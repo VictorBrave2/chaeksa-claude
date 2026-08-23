@@ -62,6 +62,10 @@ ${chartText(r, today)}`;
 - 십신 이름은 한 번 쓰고 바로 괄호로 풀이. 이후엔 풀이말만 쓴다.
 - 구조: ①오늘의 결 한 문장 ②그래서 좋은 것/조심할 것 한두 문장 ③시간대 있으면 짧게 ④마지막 줄은 "오늘 할 행동 하나:"로 시작하는 구체적 행동.
 - 솔직하다. 좋은 것만 말하지 않는다. 다만 표현은 따뜻하게.
+
+## 브리핑 본보기 (이 길이·이 말투·이 정도의 한자 사용량을 그대로 따른다)
+오늘은 경오(庚午)일, 실속과 돈의 기운이 내 뿌리 자리로 들어오는 날이에요. 불기운이 약한 분께는 힘이 되지만, 올해와 지금 대운에 '나눠 쓰는 기운'이 겹쳐 있어 추진력은 최고인데 지갑은 헐거워지기 쉬워요. 판단이 또렷한 오전 9시~오후 1시에 중요한 대화를 몰아두고, 저녁 즉흥 결제는 하루만 미루세요.
+오늘 할 행동 하나: 나가기 전에 오늘 쓸 돈 상한선을 숫자로 정해 메모하기.
 - 계산은 하지 않는다. 아래 [원국]·[현재] 데이터가 정답이며 절대 다시 계산하거나 다른 간지를 말하지 않는다.
 - 명리 용어는 쓰되 바로 풀어 말한다. 예: "정관(나를 바로 세우는 기운)".
 - 의료·투자·법률 판단은 하지 않는다. 물으면 흐름만 읽어주고 전문가에게 맡기라고 한 문장으로.
@@ -99,13 +103,23 @@ ${prof}` : ''}`;
     return (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
   }
 
+  // 한자 간지 → 한글 (브리핑 본문용). 첫 "한글(漢字)" 괄호 표기 하나는 남기고, 나머지 한자는 전부 한글로.
+  const HANJA = { 甲:'갑',乙:'을',丙:'병',丁:'정',戊:'무',己:'기',庚:'경',辛:'신',壬:'임',癸:'계',子:'자',丑:'축',寅:'인',卯:'묘',辰:'진',巳:'사',午:'오',未:'미',申:'신',酉:'유',戌:'술',亥:'해',木:'목',火:'화',土:'토',金:'금',水:'수' };
+  function dehanja(text) {
+    let kept = false;
+    return text.replace(/\(([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])\)/, (m) => { if (!kept) { kept = true; return '§' + m + '§'; } return m; })
+      .replace(/[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥木火土金水]/g, (c) => HANJA[c])
+      .replace(/§\((..)\)§/, (m, kr) => '(' + [...kr].map(c => Object.keys(HANJA).find(k => HANJA[k] === c) || c).join('') + ')');
+  }
+
   // 오늘 브리핑 (날짜별 캐시)
   async function dailyBrief(r, today) {
     const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
     const cached = localStorage.getItem(ck);
     if (cached) return cached;
     await buildProfile(r, today);
-    const text = await call(systemPrompt(r, today), [{ role: 'user', content: '오늘 브리핑. 인사 없이 바로 본론. 250자 이내. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
+    const raw = await call(systemPrompt(r, today), [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
+    const text = dehanja(raw);
     localStorage.setItem(ck, text);
     return text;
   }
@@ -114,7 +128,7 @@ ${prof}` : ''}`;
   async function chat(r, today, history, question) {
     await buildProfile(r, today);
     const msgs = [...history.slice(-10), { role: 'user', content: question }];
-    return call(systemPrompt(r, today), msgs, { maxTokens: 800 });
+    return dehanja(await call(systemPrompt(r, today), msgs, { maxTokens: 800 }));
   }
 
   // 궁합 해설
@@ -123,5 +137,5 @@ ${prof}` : ''}`;
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);
