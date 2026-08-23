@@ -74,10 +74,16 @@
     if (!AI.ready()) { box.innerHTML = ''; cta.classList.remove('hide'); return; }
     cta.classList.add('hide');
     box.className = 'brief loading'; box.textContent = '비서가 오늘을 읽는 중…';
-    try { const t = await AI.dailyBrief(R, today); box.className = 'brief'; box.textContent = t; }
+    try { const t = await AI.dailyBrief(R, today); box.className = 'brief'; box.textContent = t; collapseRuleCard(true); }
     catch (e) { box.className = 'brief'; box.innerHTML = `<span style="color:var(--ink3);font-size:14px">AI 브리핑을 가져오지 못했어요: ${e.message}</span>`; }
   }
   $('btnAiBrief').onclick = () => openSettings();
+  function collapseRuleCard(on) {
+    const card = $('brief').closest('.card'), h = card.querySelector('h2');
+    if (!on) { $('brief').classList.remove('hide'); h.textContent = '흐름 읽기'; h.onclick = null; return; }
+    $('brief').classList.add('hide'); h.textContent = '계산 근거 보기 ▸'; h.style.cursor = 'pointer';
+    h.onclick = () => { const open = $('brief').classList.toggle('hide'); h.textContent = open ? '계산 근거 보기 ▸' : '계산 근거 ▾'; };
+  }
 
   // ───── 나 ─────
   function renderMe() {

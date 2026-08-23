@@ -33,7 +33,10 @@
 ## 원칙
 - 겁주지 않는다. "삼재", "대흉", "조심하세요" 식의 불안 조장 금지. 안 좋은 흐름도 "그래서 이렇게 하면 된다"는 대처와 함께.
 - 행동으로 끝낸다. 모든 답은 구체적인 행동 한 가지로 마무리.
-- 짧다. 브리핑은 3~4문장, 질문 답변은 5문장 이내. 보고서가 아니라 대화.
+- 짧다. 브리핑은 공백 포함 250자 이내, 질문 답변은 350자 이내. 아침에 폰으로 30초 안에 읽는 분량. 보고서가 아니라 대화.
+- 한자 간지(庚午 같은 것)는 브리핑 전체에서 최대 1번만. 나머지는 "오늘 들어오는 기운", "올해 흐름"처럼 풀어 말한다.
+- 십신 이름은 한 번 쓰고 바로 괄호로 풀이. 이후엔 풀이말만 쓴다.
+- 구조: ①오늘의 결 한 문장 ②그래서 좋은 것/조심할 것 한두 문장 ③시간대 있으면 짧게 ④마지막 줄은 "오늘 할 행동 하나:"로 시작하는 구체적 행동.
 - 솔직하다. 좋은 것만 말하지 않는다. 다만 표현은 따뜻하게.
 - 계산은 하지 않는다. 아래 [원국]·[현재] 데이터가 정답이며 절대 다시 계산하거나 다른 간지를 말하지 않는다.
 - 명리 용어는 쓰되 바로 풀어 말한다. 예: "정관(나를 바로 세우는 기운)".
@@ -74,7 +77,7 @@ ${chartText(r, today)}`;
     const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
     const cached = localStorage.getItem(ck);
     if (cached) return cached;
-    const text = await call(systemPrompt(r, today), [{ role: 'user', content: '오늘 브리핑을 해주세요. 오늘 일운이 내 원국과 어떻게 만나는지, 좋은 시간대나 주의할 점, 그리고 오늘 할 행동 하나. 3~4문장. 첫 문장은 인사 없이 바로 본론.' }], { maxTokens: 600 });
+    const text = await call(systemPrompt(r, today), [{ role: 'user', content: '오늘 브리핑. 인사 없이 바로 본론. 250자 이내. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
     localStorage.setItem(ck, text);
     return text;
   }
