@@ -1,5 +1,6 @@
 <!doctype html><meta charset="utf-8"><title>엔진 테스트</title>
 <pre id="out" style="font:14px/1.5 monospace"></pre>
+<script src="astro.js"></script>
 <script src="engine.js"></script>
 <script>
 const E = ChaeksaEngine, f = E.fmt, out = [];
@@ -21,6 +22,8 @@ r = E.calc({year:1995,month:12,day:31,hour:null,gender:'M'}); show('1995-12-31 �
 
 out.push('\n2024년 절기(KST):');
 f.termsOfYear(2024).forEach(t=>out.push('  '+t.name+' '+t.y+'-'+t.m+'-'+t.d+' '+t.hh+':'+String(t.mm).padStart(2,'0')));
+const want24={'입춘':'2/4 17:27','경칩':'3/5 11:23','청명':'4/4 16:02','입하':'5/5 9:10','망종':'6/5 13:10','소서':'7/6 23:20','입추':'8/7 9:09','백로':'9/7 12:11','한로':'10/8 4:00','입동':'11/7 7:20','대설':'12/7 0:17','소한':'1/5 11:33'};
+f.termsOfYear(2024).forEach(t=>{const got=t.m+'/'+t.d+' '+t.hh+':'+String(t.mm).padStart(2,'0');const [wd,wt]=want24[t.name].split(' ');const [wh,wm]=wt.split(':').map(Number);const diff=Math.abs((t.hh*60+t.mm)-(wh*60+wm));out.push((diff<=2&&t.m+'/'+t.d===wd?'PASS ':'FAIL ')+'2024 '+t.name+' got='+got+' want='+want24[t.name]+' (차이 '+diff+'분)');});
 const t24 = f.termsOfYear(2024)[0]; expect('2024 입춘 날짜', t24.m+'/'+t24.d, '2/4');
 const today = E.dateFortune(2026,8,24); out.push('\n2026-08-24 일진: '+f.pillar(today.year)+' '+f.pillar(today.month)+' '+f.pillar(today.day));
 out.push('\n분석(2000-01-01): '+JSON.stringify(E.calc({year:2000,month:1,day:1,hour:12,minute:0,gender:'M'}).analysis, null, 0));

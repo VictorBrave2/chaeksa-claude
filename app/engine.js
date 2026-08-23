@@ -1,4 +1,4 @@
-/* 궁극의 책사 — 만세력 엔진 v0.1
+/* 궁극의 책사 — 만세력 엔진 v1.0
  * 순수 계산. AI 없음. 입력: 생년월일시(KST 기준 시계 시간) → 출력: 원국·대운·오늘 일진.
  */
 (function (global) {
@@ -48,8 +48,9 @@
     const day = B - D - Math.floor(30.6001 * E);
     const month = E < 14 ? E - 1 : E - 13;
     const year = month > 2 ? C - 4716 : C - 4715;
-    const hours = F * 24;
-    return { y: year, m: month, d: day, hh: Math.floor(hours), mm: Math.round((hours % 1) * 60) };
+    let totalMin = Math.round(F * 24 * 60);
+    if (totalMin >= 1440) totalMin = 1439; // 자정 넘김 방지(반올림)
+    return { y: year, m: month, d: day, hh: Math.floor(totalMin / 60), mm: totalMin % 60 };
   }
 
   // 한국 표준시 오프셋(시간). 역사적 UTC+8:30 구간과 1987~88 서머타임 반영.
@@ -66,8 +67,9 @@
     return 9;
   }
 
-  // ───────── 태양 황경 (Meeus 간이식, 오차 ≈ 0.01° ≈ 15분) ─────────
+  // ───────── 태양 황경: astro.js(VSOP87, 분 단위 정확) 우선, 없으면 Meeus 간이식 ─────────
   function sunLongitude(jd) {
+    if (global.ChaeksaAstro) return global.ChaeksaAstro.apparentSunLongitude(jd);
     const T = (jd - 2451545.0) / 36525;
     const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
     const M = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) * Math.PI / 180;
