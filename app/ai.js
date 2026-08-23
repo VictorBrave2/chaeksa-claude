@@ -18,7 +18,8 @@
     const g = (k) => a.gods[k] ? `${a.gods[k].stem ?? '일간'}/${a.gods[k].branch}` : '';
     const lines = [
       `[원국] 연주 ${f.pillar(p.year)}(${g('year')}) 월주 ${f.pillar(p.month)}(${g('month')}) 일주 ${f.pillar(p.day)}(${g('day')}) 시주 ${p.hour ? f.pillar(p.hour) + '(' + g('hour') + ')' : '모름'}`,
-      `[일간] ${f.stem(a.dayStem)} ${a.dayElem} (${a.dayYang ? '양' : '음'}) · ${a.strength} · 오행 목${a.elemCount[0]} 화${a.elemCount[1]} 토${a.elemCount[2]} 금${a.elemCount[3]} 수${a.elemCount[4]} · 없는 오행: ${a.missing.join(',') || '없음'} · 용신 후보: ${a.yongCandidates.join(',')}`,
+      `[일간] ${f.stem(a.dayStem)} ${a.dayElem} (${a.dayYang ? '양' : '음'}) · 오행 개수(천간+지지 정기) 목${a.elemCount[0]} 화${a.elemCount[1]} 토${a.elemCount[2]} 금${a.elemCount[3]} 수${a.elemCount[4]} · 없는 오행: ${a.missing.join(',') || '없음'}`,
+      `[판단 지침] 신강·신약, 용신·기신은 위 원국(월령·통근·지장간·합충)을 보고 당신이 직접 판단한다. 계산기의 단순 개수 세기에 의존하지 말 것.`,
       `[지장간] 연 ${a.gods.year.hidden.map(h => f.stem(h.stem) + h.god).join(' ')} / 월 ${a.gods.month.hidden.map(h => f.stem(h.stem) + h.god).join(' ')} / 일 ${a.gods.day.hidden.map(h => f.stem(h.stem) + h.god).join(' ')}${a.gods.hour ? ' / 시 ' + a.gods.hour.hidden.map(h => f.stem(h.stem) + h.god).join(' ') : ''}`,
       `[대운] ${r.daeun.forward ? '순행' : '역행'} ${r.daeun.startAge}세 시작 · ` + r.daeun.list.map(d => `${d.startAge}세 ${f.pillar(d)}`).join(', '),
       `[현재] ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()} · 대운 ${du ? f.pillar(du) + '(' + E.TEN_GODS[E.tenGod(a.dayStem, du.stem)] + ')' : '미정'} · 세운 ${f.pillar(tf.year)}(${E.TEN_GODS[E.tenGod(a.dayStem, tf.year.stem)]}) · 월운 ${f.pillar(tf.month)}(${E.TEN_GODS[E.tenGod(a.dayStem, tf.month.stem)]}) · 일운 ${f.pillar(tf.day)}(${E.TEN_GODS[E.tenGod(a.dayStem, tf.day.stem)]})`,
