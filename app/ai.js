@@ -28,14 +28,37 @@
     return lines.join('\n');
   }
 
+  // 원국 해석 프로필 — 처음 한 번만 깊게(effort high) 분석해서 고정. 이후 모든 답변은 이 위에서.
+  function profileKey(r) { return `chaeksa.profile.ai.${r.input.year}${r.input.month}${r.input.day}.${r.input.hour}.${r.input.gender}`; }
+  function getProfile(r) { return localStorage.getItem(profileKey(r)); }
+  async function buildProfile(r, today) {
+    const cached = getProfile(r); if (cached) return cached;
+    const sys = `당신은 30년 경력의 명리학자입니다. 아래 원국을 정밀 분석해 이 사람의 "고정 해석"을 작성합니다. 이 해석은 이후 매일의 브리핑과 상담에서 바뀌지 않는 기준이 됩니다. 계산은 하지 않으며 주어진 간지를 그대로 씁니다.
+
+${chartText(r, today)}`;
+    const q = `다음 항목을 정확히 이 형식으로 작성하세요. 각 항목 1~2문장, 전체 600자 이내. 이유는 월령·통근·지장간·합충 근거를 간단히.
+신강신약: (신강/중화/신약 중 하나와 근거)
+용신: (오행과 이유)
+기신: (오행과 이유)
+격국: (있으면)
+핵심성향: (3가지, 쉬운 말)
+강점: 
+주의점: 
+현재대운: (지금 대운이 이 사람에게 어떤 시기인지)`;
+    const text = await call(sys, [{ role: 'user', content: q }], { maxTokens: 1200, effort: 'high' });
+    localStorage.setItem(profileKey(r), text);
+    return text;
+  }
+
   function systemPrompt(r, today) {
+    const prof = getProfile(r);
     return `당신은 "책사", 한 사람만을 위한 개인 명리비서입니다. 아래 사람의 사주 원국을 완전히 알고 있고, 매일 옆에서 오늘을 읽어주는 또래 친구 같은 조언자입니다.
 
 ## 원칙
 - 겁주지 않는다. "삼재", "대흉", "조심하세요" 식의 불안 조장 금지. 안 좋은 흐름도 "그래서 이렇게 하면 된다"는 대처와 함께.
 - 행동으로 끝낸다. 모든 답은 구체적인 행동 한 가지로 마무리.
 - 짧다. 브리핑은 공백 포함 250자 이내, 질문 답변은 350자 이내. 아침에 폰으로 30초 안에 읽는 분량. 보고서가 아니라 대화.
-- 한자 간지(庚午 같은 것)는 브리핑 전체에서 최대 1번만. 나머지는 "오늘 들어오는 기운", "올해 흐름"처럼 풀어 말한다.
+- 한자는 첫 문장의 오늘 일진(예: 庚午) 딱 한 곳에만 허용. 그 외 한자 간지·한자 오행 표기 금지. 대운·세운·월운은 "지금 대운", "올해", "이달"이라고만 부르고 간지는 쓰지 않는다.
 - 십신 이름은 한 번 쓰고 바로 괄호로 풀이. 이후엔 풀이말만 쓴다.
 - 구조: ①오늘의 결 한 문장 ②그래서 좋은 것/조심할 것 한두 문장 ③시간대 있으면 짧게 ④마지막 줄은 "오늘 할 행동 하나:"로 시작하는 구체적 행동.
 - 솔직하다. 좋은 것만 말하지 않는다. 다만 표현은 따뜻하게.
@@ -46,7 +69,10 @@
 - 반말이 아닌 부드러운 존댓말. 이모지는 쓰지 않는다.
 
 ## 이 사람의 사주 (계산 완료, 확정값)
-${chartText(r, today)}`;
+${chartText(r, today)}
+${prof ? `
+## 확정된 원국 해석 (이미 정밀 분석 완료. 절대 번복하지 말고 이 위에서만 오늘·올해를 읽는다)
+${prof}` : ''}`;
   }
 
   async function call(system, messages, opts = {}) {
@@ -78,6 +104,7 @@ ${chartText(r, today)}`;
     const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
     const cached = localStorage.getItem(ck);
     if (cached) return cached;
+    await buildProfile(r, today);
     const text = await call(systemPrompt(r, today), [{ role: 'user', content: '오늘 브리핑. 인사 없이 바로 본론. 250자 이내. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
     localStorage.setItem(ck, text);
     return text;
@@ -85,6 +112,7 @@ ${chartText(r, today)}`;
 
   // 대화
   async function chat(r, today, history, question) {
+    await buildProfile(r, today);
     const msgs = [...history.slice(-10), { role: 'user', content: question }];
     return call(systemPrompt(r, today), msgs, { maxTokens: 800 });
   }
@@ -95,5 +123,5 @@ ${chartText(r, today)}`;
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText };
+  global.ChaeksaAI = { settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);
