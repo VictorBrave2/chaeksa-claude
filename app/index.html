@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>책사 — 나의 명리비서</title>
+<meta name="theme-color" content="#14110f">
+<style>
+  :root{
+    --bg:#14110f; --bg2:#1d1916; --card:#241f1b; --line:#3a322c;
+    --ink:#f1ebe3; --ink2:#b8ad9f; --ink3:#7d7366;
+    --accent:#e8b56a; --accent2:#c98f3c;
+    --wood:#6fbf7a; --fire:#e8705c; --earth:#d9a85a; --metal:#d8d4cc; --water:#5fa8e0;
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:520px;margin:0 auto;padding:20px 16px 80px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 18px}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .logo small{display:block;font-weight:500;font-size:12px;color:var(--ink3);letter-spacing:0}
+  .btn-ghost{background:none;border:1px solid var(--line);color:var(--ink2);border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+  .card h2{font-size:13px;font-weight:600;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+  .card h3{font-size:17px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+  label{display:block;font-size:13px;color:var(--ink2);margin:10px 0 6px}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  input,select{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px;font-size:16px;outline:none}
+  input:focus,select:focus{border-color:var(--accent2)}
+  .check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink2);margin-top:12px}
+  .check input{width:auto}
+  .btn{width:100%;margin-top:16px;background:var(--accent);color:#1a1410;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer}
+  .btn:active{transform:scale(.99)}
+  .hint{font-size:12px;color:var(--ink3);margin-top:8px}
+  /* 원국 */
+  .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .pillar{background:var(--bg2);border-radius:12px;padding:10px 4px}
+  .pillar .t{font-size:11px;color:var(--ink3);margin-bottom:6px}
+  .pillar .g{font-size:11px;color:var(--ink2);margin-top:4px;min-height:15px}
+  .han{font-size:30px;font-weight:800;line-height:1.15;font-family:"Noto Serif KR","Apple Myungjo","Batang",serif}
+  .ko{font-size:11px;color:var(--ink3)}
+  .e-목{color:var(--wood)} .e-화{color:var(--fire)} .e-토{color:var(--earth)} .e-금{color:var(--metal)} .e-수{color:var(--water)}
+  .day .han{text-shadow:0 0 18px rgba(232,181,106,.35)}
+  .day{outline:1px solid var(--accent2)}
+  .hidden{font-size:10px;color:var(--ink3);margin-top:6px;letter-spacing:.05em}
+  .me{display:flex;gap:14px;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+  .me .big{font-size:44px;font-weight:900;font-family:"Noto Serif KR",serif;line-height:1}
+  .me p{font-size:14px;color:var(--ink2)}
+  .me b{color:var(--ink)}
+  .bars{margin-top:14px;display:grid;gap:6px}
+  .bar{display:grid;grid-template-columns:22px 1fr 22px;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+  .bar i{display:block;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+  .bar i b{display:block;height:100%;border-radius:4px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .tag{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--bg2);border:1px solid var(--line);color:var(--ink2)}
+  .tag.on{border-color:var(--accent2);color:var(--accent)}
+  /* 브리핑 */
+  .brief{font-size:16px;line-height:1.7}
+  .brief p+p{margin-top:10px}
+  .brief .act{margin-top:14px;padding:12px 14px;background:var(--bg2);border-left:3px solid var(--accent);border-radius:8px;font-size:15px}
+  .ganji-line{display:flex;gap:10px;font-size:13px;color:var(--ink3);margin-bottom:12px;flex-wrap:wrap}
+  .ganji-line span b{color:var(--ink2);font-family:"Noto Serif KR",serif}
+  /* 대운 */
+  .daeun{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+  .daeun::-webkit-scrollbar{display:none}
+  .du{flex:0 0 64px;background:var(--bg2);border-radius:10px;padding:8px 4px;text-align:center;border:1px solid transparent}
+  .du.now{border-color:var(--accent2);background:#2b241c}
+  .du .age{font-size:11px;color:var(--ink3)}
+  .du .han{font-size:20px}
+  .du .yr{font-size:10px;color:var(--ink3)}
+  .ask{display:flex;gap:8px;margin-top:10px}
+  .ask input{flex:1}
+  .ask button{flex:0 0 auto;background:var(--line);color:var(--ink2);border:0;border-radius:10px;padding:0 16px;font-weight:700}
+  .soon{font-size:12px;color:var(--ink3);margin-top:8px}
+  footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:30px;line-height:1.7}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">책사<small>나의 명리비서 · 프로토타입</small></div>
+    <button class="btn-ghost hide" id="btnReset">다른 사람 보기</button>
+  </header>
+
+  <!-- 입력 -->
+  <section class="card" id="formCard">
+    <h3>처음 뵙겠습니다.</h3>
+    <p class="hint" style="margin:0 0 4px">태어난 날과 시간을 알려주시면, 오늘부터 매일 당신만을 위한 브리핑을 드릴게요.</p>
+    <label>생년월일 (양력)</label>
+    <div class="row">
+      <input id="y" type="number" placeholder="1990" min="1900" max="2100" inputmode="numeric">
+      <input id="m" type="number" placeholder="월" min="1" max="12" inputmode="numeric">
+      <input id="d" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
+    </div>
+    <label>태어난 시간</label>
+    <div class="row">
+      <input id="hh" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
+      <input id="mi" type="number" placeholder="분" min="0" max="59" inputmode="numeric">
+    </div>
+    <div class="check"><input type="checkbox" id="noTime"><label for="noTime" style="margin:0">시간을 몰라요</label></div>
+    <label>성별</label>
+    <div class="row">
+      <select id="g"><option value="M">남성</option><option value="F">여성</option></select>
+    </div>
+    <div class="check"><input type="checkbox" id="solar" checked><label for="solar" style="margin:0">진태양시 보정 (한국 출생, 약 −30분)</label></div>
+    <button class="btn" id="btnGo">내 비서 만나기</button>
+    <p class="hint">입력한 정보는 이 기기에만 저장됩니다.</p>
+  </section>
+
+  <div id="result" class="hide">
+    <!-- 오늘 브리핑 -->
+    <section class="card">
+      <h2 id="todayLabel">오늘 브리핑</h2>
+      <div class="ganji-line" id="todayGanji"></div>
+      <div class="brief" id="brief"></div>
+    </section>
+
+    <!-- 원국 -->
+    <section class="card">
+      <h2>나의 사주 원국</h2>
+      <div class="pillars" id="pillars"></div>
+      <div class="me" id="me"></div>
+      <div class="bars" id="bars"></div>
+      <div class="tags" id="tags"></div>
+    </section>
+
+    <!-- 대운 -->
+    <section class="card">
+      <h2>대운의 흐름</h2>
+      <div class="daeun" id="daeun"></div>
+      <p class="hint" id="daeunHint"></p>
+    </section>
+
+    <!-- 물어보기 -->
+    <section class="card">
+      <h2>비서에게 물어보기</h2>
+      <div class="ask"><input placeholder="이번 주 면접, 괜찮을까?" disabled><button disabled>묻기</button></div>
+      <p class="soon">다음 단계에서 열립니다. 비서가 당신의 원국을 기억한 채로 답합니다.</p>
+    </section>
+  </div>
+
+  <footer>책사는 결정을 대신하지 않습니다. 흐름을 읽고, 선택은 당신이 합니다.<br>만세력 엔진 v0.1 · 절기 기준 월주 · 진태양시 보정</footer>
+</div>
+
+<script src="engine.js"></script>
+<script src="brief.js"></script>
+<script>
+(function(){
+  const E = ChaeksaEngine, f = E.fmt;
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'chaeksa.profile';
+
+  function elemClass(i, isStem){ return 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i)); }
+
+  function render(p){
+    const r = E.calc(p);
+    const today = new Date();
+    const tf = E.dateFortune(today.getFullYear(), today.getMonth()+1, today.getDate());
+    const du = E.currentDaeun(r, today);
+
+    // 원국 기둥
+    const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
+    $('pillars').innerHTML = order.map(([k,label]) => {
+      const pl = r.pillars[k];
+      if (!pl) return `<div class="pillar"><div class="t">${label}</div><div class="han" style="color:var(--ink3)">?</div><div class="ko">시간 모름</div></div>`;
+      const g = r.analysis.gods[k];
+      return `<div class="pillar ${k==='day'?'day':''}">
+        <div class="t">${label}</div>
+        <div class="g">${g.stem ?? '<span style="color:var(--accent)">나</span>'}</div>
+        <div class="han ${elemClass(pl.stem,true)}">${f.stem(pl.stem)}</div>
+        <div class="ko">${f.stemKo(pl.stem)} · ${f.stemElem(pl.stem)}</div>
+        <div class="han ${elemClass(pl.branch,false)}" style="margin-top:4px">${f.branch(pl.branch)}</div>
+        <div class="ko">${f.branchKo(pl.branch)} · ${f.branchElem(pl.branch)}</div>
+        <div class="g">${g.branch}</div>
+        <div class="hidden">${g.hidden.map(h=>f.stem(h.stem)).join(' ')}</div>
+      </div>`;
+    }).join('');
+
+    // 나
+    const a = r.analysis;
+    const dayInfo = ChaeksaBrief.dayMaster(a.dayStem);
+    $('me').innerHTML = `<div class="big ${elemClass(a.dayStem,true)}">${f.stem(a.dayStem)}</div>
+      <p><b>${dayInfo.name}</b> — ${dayInfo.one}<br><span style="font-size:13px">${dayInfo.desc}</span></p>`;
+
+    // 오행 바
+    const max = Math.max(...a.elemCount, 1);
+    const colors = ['var(--wood)','var(--fire)','var(--earth)','var(--metal)','var(--water)'];
+    $('bars').innerHTML = E.ELEM.map((e,i)=>`<div class="bar"><span>${e}</span><i><b style="width:${a.elemCount[i]/max*100}%;background:${colors[i]}"></b></i><span>${a.elemCount[i]}</span></div>`).join('');
+    $('tags').innerHTML = [
+      `<span class="tag on">${a.strength}</span>`,
+      `<span class="tag">${a.dominant} 기운이 강함</span>`,
+      a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`,
+      `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`,
+    ].join('');
+
+    // 대운
+    $('daeun').innerHTML = r.daeun.list.map(d=>`<div class="du ${du&&du.startAge===d.startAge?'now':''}">
+      <div class="age">${d.startAge}세</div>
+      <div class="han ${elemClass(d.stem,true)}">${f.stem(d.stem)}</div>
+      <div class="han ${elemClass(d.branch,false)}">${f.branch(d.branch)}</div>
+      <div class="yr">${d.startYear}~</div></div>`).join('');
+    $('daeunHint').textContent = `${r.daeun.forward?'순행':'역행'} · ${r.daeun.startAge}세부터 10년마다 바뀜` + (du ? ` · 지금은 ${f.pillar(du)} 대운 (${du.startAge}~${du.endAge}세)` : '');
+
+    // 오늘 브리핑
+    const b = ChaeksaBrief.today(r, tf, du, today);
+    $('todayLabel').textContent = `오늘 브리핑 · ${today.getMonth()+1}월 ${today.getDate()}일`;
+    $('todayGanji').innerHTML = `<span>올해 <b>${f.pillar(tf.year)}</b></span><span>이달 <b>${f.pillar(tf.month)}</b></span><span>오늘 <b>${f.pillar(tf.day)}</b></span>` + (du?`<span>대운 <b>${f.pillar(du)}</b></span>`:'');
+    $('brief').innerHTML = b.paragraphs.map(t=>`<p>${t}</p>`).join('') + `<div class="act">${b.action}</div>`;
+
+    $('formCard').classList.add('hide');
+    $('result').classList.remove('hide');
+    $('btnReset').classList.remove('hide');
+    window.scrollTo({top:0});
+  }
+
+  function readForm(){
+    const noTime = $('noTime').checked;
+    const p = { year:+$('y').value, month:+$('m').value, day:+$('d').value,
+      hour: noTime ? null : ($('hh').value===''?null:+$('hh').value), minute: noTime?0:+($('mi').value||0),
+      gender: $('g').value, solarCorrection: $('solar').checked };
+    if (!p.year || !p.month || !p.day) { alert('생년월일을 입력해 주세요.'); return null; }
+    if (p.year < 1900 || p.year > 2100 || p.month<1||p.month>12||p.day<1||p.day>31) { alert('날짜를 다시 확인해 주세요.'); return null; }
+    return p;
+  }
+
+  $('btnGo').onclick = () => { const p = readForm(); if (!p) return; localStorage.setItem(KEY, JSON.stringify(p)); render(p); };
+  $('btnReset').onclick = () => { localStorage.removeItem(KEY); location.reload(); };
+  $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
+
+  const saved = localStorage.getItem(KEY);
+  if (saved) { try { render(JSON.parse(saved)); } catch(e){ localStorage.removeItem(KEY); } }
+})();
+</script>
+</body>
+</html>

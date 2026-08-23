@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><title>엔진 테스트</title>
+<pre id="out" style="font:14px/1.5 monospace"></pre>
+<script src="engine.js"></script>
+<script>
+const E = ChaeksaEngine, f = E.fmt, out = [];
+function show(label, r){ out.push(label+': '+['year','month','day','hour'].map(k=>f.pillar(r.pillars[k])).join(' ')+'  (보정시각 '+r.corrected.y+'-'+r.corrected.m+'-'+r.corrected.d+' '+r.corrected.hh+':'+String(r.corrected.mm).padStart(2,'0')+') 대운 '+(r.daeun.forward?'순':'역')+' '+r.daeun.startAge+'세 ['+r.daeun.list.slice(0,3).map(f.pillar).join(',')+']'); }
+function expect(label, got, want){ out.push((got===want?'PASS ':'FAIL ')+label+' got='+got+' want='+want); }
+
+let r = E.calc({year:2000,month:1,day:1,hour:12,minute:0,gender:'M'}); show('2000-01-01 12:00', r);
+expect('2000-01-01 연월일시', ['year','month','day','hour'].map(k=>f.pillar(r.pillars[k])).join(' '), '己卯 丙子 戊午 戊午');
+r = E.calc({year:2024,month:1,day:1,hour:12,minute:0,gender:'F'}); show('2024-01-01 12:00', r);
+expect('2024-01-01 연월일', ['year','month','day'].map(k=>f.pillar(r.pillars[k])).join(' '), '癸卯 甲子 甲子');
+r = E.calc({year:2024,month:2,day:4,hour:12,minute:0,gender:'M',solarCorrection:false}); show('2024-02-04 12:00 (입춘 17:27 전)', r);
+expect('입춘 전 연주', f.pillar(r.pillars.year), '癸卯');
+r = E.calc({year:2024,month:2,day:4,hour:20,minute:0,gender:'M',solarCorrection:false}); show('2024-02-04 20:00 (입춘 후)', r);
+expect('입춘 후 연월', f.pillar(r.pillars.year)+' '+f.pillar(r.pillars.month), '甲辰 丙寅');
+r = E.calc({year:1990,month:5,day:15,hour:14,minute:0,gender:'M'}); show('1990-05-15 14:00 남', r);
+r = E.calc({year:1987,month:7,day:1,hour:10,minute:0,gender:'F'}); show('1987-07-01 10:00 여 (서머타임)', r);
+r = E.calc({year:1995,month:12,day:31,hour:23,minute:30,gender:'M'}); show('1995-12-31 23:30 (야자시→익일)', r);
+r = E.calc({year:1995,month:12,day:31,hour:null,gender:'M'}); show('1995-12-31 시간모름', r);
+
+out.push('\n2024년 절기(KST):');
+f.termsOfYear(2024).forEach(t=>out.push('  '+t.name+' '+t.y+'-'+t.m+'-'+t.d+' '+t.hh+':'+String(t.mm).padStart(2,'0')));
+const t24 = f.termsOfYear(2024)[0]; expect('2024 입춘 날짜', t24.m+'/'+t24.d, '2/4');
+const today = E.dateFortune(2026,8,24); out.push('\n2026-08-24 일진: '+f.pillar(today.year)+' '+f.pillar(today.month)+' '+f.pillar(today.day));
+out.push('\n분석(2000-01-01): '+JSON.stringify(E.calc({year:2000,month:1,day:1,hour:12,minute:0,gender:'M'}).analysis, null, 0));
+document.getElementById('out').textContent = out.join('\n');
+</script>
