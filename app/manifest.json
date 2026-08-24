@@ -4,11 +4,20 @@
   "description": "내 사주를 아는 비서가 매일 아침 오늘을 브리핑합니다.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#14110f",
-  "theme_color": "#14110f",
+  "background_color": "#f7f2e8",
+  "theme_color": "#f7f2e8",
   "lang": "ko",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

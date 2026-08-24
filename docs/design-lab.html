@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>책사 디자인 실험실</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#222;font-family:"Noto Sans KR",sans-serif;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+.frame{border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.frame .tag{font-size:12px;letter-spacing:.1em;padding:8px 14px;background:#111;color:#aaa}
+.ph{padding:22px 18px 26px;min-height:560px}
+.h2{font-size:11px;letter-spacing:.15em;margin-bottom:12px}
+.brief{font-size:15px;line-height:1.85}
+.act{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:14px}
+.ganji{display:flex;gap:10px;font-size:12px;margin-bottom:14px}
+.card{border-radius:18px;padding:18px;margin-bottom:14px}
+.name{font-size:20px;font-weight:900;margin-bottom:2px}
+.sub{font-size:11px;margin-bottom:18px}
+.pill4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin-top:4px}
+.pp{border-radius:12px;padding:10px 2px;font-family:"Noto Serif KR",serif}
+.pp b{display:block;font-size:24px;font-weight:900}
+.pp small{font-size:10px;display:block;margin-top:2px}
+
+/* A. 먹과 금박 (현재) */
+.A .ph{background:radial-gradient(120% 50% at 50% -10%,rgba(217,169,98,.12),transparent),#0f0d0b;color:#efe7da}
+.A .name{font-family:"Noto Serif KR",serif}.A .sub{color:#79705f}
+.A .card{background:#1b1714;border:1px solid #2e2822}
+.A .h2{color:#d9a962}
+.A .ganji{color:#79705f}.A .ganji b{color:#d9a962;font-family:"Noto Serif KR",serif}
+.A .act{background:rgba(217,169,98,.13);border:1px solid rgba(217,169,98,.3)}
+.A .pp{background:#211d18;border:1px solid #2e2822}
+.A .pp b.f{color:#e57a66}.A .pp b.m{color:#d9d5cd}.A .pp b.e{color:#d8a95e}.A .pp small{color:#79705f}
+
+/* B. 새벽 미시(未時) 전 — 인디고 달빛 */
+.B .ph{background:linear-gradient(180deg,#141829 0%,#1a2038 55%,#232a45 100%);color:#e8eaf5;position:relative}
+.B .ph::before{content:"";position:absolute;top:26px;right:30px;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f4f0dd,#cfc8a8);box-shadow:0 0 30px rgba(244,240,221,.5)}
+.B .name{font-family:"Noto Serif KR",serif}.B .sub{color:#8b91b3}
+.B .card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(4px)}
+.B .h2{color:#b7bfe8}
+.B .ganji{color:#8b91b3}.B .ganji b{color:#e9d8a6;font-family:"Noto Serif KR",serif}
+.B .act{background:rgba(233,216,166,.12);border:1px solid rgba(233,216,166,.3)}
+.B .pp{background:rgba(255,255,255,.06)}
+.B .pp b.f{color:#f0a08e}.B .pp b.m{color:#dfe3ef}.B .pp b.e{color:#e9d8a6}.B .pp small{color:#8b91b3}
+
+/* C. 아침 한지 — 라이트 */
+.C .ph{background:linear-gradient(180deg,#faf6ee,#f3ecdd);color:#3a332a}
+.C .name{font-family:"Gowun Batang",serif;color:#2b241c}
+.C .sub{color:#a0937d}
+.C .card{background:#fffdf8;border:1px solid #e7dcc8;box-shadow:0 3px 14px rgba(120,90,40,.07)}
+.C .h2{color:#b3562e}
+.C .ganji{color:#a0937d}.C .ganji b{color:#b3562e;font-family:"Gowun Batang",serif}
+.C .brief{color:#4a4237;font-family:"Gowun Batang",serif;font-size:15.5px}
+.C .act{background:#faf1e2;border:1px solid #eadfc6;color:#6b5433}
+.C .pp{background:#faf6ec;border:1px solid #e7dcc8}
+.C .pp b.f{color:#c4573b}.C .pp b.m{color:#8a8578}.C .pp b.e{color:#b98a3e}.C .pp small{color:#a0937d}
+
+/* D. 모던 에디토리얼 — 흑백 대비 */
+.D .ph{background:#f5f4f1;color:#181614}
+.D .name{font-family:"Noto Serif KR",serif;font-size:24px;letter-spacing:-.02em}
+.D .sub{color:#8e8a83}
+.D .card{background:#fff;border:1px solid #e4e1db;border-radius:6px}
+.D .h2{color:#181614;font-weight:700;border-bottom:2px solid #181614;display:inline-block;padding-bottom:4px}
+.D .ganji{color:#8e8a83}.D .ganji b{color:#181614;font-family:"Noto Serif KR",serif}
+.D .brief{font-size:15px}
+.D .act{background:#181614;color:#f5f4f1;border-radius:6px}
+.D .pp{background:#f5f4f1;border-radius:6px}
+.D .pp b{color:#181614}.D .pp small{color:#8e8a83}
+.D .pp b.f{color:#c4573b}
+</style>
+</head>
+<body>
+<div class="frame A"><div class="tag">A. 먹과 금박 — 지금 버전 (전통 프리미엄·밤)</div><div class="ph">
+  <div class="name">책사</div><div class="sub">이승용님의 명리비서</div>
+  <div class="card"><div class="h2">오늘 브리핑 · 8월 25일</div>
+  <div class="ganji"><span>올해 <b>병오</b></span><span>이달 <b>병신</b></span><span>오늘 <b>신미</b></span></div>
+  <div class="brief">오늘은 신미(辛未)일, 곱게 다듬는 보석의 기운이 들어와요. 벌여둔 일을 정리하고 마무리 짓기 좋은 날입니다. 오후엔 문서 운이 또렷해요.</div>
+  <div class="act">오늘 할 행동 하나: 미뤄둔 답장 세 개를 오전에 보내기.</div></div>
+  <div class="card"><div class="h2">나의 사주 원국</div>
+  <div class="pill4"><div class="pp"><small>시주</small><b class="m">癸未</b><small>상관</small></div><div class="pp" style="border-color:#b8863f"><small>일주</small><b class="m">庚辰</b><small>나</small></div><div class="pp"><small>월주</small><b class="m">辛巳</b><small>겁재</small></div><div class="pp"><small>연주</small><b class="e">庚午</b><small>비견</small></div></div></div>
+</div></div>
+
+<div class="frame B"><div class="tag">B. 새벽 인디고 — 달빛 (신비·차분·앱 감성)</div><div class="ph">
+  <div class="name">책사</div><div class="sub">이승용님의 명리비서</div>
+  <div class="card"><div class="h2">오늘 브리핑 · 8월 25일</div>
+  <div class="ganji"><span>올해 <b>병오</b></span><span>이달 <b>병신</b></span><span>오늘 <b>신미</b></span></div>
+  <div class="brief">오늘은 신미(辛未)일, 곱게 다듬는 보석의 기운이 들어와요. 벌여둔 일을 정리하고 마무리 짓기 좋은 날입니다. 오후엔 문서 운이 또렷해요.</div>
+  <div class="act">오늘 할 행동 하나: 미뤄둔 답장 세 개를 오전에 보내기.</div></div>
+  <div class="card"><div class="h2">나의 사주 원국</div>
+  <div class="pill4"><div class="pp"><small>시주</small><b class="m">癸未</b><small>상관</small></div><div class="pp" style="outline:1px solid #e9d8a6"><small>일주</small><b class="m">庚辰</b><small>나</small></div><div class="pp"><small>월주</small><b class="m">辛巳</b><small>겁재</small></div><div class="pp"><small>연주</small><b class="e">庚午</b><small>비견</small></div></div></div>
+</div></div>
+
+<div class="frame C"><div class="tag">C. 아침 한지 — 라이트 (편지·정갈·아침)</div><div class="ph">
+  <div class="name">책사</div><div class="sub">이승용님의 명리비서</div>
+  <div class="card"><div class="h2">오늘 브리핑 · 8월 25일</div>
+  <div class="ganji"><span>올해 <b>병오</b></span><span>이달 <b>병신</b></span><span>오늘 <b>신미</b></span></div>
+  <div class="brief">오늘은 신미(辛未)일, 곱게 다듬는 보석의 기운이 들어와요. 벌여둔 일을 정리하고 마무리 짓기 좋은 날입니다. 오후엔 문서 운이 또렷해요.</div>
+  <div class="act">오늘 할 행동 하나: 미뤄둔 답장 세 개를 오전에 보내기.</div></div>
+  <div class="card"><div class="h2">나의 사주 원국</div>
+  <div class="pill4"><div class="pp"><small>시주</small><b class="m">癸未</b><small>상관</small></div><div class="pp" style="border-color:#b3562e"><small>일주</small><b class="m">庚辰</b><small>나</small></div><div class="pp"><small>월주</small><b class="m">辛巳</b><small>겁재</small></div><div class="pp"><small>연주</small><b class="e">庚午</b><small>비견</small></div></div></div>
+</div></div>
+
+<div class="frame D"><div class="tag">D. 모던 에디토리얼 — 잡지 (데이터·이성·미니멀)</div><div class="ph">
+  <div class="name">책사</div><div class="sub">이승용님의 명리비서</div>
+  <div class="card"><div class="h2">오늘 브리핑 · 8월 25일</div>
+  <div class="ganji" style="margin-top:12px"><span>올해 <b>병오</b></span><span>이달 <b>병신</b></span><span>오늘 <b>신미</b></span></div>
+  <div class="brief">오늘은 신미(辛未)일, 곱게 다듬는 보석의 기운이 들어와요. 벌여둔 일을 정리하고 마무리 짓기 좋은 날입니다. 오후엔 문서 운이 또렷해요.</div>
+  <div class="act">오늘 할 행동 하나: 미뤄둔 답장 세 개를 오전에 보내기.</div></div>
+  <div class="card"><div class="h2">나의 사주 원국</div>
+  <div class="pill4" style="margin-top:12px"><div class="pp"><small>시주</small><b>癸未</b><small>상관</small></div><div class="pp" style="outline:2px solid #181614"><small>일주</small><b>庚辰</b><small>나</small></div><div class="pp"><small>월주</small><b>辛巳</b><small>겁재</small></div><div class="pp"><small>연주</small><b class="f">庚午</b><small>비견</small></div></div></div>
+</div></div>
+</body>
+</html>

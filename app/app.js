@@ -18,6 +18,27 @@
     편인:'생각이 깊어지는 때. 공부·연구·기획·혼자만의 시간.', 정인:'배우고 받는 때. 도움 주는 사람, 문서·자격·학업 운.',
   };
 
+  // ───── 테마: 하루의 리듬 ─────
+  const TKEY = 'chaeksa.theme';
+  const themeMode = () => localStorage.getItem(TKEY) || 'auto';
+  const isNightHour = (d) => { const h = d.getHours(); return h < 6 || h >= 18; };
+  function applyTheme() {
+    const mode = themeMode();
+    const night = mode === 'night' || (mode === 'auto' && isNightHour(new Date()));
+    document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
+    const btn = $('btnTheme'); if (btn) { btn.textContent = night ? '☾' : '☀'; btn.title = night ? '밤 · 새벽 (눌러서 낮으로)' : '낮 · 한지 (눌러서 밤으로)'; }
+    const meta = $('metaTheme'); if (meta) meta.setAttribute('content', night ? '#141829' : '#f7f2e8');
+    const seg = $('themeSeg'); if (seg) seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === mode));
+  }
+  function setTheme(mode) { localStorage.setItem(TKEY, mode); applyTheme(); }
+  applyTheme();
+  setInterval(applyTheme, 10 * 60 * 1000);   // 열어둔 채 해가 지면 알아서 바뀜
+  $('btnTheme').onclick = () => {
+    const night = document.documentElement.getAttribute('data-theme') === 'night';
+    setTheme(night ? 'day' : 'night');
+  };
+  $('themeSeg').querySelectorAll('button').forEach(b => b.onclick = () => setTheme(b.dataset.t));
+
   // ───── 온보딩 ─────
   function readForm() {
     const noTime = $('noTime').checked;
