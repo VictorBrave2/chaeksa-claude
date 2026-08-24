@@ -1,20 +1,26 @@
 # 궁극의 책사 — 개인 명리비서
 
 ## 바로 열어보기
-`app/index.html` 파일을 더블클릭하면 브라우저에서 바로 열립니다. (설치 필요 없음)
+**https://chaeksa.kr** (라이브)
+또는 `app/index.html` 더블클릭.
 
 ## 폴더 구조
-- `docs/01_사업기획서.md` — 사업 기획서 / `docs/02_배포가이드.md` — 공개·AI 연결 방법
+- `docs/01_사업기획서.md` 사업 기획서 / `docs/02_배포가이드.md` 배포 / `docs/03_클라우드플레어_설정.md` AI 프록시 설정 / `docs/design-lab.html` 디자인 시안 비교
 - `app/astro.js` — 태양 황경 천문 계산 (절기 시각, 분 단위 정확)
 - `app/engine.js` — 만세력 엔진 (원국·대운·일진·십신·오행)
 - `app/brief.js` — 규칙 기반 브리핑 / `calendar.js` 택일 / `compat.js` 궁합 / `ai.js` AI 비서
-- `app/index.html` + `style.css` + `app.js` — 5탭 앱 (오늘·달력·나·궁합·비서), PWA
+- `app/index.html` + `style.css` + `app.js` — 랜딩 + 5탭 앱 (오늘·달력·나·궁합·비서), PWA, 낮/밤 이중 테마
+- `app/share.js` — 원국 공유 카드 (canvas 이미지) / `app/og.png` — 링크 미리보기 이미지
 - `app/test.html` — 엔진 검증 페이지
 - `server/worker.js` — 출시용 API 프록시 (Cloudflare Worker)
 
 ## 진행 상태
 - [x] 0단계: 프로토타입 (2026-08-24)
 - [x] 1단계(제작분): AI 브리핑·질문·궁합 해설, 택일 달력, 월운·세운, PWA (2026-08-24)
-- [ ] 1단계(남은 것): 웹 공개, 회원가입, 비공개 베타 50명
+- [x] 웹 공개: https://chaeksa.kr (GitHub Pages, 자동 배포)
+- [x] 디자인 v3: 낮 아침한지 / 밤 새벽인디고 이중 테마
+- [x] 랜딩 화면, 링크 미리보기(og), 원국 공유 카드
+- [ ] AI 프록시 (Cloudflare — `docs/03` 참고, 계정 필요)
+- [ ] 회원가입(Supabase), 비공개 베타 50명
 - [ ] 2단계: 구독 결제, 택일, PWA 알림
 - [ ] 3단계: 앱스토어 출시

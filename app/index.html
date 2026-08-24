@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>책사 — 나의 명리비서</title>
+<meta name="description" content="내 사주를 아는 비서가 매일 아침 오늘을 브리핑합니다. 절기 시각까지 천문 계산한 정확한 만세력, 겁주지 않는 해석, 오늘 할 행동 하나까지.">
+<link rel="canonical" href="https://chaeksa.kr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="책사">
+<meta property="og:title" content="책사 — 나의 명리비서">
+<meta property="og:description" content="내 사주를 아는 비서가 매일 아침 오늘을 브리핑합니다.">
+<meta property="og:url" content="https://chaeksa.kr/">
+<meta property="og:image" content="https://chaeksa.kr/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f7f2e8" id="metaTheme">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23,6 +33,50 @@
       <button class="btn-ghost" id="btnSettings">설정</button>
     </div>
   </header>
+
+  <!-- 랜딩 -->
+  <section id="landing" class="hide">
+    <div class="lp-hero">
+      <div class="lp-seal">策</div>
+      <h1>매일 아침,<br>나를 아는 비서의 한마디</h1>
+      <p class="lp-lead">사주는 한 번 보고 끝나는 풀이가 아닙니다.<br>오늘 무엇을 하면 좋은지 알려주는 <b>매일의 비서</b>입니다.</p>
+      <div class="lp-today">
+        <span class="lp-today-label">오늘</span>
+        <b id="lpGanji">―</b>
+        <span id="lpGanjiKo"></span>
+      </div>
+      <button class="btn lp-cta" id="btnStart">내 비서 만나기 · 무료</button>
+      <p class="hint" style="text-align:center">생년월일시만 있으면 됩니다. 가입 없이 바로.</p>
+    </div>
+
+    <section class="card">
+      <h2>비서가 해주는 일</h2>
+      <div class="lp-feat"><i>☀</i><div><b>오늘 브리핑</b><p>오늘의 기운이 내 사주와 어떻게 만나는지. 좋은 시간대, 조심할 것, 그리고 오늘 할 행동 하나.</p></div></div>
+      <div class="lp-feat"><i>▦</i><div><b>택일 달력</b><p>계약·면접·이사·개업·만남. 목적을 고르면 이달 중 좋은 날을 색으로 알려줍니다.</p></div></div>
+      <div class="lp-feat"><i>◎</i><div><b>나의 원국</b><p>내 사주 네 기둥과 오행, 10년 단위 대운의 흐름, 올해와 다음 12개월.</p></div></div>
+      <div class="lp-feat"><i>∞</i><div><b>궁합</b><p>상대의 생년월일만 넣으면 끌리는 점, 부딪히는 점, 오래 가는 방법.</p></div></div>
+      <div class="lp-feat"><i>✎</i><div><b>물어보기</b><p>“이번 주 면접 괜찮을까?” 내 원국을 전부 기억한 비서가 답합니다.</p></div></div>
+    </section>
+
+    <section class="card">
+      <h2>계산은 틀리지 않습니다</h2>
+      <div class="lp-trust">
+        <div><b>절기 시각까지 천문 계산</b><p>월주가 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다. 한국천문연구원 발표 시각과 <b>분 단위까지 일치</b>합니다.</p></div>
+        <div><b>진태양시 보정</b><p>출생지 경도에 따른 실제 태양시로 보정합니다. 1950년대 표준시, 1987~88년 서머타임도 반영합니다.</p></div>
+        <div><b>계산과 해석의 분리</b><p>사주 계산은 AI가 하지 않습니다. 계산은 엔진이 정확하게, 해석만 AI가 합니다.</p></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>책사의 원칙</h2>
+      <div class="lp-rules">
+        <p><b>겁주지 않습니다.</b> 삼재니 대흉이니 하며 불안을 팔지 않습니다. 좋지 않은 흐름도 대처법과 함께 말합니다.</p>
+        <p><b>행동으로 끝냅니다.</b> 모든 브리핑은 “그래서 오늘 무엇을 하면 되는지” 한 가지로 마무리합니다.</p>
+        <p><b>결정은 당신이 합니다.</b> 책사는 흐름을 읽어줄 뿐, 대신 결정하지 않습니다.</p>
+      </div>
+      <button class="btn" id="btnStart2">시작하기</button>
+    </section>
+  </section>
 
   <!-- 온보딩 -->
   <section class="card" id="formCard">
@@ -88,6 +142,17 @@
         <div class="me" id="me"></div>
         <div class="bars" id="bars"></div>
         <div class="tags" id="tags"></div>
+      </section>
+      <section class="card">
+        <h2>카드로 공유하기</h2>
+        <p class="hint" style="margin:0 0 4px">내 원국을 한 장의 이미지로. 카톡·인스타에 그대로 올릴 수 있어요.</p>
+        <div class="share-wrap">
+          <canvas id="shareCanvas" width="1080" height="1350"></canvas>
+          <div class="share-btns">
+            <button class="btn" id="btnShare">공유하기</button>
+            <button class="btn ghost" id="btnSaveImg">이미지 저장</button>
+          </div>
+        </div>
       </section>
       <section class="card">
         <h2>대운의 흐름</h2>
@@ -171,6 +236,7 @@
 <script src="brief.js"></script>
 <script src="calendar.js"></script>
 <script src="compat.js"></script>
+<script src="share.js"></script>
 <script src="ai.js"></script>
 <script src="app.js"></script>
 </body>

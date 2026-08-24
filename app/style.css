@@ -251,3 +251,50 @@ nav button.on{color:var(--accent);background:var(--accent-soft)}
 .seg button.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft);font-weight:700}
 footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-height:1.85;letter-spacing:.02em;position:relative;z-index:1}
 .hide{display:none!important}
+
+/* ───── 랜딩 ───── */
+.lp-hero{text-align:center;padding:22px 4px 30px}
+.lp-seal{
+  width:60px;height:60px;margin:0 auto 20px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--seal-bg);color:var(--seal-ink);
+  font-family:var(--serif);font-size:32px;font-weight:900;
+  box-shadow:var(--shadow-lift),inset 0 1px 0 rgba(255,255,255,.28);
+}
+.lp-hero h1{
+  font-family:var(--letter);font-size:31px;font-weight:700;line-height:1.45;
+  letter-spacing:-.015em;color:var(--ink);
+}
+.lp-lead{font-size:14.5px;color:var(--ink2);line-height:1.85;margin-top:16px}
+.lp-lead b{color:var(--accent);font-weight:700}
+.lp-today{
+  display:inline-flex;align-items:center;gap:9px;margin:24px 0 4px;
+  padding:9px 18px;border-radius:999px;
+  background:var(--accent-soft);border:1px solid var(--accent-line);
+}
+.lp-today-label{font-size:11.5px;color:var(--ink3);letter-spacing:.1em}
+.lp-today b{font-family:var(--serif);font-size:20px;font-weight:900;color:var(--accent)}
+.lp-today span:last-child{font-size:12.5px;color:var(--ink2)}
+.lp-cta{max-width:320px;margin:20px auto 0}
+.lp-feat{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}
+.lp-feat:last-child{border:0;padding-bottom:0}
+.lp-feat i{
+  flex:0 0 38px;height:38px;border-radius:11px;font-style:normal;font-size:17px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1px solid var(--line2);color:var(--accent);
+}
+.lp-feat b{font-size:15px;display:block;margin-bottom:3px}
+.lp-feat p{font-size:13.5px;color:var(--ink2);line-height:1.7}
+.lp-trust{display:grid;gap:15px}
+.lp-trust>div{padding-left:14px;border-left:2px solid var(--accent-line)}
+.lp-trust b{font-size:14.5px;display:block;margin-bottom:4px}
+.lp-trust p{font-size:13.5px;color:var(--ink2);line-height:1.75}
+.lp-trust p b{display:inline;color:var(--accent);font-size:inherit}
+.lp-rules{display:grid;gap:13px}
+.lp-rules p{font-family:var(--letter);font-size:15px;color:var(--ink2);line-height:1.8}
+.lp-rules b{color:var(--ink);font-weight:700}
+/* 공유 카드 */
+.share-wrap{margin-top:14px;text-align:center}
+.share-wrap canvas{width:100%;max-width:320px;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.share-btns{display:flex;gap:8px;margin-top:12px}
+.share-btns .btn{margin-top:0}

@@ -65,7 +65,9 @@
   function start(p) {
     if (!p.name) p.name = '당신';
     profile = p; R = E.calc(p);
-    $('formCard').classList.add('hide'); $('app').classList.remove('hide'); $('nav').classList.remove('hide');
+    $('landing').classList.add('hide'); $('formCard').classList.add('hide');
+    $('btnSettings').classList.remove('hide');
+    $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = `${nim()}의 명리비서`;
     renderToday(); renderMe(); renderCal(); renderPartners(); renderChat();
     go('today');
@@ -145,7 +147,22 @@
     }
     $('monthly').innerHTML = ms.join('');
     renderProfileCard();
+    renderShareCard();
   }
+  let shareReady = false;
+  async function renderShareCard() {
+    if (shareReady) return;
+    try { await ChaeksaShare.draw($('shareCanvas'), R, nim()); shareReady = true; }
+    catch (e) { $('shareCanvas').closest('.card').classList.add('hide'); }
+  }
+  $('btnShare').onclick = async () => {
+    await renderShareCard();
+    try { await ChaeksaShare.share($('shareCanvas'), profile.name); } catch (e) {}
+  };
+  $('btnSaveImg').onclick = async () => {
+    await renderShareCard();
+    ChaeksaShare.save($('shareCanvas'), profile.name);
+  };
   async function renderProfileCard() {
     let card = $('aiProfile');
     if (!card) { card = document.createElement('section'); card.className = 'card'; card.id = 'aiProfile'; $('daeun').closest('.card').before(card); }
@@ -262,10 +279,30 @@
   };
   $('btnReset').onclick = () => { if (confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) { [KEY, PKEY, HKEY].forEach(k => localStorage.removeItem(k)); Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); location.reload(); } };
 
+  // ───── 랜딩 ─────
+  function showLanding() {
+    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    $('lpGanji').textContent = f.pillar(tf.day) + '일';
+    $('lpGanjiKo').textContent = f.pillarKo(tf.day) + ' · ' + f.stemElem(tf.day.stem) + '의 날';
+    $('formCard').classList.add('hide');
+    $('landing').classList.remove('hide');
+    $('btnSettings').classList.add('hide');
+  }
+  function showForm() {
+    $('landing').classList.add('hide');
+    $('formCard').classList.remove('hide');
+    $('btnSettings').classList.remove('hide');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  $('btnStart').onclick = showForm;
+  $('btnStart2').onclick = showForm;
+
   // ───── PWA ─────
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
 
   // ───── 시작 ─────
   const saved = localStorage.getItem(KEY);
-  if (saved) { try { start(JSON.parse(saved)); } catch (e) { localStorage.removeItem(KEY); } }
+  let booted = false;
+  if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
+  if (!booted) showLanding();
 })();
