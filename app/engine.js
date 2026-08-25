@@ -117,24 +117,27 @@
     const hourKnown = p.hour != null && p.hour !== '';
     const hh = hourKnown ? Number(p.hour) : 12, mm = hourKnown ? Number(p.minute || 0) : 0;
 
-    const off = kstOffsetHours(p.year, p.month, p.day, hh);
+    // 해외 출생이면 그 나라 표준시를, 한국이면 역사적 표준시(8:30 구간·서머타임)를 쓴다
+    const off = (p.tzOffset != null && p.tzOffset !== '')
+      ? Number(p.tzOffset)
+      : kstOffsetHours(p.year, p.month, p.day, hh);
     // 시계시간 → UTC JD
     let jdUTC = jdFromUTC(p.year, p.month, p.day, hh, mm) - off / 24;
     // 진태양시(지방 평균태양시) 보정: 경도 기준. 135°E 표준자오선 대비 (lon-135)*4분
     let jdLocal = jdUTC + lonDeg / 360;          // 지방 평균태양시
-    if (p.solarCorrection === false) jdLocal = jdUTC + 9 / 24;  // 보정 끄면 KST 그대로
+    if (p.solarCorrection === false) jdLocal = jdUTC + off / 24;  // 보정 끄면 출생지 표준시 그대로
     const localClock = utcFromJD(jdLocal);        // 보정된 출생 시각(연월일시분)
 
     // 연주: 입춘 기준
     let year = localClock.y;
     let terms = solarTermsOfYear(year);
-    const ipchunLocal = terms[0].jd + (p.solarCorrection === false ? 9 / 24 : lonDeg / 360);
+    const ipchunLocal = terms[0].jd + (p.solarCorrection === false ? off / 24 : lonDeg / 360);
     if (jdLocal < ipchunLocal) { year -= 1; terms = solarTermsOfYear(year); }
     const yearStem = ((year - 4) % 10 + 10) % 10;
     const yearBranch = ((year - 4) % 12 + 12) % 12;
 
     // 월주: 절기 기준
-    const shift = p.solarCorrection === false ? 9 / 24 : lonDeg / 360;
+    const shift = p.solarCorrection === false ? off / 24 : lonDeg / 360;
     let monthIdx = 0; // 0=寅
     for (let i = 0; i < 12; i++) { if (jdLocal >= terms[i].jd + shift) monthIdx = i; }
     const monthBranch = (2 + monthIdx) % 12;

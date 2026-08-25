@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
 <div class="wrap">
@@ -104,7 +104,10 @@
     <div class="check"><input type="checkbox" id="noTime"><label for="noTime" style="margin:0">시간을 몰라요</label></div>
     <label>성별</label>
     <select id="g"><option value="M">남성</option><option value="F">여성</option></select>
-    <div class="check"><input type="checkbox" id="solar" checked><label for="solar" style="margin:0">진태양시 보정 (한국 출생, 약 −30분)</label></div>
+    <label>태어난 곳</label>
+    <select id="place"></select>
+    <p class="hint hide" id="placeNote"></p>
+    <div class="check"><input type="checkbox" id="solar" checked><label for="solar" style="margin:0">진태양시 보정 (출생지 경도로 실제 태양시 계산)</label></div>
     <button class="btn" id="btnGo">내 비서 만나기</button>
     <p class="hint">입력한 정보는 이 기기에만 저장됩니다.</p>
   </section>
@@ -148,6 +151,7 @@
         <div class="me" id="me"></div>
         <div class="bars" id="bars"></div>
         <div class="tags" id="tags"></div>
+        <p class="hint" id="bornNote"></p>
       </section>
       <section class="card">
         <h2>카드로 공유하기</h2>
@@ -273,20 +277,21 @@
   </div>
 </div>
 
-<script src="config.js?v=20"></script>
-<script src="cloud.js?v=20"></script>
-<script src="astro.js?v=20"></script>
-<script src="lunar.js?v=20"></script>
-<script src="engine.js?v=20"></script>
-<script src="brief.js?v=20"></script>
-<script src="calendar.js?v=20"></script>
-<script src="compat.js?v=20"></script>
-<script src="tongbyeon.js?v=20"></script>
-<script src="rules-wealth-love.js?v=20"></script>
-<script src="rules-health-study-move.js?v=20"></script>
-<script src="consult.js?v=20"></script>
-<script src="share.js?v=20"></script>
-<script src="ai.js?v=20"></script>
-<script src="app.js?v=20"></script>
+<script src="config.js?v=21"></script>
+<script src="cloud.js?v=21"></script>
+<script src="places.js?v=21"></script>
+<script src="astro.js?v=21"></script>
+<script src="lunar.js?v=21"></script>
+<script src="engine.js?v=21"></script>
+<script src="brief.js?v=21"></script>
+<script src="calendar.js?v=21"></script>
+<script src="compat.js?v=21"></script>
+<script src="tongbyeon.js?v=21"></script>
+<script src="rules-wealth-love.js?v=21"></script>
+<script src="rules-health-study-move.js?v=21"></script>
+<script src="consult.js?v=21"></script>
+<script src="share.js?v=21"></script>
+<script src="ai.js?v=21"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>

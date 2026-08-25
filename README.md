@@ -7,6 +7,8 @@
 ## 폴더 구조
 - `docs/01_사업기획서.md` 사업 기획서 / `docs/02_배포가이드.md` 배포 / `docs/03_클라우드플레어_설정.md` AI 프록시 설정 / `docs/design-lab.html` 디자인 시안 비교
 - `app/astro.js` — 태양 황경 천문 계산 (절기 시각, 분 단위 정확)
+- `app/places.js` — **출생지**(경도·표준시). 해외 출생·지방 출생의 시주 정확도
+- `app/cloud.js` + `server/schema.sql` — **회원·서버 동기화**(Supabase, RLS)
 - `app/lunar.js` — **음력 변환** (삭 시각 Meeus 49장 + 무중치윤법). 검증 29건 전부 통과 → `app/lunar-test.html`
 - `app/engine.js` — 만세력 엔진 (원국·대운·일진·십신·오행)
 - `app/brief.js` — 규칙 기반 브리핑 / `calendar.js` 택일 / `compat.js` 궁합 / `ai.js` AI 비서
@@ -31,6 +33,7 @@ python tools_bust.py --bump
 - [x] 웹 공개: https://chaeksa.kr (GitHub Pages, 자동 배포)
 - [x] 디자인 v3: 낮 아침한지 / 밤 새벽인디고 이중 테마
 - [x] 랜딩 화면, 링크 미리보기(og), 원국 공유 카드
+- [x] 출생지 선택 (한국 24곳 + 해외 32곳) — 해외 출생 원국 오류 해결
 - [x] 음력 생일 입력 (윤달 포함, 양력↔음력 실시간 변환 표시)
 - [x] v2.1 선택지 비교(Decision Lab) + 관측 지표 기록·추세 + 30일 재확인 알림
 - [x] v2 심층 상담: 6D 스택, 경쟁 가설, 판별 질문, 판단 수정(Belief Revision), 상담 기록·재확인

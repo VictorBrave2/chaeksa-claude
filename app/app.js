@@ -46,6 +46,28 @@
   };
   $('themeSeg').querySelectorAll('button').forEach(b => b.onclick = () => setTheme(b.dataset.t));
 
+  // ───── 출생지 ─────
+  function initPlace() {
+    const sel = $('place'); if (!sel || !window.ChaeksaPlaces) return;
+    sel.innerHTML = ChaeksaPlaces.options();
+    sel.value = 'KR:서울';
+    sel.onchange = updatePlaceNote;
+    updatePlaceNote();
+  }
+  function updatePlaceNote() {
+    const sel = $('place'), note = $('placeNote');
+    if (!sel || !note || !window.ChaeksaPlaces) return;
+    const p = ChaeksaPlaces.resolve(sel.value);
+    if (p.tzOffset == null) {
+      const diff = Math.round((p.lon - 135) * 4);
+      note.classList.remove('hide');
+      note.innerHTML = `${p.name} 기준 진태양시는 시계보다 <b>${Math.abs(diff)}분 ${diff < 0 ? '늦습니다' : '빠릅니다'}</b>. 태어난 시간이 시(時) 경계에 가까우면 이 차이로 시주가 바뀝니다.`;
+    } else {
+      note.classList.remove('hide');
+      note.innerHTML = `${p.name}의 표준시(UTC${p.tzOffset >= 0 ? '+' : ''}${p.tzOffset})로 계산합니다. <b>그 시기에 서머타임이 있었다면</b> 태어난 시각에서 1시간을 빼고 입력해 주세요.`;
+    }
+  }
+
   // ───── 양력 / 음력 입력 ─────
   let calMode = 'solar';
   function setCal(mode) {
@@ -101,6 +123,8 @@
       calendar: calMode, lunarInput: calMode === 'lunar' ? { y: +$('y').value, m: +$('m').value, d: +$('d').value, leap: $('isLeap').checked } : null,
       hour: noTime ? null : ($('hh').value === '' ? null : +$('hh').value), minute: noTime ? 0 : +($('mi').value || 0),
       gender: $('g').value, solarCorrection: $('solar').checked };
+    const pl = window.ChaeksaPlaces ? ChaeksaPlaces.resolve($('place').value) : null;
+    if (pl) { p.place = $('place').value; p.placeName = pl.name; p.longitude = pl.lon; p.tzOffset = pl.tzOffset; }
     if (!p.year || !p.month || !p.day) { alert('생년월일을 입력해 주세요.'); return null; }
     if (p.year < 1900 || p.year > 2100 || p.month < 1 || p.month > 12 || p.day < 1 || p.day > 31) { alert('날짜를 다시 확인해 주세요.'); return null; }
     return p;
@@ -185,6 +209,9 @@
     $('bars').innerHTML = E.ELEM.map((e, i) => `<div class="bar"><span>${e}</span><i><b style="width:${a.elemCount[i] / max * 100}%;background:${colors[i]}"></b></i><span>${a.elemCount[i]}</span></div>`).join('');
     $('tags').innerHTML = [`<span class="tag on">${a.strength}</span>`, `<span class="tag">${a.dominant} 기운이 강함</span>`, a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`, `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`].join('');
     $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
+    const plName = profile.placeName || '서울';
+    const bornNote = $('bornNote');
+    if (bornNote) bornNote.innerHTML = `${plName} 출생 기준 · 진태양시 보정 ${profile.solarCorrection === false ? '안 함' : '함'} · 보정된 시각 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>`;
     $('daeunHint').textContent = `${R.daeun.forward ? '순행' : '역행'} · ${R.daeun.startAge}세부터 10년마다 바뀜` + (du ? ` · 지금은 ${f.pillar(du)} 대운 — ${god(du.stem)}: ${GOD_FLOW[god(du.stem)]}` : '');
     // 세운
     const ys = [];
@@ -434,7 +461,9 @@
   }
   wireCloud();
 
+  initPlace();
   const saved = localStorage.getItem(KEY);
+  if (saved) { try { const sp = JSON.parse(saved); if (sp.place && $('place')) { $('place').value = sp.place; updatePlaceNote(); } } catch (e) {} }
   let booted = false;
   if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
   if (!booted) showLanding();
