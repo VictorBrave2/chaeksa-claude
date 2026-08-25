@@ -105,7 +105,7 @@
     if (p.year < 1900 || p.year > 2100 || p.month < 1 || p.month > 12 || p.day < 1 || p.day > 31) { alert('날짜를 다시 확인해 주세요.'); return null; }
     return p;
   }
-  $('btnGo').onclick = () => { const p = readForm(); if (!p) return; localStorage.setItem(KEY, JSON.stringify(p)); start(p); };
+  $('btnGo').onclick = () => { const p = readForm(); if (!p) return; localStorage.setItem(KEY, JSON.stringify(p)); start(p); if (window.ChaeksaCloud) ChaeksaCloud.pushSoon(); };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
   // ───── 탭 ─────
@@ -229,6 +229,7 @@
     card.innerHTML = `<h2>비서의 원국 해석</h2><div class="brief loading">원국을 정밀 분석하는 중… (처음 한 번만, 30초쯤)</div>`;
     try { const t = await AI.buildProfile(R, today); card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${mdLite(t)}</div>`; }
     catch (e) { card.innerHTML = `<h2>비서의 원국 해석</h2><p class="hint">분석 실패: ${e.message}</p>`; }
+    if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
   }
 
   // ───── 달력 ─────
@@ -326,7 +327,8 @@
   $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') ask(); });
 
   // ───── 설정 ─────
-  function openSettings() { const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('model').value = s.model || 'claude-opus-5'; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
+  function openSettings() {
+    renderCloud(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('model').value = s.model || 'claude-opus-5'; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
   $('btnSettings').onclick = openSettings;
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
   $('btnSaveSettings').onclick = () => {
@@ -367,12 +369,75 @@
     dot.classList.toggle('hide', ChaeksaConsult.openCount() === 0);
   }
 
+  // ───── 서버 동기화 ─────
+  const Cloud = () => window.ChaeksaCloud;
+  function cloudMsg(t, ok) {
+    const el = $('cloudMsg'); if (!el) return;
+    el.classList.toggle('hide', !t); el.innerHTML = t || '';
+    el.style.color = ok ? 'var(--accent)' : 'var(--ink3)';
+  }
+  function renderCloud() {
+    const C = Cloud(); if (!C || !$('cloudBox')) return;
+    if (!C.enabled()) {
+      $('cloudBox').innerHTML = '<label style="margin-top:0">기기 간 동기화</label><p class="hint">아직 준비 중입니다. 지금은 이 기기에만 저장됩니다.</p>';
+      return;
+    }
+    const inn = C.signedIn();
+    $('cloudOut').classList.toggle('hide', inn);
+    $('cloudIn').classList.toggle('hide', !inn);
+    if (inn) {
+      $('cloudWho').textContent = C.email() || '로그인됨';
+      const at = localStorage.getItem('chaeksa.sync');
+      $('cloudWhen').textContent = at ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '';
+    }
+  }
+  async function cloudSync(showMsg) {
+    const C = Cloud(); if (!C || !C.signedIn()) return;
+    try {
+      if (showMsg) cloudMsg('동기화 중…');
+      const r = await C.pull();
+      await C.push();
+      renderCloud();
+      if (showMsg) cloudMsg('동기화했습니다.', true);
+      if (r.changed) {
+        const saved = localStorage.getItem(KEY);
+        if (saved) { try { start(JSON.parse(saved)); } catch (e) {} }
+      }
+    } catch (e) { if (showMsg) cloudMsg('동기화 실패: ' + e.message); }
+  }
+  function wireCloud() {
+    const C = Cloud(); if (!C || !C.enabled()) { renderCloud(); return; }
+    const bk = $('btnKakao'), bg = $('btnGoogle'), bm = $('btnMail'),
+          bs = $('btnSyncNow'), bo = $('btnLogout');
+    if (bk) bk.onclick = () => { try { C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };
+    if (bg) bg.onclick = () => { try { C.signInWith('google'); } catch (e) { cloudMsg(e.message); } };
+    if (bm) bm.onclick = async () => {
+      const v = $('loginEmail').value.trim();
+      if (!v) { $('loginEmail').focus(); return; }
+      cloudMsg('메일 보내는 중…');
+      try { await C.sendMagicLink(v); cloudMsg('메일을 보냈습니다. 링크를 눌러주세요.', true); }
+      catch (e) { cloudMsg(e.message); }
+    };
+    if (bs) bs.onclick = () => cloudSync(true);
+    if (bo) bo.onclick = () => { C.signOut(); renderCloud(); cloudMsg('로그아웃했습니다.'); };
+    renderCloud();
+  }
+
   // ───── PWA ─────
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
 
   // ───── 시작 ─────
+  // 로그인 후 돌아온 경우 토큰을 먼저 받아둔다
+  if (window.ChaeksaCloud && ChaeksaCloud.enabled()) {
+    const came = ChaeksaCloud.captureRedirect();
+    if (came) ChaeksaCloud.me().catch(() => {});
+  }
+  wireCloud();
+
   const saved = localStorage.getItem(KEY);
   let booted = false;
   if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
   if (!booted) showLanding();
+  // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
+  if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
 })();

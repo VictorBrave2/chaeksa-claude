@@ -399,3 +399,14 @@ nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:
 .seg button.on{background:var(--accent-soft);border-color:var(--accent2);color:var(--accent);font-weight:700}
 .conv{font-size:13px;color:var(--ink2);margin-top:9px;padding:9px 12px;background:var(--bg2);border:1px solid var(--line);border-radius:10px}
 .conv b{color:var(--accent)}
+
+/* ───── 로그인 / 동기화 ───── */
+.btn.kakao{background:#FEE500;color:#191600;box-shadow:0 3px 12px rgba(254,229,0,.25)}
+.btn.kakao span{margin-right:7px}
+.mailfold{margin-top:12px}
+.mailfold summary{font-size:13px;color:var(--ink3);cursor:pointer;list-style:none;padding:6px 0}
+.mailfold summary::-webkit-details-marker{display:none}
+.mailfold summary::before{content:"› ";color:var(--accent)}
+.mailfold[open] summary::before{content:"⌄ "}
+.synced{font-size:13.5px;color:var(--ink2);margin-bottom:10px;line-height:1.6}
+.synced b{color:var(--accent);display:block;font-size:15px}

@@ -93,7 +93,9 @@
         if (!v) { inp.focus(); return; }
         list2[i].logs = list2[i].logs || [];
         list2[i].logs.push({ date: new Date().toISOString().slice(0, 10), value: v });
-        save(list2); renderHome(); return;
+        save(list2); renderHome();
+        if (global.ChaeksaCloud) global.ChaeksaCloud.pushSoon();
+        return;
       }
       begin(list2[i].question, list2[i]);
     });
@@ -277,6 +279,7 @@
     $('cSave').textContent = '저장했습니다';
     $('cSave').disabled = true;
     global.ChaeksaApp.refreshConsultBadge();
+    if (global.ChaeksaCloud) global.ChaeksaCloud.pushSoon();
   }
 
   // ───────── LLM 서술 (구조를 벗어나지 않게) ─────────
