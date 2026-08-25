@@ -14,7 +14,7 @@
  * 호출 주소: https://<프로젝트>.vercel.app/api/chat
  */
 const UPSTREAM = 'https://api.anthropic.com/v1/messages';
-const ALLOWED_MODELS = new Set(['claude-opus-5', 'claude-sonnet-5']);
+const ALLOWED_MODELS = new Set(['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5']);
 const MAX_TOKENS = 2200;
 
 // 간이 호출 제한(인스턴스 메모리). 재시작 시 초기화되므로 최종 방어선은
