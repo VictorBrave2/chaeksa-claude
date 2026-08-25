@@ -200,10 +200,24 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .hours-pick .g{font-size:var(--t2);color:var(--accent);font-weight:500}
 .hours-pick .d{font-size:var(--t2);color:var(--ink2);flex-basis:100%;line-height:1.7}
 
+.c-domain{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:13px 15px;margin-bottom:12px}
+.c-domain p{font-size:var(--t2);color:var(--ink2);line-height:1.7;margin-bottom:10px}
+.c-domain p b{color:var(--ink)}
+.c-domain .row{display:flex;flex-wrap:wrap;gap:6px}
+.c-domain .row>*{flex:0 0 auto}
+.c-domain .chip{font-size:12.5px;padding:7px 13px;border-radius:999px;background:var(--card);
+  border:1px solid var(--line2);color:var(--ink2);cursor:pointer;font-family:var(--sans);min-height:36px}
+.c-domain .chip.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft);font-weight:700}
 .c-miss{font-size:var(--t2);color:var(--g0-ink);background:var(--g0-bg);border-radius:10px;
   padding:11px 14px;margin-bottom:12px;line-height:1.7}
 
 /* ───── 상담: 언제가 좋고 나쁜가 ───── */
+.c-asked{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+  padding:13px 15px;margin:0 0 14px}
+.c-asked b{display:block;font-size:var(--t3);line-height:1.6;color:var(--ink)}
+.c-asked span{display:block;font-size:var(--t2);color:var(--ink2);margin-top:6px;line-height:1.7}
+.tlc.asked .bar{outline:2px solid var(--accent);outline-offset:1px}
+.tlc.asked .k{color:var(--accent);font-weight:700}
 .c-when .c-base{font-size:var(--t2);color:var(--ink2);line-height:1.75;margin:0 0 12px}
 .c-when .c-base b{color:var(--ink)}
 .tl{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;align-items:end;height:82px;margin:4px 0 12px}

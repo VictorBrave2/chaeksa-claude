@@ -158,6 +158,15 @@
     }
 
     if (fr.target.missNote) html += `<p class="c-miss">${esc(fr.target.missNote)}</p>`;
+    // 주제를 확신하지 못했으면 감추지 말고 바꿀 수 있게 한다
+    if (!fr.domainSure) {
+      const why = fr.domainMatched === 0
+        ? '어떤 주제인지 확실하지 않아 <b>' + esc(fr.domain.label) + '</b>으로 보고 있습니다.'
+        : '<b>' + esc(fr.domain.label) + '</b>와 <b>' + esc(fr.domainTied || '') + '</b> 중 어느 쪽인지 애매합니다.';
+      html += `<div class="c-domain"><p>${why} 다른 주제라면 눌러서 바꾸세요.</p><div class="row">`
+        + T().DOMAINS.map(d => `<button class="chip ${d.key === fr.domain.key ? 'on' : ''}" data-dom="${d.key}">${esc(d.label)}</button>`).join('')
+        + `</div></div>`;
+    }
     html += `<p class="c-lead">${esc(fr.lead)}</p>`;
 
     // 구조
@@ -264,6 +273,17 @@
 
     // 이벤트
     $('cBack').onclick = () => { fr = null; current = null; $('consultView').classList.add('hide'); $('consultHome').classList.remove('hide'); renderHome(); window.scrollTo({ top:0 }); };
+    $('consultView').querySelectorAll('[data-dom]').forEach(b => b.onclick = () => {
+      const d = T().DOMAINS.find(x => x.key === b.dataset.dom);
+      if (!d) return;
+      fr.domain = Object.assign({}, d, { matched: 9, confident: true });
+      fr.domainSure = true;
+      // 주제가 바뀌면 규칙도 다시 골라야 한다
+      const re = T().frame(R, fr.question + ' ' + d.kw[0], new Date());
+      fr.lead = re.lead; fr.theme = re.theme; fr.hypotheses = re.hypotheses;
+      fr.questions = re.questions; fr.answers = {};
+      render();
+    });
     $('cStruct').onclick = () => { const b = $('cStructBody'); const open = b.classList.toggle('hide'); $('cStruct').textContent = open ? '지금 보이는 구조 ▸' : '지금 보이는 구조 ▾'; };
     $('consultView').querySelectorAll('.cq-btns button').forEach(b => b.onclick = () => {
       fr.answers[b.dataset.q] = b.dataset.v; render();
@@ -343,45 +363,80 @@
   }
 
   global.ChaeksaConsult = { renderHome, openCount: () => load().filter(isDue).length, total: () => load().length, list: load };
-  // 6층 좌표를 기간 전체에 찍어 언제가 높고 낮은지 보여준다.
+  // 받침이 있으면 '이/은', 없으면 '가/는'
+  function josa(word, withBatchim, without) {
+    const c = String(word || '').trim().slice(-1);
+    const code = c.charCodeAt(0);
+    if (!(code >= 0xAC00 && code <= 0xD7A3)) return without;
+    return ((code - 0xAC00) % 28) ? withBatchim : without;
+  }
+
+  // 6층 좌표를 질문이 향하는 단위로 찍는다 (연·월·일·시)
   function whenHtml(fr) {
     const w = fr.when;
-    const multiYear = w.years.length > 1;
-    const singleMonth = w.months.length === 1;
-    const cells = multiYear ? w.years : (singleMonth ? w.days.map(r => ({ ...r, key: r.d })) : w.months);
+    const G = w.granularity || 'month';
+    const cells = w.cells && w.cells.length ? w.cells : (w.months || []);
+    if (!cells.length) return '';
+    const UNIT = { year:'해', month:'달', day:'날', hour:'때' }[G] || '달';
+    const HEAD = { year:'어느 해가 높고 낮은가', month:'어느 달이 높고 낮은가',
+                   day:'어느 날이 높고 낮은가', hour:'몇 시가 높고 낮은가' }[G];
     const MAX = Math.max(0.35, ...cells.map(c => Math.abs(c.rel)));
     const bars = cells.map(c => {
       const h = Math.max(3, Math.round(Math.abs(c.rel) / MAX * 30));
       const up = c.rel >= 0;
-      const lab = multiYear ? String(c.y).slice(2) : (singleMonth ? (c.d % 5 === 0 || c.d === 1 ? c.d : '') : c.m);
-      return `<div class="tlc ${up ? 'u' : 'd'}" title="${esc(String(lab))} 편차 ${c.rel > 0 ? '+' : ''}${c.rel}">
+      const isAsked = G === 'hour' && fr.target.hour != null
+        && Math.floor(((c.hour + 1) % 24) / 2) === Math.floor(((fr.target.hour + 1) % 24) / 2);
+      return `<div class="tlc ${up ? 'u' : 'd'}${isAsked ? ' asked' : ''}" title="${esc(c.name || '')} 편차 ${c.rel > 0 ? '+' : ''}${c.rel}">
         <span class="col"><span class="bar" style="height:${h}px"></span></span>
-        <span class="k">${esc(String(lab))}</span></div>`;
+        <span class="k">${esc(String(c.label == null ? '' : c.label))}</span></div>`;
     }).join('');
     const hi = cells.reduce((a, b) => (b.rel > a.rel ? b : a), cells[0]);
     const lo = cells.reduce((a, b) => (b.rel < a.rel ? b : a), cells[0]);
-    const unit = multiYear ? '해' : (singleMonth ? '날' : '달');
-    const nm = c => multiYear ? c.y + '년' : (singleMonth ? c.m + '월 ' + c.d + '일' : c.m + '월');
-    // 여러 해에 걸친 스캔이면 날짜에 연도를 반드시 붙인다
-    const day = r => `<li><b>${multiYear ? r.y + '.' : ''}${r.m}월 ${r.d}일</b> <span class="gz">${esc(r.ganji)}</span>
-      <span class="g">${esc(r.god)}</span><span class="v">${r.rel > 0 ? '+' : ''}${r.rel}</span></li>`;
+    const multiYear = (w.years || []).length > 1;
+    const one = r => {
+      if (G === 'hour') return `<li><b>${esc(r.range)}시</b> <span class="gz">${esc(r.ganji || '')}</span>
+        <span class="g">${esc(r.god || '')}</span><span class="v">${r.rel > 0 ? '+' : ''}${r.rel}</span></li>`;
+      return `<li><b>${multiYear ? r.y + '.' : ''}${r.m}월 ${r.d}일</b> <span class="gz">${esc(r.ganji || '')}</span>
+        <span class="g">${esc(r.god || '')}</span><span class="v">${r.rel > 0 ? '+' : ''}${r.rel}</span></li>`;
+    };
+    // 시각을 지목하셨으면 그 시각부터 답한다
+    let asked = '';
+    if (G === 'hour' && fr.target.hour != null) {
+      const c = cells.find(r => r.hour === (Math.floor(((fr.target.hour + 1) % 24) / 2) * 2 + 24) % 24)
+             || cells.find(r => Math.floor(((r.hour + 1) % 24) / 2) === Math.floor(((fr.target.hour + 1) % 24) / 2));
+      if (c) {
+        const rank = cells.slice().sort((a, b) => b.value - a.value).findIndex(r => r.hour === c.hour) + 1;
+        const verdict = c.value > 0.3 ? '順 — 나를 밀어주는 때' : (c.value < -0.3 ? '逆 — 나를 누르는 때' : '平 — 팽팽한 때');
+        asked = `<div class="c-asked"><b>물으신 ${esc(c.range)}시는 ${esc(c.ganji || '')} ${esc(c.god || '')}, ${verdict}입니다.</b>
+          <span>이 날 12시진 중 ${rank}번째${rank <= 3 ? ' — 상위권입니다' : (rank >= 10 ? ' — 하위권입니다' : '')}.
+          ${c.label && c.value <= 0.3 ? '더 나은 때가 있다면 아래에서 고르세요.' : ''}</span></div>`;
+      }
+    }
     const base = w.baseline;
-    const baseWord = base > 0.3 ? '順(나를 밀어주는 쪽)' : (base < -0.3 ? '逆(나를 누르는 쪽)' : '平(팽팽함)');
+    const word = base > 0.3 ? '順(나를 밀어주는 쪽)' : (base < -0.3 ? '逆(나를 누르는 쪽)' : '平(팽팽함)');
+    const span = G === 'hour' ? '12시진을 하나씩' : `${w.span}일을 하루씩`;
+    const pickLabel = G === 'hour' ? ['좋은 때', '피할 때'] : ['골라 쓸 날', '피할 날'];
+    const tail = G === 'hour'
+      ? '시운 층까지 쌓아 시진마다 다시 판정했습니다.'
+      : `날짜는 6층 적층 좌표(대운·세운·월운·일운의 평균)로 계산했습니다. ${w.spread ? '달마다 하나씩만 뽑았습니다.' : '이 기간 안에서 상위 다섯입니다.'}`;
     return `<div class="c-sec c-when">
-      <h4>언제가 좋고 언제가 나쁜가<small>${esc(fr.target.label)} · ${w.span}일을 하루씩 계산했습니다</small></h4>
-      <p class="c-base">이 기간 전체의 좌표는 <b>${base > 0 ? '+' : ''}${base}</b> — ${baseWord}.
-        아래는 그 안에서의 <b>편차</b>입니다. 높은 ${unit}가 절대적으로 좋은 게 아니라, 같은 기간 안에서 상대적으로 높다는 뜻입니다.</p>
+      <h4>${HEAD}<small>${esc(fr.target.label)} · ${span} 계산했습니다</small></h4>
+      ${asked}
+      <p class="c-base">이 기간 전체의 좌표는 <b>${base > 0 ? '+' : ''}${base}</b> — ${word}.
+        아래는 그 안에서의 <b>편차</b>입니다. 높은 ${UNIT}가 절대적으로 좋은 게 아니라, 같은 기간 안에서 상대적으로 높다는 뜻입니다.</p>
       <div class="tl">${bars}</div>
-      <p class="c-base"><b>${esc(nm(hi))}</b>이 가장 높고 <b>${esc(nm(lo))}</b>이 가장 낮습니다.</p>
-      ${w.turns.length ? `<p class="c-base">흐름이 뒤집히는 지점: ` +
-        w.turns.map(t => `${t.from.y}년 ${t.from.m}월 → ${t.to.y}년 ${t.to.m}월`).join(', ') + `</p>` : ''}
+      <p class="c-base"><b>${esc(hi.name || '')}</b>${josa(hi.name,'이','가')} 가장 높고 <b>${esc(lo.name || '')}</b>${josa(lo.name,'이','가')} 가장 낮습니다.</p>
+      ${(w.turns || []).length ? `<p class="c-base">흐름이 뒤집히는 지점: ` +
+        w.turns.map(t => G === 'hour' ? `${t.from.range}시 → ${t.to.range}시` : `${t.from.y}년 ${t.from.m}월 → ${t.to.y}년 ${t.to.m}월`).join(', ') + `</p>` : ''}
       <div class="c-days">
-        <div><h5>골라 쓸 날</h5><ul>${w.best.map(day).join('')}</ul></div>
-        <div><h5>피할 날</h5><ul>${w.worst.map(day).join('')}</ul></div>
+        <div><h5>${pickLabel[0]}</h5><ul>${w.best.map(one).join('')}</ul></div>
+        <div><h5>${pickLabel[1]}</h5><ul>${w.worst.map(one).join('')}</ul></div>
       </div>
-      <p class="hint">날짜는 6층 적층 좌표(대운·세운·월운·일운의 평균)로 계산했습니다. ${w.spread ? '달마다 하나씩만 뽑았습니다.' : '이 달 안에서 상위 다섯 날입니다.'}<br><b>달력 탭의 택일과는 다른 기준입니다.</b> 여기는 <b>내 기운이 順인가</b>를 보고, 택일은 <b>그 목적(이사·계약 등)에 맞는 날인가</b>를 봅니다. 두 결과가 다를 수 있습니다.</p>
+      <p class="hint">${tail}<br>
+        <b>달력 탭의 택일과는 다른 기준입니다.</b> 여기는 <b>내 기운이 順인가</b>를 보고, 택일은 <b>그 목적(이사·계약 등)에 맞는 날인가</b>를 봅니다. 두 결과가 다를 수 있습니다.</p>
     </div>`;
   }
+
 
 
 })(window);

@@ -21,21 +21,26 @@
 
   // ───────── 도메인 판별 ─────────
   const DOMAINS = [
-    { key:'career', label:'직업·사업', kw:['직업','사업','일','회사','이직','전직','퇴사','창업','승진','진급','자리','커리어','매장','가게','확장','장사','업무','상사','조직','프리랜서','팀'] },
+    { key:'career', label:'직업·사업', kw:['직업','사업','일','회사','이직','전직','퇴사','창업','승진','진급','자리','커리어','매장','가게','확장','장사','업무','상사','조직','프리랜서','팀','계약','거래처','납품','폐업','동업','대표','직장','근무','출근','부서','발령','면접'] },
     { key:'wealth', label:'재물·돈',   kw:['돈','재물','재테크','투자','수입','매출','자금','대출','빚','저축','부동산','주식','현금','정산','수익','손해','계약금'] },
     { key:'love',   label:'관계·인연', kw:['연애','결혼','인연','배우자','남자친구','여자친구','이혼','재혼','만남','소개팅','사람','관계','갈등','가족','부모','자식','친구'] },
-    { key:'health', label:'건강·체력', kw:['건강','몸','체력','병','아프','수술','피로','스트레스','잠','불면','정신','우울'] },
-    { key:'study',  label:'학업·시험', kw:['공부','시험','자격증','합격','학교','대학','유학','고시','면접','취업','자격'] },
-    { key:'move',   label:'이동·거처', kw:['이사','이동','이주','집','거처','해외','지방','이전','사무실','매물','전세','매매'] },
+    { key:'health', label:'건강·체력', kw:['건강','몸','체력','병','아프','수술','피로','스트레스','잠','불면','정신','우울','지치','지침','지칩','지쳐','지쳤','힘들','힘드','힘든','버겁','기운없','기운 없','번아웃','소진','기력','치료','입원','검진','다이어트','통증','불안','아파','아픈','아프','졸려','몸살'] },
+    { key:'study',  label:'학업·시험', kw:['공부','시험','자격증','합격','학교','대학','고시','취업','자격','수능','입시','논문','졸업','편입','시험운','성적','학원'] },
+    { key:'move',   label:'이동·거처', kw:['이사','이동','이주','집','거처','해외','지방','이전','사무실','매물','전세','매매','유학','귀국','출국','여행','출장','방','원룸','아파트'] },
   ];
   function detectDomain(q) {
     const t = String(q || '');
-    let best = null, bestN = 0;
-    for (const d of DOMAINS) {
-      const n = d.kw.reduce((s, k) => s + (t.includes(k) ? 1 : 0), 0);
-      if (n > bestN) { best = d; bestN = n; }
-    }
-    return best || DOMAINS[0];
+    const hits = DOMAINS.map(d => ({ d, n: d.kw.reduce((s, k) => s + (t.includes(k) ? 1 : 0), 0) }))
+                        .sort((a, b) => b.n - a.n);
+    const top = hits[0], second = hits[1];
+    // 아무것도 안 걸렸거나, 1·2위가 동점이면 확신하지 못한 것이다.
+    // 조용히 직업으로 떨어뜨리지 않고 그 사실을 알린다.
+    const confident = top.n > 0 && top.n > second.n;
+    const dom = top.n > 0 ? top.d : DOMAINS[0];
+    return Object.assign(Object.create(Object.getPrototypeOf(dom)), dom, {
+      matched: top.n, confident,
+      tied: top.n > 0 && top.n === second.n ? second.d.label : null,
+    });
   }
 
   // ───────── 시기 판별 ─────────
@@ -49,10 +54,50 @@
       if (t.includes(ko) || t.includes(han)) return { level:'대운', du, label:`${ko}(${han}) 대운`, from:du.startYear, to:du.startYear + 9, age:`${du.startAge}~${du.endAge}세` };
     }
     const cy = today.getFullYear();
-    // 2) 월 지목이 있으면 월이 이긴다. ("2026년 9월" 은 세운이 아니라 월운이다)
+    const noDaeun = !t.includes('대운');
+
+    // 2) 날짜·시각 지목 — 가장 좁은 것이 이긴다
+    //    "2026년 9월 13일 오후 3시" / "9월 13일" / "내일" / "오늘 저녁"
+    if (noDaeun) {
+      const dm = t.match(/(1[0-2]|[1-9])\s*월\s*(3[01]|[12]\d|[1-9])\s*일/);
+      const rel = t.includes('모레') ? 2 : (t.includes('내일') ? 1 : (t.includes('어제') ? -1 : (t.includes('오늘') ? 0 : null)));
+      let base = null;
+      if (dm) {
+        const ym = t.match(/(20\d{2})\s*년/);
+        const mo = +dm[1], dd = +dm[2];
+        const yy = ym ? +ym[1] : ((mo < today.getMonth() + 1 || (mo === today.getMonth() + 1 && dd < today.getDate())) ? cy + 1 : cy);
+        base = new Date(yy, mo - 1, dd);
+      } else if (rel != null) {
+        base = new Date(today.getFullYear(), today.getMonth(), today.getDate() + rel);
+      }
+      if (base) {
+        // 시각까지 지목했는가
+        const hm = t.match(/(오전|오후|새벽|아침|저녁|밤|낮)?\s*(\d{1,2})\s*시/);
+        let hour = null, hourWord = null;
+        if (hm) {
+          const w = hm[1] || ''; let h = +hm[2];
+          if (['오후','저녁','밤'].includes(w) && h < 12) h += 12;
+          if (w === '새벽' && h === 12) h = 0;
+          if (h >= 0 && h <= 23) { hour = h; hourWord = (w ? w + ' ' : '') + hm[2] + '시'; }
+        }
+        const mo = base.getMonth() + 1, dd = base.getDate(), yy = base.getFullYear();
+        const tf = E.dateFortune(yy, mo, dd);
+        const at = new Date(yy, mo - 1, dd, hour == null ? 12 : hour, 30);
+        return {
+          level: hour == null ? '일운' : '시운',
+          pillar: tf.day, year: yy, month: mo, day: dd, hour,
+          du: E.currentDaeun(result, at),
+          label: hour == null ? `${yy}년 ${mo}월 ${dd}일` : `${yy}년 ${mo}월 ${dd}일 ${hourWord}`,
+          from: yy, to: yy, atDate: at,
+          fromDate: new Date(yy, mo - 1, dd), toDate: new Date(yy, mo - 1, dd),
+        };
+      }
+    }
+
+    // 3) 월 지목이 있으면 월이 이긴다. ("2026년 9월" 은 세운이 아니라 월운이다)
     const my = t.match(/(20\d{2})\s*년?/);
     const mm = t.match(/(1[0-2]|[1-9])\s*월/);
-    if (mm && !t.includes('대운')) {
+    if (mm && noDaeun) {
       const mo = +mm[1];
       // 연도를 안 적었으면: 이미 지난 달이면 내년, 아니면 올해로 읽는다
       const y = my ? +my[1] : (mo < today.getMonth() + 1 ? cy + 1 : cy);
@@ -62,7 +107,7 @@
                label:`${y}년 ${mo}월`, from:y, to:y,
                fromDate:new Date(y, mo - 1, 1), toDate:new Date(y, mo, 0) };
     }
-    // 3) 연도 지목
+    // 4) 연도 지목
     if (my) {
       const y = +my[1];
       const du = result.daeun.list.find(d => y >= d.startYear && y <= d.startYear + 9);
@@ -73,7 +118,7 @@
       }
       return { level:'세운', year:y, pillar:tf.year, du, label:`${y}년`, from:y, to:y };
     }
-    // 4) 상대 표현
+    // 5) 상대 표현
     if (t.includes('내년')) { const tf = E.dateFortune(cy + 1, 6, 15); return { level:'세운', year:cy + 1, pillar:tf.year, du:E.currentDaeun(result, new Date(cy + 1, 5, 15)), label:`${cy + 1}년`, from:cy+1, to:cy+1 }; }
     if (t.includes('올해') || t.includes('금년') || t.includes('올 한 해')) { const tf = E.dateFortune(cy, 6, 15); return { level:'세운', year:cy, pillar:tf.year, du:E.currentDaeun(result, today), label:`${cy}년`, from:cy, to:cy }; }
     if (t.includes('작년') || t.includes('지난해')) { const tf = E.dateFortune(cy - 1, 6, 15); return { level:'세운', year:cy - 1, pillar:tf.year, du:E.currentDaeun(result, new Date(cy - 1, 5, 15)), label:`${cy - 1}년`, from:cy-1, to:cy-1 }; }
@@ -86,7 +131,7 @@
                label:`${y2}년 ${mo + 1}월`, from:y2, to:y2,
                fromDate:new Date(y2, mo, 1), toDate:new Date(y2, mo + 1, 0) };
     }
-    // 5) 기본: 현재 대운
+    // 6) 기본: 현재 대운
     // 다만 있지도 않은 간지 대운을 물으신 경우, 조용히 다른 대운으로 답하지 않는다
     let missNote = null;
     if (t.includes('대운')) {
@@ -675,7 +720,10 @@
     const cy = global.ChaeksaChaeyong ? global.ChaeksaChaeyong.stack(result, today) : null;
     // 體는 원국 고정이 아니다. 질문이 향하는 층까지 쌓은 강약을 쓴다.
     // (상담은 몇 달 유지돼야 하므로 일운·시운까지는 쌓지 않는다)
-    const bodyLevel = target.level === '월운' ? '월운' : (target.level === '세운' ? '세운' : '대운');
+    const bodyLevel = target.level === '시운' ? '시운'
+                    : target.level === '일운' ? '일운'
+                    : target.level === '월운' ? '월운'
+                    : target.level === '세운' ? '세운' : '대운';
     const bodyLayer = cy ? cy.layers.find(l => l.name === bodyLevel) : null;
     const strengthLabel = (bodyLayer && bodyLayer.strength) || a.strength;
     const strong = strengthLabel === '신강';
@@ -697,9 +745,14 @@
     let when = null;
     if (global.ChaeksaChaeyong && global.ChaeksaChaeyong.periodScan && target.from && target.to) {
       try {
-        const a0 = target.fromDate || new Date(target.from, 0, 1);
-        const b0 = target.toDate   || new Date(target.to, 11, 31);
-        when = global.ChaeksaChaeyong.periodScan(result, a0, b0, { topN: 5 });
+        const CY = global.ChaeksaChaeyong;
+        if ((target.level === '일운' || target.level === '시운') && CY.hourScan) {
+          when = CY.hourScan(result, target.atDate || target.fromDate, { topN: 5 });
+        } else {
+          const a0 = target.fromDate || new Date(target.from, 0, 1);
+          const b0 = target.toDate   || new Date(target.to, 11, 31);
+          when = CY.periodScan(result, a0, b0, { topN: 5 });
+        }
       } catch (e) { when = null; }
     }
     const sum = hyps.reduce((s, h) => s + h.p, 0);
@@ -707,6 +760,8 @@
     hyps.sort((x, y) => y.p - x.p);
     return {
       question, domain, target, group, godStem, godBranch, strong,
+      domainSure: domain.confident !== false, domainTied: domain.tied || null,
+      domainMatched: domain.matched == null ? 1 : domain.matched,
       strength: strengthLabel, natalStrength: a.strength, bodyLevel,
       lead: rule.lead, theme: rule.theme,
       layers: stack(result, target, today), modifiers: mods, chaeyong: cy, when,

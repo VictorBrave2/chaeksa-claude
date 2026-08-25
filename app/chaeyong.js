@@ -300,7 +300,13 @@
     const best = pick(days, 1);
     const worst = pick(days, -1);
 
-    return { days, months, years, best, worst, turns, baseline, spread, span: days.length };
+    // 화면이 분기하지 않도록 표시 단위를 여기서 정해 cells 로 내보낸다
+    const gran = years.length > 1 ? 'year' : (months.length > 1 ? 'month' : 'day');
+    const cells = gran === 'year' ? years.map(o => ({ ...o, label: String(o.y).slice(2), name: o.y + '년' }))
+                : gran === 'month' ? months.map(o => ({ ...o, label: String(o.m), name: o.m + '월' }))
+                : days.map(o => ({ ...o, label: (o.d % 5 === 0 || o.d === 1) ? String(o.d) : '',
+                                   name: o.m + '월 ' + o.d + '일' }));
+    return { granularity: gran, cells, days, months, years, best, worst, turns, baseline, spread, span: days.length };
   }
 
   // ───────── 오늘 12시진 곡선 ─────────
@@ -350,5 +356,31 @@
     return { rows, peak, low, nowIndex: rows.findIndex(r => JIN.indexOf(r.jin) === nowJin) };
   }
 
-  global.ChaeksaChaeyong = { stack, hourCurve, periodScan, dayCoord, WEIGHT, judge, strengthOf, hourPillarOf, HOUR_LABEL };
+  /** 하루를 12시진으로 훑는다. 일·시 단위 질문에 쓴다. periodScan 과 같은 모양으로 돌려준다. */
+  function hourScan(result, when, opts) {
+    const topN = (opts && opts.topN) || 5;
+    const hc = hourCurve(result, when);
+    if (!hc.rows.length) return { granularity:'hour', cells:[], days:[], months:[], years:[],
+                                  best:[], worst:[], turns:[], baseline:0, spread:false, span:0 };
+    const y = when.getFullYear(), m = when.getMonth() + 1, d = when.getDate();
+    const rows = hc.rows.map(r => ({
+      ...r, y, m, d, date: new Date(y, m - 1, d, r.hour, 30),
+      label: r.jin, name: r.range + '시 ' + r.jin + '시',
+      key: r.hour, avg: r.value,
+    }));
+    const baseline = Math.round((rows.reduce((s2, r) => s2 + r.value, 0) / rows.length) * 100) / 100;
+    rows.forEach(r => { r.rel = Math.round((r.value - baseline) * 100) / 100; });
+    const sorted = rows.slice().sort((a, b) => b.value - a.value || a.hour - b.hour);
+    const turns = [];
+    for (let i = 1; i < rows.length; i++) {
+      const p0 = rows[i - 1], c0 = rows[i];
+      if ((p0.rel > 0.3 && c0.rel < -0.3) || (p0.rel < -0.3 && c0.rel > 0.3))
+        turns.push({ from: p0, to: c0, dir: c0.value > p0.value ? 'up' : 'down' });
+    }
+    return { granularity:'hour', cells: rows, days: rows, months: [], years: [],
+             best: sorted.slice(0, topN), worst: sorted.slice(-topN).reverse(),
+             turns, baseline, spread: false, span: rows.length };
+  }
+
+  global.ChaeksaChaeyong = { stack, hourCurve, hourScan, periodScan, dayCoord, WEIGHT, judge, strengthOf, hourPillarOf, HOUR_LABEL };
 })(window);
