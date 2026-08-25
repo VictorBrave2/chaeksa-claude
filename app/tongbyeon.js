@@ -561,9 +561,74 @@
     sum = Object.values(post).reduce((s, v) => s + v, 0) || 1;
     const ranked = fr.hypotheses.map(h => ({ ...h, p: post[h.id] / sum })).sort((x, y) => y.p - x.p);
     const answered = fr.questions.filter(q => fr.answers[q.id] && fr.answers[q.id] !== '?').length;
+    // '모르겠어요'도 응답으로 친다 — 확률은 안 움직이지만 상담은 진행되어야 한다
+    const responded = fr.questions.filter(q => !!fr.answers[q.id]).length;
     const priorTop = [...fr.hypotheses].sort((x, y) => y.prior - x.prior)[0];
-    return { ranked, answered, total: fr.questions.length, flipped: answered > 0 && ranked[0].id !== priorTop.id, priorTopId: priorTop.id };
+    return { ranked, answered, responded, total: fr.questions.length, flipped: answered > 0 && ranked[0].id !== priorTop.id, priorTopId: priorTop.id };
   }
 
-  global.ChaeksaTongbyeon = { frame, revise, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
+
+  // ───────── Decision Lab: 선택지 비교 ─────────
+  // 가설의 성격. go = 나아가는 쪽에 힘이 실림 / fix = 먼저 풀어야 할 제약이 있음
+  const KIND = {
+    go:   ['expansion','expand','delegate','pivot','newline','breakout','promote','independent','depth','build','ally','joint','create','inflow','stable','commit','meet','open','friend','care','save','progress','go','steady'],
+    fix:  ['bottleneck','overload','overreach','drain','stall','paralysis','split','margin','friction','leak','outflow','spend','locked','invest','burden','shallow','sharp','rival','depend','scatter','strain','stay'],
+  };
+  const kindOf = (id) => KIND.go.includes(id) ? 'go' : (KIND.fix.includes(id) ? 'fix' : 'unknown');
+
+  /** 상담 결과(fr, rev)로 세 가지 선택지를 만들고 점수를 매긴다.
+   *  점수는 확신도·미확인 항목·변동성·시기 전환으로만 계산한다(결정론적). */
+  function decide(fr, rev, today) {
+    const top = rev.ranked[0], second = rev.ranked[1];
+    const unknown = fr.questions.filter(q => !fr.answers[q.id] || fr.answers[q.id] === '?').length;
+    const volatility = fr.modifiers.filter(m => m.tilt === 'change').length;
+    const topKind = kindOf(top.id);
+    const conf = top.p;
+
+    // 흐름 전환까지 남은 기간 (대운 경계 / 해 바뀜)
+    let turning = null, turnYears = 99;
+    if (fr.target.du) {
+      const endYear = fr.target.du.startYear + 9;
+      turnYears = endYear - today.getFullYear();
+      if (turnYears >= 0 && turnYears <= 2) turning = `${endYear}년에 대운이 바뀝니다`;
+    }
+
+    const A = {
+      key: 'now', label: '지금 실행한다',
+      score: Math.round(conf * 100) - unknown * 16 - volatility * 9 + (topKind === 'go' ? 12 : -14),
+      when: '1순위 판단이 나아가는 쪽이고, 확인되지 않은 항목이 적을 때',
+      risk: topKind === 'fix'
+        ? `지금 판단은 “${top.title}”입니다. 제약을 안은 채 규모를 키우면 그 제약이 함께 커집니다.`
+        : '판단이 맞더라도 확인 안 된 항목이 남아 있으면 그만큼이 그대로 위험이 됩니다.',
+      todo: topKind === 'go' ? top.action : `먼저 ${second ? second.title : '2순위 가설'}이 아닌지 한 번 더 확인하세요.`,
+    };
+    const B = {
+      key: 'wait', label: `기다린다${turning ? ' (' + turning + ')' : ' (3~6개월)'}`,
+      score: 50 + unknown * 13 + volatility * 11 + (turning ? 12 : 0) + (conf < 0.6 ? 10 : -6),
+      when: '확인되지 않은 것이 많거나, 곧 흐름이 바뀔 때',
+      risk: '기다리는 동안 기회가 지나갈 수 있습니다. 무엇을 확인하면 결정할지 기준을 정해두지 않으면 그냥 미루는 것이 됩니다.',
+      todo: unknown > 0
+        ? `아직 답하지 않은 ${unknown}가지를 확인하는 것이 먼저입니다. 확인되는 즉시 다시 판단하겠습니다.`
+        : `${top.metric}을(를) 석 달 기록한 뒤 다시 보겠습니다.`,
+    };
+    const C = {
+      key: 'prep', label: '선행 조건을 먼저 해결한다',
+      score: 55 + (topKind === 'fix' ? 20 : -8) + unknown * 6 + (volatility ? 6 : 0),
+      when: '지금 판단이 제약을 가리키고 있을 때. 제약을 풀면 나머지 선택지의 순위가 바뀝니다',
+      risk: '준비 자체가 목적이 되면 시기를 놓칩니다. 마감일을 함께 정해두어야 합니다.',
+      todo: topKind === 'fix' ? top.action : (second ? second.action : top.action),
+      note: topKind === 'fix' ? null : (second ? `2순위 "${second.title}"에 대한 대비입니다.` : null),
+    };
+
+    const options = [A, B, C].map(o => ({ ...o, score: Math.max(5, Math.min(98, o.score)) }))
+      .sort((x, y) => y.score - x.score);
+    const lead = options[0].key === 'now'
+      ? '지금 조건에서는 실행 쪽에 무게를 두겠습니다.'
+      : options[0].key === 'wait'
+        ? '지금은 결정을 확정하기보다 확인을 먼저 하겠습니다.'
+        : '규모를 키우는 것보다 지금의 제약을 먼저 푸는 쪽을 먼저 검토하겠습니다.';
+    return { options, lead, unknown, volatility, turning, topKind };
+  }
+
+  global.ChaeksaTongbyeon = { frame, revise, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
 })(window);

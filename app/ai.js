@@ -140,7 +140,7 @@ ${prof}` : ''}`;
   }
 
   // 심층 상담 서술 — 구조(frame)를 벗어나지 못하게 묶는다
-  async function deepNarrate(r, today, fr, rev, prev) {
+  async function deepNarrate(r, today, fr, rev, prev, dec) {
     const top = rev.ranked[0], second = rev.ranked[1];
     const ansText = fr.questions.map(q => `- ${q.q} → ${({y:'예',n:'아니오','?':'모르겠음'})[fr.answers[q.id]] || '무응답'}`).join('\n');
     const structure = [
@@ -160,6 +160,8 @@ ${ansText}`,
       `[실행 과제] ${top.action}`,
       `[관측 지표] ${top.metric}`,
       prev ? `[이전 상담] ${prev.createdAt}에 "${prev.topTitle}"를 1순위로 보았음` : '',
+      prev && prev.logs && prev.logs.length ? `[기록된 지표] ${prev.metric}: ` + prev.logs.map(l => `${l.date} ${l.value}`).join(' → ') : '',
+      dec ? `[선택지 비교] ` + dec.options.map((o, i) => `${'ABC'[i]}. ${o.label} (${o.score}점) — 적합: ${o.when} / 위험: ${o.risk}`).join(' | ') + ` · 미확인 ${dec.unknown}개, 변동요인 ${dec.volatility}개${dec.turning ? ', ' + dec.turning : ''}` : '',
     ].filter(Boolean).join('\n');
 
     const sys = systemPrompt(r, today) + `
@@ -174,6 +176,8 @@ ${ansText}`,
 - 사용자의 답변을 반드시 인용해 판단 근거로 삼는다.
 - 판단이 바뀌었다면 왜 바뀌었는지 분명히 말한다. 바뀌지 않았다면 그대로 유지한다고 말한다.
 - 마지막은 실행 과제와 관측 지표로 끝낸다.
+- [선택지 비교]가 주어지면 어느 것을 먼저 검토할지 한 문단으로 말한다. 점수와 순서는 주어진 것을 따르고 임의로 바꾸지 않는다.
+- [기록된 지표]가 있으면 그 숫자의 흐름을 반드시 근거로 인용한다.
 
 분량과 형식
 - 600~900자. 문단 사이는 빈 줄로 구분.

@@ -29,6 +29,7 @@ python tools_bust.py --bump
 - [x] 웹 공개: https://chaeksa.kr (GitHub Pages, 자동 배포)
 - [x] 디자인 v3: 낮 아침한지 / 밤 새벽인디고 이중 테마
 - [x] 랜딩 화면, 링크 미리보기(og), 원국 공유 카드
+- [x] v2.1 선택지 비교(Decision Lab) + 관측 지표 기록·추세 + 30일 재확인 알림
 - [x] v2 심층 상담: 6D 스택, 경쟁 가설, 판별 질문, 판단 수정(Belief Revision), 상담 기록·재확인
 - [ ] AI 프록시 (Cloudflare — `docs/03` 참고, 계정 필요)
 - [ ] 회원가입(Supabase), 비공개 베타 50명

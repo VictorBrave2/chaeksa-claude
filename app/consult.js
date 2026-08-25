@@ -12,6 +12,28 @@
   const esc = (s) => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
   const MD_B = /\*\*(.+?)\*\*/g, MD_H = /^###?\s*(.+)$/gm, MD_NL = /\n/g;
   const mdLite = (t) => esc(t).replace(MD_B, '<b>$1</b>').replace(MD_H, '<b>$1</b>').replace(MD_NL, '<br>');
+  // 30일이 지나면 다시 확인할 때가 된 것으로 본다
+  function isDue(c) {
+    const last = (c.checkins && c.checkins.length) ? c.checkins[c.checkins.length - 1].date : c.createdAt;
+    return (Date.now() - new Date(last + 'T00:00:00').getTime()) > 30 * 24 * 60 * 60 * 1000;
+  }
+  // 기록된 숫자에서 방향만 읽는다 (숫자로 못 읽으면 방향 없음)
+  function trend(logs) {
+    if (!logs || logs.length < 2) return null;
+    const num = (v) => {
+      const m = String(v).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
+      if (!m) return null;
+      let n = parseFloat(m[0]);
+      if (/억/.test(v)) n *= 10000; else if (/만/.test(v)) n *= 1;
+      return n;
+    };
+    const a = num(logs[0].value), b = num(logs[logs.length - 1].value);
+    if (a === null || b === null) return null;
+    if (b > a) return { dir: 'up', label: '↑ 오르는 중' };
+    if (b < a) return { dir: 'down', label: '↓ 내려가는 중' };
+    return { dir: 'flat', label: '→ 그대로' };
+  }
+
   const load = () => { try { return JSON.parse(localStorage.getItem(CKEY)) || []; } catch (e) { return []; } };
   const save = (list) => localStorage.setItem(CKEY, JSON.stringify(list.slice(0, 30)));
 
@@ -42,16 +64,37 @@
     // 지난 상담
     if (!list.length) { $('consultPast').classList.add('hide'); return; }
     $('consultPast').classList.remove('hide');
-    $('pastList').innerHTML = list.map((c, i) => `
-      <div class="past">
+    $('pastList').innerHTML = list.map((c, i) => {
+      const due = isDue(c);
+      const logs = c.logs || [];
+      const tr = trend(logs);
+      return `
+      <div class="past ${due ? 'due' : ''}">
         <div class="past-h"><b>${esc(c.topTitle)}</b><span>${c.createdAt}</span></div>
         <p>${esc(c.question)}</p>
-        <div class="past-m">${c.domainLabel} · ${esc(c.targetLabel)} · ${c.checkins.length ? `확인 ${c.checkins.length}회` : '확인 전'}</div>
+        <div class="past-m">${c.domainLabel} · ${esc(c.targetLabel)} · ${c.checkins.length ? `확인 ${c.checkins.length}회` : '확인 전'}${due ? ' · <b style="color:var(--accent)">확인할 때가 되었습니다</b>' : ''}</div>
+        ${c.metric ? `<div class="metric-box">
+          <div class="metric-h"><b>${esc(c.metric)}</b>${tr ? `<span class="tr ${tr.dir}">${tr.label}</span>` : ''}</div>
+          ${logs.length ? `<div class="metric-logs">${logs.slice(-6).map(l => `<span><i>${l.date.slice(5)}</i>${esc(l.value)}</span>`).join('')}</div>` : '<p class="hint" style="margin:4px 0 0">아직 기록이 없습니다. 숫자를 적어두면 다음 판단이 정확해집니다.</p>'}
+          <div class="metric-add"><input placeholder="예: -40만원 / 30% / 12건" data-i="${i}" class="mval"><button class="btn-ghost" data-i="${i}" data-a="log">기록</button></div>
+        </div>` : ''}
         <div class="past-b"><button class="btn-ghost" data-i="${i}" data-a="open">다시 확인하기</button><button class="btn-ghost" data-i="${i}" data-a="del">지우기</button></div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     $('pastList').querySelectorAll('button').forEach(b => b.onclick = () => {
       const list2 = load(), i = +b.dataset.i;
-      if (b.dataset.a === 'del') { list2.splice(i, 1); save(list2); renderHome(); return; }
+      if (b.dataset.a === 'del') {
+        if (!confirm('이 상담 기록을 지웁니다. 계속할까요?')) return;
+        list2.splice(i, 1); save(list2); renderHome(); global.ChaeksaApp.refreshConsultBadge(); return;
+      }
+      if (b.dataset.a === 'log') {
+        const inp = $('pastList').querySelector(`.mval[data-i="${i}"]`);
+        const v = inp.value.trim();
+        if (!v) { inp.focus(); return; }
+        list2[i].logs = list2[i].logs || [];
+        list2[i].logs.push({ date: new Date().toISOString().slice(0, 10), value: v });
+        save(list2); renderHome(); return;
+      }
       begin(list2[i].question, list2[i]);
     });
   }
@@ -90,7 +133,7 @@
   function render() {
     const rev = T().revise(fr);
     const top = rev.ranked[0], second = rev.ranked[1];
-    const done = rev.answered === rev.total;
+    const done = rev.responded === rev.total;   // 모르겠어요 포함
     const prevTop = current ? current.topId : null;
     const prevTitle = current ? current.topTitle : null;
 
@@ -173,7 +216,20 @@
         <div class="c-act"><b>실행 과제</b><p>${esc(top.action)}</p></div>
         <div class="c-metric"><b>다음에 함께 볼 지표</b><p>${esc(top.metric)}</p>
         <span class="hint">이 지표가 움직이면 판단을 다시 조정합니다.</span></div>
-        <p class="hint">2순위(${esc(second.title)})는 버리지 않고 남겨둡니다. ${Math.round(second.p * 100)}% 가능성으로 계속 지켜보겠습니다.</p>
+        <p class="hint">2순위(${esc(second.title)})는 버리지 않고 남겨둡니다. ${Math.round(second.p * 100)}% 가능성으로 계속 지켜보겠습니다.</p></div>`;
+
+      // 선택지 비교
+      const dec = T().decide(fr, rev, new Date());
+      html += `<div class="c-sec"><h4>선택지를 놓고 비교하면<small>${esc(dec.lead)}</small></h4>
+        <p class="hint" style="margin:0 0 12px">확인되지 않은 항목 ${dec.unknown}개, 변동 요인 ${dec.volatility}개${dec.turning ? ' · ' + esc(dec.turning) : ''} — 이 세 가지로 순위를 매겼습니다.</p>
+        ${dec.options.map((o, i) => `
+          <div class="opt ${i === 0 ? 'top' : ''}">
+            <div class="opt-h"><span class="opt-k">${'ABC'[i]}</span><b>${esc(o.label)}</b><span class="opt-s">${o.score}</span></div>
+            <p class="opt-when"><b>이럴 때 적합</b> ${esc(o.when)}</p>
+            <p class="opt-risk"><b>위험</b> ${esc(o.risk)}</p>
+            <p class="opt-todo"><b>택한다면</b> ${esc(o.todo)}${o.note ? ` <span style="color:var(--ink3)">${esc(o.note)}</span>` : ``}</p>
+          </div>`).join('')}
+        <p class="hint">점수는 확신도·미확인 항목·변동 요인·흐름 전환만으로 계산한 것입니다. 결정은 선생님이 하십니다.</p>
         <button class="btn" id="cSave">${current ? '이번 확인 기록하기' : '이 상담 저장하기'}</button></div>`;
       html += `<div class="c-sec" id="cNarr"></div>`;
     }
@@ -214,7 +270,7 @@
         domainKey: fr.domain.key, domainLabel: fr.domain.label, targetLabel: fr.target.label,
         topId: top.id, topTitle: top.title, topP: entry.topP,
         action: top.action, metric: top.metric,
-        checkins: [], first: entry,
+        checkins: [], logs: [], first: entry,
       });
       save(list);
     }
@@ -229,12 +285,12 @@
     if (!AI() || !AI().ready()) { box.innerHTML = `<p class="hint">AI 비서를 연결하면 이 판단을 상담하듯 풀어서 이야기해 드립니다.</p>`; return; }
     box.innerHTML = `<h4>비서의 이야기</h4><div class="brief loading">비서가 정리하는 중…</div>`;
     try {
-      const text = await AI().deepNarrate(global.ChaeksaApp.result(), new Date(), fr, rev, current);
+      const text = await AI().deepNarrate(global.ChaeksaApp.result(), new Date(), fr, rev, current, T().decide(fr, rev, new Date()));
       box.innerHTML = `<h4>비서의 이야기</h4><div class="brief">${mdLite(text)}</div>`;
     } catch (e) {
       box.innerHTML = `<p class="hint">서술을 가져오지 못했어요: ${esc(e.message)}</p>`;
     }
   }
 
-  global.ChaeksaConsult = { renderHome, openCount: () => load().length, list: load };
+  global.ChaeksaConsult = { renderHome, openCount: () => load().filter(isDue).length, total: () => load().length, list: load };
 })(window);
