@@ -63,7 +63,13 @@
     // 3) 상대 표현
     const cy = today.getFullYear();
     if (t.includes('내년')) { const tf = E.dateFortune(cy + 1, 6, 15); return { level:'세운', year:cy + 1, pillar:tf.year, du:E.currentDaeun(result, new Date(cy + 1, 5, 15)), label:`${cy + 1}년`, from:cy+1, to:cy+1 }; }
-    if (t.includes('이번 달') || t.includes('이달')) { const tf = E.dateFortune(cy, today.getMonth() + 1, 15); return { level:'월운', pillar:tf.month, du:E.currentDaeun(result, today), label:`${today.getMonth() + 1}월`, from:cy, to:cy }; }
+    if (t.includes('올해') || t.includes('금년') || t.includes('올 한 해')) { const tf = E.dateFortune(cy, 6, 15); return { level:'세운', year:cy, pillar:tf.year, du:E.currentDaeun(result, today), label:`${cy}년`, from:cy, to:cy }; }
+    if (t.includes('작년') || t.includes('지난해')) { const tf = E.dateFortune(cy - 1, 6, 15); return { level:'세운', year:cy - 1, pillar:tf.year, du:E.currentDaeun(result, new Date(cy - 1, 5, 15)), label:`${cy - 1}년`, from:cy-1, to:cy-1 }; }
+    if (t.includes('이번 달') || t.includes('이달')) {
+      const mo = today.getMonth(), tf = E.dateFortune(cy, mo + 1, 15);
+      return { level:'월운', pillar:tf.month, du:E.currentDaeun(result, today), label:`${mo + 1}월`,
+               from:cy, to:cy, fromDate:new Date(cy, mo, 1), toDate:new Date(cy, mo + 1, 0) };
+    }
     // 4) 기본: 현재 대운
     const du = E.currentDaeun(result, today);
     if (du) { const ko = KO_STEM[du.stem] + KO_BRANCH[du.branch]; return { level:'대운', du, label:`지금 ${ko}(${f.pillar(du)}) 대운`, from:du.startYear, to:du.startYear + 9, age:`${du.startAge}~${du.endAge}세` }; }
@@ -307,7 +313,116 @@
   });
 
   /* ═══ 재물·돈 ═══ */
-  R('wealth','재성','*',{
+  /* ═══ 직업·사업 · 중화 ═══
+     중화는 어느 쪽으로도 기울지 않았다. 그래서 들어오는 기운의 성격이 가장 선명하게 드러나고,
+     결과를 가르는 것은 사주가 아니라 지금 내가 무엇을 고르느냐가 된다. */
+  R('career','관성','mid',{
+    theme:'맡을 것인가, 맡되 조건을 걸 것인가',
+    lead:'받칠 힘은 있습니다. 그래서 맡을 수 있느냐가 아니라 어떤 조건으로 맡느냐가 이 구간을 가릅니다.',
+    H:[
+      H('promote','책임을 받으면서 자리도 함께 올라간다',.55,
+        '관성이 들어오는데 일간이 이를 감당할 만큼은 됩니다. 힘이 남지도 모자라지도 않으니, 맡은 만큼 그대로 평가로 돌아오는 구간입니다.',
+        ['새 업무를 맡아달라는 요청이 먼저 들어온다','내 이름으로 나가는 결과물이 늘었다','윗선이 내 판단을 확인 없이 통과시키는 일이 생겼다','같은 일을 해도 예전보다 말이 덜 나온다'],
+        '지금 맡고 있는 일 중에서 내 이름이 붙는 것과 붙지 않는 것을 나눠 적으세요. 붙지 않는 것 하나를 이번 분기 안에 붙이거나 놓으세요.',
+        '분기 안에 내 이름으로 보고·출시된 건수'),
+      H('strain','맡을 수는 있으나 조건을 안 걸면 그대로 소모된다',.45,
+        '중화는 버틸 수 있다는 뜻이지 남는다는 뜻이 아닙니다. 조건 없이 받으면 감당은 되는데 남는 것이 없는 형태로 굳기 쉽습니다.',
+        ['맡는 일은 늘었는데 처우나 직함은 그대로다','잘 해내니까 계속 나에게만 온다','거절하면 관계가 상할 것 같아 못 거절한다','바쁜데 무엇을 이뤘는지 설명하기 어렵다'],
+        '다음에 새 일이 올 때 받되, 받는 자리에서 기한과 필요한 것 하나를 반드시 말로 걸어두세요.',
+        '새로 맡은 일 중 조건을 걸고 시작한 비율'),
+    ],
+    Q:[
+      Q('ask','최근에 새로 맡아달라는 요청을 받은 적이 있습니까?',{ promote:{y:1.40,n:.50}, strain:{y:1.35,n:.55} }),
+      Q('title','맡는 양이 늘어난 만큼 직함이나 처우도 움직였습니까?',{ promote:{y:2.00,n:.45}, strain:{y:.45,n:1.70} }),
+      Q('no','최근 6개월 안에 요청을 거절해 본 적이 있습니까?',{ promote:{y:1.30,n:.70}, strain:{y:.55,n:1.50} }),
+    ],
+  });
+  R('career','재성','mid',{
+    theme:'벌리는 폭이 아니라 회수하는 속도',
+    lead:'감당할 그릇은 됩니다. 그래서 얼마나 벌릴지가 아니라 벌린 것이 얼마 만에 돌아오는지를 먼저 보겠습니다.',
+    H:[
+      H('build','벌린 일이 실적으로 쌓여 다음 판을 만든다',.55,
+        '재성을 감당할 힘이 있어 벌린 것이 흩어지지 않고 남습니다. 이번 성과가 다음 기회의 근거가 되는 형태로 굴러갑니다.',
+        ['한 번 거래한 곳에서 다시 연락이 온다','작년에 한 일이 올해 제안으로 돌아왔다','실적을 숫자로 설명할 수 있다','새 기회가 소개로 들어온다'],
+        '최근 1년 성과 중 다음 제안의 근거가 될 만한 것 하나를 골라 한 장으로 정리해두세요.',
+        '재구매·재의뢰 비율'),
+      H('friction','벌리기는 하는데 회수가 늦어 다음이 막힌다',.45,
+        '힘이 모자라서가 아니라 벌린 것이 돌아오는 주기가 길어서 생기는 정체입니다. 중화는 과부하보다 이 마찰에서 발이 묶입니다.',
+        ['일은 끝났는데 정산이 밀려 있다','새 건을 받고 싶어도 앞 건이 안 닫힌다','매출은 늘었는데 통장은 그대로다','마무리 단계에서 늘 시간이 더 걸린다'],
+        '지금 열려 있는 건을 오래된 순으로 적고, 가장 오래된 하나를 이번 주에 닫으세요.',
+        '착수부터 입금까지 걸린 평균 일수'),
+    ],
+    Q:[
+      Q('repeat','최근에 같은 곳에서 다시 의뢰나 주문이 들어온 적이 있습니까?',{ build:{y:2.00,n:.45}, friction:{y:.70,n:1.30} }),
+      Q('close','시작한 건들이 예정한 기한 안에 닫히고 있습니까?',{ build:{y:1.50,n:.55}, friction:{y:.40,n:1.85} }),
+      Q('cash','매출이 늘어난 만큼 실제 현금도 늘었습니까?',{ build:{y:1.60,n:.55}, friction:{y:.45,n:1.70} }),
+    ],
+  });
+  R('career','식상','mid',{
+    theme:'새로 벌린 갈래를 하나로 모을 수 있는가',
+    lead:'표현하고 만들어내는 기운이 들어옵니다. 만들 힘은 있으니 문제는 몇 갈래로 벌릴 것이냐입니다.',
+    H:[
+      H('newline','새로 시작한 갈래 하나가 본류가 된다',.55,
+        '식상이 들어오는데 일간이 이를 감당할 만큼은 되어, 벌린 것 중 하나가 뿌리를 내립니다. 중화에서는 이 흐름이 가장 잘 붙습니다.',
+        ['부업이나 사이드로 시작한 것에서 반응이 온다','내가 만든 것을 찾아오는 사람이 생겼다','예전에는 없던 갈래에서 수입이 났다','설명하지 않아도 무엇 하는 사람인지 전달된다'],
+        '지금 벌려둔 갈래를 전부 적고, 반응이 있었던 하나에만 앞으로 두 달을 몰아주세요.',
+        '주력 갈래 하나에 쓴 시간의 비율'),
+      H('scatter','여러 갈래로 벌어져 어느 것도 임계에 못 간다',.45,
+        '힘이 모자란 것이 아니라 고르게 나뉘어서 생기는 문제입니다. 중화는 어느 쪽도 못 버릴 만큼 다 할 만해 보여서 오히려 흩어집니다.',
+        ['시작한 것은 많은데 끝난 것이 없다','무엇 하는 사람이냐는 질문에 길게 설명하게 된다','각각은 조금씩 되는데 하나도 크지 않다','새 아이디어가 자꾸 앞의 것을 덮는다'],
+        '벌려둔 것 중 하나를 이번 달 안에 정식으로 접으세요. 접는 것까지가 실행입니다.',
+        '동시에 굴리고 있는 갈래의 개수'),
+    ],
+    Q:[
+      Q('start','최근 1년 안에 새로 시작한 일이나 갈래가 있습니까?',{ newline:{y:1.45,n:.45}, scatter:{y:1.40,n:.50} }),
+      Q('finish','시작한 것 중에 끝까지 마무리한 것이 있습니까?',{ newline:{y:1.75,n:.50}, scatter:{y:.45,n:1.80} }),
+      Q('one','지금 시간의 절반 이상을 쓰는 갈래가 하나 있습니까?',{ newline:{y:1.80,n:.50}, scatter:{y:.40,n:1.85} }),
+    ],
+  });
+  R('career','비겁','mid',{
+    theme:'같이 갈 것인가, 갈라설 것인가',
+    lead:'사람이 붙는 기운입니다. 혼자서도 되고 같이도 되는 자리라, 어느 쪽을 고르느냐가 결과를 만듭니다.',
+    H:[
+      H('independent','내 이름으로 서는 쪽으로 정리된다',.5,
+        '비겁이 들어오는데 일간이 밀리지 않아, 남에게 얹히기보다 내 몫을 분리해 세우는 흐름이 생깁니다.',
+        ['내 이름을 보고 들어오는 일이 있다','조직 밖에서 제안을 받은 적이 있다','내가 빠지면 안 돌아가는 영역이 있다','같이 하자는 말보다 맡아달라는 말을 듣는다'],
+        '지금 하는 일에서 나 없이는 안 되는 것 하나를 찾아, 그것만으로 설명되는 소개 문구를 한 줄 만드세요.',
+        '내 이름으로 직접 들어온 문의 건수'),
+      H('split','같이 가는 구조에서 몫이 갈라진다',.5,
+        '같은 기운이 경쟁이나 분배로 나타나는 경우입니다. 힘이 대등하기 때문에 오히려 누구 몫인지가 흐려집니다.',
+        ['성과를 누가 냈는지 애매해지는 일이 있다','같은 역할을 하는 사람이 새로 들어왔다','나눠야 할 것을 두고 말이 길어진다','내가 한 일이 팀 성과로만 남는다'],
+        '지금 함께 하는 일에서 각자 무엇을 책임지는지 문서로 한 번 확정하세요. 말로 한 합의는 이 구간에서 오래 못 갑니다.',
+        '내 기여가 문서로 남은 건수'),
+    ],
+    Q:[
+      Q('name','최근에 조직이 아니라 내 이름을 보고 들어온 제안이 있었습니까?',{ independent:{y:2.10,n:.45}, split:{y:.60,n:1.40} }),
+      Q('same','나와 비슷한 역할을 하는 사람이 가까이에 있습니까?',{ independent:{y:.65,n:1.40}, split:{y:1.90,n:.45} }),
+      Q('share','성과나 몫을 두고 조율이 필요했던 일이 있었습니까?',{ independent:{y:.70,n:1.30}, split:{y:1.85,n:.45} }),
+    ],
+  });
+  R('career','인성','mid',{
+    theme:'채우는 시간인가, 미루는 시간인가',
+    lead:'배우고 받아들이는 기운이 들어옵니다. 같은 시간이 실력이 되기도 하고 유예가 되기도 합니다.',
+    H:[
+      H('depth','한 분야를 파서 자격이나 근거가 남는다',.52,
+        '인성이 들어오는데 일간이 이미 균형이라, 받아들인 것이 그대로 쌓입니다. 배운 것이 형태로 남는 구간입니다.',
+        ['배운 것을 실제 일에 써본 적이 있다','자격이나 결과물 형태로 남은 것이 있다','설명해달라는 요청을 받는다','예전보다 판단이 빨라졌다'],
+        '지금 배우는 것을 실제 일에 한 번 적용해서 결과물로 남기세요. 남지 않으면 배운 것이 아닙니다.',
+        '배운 것을 적용해 만든 결과물 수'),
+      H('stall','준비만 길어지고 실전이 미뤄진다',.48,
+        '인성 과다는 아니지만, 중화에서는 준비가 편안하기 때문에 실전으로 넘어갈 이유를 못 찾는 정체가 생깁니다.',
+        ['자료는 모으는데 시작은 미룬다','조금 더 준비되면 하겠다는 생각을 자주 한다','배운 것을 써본 적이 없다','작년과 지금 하는 말이 비슷하다'],
+        '준비가 덜 됐다고 느끼는 그 일을 이번 달 안에 가장 작은 크기로 한 번 실행하세요.',
+        '준비 대비 실행으로 넘어간 건수'),
+    ],
+    Q:[
+      Q('learn','최근 1년 안에 새로 배우거나 자격을 준비한 것이 있습니까?',{ depth:{y:1.50,n:.45}, stall:{y:1.45,n:.50} }),
+      Q('apply','배운 것을 실제 일에 적용해 본 적이 있습니까?',{ depth:{y:2.00,n:.40}, stall:{y:.40,n:1.90} }),
+      Q('output','그 결과가 남에게 보여줄 수 있는 형태로 남았습니까?',{ depth:{y:1.85,n:.50}, stall:{y:.45,n:1.65} }),
+    ],
+  });
+
+  R('wealth','재성','mid',{
     theme:'매출과 현금흐름을 분리해서 본다',
     lead:'돈은 들어오는 양이 아니라 남는 양으로 판단하겠습니다.',
     H:[
@@ -320,7 +435,7 @@
       Q('src','수입원이 두 개 이상입니까?',{ inflow:{y:1.40,n:.75}, leak:{y:.80,n:1.20} }),
     ],
   });
-  R('wealth','비겁','*',{
+  R('wealth','비겁','mid',{
     theme:'나가는 돈을 먼저 본다',
     lead:'이 구간은 버는 쪽보다 새는 쪽을 먼저 점검하겠습니다.',
     H:[
@@ -333,7 +448,7 @@
       Q('imp','계획에 없던 지출이 늘었습니까?',{ outflow:{y:1.70,n:.60}, joint:{y:.85,n:1.10} }),
     ],
   });
-  R('wealth','식상','*',{
+  R('wealth','식상','mid',{
     theme:'만들어서 버는 구조로 갈 수 있는가',
     lead:'이 구간의 돈은 만들어 낸 것에서 나올 가능성이 높습니다.',
     H:[
@@ -346,7 +461,7 @@
       Q('again','다시 사거나 문의하는 사람이 있습니까?',{ create:{y:1.75,n:.60}, spend:{y:.65,n:1.30} }),
     ],
   });
-  R('wealth','관성','*',{
+  R('wealth','관성','mid',{
     theme:'책임이 돈을 만드는가, 돈을 묶는가',
     lead:'이 구간의 돈은 자리·계약과 함께 움직입니다.',
     H:[
@@ -359,7 +474,7 @@
       Q('free','필요할 때 쓸 수 있는 현금이 충분합니까?',{ stable:{y:1.30,n:.80}, locked:{y:.50,n:1.60} }),
     ],
   });
-  R('wealth','인성','*',{
+  R('wealth','인성','mid',{
     theme:'쌓는 시기인가, 묶이는 시기인가',
     lead:'이 구간은 버는 것보다 지키고 배우는 쪽에 힘이 실립니다.',
     H:[
@@ -375,7 +490,7 @@
 
   /* ═══ 관계·인연 ═══ */
   const loveH = (a, b) => ({ H:[a, b] });
-  R('love','관성','*',{
+  R('love','관성','mid',{
     theme:'관계가 형태를 갖추는가, 부담이 되는가',
     lead:'이 구간의 관계는 책임과 형식 쪽으로 움직입니다.',
     H:[
@@ -388,7 +503,7 @@
       Q('say','하고 싶은 말을 편하게 합니까?',{ commit:{y:1.40,n:.70}, burden:{y:.55,n:1.55} }),
     ],
   });
-  R('love','재성','*',{
+  R('love','재성','mid',{
     theme:'만남은 늘어나는데 깊이가 따라오는가',
     lead:'이 구간은 접점이 늘어나는 쪽으로 힘이 실립니다.',
     H:[
@@ -401,7 +516,7 @@
       Q('same','비슷한 패턴의 만남이 반복됩니까?',{ meet:{y:.85,n:1.10}, shallow:{y:1.75,n:.60} }),
     ],
   });
-  R('love','식상','*',{
+  R('love','식상','mid',{
     theme:'표현이 살아나는 시기',
     lead:'이 구간의 관계는 내가 얼마나 표현하느냐로 갈립니다.',
     H:[
@@ -414,7 +529,7 @@
       Q('closer','상대와 전보다 가까워졌다고 느낍니까?',{ open:{y:1.70,n:.55}, sharp:{y:.60,n:1.40} }),
     ],
   });
-  R('love','비겁','*',{
+  R('love','비겁','mid',{
     theme:'내 편이 늘어나는가, 나뉘는가',
     lead:'이 구간은 사람이 많아지는 대신 몫이 나뉘기도 합니다.',
     H:[
@@ -427,7 +542,7 @@
       Q('easy','그 관계가 편안합니까?',{ friend:{y:1.60,n:.60}, rival:{y:.50,n:1.65} }),
     ],
   });
-  R('love','인성','*',{
+  R('love','인성','mid',{
     theme:'기대는 시기 — 받는 것과 갇히는 것',
     lead:'이 구간은 돌봄과 의존이 함께 옵니다.',
     H:[
@@ -442,7 +557,7 @@
   });
 
   /* ═══ 건강 · 학업 · 이동 (기본) ═══ */
-  const simple = (domain, group, theme, lead, h1, h2, qs) => R(domain, group, '*', { theme, lead, H:[h1, h2], Q:qs });
+  const simple = (domain, group, theme, lead, h1, h2, qs) => R(domain, group, 'mid', { theme, lead, H:[h1, h2], Q:qs });
   ['관성','재성','식상','인성','비겁'].forEach(gr => {
     simple('health', gr,
       '몸이 먼저 신호를 보내는 구간인가',
@@ -479,10 +594,13 @@
   });
 
   // ───────── 규칙 조회 ─────────
-  function lookup(domain, group, strong) {
-    return RULES[`${domain}|${group}|${strong ? 'strong' : 'weak'}`]
-        || RULES[`${domain}|${group}|*`]
-        || RULES[`career|${group}|${strong ? 'strong' : 'weak'}`];
+  const SKEY = { 신강: 'strong', 중화: 'mid', 신약: 'weak' };
+  function lookup(domain, group, strengthLabel) {
+    const k = SKEY[strengthLabel] || 'mid';
+    return RULES[`${domain}|${group}|${k}`]
+        || RULES[`${domain}|${group}|mid`]
+        || RULES[`career|${group}|${k}`]
+        || RULES[`career|${group}|mid`];
   }
 
   // ───────── 관계(합·충) 보정 ─────────
@@ -522,11 +640,16 @@
     const godStem = E.TEN_GODS[E.tenGod(ds, src.stem)];
     const godBranch = E.TEN_GODS[E.tenGod(ds, E.HIDDEN[src.branch][0])];
     const group = GROUP[godStem];
-    const strong = a.strengthScore >= 0.5;
-    const rule = lookup(domain.key, group, strong);
     const mods = modifiers(result, target);
     // 6차원 적층 체용 좌표 — 어느 층에서 흐름이 뒤집히는지까지 확정한다
     const cy = global.ChaeksaChaeyong ? global.ChaeksaChaeyong.stack(result, today) : null;
+    // 體는 원국 고정이 아니다. 질문이 향하는 층까지 쌓은 강약을 쓴다.
+    // (상담은 몇 달 유지돼야 하므로 일운·시운까지는 쌓지 않는다)
+    const bodyLevel = target.level === '월운' ? '월운' : (target.level === '세운' ? '세운' : '대운');
+    const bodyLayer = cy ? cy.layers.find(l => l.name === bodyLevel) : null;
+    const strengthLabel = (bodyLayer && bodyLayer.strength) || a.strength;
+    const strong = strengthLabel === '신강';
+    const rule = lookup(domain.key, group, strengthLabel);
     const hyps = rule.H.map(h => ({ ...h, p: h.prior }));
     // 보정: 충이 많으면 변화형 가설(두 번째)에 약간 가중
     const changeN = mods.filter(m => m.tilt === 'change').length;
@@ -539,13 +662,24 @@
       if (cy.sum > 0 && goIdx >= 0) hyps[goIdx].p *= 1 + boost;
       if (cy.sum < 0 && fixIdx >= 0) hyps[fixIdx].p *= 1 + boost;
     }
+    // 이 기간을 날짜 단위로 훑어 언제가 높고 낮은지 확정한다.
+    // (LLM에게 시기를 지어내게 두지 않는다 — 날짜는 코드가 정한다)
+    let when = null;
+    if (global.ChaeksaChaeyong && global.ChaeksaChaeyong.periodScan && target.from && target.to) {
+      try {
+        const a0 = target.fromDate || new Date(target.from, 0, 1);
+        const b0 = target.toDate   || new Date(target.to, 11, 31);
+        when = global.ChaeksaChaeyong.periodScan(result, a0, b0, { topN: 5 });
+      } catch (e) { when = null; }
+    }
     const sum = hyps.reduce((s, h) => s + h.p, 0);
     hyps.forEach(h => h.p /= sum);
     hyps.sort((x, y) => y.p - x.p);
     return {
       question, domain, target, group, godStem, godBranch, strong,
-      strength: a.strength, lead: rule.lead, theme: rule.theme,
-      layers: stack(result, target, today), modifiers: mods, chaeyong: cy,
+      strength: strengthLabel, natalStrength: a.strength, bodyLevel,
+      lead: rule.lead, theme: rule.theme,
+      layers: stack(result, target, today), modifiers: mods, chaeyong: cy, when,
       hypotheses: hyps, questions: rule.Q,
       answers: {},
       createdAt: today.toISOString().slice(0, 10),
@@ -698,7 +832,11 @@
       dayGanji: f.pillar(tf.day), dayGanjiKo: f.pillarKo(tf.day),
       godDay, godDayBranch, godMonth, godYear, godDaeun,
       group: GROUP[godDay], groupMeaning: GROUP_MEAN[GROUP[godDay]],
-      strength: a.strength,
+      // 오늘 화면의 體는 일운 층까지 쌓은 것을 쓴다 (상담과 달리 하루 단위로 움직여야 한다)
+      strength: (cy && (cy.layers.find(l => l.name === '일운') || {}).strength) || a.strength,
+      natalStrength: a.strength,
+      hours: global.ChaeksaChaeyong && global.ChaeksaChaeyong.hourCurve
+             ? global.ChaeksaChaeyong.hourCurve(result, today) : null,
       relations: rels,
       helpful, dayElem, season,
       goodHours: HOURS[a.yongCandidates[0]] || null,

@@ -26,6 +26,14 @@
   --letter:"Gowun Batang","Noto Serif KR","Apple Myungjo",serif;
   --sans:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --r:18px;
+  /* 타입 계단 — 7단. 제목은 반드시 본문보다 크다 */
+  --t1:11.5px; --t2:13px; --t3:15px; --t4:17px; --t5:20px; --t6:25px; --t7:46px;
+  /* 여백 계단 — 4단만 쓴다 */
+  --s1:6px; --s2:12px; --s3:24px; --s4:40px;
+  /* 먹색 히어로 — 화면에서 진하게 칠하는 유일한 곳 */
+  --hero-bg:#2b241c; --hero-ink:#f5eee0;
+  --hero-dim:rgba(245,238,224,.56); --hero-dim2:rgba(245,238,224,.42);
+  --hero-accent:#e8b56b; --hero-line:rgba(245,238,224,.14); --hero-chip:rgba(245,238,224,.10);
   color-scheme:light;
 }
 
@@ -47,6 +55,9 @@
   --nav-bg:rgba(26,32,56,.88); --nav-shadow:0 10px 30px rgba(0,0,0,.5);
   --sky:radial-gradient(circle at 35% 34%, #f6f2e0, #cfc7a6);
   --sky-glow:0 0 30px rgba(244,240,221,.42);
+  --hero-bg:#0d1122; --hero-ink:#e9ebf6;
+  --hero-dim:rgba(233,235,246,.56); --hero-dim2:rgba(233,235,246,.40);
+  --hero-accent:#e9d8a6; --hero-line:rgba(233,235,246,.13); --hero-chip:rgba(233,235,246,.09);
   color-scheme:dark;
 }
 
@@ -58,7 +69,7 @@ body{
   -webkit-font-smoothing:antialiased;min-height:100vh;
   transition:background-color .4s ease,color .3s ease;
 }
-.wrap{max-width:520px;margin:0 auto;padding:20px 18px 104px;position:relative}
+.wrap{max-width:520px;margin:0 auto;padding:20px 18px 118px;position:relative}
 
 /* ───── 헤더 ───── */
 header{display:flex;align-items:center;justify-content:space-between;padding:4px 0 20px;position:relative;z-index:1}
@@ -77,14 +88,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:4px
 /* ───── 카드 ───── */
 .card{
   background:linear-gradient(180deg,var(--card2),var(--card));
-  border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:15px;
+  border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:var(--s3);
   box-shadow:var(--shadow);position:relative;z-index:1;
 }
 .card h2{
-  font-size:11.5px;font-weight:700;color:var(--accent);letter-spacing:.16em;margin-bottom:14px;
-  display:flex;align-items:center;gap:11px;
+  font-family:var(--serif);font-size:var(--t4);font-weight:700;color:var(--ink);
+  letter-spacing:-.015em;margin-bottom:var(--s2);
+  display:flex;align-items:baseline;gap:10px;
 }
-.card h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--accent-line),transparent)}
 .card h3{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
 
 /* ───── 온보딩 ───── */
@@ -147,7 +158,7 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .tag.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft)}
 
 /* ───── 브리핑 — 편지 ───── */
-.brief{font-family:var(--letter);font-size:16px;line-height:1.95;white-space:pre-line;color:var(--ink)}
+.brief{font-family:var(--letter);font-size:var(--t3);line-height:1.95;white-space:pre-line;color:var(--ink2)}
 .brief p+p{margin-top:12px}
 .brief b{color:var(--accent);font-weight:700}
 .brief .act{
@@ -160,9 +171,55 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .ganji-line span b{color:var(--accent);font-family:var(--serif);font-weight:700;margin-left:3px}
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;text-align:center}
 .week .wd{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:9px 2px;font-size:10.5px;color:var(--ink3)}
-.week .wd b{display:block;font-size:15px;color:var(--ink);font-family:var(--serif);margin:2px 0}
+.week .wd b{display:block;font-size:var(--t3);color:var(--ink);font-family:var(--serif);margin:2px 0}
 .week .wd i{display:block;width:7px;height:7px;border-radius:50%;margin:6px auto 0}
 .week .wd.today{border-color:var(--accent2);background:var(--accent-soft)}
+
+/* ───── 오늘의 시간대 (12시진 곡선) ───── */
+.card h2 .h2sub{font-family:var(--sans);font-size:var(--t2);font-weight:400;color:var(--ink3);letter-spacing:0}
+.hours{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;align-items:end;height:96px}
+.hr{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%;cursor:pointer;
+    background:none;border:0;padding:0;font-family:var(--sans);min-height:44px}
+.hr .col{position:relative;width:100%;flex:1}
+.hr .col::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line2)}
+.hr .bar{position:absolute;left:0;right:0;background:var(--line2);transition:.15s}
+.hr .bar.u{bottom:50%;border-radius:3px 3px 0 0}
+.hr .bar.d{top:50%;border-radius:0 0 3px 3px}
+.hr.up .bar{background:var(--accent)}
+.hr.dn .bar{background:var(--g0)}
+.hr .jin{font-size:10px;color:var(--ink3);line-height:1}
+.hr.now .jin{color:var(--accent);font-weight:700}
+.hr.now .jin::after{content:"";display:block;width:4px;height:4px;border-radius:50%;
+    background:var(--accent);margin:3px auto 0}
+.hr.sel .bar{outline:2px solid var(--accent);outline-offset:1px}
+.hr:hover .bar{filter:brightness(1.12)}
+.hours-mid{height:1px;background:var(--line);margin:0 0 6px}
+.hours-pick{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);
+    display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.hours-pick .t{font-family:var(--serif);font-size:var(--t3);color:var(--ink)}
+.hours-pick .g{font-size:var(--t2);color:var(--accent);font-weight:500}
+.hours-pick .d{font-size:var(--t2);color:var(--ink2);flex-basis:100%;line-height:1.7}
+
+/* ───── 상담: 언제가 좋고 나쁜가 ───── */
+.c-when .c-base{font-size:var(--t2);color:var(--ink2);line-height:1.75;margin:0 0 12px}
+.c-when .c-base b{color:var(--ink)}
+.tl{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;align-items:end;height:82px;margin:4px 0 12px}
+.tlc{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%}
+.tlc .col{position:relative;width:100%;flex:1}
+.tlc .col::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line2)}
+.tlc .bar{position:absolute;left:0;right:0}
+.tlc.u .bar{bottom:50%;border-radius:3px 3px 0 0;background:var(--accent)}
+.tlc.d .bar{top:50%;border-radius:0 0 3px 3px;background:var(--g0)}
+.tlc .k{font-size:10px;color:var(--ink3);line-height:1}
+.c-days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px;
+  padding-top:13px;border-top:1px solid var(--line)}
+.c-days h5{font-size:var(--t1);color:var(--accent);letter-spacing:.12em;font-weight:500;margin-bottom:8px}
+.c-days ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.c-days li{font-size:12.5px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:5px;align-items:baseline;line-height:1.5}
+.c-days li b{color:var(--ink);font-weight:500}
+.c-days li .gz{font-family:var(--serif);color:var(--ink)}
+.c-days li .v{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--ink3)}
+@media (max-width:380px){ .c-days{grid-template-columns:1fr} }
 
 /* ───── 대운·흐름 ───── */
 .daeun{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}.daeun::-webkit-scrollbar{display:none}
@@ -227,15 +284,80 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 
 /* ───── 네비 ───── */
 nav{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:9;
-  display:flex;gap:2px;padding:7px;border-radius:999px;
-  background:var(--nav-bg);backdrop-filter:blur(16px);border:1px solid var(--line2);
-  box-shadow:var(--nav-shadow);
-  padding-bottom:calc(7px + env(safe-area-inset-bottom)*.4);
+  position:fixed;left:0;right:0;bottom:0;z-index:9;
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;
+  padding:8px max(14px,calc((100vw - 520px)/2 + 14px));
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  background:var(--nav-bg);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
 }
-nav button{background:none;border:0;color:var(--ink3);font-size:10.5px;padding:7px 13px;cursor:pointer;border-radius:999px;transition:.15s;font-family:var(--sans)}
-nav button span{display:block;font-size:17px;line-height:1.25}
-nav button.on{color:var(--accent);background:var(--accent-soft)}
+nav button{
+  background:none;border:0;color:var(--ink3);font-size:var(--t1);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  min-height:44px;padding:4px 0;border-radius:10px;transition:.15s;font-family:var(--sans);
+}
+nav button svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--accent);font-weight:700}
+nav button:hover{color:var(--ink2)}
+nav button.on:hover{color:var(--accent)}
+
+/* ───── 오늘 · 먹색 히어로 ───── */
+.hero-day{
+  background:var(--hero-bg);color:var(--hero-ink);
+  border:1px solid var(--hero-line);
+  border-radius:var(--r);padding:22px 20px 24px;margin-bottom:var(--s3);
+  position:relative;z-index:1;box-shadow:var(--shadow-lift);
+}
+.hero-day .hd-top{display:flex;align-items:center;gap:10px;margin-bottom:var(--s3)}
+.hero-day .hd-date{font-size:var(--t2);color:var(--hero-dim);letter-spacing:.03em}
+.hero-day .hd-chip{
+  margin-left:auto;display:flex;align-items:center;gap:6px;font-size:var(--t1);
+  color:var(--hero-dim);background:var(--hero-chip);border-radius:999px;padding:5px 11px;
+}
+.hero-day .hd-chip i{width:5px;height:5px;border-radius:50%;background:var(--hero-accent)}
+.hero-day .hd-gz{display:flex;align-items:flex-end;gap:13px}
+.hero-day .hd-gz .han{font-size:var(--t7);font-weight:700;line-height:.95;font-family:var(--serif)}
+.hero-day .hd-gz .lab{padding-bottom:5px}
+.hero-day .hd-gz .lab small{display:block;font-size:var(--t1);color:var(--hero-dim);letter-spacing:.1em}
+.hero-day .hd-gz .lab b{display:block;font-size:var(--t4);color:var(--hero-accent);margin-top:3px}
+.hero-day .hd-lede{
+  font-family:var(--serif);font-size:var(--t5);font-weight:500;line-height:1.6;
+  letter-spacing:-.02em;margin-top:var(--s3);text-wrap:pretty;
+}
+.hero-day .hd-lede.loading{font-family:var(--sans);font-size:var(--t3);color:var(--hero-dim)}
+/* 로그인 안내 — 히어로 안에서도 읽히게 */
+.hero-day .hd-gate{
+  margin-top:var(--s3);padding-top:18px;border-top:1px solid var(--hero-line);
+}
+.hero-day .hd-gate b{display:block;font-family:var(--serif);font-size:var(--t3);color:var(--hero-ink)}
+.hero-day .hd-gate p{font-size:var(--t2);color:var(--hero-dim);line-height:1.7;margin-top:6px}
+.hero-day .hd-gate .btn{margin-top:14px;padding:13px}
+.hero-day .hd-note{display:block;font-family:var(--sans);font-size:var(--t1);color:var(--hero-dim2);margin-top:10px;letter-spacing:.02em}
+/* 통변좌표 — 우리 엔진만 내놓는 값 */
+.coord{margin-top:var(--s3);padding-top:18px;border-top:1px solid var(--hero-line)}
+.coord .c-row{display:flex;align-items:baseline;gap:7px}
+.coord .c-row .k{font-size:var(--t1);color:var(--hero-dim)}
+.coord .c-row .v{
+  margin-left:auto;font-size:var(--t5);font-weight:700;color:var(--hero-accent);
+  line-height:1;font-variant-numeric:tabular-nums;
+}
+.coord .c-row .s{font-size:var(--t1);color:var(--hero-dim)}
+.coord .gauge{position:relative;height:4px;border-radius:999px;background:var(--hero-line);margin-top:11px}
+.coord .gauge .mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--hero-dim2)}
+.coord .gauge .fill{position:absolute;top:0;bottom:0;border-radius:999px;background:var(--hero-accent)}
+.coord .scale{display:flex;justify-content:space-between;gap:8px;margin-top:7px;font-size:10.5px;color:var(--hero-dim2)}
+.coord .chain{margin-top:10px;font-size:10.5px;line-height:1.6;color:var(--hero-dim2);letter-spacing:.02em;overflow-wrap:anywhere}
+
+/* 오늘 할 하나 — 카드가 아니라 지시 */
+.act-one{display:flex;gap:13px;align-items:flex-start;margin-bottom:var(--s3)}
+.act-one .mark{
+  flex:0 0 34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+}
+.act-one .mark svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.act-one .k{font-size:var(--t1);color:var(--accent);letter-spacing:.14em;font-weight:500}
+.act-one p{font-size:var(--t4);font-weight:500;line-height:1.68;margin-top:5px;text-wrap:pretty}
 
 /* ───── 모달 ───── */
 .modal{position:fixed;inset:0;background:rgba(20,15,10,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;z-index:10}
@@ -303,7 +425,7 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 textarea{width:100%;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:12px;padding:13px 14px;font-size:15.5px;outline:none;font-family:var(--sans);line-height:1.7;resize:vertical}
 textarea:focus{border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-soft)}
 nav button{position:relative}
-nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;border-radius:50%;background:var(--accent)}
 .c-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .c-tag{font-size:11.5px;color:var(--accent);letter-spacing:.06em;padding:5px 11px;border-radius:999px;background:var(--accent-soft);border:1px solid var(--accent-line);white-space:nowrap}
 .c-q{font-family:var(--letter);font-size:19px;line-height:1.6;color:var(--ink);margin-bottom:14px}

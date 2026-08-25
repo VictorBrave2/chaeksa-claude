@@ -92,7 +92,15 @@
     return (lo + hi) / 2;
   }
   // 특정 연도의 12절(입춘~소한) UTC JD 목록. 입춘(315°)은 그 해 2월, 소한(285°)은 다음 해 1월.
+  const _termCache = new Map();
   function solarTermsOfYear(year) {
+    const hit = _termCache.get(year);
+    if (hit) return hit;
+    const out = _solarTermsOfYear(year);
+    _termCache.set(year, out);
+    return out;
+  }
+  function _solarTermsOfYear(year) {
     const out = [];
     for (let i = 0; i < 12; i++) {
       const lon = (315 + 30 * i) % 360;
@@ -202,6 +210,18 @@
     };
   }
 
+  // ───────── 세력 판정 공용 (분석엔진·체용엔진이 같이 쓴다) ─────────
+  /** 원국 자리 가중치 — 월령을 가장 무겁게, 일간 자신은 주체라 제외한다 */
+  const NATAL_WEIGHT = { yearStem: .5, yearBranch: .8, monthStem: .8, monthBranch: 2.0, dayBranch: 1.5, hourStem: .5, hourBranch: .8 };
+  /** 오행 하나가 일간에게 도움(비겁·인성)이면 +1, 소모(식상·재성·관성)면 -1 */
+  function siding(dayElemIdx, elemIdx) {
+    if (elemIdx === dayElemIdx) return 1;                        // 비겁
+    if ((dayElemIdx - elemIdx + 5) % 5 === 1) return 1;          // 인성 (elem이 일간을 生)
+    return -1;
+  }
+  /** 강약 경계 — 이 프로젝트 전체에서 이 함수 하나만 쓴다 */
+  const STRENGTH_LABEL = (score) => score >= .55 ? '신강' : (score >= .45 ? '중화' : '신약');
+
   // ───────── 분석: 십신, 오행 분포 ─────────
   function tenGod(dayStem, otherStem) {
     const de = STEM_ELEM[dayStem], oe = STEM_ELEM[otherStem];
@@ -224,14 +244,27 @@
         hidden: HIDDEN[pl.branch].map(h => ({ stem: h, god: TEN_GODS[tenGod(ds, h)] })),
       };
     }
-    // 신강/신약 간이 판정: 월지 득령 + 인비 세력
+    // 신강/신약: 자리 가중 세력 판정 (일간 자신은 주체이므로 세력에서 제외한다)
+    // 체용엔진(chaeyong.js)이 층을 쌓을 때 쓰는 것과 같은 공식·같은 경계를 쓴다.
     const month = pillars.month.branch;
     const de = STEM_ELEM[ds];
-    const support = elemCount[de] + elemCount[(de + 4) % 5]; // 비겁 + 인성
-    const total = elemCount.reduce((a, b) => a + b, 0);
     const gotMonth = BRANCH_ELEM[month] === de || BRANCH_ELEM[month] === (de + 4) % 5;
-    const strengthScore = support / total + (gotMonth ? 0.2 : 0);
-    const strength = strengthScore >= 0.6 ? '신강' : strengthScore >= 0.45 ? '중화' : '신약';
+    const W = NATAL_WEIGHT;
+    const seats = [
+      [STEM_ELEM[pillars.year.stem],    W.yearStem],
+      [BRANCH_ELEM[pillars.year.branch], W.yearBranch],
+      [STEM_ELEM[pillars.month.stem],   W.monthStem],
+      [BRANCH_ELEM[pillars.month.branch], W.monthBranch],
+      [BRANCH_ELEM[pillars.day.branch], W.dayBranch],
+    ];
+    if (pillars.hour) {
+      seats.push([STEM_ELEM[pillars.hour.stem], W.hourStem]);
+      seats.push([BRANCH_ELEM[pillars.hour.branch], W.hourBranch]);
+    }
+    let sup = 0, tot = 0;
+    for (const [elem, w] of seats) { tot += w; if (siding(de, elem) > 0) sup += w; }
+    const strengthScore = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
+    const strength = STRENGTH_LABEL(strengthScore);
     const missing = ELEM.filter((_, i) => elemCount[i] === 0);
     const dominant = ELEM[elemCount.indexOf(Math.max(...elemCount))];
     // 용신 후보(간이): 신강이면 식상·재·관 중 많은 것 설기, 신약이면 인·비
@@ -240,9 +273,16 @@
   }
 
   // ───────── 오늘/특정 날짜의 운 ─────────
+  const _dfCache = new Map();
   function dateFortune(y, m, d) {
+    const k = y * 10000 + m * 100 + d;
+    const hit = _dfCache.get(k);
+    if (hit) return hit;
     const r = calc({ year: y, month: m, day: d, hour: 12, minute: 0, gender: 'M', solarCorrection: false });
-    return { year: r.pillars.year, month: r.pillars.month, day: r.pillars.day };
+    const out = { year: r.pillars.year, month: r.pillars.month, day: r.pillars.day };
+    if (_dfCache.size > 20000) _dfCache.clear();
+    _dfCache.set(k, out);
+    return out;
   }
   function currentDaeun(result, onDate) {
     const age = onDate.getFullYear() - result.solarYear; // 세는 나이 근사 (만 나이 아님)
@@ -260,5 +300,5 @@
     termsOfYear: (y) => solarTermsOfYear(y).map(t => ({ name: t.name, ...utcFromJD(t.jd + 9 / 24) })),
   };
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, NATAL_WEIGHT, siding, STRENGTH_LABEL, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);

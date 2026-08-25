@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #b3562e; } a:hover { color: #9b4123; }
+  </style>
+</helmet>
+
+<div style="width: 375px; min-height: 760px; background: linear-gradient(180deg,#faf7f0 0%,#f5eee0 100%); font-family: 'Noto Sans KR', sans-serif; padding: 20px 18px 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px">
+
+  <div style="display: flex; align-items: center; gap: 11px; padding-bottom: 4px">
+    <div style="width: 38px; height: 38px; border-radius: 9px; background: linear-gradient(145deg,#c4603a,#9b4123); color: #fdf6ec; font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center">策</div>
+    <div style="flex-grow: 1">
+      <div style="font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 900; color: #332c23; line-height: 1.2">책사</div>
+      <div style="font-size: 11.5px; color: #a0937d; margin-top: 2px">이승용님의 명리비서</div>
+    </div>
+    <div style="border: 1px solid #dbcbad; border-radius: 999px; padding: 7px 13px; font-size: 12.5px; color: #6b6154">설정</div>
+  </div>
+
+  <div style="background: linear-gradient(180deg,#fffefb,#fffdf8); border: 1px solid #e8dcc6; border-radius: 18px; padding: 20px; box-shadow: 0 3px 16px rgba(120,90,40,.07)">
+    <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 14px">
+      <div style="font-size: 11.5px; font-weight: 700; color: #b3562e; letter-spacing: .16em">오늘 브리핑 · 8월 25일</div>
+      <div style="flex-grow: 1; height: 1px; background: linear-gradient(90deg, rgba(179,86,46,.28), transparent)"></div>
+    </div>
+    <div style="display: flex; gap: 12px; font-size: 12.5px; color: #a0937d; margin-bottom: 14px; flex-wrap: wrap">
+      <span>올해 <b style="color:#b3562e; font-family:'Noto Serif KR',serif">丙午</b></span>
+      <span>이달 <b style="color:#b3562e; font-family:'Noto Serif KR',serif">丙申</b></span>
+      <span>오늘 <b style="color:#b3562e; font-family:'Noto Serif KR',serif">辛未</b></span>
+    </div>
+    <p style="font-size: 15.5px; line-height: 1.85; color: #332c23; margin: 0">오늘은 신미(辛未)일, 편재(내가 다루는 돈·실물 기운)가 들어와 움직일수록 기회가 붙는 날이에요. 다만 비겁 기운이 겹쳐 있어 크게 베팅하면 손해 보기 쉬워요.</p>
+    <p style="font-size: 15.5px; line-height: 1.85; color: #332c23; margin: 12px 0 0">오늘 할 행동 하나: 미뤄둔 약속 하나 잡되, 오늘 쓸 돈은 작은 단위 여러 번으로 쪼개기.</p>
+  </div>
+
+  <div style="background: linear-gradient(180deg,#fffefb,#fffdf8); border: 1px solid #e8dcc6; border-radius: 18px; padding: 20px; box-shadow: 0 3px 16px rgba(120,90,40,.07)">
+    <div style="display: flex; align-items: center; gap: 11px">
+      <div style="font-size: 11.5px; font-weight: 700; color: #b3562e; letter-spacing: .16em">계산 근거 보기 ▸</div>
+      <div style="flex-grow: 1; height: 1px; background: linear-gradient(90deg, rgba(179,86,46,.28), transparent)"></div>
+    </div>
+  </div>
+
+  <div style="background: linear-gradient(180deg,#fffefb,#fffdf8); border: 1px solid #e8dcc6; border-radius: 18px; padding: 20px; box-shadow: 0 3px 16px rgba(120,90,40,.07)">
+    <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 14px">
+      <div style="font-size: 11.5px; font-weight: 700; color: #b3562e; letter-spacing: .16em">이번 주 한눈에</div>
+      <div style="flex-grow: 1; height: 1px; background: linear-gradient(90deg, rgba(179,86,46,.28), transparent)"></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; text-align: center">
+      <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+        <div style="background: #fbf7ee; border: 1px solid #e8dcc6; border-radius: 11px; padding: 9px 2px; font-size: 10.5px; color: #a0937d">
+          {{d.day}}
+          <div style="font-family: 'Noto Serif KR', serif; font-size: 15px; color: #332c23; margin: 2px 0">{{d.gz}}</div>
+          {{d.god}}
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+
+  <div style="align-self: center; display: flex; gap: 2px; padding: 7px; border-radius: 999px; background: rgba(255,253,248,.9); border: 1px solid #dbcbad; box-shadow: 0 8px 28px rgba(120,90,40,.16)">
+    <sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+      <div style="padding: 7px 13px; text-align: center; font-size: 10.5px; color: #a0937d">
+        <div style="font-size: 17px; line-height: 1.25">{{n.icon}}</div>
+        {{n.label}}
+      </div>
+    </sc-for>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      week: [
+        { day: '화 25', gz: '辛未', god: '편재' }, { day: '수 26', gz: '壬申', god: '정관' },
+        { day: '목 27', gz: '癸酉', god: '편관' }, { day: '금 28', gz: '甲戌', god: '정인' },
+        { day: '토 29', gz: '乙亥', god: '편인' }, { day: '일 30', gz: '丙子', god: '겁재' },
+        { day: '월 31', gz: '丁丑', god: '비견' },
+      ],
+      nav: [
+        { icon: '☀', label: '오늘' }, { icon: '▦', label: '달력' }, { icon: '◎', label: '나' },
+        { icon: '∞', label: '궁합' }, { icon: '◈', label: '상담' }, { icon: '✎', label: '비서' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -178,6 +178,43 @@ ${prof}` : ''}`;
 
   /** 통변엔진이 정한 '오늘의 뼈대'를 프롬프트에 넣는다.
    *  이렇게 하지 않으면 같은 사주라도 날마다 LLM이 다른 판단을 내놓는다. */
+  /** 오늘 12시진 곡선 — 시각과 사건 라벨은 코드가 확정하고, LLM은 문장만 만든다. */
+  /** 기간 스캔 결과 — 시기와 날짜는 코드가 확정한다. LLM은 이 안에서만 말한다. */
+  function whenText(fr) {
+    const w = fr && fr.when;
+    if (!w || !w.span) return '';
+    const NL = String.fromCharCode(10);
+    const multi = w.years.length > 1;
+    const cells = multi ? w.years : w.months;
+    const nm = c => multi ? c.y + '년' : c.m + '월';
+    const hi = cells.reduce((a, b) => (b.rel > a.rel ? b : a), cells[0]);
+    const lo = cells.reduce((a, b) => (b.rel < a.rel ? b : a), cells[0]);
+    const d = r => `${multi ? r.y + '.' : ''}${r.m}/${r.d}(${r.ganji} ${r.god})`;
+    return [
+      `[기간 기저 좌표] ${w.baseline > 0 ? '+' : ''}${w.baseline} — 기간 전체의 성격`,
+      `[기간 내 편차] ` + cells.map(c => `${nm(c)} ${c.rel > 0 ? '+' : ''}${c.rel}`).join(', '),
+      `[높은 때] ${nm(hi)} / [낮은 때] ${nm(lo)}`,
+      `[골라 쓸 날] ` + w.best.map(d).join(', '),
+      `[피할 날] ` + w.worst.map(d).join(', '),
+      w.turns.length ? `[흐름이 뒤집히는 지점] ` + w.turns.map(t => `${t.from.y}년 ${t.from.m}월 → ${t.to.y}년 ${t.to.m}월`).join(', ') : '',
+    ].filter(Boolean).join(NL);
+  }
+
+  function hourCurveText(df) {
+    const NL = String.fromCharCode(10);
+    const hc = df && df.hours;
+    if (!hc || !hc.rows || !hc.rows.length) return '';
+    const line = hc.rows.map(r => `${r.range}시 ${r.god} ${r.sign}${r.value > 0 ? '+' : ''}${r.value}`).join(' / ');
+    const up = hc.rows.filter(r => r.value > 0.3);
+    const dn = hc.rows.filter(r => r.value < -0.3);
+    return [
+      `[오늘 12시진] ${line}`,
+      up.length ? `[힘이 붙는 때] ${up.map(r => r.range + '시 ' + r.label).join(', ')}` : '',
+      dn.length ? `[힘이 빠지는 때] ${dn.map(r => r.range + '시 ' + r.label).join(', ')}` : '',
+      hc.peak && hc.peak.value > 0.3 ? `[오늘의 정점] ${hc.peak.range}시 ${hc.peak.god} — ${hc.peak.label}` : '',
+    ].filter(Boolean).join(NL);
+  }
+
   function dayFrameText(df) {
     if (!df) return '';
     const L = [
@@ -189,6 +226,7 @@ ${prof}` : ''}`;
       `[오늘 ${df.dayElem} 기운] ${df.helpful ? '이 사주가 반기는 쪽 — 감당하기 수월한 날' : '꼭 필요한 기운은 아님 — 무리하지 않는 편이 낫다'}`,
       df.season ? `[조후] ${df.season}` : '',
       df.goodHours ? `[집중이 붙는 시간대] ${df.goodHours}` : '',
+      hourCurveText(df),
       df.tone ? `[오늘의 결] ${df.tone}` : '',
       df.care ? `[주의] ${df.care}` : '',
       df.action ? `[권할 행동] ${df.action}` : '',
@@ -212,7 +250,8 @@ ${dayFrameText(df)}
 지켜야 할 것
 - 위 [오늘의 결]·[주의]·[권할 행동]의 방향을 벗어나지 않는다. 표현은 자유롭게 다듬되 판단을 바꾸지 않는다.
 - 십신 이름은 위에 적힌 것만 쓴다. 새로 계산하지 않는다.
-- 시간대를 말한다면 [집중이 붙는 시간대]를 쓴다.
+- 시간대를 말할 때는 반드시 [오늘 12시진]에 적힌 시각만 쓴다. 시각을 새로 지어내지 않는다.
+- 브리핑 안에 구체적인 시각을 최소 한 번은 넣는다. [오늘의 정점]이 있으면 그 시각을 우선 쓴다.
 - [6차원 적층 체용 좌표]가 있으면 그 판정을 따른다. 특히 부호가 뒤집히는 층이 있으면 그것을 오늘 이야기의 축으로 삼는다.` : '');
     const raw = await call(sys, [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { task: 'brief', maxTokens: 600 });
     const text = dehanja(raw);
@@ -243,6 +282,7 @@ ${dayFrameText(df)}
       `[구조] ` + fr.layers.map(l => `${l.level} ${l.ganji}(${l.note})`).join(' / '),
       fr.chaeyong ? chaeyongText(fr.chaeyong) : '',
       `[들어오는 기운] 천간 ${fr.godStem}, 지지 ${fr.godBranch} (${fr.group}) · 일간 ${fr.strength}`,
+      whenText(fr),
       fr.modifiers.length ? `[관계 보정] ` + fr.modifiers.map(m => m.text).join(' ') : '',
       `[1순위 가설 ${Math.round(top.p*100)}%] ${top.title}
   근거: ${top.basis}
@@ -278,9 +318,12 @@ ${fr.toldText}` : '',
 - [사용자가 직접 쓴 상황]이 있으면 그 표현을 한 번은 그대로 인용한다. 사람은 자기 말이 들렸는지로 신뢰를 판단한다.
 - [6차원 적층 체용 좌표]가 주어지면, 順/逆이 뒤집히는 층(변곡점)을 반드시 짚는다. 좌표의 부호와 값을 임의로 바꾸지 않는다.
 - 체용은 "지금 무엇이 體이고 무엇이 用인가"를 말하는 것이다. 층 이름(원국·대운·세운·월운·일운·시운)을 그대로 쓴다.
+- [골라 쓸 날]·[피할 날]이 주어지면 **반드시 구체적인 날짜를 짚는다.** 좋은 날 최소 2개, 피할 날 최소 1개를 월·일로 말한다.
+- 시기와 날짜는 [기간 내 편차]·[높은 때]·[낮은 때]·[골라 쓸 날]·[피할 날]에 적힌 것만 쓴다. **날짜를 새로 지어내지 않는다.**
+- [기간 기저 좌표]와 [기간 내 편차]는 다른 것이다. 편차가 높은 달은 "그 기간 안에서 상대적으로 높다"는 뜻이지 절대적으로 좋다는 뜻이 아니다. 이 구분을 흐리지 않는다.
 
 분량과 형식
-- 600~900자. 문단 사이는 빈 줄로 구분.
+- 700~1000자. 문단 사이는 빈 줄로 구분.
 - 소제목을 2~3개 쓴다. 소제목은 그 자체로 문장이 되게 쓴다.
 - 목록이 필요하면 '·'로 시작하는 짧은 줄로.
 - 한자는 쓰지 않는다.

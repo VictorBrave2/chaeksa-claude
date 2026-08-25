@@ -163,12 +163,15 @@
     html += `<div class="c-sec"><button class="c-toggle" id="cStruct">지금 보이는 구조 ▸</button>
       <div class="c-struct hide" id="cStructBody">
         ${fr.layers.map(l => `<div class="c-layer"><b>${l.level}</b><span class="gz">${l.ganji}</span><p>${esc(l.note)}</p></div>`).join('')}
-        <p class="hint">들어오는 기운: <b>${fr.godStem}</b>(천간) / <b>${fr.godBranch}</b>(지지) — ${T().GROUP_MEAN[fr.group]}. 일간은 <b>${fr.strength}</b>.</p>
+        <p class="hint">들어오는 기운: <b>${fr.godStem}</b>(천간) / <b>${fr.godBranch}</b>(지지) — ${T().GROUP_MEAN[fr.group]}. 일간은 원국 <b>${fr.natalStrength || fr.strength}</b>, ${esc(fr.target.label)}까지 쌓으면 <b>${fr.strength}</b>.</p>
       </div></div>`;
 
     if (fr.modifiers.length) {
       html += `<div class="c-mods">${fr.modifiers.map(m => `<p>${esc(m.text)}</p>`).join('')}</div>`;
     }
+
+    // 언제 — 기간을 날짜 단위로 훑은 결과
+    if (fr.when && fr.when.span) html += whenHtml(fr);
 
     // 가설
     html += `<div class="c-sec"><h4>${done ? '확인 후 판단' : '지금 세운 가설'}<small>${esc(fr.theme)}</small></h4>`;
@@ -339,4 +342,45 @@
   }
 
   global.ChaeksaConsult = { renderHome, openCount: () => load().filter(isDue).length, total: () => load().length, list: load };
+  // 6층 좌표를 기간 전체에 찍어 언제가 높고 낮은지 보여준다.
+  function whenHtml(fr) {
+    const w = fr.when;
+    const multiYear = w.years.length > 1;
+    const singleMonth = w.months.length === 1;
+    const cells = multiYear ? w.years : (singleMonth ? w.days.map(r => ({ ...r, key: r.d })) : w.months);
+    const MAX = Math.max(0.35, ...cells.map(c => Math.abs(c.rel)));
+    const bars = cells.map(c => {
+      const h = Math.max(3, Math.round(Math.abs(c.rel) / MAX * 30));
+      const up = c.rel >= 0;
+      const lab = multiYear ? String(c.y).slice(2) : (singleMonth ? (c.d % 5 === 0 || c.d === 1 ? c.d : '') : c.m);
+      return `<div class="tlc ${up ? 'u' : 'd'}" title="${esc(String(lab))} 편차 ${c.rel > 0 ? '+' : ''}${c.rel}">
+        <span class="col"><span class="bar" style="height:${h}px"></span></span>
+        <span class="k">${esc(String(lab))}</span></div>`;
+    }).join('');
+    const hi = cells.reduce((a, b) => (b.rel > a.rel ? b : a), cells[0]);
+    const lo = cells.reduce((a, b) => (b.rel < a.rel ? b : a), cells[0]);
+    const unit = multiYear ? '해' : (singleMonth ? '날' : '달');
+    const nm = c => multiYear ? c.y + '년' : (singleMonth ? c.m + '월 ' + c.d + '일' : c.m + '월');
+    // 여러 해에 걸친 스캔이면 날짜에 연도를 반드시 붙인다
+    const day = r => `<li><b>${multiYear ? r.y + '.' : ''}${r.m}월 ${r.d}일</b> <span class="gz">${esc(r.ganji)}</span>
+      <span class="g">${esc(r.god)}</span><span class="v">${r.rel > 0 ? '+' : ''}${r.rel}</span></li>`;
+    const base = w.baseline;
+    const baseWord = base > 0.3 ? '順(나를 밀어주는 쪽)' : (base < -0.3 ? '逆(나를 누르는 쪽)' : '平(팽팽함)');
+    return `<div class="c-sec c-when">
+      <h4>언제가 좋고 언제가 나쁜가<small>${esc(fr.target.label)} · ${w.span}일을 하루씩 계산했습니다</small></h4>
+      <p class="c-base">이 기간 전체의 좌표는 <b>${base > 0 ? '+' : ''}${base}</b> — ${baseWord}.
+        아래는 그 안에서의 <b>편차</b>입니다. 높은 ${unit}가 절대적으로 좋은 게 아니라, 같은 기간 안에서 상대적으로 높다는 뜻입니다.</p>
+      <div class="tl">${bars}</div>
+      <p class="c-base"><b>${esc(nm(hi))}</b>이 가장 높고 <b>${esc(nm(lo))}</b>이 가장 낮습니다.</p>
+      ${w.turns.length ? `<p class="c-base">흐름이 뒤집히는 지점: ` +
+        w.turns.map(t => `${t.from.y}년 ${t.from.m}월 → ${t.to.y}년 ${t.to.m}월`).join(', ') + `</p>` : ''}
+      <div class="c-days">
+        <div><h5>골라 쓸 날</h5><ul>${w.best.map(day).join('')}</ul></div>
+        <div><h5>피할 날</h5><ul>${w.worst.map(day).join('')}</ul></div>
+      </div>
+      <p class="hint">날짜는 6층 적층 좌표(대운·세운·월운·일운의 평균)로 계산했습니다. ${w.spread ? '달마다 하나씩만 뽑았습니다.' : '이 달 안에서 상위 다섯 날입니다.'}<br><b>달력 탭의 택일과는 다른 기준입니다.</b> 여기는 <b>내 기운이 順인가</b>를 보고, 택일은 <b>그 목적(이사·계약 등)에 맞는 날인가</b>를 봅니다. 두 결과가 다를 수 있습니다.</p>
+    </div>`;
+  }
+
+
 })(window);

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=40">
+<link rel="stylesheet" href="style.css?v=54">
 </head>
 <body>
 <div class="wrap">
@@ -116,14 +116,37 @@
   <div id="app" class="hide">
     <!-- 오늘 -->
     <div class="tab" data-tab="today">
-      <section class="card">
-        <h2 id="todayLabel">오늘 브리핑</h2>
-        <div class="ganji-line" id="todayGanji"></div>
-        <div class="brief" id="aiBrief"></div>
-        <div id="aiBriefCta" class="hide"><button class="btn small" id="btnAiBrief">AI 비서 브리핑 받기</button><p class="hint">설정에서 API 키를 넣으면 AI 비서가 원국 전체를 읽고 오늘을 브리핑합니다.</p></div>
+      <section class="hero-day">
+        <div class="hd-top">
+          <div class="hd-date" id="todayLabel">오늘</div>
+          <div class="hd-chip"><i></i><span id="hdFresh">오늘 갱신됨</span></div>
+        </div>
+        <div class="hd-gz">
+          <div class="han" id="hdGanji">―</div>
+          <div class="lab"><small>주도하는 기운</small><b id="hdGod">―</b></div>
+        </div>
+        <div class="hd-lede" id="aiBrief"></div>
+        <div id="aiBriefCta" class="hide"><button class="btn small" id="btnAiBrief">AI 비서 브리핑 받기</button></div>
+        <div class="coord" id="coordBox"></div>
       </section>
+
+      <div class="act-one" id="actOne">
+        <div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div>
+          <div class="k">오늘 할 하나</div>
+          <p id="actText"></p>
+        </div>
+      </div>
+
+      <section class="card" id="hoursCard">
+        <h2>오늘의 시간대<span class="h2sub" id="hoursSub"></span></h2>
+        <div class="hours" id="hours"></div>
+        <div class="hours-pick" id="hoursPick"></div>
+      </section>
+
       <section class="card">
         <h2>흐름 읽기</h2>
+        <div class="ganji-line" id="todayGanji"></div>
         <div class="brief" id="brief"></div>
       </section>
       <section class="card">
@@ -230,12 +253,12 @@
 </div>
 
 <nav id="nav" class="hide">
-  <button data-go="today"><span>☀</span>오늘</button>
-  <button data-go="cal"><span>▦</span>달력</button>
-  <button data-go="me"><span>◎</span>나</button>
-  <button data-go="compat"><span>∞</span>궁합</button>
-  <button data-go="consult"><span>◈</span>상담<i class="dot hide" id="consultDot"></i></button>
-  <button data-go="chat"><span>✎</span>비서</button>
+  <button data-go="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg><span>오늘</span></button>
+  <button data-go="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>달력</span></button>
+  <button data-go="me"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="4" height="16" rx="1"/><rect x="9.7" y="4" width="4" height="16" rx="1"/><rect x="15.9" y="4" width="4" height="16" rx="1"/></svg><span>원국</span></button>
+  <button data-go="compat"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"/></svg><span>궁합</span></button>
+  <button data-go="consult"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"/><path d="M9 9.5h6M9 12.5h4"/></svg><span>상담</span><i class="dot hide" id="consultDot"></i></button>
+  <button data-go="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.2-3.6A7.7 7.7 0 0 1 12 4.6c4.4 0 7.7 3.2 7.7 7.2S16.4 19 12 19a9 9 0 0 1-2.8-.4z"/><path d="M9 12h.01M12 12h.01M15 12h.01"/></svg><span>비서</span></button>
 </nav>
 
 
@@ -345,24 +368,24 @@
   </div>
 </div>
 
-<script src="config.js?v=40"></script>
-<script src="cloud.js?v=40"></script>
-<script src="usage.js?v=40"></script>
-<script src="places.js?v=40"></script>
-<script src="people.js?v=40"></script>
-<script src="astro.js?v=40"></script>
-<script src="lunar.js?v=40"></script>
-<script src="engine.js?v=40"></script>
-<script src="chaeyong.js?v=40"></script>
-<script src="brief.js?v=40"></script>
-<script src="calendar.js?v=40"></script>
-<script src="compat.js?v=40"></script>
-<script src="tongbyeon.js?v=40"></script>
-<script src="rules-wealth-love.js?v=40"></script>
-<script src="rules-health-study-move.js?v=40"></script>
-<script src="consult.js?v=40"></script>
-<script src="share.js?v=40"></script>
-<script src="ai.js?v=40"></script>
-<script src="app.js?v=40"></script>
+<script src="config.js?v=54"></script>
+<script src="cloud.js?v=54"></script>
+<script src="usage.js?v=54"></script>
+<script src="places.js?v=54"></script>
+<script src="people.js?v=54"></script>
+<script src="astro.js?v=54"></script>
+<script src="lunar.js?v=54"></script>
+<script src="engine.js?v=54"></script>
+<script src="chaeyong.js?v=54"></script>
+<script src="brief.js?v=54"></script>
+<script src="calendar.js?v=54"></script>
+<script src="compat.js?v=54"></script>
+<script src="tongbyeon.js?v=54"></script>
+<script src="rules-wealth-love.js?v=54"></script>
+<script src="rules-health-study-move.js?v=54"></script>
+<script src="consult.js?v=54"></script>
+<script src="share.js?v=54"></script>
+<script src="ai.js?v=54"></script>
+<script src="app.js?v=54"></script>
 </body>
 </html>

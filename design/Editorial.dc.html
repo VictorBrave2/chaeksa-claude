@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700;900&family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #b3562e; } a:hover { color: #9b4123; }
+  </style>
+</helmet>
+
+<div style="width: 375px; min-height: 900px; position: relative; background: #f7f2e8; font-family: 'Noto Sans KR', sans-serif; color: #332c23; box-sizing: border-box; padding: 26px 24px 110px; display: flex; flex-direction: column">
+
+  <!-- 판권 줄: 날짜가 주인공, 로고는 작게 -->
+  <div style="display: flex; align-items: baseline; gap: 8px; padding-bottom: 10px; border-bottom: 2px solid #332c23">
+    <div style="font-family: 'Noto Serif KR', serif; font-size: 13px; font-weight: 700; letter-spacing: .04em">책사</div>
+    <div style="flex-grow: 1"></div>
+    <div style="font-size: 11px; color: #a0937d; letter-spacing: .04em">이승용 · 庚辰일주</div>
+  </div>
+
+  <!-- 헤드라인: 날짜를 크게, 신문 1면처럼 -->
+  <div style="display: flex; align-items: flex-end; gap: 10px; padding: 22px 0 4px">
+    <div style="font-family: 'Noto Serif KR', serif; font-size: 62px; font-weight: 300; line-height: .82; letter-spacing: -.03em">25</div>
+    <div style="padding-bottom: 5px">
+      <div style="font-size: 12px; color: #6b6154; letter-spacing: .1em">8월 화요일</div>
+      <div style="font-family: 'Noto Serif KR', serif; font-size: 19px; font-weight: 500; color: #b3562e; margin-top: 1px">辛未</div>
+    </div>
+    <div style="flex-grow: 1"></div>
+    <div style="text-align: right; padding-bottom: 4px">
+      <div style="font-size: 10.5px; color: #a0937d; letter-spacing: .1em">오늘의 기운</div>
+      <div style="font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 700; margin-top: 2px">편재</div>
+    </div>
+  </div>
+
+  <!-- 리드: 카드 없이 지면에 바로. 첫 줄만 크게 -->
+  <div style="border-top: 1px solid #dbcbad; margin-top: 16px; padding-top: 20px">
+    <p style="font-family: 'Noto Serif KR', serif; font-size: 25px; font-weight: 500; line-height: 1.5; letter-spacing: -.022em; margin: 0; text-wrap: pretty">움직일수록 기회가 붙는 날. 다만 크게 걸면 잃습니다.</p>
+    <p style="font-family: 'Gowun Batang', serif; font-size: 15.5px; line-height: 1.95; color: #6b6154; margin: 18px 0 0; text-wrap: pretty">돈과 실물을 다루는 편재 기운이 들어왔습니다. 그런데 같은 자리에 비겁이 겹쳐 있어요. 벌 자리와 나눌 사람이 함께 왔다는 뜻입니다. 판을 키우면 나가는 쪽이 커집니다.</p>
+  </div>
+
+  <!-- 오늘 할 하나: 인장으로 표시, 카드 아님 -->
+  <div style="display: flex; gap: 14px; margin-top: 30px; padding: 22px 0; border-top: 1px solid #dbcbad; border-bottom: 1px solid #dbcbad">
+    <div style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 4px; background: linear-gradient(145deg,#c4603a,#9b4123); color: #fdf6ec; font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center">令</div>
+    <div>
+      <div style="font-size: 10.5px; color: #b3562e; letter-spacing: .14em; font-weight: 500">오늘 할 하나</div>
+      <p style="font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 500; line-height: 1.65; margin: 6px 0 0; text-wrap: pretty">미뤄둔 약속 하나를 오늘 잡으세요. 대신 오늘 쓸 돈은 작게 여러 번으로 쪼개세요.</p>
+    </div>
+  </div>
+
+  <!-- 주간: 카드 격자가 아니라 목록. 값에 따라 굵기가 다름 -->
+  <div style="margin-top: 30px">
+    <div style="font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 700; padding-bottom: 10px">이번 주</div>
+    <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+      <div style="display: flex; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1px solid #ece2d0">
+        <div style="width: 34px; flex-shrink: 0; font-size: 12px; color: {{d.dim}}">{{d.day}}</div>
+        <div style="width: 40px; flex-shrink: 0; font-family: 'Noto Serif KR', serif; font-size: 16px; color: {{d.dim}}">{{d.gz}}</div>
+        <div style="flex-grow: 1; font-size: 13.5px; font-weight: {{d.weight}}; color: {{d.color}}">{{d.god}}</div>
+        <div style="font-size: 12px; color: #a0937d">{{d.note}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+
+  <!-- 네비: 알약이 아니라 지면 하단 괘선 + 진짜 아이콘 -->
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; background: #f7f2e8; border-top: 1px solid #dbcbad; padding: 11px 18px 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #b3562e">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg>
+        <div style="font-size: 11px; font-weight: 700">오늘</div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #a0937d">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4" height="16" rx="1"/><rect x="9.7" y="4" width="4" height="16" rx="1"/><rect x="15.9" y="4" width="4" height="16" rx="1"/></svg>
+        <div style="font-size: 11px; font-weight: 400">원국</div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #a0937d">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"/><path d="M9 9.5h6M9 12.5h4"/></svg>
+        <div style="font-size: 11px; font-weight: 400">상담</div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #a0937d">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"/></svg>
+        <div style="font-size: 11px; font-weight: 400">사람</div>
+      </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ink = '#332c23', dim = '#a0937d', accent = '#b3562e';
+    const raw = [
+      ['화 25', '辛未', '편재', '오늘', 1],
+      ['수 26', '壬申', '정관', '', 0],
+      ['목 27', '癸酉', '편관', '무리한 요구 주의', 0],
+      ['금 28', '甲戌', '정인', '', 0],
+      ['토 29', '乙亥', '편인', '', 0],
+      ['일 30', '丙子', '겁재', '지출 조심', 0],
+      ['월 31', '丁丑', '비견', '', 0],
+    ];
+    return {
+      week: raw.map(([day, gz, god, note, on]) => ({
+        day, gz, god, note,
+        dim: on ? ink : dim,
+        color: on ? accent : ink,
+        weight: on ? '700' : '400',
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

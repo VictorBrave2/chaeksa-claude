@@ -26,8 +26,9 @@
   const E = global.ChaeksaEngine;
 
   // 세력 가중치 — 월령을 가장 무겁게, 짧은 주기일수록 가볍게
+  // 원국 가중치는 분석엔진과 같은 것을 쓴다 (두 곳이 다른 답을 내지 않게)
   const WEIGHT = {
-    natal: { yearStem: .5, yearBranch: .8, monthStem: .8, monthBranch: 2.0, dayBranch: 1.5, hourStem: .5, hourBranch: .8 },
+    natal: E.NATAL_WEIGHT,
     대운:  { stem: .8, branch: 1.6 },
     세운:  { stem: .6, branch: 1.0 },
     월운:  { stem: .4, branch: .7 },
@@ -46,12 +47,7 @@
   }
   const GROUP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
 
-  /** 오행 하나가 일간에게 어떤 세력인가: 도움(비겁·인성) = +1, 소모(식상·재성·관성) = -1 */
-  function siding(dayElem, elem) {
-    if (elem === dayElem) return 1;                       // 비겁
-    if ((dayElem - elem + 5) % 5 === 1) return 1;          // 인성 (elem이 dayElem을 生)
-    return -1;                                            // 식상·재성·관성
-  }
+  const siding = E.siding;   // 분석엔진과 같은 판정을 쓴다
 
   /** 시운(時運) 간지 — 지금 시각 기준 */
   function hourPillarOf(dayStem, hour) {
@@ -70,7 +66,7 @@
     });
     return total ? support / total : .5;
   }
-  const label = (score) => score >= .55 ? '신강' : (score >= .45 ? '중화' : '신약');
+  const label = E.STRENGTH_LABEL;   // 강약 경계는 프로젝트 전체가 하나만 쓴다
 
   /** 그 층에서 用이 體에게 順인가 逆인가 (-3 ~ +3) */
   function judge(strengthLabel, group, extras) {
@@ -80,7 +76,9 @@
     } else if (strengthLabel === '신강') {
       v = ({ 식상: 1.5, 재성: 2, 관성: 1.5, 인성: -1.5, 비겁: -2 })[group];
     } else {
-      v = ({ 인성: .5, 비겁: .5, 식상: .5, 재성: 1, 관성: .5 })[group];
+      // 중화 — 어느 쪽으로도 치우치지 않았으니 用의 성격이 그대로 드러난다.
+      // 식상생재 흐름은 반기고, 인성·비겁이 더해지면 균형이 신강 쪽으로 깨진다.
+      v = ({ 식상: 1, 재성: 1.5, 관성: .5, 인성: -.5, 비겁: -1 })[group];
     }
     if (extras.yong) v += 1;            // 이 사주가 필요로 하는 오행
     if (extras.missing) v += .5;        // 원국에 없던 오행이 채워짐
@@ -220,5 +218,137 @@
     return parts.join(' ');
   }
 
-  global.ChaeksaChaeyong = { stack, WEIGHT, judge, strengthOf, hourPillarOf };
+  // ───────── 기간 스캔 ─────────
+  // 좌표는 아무 날짜에나 찍을 수 있다. 대운·세운을 물으면 그 기간을 날짜 단위로 훑어
+  // 언제가 좋고 언제가 나쁜지를 확정한다. (LLM에게 시기를 지어내게 두지 않는다)
+  const DAY_MS = 86400000;
+
+  /** 하루의 좌표 — 대운·세운·월운·일운 네 층의 평균. 시운은 시각이 정해져야 의미가 있어 뺀다. */
+  function dayCoord(result, when) {
+    const st = stack(result, when);
+    const live = st.layers.filter(l => l.level > 1 && l.name !== '시운' && typeof l.value === 'number');
+    if (!live.length) return null;
+    const v = live.reduce((a, l) => a + l.value, 0) / live.length;
+    const dayL = st.layers.find(l => l.name === '일운');
+    return {
+      value: Math.round(v * 100) / 100,
+      god: dayL ? dayL.god : null,
+      ganji: dayL ? dayL.ganji : null,
+      sign: SIGN(v),
+    };
+  }
+
+  /** from~to 를 날짜 단위로 훑는다.
+   *  @returns {{days, months, years, best, worst, turns, span}} */
+  function periodScan(result, from, to, opts) {
+    const topN = (opts && opts.topN) || 5;
+    const a = new Date(from.getFullYear(), from.getMonth(), from.getDate(), 12, 0, 0, 0);
+    const b = new Date(to.getFullYear(), to.getMonth(), to.getDate(), 12, 0, 0, 0);
+    const days = [];
+    for (let t = a.getTime(); t <= b.getTime(); t += DAY_MS) {
+      const d = new Date(t);
+      const c = dayCoord(result, d);
+      if (!c) continue;
+      days.push({ y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate(),
+                  date: new Date(t), value: c.value, god: c.god, ganji: c.ganji, sign: c.sign });
+    }
+    if (!days.length) return { days: [], months: [], years: [], best: [], worst: [], turns: [], span: 0 };
+
+    const bucket = (keyFn) => {
+      const map = new Map();
+      days.forEach(r => {
+        const k = keyFn(r);
+        if (!map.has(k)) map.set(k, []);
+        map.get(k).push(r);
+      });
+      return [...map.entries()].map(([k, rows]) => {
+        const avg = rows.reduce((s, r) => s + r.value, 0) / rows.length;
+        const bestRow = rows.reduce((x, r) => (r.value > x.value ? r : x), rows[0]);
+        const worstRow = rows.reduce((x, r) => (r.value < x.value ? r : x), rows[0]);
+        return { key: k, y: rows[0].y, m: rows[0].m, n: rows.length,
+                 avg: Math.round(avg * 100) / 100, sign: SIGN(avg), best: bestRow, worst: worstRow };
+      });
+    };
+    const months = bucket(r => r.y * 100 + r.m);
+    const years  = bucket(r => r.y).map(o => ({ ...o, m: null }));
+
+    // 대운·세운은 기간 내내 상수라 하루 편차를 눌러버린다.
+    // 기저(baseline)와 편차(rel)를 나눠야 "이 기간 안에서 언제가 높은가"가 보인다.
+    const baseline = Math.round((days.reduce((s2, r) => s2 + r.value, 0) / days.length) * 100) / 100;
+    days.forEach(r => { r.rel = Math.round((r.value - baseline) * 100) / 100; });
+    months.forEach(o => { o.rel = Math.round((o.avg - baseline) * 100) / 100; });
+    years.forEach(o => { o.rel = Math.round((o.avg - baseline) * 100) / 100; });
+
+    // 여러 달에 걸친 스캔은 달마다 하나씩만 뽑는다 (안 그러면 한 달에서 다 나온다).
+    // 한 달짜리 스캔은 그 달 안에서 그냥 상위 N개를 뽑는다.
+    const spread = months.length > 1;
+    const pick = (rows, dir) => {
+      const sorted = rows.slice().sort((x, y2) => dir * (y2.value - x.value) || (x.date - y2.date));
+      const out = spread
+        ? sorted.filter((r, i, arr) => arr.findIndex(o => o.y === r.y && o.m === r.m) === i)
+        : sorted;
+      return out.slice(0, topN);
+    };
+    // 부호가 바뀌는 달 — 흐름이 뒤집히는 시점
+    const turns = [];
+    for (let i = 1; i < months.length; i++) {
+      const p0 = months[i - 1], c0 = months[i];
+      if ((p0.rel > 0.3 && c0.rel < -0.3) || (p0.rel < -0.3 && c0.rel > 0.3)) {
+        turns.push({ from: p0, to: c0, dir: c0.avg > p0.avg ? 'up' : 'down' });
+      }
+    }
+    const best = pick(days, 1);
+    const worst = pick(days, -1);
+
+    return { days, months, years, best, worst, turns, baseline, spread, span: days.length };
+  }
+
+  // ───────── 오늘 12시진 곡선 ─────────
+  // 같은 하루라도 시진마다 用이 달라진다. 시운 층까지 쌓은 판정을 12번 내서 하루의 모양을 만든다.
+  const JIN = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+  const HOUR_LABEL = {
+    順: { 비견:'사람과 힘을 합치기 좋은 때', 겁재:'밀어붙이는 힘이 붙는 때',
+          식신:'말과 손이 잘 풀리는 때',     상관:'아이디어가 튀어나오는 때',
+          편재:'돈과 실물이 움직이는 때',     정재:'실속이 남는 때',
+          편관:'밀어붙여 돌파하는 때',       정관:'공식적인 일이 통하는 때',
+          편인:'감이 트이는 때',            정인:'배우고 정리하기 좋은 때' },
+    平: { 비견:'나란히 가는 때',            겁재:'힘이 팽팽한 때',
+          식신:'잔잔히 굴러가는 때',        상관:'조용히 다듬는 때',
+          편재:'오가는 것이 비등한 때',      정재:'유지되는 때',
+          편관:'긴장이 유지되는 때',        정관:'형식대로 가는 때',
+          편인:'생각이 도는 때',            정인:'쉬어가는 때' },
+    逆: { 비견:'몫이 갈리기 쉬운 때',        겁재:'지출과 경쟁이 붙는 때',
+          식신:'말이 헛도는 때',            상관:'말이 앞서 탈나기 쉬운 때',
+          편재:'새는 돈이 생기는 때',        정재:'계산이 어긋나는 때',
+          편관:'압박이 몰리는 때',          정관:'규칙에 걸리는 때',
+          편인:'생각만 많아지는 때',        정인:'늘어지기 쉬운 때' },
+  };
+
+  /** 오늘 하루를 12시진으로 끊어 각 시진의 用을 판정한다.
+   *  @returns {{rows:Array, peak:Object, low:Object, nowIndex:number}} */
+  function hourCurve(result, when) {
+    when = when || new Date();
+    const base = new Date(when.getFullYear(), when.getMonth(), when.getDate());
+    const rows = [];
+    for (let h = 0; h < 24; h += 2) {
+      const at = new Date(base.getTime()); at.setHours(h, 30, 0, 0);
+      const L = stack(result, at).layers.find(l => l.name === '시운');
+      if (!L) continue;
+      const jin = JIN[Math.floor(((h + 1) % 24) / 2)];
+      const from = (h + 23) % 24, to = (h + 1) % 24;
+      rows.push({
+        hour: h, jin, ganji: L.ganji, god: L.god, group: L.group,
+        value: L.value, sign: L.sign,
+        range: String(from).padStart(2, '0') + '~' + String(to).padStart(2, '0'),
+        label: (HOUR_LABEL[L.sign] || {})[L.god] || '',
+      });
+    }
+    if (!rows.length) return { rows: [], peak: null, low: null, nowIndex: -1 };
+    const peak = rows.reduce((a, b) => (b.value > a.value ? b : a), rows[0]);
+    const low  = rows.reduce((a, b) => (b.value < a.value ? b : a), rows[0]);
+    const nowJin = Math.floor(((when.getHours() + 1) % 24) / 2);
+    return { rows, peak, low, nowIndex: rows.findIndex(r => JIN.indexOf(r.jin) === nowJin) };
+  }
+
+  global.ChaeksaChaeyong = { stack, hourCurve, periodScan, dayCoord, WEIGHT, judge, strengthOf, hourPillarOf, HOUR_LABEL };
 })(window);

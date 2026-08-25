@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #b3562e; } a:hover { color: #9b4123; }
+  </style>
+</helmet>
+
+<div style="width: 375px; min-height: 900px; position: relative; background: #f7f2e8; font-family: 'Noto Sans KR', sans-serif; color: #332c23; box-sizing: border-box; padding: 0 0 96px; display: flex; flex-direction: column">
+
+  <!-- 짙은 먹 히어로. 화면에서 진하게 칠하는 곳은 여기 하나뿐 -->
+  <div style="background: #2b241c; color: #f5eee0; padding: 26px 22px 28px; border-radius: 0 0 26px 26px">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="font-size: 12px; color: rgba(245,238,224,.6); letter-spacing: .04em">8월 25일 화요일</div>
+      <div style="flex-grow: 1"></div>
+      <div style="display: flex; align-items: center; gap: 6px; background: rgba(245,238,224,.1); border-radius: 999px; padding: 5px 11px">
+        <div style="width: 5px; height: 5px; border-radius: 50%; background: #e0a04a"></div>
+        <div style="font-size: 11.5px; color: rgba(245,238,224,.85)">오늘 갱신됨</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: flex-end; gap: 13px; margin-top: 22px">
+      <div style="font-family: 'Noto Serif KR', serif; font-size: 46px; font-weight: 500; line-height: .95; letter-spacing: -.01em">辛未</div>
+      <div style="padding-bottom: 5px">
+        <div style="font-size: 11px; color: rgba(245,238,224,.55); letter-spacing: .12em">주도하는 기운</div>
+        <div style="font-size: 18px; font-weight: 700; margin-top: 3px; color: #e8b56b">편재</div>
+      </div>
+    </div>
+
+    <p style="font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 400; line-height: 1.6; letter-spacing: -.02em; margin: 22px 0 0; text-wrap: pretty">움직일수록 기회가 붙습니다. 다만 크게 걸면 잃습니다.</p>
+
+    <!-- 이 앱만 가진 숫자. 장식이 아니라 근거 -->
+    <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(245,238,224,.14)">
+      <div style="display: flex; align-items: baseline; gap: 7px">
+        <div style="font-size: 11.5px; color: rgba(245,238,224,.55)">오늘의 통변좌표</div>
+        <div style="flex-grow: 1"></div>
+        <div style="font-size: 19px; font-weight: 700; color: #e8b56b; line-height: 1">+1.8</div>
+        <div style="font-size: 11.5px; color: rgba(245,238,224,.55)">순(順)</div>
+      </div>
+      <div style="position: relative; height: 4px; border-radius: 999px; background: rgba(245,238,224,.14); margin-top: 11px">
+        <div style="position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: rgba(245,238,224,.3)"></div>
+        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 30%; border-radius: 999px; background: linear-gradient(90deg,#c88f45,#e8b56b)"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 7px; font-size: 10.5px; color: rgba(245,238,224,.42)">
+        <div>역 −3</div>
+        <div>6층 적층 · 대운 갑신 · 세운 병오</div>
+        <div>순 +3</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 24px 22px 0; display: flex; flex-direction: column; gap: 26px">
+
+    <!-- 지시 하나. 굵게, 크게, 오해 없이 -->
+    <div style="display: flex; gap: 13px; align-items: flex-start">
+      <div style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: rgba(179,86,46,.09); color: #b3562e; display: flex; align-items: center; justify-content: center">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+      </div>
+      <div style="flex-grow: 1">
+        <div style="font-size: 11px; color: #b3562e; letter-spacing: .14em; font-weight: 500">오늘 할 하나</div>
+        <p style="font-size: 16.5px; font-weight: 500; line-height: 1.68; margin: 5px 0 0; text-wrap: pretty">미뤄둔 약속 하나를 잡되, 오늘 쓸 돈은 작게 여러 번으로 쪼개세요.</p>
+      </div>
+    </div>
+
+    <!-- 주간: 격자 카드가 아니라 밀도 있는 한 줄 -->
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 13px">
+        <div style="font-size: 15px; font-weight: 700">이번 주 흐름</div>
+        <div style="flex-grow: 1"></div>
+        <div style="font-size: 12px; color: #a0937d">8.25 – 8.31</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; align-items: end; height: 62px">
+        <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+            <div style="width: 100%; height: {{d.h}}; border-radius: 4px 4px 2px 2px; background: {{d.fill}}"></div>
+            <div style="font-size: 10.5px; color: {{d.tone}}; font-weight: {{d.weight}}">{{d.day}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 7px; margin-top: 14px; padding-top: 13px; border-top: 1px solid #e8dcc6">
+        <div style="font-size: 13.5px; color: #6b6154">가장 센 날</div>
+        <div style="font-family: 'Noto Serif KR', serif; font-size: 15px">목 27일 癸酉</div>
+        <div style="flex-grow: 1"></div>
+        <div style="font-size: 13px; color: #b3562e; font-weight: 500">편관 · 요구가 몰림</div>
+      </div>
+    </div>
+
+    <!-- 유료 서비스가 파는 것: 다음 행동 -->
+    <div style="border: 1px solid #dbcbad; border-radius: 14px; padding: 17px 18px; display: flex; align-items: center; gap: 13px">
+      <div style="flex-grow: 1">
+        <div style="font-size: 14.5px; font-weight: 700">이직을 고민 중이시죠</div>
+        <div style="font-size: 12.5px; color: #6b6154; margin-top: 4px">3주 전 판단 이후 확인할 때가 됐습니다</div>
+      </div>
+      <div style="flex-shrink: 0; background: #b3562e; color: #fdf6ec; font-size: 13px; font-weight: 500; border-radius: 9px; padding: 11px 15px; min-height: 44px; display: flex; align-items: center">점검</div>
+    </div>
+
+  </div>
+
+  <div style="flex-grow: 1"></div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; background: rgba(247,242,232,.94); border-top: 1px solid #e8dcc6; padding: 10px 18px 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #b3562e">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path><circle cx="12" cy="12" r="4"></circle></svg>
+      <div style="font-size: 10.5px; font-weight: 700">오늘</div>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #a0937d">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4" height="16" rx="1"></rect><rect x="9.7" y="4" width="4" height="16" rx="1"></rect><rect x="15.9" y="4" width="4" height="16" rx="1"></rect></svg>
+      <div style="font-size: 10.5px">원국</div>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #a0937d">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"></path><path d="M9 9.5h6M9 12.5h4"></path></svg>
+      <div style="font-size: 10.5px">상담</div>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 44px; color: #a0937d">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"></path><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"></path></svg>
+      <div style="font-size: 10.5px">사람</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const raw = [
+      ['화', 30, 1], ['수', 22, 0], ['목', 52, 0], ['금', 18, 0],
+      ['토', 14, 0], ['일', 34, 0], ['월', 26, 0],
+    ];
+    return {
+      week: raw.map(([day, h, on]) => ({
+        day, h: h + 'px',
+        fill: on ? '#b3562e' : (h >= 45 ? '#d9c9a8' : '#e8dcc6'),
+        tone: on ? '#b3562e' : '#a0937d',
+        weight: on ? '700' : '400',
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

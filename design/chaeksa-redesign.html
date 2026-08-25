@@ -1,0 +1,612 @@
+<title>책사 화면 리디자인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap">
+
+<style>
+  :root{
+    --ground:#e9e5df; --surface:#fbfaf8; --sunk:#dedad2;
+    --ink:#1c1a17; --ink2:#5f5a52; --ink3:#8d8779;
+    --rule:#d2ccc1; --rule2:#c0b9ab;
+    --accent:#7a3b1f; --accent-soft:rgba(122,59,31,.08);
+    --ok:#3f6b45; --warn:#8a6414;
+    --shadow:0 1px 2px rgba(40,32,20,.05), 0 12px 34px rgba(40,32,20,.10);
+    --display:"Gowun Batang","Noto Serif KR",serif;
+    --body:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --myung:"Noto Serif KR","Apple Myungjo","Batang",serif;
+    --max:1080px;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#171512; --surface:#211e1a; --sunk:#100f0d;
+      --ink:#ece7de; --ink2:#a49d90; --ink3:#7b7466;
+      --rule:#332f28; --rule2:#453f36;
+      --accent:#d99163; --accent-soft:rgba(217,145,99,.11);
+      --ok:#7fb289; --warn:#d3ac5c;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 38px rgba(0,0,0,.5);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#171512; --surface:#211e1a; --sunk:#100f0d;
+    --ink:#ece7de; --ink2:#a49d90; --ink3:#7b7466;
+    --rule:#332f28; --rule2:#453f36;
+    --accent:#d99163; --accent-soft:rgba(217,145,99,.11);
+    --ok:#7fb289; --warn:#d3ac5c;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 38px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--body); font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 28px}
+  h1,h2,h3{margin:0; text-wrap:balance; font-weight:700}
+  p{margin:0}
+
+  /* ── 머리말 ─────────────────────────────── */
+  header{padding:76px 0 0}
+  .eyebrow{
+    font-size:11.5px; letter-spacing:.2em; color:var(--accent);
+    font-weight:500; text-transform:none;
+  }
+  h1{
+    font-family:var(--display); font-size:clamp(34px,6vw,52px);
+    line-height:1.22; letter-spacing:-.025em; margin-top:16px;
+  }
+  .lede{
+    font-size:17px; line-height:1.85; color:var(--ink2);
+    max-width:36em; margin-top:20px;
+  }
+  .meta{
+    display:flex; flex-wrap:wrap; gap:10px 22px; margin-top:28px;
+    padding-top:20px; border-top:1px solid var(--rule);
+    font-size:12.5px; color:var(--ink3);
+  }
+  .meta b{color:var(--ink2); font-weight:500}
+
+  section{padding:72px 0 0}
+  .sechead{display:flex; align-items:baseline; gap:14px; margin-bottom:8px}
+  h2{font-family:var(--display); font-size:26px; letter-spacing:-.02em}
+  .sechead .n{font-size:12.5px; color:var(--ink3); font-variant-numeric:tabular-nums}
+  .sechead .line{flex:1; height:1px; background:var(--rule)}
+  .secsub{font-size:15px; line-height:1.8; color:var(--ink2); max-width:38em; margin-bottom:34px}
+
+  /* ── 진단: 흔적을 실물로 보여준다 ─────────── */
+  .tells{display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule)}
+  .tell{background:var(--surface); padding:22px 20px 24px; display:flex; flex-direction:column; gap:14px}
+  .specimen{
+    background:var(--sunk); border-radius:6px; padding:16px 14px;
+    min-height:104px; display:flex; flex-direction:column; justify-content:center; gap:8px;
+  }
+  .tell h3{font-size:15px; letter-spacing:-.01em}
+  .tell p{font-size:13.5px; line-height:1.75; color:var(--ink2)}
+
+  /* 표본 조각들 — 실제 앱에서 쓰던 그대로 */
+  .sp-card{background:#fffdf8; border:1px solid #e8dcc6; border-radius:12px; height:19px; box-shadow:0 2px 8px rgba(120,90,40,.06)}
+  .sp-lab{display:flex; align-items:center; gap:9px}
+  .sp-lab span{font-size:10px; font-weight:700; color:#b3562e; letter-spacing:.16em; white-space:nowrap}
+  .sp-lab i{flex:1; height:1px; background:linear-gradient(90deg,rgba(179,86,46,.34),transparent)}
+  .sp-ico{display:flex; align-items:center; justify-content:space-around; color:var(--ink3)}
+  .sp-ico .g{font-size:21px; line-height:1}
+  .sp-ico .v{width:1px; align-self:stretch; background:var(--rule2)}
+  .sp-ico svg{width:21px; height:21px; color:var(--accent)}
+  .sp-flip .t{font-size:11.5px; font-weight:700; letter-spacing:.16em; color:#b3562e}
+  .sp-flip .b{font-size:15.5px; color:var(--ink); margin-top:5px; line-height:1.6}
+  .sp-rhythm{display:flex; flex-direction:column; gap:14px}
+  .sp-rhythm i{height:11px; border-radius:3px; background:var(--rule2); display:block}
+
+  /* ── 시안 필름스트립 ─────────────────────── */
+  .strip{
+    margin-top:6px; overflow-x:auto; padding:4px 28px 34px;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  }
+  .strip-inner{display:flex; gap:34px; width:max-content; margin:0 auto; align-items:flex-start}
+  .board{width:375px; scroll-snap-align:center; display:flex; flex-direction:column; gap:0}
+  .board-cap{
+    display:flex; align-items:baseline; gap:9px; padding:0 2px 12px;
+  }
+  .board-cap .k{
+    font-family:var(--display); font-size:17px; font-weight:700; letter-spacing:-.01em;
+  }
+  .board-cap .tag{
+    font-size:11px; letter-spacing:.12em; color:var(--ink3); padding-bottom:1px;
+  }
+  .board-cap .now{color:var(--accent)}
+  .screen{
+    border-radius:20px; overflow:hidden; box-shadow:var(--shadow);
+    border:1px solid var(--rule2); background:#f7f2e8;
+  }
+  .verdicts{padding:18px 2px 0; display:flex; flex-direction:column; gap:11px}
+  .verdicts p{font-size:13.5px; line-height:1.8; color:var(--ink2)}
+  .pro,.con{display:flex; gap:9px; align-items:flex-start; font-size:13px; line-height:1.7}
+  .pro b,.con b{flex-shrink:0; font-weight:500; font-size:11.5px; letter-spacing:.1em; padding-top:3px}
+  .pro b{color:var(--ok)} .con b{color:var(--warn)}
+
+  /* ── 목업 내부 (한지 테마 고정: 이건 표본이다) ── */
+  .mk{width:375px; font-family:var(--body); color:#332c23; position:relative; display:flex; flex-direction:column}
+  .mk .serif{font-family:var(--myung)}
+  .mk .grow{flex-grow:1}
+  .mk .navbar{position:absolute; left:0; right:0; bottom:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px}
+  .mk .navit{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; min-height:44px; color:#a0937d; font-size:10.5px}
+  .mk .navit.on{color:#b3562e; font-weight:700}
+  .mk .navit svg{width:21px; height:21px}
+
+  /* ── 결론 ───────────────────────────────── */
+  .verdict{
+    background:var(--surface); border:1px solid var(--rule);
+    padding:34px 32px; display:flex; flex-direction:column; gap:22px;
+  }
+  .verdict h3{font-family:var(--display); font-size:21px; letter-spacing:-.02em}
+  .verdict p{font-size:15px; line-height:1.85; color:var(--ink2); max-width:40em}
+  .steps{display:flex; flex-direction:column; gap:1px; background:var(--rule); border:1px solid var(--rule); margin-top:8px}
+  .step{background:var(--surface); display:flex; gap:16px; padding:17px 20px; align-items:baseline}
+  .step .num{
+    font-variant-numeric:tabular-nums; font-size:12px; color:var(--accent);
+    font-weight:700; width:18px; flex-shrink:0;
+  }
+  .step .what{font-size:14.5px; font-weight:500; width:150px; flex-shrink:0; line-height:1.55}
+  .step .how{font-size:13.5px; color:var(--ink2); line-height:1.75; flex:1}
+  @media (max-width:640px){
+    .step{flex-wrap:wrap; gap:6px 16px}
+    .step .what{width:auto}
+    .step .how{flex-basis:100%}
+  }
+
+  footer{padding:64px 0 90px; margin-top:72px; border-top:1px solid var(--rule)}
+  footer p{font-size:13px; color:var(--ink3); line-height:1.8}
+</style>
+
+<header class="wrap">
+  <div class="eyebrow">chaeksa.kr · 화면 검토</div>
+  <h1>AI가 만든 것처럼<br>보이는 이유</h1>
+  <p class="lede">지금 화면은 만듦새가 나쁘지 않습니다. 문제는 <b>어디서 본 듯하다</b>는 것입니다. 생성형 도구가 기본값으로 뱉는 다섯 가지 습관이 그대로 남아 있어서, 사람이 고른 화면이 아니라 자동으로 나온 화면처럼 읽힙니다. 아래는 그 흔적 다섯과, 그것을 걷어낸 방향 세 가지입니다.</p>
+  <div class="meta">
+    <div><b>대상</b> 오늘 브리핑 화면 (375px)</div>
+    <div><b>고정</b> 낮 한지 · 밤 인디고 이중 테마</div>
+    <div><b>토큰</b> 기존 <code>style.css</code> 그대로 사용</div>
+  </div>
+</header>
+
+<section class="wrap">
+  <div class="sechead">
+    <h2>남아 있는 다섯 가지 흔적</h2>
+    <div class="line"></div>
+  </div>
+  <p class="secsub">설명 대신 실물을 놓았습니다. 아래 회색 칸 안의 것들은 전부 지금 화면에서 그대로 잘라온 조각입니다.</p>
+
+  <div class="tells">
+    <div class="tell">
+      <div class="specimen">
+        <div class="sp-card"></div>
+        <div class="sp-card"></div>
+        <div class="sp-card"></div>
+      </div>
+      <h3>모든 것이 똑같은 카드</h3>
+      <p>브리핑도, 근거 보기도, 이번 주도 전부 같은 흰 라운드 상자에 담겨 있습니다. 테두리·모서리·그림자·안쪽 여백이 전부 동일하니, 무엇이 중요한지 화면이 말해주지 않습니다.</p>
+    </div>
+
+    <div class="tell">
+      <div class="specimen">
+        <div class="sp-lab"><span>오늘 브리핑</span><i></i></div>
+        <div class="sp-lab"><span>이번 주 한눈에</span><i></i></div>
+      </div>
+      <h3>흐려지는 밑줄 라벨</h3>
+      <p>작은 글자에 자간을 넓히고 오른쪽으로 사라지는 선을 붙이는 이 조합은, 지금 생성형 UI의 사실상 서명입니다. 한 번 알아보면 모든 화면에서 눈에 띕니다.</p>
+    </div>
+
+    <div class="tell">
+      <div class="specimen sp-ico">
+        <div class="g">☀</div><div class="g">▦</div><div class="g">◎</div>
+        <div class="v"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path><circle cx="12" cy="12" r="4"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4" height="16" rx="1"></rect><rect x="9.7" y="4" width="4" height="16" rx="1"></rect><rect x="15.9" y="4" width="4" height="16" rx="1"></rect></svg>
+      </div>
+      <h3>기호를 아이콘으로 쓴 것</h3>
+      <p>네비의 ☀ ▦ ◎ ∞ ◈ ✎ 는 아이콘이 아니라 글자입니다. 굵기도 크기도 제각각이고 기기마다 다르게 그려집니다. 오른쪽처럼 같은 규격으로 그린 선 아이콘이라야 한 벌로 보입니다.</p>
+    </div>
+
+    <div class="tell">
+      <div class="specimen sp-flip">
+        <div class="t">오늘 브리핑 · 8월 25일</div>
+        <div class="b">오늘은 신미일, 편재가 들어와 움직일수록…</div>
+      </div>
+      <h3>뒤집힌 위계</h3>
+      <p>제목이 11.5px, 본문이 15.5px입니다. 제목이 본문보다 작습니다. 화면 전체의 글자 크기가 11~16px 안에 몰려 있어 시선이 처음 닿을 곳이 없습니다.</p>
+    </div>
+
+    <div class="tell">
+      <div class="specimen sp-rhythm">
+        <i></i><i></i><i></i><i></i>
+      </div>
+      <h3>리듬 없는 균등 여백</h3>
+      <p>덩어리 사이 간격이 전부 14~16px입니다. 관계가 가까운 것과 먼 것이 같은 거리에 놓이면, 읽는 사람은 매번 처음부터 구조를 다시 파악해야 합니다.</p>
+    </div>
+
+    <div class="tell" style="justify-content:center">
+      <h3 style="color:var(--accent)">공통점 하나</h3>
+      <p>다섯 가지 모두 <b>결정을 미룬 흔적</b>입니다. 무엇이 제일 중요한지 정하지 않았기 때문에 전부 카드가 되고, 전부 같은 크기가 되고, 여백이 전부 같아진 것입니다. 돈을 내는 화면은 그 반대입니다. 무엇 하나를 크게 키우고 나머지를 낮춥니다.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <h2>걷어낸 방향 세 가지</h2>
+      <div class="line"></div>
+    </div>
+    <p class="secsub">같은 데이터, 같은 색 토큰, 같은 문장으로 세 가지를 그렸습니다. 옆으로 밀어 비교하세요. 맨 왼쪽이 지금 화면입니다.</p>
+  </div>
+
+  <div class="strip">
+    <div class="strip-inner">
+
+      <!-- ─────────── 지금 ─────────── -->
+      <div class="board">
+        <div class="board-cap"><div class="k now">지금</div><div class="tag">배포된 화면</div></div>
+        <div class="screen">
+          <div class="mk" style="min-height:740px; background:linear-gradient(180deg,#faf7f0,#f5eee0); padding:20px 18px 34px; gap:15px">
+            <div style="display:flex; align-items:center; gap:11px">
+              <div class="serif" style="width:38px; height:38px; border-radius:9px; background:linear-gradient(145deg,#c4603a,#9b4123); color:#fdf6ec; font-size:20px; font-weight:900; display:flex; align-items:center; justify-content:center">策</div>
+              <div style="flex-grow:1">
+                <div class="serif" style="font-size:22px; font-weight:900; line-height:1.2">책사</div>
+                <div style="font-size:11.5px; color:#a0937d; margin-top:2px">이승용님의 명리비서</div>
+              </div>
+              <div style="border:1px solid #dbcbad; border-radius:999px; padding:7px 13px; font-size:12.5px; color:#6b6154">설정</div>
+            </div>
+
+            <div style="background:#fffdf8; border:1px solid #e8dcc6; border-radius:18px; padding:20px; box-shadow:0 3px 16px rgba(120,90,40,.07)">
+              <div style="display:flex; align-items:center; gap:11px; margin-bottom:14px">
+                <div style="font-size:11.5px; font-weight:700; color:#b3562e; letter-spacing:.16em; white-space:nowrap">오늘 브리핑 · 8월 25일</div>
+                <div style="flex-grow:1; height:1px; background:linear-gradient(90deg,rgba(179,86,46,.28),transparent)"></div>
+              </div>
+              <div style="display:flex; gap:12px; font-size:12.5px; color:#a0937d; margin-bottom:14px">
+                <span>올해 <b class="serif" style="color:#b3562e">丙午</b></span>
+                <span>이달 <b class="serif" style="color:#b3562e">丙申</b></span>
+                <span>오늘 <b class="serif" style="color:#b3562e">辛未</b></span>
+              </div>
+              <p style="font-size:15.5px; line-height:1.85">오늘은 신미(辛未)일, 편재가 들어와 움직일수록 기회가 붙는 날이에요. 다만 비겁 기운이 겹쳐 있어 크게 베팅하면 손해 보기 쉬워요.</p>
+              <p style="font-size:15.5px; line-height:1.85; margin-top:12px">오늘 할 행동 하나: 미뤄둔 약속 하나 잡되, 오늘 쓸 돈은 작은 단위 여러 번으로 쪼개기.</p>
+            </div>
+
+            <div style="background:#fffdf8; border:1px solid #e8dcc6; border-radius:18px; padding:20px; box-shadow:0 3px 16px rgba(120,90,40,.07)">
+              <div style="display:flex; align-items:center; gap:11px">
+                <div style="font-size:11.5px; font-weight:700; color:#b3562e; letter-spacing:.16em; white-space:nowrap">계산 근거 보기 ▸</div>
+                <div style="flex-grow:1; height:1px; background:linear-gradient(90deg,rgba(179,86,46,.28),transparent)"></div>
+              </div>
+            </div>
+
+            <div style="background:#fffdf8; border:1px solid #e8dcc6; border-radius:18px; padding:20px; box-shadow:0 3px 16px rgba(120,90,40,.07)">
+              <div style="display:flex; align-items:center; gap:11px; margin-bottom:14px">
+                <div style="font-size:11.5px; font-weight:700; color:#b3562e; letter-spacing:.16em; white-space:nowrap">이번 주 한눈에</div>
+                <div style="flex-grow:1; height:1px; background:linear-gradient(90deg,rgba(179,86,46,.28),transparent)"></div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; text-align:center">
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">화<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">辛未</div>편재</div>
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">수<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">壬申</div>정관</div>
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">목<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">癸酉</div>편관</div>
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">금<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">甲戌</div>정인</div>
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">토<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">乙亥</div>편인</div>
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">일<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">丙子</div>겁재</div>
+                <div style="background:#fbf7ee; border:1px solid #e8dcc6; border-radius:11px; padding:9px 2px; font-size:10.5px; color:#a0937d">월<div class="serif" style="font-size:14px; color:#332c23; margin:2px 0">丁丑</div>비견</div>
+              </div>
+            </div>
+
+            <div class="grow"></div>
+
+            <div style="align-self:center; display:flex; gap:2px; padding:7px; border-radius:999px; background:rgba(255,253,248,.9); border:1px solid #dbcbad; box-shadow:0 8px 28px rgba(120,90,40,.16)">
+              <div style="padding:7px 11px; text-align:center; font-size:10.5px; color:#a0937d"><div style="font-size:17px; line-height:1.25">☀</div>오늘</div>
+              <div style="padding:7px 11px; text-align:center; font-size:10.5px; color:#a0937d"><div style="font-size:17px; line-height:1.25">▦</div>달력</div>
+              <div style="padding:7px 11px; text-align:center; font-size:10.5px; color:#a0937d"><div style="font-size:17px; line-height:1.25">◎</div>나</div>
+              <div style="padding:7px 11px; text-align:center; font-size:10.5px; color:#a0937d"><div style="font-size:17px; line-height:1.25">∞</div>궁합</div>
+              <div style="padding:7px 11px; text-align:center; font-size:10.5px; color:#a0937d"><div style="font-size:17px; line-height:1.25">◈</div>상담</div>
+              <div style="padding:7px 11px; text-align:center; font-size:10.5px; color:#a0937d"><div style="font-size:17px; line-height:1.25">✎</div>비서</div>
+            </div>
+          </div>
+        </div>
+        <div class="verdicts">
+          <p>카드 셋이 같은 무게로 쌓여 있고, 가장 큰 글자가 로고입니다. 정작 오늘 무엇을 하라는 말은 세 번째 문단 안에 묻혀 있습니다.</p>
+        </div>
+      </div>
+
+      <!-- ─────────── A · 지면 ─────────── -->
+      <div class="board">
+        <div class="board-cap"><div class="k">A · 지면</div><div class="tag">에디토리얼</div></div>
+        <div class="screen">
+          <div class="mk" style="min-height:824px; background:#f7f2e8; padding:26px 24px 100px">
+            <div style="display:flex; align-items:baseline; gap:8px; padding-bottom:10px; border-bottom:2px solid #332c23">
+              <div class="serif" style="font-size:13px; font-weight:700; letter-spacing:.04em">책사</div>
+              <div style="flex-grow:1"></div>
+              <div style="font-size:11px; color:#a0937d; letter-spacing:.04em">이승용 · 庚辰일주</div>
+            </div>
+
+            <div style="display:flex; align-items:flex-end; gap:10px; padding:22px 0 4px">
+              <div class="serif" style="font-size:62px; font-weight:300; line-height:.82; letter-spacing:-.03em">25</div>
+              <div style="padding-bottom:5px">
+                <div style="font-size:12px; color:#6b6154; letter-spacing:.1em">8월 화요일</div>
+                <div class="serif" style="font-size:19px; font-weight:500; color:#b3562e; margin-top:1px">辛未</div>
+              </div>
+              <div style="flex-grow:1"></div>
+              <div style="text-align:right; padding-bottom:4px">
+                <div style="font-size:10.5px; color:#a0937d; letter-spacing:.1em">오늘의 기운</div>
+                <div class="serif" style="font-size:17px; font-weight:700; margin-top:2px">편재</div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid #dbcbad; margin-top:16px; padding-top:20px">
+              <p class="serif" style="font-size:25px; font-weight:500; line-height:1.5; letter-spacing:-.022em; text-wrap:pretty">움직일수록 기회가 붙는 날. 다만 크게 걸면 잃습니다.</p>
+              <p style="font-family:var(--display); font-size:15.5px; line-height:1.95; color:#6b6154; margin-top:18px; text-wrap:pretty">돈과 실물을 다루는 편재 기운이 들어왔습니다. 그런데 같은 자리에 비겁이 겹쳐 있어요. 벌 자리와 나눌 사람이 함께 왔다는 뜻입니다. 판을 키우면 나가는 쪽이 커집니다.</p>
+            </div>
+
+            <div style="display:flex; gap:14px; margin-top:30px; padding:22px 0; border-top:1px solid #dbcbad; border-bottom:1px solid #dbcbad">
+              <div class="serif" style="width:30px; height:30px; flex-shrink:0; border-radius:4px; background:linear-gradient(145deg,#c4603a,#9b4123); color:#fdf6ec; font-size:16px; font-weight:900; display:flex; align-items:center; justify-content:center">令</div>
+              <div>
+                <div style="font-size:10.5px; color:#b3562e; letter-spacing:.14em; font-weight:500">오늘 할 하나</div>
+                <p class="serif" style="font-size:17px; font-weight:500; line-height:1.65; margin-top:6px; text-wrap:pretty">미뤄둔 약속 하나를 오늘 잡으세요. 대신 오늘 쓸 돈은 작게 여러 번으로 쪼개세요.</p>
+              </div>
+            </div>
+
+            <div style="margin-top:30px">
+              <div class="serif" style="font-size:15px; font-weight:700; padding-bottom:10px">이번 주</div>
+              <div style="display:flex; align-items:baseline; gap:12px; padding:11px 0; border-top:1px solid #ece2d0">
+                <div style="width:34px; flex-shrink:0; font-size:12px">화 25</div>
+                <div class="serif" style="width:40px; flex-shrink:0; font-size:16px">辛未</div>
+                <div style="flex-grow:1; font-size:13.5px; font-weight:700; color:#b3562e">편재</div>
+                <div style="font-size:12px; color:#a0937d">오늘</div>
+              </div>
+              <div style="display:flex; align-items:baseline; gap:12px; padding:11px 0; border-top:1px solid #ece2d0">
+                <div style="width:34px; flex-shrink:0; font-size:12px; color:#a0937d">수 26</div>
+                <div class="serif" style="width:40px; flex-shrink:0; font-size:16px; color:#a0937d">壬申</div>
+                <div style="flex-grow:1; font-size:13.5px">정관</div>
+                <div style="font-size:12px; color:#a0937d"></div>
+              </div>
+              <div style="display:flex; align-items:baseline; gap:12px; padding:11px 0; border-top:1px solid #ece2d0">
+                <div style="width:34px; flex-shrink:0; font-size:12px; color:#a0937d">목 27</div>
+                <div class="serif" style="width:40px; flex-shrink:0; font-size:16px; color:#a0937d">癸酉</div>
+                <div style="flex-grow:1; font-size:13.5px">편관</div>
+                <div style="font-size:12px; color:#a0937d">요구가 몰림</div>
+              </div>
+              <div style="display:flex; align-items:baseline; gap:12px; padding:11px 0; border-top:1px solid #ece2d0">
+                <div style="width:34px; flex-shrink:0; font-size:12px; color:#a0937d">금 28</div>
+                <div class="serif" style="width:40px; flex-shrink:0; font-size:16px; color:#a0937d">甲戌</div>
+                <div style="flex-grow:1; font-size:13.5px">정인</div>
+                <div style="font-size:12px; color:#a0937d"></div>
+              </div>
+              <div style="display:flex; align-items:baseline; gap:12px; padding:11px 0; border-top:1px solid #ece2d0">
+                <div style="width:34px; flex-shrink:0; font-size:12px; color:#a0937d">토 29</div>
+                <div class="serif" style="width:40px; flex-shrink:0; font-size:16px; color:#a0937d">乙亥</div>
+                <div style="flex-grow:1; font-size:13.5px">편인</div>
+                <div style="font-size:12px; color:#a0937d"></div>
+              </div>
+              <div style="display:flex; align-items:baseline; gap:12px; padding:11px 0; border-top:1px solid #ece2d0">
+                <div style="width:34px; flex-shrink:0; font-size:12px; color:#a0937d">일 30</div>
+                <div class="serif" style="width:40px; flex-shrink:0; font-size:16px; color:#a0937d">丙子</div>
+                <div style="flex-grow:1; font-size:13.5px">겁재</div>
+                <div style="font-size:12px; color:#a0937d">지출 조심</div>
+              </div>
+            </div>
+
+            <div class="grow"></div>
+
+            <div class="navbar" style="background:#f7f2e8; border-top:1px solid #dbcbad; padding:11px 18px 16px">
+              <div class="navit on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path><circle cx="12" cy="12" r="4"></circle></svg><div>오늘</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4" height="16" rx="1"></rect><rect x="9.7" y="4" width="4" height="16" rx="1"></rect><rect x="15.9" y="4" width="4" height="16" rx="1"></rect></svg><div>원국</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"></path><path d="M9 9.5h6M9 12.5h4"></path></svg><div>상담</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"></path><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"></path></svg><div>사람</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="verdicts">
+          <p>카드를 전부 없애고 종이에 직접 조판합니다. 날짜가 62px로 1면 머리기사처럼 서고, 25px 명조 한 줄이 결론을 먼저 말합니다. 주간은 격자가 아니라 목록이라 오늘만 굵어집니다.</p>
+          <div class="pro"><b>강점</b><div>명리 서적의 권위. 글이 길어져도 읽힙니다.</div></div>
+          <div class="con"><b>약점</b><div>앱보다 웹 매거진처럼 보입니다.</div></div>
+        </div>
+      </div>
+
+      <!-- ─────────── B · 인장 ─────────── -->
+      <div class="board">
+        <div class="board-cap"><div class="k">B · 인장과 여백</div><div class="tag">절제</div></div>
+        <div class="screen">
+          <div class="mk" style="min-height:824px; background:#f7f2e8; padding:40px 34px 100px">
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-size:11.5px; color:#a0937d; letter-spacing:.18em">丙午年 丙申月</div>
+              <div style="color:#a0937d; display:flex"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.6 1.6 0 0 0 .33 1.76l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.6 1.6 0 0 0 15 19.4a1.6 1.6 0 0 0-1 1.47V21a2 2 0 1 1-4 0v-.09A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.76.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.6 1.6 0 0 0 4.6 15a1.6 1.6 0 0 0-1.47-1H3a2 2 0 1 1 0-4h.09A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.33-1.76l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.6 1.6 0 0 0 9 4.6h.09A1.6 1.6 0 0 0 10 3.13V3a2 2 0 1 1 4 0v.09A1.6 1.6 0 0 0 15 4.6a1.6 1.6 0 0 0 1.76-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.6 1.6 0 0 0 19.4 9v.09a1.6 1.6 0 0 0 1.47 1H21a2 2 0 1 1 0 4h-.09a1.6 1.6 0 0 0-1.47 1z"></path></svg></div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:22px; padding:62px 0 0">
+              <div class="serif" style="width:96px; height:96px; flex-shrink:0; border-radius:8px; background:linear-gradient(145deg,#c4603a,#9b4123); box-shadow:0 10px 30px rgba(155,65,35,.26); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fdf6ec; font-size:34px; font-weight:900; line-height:1">
+                <div>辛</div><div>未</div>
+              </div>
+              <div>
+                <div class="serif" style="font-size:40px; font-weight:200; line-height:1; letter-spacing:-.03em">8.25</div>
+                <div style="font-size:12.5px; color:#6b6154; margin-top:9px; letter-spacing:.06em">화요일 · 스물다섯째 날</div>
+                <div style="display:inline-block; margin-top:12px; font-size:12px; font-weight:500; color:#9b4123; border:1px solid rgba(179,86,46,.34); border-radius:3px; padding:4px 9px">편재</div>
+              </div>
+            </div>
+
+            <p class="serif" style="font-size:27px; font-weight:400; line-height:1.62; letter-spacing:-.028em; margin-top:64px; text-wrap:pretty">움직일수록<br>기회가 붙습니다.<br><span style="color:#a0937d">크게 걸면 잃습니다.</span></p>
+
+            <div style="margin-top:44px; padding-top:22px; border-top:1px solid #dbcbad">
+              <div style="font-size:10.5px; color:#b3562e; letter-spacing:.2em; font-weight:500">오늘 할 하나</div>
+              <p style="font-family:var(--display); font-size:17px; line-height:1.8; margin-top:10px; text-wrap:pretty">미뤄둔 약속 하나를 잡고, 오늘 쓸 돈은 작게 쪼개세요.</p>
+            </div>
+
+            <div class="grow"></div>
+
+            <div style="display:flex; align-items:center; gap:8px; padding-top:34px; color:#a0937d">
+              <div style="font-size:12.5px">왜 그런지 · 이번 주 · 원국</div>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </div>
+
+            <div class="navbar" style="padding:12px 30px 18px">
+              <div class="navit on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path><circle cx="12" cy="12" r="4"></circle></svg><div>오늘</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4" height="16" rx="1"></rect><rect x="9.7" y="4" width="4" height="16" rx="1"></rect><rect x="15.9" y="4" width="4" height="16" rx="1"></rect></svg><div>원국</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"></path><path d="M9 9.5h6M9 12.5h4"></path></svg><div>상담</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"></path><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"></path></svg><div>사람</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="verdicts">
+          <p>한 화면에 문장 하나. 96px 인장이 오늘에 찍는 도장이 되고, 나머지는 전부 접어 아래로 내립니다.</p>
+          <div class="pro"><b>강점</b><div>절제 자체가 가격표가 됩니다. 인장이 진짜 브랜드 자산이 됩니다.</div></div>
+          <div class="con"><b>약점</b><div>정보가 적어 매일 열 이유가 약해질 수 있습니다.</div></div>
+        </div>
+      </div>
+
+      <!-- ─────────── C · 정제된 앱 ─────────── -->
+      <div class="board">
+        <div class="board-cap"><div class="k">C · 정제된 앱</div><div class="tag">추천</div></div>
+        <div class="screen">
+          <div class="mk" style="min-height:824px; background:#f7f2e8; padding-bottom:90px">
+            <div style="background:#2b241c; color:#f5eee0; padding:26px 22px 28px; border-radius:0 0 26px 26px">
+              <div style="display:flex; align-items:center; gap:10px">
+                <div style="font-size:12px; color:rgba(245,238,224,.6)">8월 25일 화요일</div>
+                <div style="flex-grow:1"></div>
+                <div style="display:flex; align-items:center; gap:6px; background:rgba(245,238,224,.1); border-radius:999px; padding:5px 11px">
+                  <div style="width:5px; height:5px; border-radius:50%; background:#e0a04a"></div>
+                  <div style="font-size:11.5px; color:rgba(245,238,224,.85)">오늘 갱신됨</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-end; gap:13px; margin-top:22px">
+                <div class="serif" style="font-size:46px; font-weight:500; line-height:.95">辛未</div>
+                <div style="padding-bottom:5px">
+                  <div style="font-size:11px; color:rgba(245,238,224,.55); letter-spacing:.12em">주도하는 기운</div>
+                  <div style="font-size:18px; font-weight:700; margin-top:3px; color:#e8b56b">편재</div>
+                </div>
+              </div>
+              <p class="serif" style="font-size:20px; font-weight:400; line-height:1.6; letter-spacing:-.02em; margin-top:22px; text-wrap:pretty">움직일수록 기회가 붙습니다. 다만 크게 걸면 잃습니다.</p>
+              <div style="margin-top:24px; padding-top:18px; border-top:1px solid rgba(245,238,224,.14)">
+                <div style="display:flex; align-items:baseline; gap:7px">
+                  <div style="font-size:11.5px; color:rgba(245,238,224,.55)">오늘의 통변좌표</div>
+                  <div style="flex-grow:1"></div>
+                  <div style="font-size:19px; font-weight:700; color:#e8b56b; line-height:1; font-variant-numeric:tabular-nums">+1.8</div>
+                  <div style="font-size:11.5px; color:rgba(245,238,224,.55)">순(順)</div>
+                </div>
+                <div style="position:relative; height:4px; border-radius:999px; background:rgba(245,238,224,.14); margin-top:11px">
+                  <div style="position:absolute; left:50%; top:-3px; bottom:-3px; width:1px; background:rgba(245,238,224,.3)"></div>
+                  <div style="position:absolute; left:50%; top:0; bottom:0; width:30%; border-radius:999px; background:linear-gradient(90deg,#c88f45,#e8b56b)"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:7px; font-size:10.5px; color:rgba(245,238,224,.42)">
+                  <div>역 −3</div><div>6층 적층 · 대운 갑신 · 세운 병오</div><div>순 +3</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:24px 22px 0; display:flex; flex-direction:column; gap:26px">
+              <div style="display:flex; gap:13px; align-items:flex-start">
+                <div style="width:34px; height:34px; flex-shrink:0; border-radius:9px; background:rgba(179,86,46,.09); color:#b3562e; display:flex; align-items:center; justify-content:center">
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+                </div>
+                <div style="flex-grow:1">
+                  <div style="font-size:11px; color:#b3562e; letter-spacing:.14em; font-weight:500">오늘 할 하나</div>
+                  <p style="font-size:16.5px; font-weight:500; line-height:1.68; margin-top:5px; text-wrap:pretty">미뤄둔 약속 하나를 잡되, 오늘 쓸 돈은 작게 여러 번으로 쪼개세요.</p>
+                </div>
+              </div>
+
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:13px">
+                  <div style="font-size:15px; font-weight:700">이번 주 흐름</div>
+                  <div style="flex-grow:1"></div>
+                  <div style="font-size:12px; color:#a0937d; font-variant-numeric:tabular-nums">8.25 – 8.31</div>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; align-items:end; height:62px">
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:30px; border-radius:4px 4px 2px 2px; background:#b3562e"></div><div style="font-size:10.5px; color:#b3562e; font-weight:700">화</div></div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:22px; border-radius:4px 4px 2px 2px; background:#e8dcc6"></div><div style="font-size:10.5px; color:#a0937d">수</div></div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:52px; border-radius:4px 4px 2px 2px; background:#d9c9a8"></div><div style="font-size:10.5px; color:#a0937d">목</div></div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:18px; border-radius:4px 4px 2px 2px; background:#e8dcc6"></div><div style="font-size:10.5px; color:#a0937d">금</div></div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:14px; border-radius:4px 4px 2px 2px; background:#e8dcc6"></div><div style="font-size:10.5px; color:#a0937d">토</div></div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:34px; border-radius:4px 4px 2px 2px; background:#e8dcc6"></div><div style="font-size:10.5px; color:#a0937d">일</div></div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:6px"><div style="width:100%; height:26px; border-radius:4px 4px 2px 2px; background:#e8dcc6"></div><div style="font-size:10.5px; color:#a0937d">월</div></div>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:7px; margin-top:14px; padding-top:13px; border-top:1px solid #e8dcc6">
+                  <div style="font-size:13.5px; color:#6b6154">가장 센 날</div>
+                  <div class="serif" style="font-size:15px">목 27일 癸酉</div>
+                  <div style="flex-grow:1"></div>
+                  <div style="font-size:13px; color:#b3562e; font-weight:500">편관 · 요구가 몰림</div>
+                </div>
+              </div>
+
+              <div style="border:1px solid #dbcbad; border-radius:14px; padding:17px 18px; display:flex; align-items:center; gap:13px">
+                <div style="flex-grow:1">
+                  <div style="font-size:14.5px; font-weight:700">이직을 고민 중이시죠</div>
+                  <div style="font-size:12.5px; color:#6b6154; margin-top:4px">3주 전 판단 이후 확인할 때가 됐습니다</div>
+                </div>
+                <div style="flex-shrink:0; background:#b3562e; color:#fdf6ec; font-size:13px; font-weight:500; border-radius:9px; padding:11px 15px; min-height:44px; display:flex; align-items:center">점검</div>
+              </div>
+            </div>
+
+            <div class="grow"></div>
+
+            <div class="navbar" style="background:rgba(247,242,232,.94); border-top:1px solid #e8dcc6; padding:10px 18px 16px">
+              <div class="navit on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path><circle cx="12" cy="12" r="4"></circle></svg><div>오늘</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4" height="16" rx="1"></rect><rect x="9.7" y="4" width="4" height="16" rx="1"></rect><rect x="15.9" y="4" width="4" height="16" rx="1"></rect></svg><div>원국</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"></path><path d="M9 9.5h6M9 12.5h4"></path></svg><div>상담</div></div>
+              <div class="navit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"></path><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"></path></svg><div>사람</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="verdicts">
+          <p>화면에서 진하게 칠하는 곳은 먹색 히어로 하나뿐입니다. 그 안에 <b>통변좌표 +1.8</b> 같은, 다른 데서는 못 받는 숫자를 근거로 세웁니다. 맨 아래엔 다음에 할 일이 놓입니다.</p>
+          <div class="pro"><b>강점</b><div>유료 앱의 문법. 매일 열 이유가 화면 안에 있습니다.</div></div>
+          <div class="con"><b>약점</b><div>명리 특유의 정취는 A·B보다 옅습니다.</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sechead">
+    <h2>결론</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="verdict">
+    <h3>C를 뼈대로, A의 조판과 B의 인장을 얹습니다</h3>
+    <p>돈을 내게 만드는 건 정취가 아니라 <b>여기서만 얻는 것</b>입니다. 지금 화면은 좋은 문장을 갖고도 그것을 다른 사주 앱과 같은 무게로 놓아두고 있습니다. C의 먹색 히어로와 통변좌표가 “이건 다른 물건이다”를 3초 안에 말하고, 본문 조판은 A의 명조 위계를 따르고, 인장은 B만큼 키웁니다.</p>
+    <p>세 방향 모두 색 토큰은 지금 <code>style.css</code> 그대로입니다. 바뀌는 것은 색이 아니라 <b>크기·여백·무엇을 카드에 담지 않을지</b>입니다.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div class="what">타입 스케일 정의</div>
+        <div class="how">11.5 / 13 / 15 / 17 / 20 / 25 / 46px 일곱 단으로 고정하고, 제목은 반드시 본문보다 큽니다. 지금의 11~16px 밀집 구간을 없앱니다.</div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="what">카드 걷어내기</div>
+        <div class="how">읽는 글(브리핑·서술)은 카드에서 꺼내 지면에 직접 놓고, 카드는 <b>누를 수 있는 것</b>에만 남깁니다. 내용 없는 “계산 근거 보기” 카드는 한 줄로 줄입니다.</div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="what">라벨 문양 제거</div>
+        <div class="how">작은 자간 라벨 + 흐려지는 선 조합을 전부 걷고, 굵은 제목이나 얇은 실선 하나로 대체합니다. 여기 하나만 고쳐도 인상이 크게 바뀝니다.</div>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="what">아이콘 교체</div>
+        <div class="how">☀ ▦ ◎ ∞ ◈ ✎ 를 24px 격자·1.5 굵기 선 아이콘 한 벌로 바꿉니다. 동시에 네비를 6개에서 4개로 줄입니다.</div>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="what">여백 계단</div>
+        <div class="how">6 / 12 / 24 / 40px 네 단만 씁니다. 같은 덩어리 안은 좁게, 덩어리 사이는 넓게 — 지금의 균등한 15px을 없앱니다.</div>
+      </div>
+      <div class="step">
+        <div class="num">6</div>
+        <div class="what">숫자를 앞으로</div>
+        <div class="how">통변좌표·강약·변곡점처럼 우리 엔진만 내놓는 값을 히어로에 올립니다. 이것이 “AI에게 사주 물어보기”와 구별되는 유일한 시각적 증거입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p>2026년 8월 25일 검토 · 목업의 문장·간지·통변좌표는 실제 엔진 출력 형식을 따랐습니다. 색은 전부 기존 <code>style.css</code> 토큰이며 새로 만든 색은 없습니다.</p>
+</footer>

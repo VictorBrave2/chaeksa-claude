@@ -321,40 +321,129 @@
   function renderToday() {
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     const du = E.currentDaeun(R, today);
-    $('todayLabel').textContent = `오늘 브리핑 · ${today.getMonth() + 1}월 ${today.getDate()}일`;
+    const WD = ['일','월','화','수','목','금','토'];
+    $('todayLabel').textContent = `${today.getMonth() + 1}월 ${today.getDate()}일 ${WD[today.getDay()]}요일`;
     $('todayGanji').innerHTML = `<span>올해 <b>${f.pillar(tf.year)}</b></span><span>이달 <b>${f.pillar(tf.month)}</b></span><span>오늘 <b>${f.pillar(tf.day)}</b></span>` + (du ? `<span>대운 <b>${f.pillar(du)}</b></span>` : '');
     const b = ChaeksaBrief.today(R, tf, du, today);
-    $('brief').innerHTML = b.paragraphs.map(t => `<p>${t}</p>`).join('') + `<div class="act">${b.action}</div>`;
+    // 히어로 — 오늘의 간지와 주도하는 기운
+    $('hdGanji').textContent = f.pillar(tf.day);
+    $('hdGod').textContent = b.godDay || '―';
+    // 오늘 할 하나 — 카드에서 꺼내 지시로 세운다
+    $('actText').textContent = String(b.action || '').replace(/^\s*👉\s*/, '');
+    // 흐름 읽기 — 근거만 남긴다
+    $('brief').innerHTML = b.paragraphs.map(t => `<p>${t}</p>`).join('');
+    renderCoord();
+    renderHours();
     // 이번 주
     const wk = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(today); d.setDate(today.getDate() + i);
-      const s = C.scoreDay(R, d.getFullYear(), d.getMonth() + 1, d.getDate(), 'all');
-      wk.push(`<div class="wd ${i === 0 ? 'today' : ''}">${['일','월','화','수','목','금','토'][d.getDay()]} ${d.getDate()}<b>${f.pillar(s.tf.day)}</b>${s.god}<i class="g${s.grade}"></i></div>`);
+      const sc = C.scoreDay(R, d.getFullYear(), d.getMonth() + 1, d.getDate(), 'all');
+      wk.push(`<div class="wd ${i === 0 ? 'today' : ''}">${WD[d.getDay()]} ${d.getDate()}<b>${f.pillar(sc.tf.day)}</b>${sc.god}<i class="g${sc.grade}"></i></div>`);
     }
     $('week').innerHTML = wk.join('');
     // AI 브리핑
     loadAiBrief();
   }
+
+  // 오늘의 시간대 — 12시진 곡선. 用값을 막대 높이로, 십신을 사건 라벨로 바꾼다.
+  let hoursData = null;
+  function renderHours() {
+    const box = $('hours'), card = $('hoursCard');
+    if (!box || !window.ChaeksaChaeyong || !ChaeksaChaeyong.hourCurve) { if (card) card.classList.add('hide'); return; }
+    let hc;
+    try { hc = ChaeksaChaeyong.hourCurve(R, today); }
+    catch (e) { card.classList.add('hide'); return; }
+    if (!hc.rows.length) { card.classList.add('hide'); return; }
+    card.classList.remove('hide');
+    hoursData = hc;
+    const MAX = 3;
+    box.innerHTML = hc.rows.map((r, i) => {
+      const h = Math.max(3, Math.round(Math.abs(r.value) / MAX * 34));
+      const up = r.value >= 0;
+      const cls = r.value > 0.3 ? 'up' : (r.value < -0.3 ? 'dn' : '');
+      return `<button class="hr ${cls} ${i === hc.nowIndex ? 'now' : ''}" data-i="${i}"
+        aria-label="${esc(r.range)}시 ${esc(r.jin)}시 ${esc(r.god)} ${esc(r.label)}">
+        <span class="col"><span class="bar ${up ? 'u' : 'd'}" style="height:${h}px"></span></span>
+        <span class="jin">${esc(r.jin)}</span></button>`;
+    }).join('');
+    $('hoursSub').textContent = hc.peak.value > 0.3
+      ? `가장 센 때 ${hc.peak.range}시` : '오늘은 큰 기복이 없습니다';
+    box.querySelectorAll('.hr').forEach(b => b.onclick = () => pickHour(+b.dataset.i));
+    pickHour(hc.nowIndex >= 0 ? hc.nowIndex : hc.rows.indexOf(hc.peak));
+  }
+  function pickHour(i) {
+    if (!hoursData || !hoursData.rows[i]) return;
+    const r = hoursData.rows[i];
+    $('hours').querySelectorAll('.hr').forEach(b => b.classList.toggle('sel', +b.dataset.i === i));
+    const sgn = r.value > 0 ? '+' : '';
+    $('hoursPick').innerHTML =
+      `<span class="t">${esc(r.range)}시 · ${esc(r.jin)}시</span>`
+      + `<span class="g">${esc(r.ganji)} ${esc(r.god)}</span>`
+      + `<span class="g">${esc(r.sign)} ${sgn}${r.value}</span>`
+      + `<span class="d">${esc(r.label)}</span>`;
+  }
+
+  // 통변좌표 — 6층 적층 체용이 내놓는 오늘의 좌표
+  function renderCoord() {
+    const box = $('coordBox'); if (!box) return;
+    if (!window.ChaeksaChaeyong) { box.classList.add('hide'); return; }
+    let cy;
+    try { cy = ChaeksaChaeyong.stack(R, today); }
+    catch (e) { box.classList.add('hide'); return; }
+    const live = cy.layers.filter(l => l.level > 1 && typeof l.value === 'number');
+    if (!live.length) { box.classList.add('hide'); return; }
+    box.classList.remove('hide');
+    const v = Math.round((live.reduce((a, l) => a + l.value, 0) / live.length) * 10) / 10;
+    const sign = v > 0.3 ? '순(順)' : (v < -0.3 ? '역(逆)' : '평(平)');
+    const pct = Math.min(50, Math.abs(v) / 3 * 50);
+    const fill = v >= 0
+      ? `left:50%;width:${pct}%`
+      : `right:50%;width:${pct}%`;
+    const chain = live.map(l => `${l.name} ${l.ganji}`).join(' · ');
+    box.innerHTML = `
+      <div class="c-row">
+        <div class="k">오늘의 통변좌표</div>
+        <div class="v">${v > 0 ? '+' : ''}${v.toFixed(1)}</div>
+        <div class="s">${sign}</div>
+      </div>
+      <div class="gauge"><div class="mid"></div><div class="fill" style="${fill}"></div></div>
+      <div class="scale"><div>역 −3</div><div>순 +3</div></div>
+      <div class="chain">${esc(live.length + 1)}층 적층 · ${esc(chain)}</div>`;
+  }
+
   async function loadAiBrief() {
     const box = $('aiBrief'), cta = $('aiBriefCta');
-    if (!AI.ready()) { box.innerHTML = ''; cta.classList.remove('hide'); return; }
+    const stale = $('hdGate'); if (stale) stale.remove();
+    if (!AI.ready()) { heroFallback(); cta.classList.remove('hide'); return; }
     cta.classList.add('hide');
-    box.className = 'brief loading'; box.textContent = '비서가 오늘을 읽는 중…';
-    try { const t = await AI.dailyBrief(R, today); box.className = 'brief'; box.textContent = t; collapseRuleCard(true); }
+    box.className = 'hd-lede loading'; box.textContent = '비서가 오늘을 읽는 중…';
+    try { const t = await AI.dailyBrief(R, today); box.className = 'hd-lede'; box.textContent = t; const c = $('hdFresh'); if (c) c.textContent = 'AI 비서'; collapseRuleCard(true); }
     catch (e) {
-      box.className = 'brief';
+      box.className = 'hd-lede';
       if (e.blocked) {
         collapseRuleCard(false);                       // 규칙 브리핑을 펼쳐서 계속 쓸 수 있게 한다
-        box.innerHTML = `<div class="gate"><b>${esc(e.blocked.title)}</b><p>${esc(e.blocked.body)}</p>`
+        heroFallback();                                // 히어로에는 읽을 문장을 남긴다
+        box.insertAdjacentHTML('afterend', `<div class="hd-gate" id="hdGate"><b>${esc(e.blocked.title)}</b><p>${esc(e.blocked.body)}</p>`
           + (e.blocked.cta ? `<button class="btn kakao" id="gateLogin"><span>💬</span>${esc(e.blocked.cta)}</button>` : '')
-          + `</div>`;
+          + `</div>`);
         const g = $('gateLogin');
         if (g) g.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (err) { openSettings(); } };
       } else {
-        box.innerHTML = `<span style="color:var(--ink3);font-size:14px">AI 브리핑을 가져오지 못했어요: ${esc(e.message)}</span>`;
+        collapseRuleCard(false);
+        heroFallback();
+        box.insertAdjacentHTML('beforeend', `<span class="hd-note">AI 브리핑을 가져오지 못했어요 · ${esc(e.message)}</span>`);
       }
     }
+  }
+  // AI를 못 쓸 때도 히어로는 비지 않는다 — 규칙 엔진의 첫 문장을 세운다
+  function heroFallback() {
+    const box = $('aiBrief');
+    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const b = ChaeksaBrief.today(R, tf, E.currentDaeun(R, today), today);
+    box.className = 'hd-lede';
+    box.textContent = (b.paragraphs && b.paragraphs[0]) ? String(b.paragraphs[0]).replace(/<[^>]+>/g, '') : '';
+    const chip = $('hdFresh'); if (chip) chip.textContent = '규칙 엔진';
   }
   $('btnAiBrief').onclick = () => openSettings();
   function collapseRuleCard(on) {
