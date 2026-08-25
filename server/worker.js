@@ -19,6 +19,12 @@ export default {
       'Vary': 'Origin',
     };
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
+    if (request.method === 'GET') {
+      // 진단: 키 값은 노출하지 않고 존재 여부·길이·접두사만 (설정 오류 확인용)
+      const k = env.ANTHROPIC_API_KEY || '';
+      const diag = { ok: true, hasKey: !!k, keyLen: k.length, keyPrefix: k.slice(0, 12), allowedOrigin: env.ALLOWED_ORIGIN || null, rateKV: !!env.RATE };
+      return json(diag, 200, cors);
+    }
     if (request.method !== 'POST') return new Response('책사 API 프록시 동작 중', { status: 200, headers: cors });
     if (!originOk) return json({ error: { message: '허용되지 않은 출처' } }, 403, cors);
 
