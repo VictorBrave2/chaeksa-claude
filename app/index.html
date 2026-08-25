@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <div class="wrap">
@@ -84,12 +84,18 @@
     <p class="hero-sub">태어난 날과 시간을 알려주시면,<br>오늘부터 매일 당신만을 위한 브리핑을 드릴게요.</p></div>
     <label>이름 (부를 때 쓸 이름)</label>
     <input id="name" placeholder="예: 지수">
-    <label>생년월일 (양력)</label>
+    <label>생년월일</label>
+    <div class="seg" id="calSeg">
+      <button type="button" data-cal="solar" class="on">양력</button>
+      <button type="button" data-cal="lunar">음력</button>
+    </div>
     <div class="row">
       <input id="y" type="number" placeholder="1990" min="1900" max="2100" inputmode="numeric">
       <input id="m" type="number" placeholder="월" min="1" max="12" inputmode="numeric">
       <input id="d" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
     </div>
+    <div class="check hide" id="leapWrap"><input type="checkbox" id="isLeap"><label for="isLeap" style="margin:0">윤달이에요</label></div>
+    <p class="conv hide" id="convNote"></p>
     <label>태어난 시간</label>
     <div class="row">
       <input id="hh" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
@@ -246,17 +252,18 @@
   </div>
 </div>
 
-<script src="astro.js?v=14"></script>
-<script src="engine.js?v=14"></script>
-<script src="brief.js?v=14"></script>
-<script src="calendar.js?v=14"></script>
-<script src="compat.js?v=14"></script>
-<script src="tongbyeon.js?v=14"></script>
-<script src="rules-wealth-love.js?v=14"></script>
-<script src="rules-health-study-move.js?v=14"></script>
-<script src="consult.js?v=14"></script>
-<script src="share.js?v=14"></script>
-<script src="ai.js?v=14"></script>
-<script src="app.js?v=14"></script>
+<script src="astro.js?v=16"></script>
+<script src="lunar.js?v=16"></script>
+<script src="engine.js?v=16"></script>
+<script src="brief.js?v=16"></script>
+<script src="calendar.js?v=16"></script>
+<script src="compat.js?v=16"></script>
+<script src="tongbyeon.js?v=16"></script>
+<script src="rules-wealth-love.js?v=16"></script>
+<script src="rules-health-study-move.js?v=16"></script>
+<script src="consult.js?v=16"></script>
+<script src="share.js?v=16"></script>
+<script src="ai.js?v=16"></script>
+<script src="app.js?v=16"></script>
 </body>
 </html>

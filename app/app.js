@@ -46,10 +46,59 @@
   };
   $('themeSeg').querySelectorAll('button').forEach(b => b.onclick = () => setTheme(b.dataset.t));
 
+  // ───── 양력 / 음력 입력 ─────
+  let calMode = 'solar';
+  function setCal(mode) {
+    calMode = mode;
+    $('calSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.cal === mode));
+    $('leapWrap').classList.toggle('hide', mode !== 'lunar');
+    if (mode === 'solar') { $('isLeap').checked = false; }
+    updateConv();
+  }
+  $('calSeg').querySelectorAll('button').forEach(b => b.onclick = () => setCal(b.dataset.cal));
+  ['y', 'm', 'd', 'isLeap'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', updateConv); });
+  $('isLeap').addEventListener('change', updateConv);
+
+  /** 입력값을 양력으로 바꾼다. 음력이면 변환, 실패하면 null */
+  function toSolar() {
+    const y = +$('y').value, m = +$('m').value, d = +$('d').value;
+    if (!y || !m || !d) return null;
+    if (calMode === 'solar') return { y, m, d };
+    if (!window.ChaeksaLunar) return null;
+    const r = ChaeksaLunar.lunarToSolar(y, m, d, $('isLeap').checked);
+    return r && !r.error ? r : { error: r && r.error ? r.error : '변환할 수 없는 날짜입니다.' };
+  }
+  function updateConv() {
+    const note = $('convNote');
+    const y = +$('y').value, m = +$('m').value, d = +$('d').value;
+    if (!y || !m || !d) { note.classList.add('hide'); return; }
+    if (calMode === 'lunar') {
+      const leapM = window.ChaeksaLunar ? ChaeksaLunar.leapMonthOf(y) : null;
+      $('leapWrap').classList.toggle('hide', leapM !== m);
+      if (leapM !== m) $('isLeap').checked = false;
+      const r = toSolar();
+      if (!r) { note.classList.add('hide'); return; }
+      note.classList.remove('hide');
+      note.innerHTML = r.error
+        ? `<b style="color:var(--g0-ink)">${r.error}</b>`
+        : `음력 ${y}.${m}.${d}${$('isLeap').checked ? ' (윤달)' : ''} → 양력 <b>${r.y}년 ${r.m}월 ${r.d}일</b>`;
+    } else {
+      if (!window.ChaeksaLunar) { note.classList.add('hide'); return; }
+      const l = ChaeksaLunar.solarToLunar(y, m, d);
+      if (!l) { note.classList.add('hide'); return; }
+      note.classList.remove('hide');
+      note.innerHTML = `양력 ${y}.${m}.${d} → 음력 <b>${l.year}년 ${l.leap ? '윤' : ''}${l.month}월 ${l.day}일</b>`;
+    }
+  }
+
   // ───── 온보딩 ─────
   function readForm() {
     const noTime = $('noTime').checked;
-    const p = { name: $('name').value.trim() || '당신', year: +$('y').value, month: +$('m').value, day: +$('d').value,
+    const sol = toSolar();
+    if (!sol) { alert('생년월일을 입력해 주세요.'); return null; }
+    if (sol.error) { alert(sol.error); return null; }
+    const p = { name: $('name').value.trim() || '당신', year: sol.y, month: sol.m, day: sol.d,
+      calendar: calMode, lunarInput: calMode === 'lunar' ? { y: +$('y').value, m: +$('m').value, d: +$('d').value, leap: $('isLeap').checked } : null,
       hour: noTime ? null : ($('hh').value === '' ? null : +$('hh').value), minute: noTime ? 0 : +($('mi').value || 0),
       gender: $('g').value, solarCorrection: $('solar').checked };
     if (!p.year || !p.month || !p.day) { alert('생년월일을 입력해 주세요.'); return null; }

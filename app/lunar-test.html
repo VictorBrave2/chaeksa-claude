@@ -1,0 +1,67 @@
+<!doctype html><meta charset="utf-8"><title>음력 검증</title>
+<pre id="o" style="font:13px/1.6 monospace"></pre>
+<script src="astro.js"></script>
+<script src="lunar.js"></script>
+<script>
+const L=ChaeksaLunar, out=[];
+let pass=0, fail=0;
+function eq(label, got, want){ const ok = got===want; ok?pass++:fail++; out.push((ok?'PASS ':'FAIL ')+label+'  got='+got+'  want='+want); }
+function s2l(y,m,d){ const r=L.solarToLunar(y,m,d); return r? `${r.year}-${r.leap?'윤':''}${r.month}-${r.day}` : 'null'; }
+function l2s(y,m,d,leap){ const r=L.lunarToSolar(y,m,d,leap); return r.error? 'ERR:'+r.error : `${r.y}-${r.m}-${r.d}`; }
+
+out.push('=== 설날 (음력 1월 1일) ===');
+eq('2024 설날 2/10', s2l(2024,2,10), '2024-1-1');
+eq('2025 설날 1/29', s2l(2025,1,29), '2025-1-1');
+eq('2026 설날 2/17', s2l(2026,2,17), '2026-1-1');
+eq('2023 설날 1/22', s2l(2023,1,22), '2023-1-1');
+eq('2022 설날 2/1',  s2l(2022,2,1),  '2022-1-1');
+eq('2020 설날 1/25', s2l(2020,1,25), '2020-1-1');
+eq('2000 설날 2/5',  s2l(2000,2,5),  '2000-1-1');
+eq('1990 설날 1/27', s2l(1990,1,27), '1990-1-1');
+
+out.push('\n=== 추석 (음력 8월 15일) ===');
+eq('2024 추석 9/17', s2l(2024,9,17), '2024-8-15');
+eq('2025 추석 10/6', s2l(2025,10,6), '2025-8-15');
+eq('2026 추석 9/25', s2l(2026,9,25), '2026-8-15');
+eq('2023 추석 9/29', s2l(2023,9,29), '2023-8-15');
+eq('2022 추석 9/10', s2l(2022,9,10), '2022-8-15');
+
+out.push('\n=== 부처님오신날 (음력 4월 8일) ===');
+eq('2024 5/15', s2l(2024,5,15), '2024-4-8');
+eq('2023 5/27', s2l(2023,5,27), '2023-4-8');
+eq('2025 5/5',  s2l(2025,5,5),  '2025-4-8');
+
+out.push('\n=== 윤달 ===');
+eq('2023 윤달=2월', String(L.leapMonthOf(2023)), '2');
+eq('2020 윤달=4월', String(L.leapMonthOf(2020)), '4');
+eq('2017 윤달=5월', String(L.leapMonthOf(2017)), '5');
+eq('2014 윤달=9월', String(L.leapMonthOf(2014)), '9');
+eq('2012 윤달=3월', String(L.leapMonthOf(2012)), '3');
+eq('2025 윤달=6월', String(L.leapMonthOf(2025)), '6');
+eq('2024 윤달없음', String(L.leapMonthOf(2024)), 'null');
+eq('2026 윤달없음', String(L.leapMonthOf(2026)), 'null');
+
+out.push('\n=== 음력 → 양력 (역변환) ===');
+eq('2024-1-1 → 2/10', l2s(2024,1,1,false), '2024-2-10');
+eq('2025-8-15 → 10/6', l2s(2025,8,15,false), '2025-10-6');
+eq('2023-윤2-1', l2s(2023,2,1,true).slice(0,4)!=='ERR:' ? 'ok' : l2s(2023,2,1,true), 'ok');
+
+out.push('\n=== 왕복 변환 무결성 (1950~2030 매월 15일) ===');
+let rt=0, rtFail=0;
+for(let y=1950;y<=2030;y++) for(let m=1;m<=12;m++){
+  const r=L.solarToLunar(y,m,15); if(!r){rtFail++;continue;}
+  const b=L.lunarToSolar(r.year,r.month,r.day,r.leap);
+  if(b.error||b.y!==y||b.m!==m||b.d!==15) rtFail++; else rt++;
+}
+out.push((rtFail===0?'PASS ':'FAIL ')+`왕복 ${rt}건 성공 / 실패 ${rtFail}건`);
+rtFail===0?pass++:fail++;
+
+out.push('\n=== 음력 달 길이 (29 또는 30만 나와야) ===');
+let bad=0;
+for(let y=2000;y<=2030;y++) for(let m=1;m<=12;m++){ const n=L.lunarMonthLength(y,m,false); if(n!==29&&n!==30) bad++; }
+out.push((bad===0?'PASS ':'FAIL ')+`달 길이 이상 ${bad}건`);
+bad===0?pass++:fail++;
+
+out.push(`\n===== 통과 ${pass} / 실패 ${fail} =====`);
+document.getElementById('o').textContent=out.join('\n');
+</script>

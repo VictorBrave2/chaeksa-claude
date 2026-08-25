@@ -392,3 +392,10 @@ nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:
 .metric-add{display:flex;gap:6px;margin-top:10px}
 .metric-add input{flex:1;padding:9px 11px;font-size:14px;border-radius:9px}
 .metric-add button{flex:0 0 auto}
+
+/* ───── 양력/음력 토글 ───── */
+.seg{display:flex;gap:6px;margin-bottom:8px}
+.seg button{flex:1;padding:9px;border-radius:10px;background:var(--bg2);border:1px solid var(--line2);color:var(--ink3);font-size:14px;cursor:pointer;font-family:var(--sans);transition:.15s}
+.seg button.on{background:var(--accent-soft);border-color:var(--accent2);color:var(--accent);font-weight:700}
+.conv{font-size:13px;color:var(--ink2);margin-top:9px;padding:9px 12px;background:var(--bg2);border:1px solid var(--line);border-radius:10px}
+.conv b{color:var(--accent)}
