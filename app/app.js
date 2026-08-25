@@ -652,16 +652,23 @@
   $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') ask(); });
 
   // ───── 설정 ─────
+  // 원가는 '내 키'를 넣은 사람에게만 뜻이 있다. 책사 서버를 쓰는 사람에게는
+  // 미터기가 되어 사용을 억누르고, 나중에 값을 매길 때 원가가 기준이 되어버린다.
   const TIER_NOTE = {
-    quality:  '모든 답을 가장 좋은 모델로 만듭니다. 브리핑 1회에 약 28원.',
-    balanced: '매일 브리핑은 가벼운 모델, 상담·대화는 중간 모델, 원국 해석만 가장 좋은 모델로. 브리핑 1회에 약 5원. <b>권장</b>',
-    thrifty:  '대부분을 가벼운 모델로. 문장이 다소 단조로워질 수 있습니다.',
+    quality:  '모든 답을 가장 깊이 읽는 모델로 만듭니다. 문장이 길고 근거를 자세히 답니다.',
+    balanced: '매일 브리핑은 가볍게, 상담·대화는 중간, 원국 해석만 가장 깊이. <b>권장</b>',
+    thrifty:  '짧고 빠르게 답합니다. 문장이 다소 단조로워질 수 있습니다.',
   };
+  const TIER_COST = { quality: '브리핑 1회 약 28원', balanced: '브리핑 1회 약 5원', thrifty: '브리핑 1회 약 5원' };
   function renderTier() {
     const seg = $('tierSeg'); if (!seg) return;
-    const t = (AI.settings().tier) || 'balanced';
+    const st = AI.settings();
+    const t = st.tier || 'balanced';
     seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.tier === t));
-    $('tierNote').innerHTML = TIER_NOTE[t] || '';
+    // 자기 키를 넣었다면 자기 돈이 나가므로 원가를 반드시 알려준다
+    const own = !!st.apiKey;
+    $('tierNote').innerHTML = (TIER_NOTE[t] || '')
+      + (own ? ` <span style="color:var(--ink3)">내 키 사용 중 · ${TIER_COST[t]}</span>` : '');
   }
   function renderUsage() {
     const box = $('usageBox'); if (!box || !window.ChaeksaUsage) return;
@@ -679,7 +686,16 @@
   function openSettings() {
     renderCloud();
     renderTier();
-    renderUsage(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
+    renderUsage(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
+    // 키를 넣거나 지우면 원가 안내가 바로 따라온다
+    $('apiKey').oninput = () => {
+      const own = !!$('apiKey').value.trim();
+      const note = $('tierNote'); if (!note) return;
+      const t = (AI.settings().tier) || 'balanced';
+      note.innerHTML = (TIER_NOTE[t] || '')
+        + (own ? ` <span style="color:var(--ink3)">내 키 사용 중 · ${TIER_COST[t]}</span>` : '');
+    };
+  }
   $('btnSettings').onclick = openSettings;
   if ($('tierSeg')) $('tierSeg').querySelectorAll('button').forEach(b => b.onclick = () => {
     const s = AI.settings();
