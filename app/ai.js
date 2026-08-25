@@ -251,6 +251,8 @@ ${dayFrameText(df)}
   근거: ${second.basis}`,
       `[사용자 답변]
 ${ansText}`,
+      fr.toldText ? `[사용자가 직접 쓴 상황]
+${fr.toldText}` : '',
       rev.flipped ? `[판단 변경] 처음 1순위였던 "${fr.hypotheses.find(h=>h.id===rev.priorTopId).title}"에서 "${top.title}"로 순위를 바꿈` : `[판단 유지] 처음 판단과 같은 방향`,
       `[실행 과제] ${top.action}`,
       `[관측 지표] ${top.metric}`,
@@ -273,6 +275,7 @@ ${ansText}`,
 - 마지막은 실행 과제와 관측 지표로 끝낸다.
 - [선택지 비교]가 주어지면 어느 것을 먼저 검토할지 한 문단으로 말한다. 점수와 순서는 주어진 것을 따르고 임의로 바꾸지 않는다.
 - [기록된 지표]가 있으면 그 숫자의 흐름을 반드시 근거로 인용한다.
+- [사용자가 직접 쓴 상황]이 있으면 그 표현을 한 번은 그대로 인용한다. 사람은 자기 말이 들렸는지로 신뢰를 판단한다.
 - [6차원 적층 체용 좌표]가 주어지면, 順/逆이 뒤집히는 층(변곡점)을 반드시 짚는다. 좌표의 부호와 값을 임의로 바꾸지 않는다.
 - 체용은 "지금 무엇이 體이고 무엇이 用인가"를 말하는 것이다. 층 이름(원국·대운·세운·월운·일운·시운)을 그대로 쓴다.
 
@@ -287,11 +290,41 @@ ${structure}`;
     return dehanja(raw);
   }
 
+  /** 사용자가 자유롭게 쓴 상황 설명을 판별 질문의 답(예/아니오/모르겠음)으로 옮긴다.
+   *  질문에 갇히지 않고 말로 설명할 수 있게 하되, 판단은 여전히 규칙이 한다. */
+  async function mapAnswers(fr, text) {
+    const list = fr.questions.map((q, i) => `${i + 1}. [${q.id}] ${q.q}`).join(String.fromCharCode(10));
+    const sys = `당신은 사람이 자유롭게 쓴 이야기에서, 아래 질문들에 대한 답을 찾아내는 역할입니다.
+
+질문 목록
+${list}
+
+규칙
+- 글에서 그 질문의 답이 분명히 읽히면 "y"(그렇다) 또는 "n"(아니다)
+- 언급이 없거나 애매하면 반드시 "?" — 추측하지 마세요. 잘못 넣는 것보다 모른다고 하는 편이 낫습니다.
+- 오직 JSON만 출력합니다. 설명 금지.
+
+출력 형식
+{"질문id":"y"|"n"|"?", ...}`;
+    const raw = await call(sys, [{ role: 'user', content: text }], { task: 'brief', model: 'claude-haiku-4-5', maxTokens: 300, cache: false });
+    let out = {};
+    try {
+      const m = raw.match(/\{[\s\S]*\}/);
+      out = m ? JSON.parse(m[0]) : {};
+    } catch (e) { out = {}; }
+    const valid = {};
+    fr.questions.forEach(q => {
+      const v = out[q.id];
+      valid[q.id] = (v === 'y' || v === 'n') ? v : '?';
+    });
+    return valid;
+  }
+
   // 궁합 해설
   async function compatText(me, you, ruleResult, today) {
     const sys = systemPrompt(me, today) + `\n\n## 상대방의 사주\n${chartText(you, today)}\n\n## 규칙 엔진이 계산한 관계\n${JSON.stringify({ score: ruleResult.score, 일간관계: ruleResult.stemRel.key, 일지관계: ruleResult.branchRels.map(b => b.key), 상대는내게: ruleResult.god, 메모: ruleResult.notes })}`;
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { task: 'compat', maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { dehanja, deepNarrate, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, deepNarrate, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);

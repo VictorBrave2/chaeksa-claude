@@ -465,3 +465,12 @@ nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:
 .ub i{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
 .ub i b{display:block;height:100%;border-radius:3px;background:var(--accent)}
 .ub span:last-child{text-align:right;color:var(--ink3)}
+
+/* ───── 말로 설명하기 ───── */
+.freetell{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line2)}
+.freetell .btn-ghost{width:100%}
+#cTellBox{margin-top:10px}
+.told{padding:13px 15px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--accent-line);margin-bottom:14px}
+.told b{font-size:12px;color:var(--accent);letter-spacing:.05em}
+.told p{font-size:14px;color:var(--ink);line-height:1.75;margin:6px 0 4px}
+.told .hint{margin:0}

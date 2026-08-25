@@ -185,6 +185,10 @@
     // 판별 질문
     html += `<div class="c-sec"><h4>제가 확인하고 싶은 것<small>답에 따라 순위가 바뀝니다</small></h4>
       <p class="hint" style="margin:0 0 12px">모르면 '모르겠어요'를 눌러주세요. 억지로 답하면 판단이 흐려집니다.</p>`;
+    if (fr.toldText) {
+      html += `<div class="told"><b>말씀하신 내용에서 찾았습니다</b><p>${esc(fr.toldText)}</p>
+        <span class="hint">아래 답이 틀렸으면 직접 고치시면 됩니다.</span></div>`;
+    }
     fr.questions.forEach((q, i) => {
       const a = fr.answers[q.id];
       html += `<div class="cq-row ${a ? 'answered' : ''}">
@@ -195,6 +199,18 @@
           <button data-q="${q.id}" data-v="?" class="${a === '?' ? 'on' : ''}">모르겠어요</button>
         </div></div>`;
     });
+    html += `<div class="freetell">
+        <button class="btn-ghost" id="cTell">질문에 답하는 대신 말로 설명할게요</button>
+        <div class="hide" id="cTellBox">
+          <textarea id="cTellText" rows="4" aria-label="상황 설명"
+            placeholder="예) 요즘 맡는 일은 늘었는데 결정할 수 있는 건 그대로예요. 사람 뽑는 것도 제 마음대로 안 되고요."></textarea>
+          <div class="row" style="margin-top:8px">
+            <button class="btn" id="cTellGo">여기서 답 찾기</button>
+            <button class="btn ghost" id="cTellCancel">닫기</button>
+          </div>
+          <p class="hint" id="cTellMsg">쓰신 글에서 위 질문들의 답을 찾아 채웁니다. 찾지 못한 것은 '모르겠어요'로 두고, 틀린 게 있으면 직접 고치시면 됩니다.</p>
+        </div>
+      </div>`;
     html += `</div>`;
 
     // 판단 변화 — 재확인이면 '지난 상담의 판단'과, 첫 상담이면 '처음 세운 가설'과 비교한다
@@ -248,6 +264,27 @@
     $('consultView').querySelectorAll('.cq-btns button').forEach(b => b.onclick = () => {
       fr.answers[b.dataset.q] = b.dataset.v; render();
     });
+    const tell = $('cTell');
+    if (tell) {
+      tell.onclick = () => { $('cTellBox').classList.remove('hide'); tell.classList.add('hide'); $('cTellText').focus(); };
+      $('cTellCancel').onclick = () => { $('cTellBox').classList.add('hide'); tell.classList.remove('hide'); };
+      $('cTellGo').onclick = async () => {
+        const t = $('cTellText').value.trim();
+        if (!t) { $('cTellText').focus(); return; }
+        const msg = $('cTellMsg');
+        msg.textContent = '읽는 중…';
+        try {
+          const map = await AI().mapAnswers(fr, t);
+          Object.assign(fr.answers, map);
+          fr.toldText = t;
+          render();
+        } catch (e) {
+          msg.innerHTML = e.blocked
+            ? `<b>${esc(e.blocked.title)}</b> ${esc(e.blocked.body)}`
+            : '읽지 못했습니다: ' + esc(e.message) + ' — 아래 버튼으로 직접 답해주세요.';
+        }
+      };
+    }
     if (done) {
       $('cSave').onclick = () => doSave(rev);
       narrate(rev);
