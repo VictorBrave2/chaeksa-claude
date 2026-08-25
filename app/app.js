@@ -577,14 +577,15 @@
   function renderUsage() {
     const box = $('usageBox'); if (!box || !window.ChaeksaUsage) return;
     const U = ChaeksaUsage, p = U.plan();
-    const rows = [['brief', '오늘 브리핑'], ['chat', '비서와 대화'], ['consult', '심층 상담'], ['compat', '궁합 해설']];
+    const rows = [['brief', '오늘 브리핑'], ['chat', '비서와 대화'], ['consult', '심층 상담'], ['profile', '원국 해석'], ['compat', '궁합 해설']];
     box.innerHTML = `<p class="hint" style="margin:0 0 8px">이번 달 사용량 · 등급 <b>${U.PLANS[p].label}</b></p>`
       + rows.map(([k, name]) => {
           const lim = U.limit(k), use = U.used(k);
           const w = lim ? Math.min(100, use / lim * 100) : 0;
           return `<div class="ub"><span>${name}</span><i><b style="width:${w}%"></b></i><span>${use}/${lim || '—'}</span></div>`;
         }).join('')
-      + `<p class="hint">만세력·원국·대운·택일·궁합 점수와 규칙 기반 브리핑은 <b>한도 없이</b> 쓰실 수 있습니다.</p>`;
+      + `<p class="hint">${U.period() === 'life' ? '무료 체험분입니다(평생 기준).' : '매달 1일에 새로 열립니다.'}
+         만세력·원국·대운·택일·궁합 점수와 규칙 기반 브리핑은 <b>한도 없이</b> 쓰실 수 있습니다.</p>`;
   }
   function openSettings() {
     renderCloud();
