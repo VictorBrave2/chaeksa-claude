@@ -40,15 +40,18 @@ function overLimit(ip, limit) {
   return n > limit;
 }
 
-// 환경변수에 붙여넣기하다 공백·줄바꿈이 섞인 전례가 있다(ALLOWED_ORIGIN의 탭).
-// 헤더 값에 줄바꿈이 있으면 fetch가 던지고, 그게 '장애 시 통과' 경로로 빠져
-// 강제가 조용히 무력화된다. 반드시 벗겨낸다.
-const env = (k) => (process.env[k] || '').trim().replace(/\/+$/, '');
+// 환경변수에 붙여넣기하다 이물질이 섞인 전례가 두 번 있다 —
+// ALLOWED_ORIGIN의 탭, 그리고 SUPABASE 키에 눈에 안 보이는 유니코드 문자
+// (probe가 "ByteString ... index 8" 오류로 잡아냈다). 헤더 값에 그런 문자가 있으면
+// fetch가 던지고, 그게 '장애 시 통과'로 오판되어 강제가 조용히 무력화된다.
+// URL과 JWT는 어차피 ASCII만 유효하므로, 인쇄 가능한 ASCII 외는 전부 벗겨낸다.
+const clean = (v) => (v || '').replace(/[^!-~]/g, '');
+const env = (k) => clean(process.env[k]).replace(/\/+$/, '');
 
 /** Supabase RPC — 사용자 토큰으로 부른다. 반환: 함수의 json 또는 { ok:false, reason } */
 async function rpc(name, args, userToken) {
   const url = env('SUPABASE_URL');
-  const anon = (process.env.SUPABASE_ANON_KEY || '').trim();
+  const anon = clean(process.env.SUPABASE_ANON_KEY);
   if (!url || !anon) return { ok: true, skipped: true };   // 미설정이면 통과 (과도기)
   try {
     const res = await fetch(`${url}/rest/v1/rpc/${name}`, {
@@ -68,6 +71,10 @@ async function rpc(name, args, userToken) {
     }
     return await res.json();
   } catch (e) {
+    // 헤더에 못 들어가는 문자 = 설정이 깨진 것. 장애가 아니므로 통과시키지 않는다.
+    if (/ByteString|invalid header|Invalid value/i.test(String(e && e.message))) {
+      return { ok: false, reason: 'unauthenticated' };
+    }
     return { ok: true, degraded: true };
   }
 }
@@ -89,7 +96,7 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     const k = process.env.ANTHROPIC_API_KEY || '';
     const sbUrl = env('SUPABASE_URL');
-    const sbAnon = (process.env.SUPABASE_ANON_KEY || '').trim();
+    const sbAnon = clean(process.env.SUPABASE_ANON_KEY);
     const enforced = !!(sbUrl && sbAnon);
     // 프록시 → Supabase가 실제로 닿는지. 토큰 없이 부르면 '권한 거부'가 정상 응답이다.
     let probe = 'off';
@@ -137,7 +144,7 @@ module.exports = async (req, res) => {
   const auth = req.headers.authorization || '';
   const userToken = auth.startsWith('Bearer ') ? auth.slice(7) : '';
   const task = ALLOWED_TASKS.has(req.headers['x-chaeksa-task']) ? req.headers['x-chaeksa-task'] : 'chat';
-  const enforcing = !!(env('SUPABASE_URL') && (process.env.SUPABASE_ANON_KEY || '').trim());
+  const enforcing = !!(env('SUPABASE_URL') && clean(process.env.SUPABASE_ANON_KEY));
 
   if (enforcing) {
     if (!userToken) {
