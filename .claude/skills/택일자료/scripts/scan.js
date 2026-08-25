@@ -80,7 +80,7 @@ function score(R) {
 
 function run(CONFIG) {
   const { year, month, lon = 126.98, place = 'KR:서울', gender = 'M',
-          parents = [], dayFrom = 9, dayTo = 17 } = CONFIG;
+          parents = [], dayFrom = 8.5, dayTo = 17 } = CONFIG;
   const last = new Date(year, month, 0).getDate();
   const rows = [];
 
@@ -103,9 +103,11 @@ function run(CONFIG) {
       const from = (hh + 23) % 24, to = (hh + 1) % 24;
       const c = R.corrected;
       // 주간 여부는 '시계 시각'으로 판정한다. 병원이 보는 건 태양시가 아니라 시계다.
-      // (hh 는 태양시 시진 한복판이라 진태양시 보정만큼 시계가 뒤에 있다)
-      const clockMid = hh * 60 + 30 + Math.round((135 - lon) * 4);
-      const 주간 = clockMid >= dayFrom * 60 && clockMid <= dayTo * 60;
+      // E.calc 에 넘긴 hour/minute 이 이미 시계 시각이고(엔진이 안에서 태양시로 보정한다),
+      // 후보의 시계 시각은 언제나 hh:30 이다. 여기서 보정폭을 또 더하면 이중 계산이 되어
+      // 16:30 이 밤으로 밀리고, 정수 hh 로만 비교하면 08:30 이 밤으로 밀린다.
+      const clock = hh * 60 + 30;
+      const 주간 = clock >= dayFrom * 60 && clock <= dayTo * 60;
       rows.push({
         일: d, 요일: DOW[new Date(year, month - 1, d).getDay()],
         시진: JIN[Math.floor(((hh + 1) % 24) / 2)],
@@ -138,18 +140,23 @@ function run(CONFIG) {
     시각창.push(`${JIN[i]}시 (태양시 ${String(from).padStart(2,'0')}~${String(to).padStart(2,'0')}) → 시계 ${fmt(cf)}~${fmt(ct)}`);
   }
 
-  // 한 달 안에서 절기로 월주가 갈린다. 이걸 하나로 뭉뚱그리면 글이 틀린다.
-  // 실제로 계산된 rows 에서 월주가 바뀌는 지점을 읽는다.
-  // dateFortune(y,m,d) 는 정오 기준이라 절기가 오후에 드는 달을 하루 밀어버린다.
-  const seg = [];
-  rows.slice().sort((a, b) => a.일 - b.일 || a._hh - b._hh).forEach(r => {
-    const gz = r.원국.split(' ')[1];
-    const at = `${r.일}일 ${String(r._hh).padStart(2,'0')}:30`;
-    if (!seg.length || seg[seg.length - 1].gz !== gz) seg.push({ gz, from: at, to: at });
-    else seg[seg.length - 1].to = at;
-  });
-  const 절기 = (E.fmt.termsOfYear(year) || []).filter(t => t.m === month)
-    .map(t => `${t.name} ${t.m}/${t.d} ${String(t.hh).padStart(2,'0')}:${String(t.mm).padStart(2,'0')}`);
+  // 한 달 안에서 절기로 월주가 갈린다. 그것도 자정이 아니라 절입 '시각'에 갈린다.
+  // dateFortune 은 시각을 안 받고 정오로 계산해서 경계일을 통째로 앞 절기에 넣어버리고,
+  // rows 에서 읽으면 2시간 슬롯 해상도까지밖에 못 좁힌다. 그래서 절입 시각으로 직접 자른다.
+  const hm = t => `${String(t.hh).padStart(2,'0')}:${String(t.mm).padStart(2,'0')}`;
+  const gzAt = (d, hh, mm) => E.fmt.pillar(E.calc({
+    year, month, day: d, hour: hh, minute: mm, gender,
+    place, longitude: lon, tzOffset: null, solarCorrection: true }).pillars.month);
+  const cuts = (E.fmt.termsOfYear(year) || []).filter(t => t.m === month)
+    .sort((a, b) => a.d - b.d || a.hh - b.hh || a.mm - b.mm);
+  const pts = [{ d: 1, hh: 0, mm: 0, probe: [1, 12, 0], label: `${month}/1` }]
+    .concat(cuts.map(t => ({ d: t.d, hh: t.hh, mm: t.mm,
+                             probe: [t.d, t.hh, t.mm], label: `${month}/${t.d} ${hm(t)}` })));
+  const at = p => p.d * 1440 + p.hh * 60 + p.mm;
+  const ps = pts.filter((p, i) => !pts[i + 1] || at(pts[i + 1]) > at(p));   // 절입이 1일 0시면 앞 구간은 없다
+  const seg = ps.map((p, i) =>
+    `${p.label}~${ps[i + 1] ? ps[i + 1].label : `${month}/${last}`} ${gzAt(...p.probe)}월`);
+  const 절기 = cuts.map(t => `${t.name} ${t.m}/${t.d} ${hm(t)}`);
   // 전 기간에 공통으로 걸린 충 — 날짜를 골라도 못 피하는 것
   const 공통충 = rows.length
     ? rows[0].충.split(', ').filter(c => c !== '없음' && rows.every(r => r.충.includes(c)))
@@ -158,13 +165,13 @@ function run(CONFIG) {
   return {
     기간: `${year}년 ${month}월 · ${place} (경도 ${lon})`,
     연주: E.fmt.pillar(E.dateFortune(year, month, 15).year),
-    월주구간: seg.map(x => `${month}/${x.from} ~ ${month}/${x.to} · ${x.gz}월`),
+    월주구간: seg,
     절기: 절기.length ? 절기 : '이 달에 절기 경계 없음',
     피할수없는충: 공통충.length ? 공통충 : '없음',
     후보수: rows.length,
     점수범위: [by[by.length-1].점수, by[0].점수],
     전체상위: by.slice(0, 8).map(f),
-    주간상위: by.filter(r => r.주간).slice(0, 6).map(f),
+    주간상위: by.filter(r => r.주간).slice(0, 8).map(f),   // 주간은 5슬롯(08:30~16:30)뿐이라 6개면 16:30 으로만 찬다
     야간상위: by.filter(r => !r.주간).slice(0, 5).map(f),
     최하위: by.slice(-4).reverse().map(f),
     통근0: by.filter(r => r.통근 === 0).slice(0, 4).map(f),

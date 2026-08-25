@@ -1,0 +1,538 @@
+<title>출산택일 보고서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+
+<style>
+  :root{
+    --paper:#fbf8f2; --paper2:#fffdf8; --line:#e5dac4; --line2:#d3c5a8;
+    --ink:#2c261e; --ink2:#665d4e; --ink3:#9b9078;
+    --accent:#9b4123; --accent2:#c4603a; --soft:rgba(155,65,35,.07);
+    --good:#3f6b45; --warn:#8a6414; --bad:#9c5344; --bad-bg:#f7e6e0;
+    --serif:"Noto Serif KR","Apple Myungjo",serif;
+    --sans:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#17140f; --paper2:#1f1b15; --line:#332c22; --line2:#453c2e;
+      --ink:#efe9dd; --ink2:#a89e8a; --ink3:#7b7263;
+      --accent:#d99163; --accent2:#e8a87c; --soft:rgba(217,145,99,.10);
+      --good:#7fb289; --warn:#d3ac5c; --bad:#c98080; --bad-bg:#3a2722;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#17140f; --paper2:#1f1b15; --line:#332c22; --line2:#453c2e;
+    --ink:#efe9dd; --ink2:#a89e8a; --ink3:#7b7263;
+    --accent:#d99163; --accent2:#e8a87c; --soft:rgba(217,145,99,.10);
+    --good:#7fb289; --warn:#d3ac5c; --bad:#c98080; --bad-bg:#3a2722;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+       -webkit-font-smoothing:antialiased}
+  .page{max-width:760px;margin:0 auto;padding:0 26px 80px}
+  h1,h2,h3,h4{margin:0;font-family:var(--serif);text-wrap:balance}
+
+  /* ── 표제 ── */
+  header{padding:52px 0 0;display:flex;gap:16px;align-items:flex-start}
+  .seal{flex:0 0 46px;height:46px;border-radius:6px;margin-top:4px;
+    background:linear-gradient(145deg,var(--accent2),var(--accent));color:#fdf6ec;
+    font-family:var(--serif);font-size:24px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 14px rgba(155,65,35,.24)}
+  header h1{font-size:30px;line-height:1.25;letter-spacing:-.03em}
+  header .sub{font-size:13px;color:var(--ink3);margin-top:7px;letter-spacing:.02em}
+
+  /* ── 결론 상자 — 바쁜 사람은 이것만 본다 ── */
+  .verdict{margin-top:30px;border:1px solid var(--line2);border-radius:14px;overflow:hidden}
+  .verdict .top{background:var(--soft);padding:20px 22px;border-bottom:1px solid var(--line)}
+  .verdict .k{font-size:11.5px;letter-spacing:.18em;color:var(--accent);font-weight:500}
+  .verdict .d{font-family:var(--serif);font-size:27px;font-weight:700;margin-top:8px;
+    letter-spacing:-.025em;line-height:1.3}
+  .verdict .gz{display:flex;gap:6px;margin-top:14px}
+  .verdict .gz span{flex:1;background:var(--paper2);border:1px solid var(--line);
+    border-radius:7px;padding:9px 2px;text-align:center;
+    font-family:var(--serif);font-size:19px;font-weight:700}
+  .verdict .why{padding:16px 22px;font-size:14px;line-height:1.85;color:var(--ink2)}
+  .verdict .why b{color:var(--ink)}
+
+  /* ── 병원에 할 말 — 실제로 쓰이는 부분 ── */
+  .say{margin-top:14px;border:2px solid var(--accent);border-radius:14px;padding:18px 22px;
+    background:var(--paper2)}
+  .say .k{font-size:11.5px;letter-spacing:.16em;color:var(--accent);font-weight:700}
+  .say p{margin:10px 0 0;font-size:16.5px;line-height:1.8;font-weight:500}
+  .say .note{margin-top:10px;font-size:12.5px;color:var(--ink3);line-height:1.7}
+
+  section{margin-top:44px}
+  section > h2{font-size:19px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:10px}
+  section > h2 small{font-family:var(--sans);font-size:12.5px;font-weight:400;color:var(--ink3)}
+  section > .lead{margin-top:10px;font-size:14px;line-height:1.85;color:var(--ink2)}
+
+  /* ── 목록 ── */
+  .list{margin-top:16px;border-top:1px solid var(--line)}
+  .row{display:flex;gap:14px;padding:14px 2px;border-bottom:1px solid var(--line);align-items:flex-start}
+  .row .rank{flex:0 0 34px;font-family:var(--serif);font-size:17px;font-weight:700;color:var(--accent);
+    text-align:center;padding-top:1px;font-variant-numeric:tabular-nums}
+  .row .body{flex:1;min-width:0}
+  .row .when{font-size:15.5px;font-weight:500;line-height:1.5}
+  .row .pil{font-family:var(--serif);font-size:14px;color:var(--ink2);margin-top:4px;letter-spacing:.04em}
+  .row .meta{font-size:12.5px;color:var(--ink3);margin-top:5px;line-height:1.7}
+  .row .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;
+    margin-left:6px;vertical-align:1px;font-weight:500}
+  .t-정규{background:rgba(63,107,69,.13);color:var(--good)}
+  .t-연장{background:rgba(138,100,20,.14);color:var(--warn)}
+  .t-야간{background:var(--soft);color:var(--accent)}
+  .t-주말{background:var(--bad-bg);color:var(--bad)}
+  .row .flag{margin-top:6px;font-size:12.5px;color:var(--bad);line-height:1.6}
+  .row .ok{margin-top:6px;font-size:12.5px;color:var(--good);line-height:1.6}
+
+  .callout{margin-top:16px;background:var(--paper2);border:1px solid var(--line);
+    border-radius:12px;padding:16px 18px}
+  .callout h4{font-size:15px;margin-bottom:8px}
+  .callout p{margin:0;font-size:13.5px;line-height:1.85;color:var(--ink2)}
+  .callout p + p{margin-top:9px}
+  .callout b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--ink3);font-weight:500;font-size:12px;letter-spacing:.04em}
+  td b{font-weight:500}
+  .tw{overflow-x:auto}
+
+  .fine{margin-top:44px;padding-top:22px;border-top:1px solid var(--line2)}
+  .fine h3{font-size:15px}
+  .fine ul{margin:12px 0 0;padding-left:17px;display:flex;flex-direction:column;gap:9px}
+  .fine li{font-size:12.5px;line-height:1.8;color:var(--ink2)}
+  .fine li b{color:var(--ink)}
+  footer{margin-top:34px;font-size:12px;color:var(--ink3);line-height:1.8}
+
+
+  /* 세 고전 교차검증 */
+  .tiny{font-size:11.5px;color:var(--ink3);line-height:1.65}
+  .callout p.tiny{color:var(--ink3);font-size:12px}
+  .sc{font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
+  .sc.hi{color:var(--good)} .sc.mid{color:var(--warn)} .sc.lo{color:var(--bad)}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600}
+  .p-ok{background:rgba(63,107,69,.14);color:var(--good)}
+  .p-no{background:var(--bad-bg);color:var(--bad)}
+  td{vertical-align:top}
+  .callout .tw table{margin-top:10px;margin-bottom:4px}
+
+  @media print{
+    body{background:#fff}
+    .page{max-width:none;padding:0 12mm}
+    section{break-inside:avoid}
+  }
+</style>
+
+<div class="page">
+
+  <header>
+    <div class="seal">策</div>
+    <div>
+      <h1>출산택일 보고서</h1>
+      <div class="sub">2026년 12월 14일 ~ 24일 · 남아 · 서울 출생 기준 · 132개 시간대 전수 계산</div>
+    </div>
+  </header>
+
+  <!-- 결론 -->
+  <div class="verdict">
+    <div class="top">
+      <div class="k">권해 드리는 자리</div>
+      <div class="d">12월 21일(월)<br>오후 1시 32분 ~ 3시 32분</div>
+      <div class="gz"><span>丙午</span><span>庚子</span><span>己巳</span><span>辛未</span></div>
+    </div>
+    <div class="why">
+      <b>병원 정규 수술 시간이면서, 가족 세 분 누구와도 부딪히지 않는 유일한 상위권 자리</b>입니다.
+      아버지(申)와 육합, 어머니(未)와 육합으로 양쪽에 맞물립니다.
+      감당할 뿌리가 세 곳이고 재성·관성이 용신이며,
+      <b>15세부터 54세까지 40년이 재관 대운</b>으로 이어집니다.
+    </div>
+  </div>
+
+  <div class="say">
+    <div class="k">병원에 이렇게 말씀하세요</div>
+    <p>“12월 21일 월요일, <b>오후 1시 32분 이후</b>로 잡아주세요.<br>
+       3시 32분을 넘기지 않으면 됩니다.”</p>
+    <div class="note">서울은 태양시가 시계보다 32분 늦습니다.
+      오후 1시 정각에 수술하면 의도한 未시가 아니라 午시가 됩니다.
+      <b>1시 32분이 경계</b>입니다.</div>
+  </div>
+
+  <!-- 조건 -->
+  <section>
+    <h2>무엇을 기준으로 계산했나</h2>
+    <p class="lead">기준을 밝혀 두는 이유는, 같은 사주라도 무엇을 앞세우느냐에 따라 답이 달라지기 때문입니다.
+      아래 조건이 바뀌면 순위도 바뀝니다.</p>
+    <div class="tw">
+    <table>
+      <tr><th>항목</th><th>받은 내용</th></tr>
+      <tr><td>후보 기간</td><td>2026년 12월 14일 ~ 24일 (분만 예정 구간)</td></tr>
+      <tr><td>출생지</td><td>서울 — 진태양시 32분 보정 적용</td></tr>
+      <tr><td>성별</td><td>남아 — 대운 순행</td></tr>
+      <tr><td>가족</td><td>아버지 壬申 · 어머니 壬午 · 누나 壬戌</td></tr>
+      <tr><td>우선순위</td><td><b>재물과 직업</b> — 어머니 요청</td></tr>
+      <tr><td>계산 범위</td><td>11일 × 12시진 = 132개 시간대 전수</td></tr>
+    </table>
+    </div>
+
+    <div class="callout">
+      <h4>“재관이 좋다”를 개수로 세지 않았습니다</h4>
+      <p>재성이 넷이어도 일간이 약하면 <b>보이기만 하고 잡지 못합니다</b>(재다신약).
+        실제로 이번 계산에서 재 2·관 3인 자리가 <b>92위</b>였습니다.
+        戊土가 한겨울에 나서 신약한데 관이 셋이라 오히려 눌리는 구조였습니다.</p>
+      <p>그래서 이 순서로 봤습니다 — <b>감당하는가 → 재관이 용신인가 →
+        만든 것이 돈이 되고 돈이 자리로 이어지는가(식상생재·재생관) → 대운이 그 방향인가.</b></p>
+    </div>
+  </section>
+
+  <!-- 이 기간의 구조 -->
+  <section>
+    <h2>이 기간에 정해져 있는 것</h2>
+    <p class="lead">날짜를 골라도 바꿀 수 없는 것들입니다. 미리 아시면 다른 이야기를 들으셔도 흔들리지 않습니다.</p>
+    <div class="callout">
+      <h4>연지 午와 월지 子가 충합니다</h4>
+      <p>2026년은 丙午년이고 12월은 庚子월입니다. 午와 子는 정면으로 부딪힙니다.
+        <b>12월에 태어나는 한 이 충은 피할 수 없습니다.</b></p>
+      <p>혹시 다른 곳에서 “충이 있어 좋지 않다”는 말씀을 들으셨다면,
+        그것은 이 달에 태어나는 모든 아이에게 해당되는 이야기입니다.
+        <b>고를 수 있는 충과 고를 수 없는 충은 나눠서 보셔야 합니다.</b></p>
+    </div>
+  </section>
+
+  <!-- 목록 1 -->
+  <section>
+    <h2>사주로 좋은 자리 <small>다섯</small></h2>
+    <p class="lead">시간 제약을 빼고 사주만 놓고 본 순위입니다. 야간과 주말이 섞여 있습니다.</p>
+    <div class="list">
+
+      <div class="row">
+        <div class="rank">1</div>
+        <div class="body">
+          <div class="when">12월 21일(월) 저녁 7시 32분 ~ 9시 32분<span class="tag t-야간">야간</span></div>
+          <div class="pil">丙午 庚子 己巳 甲戌 · 己土 중화 · 통근 3</div>
+          <div class="meta">식상생재 + 재생관 · 재관 대운 15~54세</div>
+          <div class="ok">가족 충 없음 · 어머니(午)와 반합, 누나(戌)와 같은 글자</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">2</div>
+        <div class="body">
+          <div class="when">12월 21일(월) 새벽 1시 32분 ~ 3시 32분<span class="tag t-야간">야간</span></div>
+          <div class="pil">丙午 庚子 己巳 乙丑 · 己土 중화 · 통근 3</div>
+          <div class="meta">식상생재 + 재생관 · 재관 대운 15~54세</div>
+          <div class="ok">가족 충 없음 · 아버지(申)와 육합</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">4</div>
+        <div class="body">
+          <div class="when">12월 21일(월) 오후 1시 32분 ~ 3시 32분<span class="tag t-정규">정규</span></div>
+          <div class="pil">丙午 庚子 己巳 辛未 · 己土 중화 · 통근 3</div>
+          <div class="meta">식상생재 + 재생관 · 재관 대운 15~54세</div>
+          <div class="ok">가족 충 없음 · 아버지·어머니 양쪽과 육합 — <b>권해 드린 자리</b></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">5</div>
+        <div class="body">
+          <div class="when">12월 20일(일) 저녁 7시 32분 ~ 9시 32분<span class="tag t-주말">주말</span></div>
+          <div class="pil">丙午 庚子 戊辰 壬戌 · 戊土 중화 · 통근 3</div>
+          <div class="meta">식상생재 + 재생관 · 재관 대운 15~54세</div>
+          <div class="flag">누나(戌)와 일지 辰이 충 · 일요일이라 예약 수술이 어렵습니다</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">9</div>
+        <div class="body">
+          <div class="when">12월 20일(일) 새벽 1시 32분 ~ 3시 32분<span class="tag t-주말">주말</span></div>
+          <div class="pil">丙午 庚子 戊辰 癸丑 · 戊土 중화 · 통근 3</div>
+          <div class="meta">재성 넷 · 재관 대운 16~55세</div>
+          <div class="flag">누나(戌)와 일지 辰이 충 · 일요일</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 목록 2 -->
+  <section>
+    <h2>실제로 잡을 수 있는 자리 <small>다섯</small></h2>
+    <p class="lead">평일 정규·연장 시간만 남긴 순위입니다. <b>병원에 요청할 시계 시각</b>을 함께 적었습니다.</p>
+    <div class="list">
+
+      <div class="row">
+        <div class="rank">4</div>
+        <div class="body">
+          <div class="when">12월 21일(월) · 병원 요청 <b>13:32 ~ 15:32</b><span class="tag t-정규">정규</span></div>
+          <div class="pil">丙午 庚子 己巳 辛未 · 己土 중화 · 통근 3</div>
+          <div class="ok">가족 충 없음 · 창이 2시간으로 넉넉합니다</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">12</div>
+        <div class="body">
+          <div class="when">12월 21일(월) · 병원 요청 <b>09:00 ~ 09:32</b><span class="tag t-연장">연장</span></div>
+          <div class="pil">丙午 庚子 己巳 戊辰 · 己土 신강 · 통근 3</div>
+          <div class="flag">창이 32분뿐입니다 · 누나(戌)와 시지 辰이 충 — 권하지 않습니다</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">13</div>
+        <div class="body">
+          <div class="when">12월 18일(금) · 병원 요청 <b>09:32 ~ 11:32</b><span class="tag t-정규">정규</span></div>
+          <div class="pil">丙午 庚子 丙寅 癸巳 · 丙火 중화 · 통근 3</div>
+          <div class="meta">寅이 들어와 어머니·누나와 火국을 이룹니다</div>
+          <div class="flag">아버지(申)와 일지 寅이 충</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">16</div>
+        <div class="body">
+          <div class="when">12월 23일(수) · 병원 요청 <b>15:32 ~ 17:00</b><span class="tag t-정규">정규</span></div>
+          <div class="pil">丙午 庚子 辛未 丙申 · 辛金 중화 · 통근 1</div>
+          <div class="ok">가족 충 없음</div>
+          <div class="meta">뿌리가 한 곳뿐이라 위 자리들보다 약합니다</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="rank">18</div>
+        <div class="body">
+          <div class="when">12월 18일(금) · 병원 요청 <b>11:32 ~ 13:32</b><span class="tag t-정규">정규</span></div>
+          <div class="pil">丙午 庚子 丙寅 甲午 · 丙火 신강 · 통근 3</div>
+          <div class="flag">아버지(申)와 일지 寅이 충</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- 세 고전 교차검증 -->
+  <section>
+    <h2>세 고전으로 다시 확인했습니다 <small>자평진전 · 적천수 · 궁통보감</small></h2>
+    <p class="lead">저희 채점만으로 정해 드리면 그것은 저희 기준일 뿐입니다.
+      그래서 좁힌 자리들을 <b>고전 세 권의 관점으로 따로 채점해</b> 다시 확인했습니다.
+      세 관점은 보는 곳이 서로 다릅니다.</p>
+
+    <div class="tw">
+    <table>
+      <tr><th>고전</th><th>무엇을 보는가</th><th>이 아이에게 묻는 것</th></tr>
+      <tr><td><b>자평진전</b></td><td>격국 — 타고난 그릇의 짜임</td><td>쓸 만한 그릇으로 태어났는가</td></tr>
+      <tr><td><b>적천수</b></td><td>억부·유통 — 힘의 균형과 흐름</td><td>기운이 한 바퀴 도는가</td></tr>
+      <tr><td><b>궁통보감</b></td><td>조후 — 계절의 춥고 더움</td><td>한겨울에 나서 얼지 않는가</td></tr>
+    </table>
+    </div>
+
+    <div class="tw">
+    <table>
+      <tr><th>자리</th><th>자평진전</th><th>적천수</th><th>궁통보감</th></tr>
+      <tr>
+        <td><b>12/21 미시</b><br><span class="tiny">권해 드린 자리</span></td>
+        <td><span class="pill p-no">파격</span><br><span class="tiny">편재격 · 비겁이 재를 겁탈</span></td>
+        <td><span class="sc hi">83</span></td><td><span class="sc hi">88</span></td>
+      </tr>
+      <tr>
+        <td><b>12/14 신시</b><br><span class="tiny">뒤에 말씀드릴 자리</span></td>
+        <td><span class="pill p-ok">성격</span><br><span class="tiny">양인격 · 녹왕에 관성 투출</span></td>
+        <td><span class="sc hi">83</span></td><td><span class="sc hi">88</span></td>
+      </tr>
+      <tr>
+        <td><b>12/17 해시</b><br><span class="tiny">받으셨던 자리</span></td>
+        <td><span class="pill p-no">파격</span><br><span class="tiny">편인격 · 효신탈식</span></td>
+        <td><span class="sc hi">82</span></td><td><span class="sc hi">88</span></td>
+      </tr>
+      <tr>
+        <td><b>12/18 사시</b><br><span class="tiny">火국을 이루는 자리</span></td>
+        <td><span class="pill p-no">파격</span><br><span class="tiny">정관격 · 상관견관</span></td>
+        <td><span class="sc hi">83</span></td><td><span class="sc mid">64</span></td>
+      </tr>
+    </table>
+    </div>
+
+    <div class="callout">
+      <h4>먼저 솔직히 말씀드립니다 — 이 달은 자평진전에 인색한 달입니다</h4>
+      <p>132개 시간대를 자평진전 격국으로 전부 판정해 보니 <b>절반인 66개가 파격</b>이었습니다.
+        파격 사유도 몇 가지에 몰려 있습니다 — 상관견관 24개, 효신탈식 24개, 비겁이 재를 겁탈 16개.
+        <b>날짜를 고르는 문제가 아니라 이 달의 짜임 자체가 그렇습니다.</b>
+        연지 午와 월지 子가 충하는 것과 같은 종류의, 고를 수 없는 조건입니다.</p>
+      <p>그래서 이번 달에 한해 자평진전 점수만으로 순위를 매기면
+        <b>정작 아드님 인생에서 중요한 것을 놓치게 됩니다.</b> 이유는 바로 아래에 있습니다.</p>
+    </div>
+
+    <div class="callout">
+      <h4>세 관점이 모두 인정한 자리는 132개 중 16개였습니다</h4>
+      <p>그중 <b>평일 정규 수술시간이면서 가족 세 분 누구와도 충하지 않는 자리</b>는 하나였습니다 —
+        <b>12월 14일(월) 오후 3시 32분 ~ 5시 32분</b>, 丙午 庚子 壬戌 戊申입니다.</p>
+      <p>이 자리는 저희가 권해 드린 12월 21일과 <b>정반대 성격의 사주</b>가 됩니다.
+        어느 쪽이 낫다고 저희가 정할 수 없는 갈림이라, 다음 장에 그대로 펼쳐 두었습니다.</p>
+    </div>
+  </section>
+
+  <!-- 맞바꿈 -->
+  <section>
+    <h2>감추지 않고 말씀드릴 것</h2>
+    <div class="callout">
+      <h4>가장 큰 갈림 — 타고난 그릇이냐, 운이 오는 시기냐</h4>
+      <p>어머니께서 <b>재물과 자리, 그리고 대운</b>을 말씀하셨기에 이 둘을 나란히 놓습니다.
+        두 자리는 같은 것을 주지 않습니다. 정반대를 줍니다.</p>
+      <div class="tw">
+      <table>
+        <tr><th></th><th>12/21 미시 (己巳)</th><th>12/14 신시 (壬戌)</th></tr>
+        <tr><td>타고난 재관</td>
+            <td><span class="sc lo">재1 관1</span> · 천간에 드러난 것 없음</td>
+            <td><span class="sc hi">재3 관4</span> · 재·관 모두 천간에 투출</td></tr>
+        <tr><td>자평진전</td><td><span class="pill p-no">파격</span></td><td><span class="pill p-ok">성격</span></td></tr>
+        <tr><td>감당할 뿌리</td>
+            <td>세 지지 · 지장간 <b>여섯</b> 자리</td>
+            <td>세 지지 · 지장간 <b>네</b> 자리</td></tr>
+        <tr><td>재관 대운</td>
+            <td><span class="sc hi">15세 ~ 54세</span><br><span class="tiny">壬寅 정재·정관 → 癸卯 편재·편관 → 甲辰 정관 → 乙巳 편관</span></td>
+            <td><span class="sc mid">37세 ~ 66세</span><br><span class="tiny">17~36세는 비겁·식상 · 甲辰 → 乙巳 → 丙午</span></td></tr>
+      </table>
+      </div>
+      <p><b>12월 21일은 빈손으로 나서 운이 채워주는 사주</b>입니다.
+        타고난 재관은 거의 없는데 <b>사회에 나가는 15세부터 40년이 통째로 재관 대운</b>입니다.
+        자평진전이 파격이라 하는 이유가 바로 이것입니다 — 원국에 채워진 것이 없으니 그릇으로는 볼 것이 없습니다.
+        <b>자평진전은 대운을 격국 판정에 넣지 않습니다.</b> 고전의 한계가 아니라 보는 자리가 다른 것입니다.</p>
+      <p><b>12월 14일은 갖추고 나서 늦게 열리는 사주</b>입니다.
+        재관이 넉넉하고 천간에 드러나 세 고전이 모두 인정하지만,
+        <b>17세부터 36세까지 스무 해가 비겁·식상 대운</b>입니다.
+        재물과 자리가 본격적으로 도는 것은 37세부터입니다.</p>
+      <p>어머니 마음으로 <b>아드님이 젊을 때 자리 잡는 것을 보고 싶으시면 12월 21일</b>,
+        <b>늦더라도 크게 갖춘 그릇을 원하시면 12월 14일</b>입니다.
+        저희가 21일을 앞에 둔 것은 어머니께서 <b>대운</b>을 먼저 말씀하셨기 때문이지,
+        14일이 못해서가 아닙니다.</p>
+      <p class="tiny">한 가지 덧붙입니다 — 12월 14일에 낳으시면 아이의 일주가 <b>壬戌</b>로
+        따님과 똑같아집니다. 남매의 일주가 겹치면 성향이 많이 닮습니다.
+        잘 통하는 쪽으로도, 서로 부딪히는 쪽으로도 봅니다. 좋고 나쁨으로 갈리는 항목이 아니라
+        알고 계시라고 적어 둡니다.</p>
+    </div>
+    <div class="callout">
+      <h4>12월 18일은 좋은데 아버지와 부딪힙니다</h4>
+      <p>어머니(午)와 누나(戌)는 이미 火국의 두 글자를 갖고 계십니다. 寅 하나가 비어 있습니다.
+        12월 18일에 태어나면 아이가 그 寅을 채워 <b>어머니·누나와 가장 잘 맞물립니다.</b></p>
+      <p>그런데 <b>바로 그 寅이 아버지의 申과 충합니다.</b>
+        어머니·누나와 가장 잘 맞는 글자가 아버지와는 부딪히는 글자입니다.
+        이것은 좋고 나쁨이 아니라 맞바꿈이라, 저희가 대신 정해 드릴 수 없습니다.</p>
+    </div>
+    <div class="callout">
+      <h4>상위권 전부에 공통된 약점이 하나 있습니다</h4>
+      <p>이 달은 비겁이 셀 수밖에 없는 구조라, 좋은 자리들에도 <b>비겁이 재물을 나눠 갖는 형태</b>가
+        공통으로 보입니다. 날짜를 골라도 피하기 어렵습니다.</p>
+      <p>사주 탓으로 볼 일이 아니라 <b>살면서 조심할 지점</b>으로 알아두시면 됩니다 —
+        동업과 돈거래에서 새기 쉽습니다.</p>
+    </div>
+  </section>
+
+  <!-- 피할 자리 -->
+  <section>
+    <h2>피하시길 권하는 자리</h2>
+    <div class="tw">
+    <table>
+      <tr><th>날짜·시각</th><th>이유</th></tr>
+      <tr><td><b>12월 22일(화)</b> 전 시간대</td>
+          <td>목·토가 모두 비어 기운이 한 바퀴 돌지 못합니다. 이 기간 최하위가 전부 이 날입니다.</td></tr>
+      <tr><td><b>12월 17일(목)</b> 전 시간대</td>
+          <td>乙木이 한겨울에 나서 열두 시진 모두 신약이고 뿌리가 하나뿐입니다. 재관이 있어도 감당하기 어렵습니다.</td></tr>
+      <tr><td>12월 21일 <b>오전 9시~9시 32분</b></td>
+          <td>사주는 좋으나 창이 32분뿐이라 병원이 조금만 늦어도 시주가 바뀝니다.</td></tr>
+    </table>
+    </div>
+  </section>
+
+
+  <!-- 엔진 -->
+  <section>
+    <h2>이 보고서는 어떻게 계산되었나</h2>
+    <p class="lead">저희가 새로운 명리를 만든 것이 아닙니다. 그런 것은 없습니다.
+      저희가 한 일은 <b>고전에 적힌 것을 계산할 수 있게 만든 것</b>입니다.
+      그래서 같은 조건을 넣으면 언제 넣어도 같은 답이 나오고, 왜 그렇게 나왔는지 되짚을 수 있습니다.</p>
+
+    <div class="callout">
+      <h4>하나 — 만세력부터 의심했습니다</h4>
+      <p>절기 시각은 태양의 겉보기 황경으로 직접 계산하고,
+        한국천문연구원이 발표한 24절기 시각과 <b>분 단위까지 대조</b>했습니다.
+        표에서 베끼지 않았습니다.</p>
+      <p>여기에 <b>진태양시</b>(서울은 시계보다 32분 늦습니다),
+        <b>1954년~1961년의 옛 표준시</b>(그때는 UTC+8:30이었습니다),
+        <b>1987·1988년의 서머타임</b>을 모두 반영합니다.
+        저희가 표본으로 확인해 보니 이 보정을 넣고 빼는 것만으로
+        <b>다섯 명 중 한 명꼴로 시주가 바뀌었습니다.</b>
+        시주가 바뀌면 택일은 처음부터 무의미해집니다.</p>
+    </div>
+
+    <div class="callout">
+      <h4>둘 — 골라 보지 않고 전부 계산했습니다</h4>
+      <p>11일 × 12시진, <b>132개 시간대를 하나도 빼지 않고</b> 계산했습니다.
+        사람이 손으로 볼 때는 좋아 보이는 날 몇 개를 먼저 잡고 그 안에서 고르게 됩니다.
+        그러면 <b>애초에 후보에 오르지 못한 자리</b>는 영영 보이지 않습니다.
+        실제로 세 고전이 모두 인정한 16개 자리는 특정 날짜에 몰려 있지 않고
+        기간 전체에 흩어져 있었습니다. 전부 계산하지 않으면 찾을 수 없는 형태입니다.</p>
+    </div>
+
+    <div class="callout">
+      <h4>셋 — 원국만 보지 않고 여섯 층으로 쌓아 봅니다</h4>
+      <p>사주는 태어난 자리 하나로 끝나지 않습니다.
+        <b>원국 · 대운 · 세운 · 월운 · 일운 · 시운</b> 여섯 층을 차례로 쌓고,
+        아래 다섯 층이 만든 상태를 몸(體)으로 삼아 맨 위 한 층이 그 몸에 순행인지 역행인지를 봅니다.</p>
+      <p>이것이 <b>이 보고서에서 원국의 재관과 대운의 재관을 따로 세는 이유</b>입니다.
+        원국이 비었어도 운이 채우는 사주가 있고, 갖췄어도 운이 늦게 오는 사주가 있습니다.
+        오늘 앞장에서 보신 12월 21일과 14일의 갈림이 정확히 그것입니다.</p>
+    </div>
+
+    <div class="callout">
+      <h4>넷 — 고전이 갈리는 지점을 감추지 않고 측정했습니다</h4>
+      <p>자평진전·적천수·궁통보감을 각각 채점 규칙으로 옮긴 뒤,
+        같은 사주 <b>360개</b>에 세 관점을 동시에 돌려 얼마나 어긋나는지 재 봤습니다.
+        <b>자평진전과 적천수의 상관계수는 −0.18</b>이었고,
+        <b>셋이 모두 같은 자리를 상위로 꼽은 경우는 7%가 되지 않았습니다.</b></p>
+      <p>그래서 저희는 다른 곳에서 받으신 택일을 두고 틀렸다고 말씀드리지 않습니다.
+        <b>기준이 다르면 답이 다른 것이 정상이라는 사실을 저희가 직접 숫자로 확인했기 때문</b>입니다.
+        저희가 드릴 수 있는 것은 정답이 아니라, <b>왜 그렇게 나왔는지 끝까지 보여드리는 것</b>입니다.</p>
+    </div>
+
+    <div class="callout">
+      <h4>다섯 — 채점 기준을 공개하고, 직접 확인하실 수 있게 했습니다</h4>
+      <p>통근을 몇 점으로 볼지, 재다신약을 몇 점 깎을지 전부 적어 두었습니다.
+        이 보고서에 적힌 날짜와 시각을 <b>chaeksa.kr</b>에 그대로 넣어 보시면
+        사주와 대운이 같게 나오는지 <b>직접 대조하실 수 있습니다.</b>
+        확인할 수 없는 자료는 근거가 아니라 주장일 뿐이라고 생각합니다.</p>
+    </div>
+  </section>
+
+  <!-- 한계 -->
+  <div class="fine">
+    <h3>이 보고서의 한계</h3>
+    <ul>
+      <li><b>출산 날짜는 의사가 정합니다.</b> 산모와 아기의 상태, 병원 일정이 언제나 먼저입니다.
+        이 보고서는 의사가 주신 범위 안에서 고르시는 참고자료이며, 의학적 판단을 대신하지 않습니다.</li>
+      <li><b>채점 비중은 저희가 정한 것입니다.</b> 통근을 몇 점으로 볼지, 유통을 몇 점으로 볼지는
+        고전에 적혀 있지 않습니다. 격국을 우선하는 관점도, 조후를 먼저 잡는 관점도 있습니다.
+        <b>이 자료는 정답이 아니라 ‘이 기준으로는 이렇게 나왔다’입니다.</b></li>
+      <li><b>다른 곳의 택일이 틀렸다고 말씀드리지 않습니다.</b> 유파가 다르면 답도 다른 것이 정상입니다.
+        저희가 같은 사주 360개를 세 고전으로 채점해 봤을 때 서로 일치한 경우는 7%가 되지 않았습니다.</li>
+      <li><b>계산은 서울 기준입니다.</b> 다른 지역에서 낳으시면 시각 보정이 최대 11분까지 달라져
+        경계에 걸린 자리는 시주가 바뀔 수 있습니다.</li>
+      <li>대운은 성별에 따라 순행과 역행이 갈립니다. 이 보고서는 <b>남아</b> 기준으로 계산했습니다.</li>
+    </ul>
+  </div>
+
+  <footer>
+    만세력·절기 계산은 한국천문연구원이 발표한 24절기 시각과 분 단위까지 대조해 검증했습니다.<br>
+    위 날짜를 <b>chaeksa.kr</b> 에 직접 넣어보시면 같은 결과를 확인하실 수 있습니다.<br>
+    문의는 블로그 댓글로 남겨주시면 됩니다.
+  </footer>
+
+</div>

@@ -126,10 +126,32 @@ function evaluate(R, CFG, W) {
   if (여름) { if (ec[4] === 0) s -= W.조후; else if (ec[4] >= 2) s += W.조후 / 2; }
   if (a.gotMonth) s += 4;
   if (W.재관) {
-    s += Math.min(26, (재총 + 관총) * 6) * W.재관;
-    s += ((재천 > 0 ? 7 : 0) + (관천 > 0 ? 7 : 0)) * W.재관;
-    s += (재총 > 0 && 관총 > 0 ? 9 : 0) * W.재관;
-    if (재다신약) s -= 20 * W.재관;
+    // "돈 잘 벌고 자리 좋다" 는 재관의 개수가 아니라 구조다.
+    // 재가 넷이어도 신약하면 보이기만 하고 못 잡는다. 감당 → 용신 → 흐름 순으로 본다.
+    const 재오행 = EL[(de + 2) % 5], 관오행 = EL[(de + 3) % 5];
+    const 재용 = a.yongCandidates.includes(재오행), 관용 = a.yongCandidates.includes(관오행);
+    const 식상생재 = 식총 > 0 && 재총 > 0, 재생관 = 재총 > 0 && 관총 > 0;
+    const 관인상생 = 관총 > 0 && 인총 > 0;
+    const 관살혼잡 = jiAll.concat(cheon).includes('정관') && jiAll.concat(cheon).includes('편관');
+    // 감당력이 먼저다
+    if (a.strengthScore >= 0.5) s += 26;
+    else if (a.strengthScore >= 0.45) s += 18;
+    else if (a.strengthScore >= 0.38) s += 6;
+    else s -= 14;
+    if (root === 0) s -= 10;
+    // 재관이 용신이어야 약이 된다. 기신이면 많을수록 짐이다
+    if (재용 && 재총 > 0) s += 14;
+    if (관용 && 관총 > 0) s += 14;
+    if (!재용 && 재총 >= 3) s -= 10;
+    // 흐름 — 만든 것이 돈이 되고, 돈이 자리가 되는가
+    if (식상생재) s += 14;
+    if (재생관) s += 14;
+    if (식상생재 && 재생관) s += 10;
+    if (관인상생) s += 8;
+    if (재천 > 0) s += 7; if (관천 > 0) s += 7;
+    if (재다신약) s -= 30;
+    if (관살혼잡) s -= 8;
+    if (cnt('비겁', jiAll.concat(cheon)) >= 3 && 재총 > 0) s -= 14;
   }
   if (W.대운) {
     s += 재관대운.length * 4 * W.대운;
@@ -171,10 +193,24 @@ function run(CFG) {
       const v = evaluate(R, CFG, W);
       const a = (hh + 23) % 24, b = (hh + 1) % 24;
       const cm = hh * 60 + 30 + shift;
+      // 병원이 실제로 잡아주는가. 좋은 자리를 알려줘도 못 잡으면 소용없다.
+      const cs = a * 60 + shift, ce = b * 60 + shift;
+      const ov = (a1,b1,a2,b2) => Math.max(0, Math.min(b1,b2) - Math.max(a1,a2));
+      const 정규 = ov(cs, ce, 9*60, 17*60), 연장 = ov(cs, ce, 7*60, 19*60);
+      const dw = dt.getDay(), 주말 = dw === 0 || dw === 6;
+      const 등급 = 주말 ? '주말' : 정규 >= 60 ? '정규' : 연장 >= 60 ? '연장' : '야간';
+      const 안내 = { 주말:'주말이라 예약 수술은 어렵습니다',
+                     정규:'대부분 병원의 정규 수술 시간',
+                     연장:'이른 아침·저녁. 협의하면 가능한 곳이 있습니다',
+                     야간:'밤·새벽. 시간을 맞춰주는 병원을 찾으셔야 합니다' }[등급];
+      // 실제로 요청할 시각. 시진 창이 정규시간과 겹치는 구간만 남긴다.
+      const 요청 = 정규 > 0 ? `${w(Math.max(cs,9*60))}~${w(Math.min(ce,17*60))}`
+                 : 연장 > 0 ? `${w(Math.max(cs,7*60))}~${w(Math.min(ce,19*60))}` : '—';
       rows.push({
         날짜: `${M}/${D}(${DOW[dt.getDay()]})`, _m: M, _d: D, _hh: hh,
         시진: JIN[Math.floor(((hh + 1) % 24) / 2)],
         시계창: `${w(a * 60 + shift)}~${w(b * 60 + shift)}`,
+        등급, 안내, 요청시각: 요청, 창길이: 정규 > 0 ? 정규 : 연장,
         주간: cm >= (CFG.주간시작 || 8.5) * 60 && cm <= (CFG.주간끝 || 17) * 60,
         원국: ['year','month','day','hour'].map(k => E.fmt.pillar(R.pillars[k])).join(' '),
         일간: E.fmt.stem(R.pillars.day.stem),
@@ -190,7 +226,8 @@ function run(CFG) {
   by.forEach((r, i) => r.순위 = i + 1);
 
   const f = r => ({
-    자리: `${r.순위}위 · ${r.날짜} ${r.시계창} ${r.시진}시 ${r.주간 ? '[주간]' : '[야간]'}`,
+    자리: `${r.순위}위 · ${r.날짜} ${r.시계창} ${r.시진}시 [${r.등급}]`,
+    병원요청: r.요청시각 === '—' ? `— ${r.안내}` : `${r.요청시각} · ${r.안내}` + (r.창길이 < 60 ? ` ⚠ 창이 ${r.창길이}분뿐` : ''),
     원국: `${r.원국} · ${r.일간}일간 ${r.강약}(${r.강약값}) 통근${r.통근} 유통${r.유통}/5 · ${r.점수}점`,
     오행: `${r.오행} (없는 ${r.없는})`,
     재관: `재 ${r.재}${r.재천 ? `(천간 ${r.재천})` : ''} · 관 ${r.관}${r.관천 ? `(천간 ${r.관천})` : ''}` + (r.재다신약 ? ' ⚠ 재다신약 — 보여도 못 잡는다' : ''),
@@ -212,10 +249,12 @@ function run(CFG) {
     후보수: rows.length,
     피할수없는충: 공통충.length ? 공통충 : '없음',
     보정폭: `${shift}분`,
-    상위6: by.slice(0, 6).map(f),
-    주간상위3: by.filter(r => r.주간).slice(0, 3).map(f),
-    가족충없는상위3: by.filter(r => r.가족부딪힘 === '없음').slice(0, 3).map(f),
+    // 두 묶음으로 낸다. 사주로 좋은 것과 실제로 잡을 수 있는 것은 다르다.
+    사주로_좋은_자리5: by.slice(0, 5).map(f),
+    실제_잡을수있는_자리5: by.filter(r => r.등급 === '정규' || r.등급 === '연장').slice(0, 5).map(f),
+    가족충없는3: by.filter(r => r.가족부딪힘 === '없음').slice(0, 3).map(f),
     최하위3: by.slice(-3).reverse().map(f),
+    등급분포: ['정규','연장','야간','주말'].map(g => `${g} ${rows.filter(r => r.등급 === g).length}`).join(' · '),
     시각창,
     _rows: rows, _f: f,
   };
