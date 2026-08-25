@@ -226,9 +226,10 @@
 <div class="modal hide" id="settings">
   <div class="sheet">
     <h3>설정</h3>
-    <label>AI 비서 연결 (Anthropic API 키)</label>
-    <input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
-    <p class="hint">키는 이 기기에만 저장되고 Anthropic 서버로만 전송됩니다. 출시 버전에서는 서버가 대신 처리합니다.</p>
+    <p class="hint" style="margin:0 0 6px">AI 비서는 <b>바로 사용할 수 있습니다.</b> 아래는 직접 발급받은 키를 쓰고 싶을 때만 입력하세요.</p>
+    <label>내 API 키로 쓰기 (선택)</label>
+    <input id="apiKey" type="password" placeholder="비워두면 책사 서버를 이용합니다" autocomplete="off">
+    <p class="hint">입력하면 이 기기에만 저장되고 Anthropic 서버로만 전송됩니다.</p>
     <label>화면 테마</label>
     <div class="seg" id="themeSeg">
       <button data-t="auto">자동 (시간에 따라)</button>
@@ -237,7 +238,7 @@
     </div>
     <label>모델</label>
     <select id="model"><option value="claude-opus-5">Claude Opus 5 (기본)</option><option value="claude-sonnet-5">Claude Sonnet 5 (빠르고 저렴)</option></select>
-    <label>프록시 서버 주소 (선택)</label>
+    <label>프록시 서버 주소 (고급, 비워두면 기본값)</label>
     <input id="proxyUrl" placeholder="https://…/v1/messages">
     <div class="row" style="margin-top:16px"><button class="btn" id="btnSaveSettings">저장</button><button class="btn ghost" id="btnCloseSettings">닫기</button></div>
     <hr>

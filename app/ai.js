@@ -7,9 +7,17 @@
   const E = global.ChaeksaEngine, f = E.fmt;
   const KEY = 'chaeksa.ai';
 
-  function settings() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  // 기본 프록시 — 방문자는 키 없이 바로 쓸 수 있다.
+  // (Anthropic이 Cloudflare 발신 요청을 간헐 차단하므로 Vercel/Node 경유. docs/04 참고)
+  const DEFAULT_PROXY = 'https://chaeksa-claude.vercel.app/api/chat';
+  function settings() {
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { s = {}; }
+    if (!s.apiKey && !s.proxyUrl) s.proxyUrl = DEFAULT_PROXY;   // 개인 키를 넣었다면 그쪽이 우선
+    return s;
+  }
   function saveSettings(s) { localStorage.setItem(KEY, JSON.stringify(s)); }
-  function ready() { const s = settings(); return !!(s.apiKey || s.proxyUrl); }
+  function ready() { const s = settings(); return !!(s.apiKey || s.proxyUrl); }  // 기본 프록시 덕분에 항상 true
 
   function chartText(r, today) {
     const a = r.analysis, p = r.pillars;
