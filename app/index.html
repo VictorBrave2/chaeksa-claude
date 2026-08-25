@@ -185,6 +185,19 @@
       <section class="card" id="compatList"><h2>저장된 사람</h2><div id="partners"></div></section>
     </div>
 
+    <!-- 상담 -->
+    <div class="tab hide" data-tab="consult">
+      <section class="card">
+        <h2>심층 상담</h2>
+        <div id="consultHome"></div>
+      </section>
+      <section class="card hide" id="consultPast">
+        <h2>지난 상담</h2>
+        <div id="pastList"></div>
+      </section>
+      <section class="hide" id="consultView"></section>
+    </div>
+
     <!-- 비서 -->
     <div class="tab hide" data-tab="chat">
       <section class="card chatcard">
@@ -205,6 +218,7 @@
   <button data-go="cal"><span>▦</span>달력</button>
   <button data-go="me"><span>◎</span>나</button>
   <button data-go="compat"><span>∞</span>궁합</button>
+  <button data-go="consult"><span>◈</span>상담<i class="dot hide" id="consultDot"></i></button>
   <button data-go="chat"><span>✎</span>비서</button>
 </nav>
 
@@ -236,6 +250,8 @@
 <script src="brief.js"></script>
 <script src="calendar.js"></script>
 <script src="compat.js"></script>
+<script src="tongbyeon.js"></script>
+<script src="consult.js"></script>
 <script src="share.js"></script>
 <script src="ai.js"></script>
 <script src="app.js"></script>

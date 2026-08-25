@@ -233,7 +233,7 @@
     const dominant = ELEM[elemCount.indexOf(Math.max(...elemCount))];
     // 용신 후보(간이): 신강이면 식상·재·관 중 많은 것 설기, 신약이면 인·비
     const yong = strength === '신약' ? [ELEM[(de + 4) % 5], ELEM[de]] : [ELEM[(de + 1) % 5], ELEM[(de + 2) % 5], ELEM[(de + 3) % 5]];
-    return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, missing, dominant, yongCandidates: yong };
+    return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong };
   }
 
   // ───────── 오늘/특정 날짜의 운 ─────────

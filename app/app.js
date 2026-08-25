@@ -70,6 +70,7 @@
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = `${nim()}의 명리비서`;
     renderToday(); renderMe(); renderCal(); renderPartners(); renderChat();
+    if (window.ChaeksaConsult) { ChaeksaConsult.renderHome(); refreshConsultBadge(); }
     go('today');
   }
 
@@ -296,6 +297,19 @@
   }
   $('btnStart').onclick = showForm;
   $('btnStart2').onclick = showForm;
+
+  // ───── 외부 브리지 (consult.js에서 사용) ─────
+  window.ChaeksaApp = {
+    result: () => R,
+    profile: () => profile,
+    today: () => today,
+    refreshConsultBadge,
+  };
+  function refreshConsultBadge() {
+    const dot = $('consultDot');
+    if (!dot || !window.ChaeksaConsult) return;
+    dot.classList.toggle('hide', ChaeksaConsult.openCount() === 0);
+  }
 
   // ───── PWA ─────
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});

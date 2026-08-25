@@ -131,11 +131,58 @@ ${prof}` : ''}`;
     return dehanja(await call(systemPrompt(r, today), msgs, { maxTokens: 800 }));
   }
 
+  // 심층 상담 서술 — 구조(frame)를 벗어나지 못하게 묶는다
+  async function deepNarrate(r, today, fr, rev, prev) {
+    const top = rev.ranked[0], second = rev.ranked[1];
+    const ansText = fr.questions.map(q => `- ${q.q} → ${({y:'예',n:'아니오','?':'모르겠음'})[fr.answers[q.id]] || '무응답'}`).join('\n');
+    const structure = [
+      `[상담 주제] ${fr.domain.label} · ${fr.target.label}`,
+      `[질문] ${fr.question}`,
+      `[구조] ` + fr.layers.map(l => `${l.level} ${l.ganji}(${l.note})`).join(' / '),
+      `[들어오는 기운] 천간 ${fr.godStem}, 지지 ${fr.godBranch} (${fr.group}) · 일간 ${fr.strength}`,
+      fr.modifiers.length ? `[관계 보정] ` + fr.modifiers.map(m => m.text).join(' ') : '',
+      `[1순위 가설 ${Math.round(top.p*100)}%] ${top.title}
+  근거: ${top.basis}
+  현실신호: ${top.signs.join(' / ')}`,
+      `[2순위 가설 ${Math.round(second.p*100)}%] ${second.title}
+  근거: ${second.basis}`,
+      `[사용자 답변]
+${ansText}`,
+      rev.flipped ? `[판단 변경] 처음 1순위였던 "${fr.hypotheses.find(h=>h.id===rev.priorTopId).title}"에서 "${top.title}"로 순위를 바꿈` : `[판단 유지] 처음 판단과 같은 방향`,
+      `[실행 과제] ${top.action}`,
+      `[관측 지표] ${top.metric}`,
+      prev ? `[이전 상담] ${prev.createdAt}에 "${prev.topTitle}"를 1순위로 보았음` : '',
+    ].filter(Boolean).join('\n');
+
+    const sys = systemPrompt(r, today) + `
+
+## 지금은 심층 상담 서술 모드입니다
+아래 [구조]는 계산 엔진과 통변 규칙이 이미 확정한 결과입니다. 당신의 역할은 이 구조를 상담하듯 자연스럽게 풀어 쓰는 것입니다.
+
+절대 규칙
+- 주어진 가설 외에 새로운 가설을 만들지 않는다. 순위와 확률도 주어진 것을 따른다.
+- 간지·십신은 [구조]에 있는 것만 쓴다. 새로 계산하거나 추측하지 않는다.
+- 확정적으로 단정하지 않는다. "~할 가능성이 보입니다", "저는 ~쪽에 무게를 두겠습니다" 같은 어조.
+- 사용자의 답변을 반드시 인용해 판단 근거로 삼는다.
+- 판단이 바뀌었다면 왜 바뀌었는지 분명히 말한다. 바뀌지 않았다면 그대로 유지한다고 말한다.
+- 마지막은 실행 과제와 관측 지표로 끝낸다.
+
+분량과 형식
+- 600~900자. 문단 사이는 빈 줄로 구분.
+- 소제목을 2~3개 쓴다. 소제목은 그 자체로 문장이 되게 쓴다.
+- 목록이 필요하면 '·'로 시작하는 짧은 줄로.
+- 한자는 쓰지 않는다.
+
+${structure}`;
+    const raw = await call(sys, [{ role:'user', content:'위 구조를 바탕으로 상담해 주세요. 인사 없이 바로 본론부터.' }], { maxTokens: 2000, effort: 'medium' });
+    return dehanja(raw);
+  }
+
   // 궁합 해설
   async function compatText(me, you, ruleResult, today) {
     const sys = systemPrompt(me, today) + `\n\n## 상대방의 사주\n${chartText(you, today)}\n\n## 규칙 엔진이 계산한 관계\n${JSON.stringify({ score: ruleResult.score, 일간관계: ruleResult.stemRel.key, 일지관계: ruleResult.branchRels.map(b => b.key), 상대는내게: ruleResult.god, 메모: ruleResult.notes })}`;
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { dehanja, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, deepNarrate, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);
