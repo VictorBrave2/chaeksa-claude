@@ -8,9 +8,11 @@
   let profile = null, R = null;
   const elemClass = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
   const nim = () => profile.name === '당신' ? '당신' : profile.name + '님';
+  const nimSafe = () => esc(nim());
   const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
 
   // 아주 가벼운 마크다운: **굵게**, 줄바꿈만 (LLM 서술 표시용)
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   const mdLite = (t) => String(t)
     .replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]))
     .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
@@ -293,7 +295,7 @@
   function partners() { try { return JSON.parse(localStorage.getItem(PKEY)) || []; } catch (e) { return []; } }
   function renderPartners() {
     const ps = partners();
-    $('partners').innerHTML = ps.length ? ps.map((p, i) => `<div class="pl"><span>${p.name} <small>${p.year}.${p.month}.${p.day}</small></span><span><button data-i="${i}" class="see">보기</button><button data-i="${i}" class="del">지우기</button></span></div>`).join('') : '<p class="hint">아직 없어요. 위에서 한 사람 넣어보세요.</p>';
+    $('partners').innerHTML = ps.length ? ps.map((p, i) => `<div class="pl"><span>${esc(p.name)} <small>${p.year}.${p.month}.${p.day}</small></span><span><button data-i="${i}" class="see">보기</button><button data-i="${i}" class="del">지우기</button></span></div>`).join('') : '<p class="hint">아직 없어요. 위에서 한 사람 넣어보세요.</p>';
     $('partners').querySelectorAll('.see').forEach(b => b.onclick = () => showCompat(ps[+b.dataset.i]));
     $('partners').querySelectorAll('.del').forEach(b => b.onclick = () => { const a = partners(); a.splice(+b.dataset.i, 1); localStorage.setItem(PKEY, JSON.stringify(a)); renderPartners(); });
   }
@@ -305,11 +307,11 @@
   async function showCompat(p) {
     const you = E.calc(p), res = ChaeksaCompat.analyze(R, you);
     const box = $('compatResult'); box.classList.remove('hide');
-    box.innerHTML = `<h2>${profile.name} ∞ ${p.name}</h2>
-      <div class="score"><b>${res.score}</b><span>/ 100 · ${p.name}님은 내게 <b style="font-size:14px;color:var(--ink)">${res.godText}</b></span></div>
+    box.innerHTML = `<h2>${esc(profile.name)} ∞ ${esc(p.name)}</h2>
+      <div class="score"><b>${res.score}</b><span>/ 100 · ${esc(p.name)}님은 내게 <b style="font-size:14px;color:var(--ink)">${res.godText}</b></span></div>
       <div class="pillars" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
         <div class="pillar"><div class="t">나</div><div class="han ${elemClass(R.pillars.day.stem, true)}">${f.pillar(R.pillars.day)}</div></div>
-        <div class="pillar"><div class="t">${p.name}</div><div class="han ${elemClass(you.pillars.day.stem, true)}">${f.pillar(you.pillars.day)}</div></div></div>
+        <div class="pillar"><div class="t">${esc(p.name)}</div><div class="han ${elemClass(you.pillars.day.stem, true)}">${f.pillar(you.pillars.day)}</div></div></div>
       <div class="brief" style="font-size:15px"><p>${res.stemRel.text}</p>${res.branchRels.map(b => `<p>${b.text}</p>`).join('')}${res.notes.map(n => `<p style="color:var(--ink2)">${n}</p>`).join('')}</div>
       <div id="compatAi" class="brief" style="margin-top:14px;font-size:15px"></div>`;
     box.scrollIntoView({ behavior: 'smooth' });
@@ -326,7 +328,7 @@
   function renderChat() {
     try { history = JSON.parse(localStorage.getItem(HKEY)) || []; } catch (e) { history = []; }
     const box = $('msgs');
-    box.innerHTML = history.length ? history.map(m => `<div class="msg ${m.role === 'user' ? 'u' : 'a'}">${esc(m.content)}</div>`).join('') : `<div class="msg a">안녕하세요, ${nim()}. 저는 ${nim()}의 사주를 전부 알고 있는 책사예요. 고민이든 궁금한 거든 편하게 물어보세요.</div>`;
+    box.innerHTML = history.length ? history.map(m => `<div class="msg ${m.role === 'user' ? 'u' : 'a'}">${esc(m.content)}</div>`).join('') : `<div class="msg a">안녕하세요, ${nimSafe()}. 저는 ${nimSafe()}의 사주를 전부 알고 있는 책사예요. 고민이든 궁금한 거든 편하게 물어보세요.</div>`;
     $('suggest').innerHTML = SUGGEST.map(s => `<button>${s}</button>`).join('');
     $('suggest').querySelectorAll('button').forEach(b => b.onclick = () => { $('q').value = b.textContent; ask(); });
     const ok = AI.ready();
@@ -335,7 +337,7 @@
     const a = $('openSet'); if (a) a.onclick = (e) => { e.preventDefault(); openSettings(); };
     box.scrollTop = 1e9;
   }
-  function esc(s) { return s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+  // esc 는 위(15행)에 정의되어 있다 — 채팅 표시에도 같은 것을 쓴다
   async function ask() {
     const q = $('q').value.trim(); if (!q) return;
     $('q').value = '';
@@ -412,6 +414,9 @@
     const inn = C.signedIn();
     $('cloudOut').classList.toggle('hide', inn);
     $('cloudIn').classList.toggle('hide', !inn);
+    const pb = $('btnPurge'), pn = $('purgeNote');
+    if (pb) pb.classList.toggle('hide', !inn);
+    if (pn) pn.classList.toggle('hide', !inn);
     if (inn) {
       $('cloudWho').textContent = C.email() || '로그인됨';
       const at = localStorage.getItem('chaeksa.sync');
@@ -447,6 +452,19 @@
     };
     if (bs) bs.onclick = () => cloudSync(true);
     if (bo) bo.onclick = () => { C.signOut(); renderCloud(); cloudMsg('로그아웃했습니다.'); };
+    const bp = $('btnPurge');
+    if (bp) bp.onclick = async () => {
+      if (!confirm('서버에 저장된 원국·상담 기록과 계정을 모두 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
+      if (!confirm('정말 삭제하시겠습니까? 마지막 확인입니다.')) return;
+      cloudMsg('삭제 중…');
+      try {
+        await C.deleteAccount();
+        [KEY, PKEY, HKEY, 'chaeksa.consults'].forEach(k => localStorage.removeItem(k));
+        Object.keys(localStorage).filter(k => k.startsWith('chaeksa.')).forEach(k => localStorage.removeItem(k));
+        alert('모두 삭제했습니다.');
+        location.href = location.pathname;
+      } catch (e) { cloudMsg('삭제 실패: ' + e.message); }
+    };
     renderCloud();
   }
 

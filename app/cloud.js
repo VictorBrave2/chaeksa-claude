@@ -211,6 +211,16 @@
     return true;
   }
 
+  /** 서버에 저장된 내 데이터와 계정 자체를 지운다 (server/schema-2.sql의 delete_me) */
+  async function deleteAccount() {
+    if (!enabled() || !signedIn()) throw new Error('로그인 상태가 아닙니다.');
+    await api('/rest/v1/rpc/delete_me', { method: 'POST', body: '{}' });
+    clearSession();
+    localStorage.removeItem(SKEY);
+    localStorage.removeItem(PAT);
+    return true;
+  }
+
   let timer = null;
   function pushSoon() {                       // 저장이 잦으므로 묶어서 보낸다
     if (!signedIn()) return;
@@ -219,7 +229,7 @@
   }
 
   global.ChaeksaCloud = {
-    enabled, signedIn, email, sendMagicLink, signInWith, signOut, captureRedirect, me,
+    enabled, signedIn, email, sendMagicLink, signInWith, signOut, deleteAccount, captureRedirect, me,
     pull, push, pushSoon, session,
   };
 })(window);
