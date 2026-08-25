@@ -142,8 +142,21 @@ ${prof}` : ''}`;
     else { url = 'https://api.anthropic.com/v1/messages'; headers['x-api-key'] = s.apiKey; headers['anthropic-dangerous-direct-browser-access'] = 'true'; }
     const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
     if (!res.ok) {
-      let msg = `HTTP ${res.status}`;
-      try { const j = await res.json(); msg = j.error?.message || msg; } catch (e) {}
+      let msg = `HTTP ${res.status}`, raw = '';
+      try { const j = await res.json(); raw = j.error?.message || ''; msg = raw || msg; } catch (e) {}
+      // 서버 사정으로 막힌 경우는 사용자 탓이 아니다. 영어 원문을 그대로 보여주지 않는다.
+      const low = (raw + ' ' + res.status).toLowerCase();
+      const serverSide =
+        /credit|balance|quota|billing|spend limit|payment|insufficient/.test(low) ? '지금 비서를 부를 수 없습니다. 저희 쪽 사정이니 잠시 뒤 다시 열어드리겠습니다.'
+        : res.status === 429 ? '지금 요청이 몰려 있습니다. 잠시 뒤 다시 시도해 주세요.'
+        : res.status >= 500 ? '비서 쪽 서버가 잠시 불안정합니다. 곧 정상으로 돌아옵니다.'
+        : null;
+      if (serverSide) {
+        const err = new Error(serverSide);
+        err.serverSide = true;
+        err.detail = raw;              // 콘솔 확인용 — 화면에는 안 띄운다
+        throw err;
+      }
       throw new Error(msg);
     }
     const j = await res.json();

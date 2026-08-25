@@ -432,7 +432,11 @@
       } else {
         collapseRuleCard(false);
         heroFallback();
-        box.insertAdjacentHTML('beforeend', `<span class="hd-note">AI 브리핑을 가져오지 못했어요 · ${esc(e.message)}</span>`);
+        // 저희 쪽 사정이면 사용자에게 실패를 떠넘기지 않는다
+        const note = e.serverSide ? esc(e.message)
+                                  : `AI 브리핑을 가져오지 못했어요 · ${esc(e.message)}`;
+        box.insertAdjacentHTML('beforeend', `<span class="hd-note">${note}</span>`);
+        if (e.detail) try { console.warn('[chaeksa] AI 오류 상세:', e.detail); } catch (_) {}
       }
     }
   }
