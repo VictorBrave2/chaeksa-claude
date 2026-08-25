@@ -275,8 +275,14 @@
     timer = setTimeout(() => push().catch(() => {}), 1500);
   }
 
+  /** AI 프록시에 실어 보낼 토큰. 만료 직전이면 갱신해서 준다. */
+  async function token() {
+    const s = await freshSession();
+    return (s && s.access_token) || null;
+  }
+
   global.ChaeksaCloud = {
     enabled, signedIn, email, sendMagicLink, signInWith, signOut, deleteAccount, captureRedirect, me,
-    pull, push, pushSoon, session,
+    pull, push, pushSoon, session, token,
   };
 })(window);

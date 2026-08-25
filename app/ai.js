@@ -138,12 +138,35 @@ ${prof}` : ''}`;
     }, paramsFor(model, opts.effort));
     let url, headers = { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' };
     if (body.fallbacks) headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
-    if (s.proxyUrl) { url = s.proxyUrl; }
+    if (s.proxyUrl) {
+      url = s.proxyUrl;
+      // 프록시가 서버에서 인증·계량한다 (api/chat.js + server/schema-5.sql).
+      // 토큰이 없으면 안 실어 보낸다 — 서버가 401로 막고, 그 메시지를 그대로 보여준다.
+      headers['x-chaeksa-task'] = task;
+      try {
+        const C = global.ChaeksaCloud;
+        const tok = C && C.token ? await C.token() : null;
+        if (tok) headers.authorization = 'Bearer ' + tok;
+      } catch (e) {}
+    }
     else { url = 'https://api.anthropic.com/v1/messages'; headers['x-api-key'] = s.apiKey; headers['anthropic-dangerous-direct-browser-access'] = 'true'; }
     const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
     if (!res.ok) {
-      let msg = `HTTP ${res.status}`, raw = '';
-      try { const j = await res.json(); raw = j.error?.message || ''; msg = raw || msg; } catch (e) {}
+      let msg = `HTTP ${res.status}`, raw = '', kind = '';
+      try { const j = await res.json(); raw = j.error?.message || ''; kind = j.error?.type || ''; msg = raw || msg; } catch (e) {}
+      // 서버가 한도·로그인을 막은 것 — 혼잡·장애와 섞으면 안 된다.
+      if (kind === 'quota' || kind === 'auth') {
+        // 화면 카운터를 서버 판정에 맞춘다. 지운 localStorage로 다시 물어봐도 서버가 다시 막는다.
+        if (kind === 'quota' && global.ChaeksaUsage) {
+          // record()로 채워야 저장까지 된다. state()가 주는 건 사본이다.
+          try { const U = global.ChaeksaUsage; let g = U.limit(task) + 1; while (U.can(task) && g-- > 0) U.record(task); } catch (e) {}
+        }
+        const err = new Error(raw || '사용 한도에 닿았습니다.');
+        err.blocked = kind === 'quota' && global.ChaeksaUsage
+          ? global.ChaeksaUsage.blockedMessage(task)
+          : { title: raw || '로그인이 필요합니다', body: '', cta: null };
+        throw err;
+      }
       // 서버 사정으로 막힌 경우는 사용자 탓이 아니다. 영어 원문을 그대로 보여주지 않는다.
       const low = (raw + ' ' + res.status).toLowerCase();
       const serverSide =
