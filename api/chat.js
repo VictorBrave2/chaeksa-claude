@@ -18,8 +18,9 @@
  *   ANTHROPIC_API_KEY   필수 — 여기 있어야 할 유일한 비밀
  *   ALLOWED_ORIGIN      예: https://chaeksa.kr  (쉼표로 여러 개, 비우면 모두 허용)
  *   DAILY_LIMIT         인스턴스당 IP 하루 호출 상한. 기본 40 (토큰 도난 시의 겉껍데기 방어)
- *   SUPABASE_URL / SUPABASE_ANON_KEY — 넣지 않아도 된다(공개값이라 코드에 기본값 있음).
- *     넣으면 덮어쓴다. service_role 키는 어디에도 절대 넣지 말 것.
+ *   SUPABASE_URL_OVERRIDE / SUPABASE_ANON_OVERRIDE — 평소엔 불필요(공개값이라 코드에
+ *     기본값 있음). 프로젝트 이전 때만 쓴다. 예전 이름 SUPABASE_URL·SUPABASE_ANON_KEY는
+ *     깨진 값이 남은 전례가 있어 일부러 읽지 않는다. service_role 키는 어디에도 절대 금지.
  *
  * 호출 주소: https://<프로젝트>.vercel.app/api/chat
  */
@@ -55,8 +56,10 @@ const env = (k) => clean(process.env[k]).replace(/\/+$/, '');
 // Vercel에 남아야 할 비밀은 ANTHROPIC_API_KEY 하나뿐이다.
 const SB_URL_DEFAULT = 'https://dedgzremezveiwhosqjj.supabase.co';
 const SB_ANON_DEFAULT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZGd6cmVtZXp2ZWl3aG9zcWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1ODQyNzcsImV4cCI6MjEwMzE2MDI3N30.ek3yy6tZuYLydS6f1yiLrXIUGSJCeiNLPN5bExas-TA';
-const sbUrl = () => env('SUPABASE_URL') || SB_URL_DEFAULT;
-const sbAnon = () => clean(process.env.SUPABASE_ANON_KEY) || SB_ANON_DEFAULT;
+// 기존 SUPABASE_URL·SUPABASE_ANON_KEY 환경변수는 깨진 채 남아 있을 수 있으므로
+// '일부러 무시'한다. 나중에 프로젝트를 옮길 때는 _OVERRIDE 이름으로만 덮어쓴다.
+const sbUrl = () => env('SUPABASE_URL_OVERRIDE') || SB_URL_DEFAULT;
+const sbAnon = () => clean(process.env.SUPABASE_ANON_OVERRIDE) || SB_ANON_DEFAULT;
 
 /** Supabase RPC — 사용자 토큰으로 부른다. 반환: 함수의 json 또는 { ok:false, reason } */
 async function rpc(name, args, userToken) {
