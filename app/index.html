@@ -22,13 +22,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=25">
+<link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo"><i class="seal">策</i><span>책사<small id="subtitle">나의 명리비서</small></span></div>
     <div class="hbtns">
+      <button class="btn-ghost hide" id="btnPerson" aria-label="사람 바꾸기"><b id="personName"></b> ▾</button>
       <button class="btn-ghost btn-icon" id="btnTheme" aria-label="낮·밤 테마 바꾸기" title="낮/밤 바꾸기">☀</button>
       <button class="btn-ghost" id="btnSettings">설정</button>
     </div>
@@ -182,17 +183,14 @@
     <!-- 궁합 -->
     <div class="tab hide" data-tab="compat">
       <section class="card">
-        <h2>궁합 · 이 사람과 나</h2>
-        <label>상대 이름</label><input id="cName" aria-label="상대 이름" placeholder="예: 민준">
-        <label>상대 생년월일 (양력)</label>
-        <div class="row"><input id="cY" aria-label="상대 출생 연도" type="number" placeholder="1992" inputmode="numeric"><input id="cM" aria-label="상대 출생 월" type="number" placeholder="월" inputmode="numeric"><input id="cD" aria-label="상대 출생 일" type="number" placeholder="일" inputmode="numeric"></div>
-        <label>태어난 시간 (모르면 비워두세요)</label>
-        <div class="row"><input id="cH" aria-label="상대 태어난 시" type="number" placeholder="시" inputmode="numeric"><input id="cMi" aria-label="상대 태어난 분" type="number" placeholder="분" inputmode="numeric"></div>
-        <label>성별</label><select id="cG" aria-label="상대 성별"><option value="F">여성</option><option value="M">남성</option></select>
+        <h2>궁합 · 두 사람 사이</h2>
+        <p class="hint" style="margin:0 0 12px">등록한 사람들 사이의 궁합을 봅니다. 기준이 되는 사람은 지금 보고 있는 <b id="compatMe"></b>입니다.</p>
+        <label>누구와의 궁합을 볼까요</label>
+        <select id="cPick" aria-label="궁합 상대"></select>
         <button class="btn" id="btnCompat">궁합 보기</button>
+        <button class="btn ghost" id="btnCompatAdd">사람 추가하기</button>
       </section>
       <section class="card hide" id="compatResult"></section>
-      <section class="card" id="compatList"><h2>저장된 사람</h2><div id="partners"></div></section>
     </div>
 
     <!-- 상담 -->
@@ -233,6 +231,56 @@
   <button data-go="consult"><span>◈</span>상담<i class="dot hide" id="consultDot"></i></button>
   <button data-go="chat"><span>✎</span>비서</button>
 </nav>
+
+
+<!-- 사람 전환 -->
+<div class="modal hide" id="peopleSheet">
+  <div class="sheet">
+    <h3>누구의 사주를 볼까요</h3>
+    <p class="hint" style="margin:0 0 14px">등록한 사람을 눌러 바꿉니다. 오늘 브리핑·원국·택일·상담이 모두 그 사람 기준으로 바뀝니다.</p>
+    <div id="peopleList"></div>
+    <button class="btn" id="btnAddPerson">사람 추가하기</button>
+    <button class="btn ghost" id="btnClosePeople">닫기</button>
+  </div>
+</div>
+
+<!-- 사람 추가/수정 -->
+<div class="modal hide" id="personForm">
+  <div class="sheet">
+    <h3 id="pfTitle">사람 추가</h3>
+    <p class="hint" style="margin:0 0 4px">가까운 사람의 사주를 등록하면 그 사람의 오늘과 흐름도 볼 수 있습니다.</p>
+    <label>이름 (부를 때 쓸 이름)</label>
+    <input id="pfName" aria-label="이름" placeholder="예: 어머니">
+    <label>나와의 관계</label>
+    <select id="pfRel" aria-label="나와의 관계"></select>
+    <label>생년월일</label>
+    <div class="seg" id="pfCalSeg">
+      <button type="button" data-cal="solar" class="on">양력</button>
+      <button type="button" data-cal="lunar">음력</button>
+    </div>
+    <div class="row">
+      <input id="pfY" type="number" aria-label="출생 연도" placeholder="1990" inputmode="numeric">
+      <input id="pfM" type="number" aria-label="출생 월" placeholder="월" inputmode="numeric">
+      <input id="pfD" type="number" aria-label="출생 일" placeholder="일" inputmode="numeric">
+    </div>
+    <div class="check hide" id="pfLeapWrap"><input type="checkbox" id="pfLeap"><label for="pfLeap" style="margin:0">윤달이에요</label></div>
+    <p class="conv hide" id="pfConv"></p>
+    <label>태어난 시간</label>
+    <div class="row">
+      <input id="pfH" type="number" aria-label="태어난 시" placeholder="시 (0~23)" inputmode="numeric">
+      <input id="pfMi" type="number" aria-label="태어난 분" placeholder="분" inputmode="numeric">
+    </div>
+    <div class="check"><input type="checkbox" id="pfNoTime"><label for="pfNoTime" style="margin:0">시간을 몰라요</label></div>
+    <label>성별</label>
+    <select id="pfG" aria-label="성별"><option value="M">남성</option><option value="F">여성</option></select>
+    <label>태어난 곳</label>
+    <select id="pfPlace" aria-label="태어난 곳"></select>
+    <p class="hint">타인의 생년월일은 <b>본인의 동의를 받고</b> 입력해 주세요.</p>
+    <button class="btn" id="pfSave">저장</button>
+    <button class="btn ghost" id="pfCancel">취소</button>
+    <button class="btn ghost danger hide" id="pfDelete">이 사람 지우기</button>
+  </div>
+</div>
 
 <!-- 설정 -->
 <div class="modal hide" id="settings">
@@ -284,21 +332,22 @@
   </div>
 </div>
 
-<script src="config.js?v=25"></script>
-<script src="cloud.js?v=25"></script>
-<script src="places.js?v=25"></script>
-<script src="astro.js?v=25"></script>
-<script src="lunar.js?v=25"></script>
-<script src="engine.js?v=25"></script>
-<script src="brief.js?v=25"></script>
-<script src="calendar.js?v=25"></script>
-<script src="compat.js?v=25"></script>
-<script src="tongbyeon.js?v=25"></script>
-<script src="rules-wealth-love.js?v=25"></script>
-<script src="rules-health-study-move.js?v=25"></script>
-<script src="consult.js?v=25"></script>
-<script src="share.js?v=25"></script>
-<script src="ai.js?v=25"></script>
-<script src="app.js?v=25"></script>
+<script src="config.js?v=28"></script>
+<script src="cloud.js?v=28"></script>
+<script src="places.js?v=28"></script>
+<script src="people.js?v=28"></script>
+<script src="astro.js?v=28"></script>
+<script src="lunar.js?v=28"></script>
+<script src="engine.js?v=28"></script>
+<script src="brief.js?v=28"></script>
+<script src="calendar.js?v=28"></script>
+<script src="compat.js?v=28"></script>
+<script src="tongbyeon.js?v=28"></script>
+<script src="rules-wealth-love.js?v=28"></script>
+<script src="rules-health-study-move.js?v=28"></script>
+<script src="consult.js?v=28"></script>
+<script src="share.js?v=28"></script>
+<script src="ai.js?v=28"></script>
+<script src="app.js?v=28"></script>
 </body>
 </html>

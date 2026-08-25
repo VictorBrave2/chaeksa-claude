@@ -10,7 +10,7 @@
   'use strict';
   const CFG = global.CHAEKSA_SUPABASE || {};     // { url, anonKey }  ← config.js에서 주입
   const AKEY = 'chaeksa.auth';
-  const PKEY = 'chaeksa.profile', CKEY = 'chaeksa.consults';
+  const PKEY = 'chaeksa.profile', CKEY = 'chaeksa.consults', PEOPLE = 'chaeksa.people';
   const SKEY = 'chaeksa.sync';                    // 마지막 동기화 시각
   const PAT  = 'chaeksa.profileAt';               // 이 기기에서 원국을 마지막으로 고친 시각
   const ts = (v) => { const t = Date.parse(v || ''); return isNaN(t) ? 0 : t; };
@@ -138,6 +138,32 @@
       }
     }
 
+    // 사람들: id 기준 병합 (로컬에 더 최근 수정이 있으면 로컬이 이긴다)
+    try {
+      const ps = await api('/rest/v1/people?select=*&order=updated_at.desc');
+      if (Array.isArray(ps)) {
+        const local = jget(PEOPLE, []);
+        const byId = {};
+        local.forEach(x => { byId[x.id] = x; });
+        let merged = false;
+        ps.forEach(r => {
+          const cur = byId[r.id];
+          if (!cur || ts(r.updated_at) > ts(cur._at)) {
+            byId[r.id] = {
+              id: r.id, name: r.name, relation: r.relation || '기타', isSelf: !!r.is_self,
+              birth: r.birth || {}, createdAt: r.created_at, _at: r.updated_at,
+            };
+            if (r.ai_profile) {
+              const b = r.birth || {};
+              localStorage.setItem(`chaeksa.profile.ai.${b.year}${b.month}${b.day}.${b.hour}.${b.gender}`, r.ai_profile);
+            }
+            merged = true;
+          }
+        });
+        if (merged) { jset(PEOPLE, Object.values(byId)); changed = true; }
+      }
+    } catch (e) { /* people 표가 아직 없으면 조용히 넘어간다 */ }
+
     // 상담: id 기준 병합, updated_at이 최신인 쪽을 남긴다
     const cs = await api('/rest/v1/consults?select=*&order=updated_at.desc');
     if (Array.isArray(cs)) {
@@ -188,13 +214,33 @@
       });
     }
 
+    const people = jget(PEOPLE, []);
+    if (people.length) {
+      try {
+        await api('/rest/v1/people?on_conflict=id', {
+          method: 'POST',
+          headers: { Prefer: 'resolution=merge-duplicates' },
+          body: JSON.stringify(people.map(x => {
+            const b = x.birth || {};
+            return {
+              id: x.id, user_id: uid, name: x.name, relation: x.relation || null,
+              is_self: !!x.isSelf, birth: b,
+              ai_profile: localStorage.getItem(`chaeksa.profile.ai.${b.year}${b.month}${b.day}.${b.hour}.${b.gender}`) || null,
+              created_at: x.createdAt || new Date().toISOString().slice(0, 10),
+              updated_at: new Date().toISOString(),
+            };
+          })),
+        });
+      } catch (e) { /* people 표가 아직 없으면 넘어간다 */ }
+    }
+
     const list = jget(CKEY, []);
     if (list.length) {
       await api('/rest/v1/consults?on_conflict=id', {
         method: 'POST',
         headers: { Prefer: 'resolution=merge-duplicates' },
         body: JSON.stringify(list.map(c => ({
-          id: c.id, user_id: uid, question: c.question,
+          id: c.id, user_id: uid, person_id: c.personId || null, question: c.question,
           domain_key: c.domainKey || null, domain_label: c.domainLabel || null, target_label: c.targetLabel || null,
           top_id: c.topId || null, top_title: c.topTitle || null, top_p: c.topP || null,
           action: c.action || null, metric: c.metric || null,
@@ -206,6 +252,7 @@
     }
     const now = new Date().toISOString();
     if (list.length) { list.forEach(c => { c._at = now; }); jset(CKEY, list); }
+    if (people.length) { people.forEach(x => { x._at = now; }); jset(PEOPLE, people); }
     if (p) localStorage.setItem(PAT, now);
     localStorage.setItem(SKEY, now);
     return true;

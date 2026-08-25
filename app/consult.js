@@ -34,8 +34,10 @@
     return { dir: 'flat', label: '→ 그대로' };
   }
 
-  const load = () => { try { return JSON.parse(localStorage.getItem(CKEY)) || []; } catch (e) { return []; } };
-  const save = (list) => localStorage.setItem(CKEY, JSON.stringify(list.slice(0, 30)));
+  const pid = () => { var p = global.ChaeksaApp && global.ChaeksaApp.profile(); return p && p.id ? p.id : null; };
+  const loadAll = () => { try { return JSON.parse(localStorage.getItem(CKEY)) || []; } catch (e) { return []; } };
+  const load = () => { const me = pid(); const all = loadAll(); return me ? all.filter(c => !c.personId || c.personId === me) : all; };
+  const save = (list) => { const me = pid(); const others = loadAll().filter(c => me && c.personId && c.personId !== me); localStorage.setItem(CKEY, JSON.stringify(others.concat(list).slice(0, 60))); };
 
   const EXAMPLES = [
     '2027년부터 시작되는 대운에서 제 직업과 사업은 어떻게 변할까요?',
@@ -276,7 +278,7 @@
         domainKey: fr.domain.key, domainLabel: fr.domain.label, targetLabel: fr.target.label,
         topId: top.id, topTitle: top.title, topP: entry.topP,
         action: top.action, metric: top.metric,
-        checkins: [], logs: [], first: entry, _at: nowIso,
+        checkins: [], logs: [], first: entry, _at: nowIso, personId: pid(),
       });
       save(list);
     }

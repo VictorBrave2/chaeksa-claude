@@ -4,7 +4,7 @@
 import io, os, re, sys
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
-FILES = ['style.css', 'config.js', 'cloud.js', 'places.js', 'lunar.js', 'astro.js', 'engine.js', 'brief.js', 'calendar.js',
+FILES = ['style.css', 'config.js', 'cloud.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'brief.js', 'calendar.js',
          'compat.js', 'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js', 'app.js']
 
 sw = io.open(os.path.join(APP, 'sw.js'), encoding='utf-8').read()

@@ -425,3 +425,15 @@ nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:
 .suggest button, .chips .chip { min-height: 38px }
 .pl button { min-height: 40px; padding: 0 10px }
 .metric-add button { min-height: 42px }
+
+/* ───── 사람 전환 ───── */
+#btnPerson{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#btnPerson b{color:var(--ink);font-weight:700}
+.pr{display:flex;gap:8px;align-items:stretch;margin-bottom:9px}
+.pr-main{flex:1;text-align:left;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;cursor:pointer;font-family:var(--sans);min-height:56px}
+.pr.on .pr-main{border-color:var(--accent2);background:var(--accent-soft)}
+.pr-main b{display:block;font-size:15.5px;color:var(--ink);margin-bottom:3px}
+.pr-main span{font-size:12.5px;color:var(--ink3)}
+.pr .btn-ghost{flex:0 0 auto}
+#personForm .sheet{padding-bottom:26px}
+#personForm .btn{margin-top:10px}

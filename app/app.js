@@ -3,7 +3,8 @@
   'use strict';
   const E = ChaeksaEngine, f = E.fmt, C = ChaeksaCalendar, AI = ChaeksaAI;
   const $ = (id) => document.getElementById(id);
-  const KEY = 'chaeksa.profile', PKEY = 'chaeksa.partners', HKEY = 'chaeksa.chat';
+  const KEY = 'chaeksa.profile', PKEY = 'chaeksa.partners';
+  const HK = () => 'chaeksa.chat.' + (profile && profile.id ? profile.id : 'solo');
   const today = new Date();
   let profile = null, R = null;
   const elemClass = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
@@ -47,6 +48,155 @@
     setTheme(night ? 'day' : 'night');
   };
   $('themeSeg').querySelectorAll('button').forEach(b => b.onclick = () => setTheme(b.dataset.t));
+
+  // ───── 사람들 ─────
+  const People = () => window.ChaeksaPeople;
+  let editingId = null;      // 수정 중인 사람. null이면 새로 추가
+
+  function personLabel(p) { return p.isSelf ? p.name : `${p.name} · ${p.relation}`; }
+
+  function renderPeopleBtn() {
+    const btn = $('btnPerson'); if (!btn || !People()) return;
+    const p = People().active();
+    btn.classList.toggle('hide', !p);
+    if (p) $('personName').textContent = p.name;
+  }
+
+  function openPeople() {
+    const P = People(); if (!P) return;
+    const cur = P.activeId();
+    $('peopleList').innerHTML = P.list().map(p => `
+      <div class="pr ${p.id === cur ? 'on' : ''}" data-id="${p.id}">
+        <button class="pr-main" data-id="${p.id}" data-a="pick">
+          <b>${esc(p.name)}</b>
+          <span>${esc(p.relation)}${p.isSelf ? '' : ''} · ${p.birth.year}.${p.birth.month}.${p.birth.day}${p.birth.hour == null ? ' (시간 모름)' : ''}</span>
+        </button>
+        <button class="btn-ghost" data-id="${p.id}" data-a="edit" aria-label="수정">고치기</button>
+      </div>`).join('') || '<p class="hint">아직 등록된 사람이 없습니다.</p>';
+    $('peopleList').querySelectorAll('button').forEach(b => b.onclick = () => {
+      if (b.dataset.a === 'pick') { P.setActive(b.dataset.id); $('peopleSheet').classList.add('hide'); start(P.toProfile(P.active())); }
+      else openPersonForm(b.dataset.id);
+    });
+    $('peopleSheet').classList.remove('hide');
+  }
+
+  function openPersonForm(id) {
+    const P = People(); if (!P) return;
+    editingId = id || null;
+    const p = id ? P.get(id) : null;
+    $('pfTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
+    $('pfRel').innerHTML = P.RELATIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+    if ($('pfPlace') && window.ChaeksaPlaces) $('pfPlace').innerHTML = ChaeksaPlaces.options();
+    const b = p ? p.birth : {};
+    $('pfName').value = p ? p.name : '';
+    $('pfRel').value = p ? p.relation : (P.list().length ? '친구' : '나');
+    pfCal = b.calendar === 'lunar' ? 'lunar' : 'solar';
+    setPfCal(pfCal);
+    if (pfCal === 'lunar' && b.lunarInput) {
+      $('pfY').value = b.lunarInput.y; $('pfM').value = b.lunarInput.m; $('pfD').value = b.lunarInput.d;
+      $('pfLeap').checked = !!b.lunarInput.leap;
+    } else {
+      $('pfY').value = b.year || ''; $('pfM').value = b.month || ''; $('pfD').value = b.day || '';
+      $('pfLeap').checked = false;
+    }
+    $('pfH').value = b.hour == null ? '' : b.hour;
+    $('pfMi').value = b.minute == null ? '' : b.minute;
+    $('pfNoTime').checked = b.hour == null && !!p;
+    $('pfH').disabled = $('pfMi').disabled = $('pfNoTime').checked;
+    $('pfG').value = b.gender || 'M';
+    if ($('pfPlace')) $('pfPlace').value = b.place || 'KR:서울';
+    $('pfDelete').classList.toggle('hide', !p || P.list().length <= 1);
+    $('personForm').classList.remove('hide');
+    updatePfConv();
+  }
+
+  let pfCal = 'solar';
+  function setPfCal(mode) {
+    pfCal = mode;
+    $('pfCalSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.cal === mode));
+    if (mode === 'solar') { $('pfLeap').checked = false; $('pfLeapWrap').classList.add('hide'); }
+    updatePfConv();
+  }
+  function pfToSolar() {
+    const y = +$('pfY').value, m = +$('pfM').value, d = +$('pfD').value;
+    if (!y || !m || !d) return null;
+    if (pfCal === 'solar') return { y, m, d };
+    if (!window.ChaeksaLunar) return null;
+    const r = ChaeksaLunar.lunarToSolar(y, m, d, $('pfLeap').checked);
+    return r && !r.error ? r : { error: (r && r.error) || '변환할 수 없는 날짜입니다.' };
+  }
+  function updatePfConv() {
+    const note = $('pfConv'); if (!note) return;
+    const y = +$('pfY').value, m = +$('pfM').value, d = +$('pfD').value;
+    if (!y || !m || !d || !window.ChaeksaLunar) { note.classList.add('hide'); return; }
+    if (pfCal === 'lunar') {
+      const leapM = ChaeksaLunar.leapMonthOf(y);
+      $('pfLeapWrap').classList.toggle('hide', leapM !== m);
+      if (leapM !== m) $('pfLeap').checked = false;
+      const r = pfToSolar();
+      if (!r) { note.classList.add('hide'); return; }
+      note.classList.remove('hide');
+      note.innerHTML = r.error ? `<b style="color:var(--g0-ink)">${esc(r.error)}</b>`
+        : `음력 ${y}.${m}.${d}${$('pfLeap').checked ? ' (윤달)' : ''} → 양력 <b>${r.y}년 ${r.m}월 ${r.d}일</b>`;
+    } else {
+      const l = ChaeksaLunar.solarToLunar(y, m, d);
+      if (!l) { note.classList.add('hide'); return; }
+      note.classList.remove('hide');
+      note.innerHTML = `양력 ${y}.${m}.${d} → 음력 <b>${l.year}년 ${l.leap ? '윤' : ''}${l.month}월 ${l.day}일</b>`;
+    }
+  }
+
+  function savePerson() {
+    const P = People();
+    const sol = pfToSolar();
+    if (!sol) { alert('생년월일을 입력해 주세요.'); return; }
+    if (sol.error) { alert(sol.error); return; }
+    const noTime = $('pfNoTime').checked;
+    const pl = window.ChaeksaPlaces ? ChaeksaPlaces.resolve($('pfPlace') ? $('pfPlace').value : '') : null;
+    const birth = {
+      year: sol.y, month: sol.m, day: sol.d,
+      hour: noTime ? null : ($('pfH').value === '' ? null : +$('pfH').value),
+      minute: noTime ? 0 : +($('pfMi').value || 0),
+      gender: $('pfG').value, solarCorrection: true,
+      calendar: pfCal,
+      lunarInput: pfCal === 'lunar' ? { y: +$('pfY').value, m: +$('pfM').value, d: +$('pfD').value, leap: $('pfLeap').checked } : null,
+    };
+    if (pl) { birth.place = $('pfPlace').value; birth.placeName = pl.name; birth.longitude = pl.lon; birth.tzOffset = pl.tzOffset; }
+    const rel = $('pfRel').value;
+    const name = $('pfName').value.trim() || (rel === '나' ? '나' : '이름 없음');
+    if (editingId) {
+      P.update(editingId, { name, relation: rel, birth, isSelf: rel === '나' });
+    } else {
+      const id = P.add({ name, relation: rel, isSelf: rel === '나' || !P.list().length, birth });
+      P.setActive(id);
+    }
+    $('personForm').classList.add('hide');
+    $('peopleSheet').classList.add('hide');
+    if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+    start(P.toProfile(P.active()));
+  }
+
+  function wirePeople() {
+    if (!People()) return;
+    $('btnPerson').onclick = openPeople;
+    $('btnClosePeople').onclick = () => $('peopleSheet').classList.add('hide');
+    $('btnAddPerson').onclick = () => openPersonForm(null);
+    $('pfCancel').onclick = () => $('personForm').classList.add('hide');
+    $('pfSave').onclick = savePerson;
+    $('pfDelete').onclick = () => {
+      const P = People(), p = P.get(editingId);
+      if (!p) return;
+      if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다. 계속할까요?`)) return;
+      P.remove(editingId);
+      $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
+      if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+      start(P.toProfile(P.active()));
+    };
+    $('pfCalSeg').querySelectorAll('button').forEach(b => b.onclick = () => setPfCal(b.dataset.cal));
+    ['pfY', 'pfM', 'pfD'].forEach(id => $(id).addEventListener('input', updatePfConv));
+    $('pfLeap').addEventListener('change', updatePfConv);
+    $('pfNoTime').onchange = (e) => { $('pfH').disabled = $('pfMi').disabled = e.target.checked; };
+  }
 
   // ───── 출생지 ─────
   function initPlace() {
@@ -131,7 +281,17 @@
     if (p.year < 1900 || p.year > 2100 || p.month < 1 || p.month > 12 || p.day < 1 || p.day > 31) { alert('날짜를 다시 확인해 주세요.'); return null; }
     return p;
   }
-  $('btnGo').onclick = () => { const p = readForm(); if (!p) return; localStorage.setItem(KEY, JSON.stringify(p)); localStorage.setItem('chaeksa.profileAt', new Date().toISOString()); start(p); if (window.ChaeksaCloud) ChaeksaCloud.pushSoon(); };
+  $('btnGo').onclick = () => {
+    const p = readForm(); if (!p) return;
+    localStorage.setItem(KEY, JSON.stringify(p));
+    localStorage.setItem('chaeksa.profileAt', new Date().toISOString());
+    if (People()) {
+      const id = People().add({ name: p.name, relation: '나', isSelf: true, birth: p });
+      People().setActive(id);
+      start(People().toProfile(People().active()));
+    } else start(p);
+    if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+  };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
   // ───── 탭 ─────
@@ -151,6 +311,7 @@
     $('btnSettings').classList.remove('hide');
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = `${nim()}의 명리비서`;
+    renderPeopleBtn();
     renderToday(); renderMe(); renderCal(); renderPartners(); renderChat();
     if (window.ChaeksaConsult) { ChaeksaConsult.renderHome(); refreshConsultBadge(); }
     go('today');
@@ -292,33 +453,43 @@
   $('calNext').onclick = () => { calM++; if (calM > 12) { calM = 1; calY++; } selDay = null; renderCal(); };
 
   // ───── 궁합 ─────
-  function partners() { try { return JSON.parse(localStorage.getItem(PKEY)) || []; } catch (e) { return []; } }
   function renderPartners() {
-    const ps = partners();
-    $('partners').innerHTML = ps.length ? ps.map((p, i) => `<div class="pl"><span>${esc(p.name)} <small>${p.year}.${p.month}.${p.day}</small></span><span><button data-i="${i}" class="see">보기</button><button data-i="${i}" class="del">지우기</button></span></div>`).join('') : '<p class="hint">아직 없어요. 위에서 한 사람 넣어보세요.</p>';
-    $('partners').querySelectorAll('.see').forEach(b => b.onclick = () => showCompat(ps[+b.dataset.i]));
-    $('partners').querySelectorAll('.del').forEach(b => b.onclick = () => { const a = partners(); a.splice(+b.dataset.i, 1); localStorage.setItem(PKEY, JSON.stringify(a)); renderPartners(); });
+    const P = People(); if (!P || !$('cPick')) return;
+    const me = P.active();
+    if ($('compatMe')) $('compatMe').textContent = me ? me.name : '';
+    const list = P.list().filter(p => !me || p.id !== me.id);
+    $('cPick').innerHTML = list.length
+      ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('')
+      : '<option value="">등록된 사람이 없습니다</option>';
+    $('btnCompat').disabled = !list.length;
   }
   $('btnCompat').onclick = () => {
-    const p = { name: $('cName').value.trim() || '상대', year: +$('cY').value, month: +$('cM').value, day: +$('cD').value, hour: $('cH').value === '' ? null : +$('cH').value, minute: +($('cMi').value || 0), gender: $('cG').value };
-    if (!p.year || !p.month || !p.day) { alert('상대 생년월일을 입력해 주세요.'); return; }
-    const ps = partners(); ps.unshift(p); localStorage.setItem(PKEY, JSON.stringify(ps.slice(0, 20))); renderPartners(); showCompat(p);
+    const P = People(), id = $('cPick').value;
+    if (!id) return;
+    const p = P.get(id); if (!p) return;
+    showCompat(P.toProfile(p));
   };
-  async function showCompat(p) {
-    const you = E.calc(p), res = ChaeksaCompat.analyze(R, you);
+  $('btnCompatAdd').onclick = () => openPersonForm(null);
+
+  async function showCompat(you0) {
+    const you = E.calc(you0), res = ChaeksaCompat.analyze(R, you);
+    const meName = esc(profile.name), youName = esc(you0.name || '상대');
     const box = $('compatResult'); box.classList.remove('hide');
-    box.innerHTML = `<h2>${esc(profile.name)} ∞ ${esc(p.name)}</h2>
-      <div class="score"><b>${res.score}</b><span>/ 100 · ${esc(p.name)}님은 내게 <b style="font-size:14px;color:var(--ink)">${res.godText}</b></span></div>
+    box.innerHTML = `<h2>${meName} \u221e ${youName}</h2>
+      <div class="score"><b>${res.score}</b><span>/ 100 · ${youName}님은 내게 <b style="font-size:14px;color:var(--ink)">${res.godText}</b></span></div>
       <div class="pillars" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
-        <div class="pillar"><div class="t">나</div><div class="han ${elemClass(R.pillars.day.stem, true)}">${f.pillar(R.pillars.day)}</div></div>
-        <div class="pillar"><div class="t">${esc(p.name)}</div><div class="han ${elemClass(you.pillars.day.stem, true)}">${f.pillar(you.pillars.day)}</div></div></div>
-      <div class="brief" style="font-size:15px"><p>${res.stemRel.text}</p>${res.branchRels.map(b => `<p>${b.text}</p>`).join('')}${res.notes.map(n => `<p style="color:var(--ink2)">${n}</p>`).join('')}</div>
+        <div class="pillar"><div class="t">${meName}</div><div class="han ${elemClass(R.pillars.day.stem, true)}">${f.pillar(R.pillars.day)}</div></div>
+        <div class="pillar"><div class="t">${youName}</div><div class="han ${elemClass(you.pillars.day.stem, true)}">${f.pillar(you.pillars.day)}</div></div></div>
+      <div class="brief" style="font-size:15px"><p>${esc(res.stemRel.text)}</p>${res.branchRels.map(b => `<p>${esc(b.text)}</p>`).join('')}${res.notes.map(n => `<p style="color:var(--ink2)">${esc(n)}</p>`).join('')}</div>
       <div id="compatAi" class="brief" style="margin-top:14px;font-size:15px"></div>`;
-    box.scrollIntoView({ behavior: 'smooth' });
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (AI.ready()) {
-      const ai = $('compatAi'); ai.className = 'brief loading'; ai.textContent = '비서가 두 사람을 읽는 중…';
-      try { ai.textContent = await AI.compatText(R, you, res, today); ai.className = 'brief'; ai.style.borderTop = '1px solid var(--line)'; ai.style.paddingTop = '12px'; }
-      catch (e) { ai.textContent = ''; }
+      const ai = $('compatAi');
+      ai.className = 'brief loading'; ai.textContent = '비서가 두 사람을 읽는 중…';
+      try {
+        ai.textContent = await AI.compatText(R, you, res, today);
+        ai.className = 'brief'; ai.style.borderTop = '1px solid var(--line)'; ai.style.paddingTop = '12px';
+      } catch (e) { ai.textContent = ''; }
     }
   }
 
@@ -326,7 +497,7 @@
   let history = [];
   const SUGGEST = ['이번 주 흐름 어때?', '지금 대운에서 내가 집중할 건?', '이직 고민 중인데 시기가 어때?', '내 사주에서 제일 큰 강점은?', '요즘 사람 관계가 힘든데 왜 그럴까?'];
   function renderChat() {
-    try { history = JSON.parse(localStorage.getItem(HKEY)) || []; } catch (e) { history = []; }
+    try { history = JSON.parse(localStorage.getItem(HK())) || []; } catch (e) { history = []; }
     const box = $('msgs');
     box.innerHTML = history.length ? history.map(m => `<div class="msg ${m.role === 'user' ? 'u' : 'a'}">${esc(m.content)}</div>`).join('') : `<div class="msg a">안녕하세요, ${nimSafe()}. 저는 ${nimSafe()}의 사주를 전부 알고 있는 책사예요. 고민이든 궁금한 거든 편하게 물어보세요.</div>`;
     $('suggest').innerHTML = SUGGEST.map(s => `<button>${s}</button>`).join('');
@@ -347,7 +518,7 @@
     try {
       const a = await AI.chat(R, today, history, q);
       history.push({ role: 'user', content: q }, { role: 'assistant', content: a });
-      localStorage.setItem(HKEY, JSON.stringify(history.slice(-30)));
+      localStorage.setItem(HK(), JSON.stringify(history.slice(-30)));
       $('typing').outerHTML = `<div class="msg a">${esc(a)}</div>`;
     } catch (e) { $('typing').outerHTML = `<div class="msg t">답을 가져오지 못했어요: ${esc(e.message)}</div>`; }
     $('btnAsk').disabled = false; box.scrollTop = 1e9;
@@ -365,7 +536,7 @@
     $('settings').classList.add('hide');
     if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); loadAiBrief(); renderChat(); renderProfileCard(); }
   };
-  $('btnReset').onclick = () => { if (confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) { [KEY, PKEY, HKEY].forEach(k => localStorage.removeItem(k)); Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); location.reload(); } };
+  $('btnReset').onclick = () => { if (confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) { [KEY, PKEY].forEach(k => localStorage.removeItem(k)); Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); location.reload(); } };
 
   // ───── 랜딩 ─────
   function showLanding() {
@@ -459,7 +630,7 @@
       cloudMsg('삭제 중…');
       try {
         await C.deleteAccount();
-        [KEY, PKEY, HKEY, 'chaeksa.consults'].forEach(k => localStorage.removeItem(k));
+        [KEY, PKEY, 'chaeksa.consults'].forEach(k => localStorage.removeItem(k));
         Object.keys(localStorage).filter(k => k.startsWith('chaeksa.')).forEach(k => localStorage.removeItem(k));
         alert('모두 삭제했습니다.');
         location.href = location.pathname;
@@ -480,10 +651,14 @@
   wireCloud();
 
   initPlace();
+  wirePeople();
+  if (People()) People().migrate();
   const saved = localStorage.getItem(KEY);
   if (saved) { try { const sp = JSON.parse(saved); if (sp.place && $('place')) { $('place').value = sp.place; updatePlaceNote(); } } catch (e) {} }
   let booted = false;
-  if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
+  const act = People() ? People().active() : null;
+  if (act) { start(People().toProfile(act)); booted = true; }
+  else if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
   if (!booted) showLanding();
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
