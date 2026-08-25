@@ -17,7 +17,7 @@
   const mdLite = (t) => String(t)
     .replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]))
     .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-    .replace(/^###?\s*(.+)$/gm, '<b>$1</b>')
+    .replace(/^#{1,3}\s*(.+)$/gm, '<b>$1</b>')
     .replace(new RegExp(String.fromCharCode(10), 'g'), '<br>');
 
   const GOD_FLOW = {

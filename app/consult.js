@@ -10,7 +10,7 @@
   let fr = null, current = null;   // fr: 현재 프레임, current: 저장 레코드
 
   const esc = (s) => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
-  const MD_B = /\*\*(.+?)\*\*/g, MD_H = /^###?\s*(.+)$/gm, MD_NL = /\n/g;
+  const MD_B = /\*\*(.+?)\*\*/g, MD_H = /^#{1,3}\s*(.+)$/gm, MD_NL = /\n/g;
   const mdLite = (t) => esc(t).replace(MD_B, '<b>$1</b>').replace(MD_H, '<b>$1</b>').replace(MD_NL, '<br>');
   // 30일이 지나면 다시 확인할 때가 된 것으로 본다
   function isDue(c) {
