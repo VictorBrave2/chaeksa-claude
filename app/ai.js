@@ -10,6 +10,31 @@
   // 기본 프록시 — 방문자는 키 없이 바로 쓸 수 있다.
   // (Anthropic이 Cloudflare 발신 요청을 간헐 차단하므로 Vercel/Node 경유. docs/04 참고)
   const DEFAULT_PROXY = 'https://chaeksa-claude.vercel.app/api/chat';
+
+  /* 작업마다 필요한 능력이 다르다. 뼈대가 확정된 서술은 작은 모델로 충분하고,
+     판단이 섞이는 일만 큰 모델을 쓴다. 실측 기준(입력 약 2,700토큰 · 출력 200~300토큰):
+       브리핑 1회  하이쿠 약 5원 · 소네트 약 11원 · 오퍼스 약 28원
+     기본값은 '균형'. 설정에서 바꿀 수 있다. */
+  const TIERS = {
+    quality: { brief: 'claude-opus-5',   chat: 'claude-opus-5',   consult: 'claude-opus-5',   profile: 'claude-opus-5', compat: 'claude-opus-5' },
+    balanced:{ brief: 'claude-haiku-4-5', chat: 'claude-sonnet-5', consult: 'claude-sonnet-5', profile: 'claude-opus-5', compat: 'claude-sonnet-5' },
+    thrifty: { brief: 'claude-haiku-4-5', chat: 'claude-haiku-4-5', consult: 'claude-sonnet-5', profile: 'claude-sonnet-5', compat: 'claude-haiku-4-5' },
+  };
+  const modelFor = (task) => {
+    const s = settings();
+    if (s.model) return s.model;                       // 사용자가 하나로 고정한 경우
+    const t = TIERS[s.tier || 'balanced'] || TIERS.balanced;
+    return t[task] || t.chat;
+  };
+  /* 모델마다 받는 파라미터가 다르다.
+     - fallbacks: Opus 5 전용 (다른 모델에 보내면 400)
+     - output_config.effort: Haiku 4.5는 지원하지 않음 */
+  function paramsFor(model, effort) {
+    const p = {};
+    if (model === 'claude-opus-5') { p.fallbacks = 'default'; p.output_config = { effort: effort || 'low' }; }
+    else if (model === 'claude-sonnet-5') { p.output_config = { effort: effort || 'low' }; }
+    return p;   // haiku는 추가 파라미터 없이
+  }
   function settings() {
     let s = {};
     try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { s = {}; }
@@ -53,7 +78,7 @@ ${chartText(r, today)}`;
 강점: 
 주의점: 
 현재대운: (지금 대운이 이 사람에게 어떤 시기인지)`;
-    const text = await call(sys, [{ role: 'user', content: q }], { maxTokens: 1200, effort: 'high' });
+    const text = await call(sys, [{ role: 'user', content: q }], { task: 'profile', maxTokens: 1200, effort: 'high' });
     localStorage.setItem(profileKey(r), text);
     return text;
   }
@@ -89,15 +114,15 @@ ${prof}` : ''}`;
 
   async function call(system, messages, opts = {}) {
     const s = settings();
-    const body = {
-      model: s.model || 'claude-opus-5',
+    const model = opts.model || modelFor(opts.task || 'chat');
+    const body = Object.assign({
+      model,
       max_tokens: opts.maxTokens || 1024,
       system,
       messages,
-      fallbacks: 'default',
-      output_config: { effort: opts.effort || 'low' },
-    };
-    let url, headers = { 'content-type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-beta': 'server-side-fallback-2026-07-01' };
+    }, paramsFor(model, opts.effort));
+    let url, headers = { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' };
+    if (body.fallbacks) headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
     if (s.proxyUrl) { url = s.proxyUrl; }
     else { url = 'https://api.anthropic.com/v1/messages'; headers['x-api-key'] = s.apiKey; headers['anthropic-dangerous-direct-browser-access'] = 'true'; }
     const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
@@ -172,7 +197,7 @@ ${dayFrameText(df)}
 - 십신 이름은 위에 적힌 것만 쓴다. 새로 계산하지 않는다.
 - 시간대를 말한다면 [집중이 붙는 시간대]를 쓴다.
 - [6차원 적층 체용 좌표]가 있으면 그 판정을 따른다. 특히 부호가 뒤집히는 층이 있으면 그것을 오늘 이야기의 축으로 삼는다.` : '');
-    const raw = await call(sys, [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
+    const raw = await call(sys, [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { task: 'brief', maxTokens: 600 });
     const text = dehanja(raw);
     localStorage.setItem(ck, text);
     return text;
@@ -188,7 +213,7 @@ ${dayFrameText(df)}
 ${dayFrameText(df)}
 오늘에 대해 말할 때는 이 값을 따른다. 간지·십신을 새로 계산하지 않는다.` : '');
     const msgs = [...history.slice(-10), { role: 'user', content: question }];
-    return dehanja(await call(sys, msgs, { maxTokens: 800 }));
+    return dehanja(await call(sys, msgs, { task: 'chat', maxTokens: 800 }));
   }
 
   // 심층 상담 서술 — 구조(frame)를 벗어나지 못하게 묶는다
@@ -241,15 +266,15 @@ ${ansText}`,
 - 한자는 쓰지 않는다.
 
 ${structure}`;
-    const raw = await call(sys, [{ role:'user', content:'위 구조를 바탕으로 상담해 주세요. 인사 없이 바로 본론부터.' }], { maxTokens: 2000, effort: 'medium' });
+    const raw = await call(sys, [{ role:'user', content:'위 구조를 바탕으로 상담해 주세요. 인사 없이 바로 본론부터.' }], { task: 'consult', maxTokens: 2000, effort: 'medium' });
     return dehanja(raw);
   }
 
   // 궁합 해설
   async function compatText(me, you, ruleResult, today) {
     const sys = systemPrompt(me, today) + `\n\n## 상대방의 사주\n${chartText(you, today)}\n\n## 규칙 엔진이 계산한 관계\n${JSON.stringify({ score: ruleResult.score, 일간관계: ruleResult.stemRel.key, 일지관계: ruleResult.branchRels.map(b => b.key), 상대는내게: ruleResult.god, 메모: ruleResult.notes })}`;
-    return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { maxTokens: 700 });
+    return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { task: 'compat', maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { dehanja, deepNarrate, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, deepNarrate, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);

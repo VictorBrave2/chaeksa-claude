@@ -551,12 +551,31 @@
   $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') ask(); });
 
   // ───── 설정 ─────
+  const TIER_NOTE = {
+    quality:  '모든 답을 가장 좋은 모델로 만듭니다. 브리핑 1회에 약 28원.',
+    balanced: '매일 브리핑은 가벼운 모델, 상담·대화는 중간 모델, 원국 해석만 가장 좋은 모델로. 브리핑 1회에 약 5원. <b>권장</b>',
+    thrifty:  '대부분을 가벼운 모델로. 문장이 다소 단조로워질 수 있습니다.',
+  };
+  function renderTier() {
+    const seg = $('tierSeg'); if (!seg) return;
+    const t = (AI.settings().tier) || 'balanced';
+    seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.tier === t));
+    $('tierNote').innerHTML = TIER_NOTE[t] || '';
+  }
   function openSettings() {
-    renderCloud(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('model').value = s.model || 'claude-opus-5'; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
+    renderCloud();
+    renderTier(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
   $('btnSettings').onclick = openSettings;
+  if ($('tierSeg')) $('tierSeg').querySelectorAll('button').forEach(b => b.onclick = () => {
+    const s = AI.settings();
+    AI.saveSettings(Object.assign({}, s, { tier: b.dataset.tier, model: '' }));
+    renderTier();
+    Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.')).forEach(k => localStorage.removeItem(k));
+  });
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
   $('btnSaveSettings').onclick = () => {
-    AI.saveSettings({ apiKey: $('apiKey').value.trim(), model: $('model').value, proxyUrl: $('proxyUrl').value.trim() });
+    const cur = AI.settings();
+    AI.saveSettings({ apiKey: $('apiKey').value.trim(), tier: cur.tier || 'balanced', proxyUrl: $('proxyUrl').value.trim() });
     $('settings').classList.add('hide');
     if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); loadAiBrief(); renderChat(); renderProfileCard(); }
   };
