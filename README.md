@@ -16,6 +16,13 @@
 - `app/test.html` — 엔진 검증 페이지
 - `server/worker.js` — 출시용 API 프록시 (Cloudflare Worker)
 
+## 배포할 때
+코드를 고친 뒤 반드시 실행 — 정적 파일에 `?v=N` 을 붙여 사용자 브라우저 캐시를 갱신한다.
+```
+python tools_bust.py --bump
+```
+그다음 커밋·푸시하면 GitHub Actions가 chaeksa.kr 로 자동 배포한다.
+
 ## 진행 상태
 - [x] 0단계: 프로토타입 (2026-08-24)
 - [x] 1단계(제작분): AI 브리핑·질문·궁합 해설, 택일 달력, 월운·세운, PWA (2026-08-24)
