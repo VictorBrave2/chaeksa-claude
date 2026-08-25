@@ -48,10 +48,23 @@
       const han = f.stem(du.stem) + f.branch(du.branch);
       if (t.includes(ko) || t.includes(han)) return { level:'대운', du, label:`${ko}(${han}) 대운`, from:du.startYear, to:du.startYear + 9, age:`${du.startAge}~${du.endAge}세` };
     }
-    // 2) 연도 지목
-    const m = t.match(/(20\d{2})\s*년?/);
-    if (m) {
-      const y = +m[1];
+    const cy = today.getFullYear();
+    // 2) 월 지목이 있으면 월이 이긴다. ("2026년 9월" 은 세운이 아니라 월운이다)
+    const my = t.match(/(20\d{2})\s*년?/);
+    const mm = t.match(/(1[0-2]|[1-9])\s*월/);
+    if (mm && !t.includes('대운')) {
+      const mo = +mm[1];
+      // 연도를 안 적었으면: 이미 지난 달이면 내년, 아니면 올해로 읽는다
+      const y = my ? +my[1] : (mo < today.getMonth() + 1 ? cy + 1 : cy);
+      const tf = E.dateFortune(y, mo, 15);
+      return { level:'월운', pillar:tf.month, year:y, month:mo,
+               du:E.currentDaeun(result, new Date(y, mo - 1, 15)),
+               label:`${y}년 ${mo}월`, from:y, to:y,
+               fromDate:new Date(y, mo - 1, 1), toDate:new Date(y, mo, 0) };
+    }
+    // 3) 연도 지목
+    if (my) {
+      const y = +my[1];
       const du = result.daeun.list.find(d => y >= d.startYear && y <= d.startYear + 9);
       const tf = E.dateFortune(y, 6, 15);
       if (du && (t.includes('대운') || y > today.getFullYear() + 1)) {
@@ -60,19 +73,36 @@
       }
       return { level:'세운', year:y, pillar:tf.year, du, label:`${y}년`, from:y, to:y };
     }
-    // 3) 상대 표현
-    const cy = today.getFullYear();
+    // 4) 상대 표현
     if (t.includes('내년')) { const tf = E.dateFortune(cy + 1, 6, 15); return { level:'세운', year:cy + 1, pillar:tf.year, du:E.currentDaeun(result, new Date(cy + 1, 5, 15)), label:`${cy + 1}년`, from:cy+1, to:cy+1 }; }
     if (t.includes('올해') || t.includes('금년') || t.includes('올 한 해')) { const tf = E.dateFortune(cy, 6, 15); return { level:'세운', year:cy, pillar:tf.year, du:E.currentDaeun(result, today), label:`${cy}년`, from:cy, to:cy }; }
     if (t.includes('작년') || t.includes('지난해')) { const tf = E.dateFortune(cy - 1, 6, 15); return { level:'세운', year:cy - 1, pillar:tf.year, du:E.currentDaeun(result, new Date(cy - 1, 5, 15)), label:`${cy - 1}년`, from:cy-1, to:cy-1 }; }
-    if (t.includes('이번 달') || t.includes('이달')) {
-      const mo = today.getMonth(), tf = E.dateFortune(cy, mo + 1, 15);
-      return { level:'월운', pillar:tf.month, du:E.currentDaeun(result, today), label:`${mo + 1}월`,
-               from:cy, to:cy, fromDate:new Date(cy, mo, 1), toDate:new Date(cy, mo + 1, 0) };
+    if (t.includes('이번 달') || t.includes('이달') || t.includes('다음 달') || t.includes('다음달')) {
+      const next = t.includes('다음');
+      const base = new Date(cy, today.getMonth() + (next ? 1 : 0), 15);
+      const y2 = base.getFullYear(), mo = base.getMonth();
+      const tf = E.dateFortune(y2, mo + 1, 15);
+      return { level:'월운', pillar:tf.month, year:y2, month:mo + 1, du:E.currentDaeun(result, base),
+               label:`${y2}년 ${mo + 1}월`, from:y2, to:y2,
+               fromDate:new Date(y2, mo, 1), toDate:new Date(y2, mo + 1, 0) };
     }
-    // 4) 기본: 현재 대운
+    // 5) 기본: 현재 대운
+    // 다만 있지도 않은 간지 대운을 물으신 경우, 조용히 다른 대운으로 답하지 않는다
+    let missNote = null;
+    if (t.includes('대운')) {
+      const mine = new Set(result.daeun.list.map(d => KO_STEM[d.stem] + KO_BRANCH[d.branch]));
+      const mineHan = new Set(result.daeun.list.map(d => f.stem(d.stem) + f.branch(d.branch)));
+      for (let i = 0; i < 60; i++) {
+        const st = i % 10, br = i % 12;
+        const ko = KO_STEM[st] + KO_BRANCH[br], han = f.stem(st) + f.branch(br);
+        if ((t.includes(ko) && !mine.has(ko)) || (t.includes(han) && !mineHan.has(han))) {
+          missNote = `${t.includes(ko) ? ko : han}(${t.includes(ko) ? han : han}) 대운은 이 사주에 없습니다. 지금 대운으로 보겠습니다.`;
+          break;
+        }
+      }
+    }
     const du = E.currentDaeun(result, today);
-    if (du) { const ko = KO_STEM[du.stem] + KO_BRANCH[du.branch]; return { level:'대운', du, label:`지금 ${ko}(${f.pillar(du)}) 대운`, from:du.startYear, to:du.startYear + 9, age:`${du.startAge}~${du.endAge}세` }; }
+    if (du) { const ko = KO_STEM[du.stem] + KO_BRANCH[du.branch]; return { level:'대운', du, label:`지금 ${ko}(${f.pillar(du)}) 대운`, from:du.startYear, to:du.startYear + 9, age:`${du.startAge}~${du.endAge}세`, missNote }; }
     const tf = E.dateFortune(cy, 6, 15);
     return { level:'세운', year:cy, pillar:tf.year, du:null, label:`${cy}년`, from:cy, to:cy };
   }

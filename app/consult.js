@@ -157,6 +157,7 @@
       </div>`;
     }
 
+    if (fr.target.missNote) html += `<p class="c-miss">${esc(fr.target.missNote)}</p>`;
     html += `<p class="c-lead">${esc(fr.lead)}</p>`;
 
     // 구조

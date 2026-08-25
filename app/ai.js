@@ -278,6 +278,7 @@ ${dayFrameText(df)}
     const ansText = fr.questions.map(q => `- ${q.q} → ${({y:'예',n:'아니오','?':'모르겠음'})[fr.answers[q.id]] || '무응답'}`).join('\n');
     const structure = [
       `[상담 주제] ${fr.domain.label} · ${fr.target.label}`,
+      fr.target.missNote ? `[알림] ${fr.target.missNote} 이 사실을 첫 문장에서 반드시 밝히고 시작한다.` : '',
       `[질문] ${fr.question}`,
       `[구조] ` + fr.layers.map(l => `${l.level} ${l.ganji}(${l.note})`).join(' / '),
       fr.chaeyong ? chaeyongText(fr.chaeyong) : '',

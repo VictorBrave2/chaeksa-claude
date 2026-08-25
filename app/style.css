@@ -200,6 +200,9 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .hours-pick .g{font-size:var(--t2);color:var(--accent);font-weight:500}
 .hours-pick .d{font-size:var(--t2);color:var(--ink2);flex-basis:100%;line-height:1.7}
 
+.c-miss{font-size:var(--t2);color:var(--g0-ink);background:var(--g0-bg);border-radius:10px;
+  padding:11px 14px;margin-bottom:12px;line-height:1.7}
+
 /* ───── 상담: 언제가 좋고 나쁜가 ───── */
 .c-when .c-base{font-size:var(--t2);color:var(--ink2);line-height:1.75;margin:0 0 12px}
 .c-when .c-base b{color:var(--ink)}
