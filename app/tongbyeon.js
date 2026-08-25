@@ -495,6 +495,16 @@
     if (mon === '충') out.push({ text:'대운의 지지가 월지와 부딪힙니다(충). 일과 사회적 자리에서 자리 이동이나 방식 변경이 따라오기 쉽습니다.', tilt:'change' });
     if (day === '육합' || day === '삼합') out.push({ text:`대운의 지지가 일지와 ${day}을 이룹니다. 사람과 일이 붙고 협력이 수월해지는 방향입니다.`, tilt:'stable' });
     if (mon === '삼합') out.push({ text:'대운의 지지가 월지와 삼합을 이룹니다. 사회적 활동의 방향이 하나로 모이는 구간입니다.', tilt:'stable' });
+    // 조후 — 태어난 달의 한난조습. 궁통보감 계열의 기본.
+    const mb = p.month.branch;
+    const duElem = E.ELEM[E.STEM_ELEM[target.du.stem]], duBranchElem = E.ELEM[E.BRANCH_ELEM[target.du.branch]];
+    if ([5,6,7].includes(mb)) {           // 巳午未 여름 — 조열
+      if (duElem === '수' || duBranchElem === '수') out.push({ text:'여름에 난 사주에 물 기운이 들어오는 구간입니다(조후). 과열을 식혀 판단이 차분해지고, 무리한 확장을 스스로 멈출 수 있게 됩니다.', tilt:'stable' });
+      else if (duElem === '화' || duBranchElem === '화') out.push({ text:'여름에 난 사주에 다시 불 기운이 겹치는 구간입니다(조후). 의욕과 속도가 올라가지만 조급해지기 쉬우니, 결정 사이에 하루를 두는 습관이 도움이 됩니다.', tilt:'change' });
+    } else if ([11,0,1].includes(mb)) {   // 亥子丑 겨울 — 한랭
+      if (duElem === '화' || duBranchElem === '화') out.push({ text:'겨울에 난 사주에 불 기운이 들어오는 구간입니다(조후). 얼어 있던 일이 풀리고 사람과의 온도가 올라갑니다. 시작하기에 유리합니다.', tilt:'stable' });
+      else if (duElem === '수' || duBranchElem === '수') out.push({ text:'겨울에 난 사주에 물 기운이 겹치는 구간입니다(조후). 생각은 깊어지지만 움직임이 더뎌지기 쉬우니, 몸을 쓰는 일과 사람 만나는 일을 일부러 늘려두세요.', tilt:'change' });
+    }
     const elem = E.ELEM[E.STEM_ELEM[target.du.stem]];
     if (result.analysis.yongCandidates.includes(elem)) out.push({ text:`대운의 천간이 ${elem} 기운으로, 이 사주가 필요로 하는 쪽입니다. 같은 사건이라도 감당하기 수월한 구간입니다.`, tilt:'stable' });
     else if (result.analysis.missing.length && result.analysis.missing.includes(elem)) out.push({ text:`원국에 없던 ${elem} 기운이 대운으로 들어옵니다. 익숙하지 않은 영역이 열리는 구간이라 초반에 시행착오가 있을 수 있습니다.`, tilt:'change' });
@@ -630,5 +640,5 @@
     return { options, lead, unknown, volatility, turning, topKind };
   }
 
-  global.ChaeksaTongbyeon = { frame, revise, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
+  global.ChaeksaTongbyeon = { defineRule: R, H, Q, frame, revise, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
 })(window);

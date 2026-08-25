@@ -5,7 +5,7 @@ import io, os, re, sys
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
 FILES = ['style.css', 'astro.js', 'engine.js', 'brief.js', 'calendar.js',
-         'compat.js', 'tongbyeon.js', 'consult.js', 'share.js', 'ai.js', 'app.js']
+         'compat.js', 'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js', 'app.js']
 
 sw = io.open(os.path.join(APP, 'sw.js'), encoding='utf-8').read()
 cur = int(re.search(r'chaeksa-v(\d+)', sw).group(1))

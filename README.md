@@ -11,7 +11,8 @@
 - `app/brief.js` — 규칙 기반 브리핑 / `calendar.js` 택일 / `compat.js` 궁합 / `ai.js` AI 비서
 - `app/index.html` + `style.css` + `app.js` — 랜딩 + 5탭 앱 (오늘·달력·나·궁합·비서), PWA, 낮/밤 이중 테마
 - `app/share.js` — 원국 공유 카드 (canvas 이미지) / `app/og.png` — 링크 미리보기 이미지
-- `app/tongbyeon.js` — **통변 엔진**: 명리 구조 → 경쟁 가설·판별질문·실행과제·관측지표 (규칙 기반)
+- `app/tongbyeon.js` — **통변 엔진**: 명리 구조 → 경쟁 가설·판별질문·실행과제·관측지표 + 조후·형충회합 보정 + Decision Lab
+- `app/rules-wealth-love.js`, `app/rules-health-study-move.js` — **통변 규칙집** (6도메인 × 5십신그룹 × 강약 = 60세트). 명리 해석의 실체가 여기 있다. 학파가 갈리는 지점은 파일 상단 주석 참고
 - `app/consult.js` — **심층 상담**: 가설 제시 → 되묻기 → Belief Revision → 기록 → 재방문 시 판단 수정
 - `app/test.html` — 엔진 검증 페이지
 - `server/worker.js` — 출시용 API 프록시 (Cloudflare Worker)
