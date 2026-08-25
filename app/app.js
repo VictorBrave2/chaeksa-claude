@@ -342,7 +342,19 @@
     cta.classList.add('hide');
     box.className = 'brief loading'; box.textContent = '비서가 오늘을 읽는 중…';
     try { const t = await AI.dailyBrief(R, today); box.className = 'brief'; box.textContent = t; collapseRuleCard(true); }
-    catch (e) { box.className = 'brief'; box.innerHTML = `<span style="color:var(--ink3);font-size:14px">AI 브리핑을 가져오지 못했어요: ${e.message}</span>`; }
+    catch (e) {
+      box.className = 'brief';
+      if (e.blocked) {
+        collapseRuleCard(false);                       // 규칙 브리핑을 펼쳐서 계속 쓸 수 있게 한다
+        box.innerHTML = `<div class="gate"><b>${esc(e.blocked.title)}</b><p>${esc(e.blocked.body)}</p>`
+          + (e.blocked.cta ? `<button class="btn kakao" id="gateLogin"><span>💬</span>${esc(e.blocked.cta)}</button>` : '')
+          + `</div>`;
+        const g = $('gateLogin');
+        if (g) g.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (err) { openSettings(); } };
+      } else {
+        box.innerHTML = `<span style="color:var(--ink3);font-size:14px">AI 브리핑을 가져오지 못했어요: ${esc(e.message)}</span>`;
+      }
+    }
   }
   $('btnAiBrief').onclick = () => openSettings();
   function collapseRuleCard(on) {
@@ -562,9 +574,22 @@
     seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.tier === t));
     $('tierNote').innerHTML = TIER_NOTE[t] || '';
   }
+  function renderUsage() {
+    const box = $('usageBox'); if (!box || !window.ChaeksaUsage) return;
+    const U = ChaeksaUsage, p = U.plan();
+    const rows = [['brief', '오늘 브리핑'], ['chat', '비서와 대화'], ['consult', '심층 상담'], ['compat', '궁합 해설']];
+    box.innerHTML = `<p class="hint" style="margin:0 0 8px">이번 달 사용량 · 등급 <b>${U.PLANS[p].label}</b></p>`
+      + rows.map(([k, name]) => {
+          const lim = U.limit(k), use = U.used(k);
+          const w = lim ? Math.min(100, use / lim * 100) : 0;
+          return `<div class="ub"><span>${name}</span><i><b style="width:${w}%"></b></i><span>${use}/${lim || '—'}</span></div>`;
+        }).join('')
+      + `<p class="hint">만세력·원국·대운·택일·궁합 점수와 규칙 기반 브리핑은 <b>한도 없이</b> 쓰실 수 있습니다.</p>`;
+  }
   function openSettings() {
     renderCloud();
-    renderTier(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
+    renderTier();
+    renderUsage(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide'); }
   $('btnSettings').onclick = openSettings;
   if ($('tierSeg')) $('tierSeg').querySelectorAll('button').forEach(b => b.onclick = () => {
     const s = AI.settings();

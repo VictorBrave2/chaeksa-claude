@@ -114,7 +114,16 @@ ${prof}` : ''}`;
 
   async function call(system, messages, opts = {}) {
     const s = settings();
-    const model = opts.model || modelFor(opts.task || 'chat');
+    const task = opts.task || 'chat';
+    // 개인 키를 직접 넣은 사용자는 본인이 비용을 내므로 한도를 걸지 않는다
+    const U = global.ChaeksaUsage;
+    if (U && !s.apiKey && !U.can(task)) {
+      const m = U.blockedMessage(task);
+      const err = new Error(m.title);
+      err.blocked = m;
+      throw err;
+    }
+    const model = opts.model || modelFor(task);
     const body = Object.assign({
       model,
       max_tokens: opts.maxTokens || 1024,
@@ -132,6 +141,7 @@ ${prof}` : ''}`;
       throw new Error(msg);
     }
     const j = await res.json();
+    if (global.ChaeksaUsage && !s.apiKey) global.ChaeksaUsage.record(task);
     if (j.stop_reason === 'refusal') throw new Error('이 질문에는 답하지 않는 게 좋겠어요. 다른 방식으로 물어봐 주세요.');
     return (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
   }
