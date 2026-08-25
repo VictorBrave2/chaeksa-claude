@@ -37,7 +37,7 @@ export default {
     try { body = await request.json(); } catch { return json({ error: { message: 'Bad JSON' } }, 400, cors); }
     const ALLOWED_MODELS = new Set(['claude-opus-5', 'claude-sonnet-5']);
     if (!ALLOWED_MODELS.has(body.model)) body.model = 'claude-opus-5';
-    body.max_tokens = Math.min(body.max_tokens || 800, 1500);
+    body.max_tokens = Math.min(body.max_tokens || 800, 2200);  // 심층 상담 서술이 길어 상향
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
