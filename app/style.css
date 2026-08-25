@@ -437,3 +437,20 @@ nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:
 .pr .btn-ghost{flex:0 0 auto}
 #personForm .sheet{padding-bottom:26px}
 #personForm .btn{margin-top:10px}
+
+/* ───── 6차원 적층 체용 ───── */
+.cy{padding:12px 0;border-bottom:1px solid var(--line)}
+.cy:last-child{border:0;padding-bottom:0}
+.cy-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cy-lv{flex:0 0 20px;height:20px;border-radius:6px;background:var(--bg2);border:1px solid var(--line2);font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--ink3)}
+.cy-h b{font-size:14px}
+.cy-h .gz{font-family:var(--serif);font-size:15px;font-weight:700;color:var(--accent)}
+.cy-god{font-size:12px;color:var(--ink2);background:var(--bg2);border-radius:999px;padding:2px 9px}
+.cy-sign{margin-left:auto;font-size:12.5px;font-weight:700;font-family:var(--serif)}
+.cy-sign.up{color:var(--wood)}.cy-sign.dn{color:var(--fire)}.cy-sign.mid{color:var(--ink3)}
+.cy-bar{height:5px;border-radius:3px;background:var(--line);margin:8px 0 6px;overflow:hidden}
+.cy-bar i{display:block;height:100%;border-radius:3px;background:var(--ink3)}
+.cy.up .cy-bar i{background:var(--wood)}
+.cy.dn .cy-bar i{background:var(--fire)}
+.cy.base{background:var(--accent-soft);margin:-4px -10px 6px;padding:12px 10px;border-radius:10px;border-bottom:0}
+.cy p{font-size:12.5px;color:var(--ink2);line-height:1.7;margin-top:5px}

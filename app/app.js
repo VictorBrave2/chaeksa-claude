@@ -352,6 +352,29 @@
     h.onclick = () => { const open = $('brief').classList.toggle('hide'); h.textContent = open ? '계산 근거 보기 ▸' : '계산 근거 ▾'; };
   }
 
+  // ───── 6차원 적층 체용 ─────
+  function renderChaeyong() {
+    const box = $('cyStack'); if (!box || !window.ChaeksaChaeyong) return;
+    const cy = ChaeksaChaeyong.stack(R, today);
+    box.innerHTML = cy.layers.map(l => {
+      const cls = l.value > 0.3 ? 'up' : (l.value < -0.3 ? 'dn' : 'mid');
+      const w = Math.min(100, Math.abs(l.value) / 3 * 100);
+      return `<div class="cy ${l.level === 1 ? 'base' : cls}">
+        <div class="cy-h"><span class="cy-lv">${l.level}</span><b>${esc(l.name)}</b>
+          <span class="gz">${esc(l.ganji)}</span>
+          ${l.god ? `<span class="cy-god">${esc(l.god)}</span>` : ''}
+          <span class="cy-sign ${cls}">${esc(l.sign)}${l.level > 1 ? (l.value > 0 ? ' +' : ' ') + l.value : ''}</span></div>
+        ${l.level > 1 ? `<div class="cy-bar"><i style="width:${w}%"></i></div>` : ''}
+        <p>${esc(l.note || '')}</p>
+      </div>`;
+    }).join('');
+    const t = $('cyTurn');
+    const parts = [`총합 <b>${cy.sum > 0 ? '+' : ''}${cy.sum}</b> — ${cy.sum > 1 ? '전체적으로 흐름이 돕는 쪽' : (cy.sum < -1 ? '전체적으로 눌리는 쪽' : '한쪽으로 기울지 않은 상태')}입니다.`];
+    if (cy.turns.length) parts.push(`흐름이 뒤집히는 지점: <b>${cy.turns.map(x => `${x.from} → ${x.to}`).join(', ')}</b>. 이 층에서 체감이 달라집니다.`);
+    if (cy.shifted) parts.push(`층을 지나며 일간이 <b>${cy.natalStrength} → ${cy.finalStrength}</b>으로 옮겨갑니다.`);
+    t.innerHTML = parts.join(' ');
+  }
+
   // ───── 나 ─────
   function renderMe() {
     const a = R.analysis, du = E.currentDaeun(R, today);
@@ -395,6 +418,7 @@
     $('monthly').innerHTML = ms.join('');
     renderProfileCard();
     renderShareCard();
+    renderChaeyong();
   }
   let shareReady = false;
   async function renderShareCard() {

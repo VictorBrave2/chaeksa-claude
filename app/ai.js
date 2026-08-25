@@ -120,6 +120,20 @@ ${prof}` : ''}`;
       .replace(/§\((..)\)§/, (m, kr) => '(' + [...kr].map(c => Object.keys(HANJA).find(k => HANJA[k] === c) || c).join('') + ')');
   }
 
+  /** 6차원 적층 체용 좌표를 프롬프트용 문장으로 */
+  function chaeyongText(cy) {
+    if (!cy) return '';
+    const L = ['[6차원 적층 체용 좌표]'];
+    cy.layers.forEach(l => {
+      if (l.level === 1) { L.push(`  1층 원국 ${l.ganji} — ${l.strength} (${l.score})`); return; }
+      L.push(`  ${l.level}층 ${l.name} ${l.ganji}${l.period ? '(' + l.period + ')' : ''} — 體 ${l.bodyStrength} 기준으로 用 ${l.god}(${l.group})은 ${l.sign} ${l.value > 0 ? '+' : ''}${l.value}${l.moved ? ' · 강약 ' + l.moved : ''}${l.rels && l.rels.length ? ' · ' + l.rels.join(',') : ''}`);
+    });
+    L.push(`  총합 ${cy.sum > 0 ? '+' : ''}${cy.sum} (양수면 흐름이 돕는 쪽, 음수면 누르는 쪽)`);
+    if (cy.turns && cy.turns.length) L.push(`  변곡점: ` + cy.turns.map(t => `${t.from}(${t.fromSign}) → ${t.to}(${t.toSign})`).join(', '));
+    if (cy.shifted) L.push(`  층을 지나며 일간이 ${cy.natalStrength}에서 ${cy.finalStrength}으로 옮겨감`);
+    return L.join('\n');
+  }
+
   /** 통변엔진이 정한 '오늘의 뼈대'를 프롬프트에 넣는다.
    *  이렇게 하지 않으면 같은 사주라도 날마다 LLM이 다른 판단을 내놓는다. */
   function dayFrameText(df) {
@@ -136,6 +150,7 @@ ${prof}` : ''}`;
       df.tone ? `[오늘의 결] ${df.tone}` : '',
       df.care ? `[주의] ${df.care}` : '',
       df.action ? `[권할 행동] ${df.action}` : '',
+      df.chaeyong ? chaeyongText(df.chaeyong) : '',
     ].filter(Boolean);
     return L.join('\n');
   }
@@ -155,7 +170,8 @@ ${dayFrameText(df)}
 지켜야 할 것
 - 위 [오늘의 결]·[주의]·[권할 행동]의 방향을 벗어나지 않는다. 표현은 자유롭게 다듬되 판단을 바꾸지 않는다.
 - 십신 이름은 위에 적힌 것만 쓴다. 새로 계산하지 않는다.
-- 시간대를 말한다면 [집중이 붙는 시간대]를 쓴다.` : '');
+- 시간대를 말한다면 [집중이 붙는 시간대]를 쓴다.
+- [6차원 적층 체용 좌표]가 있으면 그 판정을 따른다. 특히 부호가 뒤집히는 층이 있으면 그것을 오늘 이야기의 축으로 삼는다.` : '');
     const raw = await call(sys, [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
     const text = dehanja(raw);
     localStorage.setItem(ck, text);
@@ -183,6 +199,7 @@ ${dayFrameText(df)}
       `[상담 주제] ${fr.domain.label} · ${fr.target.label}`,
       `[질문] ${fr.question}`,
       `[구조] ` + fr.layers.map(l => `${l.level} ${l.ganji}(${l.note})`).join(' / '),
+      fr.chaeyong ? chaeyongText(fr.chaeyong) : '',
       `[들어오는 기운] 천간 ${fr.godStem}, 지지 ${fr.godBranch} (${fr.group}) · 일간 ${fr.strength}`,
       fr.modifiers.length ? `[관계 보정] ` + fr.modifiers.map(m => m.text).join(' ') : '',
       `[1순위 가설 ${Math.round(top.p*100)}%] ${top.title}
@@ -214,6 +231,8 @@ ${ansText}`,
 - 마지막은 실행 과제와 관측 지표로 끝낸다.
 - [선택지 비교]가 주어지면 어느 것을 먼저 검토할지 한 문단으로 말한다. 점수와 순서는 주어진 것을 따르고 임의로 바꾸지 않는다.
 - [기록된 지표]가 있으면 그 숫자의 흐름을 반드시 근거로 인용한다.
+- [6차원 적층 체용 좌표]가 주어지면, 順/逆이 뒤집히는 층(변곡점)을 반드시 짚는다. 좌표의 부호와 값을 임의로 바꾸지 않는다.
+- 체용은 "지금 무엇이 體이고 무엇이 用인가"를 말하는 것이다. 층 이름(원국·대운·세운·월운·일운·시운)을 그대로 쓴다.
 
 분량과 형식
 - 600~900자. 문단 사이는 빈 줄로 구분.

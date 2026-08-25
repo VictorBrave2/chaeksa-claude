@@ -525,17 +525,27 @@
     const strong = a.strengthScore >= 0.5;
     const rule = lookup(domain.key, group, strong);
     const mods = modifiers(result, target);
+    // 6차원 적층 체용 좌표 — 어느 층에서 흐름이 뒤집히는지까지 확정한다
+    const cy = global.ChaeksaChaeyong ? global.ChaeksaChaeyong.stack(result, today) : null;
     const hyps = rule.H.map(h => ({ ...h, p: h.prior }));
     // 보정: 충이 많으면 변화형 가설(두 번째)에 약간 가중
     const changeN = mods.filter(m => m.tilt === 'change').length;
     if (changeN) { hyps[1].p *= 1 + 0.12 * changeN; }
+    // 적층 체용이 뚜렷하게 順이면 나아가는 가설을, 逆이면 제약 가설을 조금 올린다
+    if (cy && Math.abs(cy.sum) >= 4) {
+      const goIdx = hyps.findIndex(h => kindOf(h.id) === 'go');
+      const fixIdx = hyps.findIndex(h => kindOf(h.id) === 'fix');
+      const boost = Math.min(0.25, Math.abs(cy.sum) * 0.03);
+      if (cy.sum > 0 && goIdx >= 0) hyps[goIdx].p *= 1 + boost;
+      if (cy.sum < 0 && fixIdx >= 0) hyps[fixIdx].p *= 1 + boost;
+    }
     const sum = hyps.reduce((s, h) => s + h.p, 0);
     hyps.forEach(h => h.p /= sum);
     hyps.sort((x, y) => y.p - x.p);
     return {
       question, domain, target, group, godStem, godBranch, strong,
       strength: a.strength, lead: rule.lead, theme: rule.theme,
-      layers: stack(result, target, today), modifiers: mods,
+      layers: stack(result, target, today), modifiers: mods, chaeyong: cy,
       hypotheses: hyps, questions: rule.Q,
       answers: {},
       createdAt: today.toISOString().slice(0, 10),
@@ -679,6 +689,8 @@
       else if (dayElem === '수') season = '겨울에 난 사주에 물 기운이 겹치는 날이라 몸이 무거워지기 쉽습니다';
     }
 
+    const cy = global.ChaeksaChaeyong ? global.ChaeksaChaeyong.stack(result, today) : null;
+
     const HOURS = { 목: '새벽 5~9시', 화: '오전 9시~오후 1시', 토: '오후 1~3시와 저녁 7~9시', 금: '오후 3~7시', 수: '밤 9시~새벽 1시' };
 
     return {
@@ -690,6 +702,7 @@
       relations: rels,
       helpful, dayElem, season,
       goodHours: HOURS[a.yongCandidates[0]] || null,
+      chaeyong: cy,
       tone: G ? G.tone : null,
       care: G ? G.care : null,
       action: G ? G.act : null,

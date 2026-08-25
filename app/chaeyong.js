@@ -1,0 +1,224 @@
+/* 책사 6차원 적층 체용(體用) 판정 v1
+ *
+ * 왜 필요한가
+ *   지금까지는 원국·대운·세운·월운을 나란히 늘어놓기만 했다. 그러면 "언제 흐름이 뒤집히는지"를
+ *   짚지 못한다. 체용은 층마다 다시 판정해야 한다 — 같은 편관이라도 신강일 때는 귀(貴)가 되고
+ *   신약일 때는 살(殺)이 되기 때문이다.
+ *
+ * 적층 방식
+ *   1층 원국                         體 = 원국,            用 = 없음(기준)
+ *   2층 원국+대운                    體 = 원국,            用 = 대운
+ *   3층 원국+대운+세운               體 = 원국+대운,       用 = 세운
+ *   4층 +월운                        體 = 앞의 누적,       用 = 월운
+ *   5층 +일운                        體 = 앞의 누적,       用 = 일운
+ *   6층 +시운                        體 = 앞의 누적,       用 = 시운
+ *   각 층에서 누적 세력으로 강약을 다시 재고, 그 강약 기준으로 用을 순(順)/역(逆)으로 판정한다.
+ *
+ * 검수가 필요한 전제 (학파에 따라 갈리는 부분)
+ *   · 세력 가중치: 월지를 가장 무겁게(월령), 시간 단위가 짧아질수록 가볍게 둔다
+ *   · 지지는 정기(본기)로만 계산한다 (지장간 전체를 쓰는 방식과 다름)
+ *   · 신강일 때 관성은 順(貴), 신약일 때 관성은 逆(殺)로 본다
+ *   · 충은 감점, 육합·삼합은 가점. 형·해·파는 이 판정에서는 쓰지 않는다
+ *   이 전제를 바꾸려면 아래 WEIGHT / judge() 만 고치면 된다.
+ */
+(function (global) {
+  'use strict';
+  const E = global.ChaeksaEngine;
+
+  // 세력 가중치 — 월령을 가장 무겁게, 짧은 주기일수록 가볍게
+  const WEIGHT = {
+    natal: { yearStem: .5, yearBranch: .8, monthStem: .8, monthBranch: 2.0, dayBranch: 1.5, hourStem: .5, hourBranch: .8 },
+    대운:  { stem: .8, branch: 1.6 },
+    세운:  { stem: .6, branch: 1.0 },
+    월운:  { stem: .4, branch: .7 },
+    일운:  { stem: .3, branch: .5 },
+    시운:  { stem: .2, branch: .3 },
+  };
+
+  const YUKHAP = { 0:1,1:0,2:11,11:2,3:10,10:3,4:9,9:4,5:8,8:5,6:7,7:6 };
+  const SAMHAP = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
+  function branchRel(a, b) {
+    if (a === b) return '복음';
+    if ((b - a + 12) % 12 === 6) return '충';
+    if (YUKHAP[a] === b) return '육합';
+    if (SAMHAP.some(g => g.includes(a) && g.includes(b))) return '삼합';
+    return null;
+  }
+  const GROUP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
+
+  /** 오행 하나가 일간에게 어떤 세력인가: 도움(비겁·인성) = +1, 소모(식상·재성·관성) = -1 */
+  function siding(dayElem, elem) {
+    if (elem === dayElem) return 1;                       // 비겁
+    if ((dayElem - elem + 5) % 5 === 1) return 1;          // 인성 (elem이 dayElem을 生)
+    return -1;                                            // 식상·재성·관성
+  }
+
+  /** 시운(時運) 간지 — 지금 시각 기준 */
+  function hourPillarOf(dayStem, hour) {
+    const branch = Math.floor(((hour + 1) % 24) / 2);
+    const stem = ((dayStem % 5) * 2 + branch) % 10;
+    return { stem, branch };
+  }
+
+  /** 누적 세력으로 강약 점수를 낸다 (1에 가까울수록 신강) */
+  function strengthOf(items, dayElemIdx) {
+    let support = 0, total = 0;
+    items.forEach(it => {
+      const s = siding(dayElemIdx, it.elem);
+      total += it.w;
+      if (s > 0) support += it.w;
+    });
+    return total ? support / total : .5;
+  }
+  const label = (score) => score >= .55 ? '신강' : (score >= .45 ? '중화' : '신약');
+
+  /** 그 층에서 用이 體에게 順인가 逆인가 (-3 ~ +3) */
+  function judge(strengthLabel, group, extras) {
+    let v;
+    if (strengthLabel === '신약') {
+      v = ({ 인성: 2, 비겁: 2, 식상: -1, 재성: -1.5, 관성: -2 })[group];
+    } else if (strengthLabel === '신강') {
+      v = ({ 식상: 1.5, 재성: 2, 관성: 1.5, 인성: -1.5, 비겁: -2 })[group];
+    } else {
+      v = ({ 인성: .5, 비겁: .5, 식상: .5, 재성: 1, 관성: .5 })[group];
+    }
+    if (extras.yong) v += 1;            // 이 사주가 필요로 하는 오행
+    if (extras.missing) v += .5;        // 원국에 없던 오행이 채워짐
+    if (extras.chung) v -= 1;           // 지지 충
+    if (extras.hap) v += .5;            // 육합·삼합
+    if (extras.bokeum) v -= .5;         // 복음
+    return Math.max(-3, Math.min(3, Math.round(v * 10) / 10));
+  }
+
+  const SIGN = (v) => v > 0.3 ? '順' : (v < -0.3 ? '逆' : '平');
+
+  /**
+   * 6층 적층 체용 판정.
+   * @param {Object} result  ChaeksaEngine.calc()의 결과
+   * @param {Date}   when    기준 시각 (기본: 지금)
+   * @param {Object} [opts]  { upto: 1~6 }  몇 층까지 볼지 (기본 6)
+   */
+  function stack(result, when, opts) {
+    when = when || new Date();
+    const upto = (opts && opts.upto) || 6;
+    const a = result.analysis, ds = a.dayStem, p = result.pillars;
+    const dayElem = E.STEM_ELEM[ds];
+    const f = E.fmt;
+    const godOf = (stem) => E.TEN_GODS[E.tenGod(ds, stem)];
+
+    // 원국 세력 (일간 자신은 주체이므로 제외)
+    const W = WEIGHT.natal;
+    const items = [];
+    const push = (elem, w) => items.push({ elem, w });
+    push(E.STEM_ELEM[p.year.stem], W.yearStem);
+    push(E.BRANCH_ELEM[p.year.branch], W.yearBranch);
+    push(E.STEM_ELEM[p.month.stem], W.monthStem);
+    push(E.BRANCH_ELEM[p.month.branch], W.monthBranch);
+    push(E.BRANCH_ELEM[p.day.branch], W.dayBranch);
+    if (p.hour) { push(E.STEM_ELEM[p.hour.stem], W.hourStem); push(E.BRANCH_ELEM[p.hour.branch], W.hourBranch); }
+
+    const natalBranches = ['year','month','day','hour'].filter(k => p[k]).map(k => p[k].branch);
+    const carriedBranches = natalBranches.slice();
+
+    const layers = [];
+    // 1층 — 원국 자체
+    let score = strengthOf(items, dayElem);
+    layers.push({
+      level: 1, name: '원국', ganji: `${f.pillar(p.year)} ${f.pillar(p.month)} ${f.pillar(p.day)} ${p.hour ? f.pillar(p.hour) : '(시 모름)'}`,
+      god: null, group: null, strength: label(score), score: Math.round(score * 100) / 100,
+      value: 0, sign: '기준',
+      note: `타고난 구조. 이 층이 體의 바탕이 된다. 월지 ${f.branch(p.month.branch)}${a.gotMonth ? ' 득령' : ' 실령'}.`,
+    });
+
+    // 2~6층 — 운이 하나씩 얹힌다
+    const du = E.currentDaeun(result, when);
+    const tf = E.dateFortune(when.getFullYear(), when.getMonth() + 1, when.getDate());
+    const hourP = hourPillarOf(tf.day.stem, when.getHours());
+    const seq = [
+      { name: '대운', gz: du, w: WEIGHT.대운, period: du ? `${du.startYear}~${du.startYear + 9}` : null },
+      { name: '세운', gz: tf.year, w: WEIGHT.세운, period: `${when.getFullYear()}년` },
+      { name: '월운', gz: tf.month, w: WEIGHT.월운, period: `${when.getMonth() + 1}월` },
+      { name: '일운', gz: tf.day, w: WEIGHT.일운, period: `${when.getMonth() + 1}/${when.getDate()}` },
+      { name: '시운', gz: hourP, w: WEIGHT.시운, period: `${when.getHours()}시` },
+    ];
+
+    for (let i = 0; i < seq.length && i + 2 <= upto; i++) {
+      const s = seq[i];
+      if (!s.gz) { layers.push({ level: i + 2, name: s.name, ganji: '―', note: '대운 시작 전입니다.', value: 0, sign: '평', strength: layers[layers.length - 1].strength, score: layers[layers.length - 1].score }); continue; }
+      // 體 = 지금까지 누적된 것 (用은 아직 넣지 않는다). 이 상태를 기준으로 用을 판정한다.
+      const bodyScore = strengthOf(items, dayElem);
+      const bodyLab = label(bodyScore);
+
+      const god = godOf(s.gz.stem);
+      const group = GROUP[god];
+      const elemName = E.ELEM[E.STEM_ELEM[s.gz.stem]];
+      // 체(누적된 지지)와 용(들어온 지지)의 관계
+      const rels = [];
+      carriedBranches.forEach(b => { const r = branchRel(b, s.gz.branch); if (r) rels.push(r); });
+      const extras = {
+        yong: a.yongCandidates.includes(elemName),
+        missing: a.missing.includes(elemName),
+        chung: rels.includes('충'),
+        hap: rels.includes('육합') || rels.includes('삼합'),
+        bokeum: rels.includes('복음'),
+      };
+      const value = judge(bodyLab, group, extras);
+
+      // 판정이 끝났으니 이제 用을 體에 편입한다 (다음 층의 體가 된다)
+      items.push({ elem: E.STEM_ELEM[s.gz.stem], w: s.w.stem });
+      items.push({ elem: E.BRANCH_ELEM[s.gz.branch], w: s.w.branch });
+      carriedBranches.push(s.gz.branch);
+      score = strengthOf(items, dayElem);
+      const afterLab = label(score);
+
+      layers.push({
+        level: i + 2, name: s.name, ganji: f.pillar(s.gz), ganjiKo: f.pillarKo(s.gz), period: s.period,
+        god, group, elem: elemName,
+        bodyStrength: bodyLab, bodyScore: Math.round(bodyScore * 100) / 100,
+        strength: afterLab, score: Math.round(score * 100) / 100,
+        moved: bodyLab !== afterLab ? `${bodyLab} → ${afterLab}` : null,
+        value, sign: SIGN(value),
+        rels: [...new Set(rels)],
+        extras,
+        note: buildNote(s.name, god, group, bodyLab, value, extras, rels, bodyLab !== afterLab ? afterLab : null),
+      });
+    }
+
+    // 변곡점 — 부호가 바뀌는 층
+    const turns = [];
+    for (let i = 2; i < layers.length; i++) {
+      const prev = layers[i - 1], cur = layers[i];
+      if (prev.value == null || cur.value == null) continue;
+      if ((prev.value > 0.3 && cur.value < -0.3) || (prev.value < -0.3 && cur.value > 0.3)) {
+        turns.push({ from: prev.name, to: cur.name, fromSign: prev.sign, toSign: cur.sign });
+      }
+    }
+    // 강약이 층을 지나며 바뀌었는가
+    const shifted = layers.length > 1 && layers[0].strength !== layers[layers.length - 1].strength;
+
+    return {
+      layers,
+      coord: layers.filter(l => l.level > 1).map(l => l.value),
+      coordText: layers.map(l => l.level === 1 ? `원국(${l.strength})` : `${l.name} ${l.god || ''} ${l.sign}${l.value > 0 ? '+' : ''}${l.value}${l.moved ? ' [' + l.moved + ']' : ''}`).join(' → '),
+      turns, shifted,
+      finalStrength: layers[layers.length - 1].strength,
+      natalStrength: layers[0].strength,
+      sum: Math.round(layers.filter(l => l.level > 1).reduce((s, l) => s + (l.value || 0), 0) * 10) / 10,
+    };
+  }
+
+  function buildNote(name, god, group, bodyLab, value, ex, rels, movedTo) {
+    const dir = value > 0.3 ? '나를 돕는 쪽' : (value < -0.3 ? '나를 누르는 쪽' : '중립에 가까움');
+    const parts = [`${bodyLab}인 상태에 ${name}으로 ${god}(${group})이 들어옵니다. ${dir}입니다.`];
+    if (movedTo) parts.push(`이 기운이 얹히면서 일간은 ${bodyLab}에서 ${movedTo}으로 옮겨갑니다.`);
+    if (ex.yong) parts.push('이 사주가 필요로 하는 기운이라 힘이 붙습니다.');
+    if (ex.missing) parts.push('원국에 없던 기운이 채워집니다.');
+    if (ex.chung) parts.push('누적된 지지와 부딪혀(충) 변동이 커집니다.');
+    if (ex.hap) parts.push('누적된 지지와 합을 이뤄 일이 붙습니다.');
+    if (ex.bokeum) parts.push('같은 글자가 겹쳐(복음) 감정이 크게 느껴질 수 있습니다.');
+    void rels;
+    return parts.join(' ');
+  }
+
+  global.ChaeksaChaeyong = { stack, WEIGHT, judge, strengthOf, hourPillarOf };
+})(window);
