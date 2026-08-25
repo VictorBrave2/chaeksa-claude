@@ -67,10 +67,12 @@
   // ───────── 로그인 / 로그아웃 ─────────
   async function sendMagicLink(addr) {
     if (!enabled()) throw new Error('서버 동기화가 아직 설정되지 않았습니다.');
-    const res = await fetch(CFG.url + '/auth/v1/otp', {
+    // REST에서는 복귀 주소를 쿼리스트링 redirect_to 로 넘긴다 (SDK의 emailRedirectTo와 같은 것)
+    const back = encodeURIComponent(location.origin + location.pathname);
+    const res = await fetch(CFG.url + '/auth/v1/otp?redirect_to=' + back, {
       method: 'POST',
       headers: { apikey: CFG.anonKey, 'content-type': 'application/json' },
-      body: JSON.stringify({ email: addr, create_user: true, options: { email_redirect_to: location.origin + location.pathname } }),
+      body: JSON.stringify({ email: addr, create_user: true }),
     });
     if (!res.ok) {
       let msg = '메일을 보내지 못했습니다.';
