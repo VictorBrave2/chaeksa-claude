@@ -10,6 +10,13 @@
   const nim = () => profile.name === '당신' ? '당신' : profile.name + '님';
   const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
 
+  // 아주 가벼운 마크다운: **굵게**, 줄바꿈만 (LLM 서술 표시용)
+  const mdLite = (t) => String(t)
+    .replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]))
+    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+    .replace(/^###?\s*(.+)$/gm, '<b>$1</b>')
+    .replace(new RegExp(String.fromCharCode(10), 'g'), '<br>');
+
   const GOD_FLOW = {
     비견:'내 중심이 서는 때. 독립·자립·내 것 챙기기.', 겁재:'경쟁과 지출이 늘어나는 때. 동업·보증·큰 지출은 신중하게.',
     식신:'여유와 표현의 때. 즐기고 만들고 나누면 돌아옵니다.', 상관:'말과 재능이 튀는 때. 창작·홍보는 좋고, 윗사람과는 부드럽게.',
@@ -168,10 +175,10 @@
     let card = $('aiProfile');
     if (!card) { card = document.createElement('section'); card.className = 'card'; card.id = 'aiProfile'; $('daeun').closest('.card').before(card); }
     const cached = AI.getProfile(R);
-    if (cached) { card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${cached}</div>`; return; }
+    if (cached) { card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
     if (!AI.ready()) { card.innerHTML = `<h2>비서의 원국 해석</h2><p class="hint">AI 비서를 연결하면 원국을 한 번 정밀 분석해 고정 기준으로 씁니다.</p>`; return; }
     card.innerHTML = `<h2>비서의 원국 해석</h2><div class="brief loading">원국을 정밀 분석하는 중… (처음 한 번만, 30초쯤)</div>`;
-    try { const t = await AI.buildProfile(R, today); card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${t}</div>`; }
+    try { const t = await AI.buildProfile(R, today); card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${mdLite(t)}</div>`; }
     catch (e) { card.innerHTML = `<h2>비서의 원국 해석</h2><p class="hint">분석 실패: ${e.message}</p>`; }
   }
 

@@ -10,6 +10,8 @@
   let fr = null, current = null;   // fr: 현재 프레임, current: 저장 레코드
 
   const esc = (s) => String(s).replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
+  const MD_B = /\*\*(.+?)\*\*/g, MD_H = /^###?\s*(.+)$/gm, MD_NL = /\n/g;
+  const mdLite = (t) => esc(t).replace(MD_B, '<b>$1</b>').replace(MD_H, '<b>$1</b>').replace(MD_NL, '<br>');
   const load = () => { try { return JSON.parse(localStorage.getItem(CKEY)) || []; } catch (e) { return []; } };
   const save = (list) => localStorage.setItem(CKEY, JSON.stringify(list.slice(0, 30)));
 
@@ -228,7 +230,7 @@
     box.innerHTML = `<h4>비서의 이야기</h4><div class="brief loading">비서가 정리하는 중…</div>`;
     try {
       const text = await AI().deepNarrate(global.ChaeksaApp.result(), new Date(), fr, rev, current);
-      box.innerHTML = `<h4>비서의 이야기</h4><div class="brief">${esc(text).replace(/\n/g, '<br>')}</div>`;
+      box.innerHTML = `<h4>비서의 이야기</h4><div class="brief">${mdLite(text)}</div>`;
     } catch (e) {
       box.innerHTML = `<p class="hint">서술을 가져오지 못했어요: ${esc(e.message)}</p>`;
     }
