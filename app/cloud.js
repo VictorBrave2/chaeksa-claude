@@ -12,6 +12,8 @@
   const AKEY = 'chaeksa.auth';
   const PKEY = 'chaeksa.profile', CKEY = 'chaeksa.consults';
   const SKEY = 'chaeksa.sync';                    // 마지막 동기화 시각
+  const PAT  = 'chaeksa.profileAt';               // 이 기기에서 원국을 마지막으로 고친 시각
+  const ts = (v) => { const t = Date.parse(v || ''); return isNaN(t) ? 0 : t; };
 
   const enabled = () => !!(CFG.url && CFG.anonKey);
   const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
@@ -121,12 +123,13 @@
     const rows = await api('/rest/v1/profiles?select=*');
     const remote = rows && rows[0];
     if (remote) {
-      const localAt = localStorage.getItem(SKEY) || '';
-      const remoteAt = remote.updated_at || '';
+      const localAt = ts(localStorage.getItem(PAT));      // 이 기기의 마지막 수정 시각
+      const remoteAt = ts(remote.updated_at);
       const hasLocal = !!localStorage.getItem(PKEY);
       if (remote.birth && Object.keys(remote.birth).length && (!hasLocal || remoteAt > localAt)) {
         const b = Object.assign({}, remote.birth, remote.name ? { name: remote.name } : {});
         jset(PKEY, b);
+        localStorage.setItem(PAT, remote.updated_at || new Date().toISOString());
         if (remote.ai_profile) {
           const k = `chaeksa.profile.ai.${b.year}${b.month}${b.day}.${b.hour}.${b.gender}`;
           localStorage.setItem(k, remote.ai_profile);
@@ -152,7 +155,8 @@
           first: r.first_answer || {}, checkins: r.checkins || [], logs: r.logs || [],
           _at: r.updated_at,
         };
-        if (!cur || (r.updated_at || '') > (cur._at || '')) { byId[r.id] = remoteRec; merged = true; }
+        // 로컬에 아직 안 올린 수정이 있으면 그쪽이 이긴다
+        if (!cur || ts(r.updated_at) > ts(cur._at)) { byId[r.id] = remoteRec; merged = true; }
       });
       if (merged) {
         const list = Object.values(byId).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
@@ -200,7 +204,10 @@
         }))),
       });
     }
-    localStorage.setItem(SKEY, new Date().toISOString());
+    const now = new Date().toISOString();
+    if (list.length) { list.forEach(c => { c._at = now; }); jset(CKEY, list); }
+    if (p) localStorage.setItem(PAT, now);
+    localStorage.setItem(SKEY, now);
     return true;
   }
 

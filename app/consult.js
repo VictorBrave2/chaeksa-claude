@@ -92,7 +92,9 @@
         const v = inp.value.trim();
         if (!v) { inp.focus(); return; }
         list2[i].logs = list2[i].logs || [];
-        list2[i].logs.push({ date: new Date().toISOString().slice(0, 10), value: v });
+        const iso = new Date().toISOString();
+        list2[i].logs.push({ date: iso.slice(0, 10), value: v });
+        list2[i]._at = iso;
         save(list2); renderHome();
         if (global.ChaeksaCloud) global.ChaeksaCloud.pushSoon();
         return;
@@ -254,8 +256,9 @@
   function doSave(rev) {
     const list = load();
     const top = rev.ranked[0];
+    const nowIso = new Date().toISOString();
     const entry = {
-      date: new Date().toISOString().slice(0, 10),
+      date: nowIso.slice(0, 10),
       answers: { ...fr.answers },
       topId: top.id, topTitle: top.title, topP: Math.round(top.p * 100),
     };
@@ -264,6 +267,7 @@
       if (i >= 0) {
         list[i].checkins.push(entry);
         list[i].topId = top.id; list[i].topTitle = top.title; list[i].topP = entry.topP;
+        list[i]._at = nowIso;
         save(list);
       }
     } else {
@@ -272,7 +276,7 @@
         domainKey: fr.domain.key, domainLabel: fr.domain.label, targetLabel: fr.target.label,
         topId: top.id, topTitle: top.title, topP: entry.topP,
         action: top.action, metric: top.metric,
-        checkins: [], logs: [], first: entry,
+        checkins: [], logs: [], first: entry, _at: nowIso,
       });
       save(list);
     }

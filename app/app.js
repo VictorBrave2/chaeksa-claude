@@ -105,7 +105,7 @@
     if (p.year < 1900 || p.year > 2100 || p.month < 1 || p.month > 12 || p.day < 1 || p.day > 31) { alert('날짜를 다시 확인해 주세요.'); return null; }
     return p;
   }
-  $('btnGo').onclick = () => { const p = readForm(); if (!p) return; localStorage.setItem(KEY, JSON.stringify(p)); start(p); if (window.ChaeksaCloud) ChaeksaCloud.pushSoon(); };
+  $('btnGo').onclick = () => { const p = readForm(); if (!p) return; localStorage.setItem(KEY, JSON.stringify(p)); localStorage.setItem('chaeksa.profileAt', new Date().toISOString()); start(p); if (window.ChaeksaCloud) ChaeksaCloud.pushSoon(); };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
   // ───── 탭 ─────
@@ -395,8 +395,8 @@
     const C = Cloud(); if (!C || !C.signedIn()) return;
     try {
       if (showMsg) cloudMsg('동기화 중…');
-      const r = await C.pull();
-      await C.push();
+      const r = await C.pull();   // 서버 것과 병합 (더 최신인 쪽이 남는다)
+      await C.push();             // 병합 결과를 다시 올린다
       renderCloud();
       if (showMsg) cloudMsg('동기화했습니다.', true);
       if (r.changed) {
