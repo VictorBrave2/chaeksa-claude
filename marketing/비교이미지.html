@@ -1,0 +1,130 @@
+<title>진태양시 보정 비교</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+
+<style>
+  :root{
+    --ground:#e9e5df; --ink:#1b1916; --ink2:#5d584f; --ink3:#8c8578; --edge:#d3cdc2;
+    --paper:#f7f2e8; --paper2:#fffdf8; --line:#e8dcc6; --line2:#dbcbad;
+    --pink:#332c23; --pink2:#6b6154; --pink3:#a0937d;
+    --accent:#b3562e; --accent-soft:rgba(179,86,46,.09); --accent-line:rgba(179,86,46,.30);
+    --serif:"Noto Serif KR","Apple Myungjo",serif;
+    --sans:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --ground:#151310; --ink:#ece7de; --ink2:#a29b8e; --ink3:#7a7365; --edge:#332f29; color-scheme:dark; }
+  }
+  :root[data-theme="dark"]{ --ground:#151310; --ink:#ece7de; --ink2:#a29b8e; --ink3:#7a7365; --edge:#332f29; color-scheme:dark; }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans)}
+  .page{max-width:900px;margin:0 auto;padding:44px 22px 70px}
+  .lead{margin-bottom:26px}
+  .lead .k{font-size:11.5px;letter-spacing:.2em;color:var(--accent);font-weight:500}
+  .lead h1{margin:12px 0 0;font-family:var(--serif);font-size:clamp(23px,4.4vw,31px);line-height:1.3;letter-spacing:-.025em;text-wrap:balance}
+  .lead p{margin:12px 0 0;font-size:14.5px;line-height:1.8;color:var(--ink2);max-width:36em}
+
+  /* ── 블로그에 넣을 이미지 영역 (이 카드만 캡처하세요) ── */
+  .shot{background:var(--paper);border:1px solid var(--line2);border-radius:16px;overflow:hidden;
+        box-shadow:0 2px 4px rgba(40,32,20,.05),0 16px 42px rgba(40,32,20,.13);color:var(--pink)}
+  .shot-hd{padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+  .shot-hd .t{font-family:var(--serif);font-size:18px;font-weight:700;letter-spacing:-.015em}
+  .shot-hd .s{font-size:12.5px;color:var(--pink3);margin-top:5px;font-variant-numeric:tabular-nums}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr}
+  .side{padding:20px 22px 22px}
+  .side + .side{border-left:1px solid var(--line)}
+  .side .cap{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;margin-bottom:4px}
+  .side .cap i{width:7px;height:7px;border-radius:50%;display:block}
+  .off .cap{color:var(--pink3)} .off .cap i{background:var(--pink3)}
+  .on  .cap{color:var(--accent)} .on .cap i{background:var(--accent)}
+  .side .clock{font-family:var(--serif);font-size:15px;color:var(--pink2);margin-bottom:16px;font-variant-numeric:tabular-nums}
+
+  .pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center}
+  .pl{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:10px 2px 8px}
+  .pl .lab{font-size:9.5px;color:var(--pink3);letter-spacing:.16em;margin-bottom:5px}
+  .pl .han{font-family:var(--serif);font-size:25px;font-weight:900;line-height:1.12}
+  .pl .ko{font-size:9.5px;color:var(--pink3);margin-top:3px}
+  .pl.hit{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft)}
+  .pl.hit .han{color:var(--accent)}
+
+  .verdict{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+           display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--pink2)}
+  .verdict b{font-family:var(--serif);font-size:17px;color:var(--pink);margin-left:auto}
+  .on .verdict b{color:var(--accent)}
+
+  .shot-ft{padding:15px 22px 18px;border-top:1px solid var(--line);background:var(--paper2)}
+  .shot-ft p{margin:0;font-size:12.5px;line-height:1.75;color:var(--pink2)}
+  .shot-ft p b{color:var(--pink)}
+  .shot-ft .src{margin-top:8px;font-size:11px;color:var(--pink3);letter-spacing:.02em}
+
+  @media (max-width:620px){
+    .grid{grid-template-columns:1fr}
+    .side + .side{border-left:0;border-top:1px solid var(--line)}
+  }
+
+  .howto{margin-top:30px;padding:20px 22px;border:1px solid var(--edge);background:transparent}
+  .howto h3{margin:0 0 11px;font-family:var(--serif);font-size:16px;letter-spacing:-.015em}
+  .howto ol{margin:0;padding-left:19px;display:flex;flex-direction:column;gap:8px}
+  .howto li{font-size:13.5px;line-height:1.75;color:var(--ink2)}
+  .howto li b{color:var(--ink);font-weight:500}
+</style>
+
+<div class="page">
+  <div class="lead">
+    <div class="k">블로그용 이미지</div>
+    <h1>진태양시 보정, 켜고 끈 결과</h1>
+    <p>아래 카드만 잘라서 블로그 두 번째 이미지로 쓰세요. 숫자는 책사 엔진이 실제로 계산한 값 그대로입니다.</p>
+  </div>
+
+  <div class="shot">
+    <div class="shot-hd">
+      <div class="t">같은 사람, 같은 시각. 보정 하나로 갈립니다</div>
+      <div class="s">1990년 5월 15일 · 서울 · 오전 11시 00분 출생</div>
+    </div>
+
+    <div class="grid">
+      <div class="side off">
+        <div class="cap"><i></i>보정하지 않음</div>
+        <div class="clock">시계 그대로 11:00</div>
+        <div class="pillars">
+          <div class="pl"><div class="lab">시</div><div class="han">壬午</div><div class="ko">임오</div></div>
+          <div class="pl"><div class="lab">일</div><div class="han">庚辰</div><div class="ko">경진</div></div>
+          <div class="pl"><div class="lab">월</div><div class="han">辛巳</div><div class="ko">신사</div></div>
+          <div class="pl"><div class="lab">연</div><div class="han">庚午</div><div class="ko">경오</div></div>
+        </div>
+        <div class="verdict">일간의 강약<b>신약</b></div>
+      </div>
+
+      <div class="side on">
+        <div class="cap"><i></i>진태양시 보정</div>
+        <div class="clock">실제 태양시 10:28</div>
+        <div class="pillars">
+          <div class="pl hit"><div class="lab">시</div><div class="han">辛巳</div><div class="ko">신사</div></div>
+          <div class="pl"><div class="lab">일</div><div class="han">庚辰</div><div class="ko">경진</div></div>
+          <div class="pl"><div class="lab">월</div><div class="han">辛巳</div><div class="ko">신사</div></div>
+          <div class="pl"><div class="lab">연</div><div class="han">庚午</div><div class="ko">경오</div></div>
+        </div>
+        <div class="verdict">일간의 강약<b>중화</b></div>
+      </div>
+    </div>
+
+    <div class="shot-ft">
+      <p>시주가 <b>壬午에서 辛巳로</b> 바뀌면서, 일간의 강약 판정도 <b>신약에서 중화로</b> 달라집니다.
+         강약이 달라지면 쓰면 좋은 오행(용신)이 바뀌고, 해석의 방향이 통째로 갈립니다.</p>
+      <div class="src">chaeksa.kr · 진태양시 보정은 설정에서 켜고 끌 수 있습니다</div>
+    </div>
+  </div>
+
+  <div class="howto">
+    <h3>이미지로 만드는 법</h3>
+    <ol>
+      <li>이 페이지를 <b>폰이나 PC에서 열고</b> 위 카드 영역만 화면 캡처하세요.</li>
+      <li>PC라면 <b>브라우저 창 너비를 900px 정도로</b> 좁혀야 좌우 배치가 유지됩니다. 더 좁히면 위아래로 쌓입니다 — 모바일 블로그에는 그 편이 오히려 잘 읽힙니다.</li>
+      <li>블로그에서는 <b>글 중간 "실제로 계산해보면" 부분 바로 아래</b>에 넣으세요.</li>
+      <li>대표 이미지는 이것 말고 <b>책사 오늘 화면</b>(먹색 히어로)을 쓰시는 게 클릭률에 낫습니다.</li>
+    </ol>
+  </div>
+</div>

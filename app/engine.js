@@ -162,8 +162,11 @@
 
     // 일주: 23시 이후는 다음날로(야자시 → 익일 자시 처리)
     let dayJD = Math.floor(jdLocal + 0.5); // 해당 날짜의 JDN (정오 기준)
-    const localHourFrac = (jdLocal + 0.5) % 1; // 0~1, 0=자정
-    const localHour = localHourFrac * 24;
+    // 시주는 '표시되는 시각'과 같은 기준으로 잡는다.
+    // 분 아래를 살려두면 태양시 08:59.95 가 화면에 09:00 으로 찍히면서
+    // 표시는 巳시인데 계산은 辰시가 되는 모순이 생긴다.
+    // 출생 시각은 어차피 분 단위로 기록되므로 초 단위 정밀도는 허상이다.
+    const localHour = localClock.hh + localClock.mm / 60;
     if (hourKnown && localHour >= 23) dayJD += 1;
     const dayIdx = ((dayJD + 49) % 60 + 60) % 60;
     const dayStem = dayIdx % 10, dayBranch = dayIdx % 12;

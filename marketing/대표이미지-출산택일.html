@@ -1,0 +1,133 @@
+<title>출산택일 대표 이미지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+
+<style>
+  :root{
+    --ground:#e9e5df; --ink:#1b1916; --ink2:#5d584f; --ink3:#8c8578; --edge:#d3cdc2;
+    --serif:"Noto Serif KR","Apple Myungjo",serif;
+    --sans:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --ground:#151310; --ink:#ece7de; --ink2:#a29b8e; --ink3:#7a7365; --edge:#332f29; color-scheme:dark; }
+  }
+  :root[data-theme="dark"]{ --ground:#151310; --ink:#ece7de; --ink2:#a29b8e; --ink3:#7a7365; --edge:#332f29; color-scheme:dark; }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans)}
+  .page{max-width:940px;margin:0 auto;padding:40px 20px 70px}
+  .lead .k{font-size:11.5px;letter-spacing:.2em;color:#8c4419;font-weight:500}
+  .lead h1{margin:12px 0 0;font-family:var(--serif);font-size:clamp(22px,4.2vw,29px);line-height:1.32;letter-spacing:-.025em}
+  .lead p{margin:11px 0 26px;font-size:14px;line-height:1.8;color:var(--ink2);max-width:36em}
+
+  .label{font-size:11.5px;letter-spacing:.16em;color:var(--ink3);margin:34px 0 12px;font-weight:500}
+
+  /* ───── 대표 이미지 (정사각 1080 비율) ───── */
+  .thumb{
+    width:540px;height:540px;max-width:100%;aspect-ratio:1/1;
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgba(212,165,116,.26), transparent 62%),
+      linear-gradient(170deg,#faf7f0 0%,#f2e9d9 100%);
+    border:1px solid #dbcbad;border-radius:10px;overflow:hidden;position:relative;
+    box-shadow:0 2px 4px rgba(40,32,20,.05),0 18px 46px rgba(40,32,20,.15);
+    color:#332c23;display:flex;flex-direction:column;padding:44px 42px;
+  }
+  .thumb .seal{
+    position:absolute;top:36px;right:38px;width:52px;height:52px;border-radius:7px;
+    background:linear-gradient(145deg,#c4603a,#9b4123);color:#fdf6ec;
+    font-family:var(--serif);font-size:27px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(155,65,35,.3);
+  }
+  .thumb .yr{font-family:var(--serif);font-size:19px;font-weight:500;color:#9b4123;letter-spacing:.02em}
+  .thumb h2{
+    margin:10px 0 0;font-family:var(--serif);font-size:52px;font-weight:900;
+    line-height:1.16;letter-spacing:-.035em;
+  }
+  .thumb .sub{margin-top:16px;font-size:16px;line-height:1.7;color:#6b6154;font-weight:400}
+  .thumb .spacer{flex-grow:1}
+
+  .pick{border-top:2px solid #332c23;padding-top:18px}
+  .pick .t{font-size:12.5px;letter-spacing:.14em;color:#9b4123;font-weight:500}
+  .pick .d{font-family:var(--serif);font-size:34px;font-weight:700;letter-spacing:-.03em;margin-top:7px;line-height:1.1}
+  .pick .g{display:flex;gap:7px;margin-top:14px}
+  .pick .g span{
+    flex:1;background:#fffdf8;border:1px solid #e8dcc6;border-radius:7px;
+    padding:9px 2px;text-align:center;font-family:var(--serif);font-size:20px;font-weight:700;
+  }
+  .pick .n{margin-top:12px;font-size:13px;color:#6b6154;display:flex;align-items:baseline;gap:8px}
+  .pick .n b{margin-left:auto;font-family:var(--serif);font-size:19px;color:#9b4123}
+
+  /* ───── 가로형(썸네일 대안) ───── */
+  .wide{
+    width:100%;max-width:800px;aspect-ratio:1200/628;
+    background:linear-gradient(150deg,#2b241c 0%,#3a3025 100%);
+    border-radius:10px;overflow:hidden;position:relative;color:#f5eee0;
+    display:flex;flex-direction:column;justify-content:center;padding:0 48px;
+    box-shadow:0 2px 4px rgba(0,0,0,.15),0 18px 46px rgba(40,32,20,.22);
+  }
+  .wide .yr{font-size:13px;letter-spacing:.18em;color:rgba(245,238,224,.6)}
+  .wide h2{margin:12px 0 0;font-family:var(--serif);font-size:clamp(28px,4.6vw,44px);
+           font-weight:900;line-height:1.2;letter-spacing:-.03em}
+  .wide .sub{margin-top:14px;font-size:clamp(13px,1.8vw,16px);color:rgba(245,238,224,.66);line-height:1.7}
+  .wide .row{display:flex;gap:8px;margin-top:22px}
+  .wide .row span{background:rgba(245,238,224,.1);border:1px solid rgba(245,238,224,.16);
+                  border-radius:6px;padding:8px 14px;font-family:var(--serif);font-size:19px;font-weight:700}
+  .wide .seal{position:absolute;top:34px;right:40px;width:44px;height:44px;border-radius:6px;
+              background:linear-gradient(145deg,#c4603a,#9b4123);color:#fdf6ec;font-family:var(--serif);
+              font-size:23px;font-weight:900;display:flex;align-items:center;justify-content:center}
+
+  .howto{margin-top:34px;padding:20px 22px;border:1px solid var(--edge)}
+  .howto h3{margin:0 0 11px;font-family:var(--serif);font-size:16px;letter-spacing:-.015em}
+  .howto ol{margin:0;padding-left:19px;display:flex;flex-direction:column;gap:8px}
+  .howto li{font-size:13.5px;line-height:1.75;color:var(--ink2)}
+  .howto li b{color:var(--ink);font-weight:500}
+</style>
+
+<div class="page">
+  <div class="lead">
+    <div class="k">네이버 블로그 · 대표 이미지</div>
+    <h1>2026년 11월 출산택일</h1>
+    <p>정사각형은 블로그 대표 이미지용, 가로형은 링크 공유 카드나 썸네일용입니다. 각각 화면 캡처해서 쓰세요. 숫자와 간지는 실제 계산 결과입니다.</p>
+  </div>
+
+  <div class="label">정사각형 · 블로그 대표 이미지</div>
+
+  <div class="thumb">
+    <div class="seal">策</div>
+    <div class="yr">丙午年 己亥月</div>
+    <h2>2026년 11월<br>출산택일</h2>
+    <div class="sub">30일 × 12시진<br>360개 시간대를 전부 계산했습니다</div>
+
+    <div class="spacer"></div>
+
+    <div class="pick">
+      <div class="t">공동 1위 · 주간</div>
+      <div class="d">11월 25일 오후 3~5시</div>
+      <div class="g"><span>丙午</span><span>己亥</span><span>癸卯</span><span>庚申</span></div>
+      <div class="n">야간 1위와 동점 · 오행은 더 고름<b>100점</b></div>
+    </div>
+  </div>
+
+  <div class="label">가로형 · 공유 카드 / 썸네일</div>
+
+  <div class="wide">
+    <div class="seal">策</div>
+    <div class="yr">2026년 11월 · 출산택일</div>
+    <h2>360개 시간대를<br>전부 계산했습니다</h2>
+    <div class="sub">밤·새벽까지 전부. 야간 조율이 가능한 분을 위한 순위도 따로 있습니다.</div>
+    <div class="row"><span>丙午</span><span>己亥</span><span>癸卯</span><span>庚申</span></div>
+  </div>
+
+  <div class="howto">
+    <h3>쓰는 법</h3>
+    <ol>
+      <li><b>정사각형</b>을 블로그 대표 이미지로 쓰세요. 네이버 모바일 피드에서 정사각으로 잘리기 때문에 이 비율이 안전합니다.</li>
+      <li>캡처는 <b>PC 브라우저에서 카드 영역만</b> 잘라내세요. 폰에서는 화면 너비에 맞춰 줄어듭니다.</li>
+      <li><b>가로형</b>은 카톡·오픈채팅에 링크 공유할 때 쓰거나, 글 맨 위 배너로 넣으세요.</li>
+      <li>날짜와 간지는 실제 계산 결과입니다. <b>임의로 고치지 마세요</b> — 본문 내용과 어긋납니다.</li>
+    </ol>
+  </div>
+</div>
