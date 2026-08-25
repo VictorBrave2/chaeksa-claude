@@ -119,7 +119,7 @@ input::placeholder{color:var(--ink3);opacity:.7}
 hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 
 /* ───── 원국 기둥 ───── */
-.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;text-align:center}
+.pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;text-align:center}
 .pillar{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 4px 10px;position:relative}
 .pillar::before{content:"";position:absolute;top:0;left:24%;right:24%;height:2px;border-radius:0 0 3px 3px;background:var(--line2)}
 .pillar.day::before{background:var(--accent)}
@@ -158,7 +158,7 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .brief.loading{color:var(--ink3);font-family:var(--sans);font-size:14.5px}
 .ganji-line{display:flex;gap:12px;font-size:12.5px;color:var(--ink3);margin-bottom:15px;flex-wrap:wrap}
 .ganji-line span b{color:var(--accent);font-family:var(--serif);font-weight:700;margin-left:3px}
-.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;text-align:center}
 .week .wd{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:9px 2px;font-size:10.5px;color:var(--ink3)}
 .week .wd b{display:block;font-size:15px;color:var(--ink);font-family:var(--serif);margin:2px 0}
 .week .wd i{display:block;width:7px;height:7px;border-radius:50%;margin:6px auto 0}
@@ -182,7 +182,7 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .chip.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft)}
 .calnav{display:flex;align-items:center;justify-content:space-between;margin:10px 0 12px}
 .calnav b{font-family:var(--serif);font-size:17px}
-.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
 .calgrid .h{font-size:10.5px;color:var(--ink3);text-align:center;padding:4px 0;letter-spacing:.1em}
 .cd{aspect-ratio:1;border-radius:11px;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:.12s}
 .cd:hover{border-color:var(--accent2)}
@@ -410,3 +410,18 @@ nav .dot{position:absolute;top:4px;right:9px;width:6px;height:6px;border-radius:
 .mailfold[open] summary::before{content:"⌄ "}
 .synced{font-size:13.5px;color:var(--ink2);margin-bottom:10px;line-height:1.6}
 .synced b{color:var(--accent);display:block;font-size:15px}
+
+
+/* ───── 마무리: 넘침 방지 · 손가락으로 누를 수 있는 크기 ───── */
+/* 1fr은 내용 크기까지 늘어날 수 있어 칸이 카드 밖으로 밀려난다. minmax(0,1fr)로 고정한다. */
+.cd, .pillar, .week .wd, .du { min-width: 0 }
+.card, .tab { min-width: 0 }
+/* 터치 영역: 44px 미만은 손가락으로 정확히 누르기 어렵다 */
+.btn-ghost { min-height: 42px; display: inline-flex; align-items: center; justify-content: center }
+.btn-icon { width: 42px; height: 42px }
+.calnav .btn-ghost { min-width: 42px; font-size: 18px; line-height: 1 }
+.cq-btns button { min-height: 42px }
+.seg button { min-height: 42px }
+.suggest button, .chips .chip { min-height: 38px }
+.pl button { min-height: 40px; padding: 0 10px }
+.metric-add button { min-height: 42px }

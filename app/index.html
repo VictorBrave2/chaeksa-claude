@@ -22,14 +22,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=21">
+<link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo"><i class="seal">策</i><span>책사<small id="subtitle">나의 명리비서</small></span></div>
     <div class="hbtns">
-      <button class="btn-ghost btn-icon" id="btnTheme" title="낮/밤 바꾸기">☀</button>
+      <button class="btn-ghost btn-icon" id="btnTheme" aria-label="낮·밤 테마 바꾸기" title="낮/밤 바꾸기">☀</button>
       <button class="btn-ghost" id="btnSettings">설정</button>
     </div>
   </header>
@@ -83,29 +83,29 @@
     <div class="hero"><p class="hero-eyebrow">나의 명리비서</p><h3>처음 뵙겠습니다.</h3>
     <p class="hero-sub">태어난 날과 시간을 알려주시면,<br>오늘부터 매일 당신만을 위한 브리핑을 드릴게요.</p></div>
     <label>이름 (부를 때 쓸 이름)</label>
-    <input id="name" placeholder="예: 지수">
+    <input id="name" aria-label="이름" placeholder="예: 지수">
     <label>생년월일</label>
     <div class="seg" id="calSeg">
       <button type="button" data-cal="solar" class="on">양력</button>
       <button type="button" data-cal="lunar">음력</button>
     </div>
     <div class="row">
-      <input id="y" type="number" placeholder="1990" min="1900" max="2100" inputmode="numeric">
-      <input id="m" type="number" placeholder="월" min="1" max="12" inputmode="numeric">
-      <input id="d" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
+      <input id="y" aria-label="출생 연도" type="number" placeholder="1990" min="1900" max="2100" inputmode="numeric">
+      <input id="m" aria-label="출생 월" type="number" placeholder="월" min="1" max="12" inputmode="numeric">
+      <input id="d" aria-label="출생 일" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
     </div>
     <div class="check hide" id="leapWrap"><input type="checkbox" id="isLeap"><label for="isLeap" style="margin:0">윤달이에요</label></div>
     <p class="conv hide" id="convNote"></p>
     <label>태어난 시간</label>
     <div class="row">
-      <input id="hh" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
-      <input id="mi" type="number" placeholder="분" min="0" max="59" inputmode="numeric">
+      <input id="hh" aria-label="태어난 시" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
+      <input id="mi" aria-label="태어난 분" type="number" placeholder="분" min="0" max="59" inputmode="numeric">
     </div>
     <div class="check"><input type="checkbox" id="noTime"><label for="noTime" style="margin:0">시간을 몰라요</label></div>
     <label>성별</label>
-    <select id="g"><option value="M">남성</option><option value="F">여성</option></select>
+    <select id="g" aria-label="성별"><option value="M">남성</option><option value="F">여성</option></select>
     <label>태어난 곳</label>
-    <select id="place"></select>
+    <select id="place" aria-label="태어난 곳"></select>
     <p class="hint hide" id="placeNote"></p>
     <div class="check"><input type="checkbox" id="solar" checked><label for="solar" style="margin:0">진태양시 보정 (출생지 경도로 실제 태양시 계산)</label></div>
     <button class="btn" id="btnGo">내 비서 만나기</button>
@@ -136,7 +136,7 @@
       <section class="card">
         <h2>택일 · 좋은 날 찾기</h2>
         <div class="chips" id="purposes"></div>
-        <div class="calnav"><button class="btn-ghost" id="calPrev">‹</button><b id="calTitle"></b><button class="btn-ghost" id="calNext">›</button></div>
+        <div class="calnav"><button class="btn-ghost" id="calPrev" aria-label="이전 달">‹</button><b id="calTitle"></b><button class="btn-ghost" id="calNext" aria-label="다음 달">›</button></div>
         <div class="calgrid" id="calgrid"></div>
         <div class="legend"><span><i class="g3"></i>아주 좋음</span><span><i class="g2"></i>좋음</span><span><i class="g1"></i>보통</span><span><i class="g0"></i>피하기</span></div>
       </section>
@@ -183,12 +183,12 @@
     <div class="tab hide" data-tab="compat">
       <section class="card">
         <h2>궁합 · 이 사람과 나</h2>
-        <label>상대 이름</label><input id="cName" placeholder="예: 민준">
+        <label>상대 이름</label><input id="cName" aria-label="상대 이름" placeholder="예: 민준">
         <label>상대 생년월일 (양력)</label>
-        <div class="row"><input id="cY" type="number" placeholder="1992" inputmode="numeric"><input id="cM" type="number" placeholder="월" inputmode="numeric"><input id="cD" type="number" placeholder="일" inputmode="numeric"></div>
+        <div class="row"><input id="cY" aria-label="상대 출생 연도" type="number" placeholder="1992" inputmode="numeric"><input id="cM" aria-label="상대 출생 월" type="number" placeholder="월" inputmode="numeric"><input id="cD" aria-label="상대 출생 일" type="number" placeholder="일" inputmode="numeric"></div>
         <label>태어난 시간 (모르면 비워두세요)</label>
-        <div class="row"><input id="cH" type="number" placeholder="시" inputmode="numeric"><input id="cMi" type="number" placeholder="분" inputmode="numeric"></div>
-        <label>성별</label><select id="cG"><option value="F">여성</option><option value="M">남성</option></select>
+        <div class="row"><input id="cH" aria-label="상대 태어난 시" type="number" placeholder="시" inputmode="numeric"><input id="cMi" aria-label="상대 태어난 분" type="number" placeholder="분" inputmode="numeric"></div>
+        <label>성별</label><select id="cG" aria-label="상대 성별"><option value="F">여성</option><option value="M">남성</option></select>
         <button class="btn" id="btnCompat">궁합 보기</button>
       </section>
       <section class="card hide" id="compatResult"></section>
@@ -214,7 +214,7 @@
         <h2>비서에게 물어보기</h2>
         <div class="msgs" id="msgs"></div>
         <div class="suggest" id="suggest"></div>
-        <div class="ask"><input id="q" placeholder="이번 주 면접, 괜찮을까?"><button id="btnAsk">묻기</button></div>
+        <div class="ask"><input id="q" aria-label="비서에게 물어볼 말" placeholder="이번 주 면접, 괜찮을까?"><button id="btnAsk">묻기</button></div>
         <p class="hint" id="chatHint"></p>
       </section>
     </div>
@@ -238,7 +238,7 @@
     <h3>설정</h3>
     <p class="hint" style="margin:0 0 6px">AI 비서는 <b>바로 사용할 수 있습니다.</b> 아래는 직접 발급받은 키를 쓰고 싶을 때만 입력하세요.</p>
     <label>내 API 키로 쓰기 (선택)</label>
-    <input id="apiKey" type="password" placeholder="비워두면 책사 서버를 이용합니다" autocomplete="off">
+    <input id="apiKey" aria-label="API 키" type="password" placeholder="비워두면 책사 서버를 이용합니다" autocomplete="off">
     <p class="hint">입력하면 이 기기에만 저장되고 Anthropic 서버로만 전송됩니다.</p>
     <label>화면 테마</label>
     <div class="seg" id="themeSeg">
@@ -247,9 +247,9 @@
       <button data-t="night">밤 · 새벽</button>
     </div>
     <label>모델</label>
-    <select id="model"><option value="claude-opus-5">Claude Opus 5 (기본)</option><option value="claude-sonnet-5">Claude Sonnet 5 (빠르고 저렴)</option></select>
+    <select id="model" aria-label="AI 모델"><option value="claude-opus-5">Claude Opus 5 (기본)</option><option value="claude-sonnet-5">Claude Sonnet 5 (빠르고 저렴)</option></select>
     <label>프록시 서버 주소 (고급, 비워두면 기본값)</label>
-    <input id="proxyUrl" placeholder="https://…/v1/messages">
+    <input id="proxyUrl" aria-label="프록시 서버 주소" placeholder="https://…/v1/messages">
     <div class="row" style="margin-top:16px"><button class="btn" id="btnSaveSettings">저장</button><button class="btn ghost" id="btnCloseSettings">닫기</button></div>
     <hr>
     <div id="cloudBox">
@@ -260,7 +260,7 @@
         <button class="btn ghost" id="btnGoogle">구글로 계속하기</button>
         <details class="mailfold"><summary>이메일로 로그인</summary>
           <div class="row" style="margin-top:8px">
-            <input id="loginEmail" type="email" placeholder="이메일 주소" autocomplete="email">
+            <input id="loginEmail" aria-label="이메일 주소" type="email" placeholder="이메일 주소" autocomplete="email">
             <button class="btn-ghost" id="btnMail">링크 받기</button>
           </div>
           <p class="hint">비밀번호를 만들지 않습니다. 메일로 온 링크를 누르면 로그인됩니다.</p>
@@ -277,21 +277,21 @@
   </div>
 </div>
 
-<script src="config.js?v=21"></script>
-<script src="cloud.js?v=21"></script>
-<script src="places.js?v=21"></script>
-<script src="astro.js?v=21"></script>
-<script src="lunar.js?v=21"></script>
-<script src="engine.js?v=21"></script>
-<script src="brief.js?v=21"></script>
-<script src="calendar.js?v=21"></script>
-<script src="compat.js?v=21"></script>
-<script src="tongbyeon.js?v=21"></script>
-<script src="rules-wealth-love.js?v=21"></script>
-<script src="rules-health-study-move.js?v=21"></script>
-<script src="consult.js?v=21"></script>
-<script src="share.js?v=21"></script>
-<script src="ai.js?v=21"></script>
-<script src="app.js?v=21"></script>
+<script src="config.js?v=22"></script>
+<script src="cloud.js?v=22"></script>
+<script src="places.js?v=22"></script>
+<script src="astro.js?v=22"></script>
+<script src="lunar.js?v=22"></script>
+<script src="engine.js?v=22"></script>
+<script src="brief.js?v=22"></script>
+<script src="calendar.js?v=22"></script>
+<script src="compat.js?v=22"></script>
+<script src="tongbyeon.js?v=22"></script>
+<script src="rules-wealth-love.js?v=22"></script>
+<script src="rules-health-study-move.js?v=22"></script>
+<script src="consult.js?v=22"></script>
+<script src="share.js?v=22"></script>
+<script src="ai.js?v=22"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>
