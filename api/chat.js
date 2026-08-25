@@ -15,11 +15,11 @@
  *   무료 사용자의 '평생 1회' 상담이 네트워크 사정으로 날아가면 안 된다.
  *
  * 환경변수 (Vercel > Project > Settings > Environment Variables):
- *   ANTHROPIC_API_KEY   필수
- *   SUPABASE_URL        예: https://xxxx.supabase.co  (비우면 사용량 강제 없이 동작 — 과도기용)
- *   SUPABASE_ANON_KEY   공개 anon 키 (비밀 아님. service_role 키는 절대 여기 넣지 말 것)
+ *   ANTHROPIC_API_KEY   필수 — 여기 있어야 할 유일한 비밀
  *   ALLOWED_ORIGIN      예: https://chaeksa.kr  (쉼표로 여러 개, 비우면 모두 허용)
  *   DAILY_LIMIT         인스턴스당 IP 하루 호출 상한. 기본 40 (토큰 도난 시의 겉껍데기 방어)
+ *   SUPABASE_URL / SUPABASE_ANON_KEY — 넣지 않아도 된다(공개값이라 코드에 기본값 있음).
+ *     넣으면 덮어쓴다. service_role 키는 어디에도 절대 넣지 말 것.
  *
  * 호출 주소: https://<프로젝트>.vercel.app/api/chat
  */
@@ -48,11 +48,20 @@ function overLimit(ip, limit) {
 const clean = (v) => (v || '').replace(/[^!-~]/g, '');
 const env = (k) => clean(process.env[k]).replace(/\/+$/, '');
 
+// Supabase 주소와 anon 키는 비밀이 아니다 — app/config.js로 모든 방문자의
+// 브라우저에 이미 내려가는 공개값이다. 그런데 이걸 환경변수로 받게 했더니
+// 붙여넣기 과정에서 값이 깨져 강제가 통째로 무력화되는 사고가 났다(probe가 잡음).
+// 공개값은 코드에 둔다. 환경변수는 있으면 덮어쓰는 용도로만 남긴다.
+// Vercel에 남아야 할 비밀은 ANTHROPIC_API_KEY 하나뿐이다.
+const SB_URL_DEFAULT = 'https://dedgzremezveiwhosqjj.supabase.co';
+const SB_ANON_DEFAULT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZGd6cmVtZXp2ZWl3aG9zcWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1ODQyNzcsImV4cCI6MjEwMzE2MDI3N30.ek3yy6tZuYLydS6f1yiLrXIUGSJCeiNLPN5bExas-TA';
+const sbUrl = () => env('SUPABASE_URL') || SB_URL_DEFAULT;
+const sbAnon = () => clean(process.env.SUPABASE_ANON_KEY) || SB_ANON_DEFAULT;
+
 /** Supabase RPC — 사용자 토큰으로 부른다. 반환: 함수의 json 또는 { ok:false, reason } */
 async function rpc(name, args, userToken) {
-  const url = env('SUPABASE_URL');
-  const anon = clean(process.env.SUPABASE_ANON_KEY);
-  if (!url || !anon) return { ok: true, skipped: true };   // 미설정이면 통과 (과도기)
+  const url = sbUrl();
+  const anon = sbAnon();
   try {
     const res = await fetch(`${url}/rest/v1/rpc/${name}`, {
       method: 'POST',
@@ -95,16 +104,14 @@ module.exports = async (req, res) => {
 
   if (req.method === 'GET') {
     const k = process.env.ANTHROPIC_API_KEY || '';
-    const sbUrl = env('SUPABASE_URL');
-    const sbAnon = clean(process.env.SUPABASE_ANON_KEY);
-    const enforced = !!(sbUrl && sbAnon);
+    const enforced = true;
     // 프록시 → Supabase가 실제로 닿는지. 토큰 없이 부르면 '권한 거부'가 정상 응답이다.
-    let probe = 'off';
-    if (enforced) {
+    let probe;
+    {
       try {
-        const pr = await fetch(`${sbUrl}/rest/v1/rpc/ai_usage_state`, {
+        const pr = await fetch(`${sbUrl()}/rest/v1/rpc/ai_usage_state`, {
           method: 'POST',
-          headers: { apikey: sbAnon, 'content-type': 'application/json' },
+          headers: { apikey: sbAnon(), 'content-type': 'application/json' },
           body: '{}',
         });
         const pj = await pr.json().catch(() => ({}));
@@ -144,7 +151,7 @@ module.exports = async (req, res) => {
   const auth = req.headers.authorization || '';
   const userToken = auth.startsWith('Bearer ') ? auth.slice(7) : '';
   const task = ALLOWED_TASKS.has(req.headers['x-chaeksa-task']) ? req.headers['x-chaeksa-task'] : 'chat';
-  const enforcing = !!(env('SUPABASE_URL') && clean(process.env.SUPABASE_ANON_KEY));
+  const enforcing = true;   // 기본값이 코드에 있으므로 항상 강제한다
 
   if (enforcing) {
     if (!userToken) {
