@@ -52,6 +52,9 @@ export default {
         'x-api-key': env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
         'anthropic-beta': request.headers.get('anthropic-beta') || 'server-side-fallback-2026-07-01',
+        // Worker 요청에는 기본 UA가 없어 Anthropic 쪽 방화벽이 간헐적으로 403을 냄. 반드시 지정할 것.
+        'user-agent': 'chaeksa-proxy/1.0 (+https://chaeksa.kr)',
+        'accept': 'application/json',
       },
       body: JSON.stringify(body),
     });
