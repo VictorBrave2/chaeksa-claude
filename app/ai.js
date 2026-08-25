@@ -124,10 +124,16 @@ ${prof}` : ''}`;
       throw err;
     }
     const model = opts.model || modelFor(task);
+    /* 프롬프트 캐싱 — 원국·고정 해석·체용 좌표는 대화 내내 똑같이 반복된다.
+       앞부분을 캐시에 올려두면 두 번째 턴부터 그 부분이 1/10 가격이 된다.
+       (캐시 최소 길이가 있어 짧은 프롬프트나 haiku에서는 그냥 넘어간다 — 손해는 없다) */
+    const cacheable = opts.cache !== false && system.length > 3000;
     const body = Object.assign({
       model,
       max_tokens: opts.maxTokens || 1024,
-      system,
+      system: cacheable
+        ? [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }]
+        : system,
       messages,
     }, paramsFor(model, opts.effort));
     let url, headers = { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' };
@@ -141,6 +147,7 @@ ${prof}` : ''}`;
       throw new Error(msg);
     }
     const j = await res.json();
+    if (j.usage) global.__chaeksaLastUsage = j.usage;
     if (global.ChaeksaUsage && !s.apiKey) global.ChaeksaUsage.record(task);
     if (j.stop_reason === 'refusal') throw new Error('이 질문에는 답하지 않는 게 좋겠어요. 다른 방식으로 물어봐 주세요.');
     return (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
