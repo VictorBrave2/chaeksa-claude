@@ -640,5 +640,61 @@
     return { options, lead, unknown, volatility, turning, topKind };
   }
 
-  global.ChaeksaTongbyeon = { defineRule: R, H, Q, frame, revise, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
+
+  // ───────── 오늘 프레임 — 매일 브리핑도 통변엔진을 거치게 한다 ─────────
+  /* 지금까지 매일 브리핑은 원국 데이터를 LLM에 바로 넘겨 자유 서술시켰다.
+     그러면 같은 사주라도 날마다 말이 달라질 수 있다.
+     여기서 '오늘의 뼈대'를 규칙으로 확정하고, LLM은 그것을 문장으로 옮기기만 한다. */
+  function dayFrame(result, today) {
+    const a = result.analysis, ds = a.dayStem, p = result.pillars;
+    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const du = E.currentDaeun(result, today);
+    const godDay = E.TEN_GODS[E.tenGod(ds, tf.day.stem)];
+    const godDayBranch = E.TEN_GODS[E.tenGod(ds, E.HIDDEN[tf.day.branch][0])];
+    const godMonth = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
+    const godYear = E.TEN_GODS[E.tenGod(ds, tf.year.stem)];
+    const godDaeun = du ? E.TEN_GODS[E.tenGod(ds, du.stem)] : null;
+    const G = global.ChaeksaBrief ? global.ChaeksaBrief.GOD_TODAY[godDay] : null;
+
+    // 오늘 일지와 원국의 관계
+    const rels = [];
+    ['year', 'month', 'day', 'hour'].forEach(k => {
+      if (!p[k]) return;
+      const r = branchRel(p[k].branch, tf.day.branch);
+      if (r) rels.push({ pillar: { year: '연지', month: '월지', day: '일지', hour: '시지' }[k], rel: r });
+    });
+
+    // 오늘 기운이 이 사주에 도움이 되는가
+    const dayElem = E.ELEM[E.STEM_ELEM[tf.day.stem]];
+    const helpful = a.yongCandidates.includes(dayElem);
+
+    // 조후 — 태어난 달과 오늘 기운
+    const mb = p.month.branch;
+    let season = null;
+    if ([5, 6, 7].includes(mb)) {
+      if (dayElem === '수') season = '여름에 난 사주에 물 기운이 드는 날이라 과열이 식습니다';
+      else if (dayElem === '화') season = '여름에 난 사주에 불 기운이 겹치는 날이라 조급해지기 쉽습니다';
+    } else if ([11, 0, 1].includes(mb)) {
+      if (dayElem === '화') season = '겨울에 난 사주에 불 기운이 드는 날이라 움직이기 좋습니다';
+      else if (dayElem === '수') season = '겨울에 난 사주에 물 기운이 겹치는 날이라 몸이 무거워지기 쉽습니다';
+    }
+
+    const HOURS = { 목: '새벽 5~9시', 화: '오전 9시~오후 1시', 토: '오후 1~3시와 저녁 7~9시', 금: '오후 3~7시', 수: '밤 9시~새벽 1시' };
+
+    return {
+      date: `${today.getMonth() + 1}월 ${today.getDate()}일`,
+      dayGanji: f.pillar(tf.day), dayGanjiKo: f.pillarKo(tf.day),
+      godDay, godDayBranch, godMonth, godYear, godDaeun,
+      group: GROUP[godDay], groupMeaning: GROUP_MEAN[GROUP[godDay]],
+      strength: a.strength,
+      relations: rels,
+      helpful, dayElem, season,
+      goodHours: HOURS[a.yongCandidates[0]] || null,
+      tone: G ? G.tone : null,
+      care: G ? G.care : null,
+      action: G ? G.act : null,
+    };
+  }
+
+  global.ChaeksaTongbyeon = { defineRule: R, H, Q, frame, dayFrame, revise, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
 })(window);

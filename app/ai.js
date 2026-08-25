@@ -120,13 +120,43 @@ ${prof}` : ''}`;
       .replace(/§\((..)\)§/, (m, kr) => '(' + [...kr].map(c => Object.keys(HANJA).find(k => HANJA[k] === c) || c).join('') + ')');
   }
 
+  /** 통변엔진이 정한 '오늘의 뼈대'를 프롬프트에 넣는다.
+   *  이렇게 하지 않으면 같은 사주라도 날마다 LLM이 다른 판단을 내놓는다. */
+  function dayFrameText(df) {
+    if (!df) return '';
+    const L = [
+      `[오늘] ${df.date} · ${df.dayGanji}(${df.dayGanjiKo})일`,
+      `[들어오는 기운] 천간 ${df.godDay}, 지지 ${df.godDayBranch} — ${df.groupMeaning}`,
+      `[흐름] 대운 ${df.godDaeun || '미정'} · 올해 ${df.godYear} · 이달 ${df.godMonth}`,
+      `[일간] ${df.strength}`,
+      df.relations.length ? `[원국과의 관계] ` + df.relations.map(r => `${r.pillar}와 ${r.rel}`).join(', ') : '',
+      `[오늘 ${df.dayElem} 기운] ${df.helpful ? '이 사주가 반기는 쪽 — 감당하기 수월한 날' : '꼭 필요한 기운은 아님 — 무리하지 않는 편이 낫다'}`,
+      df.season ? `[조후] ${df.season}` : '',
+      df.goodHours ? `[집중이 붙는 시간대] ${df.goodHours}` : '',
+      df.tone ? `[오늘의 결] ${df.tone}` : '',
+      df.care ? `[주의] ${df.care}` : '',
+      df.action ? `[권할 행동] ${df.action}` : '',
+    ].filter(Boolean);
+    return L.join('\n');
+  }
+
   // 오늘 브리핑 (날짜별 캐시)
   async function dailyBrief(r, today) {
     const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
     const cached = localStorage.getItem(ck);
     if (cached) return cached;
     await buildProfile(r, today);
-    const raw = await call(systemPrompt(r, today), [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
+    const df = global.ChaeksaTongbyeon ? global.ChaeksaTongbyeon.dayFrame(r, today) : null;
+    const sys = systemPrompt(r, today) + (df ? `
+
+## 오늘의 뼈대 (통변엔진이 확정한 값 — 이 안에서만 쓴다)
+${dayFrameText(df)}
+
+지켜야 할 것
+- 위 [오늘의 결]·[주의]·[권할 행동]의 방향을 벗어나지 않는다. 표현은 자유롭게 다듬되 판단을 바꾸지 않는다.
+- 십신 이름은 위에 적힌 것만 쓴다. 새로 계산하지 않는다.
+- 시간대를 말한다면 [집중이 붙는 시간대]를 쓴다.` : '');
+    const raw = await call(sys, [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { maxTokens: 600 });
     const text = dehanja(raw);
     localStorage.setItem(ck, text);
     return text;
@@ -135,8 +165,14 @@ ${prof}` : ''}`;
   // 대화
   async function chat(r, today, history, question) {
     await buildProfile(r, today);
+    const df = global.ChaeksaTongbyeon ? global.ChaeksaTongbyeon.dayFrame(r, today) : null;
+    const sys = systemPrompt(r, today) + (df ? `
+
+## 오늘의 뼈대 (통변엔진이 확정한 값)
+${dayFrameText(df)}
+오늘에 대해 말할 때는 이 값을 따른다. 간지·십신을 새로 계산하지 않는다.` : '');
     const msgs = [...history.slice(-10), { role: 'user', content: question }];
-    return dehanja(await call(systemPrompt(r, today), msgs, { maxTokens: 800 }));
+    return dehanja(await call(sys, msgs, { maxTokens: 800 }));
   }
 
   // 심층 상담 서술 — 구조(frame)를 벗어나지 못하게 묶는다
