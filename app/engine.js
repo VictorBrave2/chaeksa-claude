@@ -121,6 +121,15 @@
    * @param {boolean} [p.solarCorrection=true]
    */
   function calc(p) {
+    // 연·월·일은 반드시 숫자여야 한다. 문자열이 섞여 들어오면(다른 기기에서 동기화된
+    // 옛 기록 등) kstOffsetHours 의 엄격 비교가 조용히 빗나가 서머타임 보정이 빠진다.
+    p = Object.assign({}, p, {
+      year: Number(p.year), month: Number(p.month), day: Number(p.day),
+      longitude: p.longitude == null || p.longitude === '' ? null : Number(p.longitude),
+      tzOffset: p.tzOffset == null || p.tzOffset === '' ? null : Number(p.tzOffset),
+    });
+    if (!Number.isFinite(p.year) || !Number.isFinite(p.month) || !Number.isFinite(p.day))
+      throw new Error('생년월일이 올바르지 않습니다.');
     const lonDeg = p.longitude == null ? 127.0 : p.longitude;
     const hourKnown = p.hour != null && p.hour !== '';
     const hh = hourKnown ? Number(p.hour) : 12, mm = hourKnown ? Number(p.minute || 0) : 0;

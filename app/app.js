@@ -384,6 +384,53 @@
       + `<span class="d">${esc(r.label)}</span>`;
   }
 
+  // 진태양시 보정을 켠 것과 끈 것을 나란히 보여준다.
+  // 시각 보정은 이 서비스가 다른 곳과 갈리는 지점이라, 묻기 전에 먼저 보여준다.
+  function renderSolarCompare(profile) {
+    const box = $('solarCmp'); if (!box) return;
+    if (profile.noTime || profile.hour == null || profile.hour === '') { box.classList.add('hide'); return; }
+    let on, off;
+    try {
+      on  = E.calc(Object.assign({}, profile, { solarCorrection: true,  tzOffset: null }));
+      off = E.calc(Object.assign({}, profile, { solarCorrection: false, tzOffset: 9 }));
+    } catch (e) { box.classList.add('hide'); return; }
+    box.classList.remove('hide');
+    const KEYS = ['year','month','day','hour'], NAMES = { year:'연주', month:'월주', day:'일주', hour:'시주' };
+    const diff = KEYS.filter(k => f.pillar(on.pillars[k]) !== f.pillar(off.pillars[k]));
+    const c = on.corrected;
+    const clock = `${String(profile.hour).padStart(2,'0')}:${String(profile.minute || 0).padStart(2,'0')}`;
+    const solar = `${String(c.hh).padStart(2,'0')}:${String(c.mm).padStart(2,'0')}`;
+    if (!diff.length) {
+      box.innerHTML = `<div class="sc-head"><b>시각 보정</b><span>시계 ${clock} → 실제 태양시 ${solar}</span></div>
+        <p class="sc-same">이 생시는 보정을 넣어도 사주가 같습니다. 경계에서 멀리 있다는 뜻입니다.</p>`;
+      return;
+    }
+    const reasons = [];
+    const y = +profile.year, mo = +profile.month, d = +profile.day;
+    const n = y * 10000 + mo * 100 + d;
+    if ((y === 1987 && n >= 19870510 && n <= 19871011) || (y === 1988 && n >= 19880508 && n <= 19881009))
+      reasons.push('서머타임 시행 중 (−1시간)');
+    if (n >= 19540321 && n <= 19610809) reasons.push('당시 한국 표준시가 지금과 달랐음 (−30분)');
+    const lon = profile.longitude;
+    if (lon) reasons.push(`${plNameOf(profile)} 경도 보정 (−${Math.round((135 - lon) * 4)}분)`);
+    box.innerHTML = `
+      <div class="sc-head"><b>시각 보정으로 ${diff.map(k => NAMES[k]).join('·')}가 바뀝니다</b>
+        <span>시계 ${clock} → 실제 태양시 ${solar}</span></div>
+      <div class="sc-grid">
+        <div class="sc-col off"><div class="t">보정 안 함</div>
+          ${KEYS.map(k => `<span class="${diff.includes(k) ? 'hit' : ''}">${f.pillar(off.pillars[k])}</span>`).join('')}
+          <div class="s">${off.analysis.strength}</div></div>
+        <div class="sc-col on"><div class="t">진태양시 보정</div>
+          ${KEYS.map(k => `<span class="${diff.includes(k) ? 'hit' : ''}">${f.pillar(on.pillars[k])}</span>`).join('')}
+          <div class="s">${on.analysis.strength}</div></div>
+      </div>
+      ${reasons.length ? `<ul class="sc-why">${reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+      ${off.analysis.strength !== on.analysis.strength
+        ? `<p class="sc-note">일간의 강약 판정도 <b>${off.analysis.strength}</b>에서 <b>${on.analysis.strength}</b>로 달라집니다.</p>` : ''}
+      <p class="hint">책사는 보정한 쪽으로 계산합니다. 바꾸시려면 위 이름 옆 ▾ → 고치기에서 끄실 수 있습니다.</p>`;
+  }
+  function plNameOf(p) { return p.placeName || '서울'; }
+
   // 통변좌표 — 6층 적층 체용이 내놓는 오늘의 좌표
   function renderCoord() {
     const box = $('coordBox'); if (!box) return;
@@ -503,6 +550,7 @@
     const plName = profile.placeName || '서울';
     const bornNote = $('bornNote');
     if (bornNote) bornNote.innerHTML = `${plName} 출생 기준 · 진태양시 보정 ${profile.solarCorrection === false ? '안 함' : '함'} · 보정된 시각 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>`;
+    renderSolarCompare(profile);
     $('daeunHint').textContent = `${R.daeun.forward ? '순행' : '역행'} · ${R.daeun.startAge}세부터 10년마다 바뀜` + (du ? ` · 지금은 ${f.pillar(du)} 대운 — ${god(du.stem)}: ${GOD_FLOW[god(du.stem)]}` : '');
     // 세운
     const ys = [];
