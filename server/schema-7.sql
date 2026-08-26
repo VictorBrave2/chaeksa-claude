@@ -17,9 +17,19 @@ begin
     'today', (select count(*) from public.visits
               where at >= date_trunc('day', now() at time zone 'Asia/Seoul') at time zone 'Asia/Seoul'),
     'days', coalesce((
-      select json_agg(json_build_object('d', d, 'n', n) order by d desc)
+      select json_agg(json_build_object('d', d, 'n', n, 'first', f) order by d desc)
       from (
-        select to_char(at at time zone 'Asia/Seoul', 'MM-DD') as d, count(*) as n
+        select to_char(at at time zone 'Asia/Seoul', 'MM-DD') as d,
+               count(*) as n,
+               count(*) filter (where first_time) as f
+        from public.visits
+        where at >= now() - interval '14 days'
+        group by 1
+      ) t), '[]'::json),
+    'sources', coalesce((
+      select json_agg(json_build_object('s', source, 'n', n) order by n desc)
+      from (
+        select source, count(*) as n
         from public.visits
         where at >= now() - interval '14 days'
         group by 1
