@@ -664,6 +664,28 @@
     renderMzDeck();
     $('btnVerdict').onclick = () => { renderCourt(); $('verdict').classList.remove('hide'); $('btnVerdict').textContent = '다시 봐도 유죄'; };
     $('verdict').classList.add('hide'); $('btnVerdict').textContent = '판결 받기';
+    // 유형 카드 뽑기 — 첫 뽑기 때 표본을 만들고(몇 초, 그게 드럼롤이다) 캐시한다
+    $('gachaWrap').classList.add('hide'); $('btnGacha').textContent = '카드 뽑기';
+    $('btnGacha').onclick = () => {
+      const T = window.ChaeksaTypecard; if (!T) return;
+      $('btnGacha').disabled = true;
+      $('gachaProg').classList.remove('hide');
+      $('gachaProg').textContent = '전국 표본과 대조하는 중…';
+      T.buildSample(
+        (r) => { $('gachaProg').textContent = `전국 표본과 대조하는 중… ${Math.round(r * 100)}%`; },
+        (sample) => {
+          const c = T.mine(R, sample);
+          $('gachaProg').classList.add('hide');
+          $('gachaSvg').innerHTML = c.svg;
+          // 애니메이션 재시작
+          const fl = $('gachaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
+          $('gachaWrap').classList.remove('hide');
+          $('gachaNote').textContent = c.rar && c.rar.unique
+            ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 당신뿐입니다 · ${c.tier}`
+            : `길게 눌러 이미지로 저장할 수 있어요 · 등급 ${c.tier}`;
+          $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
+        });
+    };
     const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
     $('pillars').innerHTML = order.map(([k, label]) => {
       const pl = R.pillars[k];
