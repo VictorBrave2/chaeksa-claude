@@ -42,8 +42,14 @@
   const BR_CH = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
   const ST_CH = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 
-  /** 궁통보감 50점 — 주용신이 천간에 있으면 50, 보좌만 있으면 30, 없으면 0.
-   *  숫자 셋(50/30/0)은 조절용 노브가 아니라 '있다>보좌만>없다'의 서열이다. */
+  /** 궁통보감 50점 — 주용신 천간 50 / 보좌만 30 / 없음 0, 그리고 기신 무리 감점 20.
+   *
+   *  디테일은 감점요인이다(사용자 설계). 기신은 별도 표 없이 용신표에서 유도한다:
+   *    기신 후보 = 일간을 극하는 오행 + 주용신을 극하는 오행
+   *    단, 그 칸의 주용신·보좌에 올라 있는 오행은 면제 (표가 이미 허락한 글자)
+   *    기신 오행의 천간 글자가 2개 이상 '한무리'면 -20 (바닥 0)
+   *  예: 甲木 寅월은 丙이 있어도 庚辛 한무리가 해친다 → 50-20=30.
+   *      (용신 丙의 극자인 수는 보좌 癸 덕에 자동 면제된다) */
   function gungtong(R) {
     const p = R.pillars;
     const cell = T[ST_CH[p.day.stem]][BR_CH[p.month.branch]];
@@ -51,8 +57,17 @@
     const cheon = ['year', 'month', 'hour'].filter(k => p[k]).map(k => ST_CH[p[k].stem]);
     const hasMain = cheon.includes(need);
     const hasAux = aux.some(x => cheon.includes(x));
-    const score = hasMain ? 50 : hasAux ? 30 : 0;
-    return { need, aux: aux.join(''), cheon: cheon.join(''), hasMain, hasAux, score };
+    let score = hasMain ? 50 : hasAux ? 30 : 0;
+    // 기신 무리 감점
+    const de = E.STEM_ELEM[p.day.stem];
+    const needEl = E.STEM_ELEM[STEM_IDX[need]];
+    const allowed = new Set([need].concat(aux).map(ch => E.STEM_ELEM[STEM_IDX[ch]]));
+    const badEls = [(de + 3) % 5, (needEl + 3) % 5].filter(e => !allowed.has(e));
+    const packCount = cheon.filter(ch => badEls.includes(E.STEM_ELEM[STEM_IDX[ch]])).length;
+    const pack = packCount >= 2;
+    if (pack) score = Math.max(0, score - 20);
+    return { need, aux: aux.join(''), cheon: cheon.join(''), hasMain, hasAux,
+             기신: badEls.map(e => '목화토금수'[e]).join('') || '없음', 기신무리: pack, score };
   }
 
   /** 자평진전 50점 — 격 판정은 typecard.gyeok(양인 교정판)을 그대로 쓴다. 성격 50 / 파격 0. */
