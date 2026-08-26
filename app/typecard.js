@@ -529,7 +529,7 @@
       });
       ny += ls.length > 1 ? 34 : 24;
     });
-    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
       + '<defs><linearGradient id="nkw" x1="0" y1="0" x2="1" y2="1">'
       + '<stop offset="0" stop-color="#7a5a38"/><stop offset=".5" stop-color="#6b4d2f"/><stop offset="1" stop-color="#5d4228"/></linearGradient></defs>'
       + '<rect width="360" height="560" rx="26" fill="url(#nkw)"/>'
@@ -701,7 +701,7 @@
     // 꽃잎 장식
     const petal = (x, y, r, o) => '<g transform="translate(' + x + ',' + y + ') rotate(' + r + ')" opacity="' + o + '">'
       + '<path d="M0 0 Q7 -9 0 -18 Q-7 -9 0 0" fill="#e4a0b4"/></g>';
-    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
       + '<defs><linearGradient id="dhw" x1="0" y1="0" x2="1" y2="1">'
       + '<stop offset="0" stop-color="#fbeef1"/><stop offset=".55" stop-color="#f6e2e8"/><stop offset="1" stop-color="#efd4dd"/></linearGradient></defs>'
       + '<rect width="360" height="560" rx="26" fill="url(#dhw)"/>'
@@ -791,7 +791,7 @@
     // 여백 계산: x=34에서 11px 한글 25자 ≈ 309px < 테두리 318. 8줄이면 y 330~477로 하단(500) 위.
     const body = lines.slice(0, 8).map((L, i) => '<text x="34" y="' + (330 + i * 21) + '" font-size="11" fill="#d7e6e2">'
       + escJ((L[1] ? '· ' : '  ') + L[0]) + '</text>').join('');
-    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
       + '<defs><linearGradient id="jkw" x1="0" y1="0" x2="1" y2="1">'
       + '<stop offset="0" stop-color="#1f4b47"/><stop offset=".55" stop-color="#1a413e"/><stop offset="1" stop-color="#153634"/></linearGradient></defs>'
       + '<rect width="360" height="560" rx="26" fill="url(#jkw)"/>'

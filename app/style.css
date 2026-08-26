@@ -697,7 +697,7 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 
 /* ── 유형 카드 뽑기 ── */
 #gachaWrap,#pastjobWrap,#seasonWrap,#banWrap{margin-top:14px;perspective:900px;display:flex;flex-direction:column;align-items:center}
-#gachaFlip,#pastjobFlip,#seasonFlip,#banFlip{width:min(300px,86%);transform-style:preserve-3d;animation:gflip .9s ease-out}
+#gachaFlip,#pastjobFlip,#seasonFlip,#banFlip,#nokpaeFlip,#dohwaFlip,#jikFlip,#accFlip{width:min(300px,86%);transform-style:preserve-3d;animation:gflip .9s ease-out}
 @keyframes gflip{0%{transform:rotateY(180deg) scale(.85);opacity:0}60%{transform:rotateY(-14deg) scale(1.02)}100%{transform:rotateY(0)}}
 #gachaSvg svg,#pastjobSvg svg,#seasonSvg svg,#banSvg svg{border-radius:20px;box-shadow:0 10px 34px rgba(40,30,15,.28)}
 
