@@ -282,6 +282,10 @@
     }
     let sup = 0, tot = 0;
     for (const [elem, w] of seats) { tot += w; if (siding(de, elem) > 0) sup += w; }
+    // 왕상휴수사 — 득령이면 가산 0.6 (비대칭: 실령을 더 깎지는 않는다).
+    // 본기 방식에서 득령의 무게가 월지 한 자리(2.0)뿐이라 건록·양인격의 21%가
+    // 신약으로 떨어졌다. 가산 후 10%로, 앵커 7사례와 실령 사주 판정은 전부 보존.
+    if (gotMonth) { sup += 0.6; tot += 0.6; }
     const strengthScore = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
     const strength = STRENGTH_LABEL(strengthScore);
     const missing = ELEM.filter((_, i) => elemCount[i] === 0);

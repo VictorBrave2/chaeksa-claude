@@ -114,6 +114,8 @@
     push(E.BRANCH_ELEM[p.month.branch], W.monthBranch);
     push(E.BRANCH_ELEM[p.day.branch], W.dayBranch);
     if (p.hour) { push(E.STEM_ELEM[p.hour.stem], W.hourStem); push(E.BRANCH_ELEM[p.hour.branch], W.hourBranch); }
+    // 득령 가산 — 분석엔진(engine.js analyze)과 같은 0.6. 두 곳이 다른 답을 내면 안 된다.
+    if (E.siding(dayElem, E.BRANCH_ELEM[p.month.branch]) > 0) push(dayElem, 0.6);
 
     const natalBranches = ['year','month','day','hour'].filter(k => p[k]).map(k => p[k].branch);
     const carriedBranches = natalBranches.slice();

@@ -61,7 +61,7 @@
   // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
   // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
-  const CACHE_KEY = 'chaeksa.typeSample.v3';   // v3: 양인격 판정 교정(양간+왕지만)
+  const CACHE_KEY = 'chaeksa.typeSample.v4';   // v4: 강약에 득령 가산 0.6 반영
   const N_SAMPLE = 10000;
   function buildSample(onTick, done) {
     try {
