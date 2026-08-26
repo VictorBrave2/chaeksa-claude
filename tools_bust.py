@@ -12,7 +12,7 @@ if _r.returncode != 0:
     sys.exit(1)
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
-FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'calendar.js',
+FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'classic.js', 'calendar.js',
          'compat.js', 'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js', 'app.js']
 
 sw = io.open(os.path.join(APP, 'sw.js'), encoding='utf-8').read()
