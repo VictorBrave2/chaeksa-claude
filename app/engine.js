@@ -192,18 +192,18 @@
     // 대운
     const yangYear = STEM_YANG[yearStem] === 1;
     const forward = (yangYear && p.gender === 'M') || (!yangYear && p.gender === 'F');
+    // 절입까지의 일수 — 물리적 간격이므로 UTC끼리 잰다 (축 보정 불필요)
     let daysToTerm;
     if (forward) {
-      // 다음 절
       let next = null;
-      for (const t of terms) { if (t.jd + shift > jdLocal) { next = t.jd + shift; break; } }
-      if (next == null) next = solarTermsOfYear(year + 1)[0].jd + shift;
-      daysToTerm = next - jdLocal;
+      for (const t of terms) { if (t.jd > jdUTC) { next = t.jd; break; } }
+      if (next == null) next = solarTermsOfYear(year + 1)[0].jd;
+      daysToTerm = next - jdUTC;
     } else {
       let prev = null;
-      for (const t of terms) { if (t.jd + shift <= jdLocal) prev = t.jd + shift; }
-      if (prev == null) prev = solarTermsOfYear(year - 1)[11].jd + shift;
-      daysToTerm = jdLocal - prev;
+      for (const t of terms) { if (t.jd <= jdUTC) prev = t.jd; }
+      if (prev == null) prev = solarTermsOfYear(year - 1)[11].jd;
+      daysToTerm = jdUTC - prev;
     }
     const daeunYears = Math.floor(daysToTerm / 3);
     const daeunMonths = Math.round(((daysToTerm / 3) % 1) * 12);
