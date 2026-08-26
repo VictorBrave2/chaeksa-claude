@@ -705,6 +705,28 @@
             ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 당신뿐입니다 · ${c.tier}`
             : `등급 ${c.tier} · 같은 사주는 언제나 이 카드입니다`;
           $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
+          // 두 번째 카드 — 지금 대운이 이 사주에 필요한 걸 갖고 왔는가
+          $('seasonWrap').classList.add('hide'); $('btnSeason').classList.remove('hide');
+          $('btnSeason').onclick = () => {
+            const sn = window.ChaeksaTypecard.seasonNow(R);
+            $('seasonSvg').innerHTML = window.ChaeksaTypecard.drawSeason(profile.name || '당신', R, sn);
+            const fl2 = $('seasonFlip'); fl2.style.animation = 'none'; void fl2.offsetWidth; fl2.style.animation = '';
+            $('seasonWrap').classList.remove('hide');
+            $('btnSeason').classList.add('hide');
+            const 조합 = (c.tier === 'SSR' || c.tier === 'SR') && (sn.grade.name === '만개' || sn.grade.name === '순풍')
+              ? ' — 희귀 유형에 시즌까지 왔습니다. 지금이 그 때입니다'
+              : sn.grade.name === '만개' ? ' — 유형과 무관하게, 시즌은 지금이 최고입니다' : '';
+            $('seasonNote').textContent = `타고난 카드 ${c.tier} × 지금 시즌 ${sn.grade.name}${조합}`;
+            $('btnSeasonShare').onclick = async () => {
+              const b = $('btnSeasonShare'); b.disabled = true; b.textContent = '만드는 중…';
+              try {
+                const shared = await window.ChaeksaTypecard.share($('seasonSvg').innerHTML, `시즌_${sn.grade.name}`);
+                b.textContent = shared ? '자랑 완료!' : '다운로드 폴더에 저장했어요';
+              } catch (e) { b.textContent = '다시 시도'; }
+              b.disabled = false;
+              setTimeout(() => { b.textContent = '시즌 자랑하기'; }, 2500);
+            };
+          };
           $('btnGachaShare').onclick = async () => {
             const b = $('btnGachaShare'); b.disabled = true; b.textContent = '만드는 중…';
             try {

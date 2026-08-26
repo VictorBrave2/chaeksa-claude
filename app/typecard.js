@@ -234,5 +234,54 @@
 </svg>`;
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji };
+  // ── 두 번째 카드: 지금 시즌 — 현재 대운이 이 사주에 필요한 걸 갖고 왔는가 ──
+  // 판정은 상담 스킬의 대운 채점과 같은 규칙이다. 대운이 바뀌면 이 카드도 바뀐다.
+  const SEASON_GRADE = [
+    { min: 2.0, name: '만개', col: '#b98a2f', line: '필요한 기운이 정확히 들어와 있는 시즌. 벌인 일이 힘을 받습니다.' },
+    { min: 1.5, name: '순풍', col: '#3e7d4f', line: '바람이 등 뒤에서 붑니다. 하던 일을 넓히기 좋은 시즌.' },
+    { min: 1.0, name: '보합', col: '#7d838f', line: '크게 밀어주지도 막지도 않는 시즌. 내 페이스가 답입니다.' },
+    { min: 0.5, name: '담금질', col: '#7a4fa3', line: '결이 다른 기운이 들어온 시즌. 단련되는 중이라 낭비는 아닙니다.' },
+    { min: 0.0, name: '월동', col: '#3a6ea5', line: '비축의 시즌. 씨앗을 고르는 때이지 심는 때가 아닙니다.' },
+  ];
+  function seasonNow(R, when) {
+    when = when || new Date();
+    const du = E.currentDaeun(R, when);
+    if (!du) return { grade: { name: '포석', col: '#8a8578', line: '아직 첫 대운 전 — 판을 짜는 중입니다.' }, du: null };
+    const a = R.analysis, de = E.STEM_ELEM[a.dayStem], ec = a.elemCount;
+    let sc = 0;
+    [E.STEM_ELEM[du.stem], E.BRANCH_ELEM[du.branch]].forEach(e => {
+      const sup = E.siding(de, e) > 0;
+      sc += a.strengthScore < 0.45 ? (sup ? 1 : 0)
+          : a.strengthScore > 0.55 ? (sup ? 0 : 1)
+          : ec[e] <= 1 ? 1 : ec[e] >= 3 ? 0 : 0.5;
+    });
+    const grade = SEASON_GRADE.find(g => sc >= g.min) || SEASON_GRADE[4];
+    return { grade, du, score: sc };
+  }
+  function drawSeason(name, R, sn) {
+    const esc2 = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const g = sn.grade;
+    const duTxt = sn.du ? `${E.fmt.pillar(sn.du)} 대운 · ${sn.du.startAge}~${sn.du.endAge}세` : '첫 대운 전';
+    // 한 줄을 카드 폭에 맞게 접는다
+    const words = g.line.split(' '); let l1 = '', l2 = '';
+    words.forEach(w => { if (l1.length < 15) l1 += (l1 ? ' ' : '') + w; else l2 += (l2 ? ' ' : '') + w; });
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">
+  <defs><linearGradient id="sn" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f6f2e9"/><stop offset="1" stop-color="#e9e2d0"/></linearGradient></defs>
+  <rect width="360" height="560" rx="20" fill="url(#sn)"/>
+  <rect x="10" y="10" width="340" height="540" rx="14" fill="none" stroke="${g.col}" stroke-width="2.5"/>
+  <g transform="translate(38,44)"><rect width="52" height="52" rx="8" fill="${g.col}"/>
+    <text x="26" y="38" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="30" font-weight="900" fill="#fff">運</text></g>
+  <text x="322" y="70" text-anchor="end" font-size="13" fill="#7d7566" letter-spacing="3">두 번째 카드</text>
+  <text x="180" y="170" text-anchor="middle" font-size="15" fill="#6b6254">${esc2(name)}의 지금 시즌은</text>
+  <text x="180" y="270" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="86" font-weight="900" fill="${g.col}">${g.name}</text>
+  <text x="180" y="330" text-anchor="middle" font-size="14" fill="#5c5546" letter-spacing="1">${duTxt}</text>
+  <text x="180" y="400" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc2(l1)}</text>
+  <text x="180" y="422" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc2(l2)}</text>
+  <text x="180" y="480" text-anchor="middle" font-size="12" fill="#8a7a58">대운이 바뀌면 이 카드도 바뀝니다</text>
+  <text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a8171" letter-spacing="2">策 · chaeksa.kr · 원국과 대운으로 계산된 시즌</text>
+</svg>`;
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason };
 })(window);

@@ -696,10 +696,10 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 #verdict .foot{font-size:11.5px;color:var(--ink3);text-align:center;padding:10px 14px 2px;line-height:1.7}
 
 /* ── 유형 카드 뽑기 ── */
-#gachaWrap,#pastjobWrap{margin-top:14px;perspective:900px;display:flex;flex-direction:column;align-items:center}
-#gachaFlip,#pastjobFlip{width:min(300px,86%);transform-style:preserve-3d;animation:gflip .9s ease-out}
+#gachaWrap,#pastjobWrap,#seasonWrap{margin-top:14px;perspective:900px;display:flex;flex-direction:column;align-items:center}
+#gachaFlip,#pastjobFlip,#seasonFlip{width:min(300px,86%);transform-style:preserve-3d;animation:gflip .9s ease-out}
 @keyframes gflip{0%{transform:rotateY(180deg) scale(.85);opacity:0}60%{transform:rotateY(-14deg) scale(1.02)}100%{transform:rotateY(0)}}
-#gachaSvg svg,#pastjobSvg svg{border-radius:20px;box-shadow:0 10px 34px rgba(40,30,15,.28)}
+#gachaSvg svg,#pastjobSvg svg,#seasonSvg svg{border-radius:20px;box-shadow:0 10px 34px rgba(40,30,15,.28)}
 
 /* ── 웹툰식 홈: 인기 배너와 콘텐츠 진열대 ── */
 .hero-banner{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;cursor:pointer;
