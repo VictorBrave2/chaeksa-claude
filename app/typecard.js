@@ -139,13 +139,13 @@
   ${frame}
   ${corner(26, 26, 0)}${corner(334, 26, 90)}${corner(334, 534, 180)}${corner(26, 534, 270)}
   <g transform="translate(38,44)"><rect width="52" height="52" rx="8" fill="#b23a2a"/>
-    <text x="26" y="38" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="32" font-weight="900" fill="#fdf3e7">${SEAL[J.name] || '?'}</text></g>
-  <text x="322" y="62" text-anchor="end" font-family="'Noto Serif KR',serif" font-size="15" fill="#4a4238" letter-spacing="4">${J.name}격 ${J.ok ? '成' : '破'}</text>
+    <text x="26" y="38" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="32" font-weight="900" fill="#fdf3e7">${SEAL[J.name] || '?'}</text></g>
+  <text x="322" y="62" text-anchor="end" font-family="Noto Serif KR,serif" font-size="15" fill="#4a4238" letter-spacing="4">${J.name}격 ${J.ok ? '成' : '破'}</text>
   <text x="322" y="84" text-anchor="end" font-size="12" fill="#7d7566" letter-spacing="3">${a.strength}</text>
-  <text x="180" y="316" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="150" font-weight="900" fill="${ELCOL[de]}">${stemCh}</text>
+  <text x="180" y="316" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="150" font-weight="900" fill="${ELCOL[de]}">${stemCh}</text>
   <text x="180" y="360" text-anchor="middle" font-size="15" fill="#5c5546" letter-spacing="2">${stemKo} 일간 · ${E.fmt.branchKo(p.month.branch)}월생</text>
   <rect x="46" y="410" width="268" height="52" rx="10" fill="#ffffff" opacity=".55"/>
-  <text x="180" y="432" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${J.ok ? '성격' : '파격'} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
+  <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${J.ok ? '성격' : '파격'} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
   <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
@@ -234,17 +234,17 @@
   <rect width="360" height="560" rx="16" fill="url(#gj)"/>
   <rect x="12" y="12" width="336" height="536" rx="10" fill="none" stroke="#8a6a34" stroke-width="2.5"/>
   <rect x="20" y="20" width="320" height="520" rx="6" fill="none" stroke="#8a6a34" stroke-width="1" opacity=".5"/>
-  <text x="180" y="86" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="44" font-weight="900" fill="#6d4f21" letter-spacing="18">敎 旨</text>
+  <text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="44" font-weight="900" fill="#6d4f21" letter-spacing="18">敎 旨</text>
   <text x="180" y="130" text-anchor="middle" font-size="13" fill="#7a6a4a" letter-spacing="4">전생 직업 증명서</text>
-  <text x="180" y="196" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="20" fill="#4a3a20">${esc(name)}의 전생은</text>
+  <text x="180" y="196" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="20" fill="#4a3a20">${esc(name)}의 전생은</text>
   <text x="180" y="248" text-anchor="middle" font-size="15" fill="#7a6a4a">${esc(pj.rank)}</text>
-  <text x="180" y="300" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="30" font-weight="900" fill="#33291c">${esc(pj.job)}</text>
+  <text x="180" y="300" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="30" font-weight="900" fill="#33291c">${esc(pj.job)}</text>
   <text x="180" y="340" text-anchor="middle" font-size="13" fill="#8a7a58" letter-spacing="2">${esc(pj.gyeok.name)}격 ${pj.gyeok.ok ? '성격' : '파격'}의 명(命)이라</text>
   <text x="180" y="404" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc(l1)}</text>
   <text x="180" y="426" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc(l2)}</text>
   <g transform="translate(256,440)"><rect width="62" height="62" rx="8" fill="#b23a2a" opacity=".92"/>
-    <text x="31" y="28" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="20" font-weight="900" fill="#fdf3e7">前生</text>
-    <text x="31" y="50" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="20" font-weight="900" fill="#fdf3e7">職所</text></g>
+    <text x="31" y="28" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="20" font-weight="900" fill="#fdf3e7">前生</text>
+    <text x="31" y="50" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="20" font-weight="900" fill="#fdf3e7">職所</text></g>
   <text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">策 · chaeksa.kr · 격국과 일간으로 계산된 전생</text>
 </svg>`;
   }
@@ -286,10 +286,10 @@
   <rect width="360" height="560" rx="20" fill="url(#sn)"/>
   <rect x="10" y="10" width="340" height="540" rx="14" fill="none" stroke="${g.col}" stroke-width="2.5"/>
   <g transform="translate(38,44)"><rect width="52" height="52" rx="8" fill="${g.col}"/>
-    <text x="26" y="38" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="30" font-weight="900" fill="#fff">運</text></g>
+    <text x="26" y="38" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="30" font-weight="900" fill="#fff">運</text></g>
   <text x="322" y="70" text-anchor="end" font-size="13" fill="#7d7566" letter-spacing="3">두 번째 카드</text>
   <text x="180" y="170" text-anchor="middle" font-size="15" fill="#6b6254">${esc2(name)}의 지금 시즌은</text>
-  <text x="180" y="270" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="86" font-weight="900" fill="${g.col}">${g.name}</text>
+  <text x="180" y="270" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="86" font-weight="900" fill="${g.col}">${g.name}</text>
   <text x="180" y="330" text-anchor="middle" font-size="14" fill="#5c5546" letter-spacing="1">${duTxt}</text>
   <text x="180" y="400" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc2(l1)}</text>
   <text x="180" y="422" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc2(l2)}</text>
@@ -298,5 +298,47 @@
 </svg>`;
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason };
+  // ── 오늘의 금지령 — 오늘 일진 십신 + 일지 관계(충·복음)로 정한다. 매일 바뀐다 ──
+  function banToday(R, when) {
+    when = when || new Date();
+    const B = global.ChaeksaBrief;
+    const tf = E.dateFortune(when.getFullYear(), when.getMonth() + 1, when.getDate());
+    const god = E.TEN_GODS[E.tenGod(R.analysis.dayStem, tf.day.stem)];
+    const base = B.BANLIST[god] || B.BANLIST['비견'];
+    const 금지 = base.금지.slice();
+    const myBr = R.pillars.day.branch, todayBr = tf.day.branch;
+    let 관계 = null;
+    if (myBr === todayBr) 관계 = '복음';
+    else if (((todayBr - myBr + 12) % 12) === 6) 관계 = '충';
+    if (관계) 금지.push(B.BAN_EXTRA[관계]);
+    return { god, 관계, 금지, 허가: base.허가, 일진: E.fmt.pillar(tf.day) };
+  }
+  function drawBan(name, ban, when) {
+    when = when || new Date();
+    const esc3 = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const dateTxt = (when.getMonth() + 1) + '월 ' + when.getDate() + '일 · ' + ban.일진 + '일 (' + ban.god + ')';
+    const items = ban.금지.map((t, i) =>
+      '<text x="52" y="' + (250 + i * 52) + '" font-size="15" fill="#8a3020" font-weight="700">禁</text>' +
+      '<text x="82" y="' + (250 + i * 52) + '" font-size="14.5" fill="#4a3a28">' + esc3(t) + '</text>').join('');
+    const okY = 250 + ban.금지.length * 52 + 14;
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
+      + '<defs><linearGradient id="bn" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#f7efdb"/><stop offset="1" stop-color="#eee0c2"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="16" fill="url(#bn)"/>'
+      + '<rect x="12" y="12" width="336" height="536" rx="10" fill="none" stroke="#7a5a28" stroke-width="2.5"/>'
+      + '<text x="180" y="88" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="46" font-weight="900" fill="#5c421c" letter-spacing="16">禁 令</text>'
+      + '<text x="180" y="126" text-anchor="middle" font-size="13" fill="#7a6a48" letter-spacing="3">오늘의 금지령</text>'
+      + '<text x="180" y="172" text-anchor="middle" font-size="14" fill="#5c4c2e">' + esc3(name) + ' 앞 · ' + esc3(dateTxt) + '</text>'
+      + '<line x1="40" y1="200" x2="320" y2="200" stroke="#c9b285" stroke-width="1.5"/>'
+      + items
+      + '<line x1="40" y1="' + okY + '" x2="320" y2="' + okY + '" stroke="#c9b285" stroke-width="1.5" stroke-dasharray="5 4"/>'
+      + '<text x="52" y="' + (okY + 40) + '" font-size="15" fill="#2f6b3a" font-weight="700">許</text>'
+      + '<text x="82" y="' + (okY + 40) + '" font-size="14.5" fill="#33502e">' + esc3(ban.허가) + '</text>'
+      + '<g transform="translate(276,452)"><rect width="52" height="52" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="26" y="34" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="22" font-weight="900" fill="#fdf3e7">策</text></g>'
+      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">chaeksa.kr · 오늘 일진으로 계산 · 내일이면 바뀝니다</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan };
 })(window);

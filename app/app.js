@@ -665,6 +665,24 @@
     renderMzDeck();
     $('btnVerdict').onclick = () => { renderCourt(); $('verdict').classList.remove('hide'); $('btnVerdict').textContent = '다시 봐도 유죄'; };
     $('verdict').classList.add('hide'); $('btnVerdict').textContent = '판결 받기';
+    // 오늘의 금지령 — 탭 열면 바로 그린다 (매일 콘텐츠는 문턱이 없어야 한다)
+    (function renderBan() {
+      const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
+      const ban = T.banToday(R);
+      $('banSvg').innerHTML = T.drawBan(profile.name || '당신', ban);
+      $('tiBanGz').textContent = '🚫 ' + ban.god;
+      $('tiBanSub').textContent = ban.관계 ? `오늘은 ${ban.관계}까지 — 금지 ${ban.금지.length}개` : `오늘 금지 ${ban.금지.length}개`;
+      $('btnBanShare').onclick = async () => {
+        const b = $('btnBanShare'); b.disabled = true; b.textContent = '만드는 중…';
+        try {
+          const r = await T.share($('banSvg').innerHTML, `금지령_${ban.일진}`);
+          b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+        } catch (e) { b.textContent = '다시 시도'; }
+        b.disabled = false;
+        setTimeout(() => { b.textContent = '금지령 자랑하기'; }, 2500);
+      };
+    })();
+
     // 전생 직업소 — 조회 즉시 교지 발급. 문장은 brief.js PASTJOB.
     $('pastjobWrap').classList.add('hide'); $('btnPastjob').textContent = '전생 조회하기';
     $('btnPastjob').onclick = () => {

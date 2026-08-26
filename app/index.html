@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=99">
+<link rel="stylesheet" href="style.css?v=100">
 </head>
 <body>
 <div class="wrap">
@@ -125,6 +125,11 @@
 
       <div class="sec-label">콘텐츠</div>
       <div class="tiles">
+        <button class="tile" data-open="ban">
+          <span class="ti-k">오늘의 금지령</span>
+          <span class="ti-big" id="tiBanGz">🚫</span>
+          <span class="ti-sub" id="tiBanSub">매일 바뀝니다</span>
+        </button>
         <button class="tile" data-open="court">
           <span class="ti-k">사주 법정</span>
           <span class="ti-big">⚖️ 유죄</span>
@@ -189,6 +194,17 @@
           <span class="ti-sub">4기둥 · 대운 · 6층 체용</span>
         </button>
       </div>
+    </div>
+
+    <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
+    <div class="tab hide" data-tab="ban">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>🚫 오늘의 금지령</h2>
+        <p class="hint" style="margin:0 0 12px">오늘 일진이 당신 사주와 만나는 결로 정해집니다. 내일이면 바뀝니다.</p>
+        <div id="banWrap"><div id="banFlip"><div id="banSvg"></div></div>
+          <button class="btn small" id="btnBanShare" style="margin-top:12px">금지령 자랑하기</button></div>
+      </section>
     </div>
 
     <!-- 독립 콘텐츠: 유형 카드 뽑기 -->
@@ -499,27 +515,27 @@
   </div>
 </div>
 
-<script src="config.js?v=99"></script>
-<script src="track.js?v=99"></script>
-<script src="cloud.js?v=99"></script>
-<script src="usage.js?v=99"></script>
-<script src="places.js?v=99"></script>
-<script src="people.js?v=99"></script>
-<script src="astro.js?v=99"></script>
-<script src="lunar.js?v=99"></script>
-<script src="engine.js?v=99"></script>
-<script src="chaeyong.js?v=99"></script>
-<script src="brief.js?v=99"></script>
-<script src="typecard.js?v=99"></script>
-<script src="classic.js?v=99"></script>
-<script src="calendar.js?v=99"></script>
-<script src="compat.js?v=99"></script>
-<script src="tongbyeon.js?v=99"></script>
-<script src="rules-wealth-love.js?v=99"></script>
-<script src="rules-health-study-move.js?v=99"></script>
-<script src="consult.js?v=99"></script>
-<script src="share.js?v=99"></script>
-<script src="ai.js?v=99"></script>
-<script src="app.js?v=99"></script>
+<script src="config.js?v=100"></script>
+<script src="track.js?v=100"></script>
+<script src="cloud.js?v=100"></script>
+<script src="usage.js?v=100"></script>
+<script src="places.js?v=100"></script>
+<script src="people.js?v=100"></script>
+<script src="astro.js?v=100"></script>
+<script src="lunar.js?v=100"></script>
+<script src="engine.js?v=100"></script>
+<script src="chaeyong.js?v=100"></script>
+<script src="brief.js?v=100"></script>
+<script src="typecard.js?v=100"></script>
+<script src="classic.js?v=100"></script>
+<script src="calendar.js?v=100"></script>
+<script src="compat.js?v=100"></script>
+<script src="tongbyeon.js?v=100"></script>
+<script src="rules-wealth-love.js?v=100"></script>
+<script src="rules-health-study-move.js?v=100"></script>
+<script src="consult.js?v=100"></script>
+<script src="share.js?v=100"></script>
+<script src="ai.js?v=100"></script>
+<script src="app.js?v=100"></script>
 </body>
 </html>
