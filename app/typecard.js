@@ -143,17 +143,13 @@
   <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
-  ${rar && rar.edition ? `<g transform="translate(228,478)"><rect width="52" height="30" rx="15" fill="none" stroke="#b98a2f" stroke-width="1.5"/>
-    <text x="26" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#b98a2f">初版</text></g>` : ''}
   <text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a8171" letter-spacing="2">策 · chaeksa.kr · 세 고전 축으로 계산된 카드</text>
 </svg>`;
   }
 
   /** 내 카드 정보 + SVG. 희귀도 표본이 없으면 rar 없이도 그려진다.
-   *  한 번 발급된 카드의 등급은 깎지 않는다 — "다시 뽑아도 이 카드"라고 약속했다.
-   *  등급 조정으로 지금 기준보다 높게 발급돼 있으면 초판(初版)으로 유지한다. */
-  const ISSUED_KEY = 'chaeksa.cardIssued';
-  const RANK = { SSR: 3, SR: 2, R: 1, N: 0 };
+   *  등급은 언제나 현재 기준의 계산값이다 — 발급 시점 유지 같은 예외를 두지 않는다. */
+  try { localStorage.removeItem('chaeksa.cardIssued'); } catch (e) {}   // 초판 제도 흔적 청소
   function mine(R, sample) {
     const J = gyeok(R);
     const key = keyOf(R, J);
@@ -161,16 +157,7 @@
     if (sample) {
       const c = Math.max(sample.seen[key] || 0, 1);
       rar = { count: c, n: sample.n, pct: Math.round(c / sample.n * 1000) / 10,
-              unique: c <= 1, tier: tierOf(c, sample.th), edition: false };
-      let issued = {};
-      try { issued = JSON.parse(localStorage.getItem(ISSUED_KEY)) || {}; } catch (e) {}
-      const prev = issued[key];
-      if (prev && RANK[prev.tier] > RANK[rar.tier]) {
-        rar.tier = prev.tier; rar.edition = true;          // 초판 유지
-      } else if (!prev || RANK[rar.tier] > RANK[prev.tier]) {
-        issued[key] = { tier: rar.tier, at: new Date().toISOString().slice(0, 10) };
-        try { localStorage.setItem(ISSUED_KEY, JSON.stringify(issued)); } catch (e) {}
-      }
+              unique: c <= 1, tier: tierOf(c, sample.th) };
     }
     return { key, gyeok: J, rar, svg: draw(R, J, rar), tier: rar ? rar.tier : null };
   }

@@ -701,9 +701,7 @@
           // 애니메이션 재시작
           const fl = $('gachaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
           $('gachaWrap').classList.remove('hide');
-          $('gachaNote').textContent = c.rar && c.rar.edition
-            ? `등급 조정 전에 발급된 초판입니다 — ${c.tier} 등급이 그대로 유지됩니다`
-            : c.rar && c.rar.unique
+          $('gachaNote').textContent = c.rar && c.rar.unique
             ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 당신뿐입니다 · ${c.tier}`
             : `등급 ${c.tier} · 같은 사주는 언제나 이 카드입니다`;
           $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
