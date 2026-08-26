@@ -350,11 +350,31 @@
       P.setActive(b.dataset.pid);
       start(P.toProfile(P.active()));
     });
-    // 타일 미리보기
+    // 타일 미리보기 — 고정 문구는 남의 얘기로 읽힌다. 내 사주에서 나온 사실을 걸되
+    // 결론은 감춰서 열어보게 만든다. 표본(1만 명)이 필요한 값은 여기서 쓰지 않는다 —
+    // 홈이 표본 굽기를 기다리게 되면 첫 화면이 멈춘다.
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     $('tiTodayGz').textContent = f.pillar(tf.day);
     $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
     $('tiMeStr').style.fontSize = '17px';
+    const T = window.ChaeksaTypecard;
+    const set = (id, txt) => { const el = $(id); if (el && txt) el.textContent = txt; };
+    try {
+      const ch = courtCharges().charges;
+      set('tiCourtBig', ch.length ? '죄목 ' + ch.length + '건' : '무혐의');
+      set('tiCourtSub', ch.length ? '형량과 양형 이유는 안에서' : '뒤져봤지만 걸린 게 없습니다');
+    } catch (e) {}
+    if (T) {
+      try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      try { const c = T.career(R, null); set('tiJikBig', c.group + '축'); set('tiJikSub', '25유형 중 어느 쪽인지 열어보기'); } catch (e) {}
+      try { const l = T.love(R, new Date(), null); set('tiDoBig', l.key.slice(0, 2)); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
+      try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
+    }
+    const P2 = People();
+    const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
+    set('tiAccSub', !others.length ? '사람을 한 명 더 등록하면 열립니다'
+      : others.length === 1 ? others[0].name + '님과 대조해 보기'
+      : others[0].name + ' 외 ' + (others.length - 1) + '명과 대조 가능');
   }
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => go(b.dataset.open));
 
@@ -607,7 +627,8 @@
   }
 
   // 사주 법정 — 죄목은 전부 계산에서 나온다. 문장은 brief.js의 ROAST 자산.
-  function renderCourt() {
+  // 홈 타일이 '죄목 몇 건'을 미리 보여줘야 해서 계산부를 따로 뺐다.
+  function courtCharges() {
     const a = R.analysis, p2 = R.pillars;
     const list = ['year','month','day','hour'].filter(k => p2[k]);
     const br = list.map(k => p2[k].branch);
@@ -648,6 +669,12 @@
     const charges = ChaeksaBrief.ROAST.filter(r => hit[r.key]).slice(0, 4);
     const mercy = flow >= 5 ? '유통' : a.missing.length === 0 ? '구족' : root >= 3 ? '통근' : a.strength === '중화' ? '중화' : '기본';
     const mercyText = ChaeksaBrief.MERCY.find(m => m.key === mercy).text;
+    return { charges, mercyText };
+  }
+
+  function renderCourt() {
+    const a = R.analysis, p2 = R.pillars;
+    const { charges, mercyText } = courtCharges();
     const $v = $('verdict');
     if (!charges.length) {
       $v.innerHTML = `<div class="vh"><div class="no">판결</div><div class="tt">무혐의</div></div>
