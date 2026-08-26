@@ -61,14 +61,14 @@
   // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
   // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
-  const CACHE_KEY = 'chaeksa.typeSample.v7';   // v7: 연애 유형에 暗緣 축 추가 (v6: 연애 분포 동승)
+  const CACHE_KEY = 'chaeksa.typeSample.v8';   // v8: 천직 유형 분포 동승 (v7: 연애 暗緣 축)
   const N_SAMPLE = 10000;
   function buildSample(onTick, done) {
     try {
       const hit = JSON.parse(localStorage.getItem(CACHE_KEY));
-      if (hit && hit.n >= N_SAMPLE && hit.th && hit.wh && hit.lt) return done(hit);
+      if (hit && hit.n >= N_SAMPLE && hit.th && hit.wh && hit.lt && hit.jt) return done(hit);
     } catch (e) {}
-    const seen = {}, wh = {}, lt = {}; let i = 0, n = 0;
+    const seen = {}, wh = {}, lt = {}, jt = {}; let i = 0, n = 0;
     (function chunk() {
       const end = Math.min(i + 250, N_SAMPLE);
       for (; i < end; i++) {
@@ -79,7 +79,8 @@
                              place: 'KR:서울', longitude: 126.98, tzOffset: null, solarCorrection: true });
           seen[keyOf(R, gyeok(R))] = (seen[keyOf(R, gyeok(R))] || 0) + 1;
           const ws = wealthScore(R).score; wh[ws] = (wh[ws] || 0) + 1;
-          const lk = loveType(R).key; lt[lk] = (lt[lk] || 0) + 1; n++;
+          const lk = loveType(R).key; lt[lk] = (lt[lk] || 0) + 1;
+          const jk = careerAxis(R).key; jt[jk] = (jt[jk] || 0) + 1; n++;
         } catch (e) {}
       }
       if (onTick) onTick(i / N_SAMPLE);
@@ -96,8 +97,8 @@
           if (cum / n <= 0.15) th[1] = c;
           if (cum / n <= 0.50) th[2] = c;
         });
-        const out = { seen, n, th, types: Object.keys(seen).length, wh, lt };
-        try { ['v4','v5','v6'].forEach(k => localStorage.removeItem('chaeksa.typeSample.' + k)); } catch (e) {}
+        const out = { seen, n, th, types: Object.keys(seen).length, wh, lt, jt };
+        try { ['v4','v5','v6','v7'].forEach(k => localStorage.removeItem('chaeksa.typeSample.' + k)); } catch (e) {}
         try { localStorage.setItem(CACHE_KEY, JSON.stringify(out)); } catch (e) {}
         done(out);
       }
@@ -320,10 +321,16 @@
     when = when || new Date();
     const esc3 = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const dateTxt = (when.getMonth() + 1) + '월 ' + when.getDate() + '일 · ' + ban.일진 + '일 (' + ban.god + ')';
-    const items = ban.금지.map((t, i) =>
-      '<text x="52" y="' + (250 + i * 52) + '" font-size="15" fill="#8a3020" font-weight="700">禁</text>' +
-      '<text x="82" y="' + (250 + i * 52) + '" font-size="14.5" fill="#4a3a28">' + esc3(t) + '</text>').join('');
-    const okY = 250 + ban.금지.length * 52 + 14;
+    // x=82에서 오른쪽 여백(320)까지 238px. 13px 글자면 18자.
+    let by = 250;
+    const items = ban.금지.map((t) => {
+      const ls = foldTxt(t, 238, 13).slice(0, 2);
+      const g = '<text x="52" y="' + by + '" font-size="15" fill="#8a3020" font-weight="700">禁</text>'
+        + ls.map((L, j) => '<text x="82" y="' + (by + j * 19) + '" font-size="13" fill="#4a3a28">' + esc3(L[0]) + '</text>').join('');
+      by += ls.length > 1 ? 52 : 40;
+      return g;
+    }).join('');
+    const okY = by + 8;
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
       + '<defs><linearGradient id="bn" x1="0" y1="0" x2="0" y2="1">'
       + '<stop offset="0" stop-color="#f7efdb"/><stop offset="1" stop-color="#eee0c2"/></linearGradient></defs>'
@@ -336,7 +343,8 @@
       + items
       + '<line x1="40" y1="' + okY + '" x2="320" y2="' + okY + '" stroke="#c9b285" stroke-width="1.5" stroke-dasharray="5 4"/>'
       + '<text x="52" y="' + (okY + 40) + '" font-size="15" fill="#2f6b3a" font-weight="700">許</text>'
-      + '<text x="82" y="' + (okY + 40) + '" font-size="14.5" fill="#33502e">' + esc3(ban.허가) + '</text>'
+      + foldTxt(ban.허가, 238, 13).slice(0, 2).map((L, j) =>
+          '<text x="82" y="' + (okY + 40 + j * 19) + '" font-size="13" fill="#33502e">' + esc3(L[0]) + '</text>').join('')
       + '<g transform="translate(276,452)"><rect width="52" height="52" rx="8" fill="#b23a2a" opacity=".92"/>'
       + '<text x="26" y="34" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="22" font-weight="900" fill="#fdf3e7">策</text></g>'
       + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">chaeksa.kr · 오늘 일진으로 계산 · 내일이면 바뀝니다</text>'
@@ -512,7 +520,15 @@
     const F = 'Noto Serif KR,serif';
     const escN = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const top = w.top == null ? '' : ' · 상위 ' + w.top + '%';
-    const body = w.lines.map((l, i) => '<text x="42" y="' + (356 + i * 29) + '" font-size="12.5" fill="#f0e2c6">' + escN('· ' + l) + '</text>').join('');
+    let ny = 352, body = '';
+    w.lines.forEach((l) => {
+      const ls = foldTxt(l, 276, 12, 2).slice(0, 2);
+      ls.forEach((L, j) => {
+        body += '<text x="42" y="' + (ny + j * 17) + '" font-size="12" fill="#f0e2c6">'
+          + escN((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+      });
+      ny += ls.length > 1 ? 34 : 24;
+    });
     return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
       + '<defs><linearGradient id="nkw" x1="0" y1="0" x2="1" y2="1">'
       + '<stop offset="0" stop-color="#7a5a38"/><stop offset=".5" stop-color="#6b4d2f"/><stop offset="1" stop-color="#5d4228"/></linearGradient></defs>'
@@ -535,6 +551,22 @@
       + '<text x="42" y="500" font-size="10.5" fill="#c9b08a">재물 점수 ' + w.score + (w.n ? ' · 표본 ' + w.n.toLocaleString() + '명 중앙값 40' : '') + '</text>'
       + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b39a72" letter-spacing="2">chaeksa.kr \u00b7 재성 세력·유통·구멍으로 계산한 그릇</text>'
       + '</svg>';
+  }
+
+  // ── 카드 공용: 폭에 맞춰 접기 ──
+  // maxPx = 쓸 수 있는 가로 폭, size = 폰트 크기. 한글 한 글자 ≈ 폰트 크기.
+  // 반환은 [줄, 첫조각인가] 쌍 — 이어지는 줄에 글머리표를 붙이지 않기 위해서다.
+  function foldTxt(t, maxPx, size, lead) {
+    const max = Math.max(6, Math.floor(maxPx / size) - (lead || 0));
+    const src = String(t);
+    if (src.length <= max) return [[src, true]];
+    const out = []; let cur = '', first = true;
+    src.split(' ').forEach(w => {
+      if ((cur + ' ' + w).trim().length > max) { if (cur) { out.push([cur, first]); first = false; } cur = w; }
+      else cur = (cur + ' ' + w).trim();
+    });
+    if (cur) out.push([cur, first]);
+    return out;
   }
 
   // ── 연애·인연 — 도화첩(桃花帖) ──
@@ -654,7 +686,15 @@
   function drawDohwa(name, v) {
     const F = 'Noto Serif KR,serif';
     const escD = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const body = v.lines.map((l, i) => '<text x="42" y="' + (368 + i * 29) + '" font-size="12.5" fill="#5c3242">' + escD('· ' + l) + '</text>').join('');
+    let dy = 366, body = '';
+    v.lines.forEach((l) => {
+      const ls = foldTxt(l, 276, 12, 2).slice(0, 2);
+      ls.forEach((L, j) => {
+        body += '<text x="42" y="' + (dy + j * 17) + '" font-size="12" fill="#5c3242">'
+          + escD((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+      });
+      dy += ls.length > 1 ? 34 : 24;
+    });
     const bd = v.badges.map((b, i) => '<g transform="translate(' + (42 + i * 62) + ',196)">'
       + '<rect width="54" height="24" rx="12" fill="#c9647f" opacity=".9"/>'
       + '<text x="27" y="16.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff6f8">' + b + '</text></g>').join('');
@@ -685,5 +725,92 @@
       + '</svg>';
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa };
+  // ── 천직 — 천직첩(天職帖) ──
+  // 축 둘: 십신 세력의 최강 그룹 x 오행 분포의 최강. 전생 직업소(격국 x 일간오행)와
+  // 축이 겹치지 않아 두 카드가 같은 답을 내지 않는다.
+  const SIP_GROUP = { 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상',
+                      정재: '재성', 편재: '재성', 정관: '관성', 편관: '관성',
+                      정인: '인성', 편인: '인성' };
+  const GROUPS = ['비겁', '식상', '재성', '관성', '인성'];
+
+  function careerAxis(R) {
+    const ds = R.analysis.dayStem, p = R.pillars;
+    const god = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const sc = { 비겁: 0, 식상: 0, 재성: 0, 관성: 0, 인성: 0 };
+    for (const k of ['year', 'month', 'hour']) {            // 일간 자신은 축에서 뺀다
+      const pl = p[k]; if (!pl) continue;
+      sc[SIP_GROUP[god(pl.stem)]] += k === 'month' ? 10 : 8;
+    }
+    for (const k of ['year', 'month', 'day', 'hour']) {
+      const pl = p[k]; if (!pl) continue;
+      E.HIDDEN[pl.branch].forEach((h, i) => {
+        sc[SIP_GROUP[god(h)]] += i === 0 ? (k === 'month' ? 14 : 7) : 3;
+      });
+    }
+    // 동점이면 월지 정기가 속한 그룹을 우선한다 — 월령이 축의 주인이다
+    const mg = SIP_GROUP[god(E.HIDDEN[p.month.branch][0])];
+    let top = GROUPS[0];
+    GROUPS.forEach(g => { if (sc[g] > sc[top] || (sc[g] === sc[top] && g === mg)) top = g; });
+    const ec = R.analysis.elemCount, EL = ['목', '화', '토', '금', '수'];
+    let ei = 0;
+    ec.forEach((v, i) => { if (v > ec[ei]) ei = i; });
+    return { key: top + '·' + EL[ei], group: top, elem: EL[ei], sc, elemCount: ec };
+  }
+
+  function career(R, sample) {
+    const ax = careerAxis(R), C = global.ChaeksaBrief.CAREER;
+    const row = (C[ax.group] || C['비겁'])[ax.elem] || ['미분류', '', ''];
+    let share = null;
+    if (sample && sample.jt && sample.n) share = Math.max(1, Math.round((sample.jt[ax.key] || 0) / sample.n * 100));
+    const strong = R.analysis.strength;
+    const l1 = strong === '신강' ? '신강 — 내 판을 직접 굴릴 때 힘이 난다'
+      : strong === '신약' ? '신약 — 좋은 조직·좋은 사람 옆에서 몇 배가 된다'
+      : '중화 — 조직도 독립도 되는 쪽, 선택지가 넓다';
+    const l2 = '주력은 ' + ax.group + ' — ' + ({
+      비겁: '내 손으로 밀어붙이는 힘', 식상: '만들어 내보이는 힘',
+      재성: '값을 매기고 거둬들이는 힘', 관성: '질서를 세우고 지키는 힘',
+      인성: '쌓고 읽어내는 힘' }[ax.group]);
+    // 가장 약한 축 = 보완할 자리
+    let low = GROUPS[0];
+    GROUPS.forEach(g => { if (ax.sc[g] < ax.sc[low]) low = g; });
+    const l3 = '얇은 축은 ' + low + ' — ' + ({
+      비겁: '뚝심은 사람으로 메운다', 식상: '표현·산출은 훈련해야 는다',
+      재성: '받아낼 돈은 남에게 안 맡긴다', 관성: '규칙과 마감은 장치로 걸어둔다',
+      인성: '기초 공부는 미루면 발목 잡는다' }[low]);
+    const l4 = '어울리는 일 — ' + row[2];
+    return { key: ax.key, name: row[0], note: row[1], jobs: row[2], group: ax.group, elem: ax.elem,
+             share, n: sample && sample.n ? sample.n : 0, lines: [l1, l2, l3, l4] };
+  }
+
+  function drawJikcheop(name, v) {
+    const F = 'Noto Serif KR,serif';
+    const escJ = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // 넷째 줄(직업 셋)은 길어서 접는다
+    const lines = [];
+    v.lines.forEach(l => { foldTxt(l, 276, 11, 2).forEach(L => lines.push(L)); });
+    // 여백 계산: x=34에서 11px 한글 25자 ≈ 309px < 테두리 318. 8줄이면 y 330~477로 하단(500) 위.
+    const body = lines.slice(0, 8).map((L, i) => '<text x="34" y="' + (330 + i * 21) + '" font-size="11" fill="#d7e6e2">'
+      + escJ((L[1] ? '· ' : '  ') + L[0]) + '</text>').join('');
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
+      + '<defs><linearGradient id="jkw" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="#1f4b47"/><stop offset=".55" stop-color="#1a413e"/><stop offset="1" stop-color="#153634"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="26" fill="url(#jkw)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#7fb3a8" stroke-width="1.4" opacity=".6"/>'
+      + '<path d="M30 118 H330 M30 312 H330" stroke="#7fb3a8" stroke-width="1" opacity=".35"/>'
+      + '<text x="180" y="82" text-anchor="middle" font-size="34" font-weight="900" fill="#e8f3ef" letter-spacing="12">天職帖</text>'
+      + '<text x="180" y="106" text-anchor="middle" font-size="12" fill="#9fc9c0" letter-spacing="4">적성 감정첩</text>'
+      + '<text x="180" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#d7e6e2">' + escJ(name) + '</text>'
+      + '<text x="180" y="176" text-anchor="middle" font-size="14" font-weight="700" fill="#9fc9c0" letter-spacing="4">' + escJ(v.key) + '</text>'
+      + '<text x="180" y="236" text-anchor="middle" font-size="33" font-weight="900" fill="#eddc9a">' + escJ(v.name) + '</text>'
+      + '<text x="180" y="268" text-anchor="middle" font-size="12" fill="#b9d6cf">' + escJ(v.note) + '</text>'
+      + (v.share != null ? '<text x="180" y="298" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e8f3ef">같은 유형 ' + v.share + '%</text>' : '')
+      + body
+      + '<g transform="translate(272,462)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="21" font-weight="900" fill="#fdf3e7">職</text></g>'
+      + '<text x="42" y="500" font-size="10.5" fill="#9fc9c0">십신 세력 x 오행 분포로 감정' + (v.n ? ' · 표본 ' + v.n.toLocaleString() + '명' : '') + '</text>'
+      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#7fa8a0" letter-spacing="2">chaeksa.kr \u00b7 전생 직업소와는 다른 축으로 봅니다</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop };
 })(window);

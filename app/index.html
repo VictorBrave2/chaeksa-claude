@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=113">
+<link rel="stylesheet" href="style.css?v=117">
 </head>
 <body>
 <div class="wrap">
@@ -147,6 +147,11 @@
         </button>
       </div>
       <div class="tiles">
+        <button class="tile" data-open="jikcheop">
+          <span class="ti-k">천직 감정</span>
+          <span class="ti-big">🧭 天職</span>
+          <span class="ti-sub">십신·오행으로 보는 내게 맞는 일</span>
+        </button>
         <button class="tile" data-open="dohwa">
           <span class="ti-k">연애·인연</span>
           <span class="ti-big">🌸 桃花</span>
@@ -214,6 +219,19 @@
         <p class="hint" style="margin:0 0 12px">오늘 일진이 당신 사주와 만나는 결로 정해집니다. 내일이면 바뀝니다.</p>
         <div id="banWrap"><div id="banFlip"><div id="banSvg"></div></div>
           <button class="btn small" id="btnBanShare" style="margin-top:12px">금지령 자랑하기</button></div>
+      </section>
+    </div>
+
+    <!-- 독립 콘텐츠: 천직 감정 -->
+    <div class="tab hide" data-tab="jikcheop">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>🧭 천직 감정</h2>
+        <p class="hint" style="margin:0 0 12px">십신 세력의 주력 축과 오행 분포로 25가지 중 하나를 감정합니다. 전생 직업소가 판타지라면 이쪽은 지금 하는 일 이야기입니다.</p>
+        <p class="hint hide" id="jikProg" style="font-weight:700"></p>
+        <div id="jikWrap" class="hide"><div id="jikFlip"><div id="jikSvg"></div></div>
+          <button class="btn small" id="btnJikShare" style="margin-top:12px">천직첩 자랑하기</button></div>
+        <p class="hint" id="jikNote" style="margin-top:10px"></p>
       </section>
     </div>
 
@@ -550,27 +568,27 @@
   </div>
 </div>
 
-<script src="config.js?v=113"></script>
-<script src="track.js?v=113"></script>
-<script src="cloud.js?v=113"></script>
-<script src="usage.js?v=113"></script>
-<script src="places.js?v=113"></script>
-<script src="people.js?v=113"></script>
-<script src="astro.js?v=113"></script>
-<script src="lunar.js?v=113"></script>
-<script src="engine.js?v=113"></script>
-<script src="chaeyong.js?v=113"></script>
-<script src="brief.js?v=113"></script>
-<script src="typecard.js?v=113"></script>
-<script src="classic.js?v=113"></script>
-<script src="calendar.js?v=113"></script>
-<script src="compat.js?v=113"></script>
-<script src="tongbyeon.js?v=113"></script>
-<script src="rules-wealth-love.js?v=113"></script>
-<script src="rules-health-study-move.js?v=113"></script>
-<script src="consult.js?v=113"></script>
-<script src="share.js?v=113"></script>
-<script src="ai.js?v=113"></script>
-<script src="app.js?v=113"></script>
+<script src="config.js?v=117"></script>
+<script src="track.js?v=117"></script>
+<script src="cloud.js?v=117"></script>
+<script src="usage.js?v=117"></script>
+<script src="places.js?v=117"></script>
+<script src="people.js?v=117"></script>
+<script src="astro.js?v=117"></script>
+<script src="lunar.js?v=117"></script>
+<script src="engine.js?v=117"></script>
+<script src="chaeyong.js?v=117"></script>
+<script src="brief.js?v=117"></script>
+<script src="typecard.js?v=117"></script>
+<script src="classic.js?v=117"></script>
+<script src="calendar.js?v=117"></script>
+<script src="compat.js?v=117"></script>
+<script src="tongbyeon.js?v=117"></script>
+<script src="rules-wealth-love.js?v=117"></script>
+<script src="rules-health-study-move.js?v=117"></script>
+<script src="consult.js?v=117"></script>
+<script src="share.js?v=117"></script>
+<script src="ai.js?v=117"></script>
+<script src="app.js?v=117"></script>
 </body>
 </html>

@@ -304,6 +304,7 @@
     if (tab === 'chat') setTimeout(() => $('msgs').scrollTop = 1e9, 0);
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
+    if (tab === 'jikcheop') renderJikcheop();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
 
@@ -930,6 +931,36 @@
           } catch (e) { b.textContent = '다시 시도'; }
           b.disabled = false;
           setTimeout(() => { b.textContent = '녹패 자랑하기'; }, 2500);
+        };
+      });
+  }
+
+  // ───── 천직 — 천직첩 ─────
+  let jikFor = null;
+  function renderJikcheop() {
+    const T = window.ChaeksaTypecard; if (!T || !$('jikSvg')) return;
+    if (jikFor === R) return;
+    $('jikWrap').classList.add('hide'); $('jikNote').textContent = '';
+    $('jikProg').classList.remove('hide');
+    $('jikProg').textContent = '적성을 재는 중\u2026';
+    T.buildSample(
+      (r) => { $('jikProg').textContent = '적성을 재는 중\u2026 ' + Math.round(r * 100) + '%'; },
+      (sample) => {
+        const v = T.career(R, sample);
+        jikFor = R;
+        $('jikProg').classList.add('hide');
+        $('jikSvg').innerHTML = T.drawJikcheop(profile.name || '당신', v);
+        const fl = $('jikFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+        $('jikWrap').classList.remove('hide');
+        $('jikNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
+        $('btnJikShare').onclick = async () => {
+          const b = $('btnJikShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
+          try {
+            const r = await T.share($('jikSvg').innerHTML, '천직첩_' + v.name);
+            b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 \u2014 Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+          } catch (e) { b.textContent = '다시 시도'; }
+          b.disabled = false;
+          setTimeout(() => { b.textContent = '천직첩 자랑하기'; }, 2500);
         };
       });
   }
