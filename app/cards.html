@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>책사 — 카드 배열 점검</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#17171a;color:#e8e8ee;font-family:"Noto Sans KR",sans-serif;padding:20px 16px 60px}
+  h1{font-size:17px;margin:0 0 4px}
+  p.sub{color:#9a9aa6;font-size:13px;margin:0 0 16px;line-height:1.6}
+  .form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+  .form input,.form select{background:#26262c;border:1px solid #3a3a44;color:#e8e8ee;
+    border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit}
+  .form input{width:74px}
+  .form button{background:#c8a24a;border:0;border-radius:8px;padding:9px 16px;
+    font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+  .g{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+  .c{width:min(330px,92vw)}
+  .c b{display:block;color:#b9b9c6;font-size:12.5px;margin-bottom:7px;font-weight:500}
+  .c svg{width:100%;height:auto;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .note{margin-top:22px;color:#7a7a86;font-size:12px;line-height:1.7;text-align:center}
+</style>
+</head>
+<body>
+<h1>카드 배열 점검</h1>
+<p class="sub">여덟 종을 한 화면에서 봅니다. 생년월일시를 바꾸면 그 사주로 다시 그립니다.<br>배포된 코드를 그대로 쓰므로 여기서 멀쩡하면 앱에서도 멀쩡합니다.</p>
+
+<div class="form">
+  <input id="y" type="number" value="1985" aria-label="연"> 년
+  <input id="m" type="number" value="8" aria-label="월"> 월
+  <input id="d" type="number" value="27" aria-label="일"> 일
+  <input id="h" type="number" value="10" aria-label="시"> 시
+  <input id="mi" type="number" value="50" aria-label="분"> 분
+  <select id="g" aria-label="성별"><option value="M">남</option><option value="F">여</option></select>
+  <button id="go">다시 그리기</button>
+</div>
+
+<div class="g" id="cards"></div>
+<p class="note" id="note"></p>
+
+<script>
+// 점검 페이지가 캐시된 옛 코드를 보여주면 의미가 없다. 매번 새로 받는다.
+(function () {
+  var files = ['astro.js','lunar.js','places.js','engine.js','brief.js','classic.js','typecard.js'];
+  var t = Date.now(), i = 0;
+  (function next() {
+    if (i >= files.length) { window.__ready(); return; }
+    var s = document.createElement('script');
+    s.src = files[i++] + '?t=' + t;
+    s.onload = next;
+    s.onerror = function () { document.getElementById('note').textContent = '불러오기 실패: ' + s.src; };
+    document.head.appendChild(s);
+  })();
+})();
+</script>
+<script>
+window.__ready = function () {
+  var E = window.ChaeksaEngine, T = window.ChaeksaTypecard;
+  var $ = function (i) { return document.getElementById(i); };
+  // 표본은 굽지 않는다 — 배열만 보는 페이지라 등급·희귀도는 대표값으로 채운다
+  var S = { th: [2, 8, 26], n: 10000, seen: {}, wh: { 40: 100 }, lt: {}, jt: {} };
+
+  function calc(o) {
+    return E.calc({ year: o.y, month: o.m, day: o.d, hour: o.h, minute: o.mi, gender: o.g,
+      place: 'KR:서울', longitude: 126.978, tzOffset: 9, solarCorrection: true });
+  }
+
+  function draw() {
+    var o = { y: +$('y').value, m: +$('m').value, d: +$('d').value,
+              h: +$('h').value, mi: +$('mi').value, g: $('g').value };
+    var R, R2;
+    try { R = calc(o); R2 = calc({ y: 1990, m: 1, d: 11, h: 11, mi: 11, g: o.g === 'M' ? 'F' : 'M' }); }
+    catch (e) { $('note').textContent = '계산 실패: ' + e.message; return; }
+    var now = new Date(), nm = '이승용', you = '을순';
+    var list = [
+      ['유형 카드 (가챠)', T.mine(R, S).svg],
+      ['재물 그릇 · 녹패', T.drawNokpae(nm, T.wealth(R, now, S))],
+      ['연애·인연 · 도화첩', T.drawDohwa(nm, T.love(R, now, S))],
+      ['천직 · 천직첩', T.drawJikcheop(nm, T.career(R, S))],
+      ['오늘의 금지령', T.drawBan(nm, T.banToday(R, now), now)],
+      ['전생 교지', T.drawGyoji(nm, T.pastjob(R))],
+      ['시즌', T.drawSeason(nm, R, T.seasonNow(R))],
+      ['공범 판결', T.drawAccomplice(nm, you, T.accomplice(R, R2, nm, you))]
+    ];
+    $('cards').innerHTML = list.map(function (x) {
+      return '<div class="c"><b>' + x[0] + '</b>' + x[1] + '</div>';
+    }).join('');
+    var p = R.pillars, f = E.fmt;
+    $('note').textContent = f.pillar(p.year) + ' ' + f.pillar(p.month) + ' '
+      + f.pillar(p.day) + ' ' + (p.hour ? f.pillar(p.hour) : '(시 모름)')
+      + ' · ' + R.analysis.strength + ' · 진태양시 보정 ' + R.solarOffsetMin + '분';
+  }
+
+  $('go').onclick = draw;
+  draw();
+};
+</script>
+</body>
+</html>
