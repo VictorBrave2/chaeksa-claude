@@ -28,7 +28,12 @@
     const has = n => all.includes(n), hasG = g => all.some(x => GRP[x] === g);
     const cnt = g => all.filter(x => GRP[x] === g).length, tu = n => cheon.includes(n);
     if (GRP[mg] === '비겁') {
-      const nm = mg === '비견' ? '건록' : '양인';
+      // 양인격은 양간이 왕지(자오묘유) 겁재월에 났을 때만이다: 甲卯·丙午·庚酉·壬子.
+      // 음간의 겁재월과 토 일간의 축미월은 양인이 아니라 건록(월겁)으로 본다.
+      // 실측에서 양인격의 48%가 음간으로 잘못 잡히고 있었다.
+      const yang = E.STEM_YANG[ds] === 1;
+      const wang = [0, 3, 6, 9].includes(p.month.branch);
+      const nm = (mg === '겁재' && yang && wang) ? '양인' : '건록';
       const ok = tu('정관') || tu('편관') || tu('정재') || tu('편재') || tu('식신') || tu('상관');
       return { name: nm, ok: ok ? 1 : 0 };
     }
@@ -56,7 +61,7 @@
   // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
   // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
-  const CACHE_KEY = 'chaeksa.typeSample.v2';
+  const CACHE_KEY = 'chaeksa.typeSample.v3';   // v3: 양인격 판정 교정(양간+왕지만)
   const N_SAMPLE = 10000;
   function buildSample(onTick, done) {
     try {
