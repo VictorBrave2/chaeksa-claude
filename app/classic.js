@@ -179,6 +179,21 @@
       if (!allowed.has(gwan) && cnt(gwan) >= 2) { deduct = 30; why = '관살 무리(관계식)'; }
       else if (!allowed.has(geuk) && geuk !== gwan && cnt(geuk) >= 2) { deduct = 20; why = '주용신 극 무리(관계식)'; }
     }
+    // 지지 국(局) — 삼합 3지가 전부 모여 국을 이루고 그 오행이 일간을 극하는데
+    // 제방 천간(국을 극하는 오행)이 없으면 -30. 원문의 "支成水局 死無棺槨 /
+    // 支成火局 僧道" 급 경고가 이 그림이다. 완비 국만 본다(반합은 42%가 걸려 남발).
+    // 실측: 완비 국 3.8%, 그중 이 규칙이 잡는 맹점 0.4%. 칸별 원문 전사가 아닌
+    // 일반 근사임을 밝힌다.
+    const br = ['year', 'month', 'day', 'hour'].filter(k => p[k]).map(k => p[k].branch);
+    const SAMHAP = [[8, 0, 4, 4], [11, 3, 7, 0], [2, 6, 10, 1], [5, 9, 1, 3]];  // [지지3, 국오행]
+    for (const g of SAMHAP) {
+      if (!g.slice(0, 3).every(b => br.includes(b))) continue;
+      const el = g[3];
+      if ((de - el + 5) % 5 !== 2) continue;                       // 국이 일간을 극할 때만
+      const guard = (el + 3) % 5;                                  // 국을 극하는 오행이 제방
+      if (cheon.some(ch => E.STEM_ELEM[STEM_IDX[ch]] === guard)) continue;
+      if (30 > deduct) { deduct = 30; why = '지지 ' + '목화토금수'[el] + '국 완비, 일간 피극(국 근사)'; }
+    }
     if (deduct) score = Math.max(0, score - deduct);
     const badEls = [(de + 3) % 5, (needEl + 3) % 5].filter(e => !allowed.has(e));
     return { need, aux: aux.join(''), cheon: cheon.join(''), hasMain, hasAux,
