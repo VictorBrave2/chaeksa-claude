@@ -350,9 +350,18 @@
       });
     }
     if (!rows.length) return { rows: [], peak: null, low: null, nowIndex: -1 };
-    const peak = rows.reduce((a, b) => (b.value > a.value ? b : a), rows[0]);
-    const low  = rows.reduce((a, b) => (b.value < a.value ? b : a), rows[0]);
     const nowJin = Math.floor(((when.getHours() + 1) % 24) / 2);
+    // 최고·최저가 동점이면(하루 평균 2.3개) 지금부터 가장 가까운 다가오는 시진을 고른다.
+    // 첫 번째 것을 그냥 남기면 자·축·인시(한밤~새벽)로 쏠려서, 오후에 열어본 사람에게
+    // "가장 센 때는 지나간 새벽"이라고 알려주게 된다. 같은 값이면 쓸 수 있는 쪽이 답이다.
+    const near = (r) => (JIN.indexOf(r.jin) - nowJin + 12) % 12;
+    const pickBy = (better) => {
+      let bestV = rows[0].value;
+      for (const r of rows) if (better(r.value, bestV)) bestV = r.value;
+      return rows.filter(r => r.value === bestV).reduce((a, b) => (near(b) < near(a) ? b : a));
+    };
+    const peak = pickBy((x, y) => x > y);
+    const low  = pickBy((x, y) => x < y);
     return { rows, peak, low, nowIndex: rows.findIndex(r => JIN.indexOf(r.jin) === nowJin) };
   }
 
