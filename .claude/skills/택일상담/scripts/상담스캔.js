@@ -163,7 +163,23 @@ function evaluate(R, CFG, W) {
   // 합은 동점일 때만 가른다(아래 정렬에서 가족합 수로 타이브레이크).
   if (W.가족) { s -= 부딪힘.length * 14 * W.가족; }
 
+  // ── 대운 점수 (원국과 별도 축. ①원국 순위 / ②원국+대운 순위를 따로 내기 위한 것)
+  // 6~55세 대운마다 천간·지지 오행이 강약을 중화로 미는지 본다.
+  // 중화 사주는 빈 오행(0~1)을 채우면 +, 편중(3+)을 더하면 −.
+  // 이 규칙이 없으면 중화 사주가 전부 같은 점수로 뭉개져 안 갈린다.
+  let dSc = 0, dTot = 0;
+  list.filter(l => l.endAge >= 6 && l.startAge <= 55).forEach(l => {
+    [E.STEM_ELEM[l.stem], E.BRANCH_ELEM[l.branch]].forEach(e => {
+      const sup = E.siding(de, e) > 0;
+      const g = a.strengthScore < 0.45 ? (sup ? 1 : 0)
+              : a.strengthScore > 0.55 ? (sup ? 0 : 1)
+              : ec[e] <= 1 ? 1 : ec[e] >= 3 ? 0 : 0.5;
+      dTot++; dSc += g;
+    });
+  });
+
   return { _s: Math.max(0, Math.round(s)),
+    _d: dTot ? Math.round(dSc / dTot * 100) : 50,
     강약: a.strength, 강약값: a.strengthScore, 통근: root, 유통: flow,
     오행: ec.map((n, i) => EL[i] + n).join(' '), 없는: a.missing.join('·') || '없음',
     충: chung.join(', ') || '없음', 합: hap.join(', ') || '없음',
@@ -228,6 +244,9 @@ function run(CFG) {
   // 동점이면 가족과 합이 많은 쪽을 앞에 — 합의 유일한 쓰임새다 (점수는 못 산다)
   const 합수 = r => (r.가족어울림 === '—' ? 0 : r.가족어울림.split(' / ').length);
   const by = rows.slice().sort((x, y) => y._s - x._s || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
+  // 원국+대운 종합 — 그릇이 먼저라는 통설대로 60:40. 비중은 의뢰인에게 공개한다.
+  rows.forEach(r => { r._t = Math.round(r._s * 0.6 + r._d * 0.4); });
+  const byT = rows.slice().sort((x, y) => y._t - x._t || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
   by.forEach((r, i) => r.순위 = i + 1);
 
   const f = r => ({
@@ -254,9 +273,10 @@ function run(CFG) {
     후보수: rows.length,
     피할수없는충: 공통충.length ? 공통충 : '없음',
     보정폭: `${shift}분`,
-    // 두 묶음으로 낸다. 사주로 좋은 것과 실제로 잡을 수 있는 것은 다르다.
-    사주로_좋은_자리5: by.slice(0, 5).map(f),
-    실제_잡을수있는_자리5: by.filter(r => r.등급 === '정규' || r.등급 === '연장').slice(0, 5).map(f),
+    // 세 묶음으로 낸다. 그릇(원국) · 그릇+흐름(대운) · 현실(병원)은 서로 다른 축이다.
+    원국_순위5: by.slice(0, 5).map(f),
+    원국대운_순위5: byT.slice(0, 5).map(r => f(r) + ` | 대운 ${r._d} 종합 ${r._t}`),
+    실제_잡을수있는_자리5: byT.filter(r => r.등급 === '정규' || r.등급 === '연장').slice(0, 5).map(f),
     가족충없는3: by.filter(r => r.가족부딪힘 === '없음').slice(0, 3).map(f),
     최하위3: by.slice(-3).reverse().map(f),
     등급분포: ['정규','연장','야간','주말'].map(g => `${g} ${rows.filter(r => r.등급 === g).length}`).join(' · '),
