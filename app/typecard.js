@@ -363,7 +363,7 @@
     let 조후 = null;
     if (C) {
       const needA = C.gungtong(Rme).need, needB = C.gungtong(Ryou).need;
-      const stems = (R) => ['year','month','day','hour'].filter(k=>R.pillars[k]).map(k=>ST_CH[R.pillars[k].stem]);
+      const stems = (R) => ['year','month','day','hour'].filter(k=>R.pillars[k]).map(k=>E.fmt.stem(R.pillars[k].stem));
       const BhasA = stems(Ryou).includes(needA);   // 상대가 내 용신을 가짐
       const AhasB = stems(Rme).includes(needB);
       if (BhasA && AhasB) {
