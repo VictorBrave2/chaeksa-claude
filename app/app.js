@@ -305,6 +305,7 @@
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'jikcheop') renderJikcheop();
+    if (tab === 'life') renderLife();
     if (tab === 'taekil') wireTaekil();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
@@ -366,6 +367,8 @@
     } catch (e) {}
     if (T) {
       try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      try { const lc = T.lifeCurve(R, today);
+        set('tiLifeBig', lc.kind + '형'); set('tiLifeSub', '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
       try { const c = T.career(R, null); set('tiJikBig', c.group + '축'); set('tiJikSub', '25유형 중 어느 쪽인지 열어보기'); } catch (e) {}
       try { const l = T.love(R, new Date(), null); set('tiDoBig', l.key.slice(0, 2)); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
       try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
@@ -978,6 +981,26 @@
     a.href = 'mailto:b01099991263@gmail.com?subject='
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(body);
+  }
+
+  // ───── 인생 곡선 — 대운도 ─────
+  // 표본이 필요 없어 즉시 그린다. 곡선은 원국과 대운만으로 나온다.
+  function renderLife() {
+    const T = window.ChaeksaTypecard; if (!T || !$('lifeSvg')) return;
+    const lc = T.lifeCurve(R, today);
+    $('lifeSvg').innerHTML = T.drawLifeCurve(profile.name || '당신', lc);
+    const fl = $('lifeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    $('lifeWrap').classList.remove('hide');
+    $('lifeNote').textContent = lc.kind + '형 · 최고 구간 ' + lc.peakTxt + ' · 대운은 열 해마다 바뀌고, 같은 사주는 언제나 같은 곡선입니다';
+    $('btnLifeShare').onclick = async () => {
+      const b = $('btnLifeShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('lifeSvg').innerHTML, '대운도_' + lc.peak.startAge + '세');
+        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '대운도 자랑하기'; }, 2500);
+    };
   }
 
   // ───── 천직 — 천직첩 ─────

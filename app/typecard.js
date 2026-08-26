@@ -847,5 +847,143 @@
     });
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop };
+  // ── 인생 곡선 — 대운도(大運圖) ──
+  // 대운 아홉 칸을 같은 잣대로 채점해 곡선으로 그린다. 뼈대는 시즌 카드(seasonNow)와
+  // 같은 강약 판정이다 — 두 카드가 서로 다른 말을 하면 그게 결함이다.
+  // 여기에 조후(궁통보감 용신 오행)와 일지 충·합을 얹는다.
+  const SAMHAP_L = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
+  function daeunScore(R, du) {
+    const a = R.analysis, de = E.STEM_ELEM[a.dayStem], ec = a.elemCount;
+    let sc = 0;
+    [E.STEM_ELEM[du.stem], E.BRANCH_ELEM[du.branch]].forEach(e => {
+      const sup = E.siding(de, e) > 0;
+      sc += a.strengthScore < 0.45 ? (sup ? 1 : 0)
+          : a.strengthScore > 0.55 ? (sup ? 0 : 1)
+          : ec[e] <= 1 ? 1 : ec[e] >= 3 ? 0 : 0.5;
+    });
+    let v = sc * 30;                                   // 강약 부합 0~60
+    // 조후 — 궁통보감 용신 오행이 대운에 들어오는가
+    const C = global.ChaeksaClassic;
+    if (C && C.gungtong) {
+      try {
+        const g = C.gungtong(R);
+        const elOf = (ch) => E.STEM_ELEM[E.STEMS.indexOf(ch)];
+        const duEl = [E.STEM_ELEM[du.stem], E.BRANCH_ELEM[du.branch]];
+        if (g.need && duEl.indexOf(elOf(g.need)) >= 0) v += 25;
+        else if (g.aux && g.aux.some(x => duEl.indexOf(elOf(x)) >= 0)) v += 12;
+      } catch (e) {}
+    }
+    // 일지(배우자·나의 자리)와의 관계
+    const db = R.pillars.day.branch, b = du.branch;
+    if ((db - b + 12) % 12 === 6) v -= 12;             // 충
+    else if (db + b === 13 || db + b === 1) v += 8;    // 육합
+    else if (SAMHAP_L.some(gp => gp.indexOf(db) >= 0 && gp.indexOf(b) >= 0 && db !== b)) v += 6;
+    return Math.max(0, Math.min(100, Math.round(v)));
+  }
+
+  // 곡선의 생김새로 유형을 낸다. '앞으로의 최고 구간'을 머리에 세웠더니 남은 인생
+  // 전체에서 찾느라 스물이든 마흔이든 죄다 칠팔십 대가 나왔다 — 맞는 답이지만
+  // 아무 쓸모가 없다. 나이 대신 모양을 말하고, 당장 쓸 정보는 본문에 둔다.
+  const CURVE_KIND = {
+    대기만성: '뒤로 갈수록 두터워지는 곡선',
+    초년집중: '이른 나이에 크게 열린 곡선',
+    중년절정: '가운데가 솟은 곡선',
+    파도: '오르내림이 큰 곡선',
+    완만: '큰 기복 없이 이어지는 곡선',
+  };
+  function lifeCurve(R, todayD) {
+    const list = R.daeun.list.map(d => ({ d, v: daeunScore(R, d) }));
+    const cur = E.currentDaeun(R, todayD || new Date());
+    const curIdx = cur ? list.findIndex(x => x.d.startAge === cur.startAge) : -1;
+    let hi = 0, lo = 0;
+    list.forEach((x, i) => { if (x.v > list[hi].v) hi = i; if (x.v < list[lo].v) lo = i; });
+    const vs = list.map(x => x.v), n = vs.length;
+    const avg = (arr) => arr.reduce((p, c) => p + c, 0) / (arr.length || 1);
+    const early = avg(vs.slice(0, Math.ceil(n / 3)));
+    const mid = avg(vs.slice(Math.ceil(n / 3), Math.ceil(n * 2 / 3)));
+    const late = avg(vs.slice(Math.ceil(n * 2 / 3)));
+    const range = list[hi].v - list[lo].v;
+    // 폭이 좁으면 방향을 말할 게 없다. 기존 '평탄/완만' 두 갈래는 하나도 안 걸려 합쳤다.
+    const kind = range <= 25 ? '완만'
+      : late - early >= 10 ? '대기만성'
+      : early - late >= 10 ? '초년집중'
+      : mid - Math.max(early, late) >= 8 ? '중년절정'
+      : '파도';
+    const gradeOf = (v) => (SEASON_GRADE.find(g => v / 50 >= g.min) || SEASON_GRADE[4]);
+    const nxt = curIdx >= 0 && curIdx + 1 < n ? list[curIdx + 1] : null;
+    const lines = [];
+    if (curIdx >= 0) {
+      const g = gradeOf(list[curIdx].v);
+      lines.push('지금은 ' + list[curIdx].d.startAge + '세 대운 ' + E.fmt.pillar(list[curIdx].d) + ' — ' + g.name + '. ' + g.line);
+    } else {
+      lines.push('아직 첫 대운 전 — 곡선은 ' + list[0].d.startAge + '세부터 시작합니다');
+    }
+    if (nxt) {
+      const g2 = gradeOf(nxt.v), 방향 = nxt.v > list[curIdx].v + 8 ? '올라갑니다' : nxt.v < list[curIdx].v - 8 ? '내려갑니다' : '비슷하게 갑니다';
+      lines.push('다음 10년(' + nxt.d.startAge + '세~)은 ' + g2.name + ' — 지금보다 ' + 방향);
+    } else if (curIdx >= 0) {
+      lines.push('마지막 대운 구간입니다 — 곡선은 여기서 마무리됩니다');
+    } else {
+      lines.push('첫 대운 ' + list[0].d.startAge + '세부터 열 해마다 판이 바뀝니다');
+    }
+    lines.push('가장 높은 구간은 ' + list[hi].d.startAge + '~' + list[hi].d.endAge + '세, 가장 낮은 구간은 ' + list[lo].d.startAge + '~' + list[lo].d.endAge + '세');
+    lines.push('곡선은 대운이 내 사주에 필요한 것을 갖고 오는가로 잽니다');
+    return { list, hi, lo, curIdx, headIdx: hi, kind, kindNote: CURVE_KIND[kind],
+             peak: list[hi].d, low: list[lo].d, lines,
+             peakTxt: list[hi].d.startAge + '~' + list[hi].d.endAge + '세' };
+  }
+
+  function drawLifeCurve(name, lc) {
+    const F = 'Noto Serif KR,serif';
+    const X0 = 46, X1 = 314, Y0 = 236, Y1 = 356;      // 그래프 자리
+    const n = lc.list.length;
+    const px = (i) => X0 + (X1 - X0) * (n === 1 ? 0.5 : i / (n - 1));
+    const py = (v) => Y1 - (Y1 - Y0) * (v / 100);
+    const pts = lc.list.map((x, i) => px(i) + ',' + py(x.v)).join(' ');
+    const area = 'M' + px(0) + ',' + Y1 + ' L' + lc.list.map((x, i) => px(i) + ',' + py(x.v)).join(' L') + ' L' + px(n - 1) + ',' + Y1 + ' Z';
+    const dots = lc.list.map((x, i) => {
+      const isCur = i === lc.curIdx, isHi = i === lc.headIdx;
+      return '<circle cx="' + px(i) + '" cy="' + py(x.v) + '" r="' + (isCur ? 5.5 : isHi ? 4.5 : 2.8) + '" '
+        + 'fill="' + (isCur ? '#b23a2a' : isHi ? '#c8a24a' : '#8a7a58') + '"/>';
+    }).join('');
+    const labels = lc.list.map((x, i) => (i % 2 === 0 || i === lc.headIdx)
+      ? '<text x="' + px(i) + '" y="' + (Y1 + 15) + '" text-anchor="middle" font-size="9" fill="#8a7a58">' + x.d.startAge + '</text>' : '').join('');
+    const hiLab = '<text x="' + px(lc.headIdx) + '" y="' + (py(lc.list[lc.headIdx].v) - 11) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8a6a1e">' + '최고' + '</text>';
+    const curLab = lc.curIdx >= 0 ? '<text x="' + px(lc.curIdx) + '" y="' + (py(lc.list[lc.curIdx].v) + 18) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b23a2a">지금</text>' : '';
+    let by = 392, body = '';
+    lc.lines.forEach((l) => {
+      const ls = foldTxt(l, 274, 11.5, 2);
+      ls.forEach((L, j) => {
+        body += '<text x="42" y="' + (by + j * 16) + '" font-size="11.5" fill="#4a3a28">'
+          + escF((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+      });
+      by += (ls.length - 1) * 16 + 21;
+    });
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
+      + '<defs><linearGradient id="lcg" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#f8f2e4"/><stop offset="1" stop-color="#ece1c9"/></linearGradient>'
+      + '<linearGradient id="lca" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#c8a24a" stop-opacity=".45"/><stop offset="1" stop-color="#c8a24a" stop-opacity="0"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="26" fill="url(#lcg)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#a98a52" stroke-width="1.5" opacity=".7"/>'
+      + '<text x="180" y="78" text-anchor="middle" font-size="34" font-weight="900" fill="#5c421c" letter-spacing="12">大運圖</text>'
+      + '<text x="180" y="100" text-anchor="middle" font-size="11.5" fill="#8a7a58" letter-spacing="4">인생 흐름도</text>'
+      + '<text x="180" y="124" text-anchor="middle" font-size="13" fill="#5c4c2e" font-weight="700">' + escF(name) + '</text>'
+      + '<line x1="42" y1="140" x2="318" y2="140" stroke="#a98a52" stroke-width="1" opacity=".55"/>'
+      + '<text x="180" y="170" text-anchor="middle" font-size="30" font-weight="900" fill="#8a6a1e">' + escF(lc.kind + '형') + '</text>'
+      + '<text x="180" y="192" text-anchor="middle" font-size="11.5" fill="#8a7a58">' + escF(lc.kindNote) + '</text>'
+      + '<text x="180" y="214" text-anchor="middle" font-size="12" fill="#5c4c2e" font-weight="700">최고 구간 ' + escF(lc.peakTxt) + '</text>'
+      + '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="#c9b285" stroke-width="1"/>'
+      + '<path d="' + area + '" fill="url(#lca)"/>'
+      + '<polyline points="' + pts + '" fill="none" stroke="#8a6a1e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+      + dots + labels + hiLab + curLab
+      + '<text x="' + X1 + '" y="' + (Y1 + 15) + '" text-anchor="end" font-size="9" fill="#a08a5f">세</text>'
+      + body
+      + '<g transform="translate(274,462)"><rect width="46" height="46" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="23" y="31" text-anchor="middle" font-family="' + F + '" font-size="19" font-weight="900" fill="#fdf3e7">運</text></g>'
+      + '<text x="180" y="534" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="1">chaeksa.kr · 대운 아홉 칸을 같은 잣대로 채점</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve };
 })(window);

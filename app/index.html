@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=137">
+<link rel="stylesheet" href="style.css?v=143">
 </head>
 <body>
 <div class="wrap">
@@ -147,6 +147,11 @@
         </button>
       </div>
       <div class="tiles">
+        <button class="tile" data-open="life">
+          <span class="ti-k">인생 곡선</span>
+          <span class="ti-big" id="tiLifeBig">📈 大運</span>
+          <span class="ti-sub" id="tiLifeSub">내 전성기는 몇 살인가</span>
+        </button>
         <button class="tile" data-open="jikcheop">
           <span class="ti-k">천직 감정</span>
           <span class="ti-big" id="tiJikBig">🧭 天職</span>
@@ -261,6 +266,18 @@
         <p class="hint" style="margin:16px 0 10px"><b>값을 먼저 부르지 않습니다.</b> 자료를 받아보시고 도움이 되었다면 그때 마음만큼 해주시면 됩니다.</p>
         <a class="btn" id="btnTaekMail" href="#" style="display:block;text-align:center;text-decoration:none">📧 상담 문의하기</a>
         <p class="hint" style="margin-top:10px">개업·이전·계약 등 다른 택일도 같은 방식으로 봐드립니다.</p>
+      </section>
+    </div>
+
+    <!-- 독립 콘텐츠: 인생 곡선 -->
+    <div class="tab hide" data-tab="life">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>📈 인생 곡선</h2>
+        <p class="hint" style="margin:0 0 12px">대운 아홉 칸을 같은 잣대로 채점해 곡선으로 그립니다. 대운이 내 사주에 필요한 것을 갖고 오는지로 잽니다.</p>
+        <div id="lifeWrap" class="cardwrap hide"><div id="lifeFlip" class="cardflip"><div id="lifeSvg" class="cardsvg"></div></div>
+          <button class="btn small" id="btnLifeShare">대운도 자랑하기</button></div>
+        <p class="hint" id="lifeNote" style="margin-top:10px"></p>
       </section>
     </div>
 
@@ -611,27 +628,27 @@
   </div>
 </div>
 
-<script src="config.js?v=137"></script>
-<script src="track.js?v=137"></script>
-<script src="cloud.js?v=137"></script>
-<script src="usage.js?v=137"></script>
-<script src="places.js?v=137"></script>
-<script src="people.js?v=137"></script>
-<script src="astro.js?v=137"></script>
-<script src="lunar.js?v=137"></script>
-<script src="engine.js?v=137"></script>
-<script src="chaeyong.js?v=137"></script>
-<script src="brief.js?v=137"></script>
-<script src="typecard.js?v=137"></script>
-<script src="classic.js?v=137"></script>
-<script src="calendar.js?v=137"></script>
-<script src="compat.js?v=137"></script>
-<script src="tongbyeon.js?v=137"></script>
-<script src="rules-wealth-love.js?v=137"></script>
-<script src="rules-health-study-move.js?v=137"></script>
-<script src="consult.js?v=137"></script>
-<script src="share.js?v=137"></script>
-<script src="ai.js?v=137"></script>
-<script src="app.js?v=137"></script>
+<script src="config.js?v=143"></script>
+<script src="track.js?v=143"></script>
+<script src="cloud.js?v=143"></script>
+<script src="usage.js?v=143"></script>
+<script src="places.js?v=143"></script>
+<script src="people.js?v=143"></script>
+<script src="astro.js?v=143"></script>
+<script src="lunar.js?v=143"></script>
+<script src="engine.js?v=143"></script>
+<script src="chaeyong.js?v=143"></script>
+<script src="brief.js?v=143"></script>
+<script src="typecard.js?v=143"></script>
+<script src="classic.js?v=143"></script>
+<script src="calendar.js?v=143"></script>
+<script src="compat.js?v=143"></script>
+<script src="tongbyeon.js?v=143"></script>
+<script src="rules-wealth-love.js?v=143"></script>
+<script src="rules-health-study-move.js?v=143"></script>
+<script src="consult.js?v=143"></script>
+<script src="share.js?v=143"></script>
+<script src="ai.js?v=143"></script>
+<script src="app.js?v=143"></script>
 </body>
 </html>

@@ -84,7 +84,8 @@ window.__ready = function () {
       ['오늘의 금지령', T.drawBan(nm, T.banToday(R, now), now)],
       ['전생 교지', T.drawGyoji(nm, T.pastjob(R))],
       ['시즌', T.drawSeason(nm, R, T.seasonNow(R))],
-      ['공범 판결', T.drawAccomplice(nm, you, T.accomplice(R, R2, nm, you))]
+      ['공범 판결', T.drawAccomplice(nm, you, T.accomplice(R, R2, nm, you))],
+      ['인생 곡선 · 대운도', T.drawLifeCurve(nm, T.lifeCurve(R, now))]
     ];
     $('cards').innerHTML = list.map(function (x) {
       return '<div class="c"><b>' + x[0] + '</b>' + x[1] + '</div>';
