@@ -655,3 +655,25 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .hm-people button.on{background:var(--accent-soft);border-color:var(--accent2);color:var(--ink);font-weight:600}
 .hm-meta{margin-top:12px;font-size:13px;color:var(--ink2);line-height:1.8}
 .hm-meta b{color:var(--ink)}
+
+/* ── 원국 한입 카드 덱 (가로 스와이프) ── */
+.mzdeck{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 14px;margin:0 -2px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mzdeck::-webkit-scrollbar{display:none}
+.mzcard{flex:0 0 76%;max-width:300px;scroll-snap-align:start;border-radius:18px;
+  padding:18px 18px 16px;border:1px solid var(--line);background:var(--bg2);
+  display:flex;flex-direction:column;gap:8px;min-height:150px}
+.mzcard .mk{font-size:11px;letter-spacing:.18em;color:var(--accent);font-weight:600}
+.mzcard .mb{font-size:21px;font-weight:800;font-family:var(--serif);line-height:1.25;letter-spacing:-.02em}
+.mzcard .ms{font-size:13px;color:var(--ink2);line-height:1.7}
+.mzcard .mtags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.mzcard .mtags span{font-size:11.5px;color:var(--accent);background:var(--accent-soft);
+  border-radius:999px;padding:3px 9px}
+.mzcard .stat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.mzcard .stat b{width:16px;text-align:center;font-size:13px}
+.mzcard .stat .bar{flex:1;height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.mzcard .stat .bar i{display:block;height:100%;border-radius:99px}
+.mzcard .stat .n{width:14px;text-align:right;font-variant-numeric:tabular-nums}
+.mzcard .stat .bar .f-목{background:var(--wood)}.mzcard .stat .bar .f-화{background:var(--fire)}
+.mzcard .stat .bar .f-토{background:var(--earth)}.mzcard .stat .bar .f-금{background:var(--metal)}
+.mzcard .stat .bar .f-수{background:var(--water)}

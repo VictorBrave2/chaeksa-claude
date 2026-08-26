@@ -562,8 +562,46 @@
   }
 
   // ───── 나 ─────
+  // 한입 카드 — 원국 풀이를 다섯 장으로 분해한 것. 문장은 brief.js의 MZ 자산.
+  function renderMzDeck() {
+    const a = R.analysis, du = E.currentDaeun(R, today);
+    const MZ = ChaeksaBrief.MZ;
+    const EL5 = ['목','화','토','금','수'];
+    const stem = MZ.STEM[a.dayStem];
+    const st = MZ.STRENGTH[a.strength] || MZ.STRENGTH['중화'];
+    const ec = a.elemCount, mx = Math.max(...ec, 1);
+    const top = EL5[ec.indexOf(Math.max(...ec))];
+    // 시즌 — 지금 대운이 몇 번째인지, 천간 십신으로 구간의 결을 잡는다
+    let season = '';
+    if (du) {
+      const n = R.daeun.list.findIndex(x => x.stem === du.stem && x.branch === du.branch) + 1;
+      const god = E.TEN_GODS[E.tenGod(a.dayStem, du.stem)];
+      season = `<div class="mzcard"><div class="mk">지금 시즌</div>
+        <div class="mb">인생 ${n}번째 시즌</div>
+        <div class="ms">${du.startAge}~${du.endAge}세 · ${f.pillar(du)}<br><b>${god}</b> — ${MZ.SEASON[god] || ''}</div></div>`;
+    }
+    $('mzDeck').innerHTML = `
+      <div class="mzcard"><div class="mk">나의 본캐</div>
+        <div class="mb">${stem.nick}</div>
+        <div class="ms">${f.stem(a.dayStem)} ${f.stemKo(a.dayStem)} 일간 · ${stem.one}</div>
+        <div class="mtags">${stem.tags.map(t => `<span>${t}</span>`).join('')}</div></div>
+      <div class="mzcard"><div class="mk">스탯창</div>
+        ${EL5.map((el, i) => `<div class="stat"><b class="e-${el}">${el}</b>
+          <div class="bar"><i class="f-${el}" style="width:${Math.round(ec[i] / mx * 100)}%"></i></div>
+          <span class="n">${ec[i]}</span></div>`).join('')}
+        <div class="ms" style="margin-top:2px">주력 스탯 <b>${top}</b>${a.missing.length ? ` · 히든퀘스트 <b>${a.missing.join('·')} 채우기</b>` : ' · 다 갖춘 밸런스'}</div></div>
+      <div class="mzcard"><div class="mk">에너지 타입</div>
+        <div class="mb">${st.nick} ${st.emoji}</div>
+        <div class="ms">${st.desc}</div></div>
+      <div class="mzcard"><div class="mk">부스터</div>
+        <div class="mb">${a.yongCandidates.join(' · ')}</div>
+        <div class="ms">나를 채워주는 기운이에요.<br>${a.yongCandidates.map(el => MZ.BOOST[el]).filter(Boolean).join('<br>')}</div></div>
+      ${season}`;
+  }
+
   function renderMe() {
     const a = R.analysis, du = E.currentDaeun(R, today);
+    renderMzDeck();
     const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
     $('pillars').innerHTML = order.map(([k, label]) => {
       const pl = R.pillars[k];
