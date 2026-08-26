@@ -61,14 +61,14 @@
   // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
   // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
-  const CACHE_KEY = 'chaeksa.typeSample.v5';   // v5: 재물 점수 히스토그램 동승 (v4: 득령 가산 0.6)
+  const CACHE_KEY = 'chaeksa.typeSample.v7';   // v7: 연애 유형에 暗緣 축 추가 (v6: 연애 분포 동승)
   const N_SAMPLE = 10000;
   function buildSample(onTick, done) {
     try {
       const hit = JSON.parse(localStorage.getItem(CACHE_KEY));
-      if (hit && hit.n >= N_SAMPLE && hit.th && hit.wh) return done(hit);
+      if (hit && hit.n >= N_SAMPLE && hit.th && hit.wh && hit.lt) return done(hit);
     } catch (e) {}
-    const seen = {}, wh = {}; let i = 0, n = 0;
+    const seen = {}, wh = {}, lt = {}; let i = 0, n = 0;
     (function chunk() {
       const end = Math.min(i + 250, N_SAMPLE);
       for (; i < end; i++) {
@@ -78,7 +78,8 @@
           const R = E.calc({ year: y, month: m, day: d, hour: hh, minute: 30, gender: i % 2 ? 'M' : 'F',
                              place: 'KR:서울', longitude: 126.98, tzOffset: null, solarCorrection: true });
           seen[keyOf(R, gyeok(R))] = (seen[keyOf(R, gyeok(R))] || 0) + 1;
-          const ws = wealthScore(R).score; wh[ws] = (wh[ws] || 0) + 1; n++;
+          const ws = wealthScore(R).score; wh[ws] = (wh[ws] || 0) + 1;
+          const lk = loveType(R).key; lt[lk] = (lt[lk] || 0) + 1; n++;
         } catch (e) {}
       }
       if (onTick) onTick(i / N_SAMPLE);
@@ -95,8 +96,8 @@
           if (cum / n <= 0.15) th[1] = c;
           if (cum / n <= 0.50) th[2] = c;
         });
-        const out = { seen, n, th, types: Object.keys(seen).length, wh };
-        try { localStorage.removeItem('chaeksa.typeSample.v4'); } catch (e) {}
+        const out = { seen, n, th, types: Object.keys(seen).length, wh, lt };
+        try { ['v4','v5','v6'].forEach(k => localStorage.removeItem('chaeksa.typeSample.' + k)); } catch (e) {}
         try { localStorage.setItem(CACHE_KEY, JSON.stringify(out)); } catch (e) {}
         done(out);
       }
@@ -536,5 +537,153 @@
       + '</svg>';
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae };
+  // ── 연애·인연 — 도화첩(桃花帖) ──
+  // 축 둘로 유형을 가른다: 배우자성(남=재성·여=관성)의 정/편 구성 × 배우자궁(일지)의 상태.
+  // 신살(도화·홍염·천을귀인)은 유형을 바꾸지 않고 배지로만 붙인다 — 재미는 주되 판정은 흔들지 않는다.
+  const DOHWA = { 8: 9, 0: 9, 4: 9, 11: 0, 3: 0, 7: 0, 2: 3, 6: 3, 10: 3, 5: 6, 9: 6, 1: 6 }; // 삼합국 → 도화지
+  const HONGYEOM = [6, 6, 2, 7, 4, 4, 10, 9, 0, 8];        // 일간별 홍염살 지지
+  const CHEONEUL = [[1,7],[0,8],[11,9],[11,9],[1,7],[0,8],[1,7],[6,2],[3,5],[3,5]]; // 천을귀인
+  const gongmang = (st, br) => {                            // 일주 순중공망
+    const n = ((st * 6 - br * 5) % 60 + 60) % 60, sun = Math.floor(n / 10);
+    return [(10 + sun * 10) % 12, (11 + sun * 10) % 12];
+  };
+  const SAMHAP_G = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
+  const isChung = (a, b) => (a - b + 12) % 12 === 6;
+  const isYukhap = (a, b) => a + b === 13 || a + b === 1;
+  const isSamhap = (a, b) => a !== b && SAMHAP_G.some(g => g.indexOf(a) >= 0 && g.indexOf(b) >= 0);
+
+  const LOVE_NAME = {
+    '一心定': ['한 사람만', '정한 자리에 정한 사람 — 흔들 일이 별로 없다'],
+    '一心合': ['운명 신봉자', '인연이 끌려온다. 첫눈에가 실제로 일어나는 쪽'],
+    '一心動': ['진심인데 파란만장', '마음은 하나인데 상황이 자꾸 흔든다'],
+    '一心空': ['짝사랑 장인', '깊게 두는데 자리가 비어 있다. 표현이 숙제'],
+    '自由定': ['썸의 기술자', '거리 조절이 재능. 급할 게 없어서 더 끌린다'],
+    '自由合': ['인기 관리자', '들어오는 인연이 많다. 고르는 게 일'],
+    '自由動': ['불꽃 연애가', '뜨겁게 붙고 빠르게 움직인다. 잔잔함과는 거리'],
+    '自由空': ['혼자가 편한', '연애를 못 하는 게 아니라 안 하는 쪽에 가깝다'],
+    '多情定': ['다 챙기는 사람', '정이 넓은데 자리는 지킨다. 오해만 조심'],
+    '多情合': ['모두의 최애', '어디 가도 인연이 붙는다. 정리가 관건'],
+    '多情動': ['드라마 주인공', '사건이 끊이지 않는다. 본인 탓만은 아니다'],
+    '多情空': ['많은데 허한', '사람은 많은데 채워지는 자리가 따로 있다'],
+    '暗緣定': ['조용한 인연', '요란하지 않게 이어진다. 겉으로 드러나지 않을 뿐'],
+    '暗緣合': ['티 안 나게 잘 풀리는', '숨은 인연이 제때 자리를 잡는다'],
+    '暗緣動': ['숨은 인연에 파도', '조용한 자리인데 사건은 붙는다'],
+    '暗緣空': ['늦게 드러나는', '자리가 늦게 채워진다. 서두를수록 손해'],
+    '無緣定': ['때를 기다리는', '지금은 조용. 인연은 대운을 타고 온다'],
+    '無緣合': ['늦게 트이는', '이르지 않을 뿐, 오면 제대로 온다'],
+    '無緣動': ['연애보다 일', '에너지가 다른 데 쓰인다. 그게 나쁜 것도 아니다'],
+    '無緣空': ['자급자족형', '혼자로 완성되는 쪽. 인연은 선택이지 필수가 아니다'],
+  };
+
+  function loveType(R) {
+    const a = R.analysis, ds = a.dayStem, p = R.pillars;
+    const male = (R.input && R.input.gender) !== 'F';
+    const god = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const jeongG = male ? '정재' : '정관', pyeonG = male ? '편재' : '편관';
+    let jeong = 0, pyeon = 0, hid = 0;
+    for (const k of ['year', 'month', 'hour']) {
+      const pl = p[k]; if (!pl) continue;
+      const g = god(pl.stem);
+      if (g === jeongG) jeong++; else if (g === pyeonG) pyeon++;
+    }
+    for (const k of ['year', 'month', 'day', 'hour']) {
+      const pl = p[k]; if (!pl) continue;
+      E.HIDDEN[pl.branch].forEach((h, i) => {
+        const g = god(h);
+        if (g !== jeongG && g !== pyeonG) return;
+        if (i === 0) { if (g === jeongG) jeong++; else pyeon++; } else hid++;
+      });
+    }
+    // 지장간에만 있는 배우자성은 '없음'이 아니라 숨은 것이다(暗緣).
+    // 이걸 無緣으로 뭉치면 배우자 있는 사람에게 '혼자로 완성되는 쪽'이라 말하게 된다.
+    const A = jeong > 0 && pyeon > 0 ? '多情' : jeong > 0 ? '一心' : pyeon > 0 ? '自由'
+      : hid > 0 ? '暗緣' : '無緣';
+    // 배우자궁 — 공망 > 충 > 합 > 안정
+    // 배우자궁 공망은 반드시 년주 기준으로 본다.
+    // 일지는 제 일주의 순(旬) 안에 있어 자기 기준으로는 결코 공망이 될 수 없다.
+    const db = p.day.branch, gm = gongmang(p.year.stem, p.year.branch);
+    const others = ['year', 'month', 'hour'].map(k => p[k] && p[k].branch).filter(b => b != null);
+    const chung = others.filter(b => isChung(db, b)).length;
+    const hap = others.filter(b => isYukhap(db, b) || isSamhap(db, b)).length;
+    const B = gm.indexOf(db) >= 0 ? '空' : chung ? '動' : hap ? '合' : '定';
+    // 신살 배지
+    const all = ['year', 'month', 'day', 'hour'].map(k => p[k] && p[k].branch).filter(b => b != null);
+    const dohwaB = [DOHWA[p.year.branch], DOHWA[db]];
+    const badges = [];
+    if (all.some(b => dohwaB.indexOf(b) >= 0)) badges.push('도화');
+    if (all.indexOf(HONGYEOM[ds]) >= 0) badges.push('홍염');
+    if (all.some(b => CHEONEUL[ds].indexOf(b) >= 0)) badges.push('귀인');
+    return { key: A + B, A, B, jeong, pyeon, hid, chung, hap, badges, male, gmBranch: gm.indexOf(db) >= 0 };
+  }
+
+  function love(R, todayD, sample) {
+    const t = loveType(R), nm = LOVE_NAME[t.key] || ['미분류', ''];
+    let share = null;
+    if (sample && sample.lt && sample.n) share = Math.max(1, Math.round((sample.lt[t.key] || 0) / sample.n * 100));
+    const 상대 = t.male ? '재성' : '관성';
+    const l1 = t.A === '暗緣' ? '지장간에만 ' + 상대 + ' — 겉으로 안 드러날 뿐, 인연은 있다'
+      : t.A === '無緣' ? '사주에 ' + 상대 + ' 없음 — 인연은 내가 만들어 부르는 쪽'
+      : t.A === '多情' ? '정(正)과 편(偏)이 함께 — 진지함과 설렘을 둘 다 원한다'
+      : t.A === '一心' ? '정(正)만 ' + t.jeong + '개 — 한 번 정하면 오래 간다'
+      : '편(偏)만 ' + t.pyeon + '개 — 규칙보다 끌림이 먼저다';
+    const l2 = t.B === '空' ? '배우자궁 공망 — 자리가 비어 있다. 늦을수록 안정된다'
+      : t.B === '動' ? '배우자궁 충 ' + t.chung + '개 — 인연에 사건이 붙는다'
+      : t.B === '合' ? '배우자궁 합 ' + t.hap + '개 — 끌어당기는 자리를 타고났다'
+      : '배우자궁 무탈 — 조용하고 단단한 자리';
+    const l3 = t.badges.length
+      ? t.badges.join('·') + ' 보유 — ' + (t.badges.indexOf('도화') >= 0 ? '가만히 있어도 눈에 띈다'
+          : t.badges.indexOf('홍염') >= 0 ? '은근한 끌림이 오래 남는다' : '결정적일 때 사람이 돕는다')
+      : '신살 없음 — 매력은 타고나는 게 아니라 쌓는 것';
+    // 인연 시기 — 배우자성 대운
+    const ds = R.analysis.dayStem, godS = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const want = t.male ? ['정재', '편재'] : ['정관', '편관'];
+    const duLove = (d) => want.indexOf(godS(d.stem)) >= 0 || want.indexOf(godS(E.HIDDEN[d.branch][0])) >= 0;
+    const du = E.currentDaeun(R, todayD), list = R.daeun.list;
+    let l4 = '대운 시작 전 — 인연 이야기는 아직 이르다';
+    if (du && duLove(du)) l4 = '지금 대운에 ' + 상대 + ' — 인연이 열려 있는 10년';
+    else if (du) {
+      const i0 = list.findIndex(d => d.startAge === du.startAge);
+      const nx = list.slice(i0 + 1).find(duLove);
+      l4 = nx && nx.startAge < 70 ? nx.startAge + '세 대운에 ' + 상대 + ' — 그때 크게 트인다'
+        : '대운은 조용함 — 인연은 해마다 세운으로 온다';
+    }
+    return { key: t.key, name: nm[0], note: nm[1], badges: t.badges, share,
+             n: sample && sample.n ? sample.n : 0, lines: [l1, l2, l3, l4] };
+  }
+
+  function drawDohwa(name, v) {
+    const F = 'Noto Serif KR,serif';
+    const escD = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const body = v.lines.map((l, i) => '<text x="42" y="' + (368 + i * 29) + '" font-size="12.5" fill="#5c3242">' + escD('· ' + l) + '</text>').join('');
+    const bd = v.badges.map((b, i) => '<g transform="translate(' + (42 + i * 62) + ',196)">'
+      + '<rect width="54" height="24" rx="12" fill="#c9647f" opacity=".9"/>'
+      + '<text x="27" y="16.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff6f8">' + b + '</text></g>').join('');
+    // 꽃잎 장식
+    const petal = (x, y, r, o) => '<g transform="translate(' + x + ',' + y + ') rotate(' + r + ')" opacity="' + o + '">'
+      + '<path d="M0 0 Q7 -9 0 -18 Q-7 -9 0 0" fill="#e4a0b4"/></g>';
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
+      + '<defs><linearGradient id="dhw" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="#fbeef1"/><stop offset=".55" stop-color="#f6e2e8"/><stop offset="1" stop-color="#efd4dd"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="26" fill="url(#dhw)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#c9647f" stroke-width="1.4" opacity=".55"/>'
+      + petal(56, 84, 20, .5) + petal(312, 132, -35, .4) + petal(40, 470, 15, .35) + petal(322, 500, -20, .45)
+      + '<text x="180" y="80" text-anchor="middle" font-size="34" font-weight="900" fill="#8e3b56" letter-spacing="12">桃花帖</text>'
+      + '<text x="180" y="104" text-anchor="middle" font-size="12" fill="#a6607a" letter-spacing="4">연애·인연 감정첩</text>'
+      + '<text x="180" y="134" text-anchor="middle" font-size="13.5" font-weight="700" fill="#6b2f45">' + escD(name) + '</text>'
+      + '<line x1="42" y1="152" x2="318" y2="152" stroke="#c9647f" stroke-width="1" opacity=".5"/>'
+      + '<text x="180" y="180" text-anchor="middle" font-size="15" font-weight="800" fill="#a6607a" letter-spacing="6">' + v.key + '</text>'
+      + bd
+      + '<text x="180" y="266" text-anchor="middle" font-size="27" font-weight="900" fill="#8e3b56">' + escD(v.name) + '</text>'
+      + '<text x="180" y="296" text-anchor="middle" font-size="11.5" fill="#8a5468">' + escD(v.note) + '</text>'
+      + (v.share != null ? '<text x="180" y="326" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6b2f45">같은 유형 ' + v.share + '%</text>' : '')
+      + '<line x1="42" y1="346" x2="318" y2="346" stroke="#c9647f" stroke-width="1" stroke-dasharray="5 4" opacity=".5"/>'
+      + body
+      + '<g transform="translate(272,464)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".9"/>'
+      + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="21" font-weight="900" fill="#fdf3e7">緣</text></g>'
+      + '<text x="42" y="500" font-size="10.5" fill="#a6607a">배우자궁·배우자성 + 신살(도화·홍염·귀인)로 감정' + (v.n ? ' · 표본 ' + v.n.toLocaleString() + '명' : '') + '</text>'
+      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b3798c" letter-spacing="2">chaeksa.kr \u00b7 두 사람 사이는 공범 판결에서</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa };
 })(window);
