@@ -649,7 +649,7 @@
       return;
     }
     $v.innerHTML = `
-      <div class="vh"><div class="no">사주법원 제${(a.dayStem + 1)}형사부 · 사건번호 ${R.solarYear}고단${p2.day.stem}${p2.day.branch}</div>
+      <div class="vh"><div class="no">사주법원 제${(a.dayStem + 1)}형사부 · 사건번호 ${R.solarYear}고단${f.pillar(p2.day)}</div>
         <div class="tt">${nimSafe()}의 원국에 대한 판결</div></div>
       <div class="vb">
         ${charges.map((c, i) => `<div class="chg"><div class="ct"><em>죄목 ${i + 1}</em>${c.title}</div><div class="cx">${c.text}</div></div>`).join('')}
