@@ -884,7 +884,30 @@
         <div class="pillar"><div class="t">${meName}</div><div class="han ${elemClass(R.pillars.day.stem, true)}">${f.pillar(R.pillars.day)}</div></div>
         <div class="pillar"><div class="t">${youName}</div><div class="han ${elemClass(you.pillars.day.stem, true)}">${f.pillar(you.pillars.day)}</div></div></div>
       <div class="brief" style="font-size:15px"><p>${esc(res.stemRel.text)}</p>${res.branchRels.map(b => `<p>${esc(b.text)}</p>`).join('')}${res.notes.map(n => `<p style="color:var(--ink2)">${esc(n)}</p>`).join('')}</div>
-      <div id="compatAi" class="brief" style="margin-top:14px;font-size:15px"></div>`;
+      <div id="compatAi" class="brief" style="margin-top:14px;font-size:15px"></div>
+      <button class="btn" id="btnAccomplice" style="margin-top:14px">⚖️ 공범 판결 받기</button>
+      <div id="accWrap" class="hide" style="margin-top:14px;perspective:900px;display:flex;flex-direction:column;align-items:center">
+        <div id="accFlip" style="width:min(300px,86%)"><div id="accSvg"></div></div>
+        <button class="btn small hide" id="btnAccShare" style="margin-top:12px">판결문 자랑하기</button>
+      </div>`;
+    // 공범 판결 — 관계 축(충·합·복음) + 조후 상보(궁통보감 원문 표)
+    $('btnAccomplice').onclick = () => {
+      const T = window.ChaeksaTypecard;
+      const v = T.accomplice(R, you, profile.name || '나', you0.name || '상대');
+      $('accSvg').innerHTML = T.drawAccomplice(profile.name || '나', you0.name || '상대', v);
+      const fl = $('accFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+      $('accWrap').classList.remove('hide'); $('btnAccShare').classList.remove('hide');
+      $('btnAccomplice').textContent = '판결 확정 (재심 없음)'; $('btnAccomplice').disabled = true;
+      $('btnAccShare').onclick = async () => {
+        const b = $('btnAccShare'); b.disabled = true; b.textContent = '만드는 중…';
+        try {
+          const r = await T.share($('accSvg').innerHTML, '공범판결');
+          b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+        } catch (e) { b.textContent = '다시 시도'; }
+        b.disabled = false;
+        setTimeout(() => { b.textContent = '판결문 자랑하기'; }, 2500);
+      };
+    };
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (AI.ready()) {
       const ai = $('compatAi');

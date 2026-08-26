@@ -340,5 +340,82 @@
       + '</svg>';
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan };
+  // ── 공범 판결 — 두 사람의 관계 축(충·합·복음) + 조후 상보(궁통보감 표) ──
+  // 조후 상보가 이 판결의 심장이다: 내 조후용신(원문 120칸)을 상대 천간이 갖고 있는가.
+  function accomplice(Rme, Ryou, nameA, nameB) {
+    const brA = ['year','month','day','hour'].filter(k=>Rme.pillars[k]).map(k=>Rme.pillars[k].branch);
+    const brB = ['year','month','day','hour'].filter(k=>Ryou.pillars[k]).map(k=>Ryou.pillars[k].branch);
+    const dA = Rme.pillars.day.branch, dB = Ryou.pillars.day.branch;
+    const YUKHAP = {0:1,1:0,2:11,11:2,3:10,10:3,4:9,9:4,5:8,8:5,6:7,7:6};
+    const SAM = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
+    const chung = (a,b)=>((b-a+12)%12)===6;
+    const 죄목 = [], 참작 = [];
+    if (chung(dA,dB)) 죄목.push('만나면 사건이 터짐죄 — 두 일지가 정면 충. 지루할 틈은 없음');
+    let crossChung = 0;
+    brA.forEach(a=>brB.forEach(b=>{ if(chung(a,b)) crossChung++; }));
+    if (crossChung >= 3) 죄목.push('합동 소란죄 — 지지 곳곳이 부딪힘(' + crossChung + '건). 일정이 자주 바뀜');
+    if (Rme.pillars.day.stem === Ryou.pillars.day.stem && dA === dB)
+      죄목.push('동일 수법 반복죄 — 일주가 같아 장단점까지 복제됨');
+    if (YUKHAP[dA] === dB) 참작.push('두 일지가 육합 — 붙어 있으면 서로 안정됨');
+    else if (SAM.some(g=>g.includes(dA)&&g.includes(dB)&&dA!==dB)) 참작.push('두 일지가 삼합 — 같은 팀으로 굴러감');
+    // 조후 상보 (궁통보감 표)
+    const C = global.ChaeksaClassic;
+    let 조후 = null;
+    if (C) {
+      const needA = C.gungtong(Rme).need, needB = C.gungtong(Ryou).need;
+      const stems = (R) => ['year','month','day','hour'].filter(k=>R.pillars[k]).map(k=>ST_CH[R.pillars[k].stem]);
+      const BhasA = stems(Ryou).includes(needA);   // 상대가 내 용신을 가짐
+      const AhasB = stems(Rme).includes(needB);
+      if (BhasA && AhasB) {
+        조후 = '상호';
+        참작.push('서로의 조후용신을 갖고 있음 — ' + nameA + '에게 필요한 ' + needA + '를 ' + nameB + '가, ' + nameB + '에게 필요한 ' + needB + '를 ' + nameA + '가');
+      } else if (BhasA || AhasB) {
+        조후 = '일방';
+        const 부양자 = BhasA ? nameB : nameA, 수혜자 = BhasA ? nameA : nameB, 글자 = BhasA ? needA : needB;
+        죄목.push('온기 독점죄 — ' + 수혜자 + '에게 필요한 ' + 글자 + '를 ' + 부양자 + '만 대주고 있음. 고마운 줄 알 것');
+      }
+    }
+    const 선고 = 죄목.length && 참작.length ? '공범 관계 인정. 다만 정상을 참작하여 형량은 평생 동행으로 한다'
+      : 죄목.length ? '공범 관계 인정. 형량: 평생 동행 (집행유예 없음)'
+      : 참작.length ? '무혐의. 오히려 공생 관계로 표창을 검토한다'
+      : '혐의 없음. 다만 서류상 남남처럼 심심할 수 있음';
+    return { 죄목, 참작, 조후, 선고 };
+  }
+  function drawAccomplice(nameA, nameB, v) {
+    const esc4 = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const wrap = (t) => {   // 카드 폭에 맞게 두 줄까지 접기
+      const out = []; let cur = '';
+      t.split(' ').forEach(w => { if ((cur + ' ' + w).trim().length <= 24) cur = (cur + ' ' + w).trim(); else { out.push(cur); cur = w; } });
+      if (cur) out.push(cur);
+      return out.slice(0, 2);
+    };
+    let y = 218, body = '';
+    v.죄목.forEach(t => { const ls = wrap(t);
+      body += '<text x="46" y="' + y + '" font-size="14" fill="#8a3020" font-weight="700">罪</text>';
+      ls.forEach((l,i)=>{ body += '<text x="74" y="' + (y + i*20) + '" font-size="13" fill="#4a3a28">' + esc4(l) + '</text>'; });
+      y += ls.length*20 + 14; });
+    v.참작.forEach(t => { const ls = wrap(t);
+      body += '<text x="46" y="' + y + '" font-size="14" fill="#2f6b3a" font-weight="700">恕</text>';
+      ls.forEach((l,i)=>{ body += '<text x="74" y="' + (y + i*20) + '" font-size="13" fill="#33502e">' + esc4(l) + '</text>'; });
+      y += ls.length*20 + 14; });
+    const 선고줄 = wrap(v.선고);
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
+      + '<defs><linearGradient id="ac" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#f6efe0"/><stop offset="1" stop-color="#e9dec6"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="16" fill="url(#ac)"/>'
+      + '<rect x="12" y="12" width="336" height="536" rx="10" fill="none" stroke="#5c4a30" stroke-width="2.5"/>'
+      + '<text x="180" y="82" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="38" font-weight="900" fill="#4a3820" letter-spacing="8">共犯判決</text>'
+      + '<text x="180" y="118" text-anchor="middle" font-size="12.5" fill="#7a6a48" letter-spacing="3">사주법원 궁합 전담부</text>'
+      + '<text x="180" y="158" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="17" font-weight="700" fill="#33291c">' + esc4(nameA) + ' · ' + esc4(nameB) + '</text>'
+      + '<line x1="40" y1="184" x2="320" y2="184" stroke="#c9b285" stroke-width="1.5"/>'
+      + body
+      + '<line x1="40" y1="' + (y+4) + '" x2="320" y2="' + (y+4) + '" stroke="#c9b285" stroke-width="1.5" stroke-dasharray="5 4"/>'
+      + 선고줄.map((l,i)=>'<text x="180" y="' + (y+34+i*21) + '" text-anchor="middle" font-size="13.5" font-weight="700" fill="#4a3820">' + esc4(l) + '</text>').join('')
+      + '<g transform="translate(276,452)"><rect width="52" height="52" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="26" y="34" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="22" font-weight="900" fill="#fdf3e7">策</text></g>'
+      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">chaeksa.kr · 궁통보감 원문 조후표로 계산한 상보</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice };
 })(window);
