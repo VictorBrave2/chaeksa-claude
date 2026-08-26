@@ -916,9 +916,9 @@
     const v = T.accomplice(R, you, meName, youName);
     const box = $('compatResult'); box.classList.remove('hide');
     box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
-      <div style="perspective:900px;display:flex;flex-direction:column;align-items:center">
-        <div id="accFlip" style="width:min(300px,86%)"><div id="accSvg">${T.drawAccomplice(meName, youName, v)}</div></div>
-        <button class="btn small" id="btnAccShare" style="margin-top:12px">판결문 자랑하기</button>
+      <div id="accWrap" class="cardwrap">
+        <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawAccomplice(meName, youName, v)}</div></div>
+        <button class="btn small" id="btnAccShare">판결문 자랑하기</button>
       </div>`;
     const fl = $('accFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     $('btnAccShare').onclick = async () => {
