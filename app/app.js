@@ -305,6 +305,7 @@
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'jikcheop') renderJikcheop();
+    if (tab === 'taekil') wireTaekil();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
 
@@ -933,6 +934,23 @@
           setTimeout(() => { b.textContent = '녹패 자랑하기'; }, 2500);
         };
       });
+  }
+
+  // ───── 택일 1:1 상담 문의 ─────
+  // 빈 메일 창을 열면 무엇을 써야 할지 몰라 닫는다. 양식을 채워서 연다.
+  function wireTaekil() {
+    const a = $('btnTaekMail'); if (!a || a.dataset.wired) return;
+    a.dataset.wired = '1';
+    const body = [
+      '출산택일 상담을 신청합니다.', '',
+      '아버지 생년월일시 :', '어머니 생년월일시 :',
+      '출생 예정지 (시·군) :', '수술 가능한 날짜 범위 :',
+      '아이 성별 :', '첫째인지 :', '',
+      '(양력/음력을 함께 적어주시면 좋습니다)',
+    ].join('\n');
+    a.href = 'mailto:b01099991263@gmail.com?subject='
+      + encodeURIComponent('[책사] 출산택일 상담 문의')
+      + '&body=' + encodeURIComponent(body);
   }
 
   // ───── 천직 — 천직첩 ─────
