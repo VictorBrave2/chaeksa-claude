@@ -679,7 +679,7 @@
         const b = $('btnPastjobShare'); b.disabled = true; b.textContent = '만드는 중…';
         try {
           const shared = await T.share($('pastjobSvg').innerHTML, `전생_${pj.job.replace(/[^가-힣a-zA-Z]/g, '')}`);
-          b.textContent = shared ? '자랑 완료!' : '저장했어요';
+          b.textContent = shared ? '자랑 완료!' : '다운로드 폴더에 저장했어요';
         } catch (e) { b.textContent = '다시 시도'; }
         b.disabled = false;
         setTimeout(() => { b.textContent = '교지 자랑하기'; }, 2500);
@@ -709,7 +709,7 @@
             const b = $('btnGachaShare'); b.disabled = true; b.textContent = '만드는 중…';
             try {
               const shared = await window.ChaeksaTypecard.share(c.svg, `${c.gyeok.name}격_${c.tier || ''}`);
-              b.textContent = shared ? '자랑 완료!' : '저장했어요';
+              b.textContent = shared ? '자랑 완료!' : '다운로드 폴더에 저장했어요';
             } catch (e) { b.textContent = '다시 시도'; }
             b.disabled = false;
             setTimeout(() => { b.textContent = '카드 자랑하기'; }, 2500);
