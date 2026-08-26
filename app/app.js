@@ -665,6 +665,26 @@
     renderMzDeck();
     $('btnVerdict').onclick = () => { renderCourt(); $('verdict').classList.remove('hide'); $('btnVerdict').textContent = '다시 봐도 유죄'; };
     $('verdict').classList.add('hide'); $('btnVerdict').textContent = '판결 받기';
+    // 전생 직업소 — 조회 즉시 교지 발급. 문장은 brief.js PASTJOB.
+    $('pastjobWrap').classList.add('hide'); $('btnPastjob').textContent = '전생 조회하기';
+    $('btnPastjob').onclick = () => {
+      const T = window.ChaeksaTypecard;
+      const pj = T.pastjob(R);
+      $('pastjobSvg').innerHTML = T.drawGyoji(profile.name || '당신', pj);
+      const fl = $('pastjobFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
+      $('pastjobWrap').classList.remove('hide');
+      $('pastjobNote').textContent = `${pj.gyeok.name}격 × ${f.stemElem(R.analysis.dayStem)} 일간 — 150가지 중 이 조합입니다`;
+      $('btnPastjob').textContent = '다시 조회해도 이 전생';
+      $('btnPastjobShare').onclick = async () => {
+        const b = $('btnPastjobShare'); b.disabled = true; b.textContent = '만드는 중…';
+        try {
+          const shared = await T.share($('pastjobSvg').innerHTML, `전생_${pj.job.replace(/[^가-힣a-zA-Z]/g, '')}`);
+          b.textContent = shared ? '자랑 완료!' : '저장했어요';
+        } catch (e) { b.textContent = '다시 시도'; }
+        b.disabled = false;
+        setTimeout(() => { b.textContent = '교지 자랑하기'; }, 2500);
+      };
+    };
     // 유형 카드 뽑기 — 첫 뽑기 때 표본을 만들고(몇 초, 그게 드럼롤이다) 캐시한다
     $('gachaWrap').classList.add('hide'); $('btnGacha').textContent = '카드 뽑기';
     $('btnGacha').onclick = () => {

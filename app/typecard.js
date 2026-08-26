@@ -168,5 +168,42 @@
     return false;
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share };
+  // ── 전생 직업 교지(敎旨) — 격국×일간오행 = 50직업, 강약이 직급 ──
+  function pastjob(R) {
+    const B = global.ChaeksaBrief.PASTJOB;
+    const J = gyeok(R);
+    const de = E.STEM_ELEM[R.analysis.dayStem];
+    const job = (B.JOB[J.name] || B.JOB['건록'])[de];
+    const rank = B.RANK[R.analysis.strength] || B.RANK['중화'];
+    const drip = B.DRIP[J.name] || '';
+    return { job, rank, drip, gyeok: J };
+  }
+  function drawGyoji(name, pj) {
+    const esc = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    // 드립을 두 줄로 접는다 (교지 폭에 맞게)
+    const words = pj.drip.split(' ');
+    let l1 = '', l2 = '';
+    words.forEach(w => { if (l1.length < 16) l1 += (l1 ? ' ' : '') + w; else l2 += (l2 ? ' ' : '') + w; });
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">
+  <defs><linearGradient id="gj" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f8f0dc"/><stop offset="1" stop-color="#eddfbe"/></linearGradient></defs>
+  <rect width="360" height="560" rx="16" fill="url(#gj)"/>
+  <rect x="12" y="12" width="336" height="536" rx="10" fill="none" stroke="#8a6a34" stroke-width="2.5"/>
+  <rect x="20" y="20" width="320" height="520" rx="6" fill="none" stroke="#8a6a34" stroke-width="1" opacity=".5"/>
+  <text x="180" y="86" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="44" font-weight="900" fill="#6d4f21" letter-spacing="18">敎 旨</text>
+  <text x="180" y="130" text-anchor="middle" font-size="13" fill="#7a6a4a" letter-spacing="4">전생 직업 증명서</text>
+  <text x="180" y="196" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="20" fill="#4a3a20">${esc(name)}의 전생은</text>
+  <text x="180" y="248" text-anchor="middle" font-size="15" fill="#7a6a4a">${esc(pj.rank)}</text>
+  <text x="180" y="300" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="30" font-weight="900" fill="#33291c">${esc(pj.job)}</text>
+  <text x="180" y="340" text-anchor="middle" font-size="13" fill="#8a7a58" letter-spacing="2">${esc(pj.gyeok.name)}격 ${pj.gyeok.ok ? '성격' : '파격'}의 명(命)이라</text>
+  <text x="180" y="404" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc(l1)}</text>
+  <text x="180" y="426" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc(l2)}</text>
+  <g transform="translate(256,440)"><rect width="62" height="62" rx="8" fill="#b23a2a" opacity=".92"/>
+    <text x="31" y="28" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="20" font-weight="900" fill="#fdf3e7">前生</text>
+    <text x="31" y="50" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="20" font-weight="900" fill="#fdf3e7">職所</text></g>
+  <text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">策 · chaeksa.kr · 격국과 일간으로 계산된 전생</text>
+</svg>`;
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji };
 })(window);
