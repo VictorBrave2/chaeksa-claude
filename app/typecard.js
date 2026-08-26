@@ -489,7 +489,8 @@
       : w.jaeda < 0 ? '재다신약 — 돈이 나보다 크다, 체력 먼저'
       : w.gotgan ? '재고(財庫) — 쌓이면 안 새는 곳간 보유'
       : '구멍 없음 — 새는 건 팔자 아닌 습관';
-    let l4 = '';
+    // 대운 시작 전(아기·아이)도 빈칸으로 두지 않는다 — 출산택일 고객이 보는 자리다
+    let l4 = '대운 시작 전 — 그릇은 이미 정해졌고, 쓰는 건 이제부터';
     const du = E.currentDaeun(R, todayD), list = R.daeun.list;
     const duJae = (d) => isJae(god(d.stem)) || isJae(god(E.HIDDEN[d.branch][0]));
     const isSik2 = (g) => g === '식신' || g === '상관';
@@ -499,7 +500,8 @@
     else if (du) {
       const i0 = list.findIndex(d => d.startAge === du.startAge);
       const nx = list.slice(i0 + 1).find(duJae);
-      l4 = nx ? nx.startAge + '세 대운부터 돈길 개통' : '대운 재성 무 — 해마다 세운으로 승부';
+      l4 = nx && nx.startAge < 70 ? nx.startAge + '세 대운부터 돈길 개통'
+        : '대운은 조용함 — 돈길은 해마다 세운으로 잡는다';
     }
     return { score: w.score, top, n, grade: { name: grade[1], han: grade[2], note: grade[3] },
              lines: [l1, l2, l3, l4].filter(Boolean), raw: w };
@@ -529,7 +531,7 @@
       + body
       + '<g transform="translate(272,464)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".92"/>'
       + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="19" font-weight="900" fill="#fdf3e7">戶曹</text></g>'
-      + '<text x="42" y="500" font-size="10.5" fill="#c9b08a">재물 점수 ' + w.score + '점 / 100' + (w.n ? ' · 표본 ' + w.n.toLocaleString() + '명 대조' : '') + '</text>'
+      + '<text x="42" y="500" font-size="10.5" fill="#c9b08a">재물 점수 ' + w.score + (w.n ? ' · 표본 ' + w.n.toLocaleString() + '명 중앙값 40' : '') + '</text>'
       + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b39a72" letter-spacing="2">chaeksa.kr \u00b7 재성 세력·유통·구멍으로 계산한 그릇</text>'
       + '</svg>';
   }
