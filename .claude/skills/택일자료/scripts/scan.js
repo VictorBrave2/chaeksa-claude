@@ -52,10 +52,6 @@ function score(R) {
 
   const missing = a.missing.length;
   const balance = Math.abs(a.strengthScore - 0.5);
-  const fire = ec[1], water = ec[4];
-  const mb = E.BRANCH_ELEM[p.month.branch];
-  const 겨울 = [11, 0, 1].includes(p.month.branch);
-  const 여름 = [5, 6, 7].includes(p.month.branch);
 
   let s = 100;
   s -= missing * 13;              // 빈 오행 하나당
@@ -63,8 +59,9 @@ function score(R) {
   s -= chung.length * 11;
   s += Math.min(8, root * 3);     // 뿌리는 가점
   s += (flow - 3) * 4;            // 유통 3칸을 기준으로 가감
-  if (겨울) { if (fire === 0) s -= 10; else if (fire >= 2) s += 5; }   // 조후
-  if (여름) { if (water === 0) s -= 10; else if (water >= 2) s += 5; }
+  // 조후 — 궁통보감 조후용신표(classic.js)로. 계절 근사를 표로 교체 (50→+10, 30→+2, 0→-10)
+  const jh = window.ChaeksaClassic ? window.ChaeksaClassic.gungtong(R) : null;
+  if (jh) s += ((jh.score - 25) / 25) * 10;
   if (a.gotMonth) s += 4;
 
   return {

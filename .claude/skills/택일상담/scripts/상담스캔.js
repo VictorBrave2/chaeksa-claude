@@ -115,15 +115,16 @@ function evaluate(R, CFG, W) {
 
   // ── 채점
   const mb = p.month.branch;
-  const 겨울 = [11,0,1].includes(mb), 여름 = [5,6,7].includes(mb);
   let s = 100;
   s -= a.missing.length * W.구족;
   s -= Math.abs(a.strengthScore - 0.5) * W.중화;
   s -= chung.length * W.충;
   s += Math.min(W.통근 * 3, root * W.통근);
   s += (flow - 3) * W.유통;
-  if (겨울) { if (ec[1] === 0) s -= W.조후; else if (ec[1] >= 2) s += W.조후 / 2; }
-  if (여름) { if (ec[4] === 0) s -= W.조후; else if (ec[4] >= 2) s += W.조후 / 2; }
+  // 조후 — 궁통보감 조후용신표(classic.js 120칸, docs/12에 전문 공개)로 판정한다.
+  // 예전의 계절 근사(겨울 화0 감점)를 표로 교체. 50→+W, 30→+0.2W, 0→-W 선형 사상.
+  const jh = window.ChaeksaClassic ? window.ChaeksaClassic.gungtong(R) : null;
+  if (jh) s += ((jh.score - 25) / 25) * W.조후;
   if (a.gotMonth) s += 4;
   if (W.재관) {
     // "돈 잘 벌고 자리 좋다" 는 재관의 개수가 아니라 구조다.
@@ -183,6 +184,7 @@ function evaluate(R, CFG, W) {
     강약: a.strength, 강약값: a.strengthScore, 통근: root, 유통: flow,
     오행: ec.map((n, i) => EL[i] + n).join(' '), 없는: a.missing.join('·') || '없음',
     충: chung.join(', ') || '없음', 합: hap.join(', ') || '없음',
+    조후: jh ? `필요 ${jh.need}${jh.hasMain ? ' 투출✓' : jh.hasAux ? ' (보좌만)' : ' 없음'}` : '-',
     재: 재총, 재천, 관: 관총, 관천, 재다신약,
     대운시작: list[0] ? list[0].startAge + '세' : '?',
     재관대운: 재관대운.map(x => `${x.나이}세 ${x.gz}`).join(', ') || '없음',
