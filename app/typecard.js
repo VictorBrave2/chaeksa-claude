@@ -117,6 +117,12 @@
 
   function draw(R, J, rar) {
     const a = R.analysis, p = R.pillars;
+    // 고전 채점(조후 50 + 격국 50) — classic.js가 있으면 카드에 찍는다.
+    let cs = null;
+    try { cs = global.ChaeksaClassic ? global.ChaeksaClassic.score(R) : null; } catch (e) {}
+    const csLine = cs
+      ? '<text x="180" y="522" text-anchor="middle" font-size="12.5" font-weight="600" fill="#5c4c2e">고전 채점 ' + cs.총점 + '점 <tspan font-weight="400" fill="#8a7a58">· 조후 ' + cs.조후.score + ' + 격국 ' + cs.격국.score + '</tspan></text>'
+      : '';
     const de = E.STEM_ELEM[a.dayStem];
     const tone = TONE[a.strength] || TONE['중화'];
     const frame = J.ok
@@ -143,7 +149,8 @@
   <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
-  <text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a8171" letter-spacing="2">策 · chaeksa.kr · 세 고전 축으로 계산된 카드</text>
+  ${csLine}
+  <text x="180" y="542" text-anchor="middle" font-size="10.5" fill="#8a8171" letter-spacing="2">策 · chaeksa.kr · 궁통보감 원문 대조 채점</text>
 </svg>`;
   }
 
