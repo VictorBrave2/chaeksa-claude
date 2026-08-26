@@ -347,7 +347,8 @@
     // 타일 미리보기
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     $('tiTodayGz').textContent = f.pillar(tf.day);
-    $('tiMeStr').textContent = a.strength;
+    $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
+    $('tiMeStr').style.fontSize = '17px';
   }
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => go(b.dataset.open));
 

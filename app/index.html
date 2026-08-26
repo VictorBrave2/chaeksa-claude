@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=82">
+<link rel="stylesheet" href="style.css?v=83">
 </head>
 <body>
 <div class="wrap">
@@ -116,6 +116,26 @@
   <div id="app" class="hide">
     <!-- 홈 — 타일 · 만세력(사람 전환) · 타일 -->
     <div class="tab" data-tab="home">
+      <!-- 인기 1위 배너 -->
+      <button class="hero-banner" data-open="gacha">
+        <span class="hb-badge">HOT</span>
+        <span class="hb-title">🎴 내 유형 카드 뽑기</span>
+        <span class="hb-sub">686개 유형 중 단 한 장 · SSR이 나올 확률 그대로 계산됩니다</span>
+      </button>
+
+      <div class="sec-label">콘텐츠</div>
+      <div class="tiles">
+        <button class="tile" data-open="court">
+          <span class="ti-k">사주 법정</span>
+          <span class="ti-big">⚖️ 유죄</span>
+          <span class="ti-sub">계산으로 걸린 죄목, 팩폭 판결문</span>
+        </button>
+        <button class="tile" data-open="me">
+          <span class="ti-k">나의 본캐</span>
+          <span class="ti-big" id="tiMeStr">―</span>
+          <span class="ti-sub">한입 카드 5장 · 해시태그</span>
+        </button>
+      </div>
       <div class="tiles">
         <button class="tile" data-open="today">
           <span class="ti-k">오늘의 흐름</span>
@@ -139,30 +159,56 @@
         <button class="btn ghost small" data-open="me" style="margin-top:12px">원국 풀이 전체 보기</button>
       </section>
 
+      <div class="sec-label">더 보기</div>
       <div class="tiles">
-        <button class="tile" data-open="me">
-          <span class="ti-k">원국 풀이</span>
-          <span class="ti-big" id="tiMeStr">―</span>
-          <span class="ti-sub">🎴 유형 카드 · ⚖️ 사주 법정</span>
-        </button>
         <button class="tile" data-open="compat">
           <span class="ti-k">궁합</span>
           <span class="ti-big">🤝</span>
           <span class="ti-sub" id="tiCompatSub">두 사람 사이</span>
         </button>
-      </div>
-      <div class="tiles">
         <button class="tile" data-open="consult">
           <span class="ti-k">심층 상담</span>
           <span class="ti-big">💬</span>
           <span class="ti-sub" id="tiConsultSub">질문 하나를 끝까지</span>
         </button>
+      </div>
+      <div class="tiles">
         <button class="tile" data-open="chat">
           <span class="ti-k">비서</span>
           <span class="ti-big">🖋️</span>
           <span class="ti-sub">무엇이든 물어보기</span>
         </button>
+        <button class="tile" data-open="me">
+          <span class="ti-k">원국 풀이</span>
+          <span class="ti-big">📜</span>
+          <span class="ti-sub">4기둥 · 대운 · 6층 체용</span>
+        </button>
       </div>
+    </div>
+
+    <!-- 독립 콘텐츠: 유형 카드 뽑기 -->
+    <div class="tab hide" data-tab="gacha">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card" id="gachaCard">
+        <h2>🎴 내 유형 카드 뽑기</h2>
+        <p class="hint" style="margin:0 0 12px">격국 × 성패 × 강약 × 조후칸 — 세 고전 축으로 686개 유형 중 당신의 카드 한 장. 같은 사주는 언제나 같은 카드가 나옵니다.</p>
+        <button class="btn" id="btnGacha">카드 뽑기</button>
+        <div class="hint hide" id="gachaProg"></div>
+        <div id="gachaWrap" class="hide"><div id="gachaFlip"><div id="gachaSvg"></div></div>
+          <button class="btn small" id="btnGachaShare" style="margin-top:12px">카드 자랑하기</button>
+          <p class="hint" style="text-align:center;margin-top:8px" id="gachaNote"></p></div>
+      </section>
+    </div>
+
+    <!-- 독립 콘텐츠: 사주 법정 -->
+    <div class="tab hide" data-tab="court">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card court" id="courtCard">
+        <h2>⚖️ 사주 법정</h2>
+        <p class="hint" style="margin:0 0 12px">당신의 원국에서 발견된 혐의로 판결합니다. 재미로 보되, 죄목은 전부 실제 계산에서 나옵니다.</p>
+        <button class="btn" id="btnVerdict">판결 받기</button>
+        <div id="verdict" class="hide"></div>
+      </section>
     </div>
 
     <!-- 오늘 -->
@@ -222,22 +268,7 @@
     <div class="tab hide" data-tab="me">
       <div class="mzdeck" id="mzDeck" aria-label="한입 요약 카드"></div>
 
-      <section class="card court" id="courtCard">
-        <h2>⚖️ 사주 법정</h2>
-        <p class="hint" style="margin:0 0 12px">당신의 원국에서 발견된 혐의로 판결합니다. 재미로 보되, 죄목은 전부 실제 계산에서 나옵니다.</p>
-        <button class="btn" id="btnVerdict">판결 받기</button>
-        <div id="verdict" class="hide"></div>
-      </section>
 
-      <section class="card" id="gachaCard">
-        <h2>🎴 내 유형 카드 뽑기</h2>
-        <p class="hint" style="margin:0 0 12px">격국 × 성패 × 강약 × 조후칸 — 세 고전 축으로 686개 유형 중 당신의 카드 한 장. 같은 사주는 언제나 같은 카드가 나옵니다.</p>
-        <button class="btn" id="btnGacha">카드 뽑기</button>
-        <div class="hint hide" id="gachaProg"></div>
-        <div id="gachaWrap" class="hide"><div id="gachaFlip"><div id="gachaSvg"></div></div>
-          <button class="btn small" id="btnGachaShare" style="margin-top:12px">카드 자랑하기</button>
-          <p class="hint" style="text-align:center;margin-top:8px" id="gachaNote"></p></div>
-      </section>
 
       <section class="card">
         <h2>나의 사주 원국</h2>
@@ -445,26 +476,26 @@
   </div>
 </div>
 
-<script src="config.js?v=82"></script>
-<script src="track.js?v=82"></script>
-<script src="cloud.js?v=82"></script>
-<script src="usage.js?v=82"></script>
-<script src="places.js?v=82"></script>
-<script src="people.js?v=82"></script>
-<script src="astro.js?v=82"></script>
-<script src="lunar.js?v=82"></script>
-<script src="engine.js?v=82"></script>
-<script src="chaeyong.js?v=82"></script>
-<script src="brief.js?v=82"></script>
-<script src="typecard.js?v=82"></script>
-<script src="calendar.js?v=82"></script>
-<script src="compat.js?v=82"></script>
-<script src="tongbyeon.js?v=82"></script>
-<script src="rules-wealth-love.js?v=82"></script>
-<script src="rules-health-study-move.js?v=82"></script>
-<script src="consult.js?v=82"></script>
-<script src="share.js?v=82"></script>
-<script src="ai.js?v=82"></script>
-<script src="app.js?v=82"></script>
+<script src="config.js?v=83"></script>
+<script src="track.js?v=83"></script>
+<script src="cloud.js?v=83"></script>
+<script src="usage.js?v=83"></script>
+<script src="places.js?v=83"></script>
+<script src="people.js?v=83"></script>
+<script src="astro.js?v=83"></script>
+<script src="lunar.js?v=83"></script>
+<script src="engine.js?v=83"></script>
+<script src="chaeyong.js?v=83"></script>
+<script src="brief.js?v=83"></script>
+<script src="typecard.js?v=83"></script>
+<script src="calendar.js?v=83"></script>
+<script src="compat.js?v=83"></script>
+<script src="tongbyeon.js?v=83"></script>
+<script src="rules-wealth-love.js?v=83"></script>
+<script src="rules-health-study-move.js?v=83"></script>
+<script src="consult.js?v=83"></script>
+<script src="share.js?v=83"></script>
+<script src="ai.js?v=83"></script>
+<script src="app.js?v=83"></script>
 </body>
 </html>
