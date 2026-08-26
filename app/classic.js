@@ -61,16 +61,23 @@
     const hasMain = cheon.includes(need);
     const hasAux = aux.some(x => cheon.includes(x));
     let score = hasMain ? 50 : hasAux ? 30 : 0;
-    // 기신 무리 감점
+    // 기신 무리 감점 — 경중을 나눈다. 원문이 나누기 때문이다:
+    //   일간을 극하는(관살) 무리는 "非貧即夭"(甲寅월 一派庚辛)급 치명 → -30
+    //   주용신을 극하는 무리는 용신이 상하는 것 → -20
+    // 둘 다 무리면 치명 쪽 하나만 적용. 용신·보좌에 오른 오행은 여전히 면제.
     const de = E.STEM_ELEM[p.day.stem];
     const needEl = E.STEM_ELEM[STEM_IDX[need]];
     const allowed = new Set([need].concat(aux).map(ch => E.STEM_ELEM[STEM_IDX[ch]]));
-    const badEls = [(de + 3) % 5, (needEl + 3) % 5].filter(e => !allowed.has(e));
-    const packCount = cheon.filter(ch => badEls.includes(E.STEM_ELEM[STEM_IDX[ch]])).length;
-    const pack = packCount >= 2;
-    if (pack) score = Math.max(0, score - 20);
+    const cnt = (el) => cheon.filter(ch => E.STEM_ELEM[STEM_IDX[ch]] === el).length;
+    const 관살El = (de + 3) % 5, 극용El = (needEl + 3) % 5;
+    const 관살무리 = !allowed.has(관살El) && cnt(관살El) >= 2;
+    const 극용무리 = !allowed.has(극용El) && 극용El !== 관살El && cnt(극용El) >= 2;
+    const 감점 = 관살무리 ? 30 : 극용무리 ? 20 : 0;
+    if (감점) score = Math.max(0, score - 감점);
+    const badEls = [관살El, 극용El].filter(e => !allowed.has(e));
     return { need, aux: aux.join(''), cheon: cheon.join(''), hasMain, hasAux,
-             기신: badEls.map(e => '목화토금수'[e]).join('') || '없음', 기신무리: pack, score };
+             기신: [...new Set(badEls)].map(e => '목화토금수'[e]).join('') || '없음',
+             기신무리: !!감점, 감점, score };
   }
 
   /** 자평진전 50점 — 격 판정은 typecard.gyeok(양인 교정판)을 그대로 쓴다. 성격 50 / 파격 0. */
