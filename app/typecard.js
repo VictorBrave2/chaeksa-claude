@@ -720,7 +720,7 @@
       + body
       + '<g transform="translate(272,464)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".9"/>'
       + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="21" font-weight="900" fill="#fdf3e7">緣</text></g>'
-      + '<text x="42" y="500" font-size="10.5" fill="#a6607a">배우자궁·배우자성 + 신살(도화·홍염·귀인)로 감정' + (v.n ? ' · 표본 ' + v.n.toLocaleString() + '명' : '') + '</text>'
+      + '<text x="42" y="500" font-size="10.5" fill="#a6607a">배우자궁·신살 감정' + (v.n ? ' · 표본 ' + (v.n / 10000) + '만 명' : '') + '</text>'
       + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b3798c" letter-spacing="2">chaeksa.kr \u00b7 두 사람 사이는 공범 판결에서</text>'
       + '</svg>';
   }
