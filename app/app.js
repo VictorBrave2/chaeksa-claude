@@ -302,6 +302,7 @@
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
     window.scrollTo({ top: 0 });
     if (tab === 'chat') setTimeout(() => $('msgs').scrollTop = 1e9, 0);
+    if (tab === 'nokpae') renderNokpae();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
 
@@ -900,6 +901,36 @@
       setTimeout(() => { b.textContent = '판결문 자랑하기'; }, 2500);
     };
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ───── 재물 그릇 — 녹패 ─────
+  let nokpaeFor = null;   // 어느 사주로 그렸는지 — 프로필이 바뀌면 다시 그린다
+  function renderNokpae() {
+    const T = window.ChaeksaTypecard; if (!T || !$('nokpaeSvg')) return;
+    if (nokpaeFor === R) return;
+    $('nokpaeWrap').classList.add('hide'); $('nokpaeNote').textContent = '';
+    $('nokpaeProg').classList.remove('hide');
+    $('nokpaeProg').textContent = '호조 장부와 대조하는 중…';
+    T.buildSample(
+      (r) => { $('nokpaeProg').textContent = '호조 장부와 대조하는 중… ' + Math.round(r * 100) + '%'; },
+      (sample) => {
+        const w = T.wealth(R, today, sample);
+        nokpaeFor = R;
+        $('nokpaeProg').classList.add('hide');
+        $('nokpaeSvg').innerHTML = T.drawNokpae(profile.name || '당신', w);
+        const fl = $('nokpaeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+        $('nokpaeWrap').classList.remove('hide');
+        $('nokpaeNote').textContent = '표본 ' + w.n.toLocaleString() + '명 중 상위 ' + w.top + '% · ' + w.grade.name + ' — 같은 사주는 언제나 같은 녹패입니다';
+        $('btnNokpaeShare').onclick = async () => {
+          const b = $('btnNokpaeShare'); b.disabled = true; b.textContent = '만드는 중…';
+          try {
+            const r = await T.share($('nokpaeSvg').innerHTML, '녹패_' + w.grade.name);
+            b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+          } catch (e) { b.textContent = '다시 시도'; }
+          b.disabled = false;
+          setTimeout(() => { b.textContent = '녹패 자랑하기'; }, 2500);
+        };
+      });
   }
 
   // ───── 비서 채팅 ─────

@@ -61,14 +61,14 @@
   // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
   // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
-  const CACHE_KEY = 'chaeksa.typeSample.v4';   // v4: 강약에 득령 가산 0.6 반영
+  const CACHE_KEY = 'chaeksa.typeSample.v5';   // v5: 재물 점수 히스토그램 동승 (v4: 득령 가산 0.6)
   const N_SAMPLE = 10000;
   function buildSample(onTick, done) {
     try {
       const hit = JSON.parse(localStorage.getItem(CACHE_KEY));
-      if (hit && hit.n >= N_SAMPLE && hit.th) return done(hit);
+      if (hit && hit.n >= N_SAMPLE && hit.th && hit.wh) return done(hit);
     } catch (e) {}
-    const seen = {}; let i = 0, n = 0;
+    const seen = {}, wh = {}; let i = 0, n = 0;
     (function chunk() {
       const end = Math.min(i + 250, N_SAMPLE);
       for (; i < end; i++) {
@@ -77,7 +77,8 @@
         try {
           const R = E.calc({ year: y, month: m, day: d, hour: hh, minute: 30, gender: i % 2 ? 'M' : 'F',
                              place: 'KR:서울', longitude: 126.98, tzOffset: null, solarCorrection: true });
-          seen[keyOf(R, gyeok(R))] = (seen[keyOf(R, gyeok(R))] || 0) + 1; n++;
+          seen[keyOf(R, gyeok(R))] = (seen[keyOf(R, gyeok(R))] || 0) + 1;
+          const ws = wealthScore(R).score; wh[ws] = (wh[ws] || 0) + 1; n++;
         } catch (e) {}
       }
       if (onTick) onTick(i / N_SAMPLE);
@@ -94,7 +95,8 @@
           if (cum / n <= 0.15) th[1] = c;
           if (cum / n <= 0.50) th[2] = c;
         });
-        const out = { seen, n, th, types: Object.keys(seen).length };
+        const out = { seen, n, th, types: Object.keys(seen).length, wh };
+        try { localStorage.removeItem('chaeksa.typeSample.v4'); } catch (e) {}
         try { localStorage.setItem(CACHE_KEY, JSON.stringify(out)); } catch (e) {}
         done(out);
       }
@@ -417,5 +419,120 @@
       + '</svg>';
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice };
+  // ── 재물 그릇 — 녹패(祿牌) ──
+  // 점수(0~100) = 재성 세력(40) + 식상 통로(14) + 담는 힘(25) + 재고(6) − 군겁쟁재(15) − 재다신약(15).
+  // 등급은 점수가 아니라 표본 1만 명 속 '사람 백분위'로 긋는다 — 유형 카드와 같은 원칙.
+  function wealthScore(R) {
+    const a = R.analysis, ds = a.dayStem, p = R.pillars;
+    const god = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const isJae = (g) => g === '정재' || g === '편재';
+    const isSik = (g) => g === '식신' || g === '상관';
+    const isBi = (g) => g === '비견' || g === '겁재';
+    let jae = 0, sik = 0, bi = 0, jeong = 0, pyeon = 0, hidJae = 0, sikStem = 0;
+    for (const k of ['year', 'month', 'hour']) {          // 일간 자신은 제외
+      const pl = p[k]; if (!pl) continue;
+      const g = god(pl.stem);
+      if (isJae(g)) { jae += 8; if (g === '정재') jeong++; else pyeon++; }
+      if (isSik(g)) { sik++; sikStem++; }
+      if (isBi(g)) bi++;
+    }
+    for (const k of ['year', 'month', 'day', 'hour']) {
+      const pl = p[k]; if (!pl) continue;
+      E.HIDDEN[pl.branch].forEach((h, i) => {
+        const g = god(h);
+        if (i === 0) {                                     // 정기 — 월지가 가장 무겁다
+          if (isJae(g)) { jae += k === 'month' ? 14 : 7; if (g === '정재') jeong++; else pyeon++; }
+          if (isSik(g)) sik++;
+          if (isBi(g)) bi++;
+        } else if (isJae(g)) { jae += 3; if (g === '정재') jeong++; else pyeon++; hidJae++; }
+      });
+    }
+    jae = Math.min(40, jae);
+    const tongro = jae > 0 && sik > 0 ? 14 : sik > 0 ? 5 : 0;
+    const him = a.strength === '중화' ? 25 : a.strength === '신강' ? 22 : 10;
+    const wEl = (E.STEM_ELEM[ds] + 2) % 5;                 // 재 = 일간이 극하는 오행
+    const GOJI = [7, 10, 4, 1, 4];                         // 고지: 목未 화戌 토辰 금丑 수辰
+    const gotgan = ['year', 'month', 'day', 'hour'].some(k => p[k] && p[k].branch === GOJI[wEl]) ? 6 : 0;
+    const gungeop = bi >= 3 && jae > 0 ? -15 : 0;          // 군겁쟁재
+    const jaeda = jae >= 25 && a.strength === '신약' ? -15 : 0; // 재다신약
+    return { score: Math.max(0, Math.min(100, jae + tongro + him + gotgan + gungeop + jaeda)),
+             jae, sik, bi, jeong, pyeon, hidJae, sikStem, tongro, gotgan, gungeop, jaeda };
+  }
+
+  const NOKGRADE = [
+    [2, '만석꾼', '萬石', '그릇이 곳간째로 온 팔자 — 관건은 관리다'],
+    [10, '천석꾼', '千石', '쌓는 족족 담긴다 — 큰물에서 놀 것'],
+    [30, '백석꾼', '百石', '먹고살 걱정 없는 그릇 — 불리는 건 전략'],
+    [60, '쉰섬지기', '五十石', '그릇은 평범, 손은 부지런 — 구멍만 막으면 는다'],
+    [100, '자수성가', '自手', '물려받을 곳간 없음 — 내가 만든 건 전부 내 것'],
+  ];
+
+  function wealth(R, todayD, sample) {
+    const w = wealthScore(R), ds = R.analysis.dayStem;
+    const god = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const isJae = (g) => g === '정재' || g === '편재';
+    // 백분위 — 동점은 위로 친다(상위 %가 후해지지 않게)
+    let below = 0, n = 0;
+    if (sample && sample.wh) for (const k in sample.wh) { if (+k < w.score) below += sample.wh[k]; n += sample.wh[k]; }
+    const top = n ? Math.max(1, Math.ceil((1 - below / n) * 100)) : null;
+    const grade = NOKGRADE.find(g => (top == null ? 100 : top) <= g[0]) || NOKGRADE[4];
+    const l1 = w.jae === 0 ? '무재팔자 — 돈보다 실력이 먼저 오는 순서'
+      : w.jeong + w.pyeon === w.hidJae ? '암장 재성 — 숨은 돈, 티 안 나게 쌓인다'
+      : w.jeong > w.pyeon ? '정재형 — 또박또박 쌓이는 돈이 힘'
+      : w.pyeon > w.jeong ? '편재형 — 크게 들고 크게 도는 돈'
+      : '양손잡이 — 모을 줄도 굴릴 줄도 안다';
+    const l2 = w.jae === 0 ? (w.sik > 0 ? '재능만 가동 — 돈은 명예·사람으로 환전' : '통로 미개설 — 돈은 목돈으로 움직인다')
+      : w.sikStem > 0 ? '식상생재 — 일할수록 돈이 되는 라인'
+      : w.sik > 0 ? '반자동 라인 — 몸이 움직여야 돈이 따라온다'
+      : '통로 미개설 — 돈은 목돈으로 움직인다';
+    const l3 = w.gungeop < 0 ? '군겁쟁재 — 동업·보증·빌려주기 금지'
+      : w.jaeda < 0 ? '재다신약 — 돈이 나보다 크다, 체력 먼저'
+      : w.gotgan ? '재고(財庫) — 쌓이면 안 새는 곳간 보유'
+      : '구멍 없음 — 새는 건 팔자 아닌 습관';
+    let l4 = '';
+    const du = E.currentDaeun(R, todayD), list = R.daeun.list;
+    const duJae = (d) => isJae(god(d.stem)) || isJae(god(E.HIDDEN[d.branch][0]));
+    const isSik2 = (g) => g === '식신' || g === '상관';
+    const duSik = (d) => isSik2(god(d.stem)) || isSik2(god(E.HIDDEN[d.branch][0]));
+    if (du && duJae(du)) l4 = '지금 대운에 재성 재실 — 버는 10년';
+    else if (du && w.jae > 0 && duSik(du)) l4 = '지금 대운 식상 — 재성으로 흘러드는 10년';
+    else if (du) {
+      const i0 = list.findIndex(d => d.startAge === du.startAge);
+      const nx = list.slice(i0 + 1).find(duJae);
+      l4 = nx ? nx.startAge + '세 대운부터 돈길 개통' : '대운 재성 무 — 해마다 세운으로 승부';
+    }
+    return { score: w.score, top, n, grade: { name: grade[1], han: grade[2], note: grade[3] },
+             lines: [l1, l2, l3, l4].filter(Boolean), raw: w };
+  }
+
+  function drawNokpae(name, w) {
+    const F = 'Noto Serif KR,serif';
+    const escN = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const top = w.top == null ? '' : ' · 상위 ' + w.top + '%';
+    const body = w.lines.map((l, i) => '<text x="42" y="' + (356 + i * 29) + '" font-size="12.5" fill="#f0e2c6">' + escN('· ' + l) + '</text>').join('');
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" font-family="' + F + '">'
+      + '<defs><linearGradient id="nkw" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="#7a5a38"/><stop offset=".5" stop-color="#6b4d2f"/><stop offset="1" stop-color="#5d4228"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="26" fill="url(#nkw)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#c9a86a" stroke-width="1.6" opacity=".85"/>'
+      + '<path d="M30 120 Q180 108 330 122 M30 246 Q180 236 330 248 M30 466 Q180 456 330 468" stroke="#54391f" stroke-width="1" fill="none" opacity=".5"/>'
+      + '<circle cx="180" cy="44" r="9" fill="#3d2a16"/><circle cx="180" cy="44" r="9" fill="none" stroke="#c9a86a" stroke-width="1.4"/>'
+      + '<path d="M172 38 Q180 18 188 38" stroke="#b23a2a" stroke-width="4" fill="none" stroke-linecap="round"/>'
+      + '<text x="180" y="99" text-anchor="middle" font-size="36" font-weight="900" fill="#f3e3c0" letter-spacing="14">祿牌</text>'
+      + '<text x="180" y="123" text-anchor="middle" font-size="12" fill="#d9c194" letter-spacing="4">호조 재물 그릇 감정서</text>'
+      + '<text x="180" y="153" text-anchor="middle" font-size="13.5" font-weight="700" fill="#f0e2c6">' + escN(name) + '</text>'
+      + '<line x1="42" y1="171" x2="318" y2="171" stroke="#c9a86a" stroke-width="1.2" opacity=".7"/>'
+      + '<text x="180" y="262" text-anchor="middle" font-size="72" font-weight="900" fill="#e9c877">' + w.grade.han + '</text>'
+      + '<text x="180" y="296" text-anchor="middle" font-size="17" font-weight="800" fill="#f3e3c0">' + escN(w.grade.name + top) + '</text>'
+      + '<text x="180" y="318" text-anchor="middle" font-size="11.5" fill="#d9c194">' + escN(w.grade.note) + '</text>'
+      + '<line x1="42" y1="334" x2="318" y2="334" stroke="#c9a86a" stroke-width="1.2" stroke-dasharray="5 4" opacity=".7"/>'
+      + body
+      + '<g transform="translate(272,464)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="19" font-weight="900" fill="#fdf3e7">戶曹</text></g>'
+      + '<text x="42" y="500" font-size="10.5" fill="#c9b08a">재물 점수 ' + w.score + '점 / 100' + (w.n ? ' · 표본 ' + w.n.toLocaleString() + '명 대조' : '') + '</text>'
+      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b39a72" letter-spacing="2">chaeksa.kr \u00b7 재성 세력·유통·구멍으로 계산한 그릇</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae };
 })(window);

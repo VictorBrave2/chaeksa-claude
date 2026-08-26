@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=104">
+<link rel="stylesheet" href="style.css?v=107">
 </head>
 <body>
 <div class="wrap">
@@ -147,6 +147,11 @@
         </button>
       </div>
       <div class="tiles">
+        <button class="tile" data-open="nokpae">
+          <span class="ti-k">재물 그릇</span>
+          <span class="ti-big">💰 祿牌</span>
+          <span class="ti-sub">쌀 몇 섬 그릇인지, 상위 몇 %인지</span>
+        </button>
         <button class="tile" data-open="me">
           <span class="ti-k">나의 본캐</span>
           <span class="ti-big" id="tiMeStr">―</span>
@@ -204,6 +209,19 @@
         <p class="hint" style="margin:0 0 12px">오늘 일진이 당신 사주와 만나는 결로 정해집니다. 내일이면 바뀝니다.</p>
         <div id="banWrap"><div id="banFlip"><div id="banSvg"></div></div>
           <button class="btn small" id="btnBanShare" style="margin-top:12px">금지령 자랑하기</button></div>
+      </section>
+    </div>
+
+    <!-- 독립 콘텐츠: 재물 그릇 녹패 -->
+    <div class="tab hide" data-tab="nokpae">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>💰 재물 그릇 감정</h2>
+        <p class="hint" style="margin:0 0 12px">재성의 세력·유통·구멍을 계산해 그릇 크기를 재고, 표본 1만 명과 대조해 상위 몇 %인지 녹패(祿牌)로 발급합니다.</p>
+        <p class="hint hide" id="nokpaeProg" style="font-weight:700"></p>
+        <div id="nokpaeWrap" class="hide"><div id="nokpaeFlip"><div id="nokpaeSvg"></div></div>
+          <button class="btn small" id="btnNokpaeShare" style="margin-top:12px">녹패 자랑하기</button></div>
+        <p class="hint" id="nokpaeNote" style="margin-top:10px"></p>
       </section>
     </div>
 
@@ -514,27 +532,27 @@
   </div>
 </div>
 
-<script src="config.js?v=104"></script>
-<script src="track.js?v=104"></script>
-<script src="cloud.js?v=104"></script>
-<script src="usage.js?v=104"></script>
-<script src="places.js?v=104"></script>
-<script src="people.js?v=104"></script>
-<script src="astro.js?v=104"></script>
-<script src="lunar.js?v=104"></script>
-<script src="engine.js?v=104"></script>
-<script src="chaeyong.js?v=104"></script>
-<script src="brief.js?v=104"></script>
-<script src="typecard.js?v=104"></script>
-<script src="classic.js?v=104"></script>
-<script src="calendar.js?v=104"></script>
-<script src="compat.js?v=104"></script>
-<script src="tongbyeon.js?v=104"></script>
-<script src="rules-wealth-love.js?v=104"></script>
-<script src="rules-health-study-move.js?v=104"></script>
-<script src="consult.js?v=104"></script>
-<script src="share.js?v=104"></script>
-<script src="ai.js?v=104"></script>
-<script src="app.js?v=104"></script>
+<script src="config.js?v=107"></script>
+<script src="track.js?v=107"></script>
+<script src="cloud.js?v=107"></script>
+<script src="usage.js?v=107"></script>
+<script src="places.js?v=107"></script>
+<script src="people.js?v=107"></script>
+<script src="astro.js?v=107"></script>
+<script src="lunar.js?v=107"></script>
+<script src="engine.js?v=107"></script>
+<script src="chaeyong.js?v=107"></script>
+<script src="brief.js?v=107"></script>
+<script src="typecard.js?v=107"></script>
+<script src="classic.js?v=107"></script>
+<script src="calendar.js?v=107"></script>
+<script src="compat.js?v=107"></script>
+<script src="tongbyeon.js?v=107"></script>
+<script src="rules-wealth-love.js?v=107"></script>
+<script src="rules-health-study-move.js?v=107"></script>
+<script src="consult.js?v=107"></script>
+<script src="share.js?v=107"></script>
+<script src="ai.js?v=107"></script>
+<script src="app.js?v=107"></script>
 </body>
 </html>
