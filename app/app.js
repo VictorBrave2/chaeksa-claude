@@ -762,7 +762,20 @@
     $('settings').classList.add('hide');
     if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); loadAiBrief(); renderChat(); renderProfileCard(); }
   };
-  $('btnReset').onclick = () => { if (confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) { [KEY, PKEY].forEach(k => localStorage.removeItem(k)); Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); location.reload(); } };
+  $('btnReset').onclick = () => {
+    if (!confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) return;
+    // 데이터는 전부 지우고, 데이터가 아닌 것만 남긴다.
+    //   auth      로그인 세션 — "이 기기에서만 지우기"는 로그아웃이 아니다
+    //   usage·usageLife  AI 한도 — 지우면 이 버튼이 한도 우회 수단이 된다
+    //   theme·ai·trackAt 화면 취향, 프록시 설정, 방문 카운터 스로틀
+    // 키 목록을 나열해서 지우면 새 키가 생길 때마다 여기서 또 빠뜨린다.
+    // (예전 코드가 정확히 그 버그였다 — 사람 목록 키가 생긴 뒤에도 옛 키만 지웠다)
+    const KEEP = ['chaeksa.auth', 'chaeksa.usage', 'chaeksa.usageLife', 'chaeksa.theme', 'chaeksa.ai', 'chaeksa.trackAt'];
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('chaeksa.') && !KEEP.includes(k))
+      .forEach(k => localStorage.removeItem(k));
+    location.reload();
+  };
 
   // ───── 랜딩 ─────
   function showLanding() {
