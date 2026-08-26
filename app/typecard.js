@@ -183,18 +183,26 @@
       img.src = url;
     });
   }
-  /** 공유(모바일) 또는 저장(그 외). 공유되면 true. */
+  /** 카드 내보내기. 반환: 'shared' | 'copied' | 'saved'.
+   *  모바일은 공유 시트가 자연스럽고, PC는 윈도우 공유 시트가 어중간해서
+   *  아예 건너뛰고 클립보드 복사로 간다 — 카톡·메모장에 Ctrl+V면 끝이다. */
   async function share(svgStr, label) {
     const blob = await toPng(svgStr);
-    const file = new File([blob], `책사_유형카드_${label}.png`, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: '내 사주 유형 카드', text: `${label} · chaeksa.kr` }); return true; } catch (e) {}
+    const mobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+    if (mobile && navigator.canShare) {
+      const file = new File([blob], `책사_카드_${label}.png`, { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: '내 사주 카드', text: `${label} · chaeksa.kr` }); return 'shared'; } catch (e) {}
+      }
+    }
+    if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
+      try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); return 'copied'; } catch (e) {}
     }
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = file.name;
+    a.href = URL.createObjectURL(blob); a.download = `책사_카드_${label}.png`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    return false;
+    return 'saved';
   }
 
   // ── 전생 직업 교지(敎旨) — 격국×일간오행 = 50직업, 강약이 직급 ──
