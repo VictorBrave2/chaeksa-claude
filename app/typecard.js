@@ -368,11 +368,11 @@
       const AhasB = stems(Rme).includes(needB);
       if (BhasA && AhasB) {
         조후 = '상호';
-        참작.push('서로의 조후용신을 갖고 있음 — ' + nameA + '에게 필요한 ' + needA + '를 ' + nameB + '가, ' + nameB + '에게 필요한 ' + needB + '를 ' + nameA + '가');
+        참작.push('서로의 조후용신을 갖고 있음 — ' + nameA + '의 용신 ' + needA + '는 ' + nameB + '에게, ' + nameB + '의 용신 ' + needB + '는 ' + nameA + '에게 있음');
       } else if (BhasA || AhasB) {
         조후 = '일방';
         const 부양자 = BhasA ? nameB : nameA, 수혜자 = BhasA ? nameA : nameB, 글자 = BhasA ? needA : needB;
-        죄목.push('온기 독점죄 — ' + 수혜자 + '에게 필요한 ' + 글자 + '를 ' + 부양자 + '만 대주고 있음. 고마운 줄 알 것');
+        죄목.push('온기 독점죄 — ' + 수혜자 + '의 용신 ' + 글자 + ', ' + 부양자 + ' 혼자 대주는 중. 고마운 줄 알 것');
       }
     }
     const 선고 = 죄목.length && 참작.length ? '공범 관계 인정. 다만 정상을 참작하여 형량은 평생 동행으로 한다'
