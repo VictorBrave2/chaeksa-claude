@@ -327,7 +327,7 @@
       const ls = foldTxt(t, 238, 13).slice(0, 2);
       const g = '<text x="52" y="' + by + '" font-size="15" fill="#8a3020" font-weight="700">禁</text>'
         + ls.map((L, j) => '<text x="82" y="' + (by + j * 19) + '" font-size="13" fill="#4a3a28">' + esc3(L[0]) + '</text>').join('');
-      by += ls.length > 1 ? 52 : 40;
+      by += (ls.length - 1) * 19 + 40;
       return g;
     }).join('');
     const okY = by + 8;
@@ -400,16 +400,26 @@
       if (cur) out.push(cur);
       return out.slice(0, 2);
     };
-    let y = 218, body = '';
-    v.죄목.forEach(t => { const ls = wrap(t);
-      body += '<text x="46" y="' + y + '" font-size="14" fill="#8a3020" font-weight="700">罪</text>';
-      ls.forEach((l,i)=>{ body += '<text x="74" y="' + (y + i*20) + '" font-size="13" fill="#4a3a28">' + esc4(l) + '</text>'; });
-      y += ls.length*20 + 14; });
-    v.참작.forEach(t => { const ls = wrap(t);
-      body += '<text x="46" y="' + y + '" font-size="14" fill="#2f6b3a" font-weight="700">恕</text>';
-      ls.forEach((l,i)=>{ body += '<text x="74" y="' + (y + i*20) + '" font-size="13" fill="#33502e">' + esc4(l) + '</text>'; });
-      y += ls.length*20 + 14; });
+    // 선고는 판결문의 맺음이라 자리가 고정이다. 죄목·참작은 그 위 띠(202~388) 안에서
+    // 세로 가운데에 앉힌다. 위에서부터 흘리면 죄목이 적을 때 아래가 통째로 빈다.
+    const blocks = v.죄목.map(t => ({ mark: '罪', col: '#8a3020', txt: '#4a3a28', ls: wrap(t) }))
+      .concat(v.참작.map(t => ({ mark: '恕', col: '#2f6b3a', txt: '#33502e', ls: wrap(t) })));
+    const blockH = blocks.reduce((h, b) => h + b.ls.length * 20 + 14, 0) - 14;
+    let y = Math.max(218, Math.round(202 + (186 - blockH) / 2));
+    let body = '';
+    // 죄목도 참작도 없으면 가운데가 통째로 빈다. 빈 판결문 대신 무혐의를 새긴다.
+    if (!blocks.length) {
+      body += '<text x="180" y="286" text-anchor="middle" font-family="Noto Serif KR,serif"'
+        + ' font-size="44" font-weight="900" fill="#8a7a58" letter-spacing="8" opacity=".85">無嫌疑</text>'
+        + '<text x="180" y="322" text-anchor="middle" font-size="13" fill="#7a6a48">조사 결과, 걸리는 것이 없습니다</text>';
+    }
+    blocks.forEach(b => {
+      body += '<text x="46" y="' + y + '" font-size="14" fill="' + b.col + '" font-weight="700">' + b.mark + '</text>';
+      b.ls.forEach((l, i) => { body += '<text x="74" y="' + (y + i*20) + '" font-size="13" fill="' + b.txt + '">' + esc4(l) + '</text>'; });
+      y += b.ls.length * 20 + 14;
+    });
     const 선고줄 = wrap(v.선고);
+    y = 396;   // 선고 자리 고정
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
       + '<defs><linearGradient id="ac" x1="0" y1="0" x2="0" y2="1">'
       + '<stop offset="0" stop-color="#f6efe0"/><stop offset="1" stop-color="#e9dec6"/></linearGradient></defs>'
@@ -527,7 +537,7 @@
         body += '<text x="42" y="' + (ny + j * 17) + '" font-size="12" fill="#f0e2c6">'
           + escN((L[1] ? '· ' : '  ') + L[0]) + '</text>';
       });
-      ny += ls.length > 1 ? 34 : 24;
+      ny += (ls.length - 1) * 17 + 24;
     });
     return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
       + '<defs><linearGradient id="nkw" x1="0" y1="0" x2="1" y2="1">'
@@ -693,7 +703,7 @@
         body += '<text x="42" y="' + (dy + j * 17) + '" font-size="12" fill="#5c3242">'
           + escD((L[1] ? '· ' : '  ') + L[0]) + '</text>';
       });
-      dy += ls.length > 1 ? 34 : 24;
+      dy += (ls.length - 1) * 17 + 24;
     });
     const bd = v.badges.map((b, i) => '<g transform="translate(' + (42 + i * 62) + ',196)">'
       + '<rect width="54" height="24" rx="12" fill="#c9647f" opacity=".9"/>'
