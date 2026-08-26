@@ -682,8 +682,17 @@
           $('gachaWrap').classList.remove('hide');
           $('gachaNote').textContent = c.rar && c.rar.unique
             ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 당신뿐입니다 · ${c.tier}`
-            : `길게 눌러 이미지로 저장할 수 있어요 · 등급 ${c.tier}`;
+            : `등급 ${c.tier} · 같은 사주는 언제나 이 카드입니다`;
           $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
+          $('btnGachaShare').onclick = async () => {
+            const b = $('btnGachaShare'); b.disabled = true; b.textContent = '만드는 중…';
+            try {
+              const shared = await window.ChaeksaTypecard.share(c.svg, `${c.gyeok.name}격_${c.tier || ''}`);
+              b.textContent = shared ? '자랑 완료!' : '저장했어요';
+            } catch (e) { b.textContent = '다시 시도'; }
+            b.disabled = false;
+            setTimeout(() => { b.textContent = '카드 자랑하기'; }, 2500);
+          };
         });
     };
     const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];

@@ -138,5 +138,35 @@
     return { key: keyOf(R, J), gyeok: J, rar, svg: draw(R, J, rar), tier: rar ? TIER(rar.pct)[0] : null };
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok };
+  /** SVG 문자열 → PNG blob. 카드 비율 2배(720×1120)로 굽는다. */
+  function toPng(svgStr) {
+    return new Promise((res, rej) => {
+      const img = new Image();
+      const url = URL.createObjectURL(new Blob([svgStr], { type: 'image/svg+xml' }));
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        c.width = 720; c.height = 1120;
+        c.getContext('2d').drawImage(img, 0, 0, 720, 1120);
+        URL.revokeObjectURL(url);
+        c.toBlob((b) => b ? res(b) : rej(new Error('png 변환 실패')), 'image/png');
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('svg 로드 실패')); };
+      img.src = url;
+    });
+  }
+  /** 공유(모바일) 또는 저장(그 외). 공유되면 true. */
+  async function share(svgStr, label) {
+    const blob = await toPng(svgStr);
+    const file = new File([blob], `책사_유형카드_${label}.png`, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: '내 사주 유형 카드', text: `${label} · chaeksa.kr` }); return true; } catch (e) {}
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    return false;
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share };
 })(window);
