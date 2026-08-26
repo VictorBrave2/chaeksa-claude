@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=103">
+<link rel="stylesheet" href="style.css?v=104">
 </head>
 <body>
 <div class="wrap">
@@ -135,6 +135,11 @@
           <span class="ti-big">⚖️ 유죄</span>
           <span class="ti-sub">계산으로 걸린 죄목, 팩폭 판결문</span>
         </button>
+        <button class="tile" data-open="compat">
+          <span class="ti-k">공범 판결</span>
+          <span class="ti-big">⛓️ 共犯</span>
+          <span class="ti-sub">둘이 같이 저지른 죄 — 커플·친구용</span>
+        </button>
         <button class="tile" data-open="pastjob">
           <span class="ti-k">전생 직업소</span>
           <span class="ti-big">🏺 敎旨</span>
@@ -170,11 +175,6 @@
           <span class="ti-k">택일 달력</span>
           <span class="ti-big">📅</span>
           <span class="ti-sub" id="tiCalSub">좋은 날 찾기</span>
-        </button>
-        <button class="tile" data-open="compat">
-          <span class="ti-k">궁합</span>
-          <span class="ti-big">🤝</span>
-          <span class="ti-sub" id="tiCompatSub">두 사람 사이</span>
         </button>
         <button class="tile" data-open="consult">
           <span class="ti-k">심층 상담</span>
@@ -353,11 +353,11 @@
     <!-- 궁합 -->
     <div class="tab hide" data-tab="compat">
       <section class="card">
-        <h2>궁합 · 두 사람 사이</h2>
-        <p class="hint" style="margin:0 0 12px">등록한 사람들 사이의 궁합을 봅니다. 기준이 되는 사람은 지금 보고 있는 <b id="compatMe"></b>입니다.</p>
-        <label>누구와의 궁합을 볼까요</label>
-        <select id="cPick" aria-label="궁합 상대"></select>
-        <button class="btn" id="btnCompat">궁합 보기</button>
+        <h2>⛓️ 공범 판결</h2>
+        <p class="hint" style="margin:0 0 12px">두 사주를 대조해 같이 저지른 죄를 판결문으로 발부합니다. 피고인 1은 지금 보고 있는 <b id="compatMe"></b>입니다.</p>
+        <label>공범(피고인 2)을 고르세요</label>
+        <select id="cPick" aria-label="공범 선택"></select>
+        <button class="btn" id="btnCompat">⚖️ 판결 받기</button>
         <button class="btn ghost" id="btnCompatAdd">사람 추가하기</button>
       </section>
       <section class="card hide" id="compatResult"></section>
@@ -398,7 +398,6 @@
   <button data-go="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg><span>오늘</span></button>
   <button data-go="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>달력</span></button>
   <button data-go="me"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="4" height="16" rx="1"/><rect x="9.7" y="4" width="4" height="16" rx="1"/><rect x="15.9" y="4" width="4" height="16" rx="1"/></svg><span>원국</span></button>
-  <button data-go="compat"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16.5 5.6a3.2 3.2 0 0 1 0 6.3M18 14.9c2 .7 3.4 2.6 3.4 5.1"/></svg><span>궁합</span></button>
   <button data-go="consult"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5c0 1.1-.9 2-2 2H8l-4 3.5v-13c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2z"/><path d="M9 9.5h6M9 12.5h4"/></svg><span>상담</span><i class="dot hide" id="consultDot"></i></button>
   <button data-go="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.2-3.6A7.7 7.7 0 0 1 12 4.6c4.4 0 7.7 3.2 7.7 7.2S16.4 19 12 19a9 9 0 0 1-2.8-.4z"/><path d="M9 12h.01M12 12h.01M15 12h.01"/></svg><span>비서</span></button>
 </nav>
@@ -515,27 +514,27 @@
   </div>
 </div>
 
-<script src="config.js?v=103"></script>
-<script src="track.js?v=103"></script>
-<script src="cloud.js?v=103"></script>
-<script src="usage.js?v=103"></script>
-<script src="places.js?v=103"></script>
-<script src="people.js?v=103"></script>
-<script src="astro.js?v=103"></script>
-<script src="lunar.js?v=103"></script>
-<script src="engine.js?v=103"></script>
-<script src="chaeyong.js?v=103"></script>
-<script src="brief.js?v=103"></script>
-<script src="typecard.js?v=103"></script>
-<script src="classic.js?v=103"></script>
-<script src="calendar.js?v=103"></script>
-<script src="compat.js?v=103"></script>
-<script src="tongbyeon.js?v=103"></script>
-<script src="rules-wealth-love.js?v=103"></script>
-<script src="rules-health-study-move.js?v=103"></script>
-<script src="consult.js?v=103"></script>
-<script src="share.js?v=103"></script>
-<script src="ai.js?v=103"></script>
-<script src="app.js?v=103"></script>
+<script src="config.js?v=104"></script>
+<script src="track.js?v=104"></script>
+<script src="cloud.js?v=104"></script>
+<script src="usage.js?v=104"></script>
+<script src="places.js?v=104"></script>
+<script src="people.js?v=104"></script>
+<script src="astro.js?v=104"></script>
+<script src="lunar.js?v=104"></script>
+<script src="engine.js?v=104"></script>
+<script src="chaeyong.js?v=104"></script>
+<script src="brief.js?v=104"></script>
+<script src="typecard.js?v=104"></script>
+<script src="classic.js?v=104"></script>
+<script src="calendar.js?v=104"></script>
+<script src="compat.js?v=104"></script>
+<script src="tongbyeon.js?v=104"></script>
+<script src="rules-wealth-love.js?v=104"></script>
+<script src="rules-health-study-move.js?v=104"></script>
+<script src="consult.js?v=104"></script>
+<script src="share.js?v=104"></script>
+<script src="ai.js?v=104"></script>
+<script src="app.js?v=104"></script>
 </body>
 </html>

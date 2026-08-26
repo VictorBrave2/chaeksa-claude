@@ -52,6 +52,7 @@
   // ───── 사람들 ─────
   const People = () => window.ChaeksaPeople;
   let editingId = null;      // 수정 중인 사람. null이면 새로 추가
+  let pendingPick = null;    // 방금 추가한 사람 — 공범 선택칸에 미리 골라둔다
 
   function personLabel(p) { return p.isSelf ? p.name : `${p.name} · ${p.relation}`; }
 
@@ -167,13 +168,14 @@
     if (editingId) {
       P.update(editingId, { name, relation: rel, birth, isSelf: rel === '나' });
     } else {
-      const id = P.add({ name, relation: rel, isSelf: rel === '나' || !P.list().length, birth });
-      P.setActive(id);
+      // 사람을 추가해도 보던 프로필은 그대로 둔다 — 첫 사람일 때만 people.js가 활성화한다
+      pendingPick = P.add({ name, relation: rel, isSelf: rel === '나' || !P.list().length, birth });
     }
     $('personForm').classList.add('hide');
     $('peopleSheet').classList.add('hide');
     if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
-    start(P.toProfile(P.active()));
+    if (!R || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
+    else { renderPeopleBtn(); renderPartners(); renderHome(); }
   }
 
   function wirePeople() {
@@ -864,6 +866,8 @@
     $('cPick').innerHTML = list.length
       ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
+    if (pendingPick && list.some(p => p.id === pendingPick)) $('cPick').value = pendingPick;
+    pendingPick = null;
     $('btnCompat').disabled = !list.length;
   }
   $('btnCompat').onclick = () => {
@@ -874,49 +878,28 @@
   };
   $('btnCompatAdd').onclick = () => openPersonForm(null);
 
-  async function showCompat(you0) {
-    const you = E.calc(you0), res = ChaeksaCompat.analyze(R, you);
-    const meName = esc(profile.name), youName = esc(you0.name || '상대');
+  // 궁합 탭을 접고 공범 판결만 남겼다 — 점수·해설 없이 판결문 한 장이 결과의 전부다
+  function showCompat(you0) {
+    const you = E.calc(you0), T = window.ChaeksaTypecard;
+    const meName = profile.name || '나', youName = you0.name || '상대';
+    const v = T.accomplice(R, you, meName, youName);
     const box = $('compatResult'); box.classList.remove('hide');
-    box.innerHTML = `<h2>${meName} \u221e ${youName}</h2>
-      <div class="score"><b>${res.score}</b><span>/ 100 · ${youName}님은 내게 <b style="font-size:14px;color:var(--ink)">${res.godText}</b></span></div>
-      <div class="pillars" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
-        <div class="pillar"><div class="t">${meName}</div><div class="han ${elemClass(R.pillars.day.stem, true)}">${f.pillar(R.pillars.day)}</div></div>
-        <div class="pillar"><div class="t">${youName}</div><div class="han ${elemClass(you.pillars.day.stem, true)}">${f.pillar(you.pillars.day)}</div></div></div>
-      <div class="brief" style="font-size:15px"><p>${esc(res.stemRel.text)}</p>${res.branchRels.map(b => `<p>${esc(b.text)}</p>`).join('')}${res.notes.map(n => `<p style="color:var(--ink2)">${esc(n)}</p>`).join('')}</div>
-      <div id="compatAi" class="brief" style="margin-top:14px;font-size:15px"></div>
-      <button class="btn" id="btnAccomplice" style="margin-top:14px">⚖️ 공범 판결 받기</button>
-      <div id="accWrap" class="hide" style="margin-top:14px;perspective:900px;display:flex;flex-direction:column;align-items:center">
-        <div id="accFlip" style="width:min(300px,86%)"><div id="accSvg"></div></div>
-        <button class="btn small hide" id="btnAccShare" style="margin-top:12px">판결문 자랑하기</button>
+    box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
+      <div style="perspective:900px;display:flex;flex-direction:column;align-items:center">
+        <div id="accFlip" style="width:min(300px,86%)"><div id="accSvg">${T.drawAccomplice(meName, youName, v)}</div></div>
+        <button class="btn small" id="btnAccShare" style="margin-top:12px">판결문 자랑하기</button>
       </div>`;
-    // 공범 판결 — 관계 축(충·합·복음) + 조후 상보(궁통보감 원문 표)
-    $('btnAccomplice').onclick = () => {
-      const T = window.ChaeksaTypecard;
-      const v = T.accomplice(R, you, profile.name || '나', you0.name || '상대');
-      $('accSvg').innerHTML = T.drawAccomplice(profile.name || '나', you0.name || '상대', v);
-      const fl = $('accFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
-      $('accWrap').classList.remove('hide'); $('btnAccShare').classList.remove('hide');
-      $('btnAccomplice').textContent = '판결 확정 (재심 없음)'; $('btnAccomplice').disabled = true;
-      $('btnAccShare').onclick = async () => {
-        const b = $('btnAccShare'); b.disabled = true; b.textContent = '만드는 중…';
-        try {
-          const r = await T.share($('accSvg').innerHTML, '공범판결');
-          b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-        } catch (e) { b.textContent = '다시 시도'; }
-        b.disabled = false;
-        setTimeout(() => { b.textContent = '판결문 자랑하기'; }, 2500);
-      };
+    const fl = $('accFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    $('btnAccShare').onclick = async () => {
+      const b = $('btnAccShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('accSvg').innerHTML, '공범판결');
+        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '판결문 자랑하기'; }, 2500);
     };
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    if (AI.ready()) {
-      const ai = $('compatAi');
-      ai.className = 'brief loading'; ai.textContent = '비서가 두 사람을 읽는 중…';
-      try {
-        ai.textContent = await AI.compatText(R, you, res, today);
-        ai.className = 'brief'; ai.style.borderTop = '1px solid var(--line)'; ai.style.paddingTop = '12px';
-      } catch (e) { ai.textContent = ''; }
-    }
   }
 
   // ───── 비서 채팅 ─────
@@ -974,7 +957,7 @@
   function renderUsage() {
     const box = $('usageBox'); if (!box || !window.ChaeksaUsage) return;
     const U = ChaeksaUsage, p = U.plan();
-    const rows = [['brief', '오늘 브리핑'], ['chat', '비서와 대화'], ['consult', '심층 상담'], ['profile', '원국 해석'], ['compat', '궁합 해설']];
+    const rows = [['brief', '오늘 브리핑'], ['chat', '비서와 대화'], ['consult', '심층 상담'], ['profile', '원국 해석']];
     box.innerHTML = `<p class="hint" style="margin:0 0 8px">이번 달 사용량 · 등급 <b>${U.PLANS[p].label}</b></p>`
       + rows.map(([k, name]) => {
           const lim = U.limit(k), use = U.used(k);
@@ -982,7 +965,7 @@
           return `<div class="ub"><span>${name}</span><i><b style="width:${w}%"></b></i><span>${use}/${lim || '—'}</span></div>`;
         }).join('')
       + `<p class="hint">${U.period() === 'life' ? '무료 체험분입니다(평생 기준).' : '매달 1일에 새로 열립니다.'}
-         만세력·원국·대운·택일·궁합 점수와 규칙 기반 브리핑은 <b>한도 없이</b> 쓰실 수 있습니다.</p>`;
+         만세력·원국·대운·택일·공범 판결과 규칙 기반 브리핑은 <b>한도 없이</b> 쓰실 수 있습니다.</p>`;
   }
   function openSettings() {
     renderCloud();
