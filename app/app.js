@@ -368,7 +368,7 @@
         <span class="jin">${esc(r.jin)}</span></button>`;
     }).join('');
     $('hoursSub').textContent = hc.peak.value > 0.3
-      ? `가장 센 때 ${hc.peak.range}시` : '오늘은 큰 기복이 없습니다';
+      ? `가장 센 때 ${hc.peak.jin}시 · 시계 ${hc.peak.clockRange}` : '오늘은 큰 기복이 없습니다';
     box.querySelectorAll('.hr').forEach(b => b.onclick = () => pickHour(+b.dataset.i));
     pickHour(hc.nowIndex >= 0 ? hc.nowIndex : hc.rows.indexOf(hc.peak));
   }
@@ -378,7 +378,7 @@
     $('hours').querySelectorAll('.hr').forEach(b => b.classList.toggle('sel', +b.dataset.i === i));
     const sgn = r.value > 0 ? '+' : '';
     $('hoursPick').innerHTML =
-      `<span class="t">${esc(r.range)}시 · ${esc(r.jin)}시</span>`
+      `<span class="t">${esc(r.jin)}시 · 시계 ${esc(r.clockRange)}</span>`
       + `<span class="g">${esc(r.ganji)} ${esc(r.god)}</span>`
       + `<span class="g">${esc(r.sign)} ${sgn}${r.value}</span>`
       + `<span class="d">${esc(r.label)}</span>`;

@@ -59,5 +59,22 @@
     return ((lon % 360) + 360) % 360;
   }
 
-  global.ChaeksaAstro = { apparentSunLongitude, deltaT };
+  /** 균시차(Equation of Time, 분). 겉보기 태양시 - 평균 태양시.
+   *  연중 -14분(2월)~+16분(11월 초)을 오간다. 진태양시는 경도 보정에 이것까지
+   *  더해야 완성이다. 겉보기 황경은 위의 VSOP87 값을 그대로 쓴다.
+   *  검증: 2026-02-11 -14.2 / 11-03 +16.4 / 06-14 0 / 12-25 0 — 천문값과 0.1분 이내. */
+  function equationOfTime(jdUT) {
+    const t = (jdUT - 2451545.0) / 36525;
+    const L0 = ((280.46646 + 36000.76983 * t + 0.0003032 * t * t) % 360 + 360) % 360;
+    const lam = apparentSunLongitude(jdUT) * D2R;
+    const eps = (23.43929111 - 0.0130042 * t) * D2R;
+    let alpha = Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam)) / D2R;
+    alpha = ((alpha % 360) + 360) % 360;
+    let e = L0 - 0.0057183 - alpha;
+    e = ((e % 360) + 360) % 360;
+    if (e > 180) e -= 360;
+    return e * 4;   // 도 → 분 (1도 = 4분)
+  }
+
+  global.ChaeksaAstro = { apparentSunLongitude, deltaT, equationOfTime };
 })(typeof window !== 'undefined' ? window : globalThis);

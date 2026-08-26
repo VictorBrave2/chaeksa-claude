@@ -140,23 +140,27 @@
       : kstOffsetHours(p.year, p.month, p.day, hh);
     // 시계시간 → UTC JD
     let jdUTC = jdFromUTC(p.year, p.month, p.day, hh, mm) - off / 24;
-    // 진태양시(지방 평균태양시) 보정: 경도 기준. 135°E 표준자오선 대비 (lon-135)*4분
-    let jdLocal = jdUTC + lonDeg / 360;          // 지방 평균태양시
+    // 진태양시 = 경도 보정 + 균시차.
+    //   경도: 135°E 표준자오선 대비 (lon-135)*4분 (서울 -32분, 연중 고정)
+    //   균시차: 겉보기 태양시-평균 태양시. -14분(2월)~+16분(11월 초) (astro.js)
+    // 예전에는 경도만 반영했다 — 그건 지방 '평균'태양시지 진태양시가 아니다.
+    const eotMin = (p.solarCorrection === false || !global.ChaeksaAstro) ? 0
+      : global.ChaeksaAstro.equationOfTime(jdUTC);
+    let jdLocal = jdUTC + lonDeg / 360 + eotMin / 1440;
     if (p.solarCorrection === false) jdLocal = jdUTC + off / 24;  // 보정 끄면 출생지 표준시 그대로
     const localClock = utcFromJD(jdLocal);        // 보정된 출생 시각(연월일시분)
 
-    // 연주: 입춘 기준
+    // 연주: 입춘 기준. 절기 시각과 출생 시각을 UTC끼리 직접 비교한다 —
+    // 균시차가 들어온 뒤로는 지방시 축에 절기를 옮기면 축이 섞인다.
     let year = localClock.y;
     let terms = solarTermsOfYear(year);
-    const ipchunLocal = terms[0].jd + (p.solarCorrection === false ? off / 24 : lonDeg / 360);
-    if (jdLocal < ipchunLocal) { year -= 1; terms = solarTermsOfYear(year); }
+    if (jdUTC < terms[0].jd) { year -= 1; terms = solarTermsOfYear(year); }
     const yearStem = ((year - 4) % 10 + 10) % 10;
     const yearBranch = ((year - 4) % 12 + 12) % 12;
 
-    // 월주: 절기 기준
-    const shift = p.solarCorrection === false ? off / 24 : lonDeg / 360;
+    // 월주: 절기 기준 (역시 UTC끼리)
     let monthIdx = 0; // 0=寅
-    for (let i = 0; i < 12; i++) { if (jdLocal >= terms[i].jd + shift) monthIdx = i; }
+    for (let i = 0; i < 12; i++) { if (jdUTC >= terms[i].jd) monthIdx = i; }
     const monthBranch = (2 + monthIdx) % 12;
     const monthStem = ((yearStem % 5) * 2 + 2 + monthIdx) % 10;
 
@@ -215,6 +219,9 @@
     return {
       input: p,
       corrected: localClock,
+      eot: Math.round(eotMin * 10) / 10,                                   // 균시차(분)
+      solarOffsetMin: p.solarCorrection === false ? 0
+        : Math.round(((lonDeg - 135) * 4 + eotMin) * 10) / 10,             // 총 보정(분, 시계→태양)
       solarYear: year,
       pillars,
       daeun: { forward, startAge: daeunStart, rawDays: daysToTerm, list: daeun },
@@ -312,5 +319,14 @@
     termsOfYear: (y) => solarTermsOfYear(y).map(t => ({ name: t.name, ...utcFromJD(t.jd + 9 / 24) })),
   };
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, NATAL_WEIGHT, siding, STRENGTH_LABEL, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  /** 그 날짜의 총 진태양시 보정(분) = (경도-135)*4 + 균시차. 한국 정오 기준.
+   *  시계 시각 + 이 값 = 태양시. (서울 11월 말 약 -19분, 2월 중순 약 -46분) */
+  function solarOffsetMin(y, m, d, lonDeg) {
+    const lon = lonDeg == null ? 127.0 : lonDeg;
+    const jd = jdFromUTC(y, m, d, 3, 0);   // 한국 정오 = UTC 03시
+    const eot = global.ChaeksaAstro ? global.ChaeksaAstro.equationOfTime(jd) : 0;
+    return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
+  }
+
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);

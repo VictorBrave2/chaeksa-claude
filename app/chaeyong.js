@@ -131,7 +131,15 @@
     // 2~6층 — 운이 하나씩 얹힌다
     const du = E.currentDaeun(result, when);
     const tf = E.dateFortune(when.getFullYear(), when.getMonth() + 1, when.getDate());
-    const hourP = hourPillarOf(tf.day.stem, when.getHours());
+    // 시운의 시진도 원국 시주와 같은 축(진태양시)으로 잡는다.
+    // 예전엔 시계 시각 그대로 썼는데, 그러면 원국은 태양시·시운은 시계시가 되어
+    // 경계 근처에서 두 층이 서로 다른 시진을 보게 된다.
+    const inp = result.input || {};
+    const offMin = inp.solarCorrection === false ? 0
+      : E.solarOffsetMin(when.getFullYear(), when.getMonth() + 1, when.getDate(),
+                         inp.longitude == null ? 127.0 : Number(inp.longitude));
+    const solarHour = ((when.getHours() + when.getMinutes() / 60 + offMin / 60) % 24 + 24) % 24;
+    const hourP = hourPillarOf(tf.day.stem, solarHour);
     const seq = [
       { name: '대운', gz: du, w: WEIGHT.대운, period: du ? `${du.startYear}~${du.startYear + 9}` : null },
       { name: '세운', gz: tf.year, w: WEIGHT.세운, period: `${when.getFullYear()}년` },
@@ -335,22 +343,34 @@
   function hourCurve(result, when) {
     when = when || new Date();
     const base = new Date(when.getFullYear(), when.getMonth(), when.getDate());
+    const inp0 = result.input || {};
+    const off0 = inp0.solarCorrection === false ? 0
+      : E.solarOffsetMin(base.getFullYear(), base.getMonth() + 1, base.getDate(),
+                         inp0.longitude == null ? 127.0 : Number(inp0.longitude));
     const rows = [];
     for (let h = 0; h < 24; h += 2) {
-      const at = new Date(base.getTime()); at.setHours(h, 30, 0, 0);
+      // 태양시로 h:00가 그 시진의 한가운데다. 그 순간의 '시계 시각'으로 찔러본다.
+      const clockMin = ((h * 60 - off0) % 1440 + 1440) % 1440;
+      const at = new Date(base.getTime()); at.setHours(Math.floor(clockMin / 60), Math.round(clockMin % 60), 0, 0);
       const L = stack(result, at).layers.find(l => l.name === '시운');
       if (!L) continue;
       const jin = JIN[Math.floor(((h + 1) % 24) / 2)];
       const from = (h + 23) % 24, to = (h + 1) % 24;
+      // 시계 창 — 이 시진에 들어가려면 시계로 몇 시여야 하는가.
+      // 태양시 창에서 총 보정(경도+균시차)을 되돌린 것. 화면에는 이걸 보여준다.
+      const cw = (solarH) => { const m = ((solarH * 60 - off0) % 1440 + 1440) % 1440;
+        return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.round(m % 60)).padStart(2, '0'); };
       rows.push({
         hour: h, jin, ganji: L.ganji, god: L.god, group: L.group,
         value: L.value, sign: L.sign,
         range: String(from).padStart(2, '0') + '~' + String(to).padStart(2, '0'),
+        clockRange: cw(from) + '~' + cw(to),
         label: (HOUR_LABEL[L.sign] || {})[L.god] || '',
       });
     }
     if (!rows.length) return { rows: [], peak: null, low: null, nowIndex: -1 };
-    const nowJin = Math.floor(((when.getHours() + 1) % 24) / 2);
+    const solarNow = ((when.getHours() + when.getMinutes() / 60 + off0 / 60) % 24 + 24) % 24;
+    const nowJin = Math.floor(((solarNow + 1) % 24) / 2);
     // 최고·최저가 동점이면(하루 평균 2.3개) 지금부터 가장 가까운 다가오는 시진을 고른다.
     // 첫 번째 것을 그냥 남기면 자·축·인시(한밤~새벽)로 쏠려서, 오후에 열어본 사람에게
     // "가장 센 때는 지나간 새벽"이라고 알려주게 된다. 같은 값이면 쓸 수 있는 쪽이 답이다.
