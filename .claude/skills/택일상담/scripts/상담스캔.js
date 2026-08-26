@@ -158,7 +158,10 @@ function evaluate(R, CFG, W) {
     if (대운.slice(0, 3).some(x => ['재성','관성'].includes(x.간))) s += 8 * W.대운;
   }
   if (W.인식) { s += Math.min(18, (인총 + 식총) * 4) * W.인식; s += 인식대운.length * 3 * W.인식; }
-  if (W.가족) { s -= 부딪힘.length * 12 * W.가족; s += Math.min(18, 좋음.length * 5) * W.가족; }
+  // 가족은 거르는 체다 — 충·복음은 세게 깎고, 합은 점수를 주지 않는다.
+  // 합에 점수를 주면 합이 순위를 사서, 사주 자체가 처지는 자리가 위로 올라온다.
+  // 합은 동점일 때만 가른다(아래 정렬에서 가족합 수로 타이브레이크).
+  if (W.가족) { s -= 부딪힘.length * 14 * W.가족; }
 
   return { _s: Math.max(0, Math.round(s)),
     강약: a.strength, 강약값: a.strengthScore, 통근: root, 유통: flow,
@@ -222,7 +225,9 @@ function run(CFG) {
 
   const raw = rows.map(r => r._s), lo = Math.min(...raw), hi = Math.max(...raw);
   rows.forEach(r => r.점수 = hi === lo ? 50 : Math.round((r._s - lo) / (hi - lo) * 100));
-  const by = rows.slice().sort((x, y) => y._s - x._s || x._m - y._m || x._d - y._d || x._hh - y._hh);
+  // 동점이면 가족과 합이 많은 쪽을 앞에 — 합의 유일한 쓰임새다 (점수는 못 산다)
+  const 합수 = r => (r.가족어울림 === '—' ? 0 : r.가족어울림.split(' / ').length);
+  const by = rows.slice().sort((x, y) => y._s - x._s || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
   by.forEach((r, i) => r.순위 = i + 1);
 
   const f = r => ({
