@@ -599,9 +599,71 @@
       ${season}`;
   }
 
+  // 사주 법정 — 죄목은 전부 계산에서 나온다. 문장은 brief.js의 ROAST 자산.
+  function renderCourt() {
+    const a = R.analysis, p2 = R.pillars;
+    const list = ['year','month','day','hour'].filter(k => p2[k]);
+    const br = list.map(k => p2[k].branch);
+    const GRP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
+    // 천간 + 지지 정기의 십신을 센다 (일간 자신 제외)
+    const gods = [];
+    list.forEach(k => {
+      if (k !== 'day') gods.push(E.TEN_GODS[E.tenGod(a.dayStem, p2[k].stem)]);
+      gods.push(E.TEN_GODS[E.tenGod(a.dayStem, E.HIDDEN[p2[k].branch][0])]);
+    });
+    const cnt = (g) => gods.filter(x => GRP[x] === g).length;
+    const has = (n) => gods.includes(n);
+    let chung = 0;
+    for (let i = 0; i < br.length; i++) for (let j = i + 1; j < br.length; j++)
+      if (((br[j] - br[i] + 12) % 12) === 6) chung++;
+    const inSet = (set) => br.filter(b => set.includes(b)).length;
+    const ec = a.elemCount;
+    const de = E.STEM_ELEM[a.dayStem];
+    const root = br.filter(b => E.HIDDEN[b].some(h => E.STEM_ELEM[h] === de)).length;
+    let flow = 0;
+    for (let st2 = 0; st2 < 5; st2++) { let n = 0; for (let i = 0; i < 5; i++) { if (ec[(st2 + i) % 5] > 0) n++; else break; } flow = Math.max(flow, n); }
+
+    const hit = {
+      재다신약: a.strength === '신약' && cnt('재성') >= 3,
+      관살혼잡: has('정관') && has('편관'),
+      상관견관: has('상관') && has('정관'),
+      비겁과다: cnt('비겁') >= 3,
+      인성과다: cnt('인성') >= 3,
+      식상과다: cnt('식상') >= 3,
+      도화: inSet([0,3,6,9]) >= 2,
+      역마: inSet([2,5,8,11]) >= 2,
+      화개: inSet([1,4,7,10]) >= 3,
+      다충: chung >= 2,
+      신강비겁: a.strength === '신강' && cnt('비겁') >= 2,
+      신약무인성: a.strength === '신약' && cnt('인성') === 0,
+      무화: ec[1] === 0, 무수: ec[4] === 0, 무토: ec[2] === 0, 무금: ec[3] === 0, 무목: ec[0] === 0,
+    };
+    const charges = ChaeksaBrief.ROAST.filter(r => hit[r.key]).slice(0, 4);
+    const mercy = flow >= 5 ? '유통' : a.missing.length === 0 ? '구족' : root >= 3 ? '통근' : a.strength === '중화' ? '중화' : '기본';
+    const mercyText = ChaeksaBrief.MERCY.find(m => m.key === mercy).text;
+    const $v = $('verdict');
+    if (!charges.length) {
+      $v.innerHTML = `<div class="vh"><div class="no">판결</div><div class="tt">무혐의</div></div>
+        <div class="vb"><div class="mercy">이 법정이 뒤져봤지만 잡아낼 죄목이 없습니다.
+        이렇게 무난하게 균형 잡힌 사주가 오히려 드뭅니다. 석방.</div></div>`;
+      return;
+    }
+    $v.innerHTML = `
+      <div class="vh"><div class="no">사주법원 제${(a.dayStem + 1)}형사부 · 사건번호 ${R.solarYear}고단${p2.day.stem}${p2.day.branch}</div>
+        <div class="tt">${nimSafe()}의 원국에 대한 판결</div></div>
+      <div class="vb">
+        ${charges.map((c, i) => `<div class="chg"><div class="ct"><em>죄목 ${i + 1}</em>${c.title}</div><div class="cx">${c.text}</div></div>`).join('')}
+        <div class="mercy"><b>양형 이유</b> — ${mercyText}</div>
+        <div class="foot">선고: 종신형 (사주는 평생 유지됩니다) · 항소 불가 — 재발급이 안 됩니다<br>
+        ※ 재미로 보는 과장 해석입니다. 진지한 풀이는 아래에 있습니다.</div>
+      </div>`;
+  }
+
   function renderMe() {
     const a = R.analysis, du = E.currentDaeun(R, today);
     renderMzDeck();
+    $('btnVerdict').onclick = () => { renderCourt(); $('verdict').classList.remove('hide'); $('btnVerdict').textContent = '다시 봐도 유죄'; };
+    $('verdict').classList.add('hide'); $('btnVerdict').textContent = '판결 받기';
     const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
     $('pillars').innerHTML = order.map(([k, label]) => {
       const pl = R.pillars[k];
