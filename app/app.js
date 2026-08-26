@@ -312,10 +312,44 @@
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = `${nim()}의 명리비서`;
     renderPeopleBtn();
-    renderToday(); renderMe(); renderCal(); renderPartners(); renderChat();
+    renderToday(); renderMe(); renderCal(); renderPartners(); renderChat(); renderHome();
     if (window.ChaeksaConsult) { ChaeksaConsult.renderHome(); refreshConsultBadge(); }
-    go('today');
+    go('home');
   }
+
+  // ───── 홈 — 타일과 가운데 만세력 ─────
+  function renderHome() {
+    const a = R.analysis;
+    // 만세력 4기둥 (원국 탭과 같은 그리기, 지장간·십신은 줄여서)
+    const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
+    $('hmPillars').innerHTML = order.map(([k, label]) => {
+      const pl = R.pillars[k];
+      if (!pl) return `<div class="pillar"><div class="t">${label}</div><div class="han" style="color:var(--ink3)">?</div><div class="ko">시간 모름</div></div>`;
+      return `<div class="pillar ${k === 'day' ? 'day' : ''}"><div class="t">${label}</div>
+        <div class="han ${elemClass(pl.stem, true)}">${f.stem(pl.stem)}</div><div class="ko">${f.stemKo(pl.stem)}</div>
+        <div class="han ${elemClass(pl.branch, false)}" style="margin-top:4px">${f.branch(pl.branch)}</div><div class="ko">${f.branchKo(pl.branch)}</div></div>`;
+    }).join('');
+    const ec = a.elemCount, EL5 = ['목','화','토','금','수'];
+    $('hmMeta').innerHTML = `<b>${nim()}</b> · ${f.stem(a.dayStem)} 일간 · <b>${a.strength}</b> ${a.strengthScore}
+      · ${ec.map((n,i)=>`${EL5[i]}${n}`).join(' ')}${a.missing.length ? ` · 빈 오행 <b>${a.missing.join('·')}</b>` : ''}`;
+    // 사람 전환 칩 — 만세력이 프로필을 갈아끼우는 자리다
+    const P = People();
+    const list = P ? P.list() : [];
+    const act = P && P.active();
+    $('hmPeople').innerHTML = list.map(x =>
+      `<button data-pid="${x.id}" class="${act && x.id === act.id ? 'on' : ''}">${esc(x.name)}</button>`).join('')
+      + `<button data-pid="__add">＋</button>`;
+    $('hmPeople').querySelectorAll('button').forEach(b => b.onclick = () => {
+      if (b.dataset.pid === '__add') { openPeople(); return; }
+      P.setActive(b.dataset.pid);
+      start(P.toProfile(P.active()));
+    });
+    // 타일 미리보기
+    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    $('tiTodayGz').textContent = f.pillar(tf.day);
+    $('tiMeStr').textContent = a.strength;
+  }
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => go(b.dataset.open));
 
   // ───── 오늘 ─────
   function renderToday() {

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=75">
+<link rel="stylesheet" href="style.css?v=76">
 </head>
 <body>
 <div class="wrap">
@@ -114,8 +114,59 @@
   </section>
 
   <div id="app" class="hide">
+    <!-- 홈 — 타일 · 만세력(사람 전환) · 타일 -->
+    <div class="tab" data-tab="home">
+      <div class="tiles">
+        <button class="tile" data-open="today">
+          <span class="ti-k">오늘의 흐름</span>
+          <span class="ti-big" id="tiTodayGz">―</span>
+          <span class="ti-sub" id="tiTodayGod">일운·시운까지</span>
+        </button>
+        <button class="tile" data-open="cal">
+          <span class="ti-k">택일 달력</span>
+          <span class="ti-big">📅</span>
+          <span class="ti-sub" id="tiCalSub">좋은 날 찾기</span>
+        </button>
+      </div>
+
+      <section class="card home-manse">
+        <div class="hm-head">
+          <h2>만세력</h2>
+          <div class="hm-people" id="hmPeople"></div>
+        </div>
+        <div class="pillars" id="hmPillars"></div>
+        <div class="hm-meta" id="hmMeta"></div>
+        <button class="btn ghost small" data-open="me" style="margin-top:12px">원국 풀이 전체 보기</button>
+      </section>
+
+      <div class="tiles">
+        <button class="tile" data-open="me">
+          <span class="ti-k">원국 풀이</span>
+          <span class="ti-big" id="tiMeStr">―</span>
+          <span class="ti-sub">대운 · 6층 체용</span>
+        </button>
+        <button class="tile" data-open="compat">
+          <span class="ti-k">궁합</span>
+          <span class="ti-big">🤝</span>
+          <span class="ti-sub" id="tiCompatSub">두 사람 사이</span>
+        </button>
+      </div>
+      <div class="tiles">
+        <button class="tile" data-open="consult">
+          <span class="ti-k">심층 상담</span>
+          <span class="ti-big">💬</span>
+          <span class="ti-sub" id="tiConsultSub">질문 하나를 끝까지</span>
+        </button>
+        <button class="tile" data-open="chat">
+          <span class="ti-k">비서</span>
+          <span class="ti-big">🖋️</span>
+          <span class="ti-sub">무엇이든 물어보기</span>
+        </button>
+      </div>
+    </div>
+
     <!-- 오늘 -->
-    <div class="tab" data-tab="today">
+    <div class="tab hide" data-tab="today">
       <section class="hero-day">
         <div class="hd-top">
           <div class="hd-date" id="todayLabel">오늘</div>
@@ -254,6 +305,7 @@
 </div>
 
 <nav id="nav" class="hide">
+  <button data-go="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg><span>홈</span></button>
   <button data-go="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg><span>오늘</span></button>
   <button data-go="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>달력</span></button>
   <button data-go="me"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="4" height="16" rx="1"/><rect x="9.7" y="4" width="4" height="16" rx="1"/><rect x="15.9" y="4" width="4" height="16" rx="1"/></svg><span>원국</span></button>
@@ -374,25 +426,25 @@
   </div>
 </div>
 
-<script src="config.js?v=75"></script>
-<script src="track.js?v=75"></script>
-<script src="cloud.js?v=75"></script>
-<script src="usage.js?v=75"></script>
-<script src="places.js?v=75"></script>
-<script src="people.js?v=75"></script>
-<script src="astro.js?v=75"></script>
-<script src="lunar.js?v=75"></script>
-<script src="engine.js?v=75"></script>
-<script src="chaeyong.js?v=75"></script>
-<script src="brief.js?v=75"></script>
-<script src="calendar.js?v=75"></script>
-<script src="compat.js?v=75"></script>
-<script src="tongbyeon.js?v=75"></script>
-<script src="rules-wealth-love.js?v=75"></script>
-<script src="rules-health-study-move.js?v=75"></script>
-<script src="consult.js?v=75"></script>
-<script src="share.js?v=75"></script>
-<script src="ai.js?v=75"></script>
-<script src="app.js?v=75"></script>
+<script src="config.js?v=76"></script>
+<script src="track.js?v=76"></script>
+<script src="cloud.js?v=76"></script>
+<script src="usage.js?v=76"></script>
+<script src="places.js?v=76"></script>
+<script src="people.js?v=76"></script>
+<script src="astro.js?v=76"></script>
+<script src="lunar.js?v=76"></script>
+<script src="engine.js?v=76"></script>
+<script src="chaeyong.js?v=76"></script>
+<script src="brief.js?v=76"></script>
+<script src="calendar.js?v=76"></script>
+<script src="compat.js?v=76"></script>
+<script src="tongbyeon.js?v=76"></script>
+<script src="rules-wealth-love.js?v=76"></script>
+<script src="rules-health-study-move.js?v=76"></script>
+<script src="consult.js?v=76"></script>
+<script src="share.js?v=76"></script>
+<script src="ai.js?v=76"></script>
+<script src="app.js?v=76"></script>
 </body>
 </html>
