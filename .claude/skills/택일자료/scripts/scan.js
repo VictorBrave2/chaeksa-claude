@@ -131,7 +131,8 @@ function run(CONFIG) {
   const by = rows.slice().sort((a, b) => b.점수 - a.점수 || a.일 - b.일 || a._hh - b._hh);
 
   // 시각 창 — 시계로 몇 시에 잡아야 그 시진이 되나
-  const shift = Math.round((135 - lon) * 4);
+  // 경도+균시차. 한 달 안에서도 날짜마다 달라서 월 중간 기준으로 안내하고 그 사실을 밝힌다.
+  const shift = Math.round(-E.solarOffsetMin(year, month, 15, lon));
   const 시각창 = [];
   for (let i = 0; i < 12; i++) {
     const from = (i * 2 + 23) % 24, to = (i * 2 + 1) % 24;
@@ -176,7 +177,7 @@ function run(CONFIG) {
     최하위: by.slice(-4).reverse().map(f),
     통근0: by.filter(r => r.통근 === 0).slice(0, 4).map(f),
     시각창: 시각창,
-    보정폭: `${place} 기준 ${shift}분`,
+    보정폭: `${place} 기준 ${shift}분 (경도+균시차 · ${month}/15 기준, 날짜마다 1~2분 다름)`,
     _rows: rows,
   };
 }

@@ -192,7 +192,9 @@ function evaluate(R, CFG, W) {
 
 function run(CFG) {
   const lon = CFG.경도 || 126.98;
-  const shift = Math.round((135 - lon) * 4);
+  // 시계→태양 보정은 경도만이 아니라 균시차까지다. 날짜마다 달라서 함수로 쓴다.
+  // (엔진 v75부터 E.solarOffsetMin. 서울 기준 2월 -46분 ~ 11월 초 -16분)
+  const shiftOf = (y2, m2, d2) => Math.round(-E.solarOffsetMin(y2, m2, d2, lon));
   const W = Object.assign({}, PRESET.무난, PRESET[CFG.우선순위] || {});
   const [y1, m1, d1] = CFG.시작, [y2, m2, d2] = CFG.끝;
   const from = new Date(y1, m1 - 1, d1), to = new Date(y2, m2 - 1, d2);
@@ -211,9 +213,10 @@ function run(CFG) {
       } catch (e) { continue; }
       const v = evaluate(R, CFG, W);
       const a = (hh + 23) % 24, b = (hh + 1) % 24;
-      const cm = hh * 60 + 30 + shift;
+      const sh = shiftOf(Y, M, D);
+      const cm = hh * 60 + 30 + sh;
       // 병원이 실제로 잡아주는가. 좋은 자리를 알려줘도 못 잡으면 소용없다.
-      const cs = a * 60 + shift, ce = b * 60 + shift;
+      const cs = a * 60 + sh, ce = b * 60 + sh;
       const ov = (a1,b1,a2,b2) => Math.max(0, Math.min(b1,b2) - Math.max(a1,a2));
       const 정규 = ov(cs, ce, 9*60, 17*60), 연장 = ov(cs, ce, 7*60, 19*60);
       const dw = dt.getDay(), 주말 = dw === 0 || dw === 6;
@@ -228,7 +231,7 @@ function run(CFG) {
       rows.push({
         날짜: `${M}/${D}(${DOW[dt.getDay()]})`, _m: M, _d: D, _hh: hh,
         시진: JIN[Math.floor(((hh + 1) % 24) / 2)],
-        시계창: `${w(a * 60 + shift)}~${w(b * 60 + shift)}`,
+        시계창: `${w(cs)}~${w(ce)}`,
         등급, 안내, 요청시각: 요청, 창길이: 정규 > 0 ? 정규 : 연장,
         주간: cm >= (CFG.주간시작 || 8.5) * 60 && cm <= (CFG.주간끝 || 17) * 60,
         원국: ['year','month','day','hour'].map(k => E.fmt.pillar(R.pillars[k])).join(' '),
@@ -259,11 +262,14 @@ function run(CFG) {
     가족: r.가족어울림, 충돌: r.가족부딪힘, 삼합: r.삼합완성,
     원국충: r.충,
   });
+  // 안내용 시각창은 기간 한가운데 날짜 기준. 실제 행마다의 시계창은 그 날짜 보정을 쓴다.
+  const midDt = new Date((from.getTime() + to.getTime()) / 2);
+  const midShift = shiftOf(midDt.getFullYear(), midDt.getMonth() + 1, midDt.getDate());
 
   const 시각창 = [];
   for (let i = 0; i < 12; i++) {
     const a = (i * 2 + 23) % 24, b = (i * 2 + 1) % 24;
-    시각창.push(`${JIN[i]}시 (태양시 ${String(a).padStart(2,'0')}~${String(b).padStart(2,'0')}) → 시계 ${w(a*60+shift)}~${w(b*60+shift)}`);
+    시각창.push(`${JIN[i]}시 (태양시 ${String(a).padStart(2,'0')}~${String(b).padStart(2,'0')}) → 시계 ${w(a*60+midShift)}~${w(b*60+midShift)}`);
   }
   const 공통충 = rows[0].충.split(', ').filter(c => c !== '없음' && rows.every(r => r.충.includes(c)));
 
@@ -272,7 +278,7 @@ function run(CFG) {
     가족: (CFG.가족 || []).map(F => `${F.이름} ${F.일주}`).join(' · ') || '(안 받음)',
     후보수: rows.length,
     피할수없는충: 공통충.length ? 공통충 : '없음',
-    보정폭: `${shift}분`,
+    보정폭: `기간 중간 기준 ${midShift}분 (경도+균시차, 날짜마다 1~2분 다름)`,
     // 한 축으로 점점 좁힌다: 원국 → 대운을 얹고 → 병원 시간(평일 09~17)만 남긴다.
     // 세 번째를 다른 기준으로 다시 섞으면 안 된다. ②의 순위에서 거른 것이 ③이다.
     원국_TOP5: by.slice(0, 5).map(f),
