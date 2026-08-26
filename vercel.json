@@ -1,4 +1,7 @@
 {
   "outputDirectory": "app",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "crons": [
+    { "path": "/api/push", "schedule": "30 22 * * *" }
+  ]
 }

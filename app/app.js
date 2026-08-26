@@ -878,6 +878,70 @@
     renderCloud();
   }
 
+  // ───── 아침 푸시 알림 ─────
+  // 구독은 이 기기와 푸시 서비스 사이의 일이라 로그인이 필요 없다.
+  // 서버(push_subs)에는 endpoint만 가고, 문구는 sw.js가 만든다.
+  async function pushReg() { return navigator.serviceWorker.ready; }
+  function pushKey() {
+    const s = (window.CHAEKSA_VAPID || '').replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  }
+  async function pushRpc(fn, args) {
+    const CFG = window.CHAEKSA_SUPABASE;
+    await fetch(CFG.url + '/rest/v1/rpc/' + fn, {
+      method: 'POST',
+      headers: { apikey: CFG.anonKey, 'content-type': 'application/json' },
+      body: JSON.stringify(args),
+    });
+  }
+  async function wirePush() {
+    const btn = $('btnPush'), hint = $('pushHint'), row = $('pushRow');
+    if (!btn) return;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      // 아이폰은 홈 화면에 추가한 뒤에만 알림이 된다 — 안내만 남긴다
+      const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      if (ios && !window.matchMedia('(display-mode: standalone)').matches) {
+        btn.style.display = 'none';
+        if (hint) hint.textContent = '아이폰은 공유 버튼 → "홈 화면에 추가" 후에 아침 알림을 켤 수 있습니다.';
+      } else if (row) row.style.display = 'none';
+      return;
+    }
+    const paint = async () => {
+      const sub = await (await pushReg()).pushManager.getSubscription();
+      btn.textContent = sub ? '아침 알림 끄기' : '아침 알림 받기';
+      return sub;
+    };
+    btn.onclick = async () => {
+      btn.disabled = true;
+      try {
+        const reg = await pushReg();
+        const cur = await reg.pushManager.getSubscription();
+        if (cur) {
+          await pushRpc('push_unsubscribe', { p_endpoint: cur.endpoint });
+          await cur.unsubscribe();
+          if (hint) hint.textContent = '알림을 껐습니다. 언제든 다시 켤 수 있습니다.';
+        } else {
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            if (hint) hint.textContent = '브라우저에서 알림이 차단되어 있습니다. 주소창의 자물쇠에서 허용으로 바꿔주세요.';
+            return;
+          }
+          const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: pushKey() });
+          const j = sub.toJSON();
+          await pushRpc('push_subscribe', { p_endpoint: sub.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
+          if (hint) hint.textContent = '내일 아침 7시 30분부터 알려드립니다.';
+        }
+      } catch (e) {
+        if (hint) hint.textContent = '알림 설정에 실패했습니다: ' + e.message;
+      } finally {
+        btn.disabled = false;
+        paint().catch(() => {});
+      }
+    };
+    paint().catch(() => {});
+  }
+  wirePush();
+
   // ───── PWA ─────
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
 
