@@ -526,58 +526,6 @@
              lines: [l1, l2, l3, l4].filter(Boolean), raw: w };
   }
 
-  function drawNokpae(name, w) {
-    const F = 'Noto Serif KR,serif';
-    const escN = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const top = w.top == null ? '' : ' · 상위 ' + w.top + '%';
-    let ny = 352, body = '';
-    w.lines.forEach((l) => {
-      const ls = foldTxt(l, 276, 12, 2).slice(0, 2);
-      ls.forEach((L, j) => {
-        body += '<text x="42" y="' + (ny + j * 17) + '" font-size="12" fill="#f0e2c6">'
-          + escN((L[1] ? '· ' : '  ') + L[0]) + '</text>';
-      });
-      ny += (ls.length - 1) * 17 + 24;
-    });
-    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
-      + '<defs><linearGradient id="nkw" x1="0" y1="0" x2="1" y2="1">'
-      + '<stop offset="0" stop-color="#7a5a38"/><stop offset=".5" stop-color="#6b4d2f"/><stop offset="1" stop-color="#5d4228"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="26" fill="url(#nkw)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#c9a86a" stroke-width="1.6" opacity=".85"/>'
-      + '<path d="M30 120 Q180 108 330 122 M30 246 Q180 236 330 248 M30 466 Q180 456 330 468" stroke="#54391f" stroke-width="1" fill="none" opacity=".5"/>'
-      + '<circle cx="180" cy="44" r="9" fill="#3d2a16"/><circle cx="180" cy="44" r="9" fill="none" stroke="#c9a86a" stroke-width="1.4"/>'
-      + '<path d="M172 38 Q180 18 188 38" stroke="#b23a2a" stroke-width="4" fill="none" stroke-linecap="round"/>'
-      + '<text x="180" y="99" text-anchor="middle" font-size="36" font-weight="900" fill="#f3e3c0" letter-spacing="14">祿牌</text>'
-      + '<text x="180" y="123" text-anchor="middle" font-size="12" fill="#d9c194" letter-spacing="4">호조 재물 그릇 감정서</text>'
-      + '<text x="180" y="153" text-anchor="middle" font-size="13.5" font-weight="700" fill="#f0e2c6">' + escN(name) + '</text>'
-      + '<line x1="42" y1="171" x2="318" y2="171" stroke="#c9a86a" stroke-width="1.2" opacity=".7"/>'
-      + '<text x="180" y="262" text-anchor="middle" font-size="72" font-weight="900" fill="#e9c877">' + w.grade.han + '</text>'
-      + '<text x="180" y="296" text-anchor="middle" font-size="17" font-weight="800" fill="#f3e3c0">' + escN(w.grade.name + top) + '</text>'
-      + '<text x="180" y="318" text-anchor="middle" font-size="11.5" fill="#d9c194">' + escN(w.grade.note) + '</text>'
-      + '<line x1="42" y1="334" x2="318" y2="334" stroke="#c9a86a" stroke-width="1.2" stroke-dasharray="5 4" opacity=".7"/>'
-      + body
-      + '<g transform="translate(272,464)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".92"/>'
-      + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="19" font-weight="900" fill="#fdf3e7">戶曹</text></g>'
-      + '<text x="42" y="500" font-size="10.5" fill="#c9b08a">재물 점수 ' + w.score + (w.n ? ' · 표본 ' + w.n.toLocaleString() + '명 중앙값 40' : '') + '</text>'
-      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b39a72" letter-spacing="2">chaeksa.kr \u00b7 재성 세력·유통·구멍으로 계산한 그릇</text>'
-      + '</svg>';
-  }
-
-  // ── 카드 공용: 폭에 맞춰 접기 ──
-  // maxPx = 쓸 수 있는 가로 폭, size = 폰트 크기. 한글 한 글자 ≈ 폰트 크기.
-  // 반환은 [줄, 첫조각인가] 쌍 — 이어지는 줄에 글머리표를 붙이지 않기 위해서다.
-  function foldTxt(t, maxPx, size, lead) {
-    const max = Math.max(6, Math.floor(maxPx / size) - (lead || 0));
-    const src = String(t);
-    if (src.length <= max) return [[src, true]];
-    const out = []; let cur = '', first = true;
-    src.split(' ').forEach(w => {
-      if ((cur + ' ' + w).trim().length > max) { if (cur) { out.push([cur, first]); first = false; } cur = w; }
-      else cur = (cur + ' ' + w).trim();
-    });
-    if (cur) out.push([cur, first]);
-    return out;
-  }
 
   // ── 연애·인연 — 도화첩(桃花帖) ──
   // 축 둘로 유형을 가른다: 배우자성(남=재성·여=관성)의 정/편 구성 × 배우자궁(일지)의 상태.
@@ -693,47 +641,6 @@
              n: sample && sample.n ? sample.n : 0, lines: [l1, l2, l3, l4] };
   }
 
-  function drawDohwa(name, v) {
-    const F = 'Noto Serif KR,serif';
-    const escD = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    let dy = 366, body = '';
-    v.lines.forEach((l) => {
-      const ls = foldTxt(l, 276, 12, 2).slice(0, 2);
-      ls.forEach((L, j) => {
-        body += '<text x="42" y="' + (dy + j * 17) + '" font-size="12" fill="#5c3242">'
-          + escD((L[1] ? '· ' : '  ') + L[0]) + '</text>';
-      });
-      dy += (ls.length - 1) * 17 + 24;
-    });
-    const bd = v.badges.map((b, i) => '<g transform="translate(' + (42 + i * 62) + ',196)">'
-      + '<rect width="54" height="24" rx="12" fill="#c9647f" opacity=".9"/>'
-      + '<text x="27" y="16.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff6f8">' + b + '</text></g>').join('');
-    // 꽃잎 장식
-    const petal = (x, y, r, o) => '<g transform="translate(' + x + ',' + y + ') rotate(' + r + ')" opacity="' + o + '">'
-      + '<path d="M0 0 Q7 -9 0 -18 Q-7 -9 0 0" fill="#e4a0b4"/></g>';
-    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
-      + '<defs><linearGradient id="dhw" x1="0" y1="0" x2="1" y2="1">'
-      + '<stop offset="0" stop-color="#fbeef1"/><stop offset=".55" stop-color="#f6e2e8"/><stop offset="1" stop-color="#efd4dd"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="26" fill="url(#dhw)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#c9647f" stroke-width="1.4" opacity=".55"/>'
-      + petal(56, 84, 20, .5) + petal(312, 132, -35, .4) + petal(40, 470, 15, .35) + petal(322, 500, -20, .45)
-      + '<text x="180" y="80" text-anchor="middle" font-size="34" font-weight="900" fill="#8e3b56" letter-spacing="12">桃花帖</text>'
-      + '<text x="180" y="104" text-anchor="middle" font-size="12" fill="#a6607a" letter-spacing="4">연애·인연 감정첩</text>'
-      + '<text x="180" y="134" text-anchor="middle" font-size="13.5" font-weight="700" fill="#6b2f45">' + escD(name) + '</text>'
-      + '<line x1="42" y1="152" x2="318" y2="152" stroke="#c9647f" stroke-width="1" opacity=".5"/>'
-      + '<text x="180" y="180" text-anchor="middle" font-size="15" font-weight="800" fill="#a6607a" letter-spacing="6">' + v.key + '</text>'
-      + bd
-      + '<text x="180" y="266" text-anchor="middle" font-size="27" font-weight="900" fill="#8e3b56">' + escD(v.name) + '</text>'
-      + '<text x="180" y="296" text-anchor="middle" font-size="11.5" fill="#8a5468">' + escD(v.note) + '</text>'
-      + (v.share != null ? '<text x="180" y="326" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6b2f45">같은 유형 ' + v.share + '%</text>' : '')
-      + '<line x1="42" y1="346" x2="318" y2="346" stroke="#c9647f" stroke-width="1" stroke-dasharray="5 4" opacity=".5"/>'
-      + body
-      + '<g transform="translate(272,464)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".9"/>'
-      + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="21" font-weight="900" fill="#fdf3e7">緣</text></g>'
-      + '<text x="42" y="500" font-size="10.5" fill="#a6607a">배우자궁·신살 감정' + (v.n ? ' · 표본 ' + (v.n / 10000) + '만 명' : '') + '</text>'
-      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#b3798c" letter-spacing="2">chaeksa.kr \u00b7 두 사람 사이는 공범 판결에서</text>'
-      + '</svg>';
-  }
 
   // ── 천직 — 천직첩(天職帖) ──
   // 축 둘: 십신 세력의 최강 그룹 x 오행 분포의 최강. 전생 직업소(격국 x 일간오행)와
@@ -792,34 +699,152 @@
              share, n: sample && sample.n ? sample.n : 0, lines: [l1, l2, l3, l4] };
   }
 
-  function drawJikcheop(name, v) {
+
+  // ── 감정첩 3종 공통 판 ──
+  // 녹패·도화첩·천직첩이 각자 좌표를 쓰다가 줄이 하단 문구 아래로 밀려나거나
+  // 왼쪽 선이 어긋났다. 세로 위치를 한 곳에서 정하고 셋이 같은 판을 쓴다.
+  // 세로 위치는 위에서부터 흘려 잡는다. 고정 좌표를 쓰던 때는 배지가 없는 카드에
+  // 70px가 텅 비고, 배지가 있는 카드는 유형 표기와 2px 겹쳤다.
+  const FR = {
+    title: 78, sub: 100, name: 124, rule: 140,   // 머리
+    key: 172,                                    // 유형표기(선택)
+    bodyBottom: 452,               // 본문 띠 — 도장(462~)에 닿지 않는다
+    lineH: 17, itemGap: 7, bodyX: 40, bodyW: 278, bodySize: 11.5,
+    sealX: 274, sealY: 462, sealW: 46,
+    foot: 534,
+  };
+  const escF = (x) => String(x).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // 폭에 맞춰 접기. maxPx = 쓸 수 있는 가로 폭, size = 폰트 크기(한글 한 글자 ≈ 크기).
+  // 반환은 [줄, 첫조각인가] 쌍 — 이어지는 줄에 글머리표를 붙이지 않기 위해서다.
+  function foldTxt(t, maxPx, size, lead) {
+    const max = Math.max(6, Math.floor(maxPx / size) - (lead || 0));
+    const src = String(t);
+    if (src.length <= max) return [[src, true]];
+    const out = []; let cur = '', first = true;
+    src.split(' ').forEach(w => {
+      if ((cur + ' ' + w).trim().length > max) { if (cur) { out.push([cur, first]); first = false; } cur = w; }
+      else cur = (cur + ' ' + w).trim();
+    });
+    if (cur) out.push([cur, first]);
+    return out;
+  }
+
+  // 본문 맞추기 — 글자 크기·줄간격·항목간격을 한 벌로 묶어 위에서부터 시도한다.
+  // 예전엔 넘치면 줄을 버렸는데, 그 바람에 '사람이 돕'처럼 말이 잘려 사라졌다.
+  // 내용을 버리는 대신 촘촘한 조판으로 내려간다.
+  const FITS = [[11.5, 17, 7], [11, 15.5, 6], [10.5, 14, 5], [10, 13, 4]];
+  function fitBody(lines, col, top) {
+    const avail = FR.bodyBottom - top;
+    let pick = FITS[FITS.length - 1], rows = null;
+    for (const f of FITS) {
+      const r = [];
+      lines.forEach(l => foldTxt(l, FR.bodyW, f[0], 2).forEach(L => r.push(L)));
+      const h = (r.length - 1) * f[1] + (lines.length - 1) * f[2];
+      if (h <= avail) { pick = f; rows = r; break; }
+    }
+    if (!rows) {
+      rows = [];
+      lines.forEach(l => foldTxt(l, FR.bodyW, pick[0], 2).forEach(L => rows.push(L)));
+    }
+    let y = top, svg = '';
+    rows.forEach((L, i) => {
+      if (L[1] && i) y += pick[2];
+      svg += '<text x="' + FR.bodyX + '" y="' + y + '" font-size="' + pick[0] + '" fill="' + col + '">'
+        + escF((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+      y += pick[1];
+    });
+    return svg;
+  }
+
+  // c = { grad:[3색], ink, ink2, ink3, line, bigCol, sealCol, seal }
+  function drawFrame(c, d) {
     const F = 'Noto Serif KR,serif';
-    const escJ = (x) => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    // 넷째 줄(직업 셋)은 길어서 접는다
-    const lines = [];
-    v.lines.forEach(l => { foldTxt(l, 276, 11, 2).forEach(L => lines.push(L)); });
-    // 여백 계산: x=34에서 11px 한글 25자 ≈ 309px < 테두리 318. 8줄이면 y 330~477로 하단(500) 위.
-    const body = lines.slice(0, 8).map((L, i) => '<text x="34" y="' + (330 + i * 21) + '" font-size="11" fill="#d7e6e2">'
-      + escJ((L[1] ? '· ' : '  ') + L[0]) + '</text>').join('');
+    const t = (y, size, col, txt, weight, ls) => txt ? '<text x="180" y="' + y + '" text-anchor="middle" font-size="' + size
+      + '" fill="' + col + '"' + (weight ? ' font-weight="' + weight + '"' : '')
+      + (ls ? ' letter-spacing="' + ls + '"' : '') + '>' + escF(txt) + '</text>' : '';
+    // 결과 블록 흐름: 큰글씨 → 한 줄 설명 → (배지) → 희귀도 → 점선
+    const bigY = d.key ? 218 : 206;
+    const noteY = bigY + 28;
+    const hasBadge = !!(d.badges && d.badges.length);
+    const badgeTop = noteY + 14;                 // rect 상단
+    const rareY = hasBadge ? badgeTop + 44 : noteY + 26;
+    const dashY = rareY + 16;
+    const badges = (d.badges || []).map((b, i) => {
+      const w = 54, gap = 8, total = d.badges.length * w + (d.badges.length - 1) * gap;
+      return '<g transform="translate(' + Math.round(180 - total / 2 + i * (w + gap)) + ',' + badgeTop + ')">'
+        + '<rect width="' + w + '" height="24" rx="12" fill="' + (c.badgeBg || c.sealCol) + '" opacity=".9"/>'
+        + '<text x="27" y="16.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">' + escF(b) + '</text></g>';
+    }).join('');
     return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
-      + '<defs><linearGradient id="jkw" x1="0" y1="0" x2="1" y2="1">'
-      + '<stop offset="0" stop-color="#1f4b47"/><stop offset=".55" stop-color="#1a413e"/><stop offset="1" stop-color="#153634"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="26" fill="url(#jkw)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#7fb3a8" stroke-width="1.4" opacity=".6"/>'
-      + '<path d="M30 118 H330 M30 312 H330" stroke="#7fb3a8" stroke-width="1" opacity=".35"/>'
-      + '<text x="180" y="82" text-anchor="middle" font-size="34" font-weight="900" fill="#e8f3ef" letter-spacing="12">天職帖</text>'
-      + '<text x="180" y="106" text-anchor="middle" font-size="12" fill="#9fc9c0" letter-spacing="4">적성 감정첩</text>'
-      + '<text x="180" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#d7e6e2">' + escJ(name) + '</text>'
-      + '<text x="180" y="176" text-anchor="middle" font-size="14" font-weight="700" fill="#9fc9c0" letter-spacing="4">' + escJ(v.key) + '</text>'
-      + '<text x="180" y="236" text-anchor="middle" font-size="33" font-weight="900" fill="#eddc9a">' + escJ(v.name) + '</text>'
-      + '<text x="180" y="268" text-anchor="middle" font-size="12" fill="#b9d6cf">' + escJ(v.note) + '</text>'
-      + (v.share != null ? '<text x="180" y="298" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e8f3ef">같은 유형 ' + v.share + '%</text>' : '')
-      + body
-      + '<g transform="translate(272,462)"><rect width="50" height="50" rx="8" fill="#b23a2a" opacity=".92"/>'
-      + '<text x="25" y="33" text-anchor="middle" font-family="' + F + '" font-size="21" font-weight="900" fill="#fdf3e7">職</text></g>'
-      + '<text x="42" y="500" font-size="10.5" fill="#9fc9c0">십신 세력 x 오행 분포로 감정' + (v.n ? ' · 표본 ' + v.n.toLocaleString() + '명' : '') + '</text>'
-      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#7fa8a0" letter-spacing="2">chaeksa.kr \u00b7 전생 직업소와는 다른 축으로 봅니다</text>'
+      + '<defs><linearGradient id="' + c.id + '" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="' + c.grad[0] + '"/><stop offset=".55" stop-color="' + c.grad[1] + '"/>'
+      + '<stop offset="1" stop-color="' + c.grad[2] + '"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="26" fill="url(#' + c.id + ')"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="' + c.line + '" stroke-width="1.5" opacity=".7"/>'
+      + (c.deco || '')
+      + t(FR.title, 34, c.ink, d.title, 900, 12)
+      + t(FR.sub, 11.5, c.ink3, d.sub, null, 4)
+      + t(FR.name, 13, c.ink2, d.name, 700)
+      + '<line x1="42" y1="' + FR.rule + '" x2="318" y2="' + FR.rule + '" stroke="' + c.line + '" stroke-width="1" opacity=".55"/>'
+      + t(FR.key, 13.5, c.ink3, d.key, 700, 5)
+      + t(bigY, 33, c.bigCol, d.big, 900)
+      + t(noteY, 12, c.ink2, d.note)
+      + badges
+      + t(rareY, 12.5, c.ink, d.rare, 700)
+      + '<line x1="42" y1="' + dashY + '" x2="318" y2="' + dashY + '" stroke="' + c.line + '" stroke-width="1" stroke-dasharray="5 4" opacity=".55"/>'
+      + fitBody(d.lines, c.ink2, dashY + 22)
+      + '<g transform="translate(' + FR.sealX + ',' + FR.sealY + ')">'
+      + '<rect width="' + FR.sealW + '" height="' + FR.sealW + '" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="' + (FR.sealW / 2) + '" y="' + (FR.sealW / 2 + 8) + '" text-anchor="middle" font-family="' + F
+      + '" font-size="19" font-weight="900" fill="#fdf3e7">' + c.seal + '</text></g>'
+      + t(FR.foot, 10.5, c.ink3, d.foot, null, 1)
       + '</svg>';
+  }
+
+  function drawNokpae(name, w) {
+    return drawFrame({
+      id: 'nkw', grad: ['#7a5a38', '#6b4d2f', '#5d4228'], line: '#c9a86a',
+      ink: '#f3e3c0', ink2: '#e2d0ab', ink3: '#c9b08a', bigCol: '#e9c877', sealCol: '#b23a2a', seal: '戶曹',
+      deco: '<path d="M30 118 Q180 108 330 122 M30 300 Q180 292 330 302" stroke="#54391f" stroke-width="1" fill="none" opacity=".45"/>'
+        + '<circle cx="180" cy="44" r="9" fill="#3d2a16"/><circle cx="180" cy="44" r="9" fill="none" stroke="#c9a86a" stroke-width="1.4"/>'
+        + '<path d="M172 38 Q180 18 188 38" stroke="#b23a2a" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    }, {
+      title: '祿牌', sub: '호조 재물 그릇 감정서', name: name,
+      key: '재물 점수 ' + w.score, big: w.grade.han,
+      note: w.grade.note, rare: w.grade.name + (w.top == null ? '' : ' · 상위 ' + w.top + '%'),
+      lines: w.lines, foot: 'chaeksa.kr · 재성 세력·유통·구멍으로 계산',
+    });
+  }
+
+  function drawDohwa(name, v) {
+    const petal = (x, y, r, o) => '<g transform="translate(' + x + ',' + y + ') rotate(' + r + ')" opacity="' + o + '">'
+      + '<path d="M0 0 Q7 -9 0 -18 Q-7 -9 0 0" fill="#e4a0b4"/></g>';
+    return drawFrame({
+      id: 'dhw', grad: ['#fbeef1', '#f6e2e8', '#efd4dd'], line: '#c9647f',
+      ink: '#8e3b56', ink2: '#6b3348', ink3: '#a6607a', bigCol: '#8e3b56',
+      sealCol: '#c9647f', badgeBg: '#c9647f', seal: '緣',
+      deco: petal(56, 60, 20, .5) + petal(312, 108, -35, .4) + petal(40, 486, 15, .3) + petal(322, 512, -20, .4),
+    }, {
+      title: '桃花帖', sub: '연애·인연 감정첩', name: name,
+      key: v.key, badges: v.badges, big: v.name, note: v.note,
+      rare: v.share == null ? '' : '같은 유형 ' + v.share + '%',
+      lines: v.lines, foot: 'chaeksa.kr · 배우자궁·배우자성·신살로 감정',
+    });
+  }
+
+  function drawJikcheop(name, v) {
+    return drawFrame({
+      id: 'jkw', grad: ['#1f4b47', '#1a413e', '#153634'], line: '#7fb3a8',
+      ink: '#e8f3ef', ink2: '#d0e3de', ink3: '#9fc9c0', bigCol: '#eddc9a', sealCol: '#b23a2a', seal: '職',
+      deco: '<path d="M30 118 H330 M30 300 H330" stroke="#7fb3a8" stroke-width="1" fill="none" opacity=".3"/>',
+    }, {
+      title: '天職帖', sub: '적성 감정첩', name: name,
+      key: v.key, big: v.name, note: v.note,
+      rare: v.share == null ? '' : '같은 유형 ' + v.share + '%',
+      lines: v.lines, foot: 'chaeksa.kr · 십신 세력 × 오행 분포로 감정',
+    });
   }
 
   global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop };
