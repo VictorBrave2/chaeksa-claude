@@ -53,18 +53,21 @@
 
   const keyOf = (R, J) => `${J.name}|${J.ok}|${R.analysis.strength}|${R.pillars.day.stem}|${R.pillars.month.branch}`;
 
-  // ── 희귀도 표본 — 결정적 1,500명. 조각내서 돌려 화면이 안 멈추게 한다 ──
-  const CACHE_KEY = 'chaeksa.typeSample.v1';
+  // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
+  // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
+  // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
+  const CACHE_KEY = 'chaeksa.typeSample.v2';
+  const N_SAMPLE = 10000;
   function buildSample(onTick, done) {
     try {
       const hit = JSON.parse(localStorage.getItem(CACHE_KEY));
-      if (hit && hit.n >= 1500) return done(hit);
+      if (hit && hit.n >= N_SAMPLE && hit.th) return done(hit);
     } catch (e) {}
     const seen = {}; let i = 0, n = 0;
     (function chunk() {
-      const end = Math.min(i + 100, 1500);
+      const end = Math.min(i + 250, N_SAMPLE);
       for (; i < end; i++) {
-        const y = 1940 + (i * 7919) % 71, m = 1 + (i * 104729) % 12,
+        const y = 1930 + (i * 7919) % 81, m = 1 + (i * 104729) % 12,
               d = 1 + (i * 1299709) % 28, hh = (i * 15485863) % 24;
         try {
           const R = E.calc({ year: y, month: m, day: d, hour: hh, minute: 30, gender: i % 2 ? 'M' : 'F',
@@ -72,10 +75,21 @@
           seen[keyOf(R, gyeok(R))] = (seen[keyOf(R, gyeok(R))] || 0) + 1; n++;
         } catch (e) {}
       }
-      if (onTick) onTick(i / 1500);
-      if (i < 1500) setTimeout(chunk, 0);
+      if (onTick) onTick(i / N_SAMPLE);
+      if (i < N_SAMPLE) setTimeout(chunk, 0);
       else {
-        const out = { seen, n, types: Object.keys(seen).length };
+        // 등급선: SSR = 희귀한 순으로 사람 3%까지의 유형 크기, SR = 15%, R = 50%
+        const byC = {};
+        Object.values(seen).forEach(c => { byC[c] = (byC[c] || 0) + c; });
+        const cs = Object.keys(byC).map(Number).sort((a, b) => a - b);
+        const th = [0, 0, 0]; let cum = 0;
+        cs.forEach(c => {
+          cum += byC[c];
+          if (cum / n <= 0.03) th[0] = c;
+          if (cum / n <= 0.15) th[1] = c;
+          if (cum / n <= 0.50) th[2] = c;
+        });
+        const out = { seen, n, th, types: Object.keys(seen).length };
         try { localStorage.setItem(CACHE_KEY, JSON.stringify(out)); } catch (e) {}
         done(out);
       }
@@ -93,7 +107,8 @@
     겨울:{ col:'#3a6ea5', path:'M0 4 Q3 0 7 4 Q11 8 14 4 M0 10 Q3 6 7 10 Q11 14 14 10' }, // 물결
   };
   const seasonOf = (b) => [2,3,4].includes(b) ? '봄' : [5,6,7].includes(b) ? '여름' : [8,9,10].includes(b) ? '가을' : '겨울';
-  const TIER = (pct) => pct <= 0.2 ? ['SSR', '#b98a2f'] : pct <= 0.7 ? ['SR', '#7a4fa3'] : pct <= 2 ? ['R', '#3a6ea5'] : ['N', '#8a8578'];
+  const TIER_COL = { SSR: '#b98a2f', SR: '#7a4fa3', R: '#3a6ea5', N: '#8a8578' };
+  const tierOf = (count, th) => !th ? 'N' : count <= th[0] ? 'SSR' : count <= th[1] ? 'SR' : count <= th[2] ? 'R' : 'N';
 
   function draw(R, J, rar) {
     const a = R.analysis, p = R.pillars;
@@ -104,7 +119,7 @@
       : '<rect x="10" y="10" width="340" height="540" rx="14" fill="none" stroke="#4a4238" stroke-width="2" stroke-dasharray="9 5"/>';
     const se = SEASON[seasonOf(p.month.branch)];
     const corner = (x, y, r) => `<g transform="translate(${x},${y}) rotate(${r})" stroke="${se.col}" stroke-width="1.6" fill="none" opacity=".8"><path d="${se.path}"/></g>`;
-    const [tier, tcol] = rar ? TIER(rar.pct) : ['?', '#8a8578'];
+    const tier = rar ? rar.tier : '?', tcol = rar ? TIER_COL[rar.tier] : '#8a8578';
     const stemCh = E.fmt.stem(a.dayStem), stemKo = E.fmt.stemKo(a.dayStem);
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">
   <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
@@ -120,7 +135,7 @@
   <text x="180" y="360" text-anchor="middle" font-size="15" fill="#5c5546" letter-spacing="2">${stemKo} 일간 · ${E.fmt.branchKo(p.month.branch)}월생</text>
   <rect x="46" y="410" width="268" height="52" rx="10" fill="#ffffff" opacity=".55"/>
   <text x="180" y="432" text-anchor="middle" font-family="'Noto Serif KR',serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${J.ok ? '성격' : '파격'} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
-  <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명 · ${rar.pct}%` : ''}</text>
+  <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
   <text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a8171" letter-spacing="2">策 · chaeksa.kr · 세 고전 축으로 계산된 카드</text>
@@ -132,10 +147,11 @@
     const J = gyeok(R);
     let rar = null;
     if (sample) {
-      const c = sample.seen[keyOf(R, J)] || 0;
-      rar = { count: c || 1, n: sample.n, pct: Math.round(Math.max(c, 1) / sample.n * 1000) / 10, unique: c <= 1 };
+      const c = Math.max(sample.seen[keyOf(R, J)] || 0, 1);
+      rar = { count: c, n: sample.n, pct: Math.round(c / sample.n * 1000) / 10,
+              unique: c <= 1, tier: tierOf(c, sample.th) };
     }
-    return { key: keyOf(R, J), gyeok: J, rar, svg: draw(R, J, rar), tier: rar ? TIER(rar.pct)[0] : null };
+    return { key: keyOf(R, J), gyeok: J, rar, svg: draw(R, J, rar), tier: rar ? rar.tier : null };
   }
 
   /** SVG 문자열 → PNG blob. 카드 비율 2배(720×1120)로 굽는다. */
