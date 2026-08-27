@@ -280,5 +280,162 @@ ok('D','12월 전수 성격:파격 ≈ 66:66', Math.abs(성격-66)<=6 && Math.ab
 }
 return out.join('\n') + `\n\n실패 ${fail.length}건` + (fail.length? '\n  '+fail.join('\n  ') : '');
 })();
-  return r1 + '\n\n' + r2;
+
+// ── L: 오늘 정한 규칙이 실제로 그렇게 도는가 ──
+// 형식이 아니라 **내용**을 본다. 「표가 안 깨졌다」는 검사가 아니다.
+// 지장간이 172커밋을 버틴 것도, 검사가 제 사본만 재고 있던 것도 여기가 없어서였다.
+// 규칙을 하나 정할 때마다 여기에 한 줄을 더한다. 근거는 docs/15_동결표.md 다.
+const r3 = (() => {
+const E = window.ChaeksaEngine, T = window.ChaeksaTypecard, CY = window.ChaeksaChaeyong;
+const out = [], fail = [];
+const ok = (tag, name, cond, detail) => {
+  out.push((cond ? 'O' : 'X') + ' [' + tag + '] ' + name + (detail ? ' — ' + detail : ''));
+  if (!cond) fail.push(name + (detail ? ' — ' + detail : ''));
+};
+const S = (ch) => E.STEMS.indexOf(ch), B = (ch) => E.BRANCHES.indexOf(ch);
+const W = E.NATAL_WEIGHT;
+const 기둥 = (y, m, d, h) => ({
+  year:  { stem: S(y[0]), branch: B(y[1]) },
+  month: { stem: S(m[0]), branch: B(m[1]) },
+  day:   { stem: S(d[0]), branch: B(d[1]) },
+  hour:  { stem: S(h[0]), branch: B(h[1]) },
+});
+const 자리of = (p) => {
+  const a = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch], [p.day.branch, W.dayBranch]];
+  if (p.hour) a.push([p.hour.branch, W.hourBranch]);
+  return a;
+};
+const 서울 = { place: 'KR:서울', longitude: 126.98, tzOffset: null, solarCorrection: true };
+const 사례 = E.calc(Object.assign({ year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M' }, 서울));
+
+// L1 십이운성 장생지 열 자리 (역행판)
+{
+  const 표 = [['甲','亥'],['乙','午'],['丙','寅'],['丁','酉'],['戊','寅'],
+              ['己','酉'],['庚','巳'],['辛','子'],['壬','申'],['癸','卯']];
+  const 틀린 = 표.filter(v => E.unseong(S(v[0]), B(v[1])) !== '장생').map(v => v.join(''));
+  ok('L', 'L1 장생지 10개', 틀린.length === 0,
+     틀린.length ? '틀림 ' + 틀린.join(' ') : '甲亥 乙午 丙寅 丁酉 戊寅 己酉 庚巳 辛子 壬申 癸卯');
+}
+// L2 양간 순행 · 음간 역행
+{
+  const a = E.unseong(S('甲'), B('子')), b = E.unseong(S('乙'), B('子'));
+  ok('L', 'L2 양간 순행·음간 역행', a === '목욕' && b === '병', '甲子 ' + a + '(순행) · 乙子 ' + b + '(역행)');
+}
+// L3 묘는 두 칸 — 통근하면 묘고, 못 하면 0 (자평진전 득시불왕)
+{
+  const 고 = E.power(S('壬'), B('辰')), 맹 = E.power(S('丁'), B('丑'));
+  const 둘다묘 = E.unseong(S('壬'), B('辰')) === '묘' && E.unseong(S('丁'), B('丑')) === '묘';
+  ok('L', 'L3 묘 두 칸', 둘다묘 && 고 === E.UNSEONG_POWER.묘고 && 맹 === 0,
+     '壬辰 묘고 ' + 고 + ' (辰중 癸) · 丁丑 묘 ' + 맹 + ' (丑에 화 없음)');
+}
+// L4 천간의 자리는 힘에 관여하지 않는다
+{
+  const p1 = 기둥('壬申','甲辰','丁卯','庚子'), p2 = 기둥('庚申','甲辰','丁卯','壬子');
+  const a = E.stemPower(S('壬'), 자리of(p1)), b = E.stemPower(S('壬'), 자리of(p2));
+  ok('L', 'L4 천간 자리 가중 없음', a === b,
+     '연간 壬 ' + a.toFixed(2) + ' = 시간 壬 ' + b.toFixed(2) + ' (지지가 같으면 같다)');
+}
+// L5 지지 자리 무게
+{
+  ok('L', 'L5 지지 자리 무게', W.monthBranch === 2.0 && W.yearBranch === 1.0 && W.dayBranch === 1.0 && W.hourBranch === 1.5,
+     '연' + W.yearBranch + ' 월' + W.monthBranch + ' 일' + W.dayBranch + ' 시' + W.hourBranch);
+}
+// L6 지장간 — 왕지(子卯酉)는 둘, 나머지는 셋 · 亥의 여기 무토
+{
+  const 둘 = [B('子'), B('卯'), B('酉')];
+  const 맞 = E.HIDDEN.every((h, b) => h.length === (둘.indexOf(b) >= 0 ? 2 : 3));
+  const 해 = E.HIDDEN[B('亥')].map(x => E.STEMS[x]).join('');
+  ok('L', 'L6 지장간 — 왕지 2 나머지 3', 맞 && 해 === '壬甲戊', '子卯酉 2개 · 나머지 3개 · 亥 ' + 해);
+}
+// L7 합거 = 명령없음 (계수 없이 0)
+{
+  const p = 기둥('甲子','己巳','丁卯','庚子'), h = E.natalHap(p);
+  const a = E.strengthOf(p).strengthScore;
+  const b = E.strengthOf(기둥('甲子','乙巳','丁卯','庚子')).strengthScore;
+  ok('L', 'L7 합거 = 명령없음', h.year === 'month' && h.month === 'year' && a !== b,
+     '甲己 합거 → ' + a + ' · 합 없는 甲乙 → ' + b);
+}
+// L8 일간은 합거하지 않는다
+{
+  const h = E.natalHap(기둥('壬申','丙辰','丁卯','庚子'));
+  ok('L', 'L8 일간은 합거 안 함', Object.keys(h).length === 0,
+     '일간 丁 · 연간 壬 이 합이지만 합거 ' + Object.keys(h).length + '건');
+}
+// L9 격합은 안 본다 (월간-시간)
+{
+  const h = E.natalHap(기둥('壬申','甲辰','丁卯','己亥'));
+  ok('L', 'L9 격합 안 봄', Object.keys(h).length === 0,
+     '월간 甲 · 시간 己 가 합이지만 합거 ' + Object.keys(h).length + '건 — forks 가 갈림으로 표시');
+}
+// L10 삼합국 — 국이 명령의 단위
+{
+  const p = 기둥('壬申','甲辰','丁卯','庚子'), 자리 = 자리of(p);
+  const 국 = E.samhapOf(자리), 힘 = E.stemPower(S('壬'), 자리);
+  const 하나 = Math.max.apply(null, 자리.map(v => v[1] * E.power(S('壬'), v[0])));
+  ok('L', 'L10 삼합국 — 국이 명령의 단위', 국.length === 1 && 힘 > 하나 + 0.001,
+     '申子辰 수국 · 壬 국 ' + 힘.toFixed(2) + ' > 자리 하나 ' + 하나.toFixed(2));
+}
+// L11 국은 남의 뿌리를 뺏지 않는다
+{
+  const p = 기둥('壬申','甲辰','丁卯','庚子'), 자리 = 자리of(p);
+  const 庚 = E.stemPower(S('庚'), 자리), 甲 = E.stemPower(S('甲'), 자리);
+  const 기대 = W.yearBranch * E.power(S('庚'), B('申'));
+  ok('L', 'L11 국이 남의 뿌리를 안 뺏는다', Math.abs(庚 - 기대) < 0.001 && 甲 > 1.0,
+     '庚 ' + 庚.toFixed(2) + ' (申 건록 그대로) · 甲 ' + 甲.toFixed(2) + ' (辰 여기 그대로)');
+}
+// L12 국이 서도 오행 개수는 안 바뀐다 — 금이 수로 바뀌는 게 아니다
+{
+  const c = 사례.analysis.elemCount;
+  ok('L', 'L12 국이 서도 오행 개수 불변', c[3] === 2 && c[4] === 2 && c[2] === 1,
+     '목' + c[0] + ' 화' + c[1] + ' 토' + c[2] + ' 금' + c[3] + ' 수' + c[4] + ' — 申은 금, 辰은 토 그대로');
+}
+// L13 격은 국을 따른다 (자평진전)
+{
+  const J = T.gyeok(사례);
+  ok('L', 'L13 격은 국을 따른다', J.name === '정관' && J.ok === 1,
+     '월지 辰(정기 戊=상관)인데 수국이라 ' + J.name + ' ' + (J.ok ? '성격' : '파격'));
+}
+// L14 무근은 0 — 바닥이 없다. 원국 천간도 운의 천간도 같은 stemPower 를 쓴다
+{
+  const 맹 = E.stemPower(S('丁'), [[B('丑'), 1.0]]);         // 丑중 己癸辛 — 화가 없다
+  const 장생 = E.stemPower(S('丁'), [[B('酉'), 1.0]]);        // 丁의 장생지
+  ok('L', 'L14 무근은 0 (바닥 없음)', 맹 === 0 && 장생 > 0,
+     '丁이 丑 뿐이면 ' + 맹 + ' · 酉 면 ' + 장생.toFixed(2) + ' — 이름만 오는 것은 힘을 못 쓴다');
+}
+// L15 촉발은 짧은 주기가 무겁다 (세력과 반대)
+{
+  const R = E.calc(Object.assign({ year: 1990, month: 6, day: 15, hour: 10, minute: 0, gender: 'M' }, 서울));
+  const St = CY.stack(R, new Date(2026, 7, 28, 12));
+  const ps = St.triggerParts || [];
+  const 대 = ps.filter(v => v.name === '대운')[0], 시 = ps.filter(v => v.name === '시운')[0];
+  ok('L', 'L15 촉발은 짧은 주기가 무겁다', !!(대 && 시) && 시.w > 대.w,
+     대 && 시 ? '대운 ' + 대.w + ' < 시운 ' + 시.w : '층이 모자람');
+}
+// L16 운은 합을 풀지 않는다 — 壬 이 와도 원국 합거는 그대로
+{
+  const R = 사례;
+  const 세운丁 = CY.stack(R, new Date(2027, 5, 15, 12));   // 세운 丁未 — 연간 壬 을 묶는다
+  const 월운壬 = CY.stack(R, new Date(2027, 11, 15, 12));  // 월운 壬子 — 壬 이 하나 더 온다
+  const 묶임 = (Sx) => (Sx.합거 || []).some(h => h.자리 === '연간');
+  const 채움 = (Sx) => Sx.layers.some(l => l.빈자리채움 && l.빈자리채움.length);
+  ok('L', 'L16 운은 합을 풀지 않는다', 묶임(세운丁) && 묶임(월운壬) && 채움(월운壬),
+     '2027 세운 丁未 합거 유지 · 12월 월운 壬子 도 합거 유지 + 빈자리 채움');
+}
+// L17 갈림 — 판정이 필요한 자리를 엔진이 스스로 말한다
+{
+  let n = 0, 있 = 0;
+  for (let i = 0; i < 600; i++) {
+    const y = 1960 + (i * 7919) % 60, m = 1 + (i * 104729) % 12,
+          d = 1 + (i * 1299709) % 28, hh = (i * 15485863) % 24;
+    let X; try { X = E.calc(Object.assign({ year: y, month: m, day: d, hour: hh, minute: 30, gender: i % 2 ? 'F' : 'M' }, 서울)); }
+    catch (e) { continue; }
+    n++; if (E.forks(X.pillars).length) 있++;
+  }
+  const 율 = 있 / n * 100;
+  ok('L', 'L17 갈림 표시 (반합·격합) 5~30%', 율 >= 5 && 율 <= 30, 있 + '/' + n + ' (' + 율.toFixed(1) + '%)');
+}
+return out.join('\n') + '\n\n실패 ' + fail.length + '건' + (fail.length ? '\n  ' + fail.join('\n  ') : '');
+})();
+
+  return r1 + '\n\n' + r2 + '\n\n' + r3;
 })()
