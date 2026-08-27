@@ -754,8 +754,10 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .mm-out{margin-top:9px;font-size:13px;color:var(--ink2);line-height:1.6}
 .mm-ask{margin-top:10px;font-size:12.5px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .mm-ask .chip{font-size:12px;padding:5px 10px}
-.mm-del{position:absolute;top:11px;right:12px;border:0;background:none;cursor:pointer;
-  font-size:11px;color:var(--ink3);font-family:inherit;padding:2px 4px}
+/* 오른쪽 위 구석은 '1달째'가 쓰는 자리다. 지우기를 절대위치로 거기 박으니 겹쳤다.
+   흐름 맨 끝에 두고 오른쪽으로 민다 — 실수로 누를 일도 줄어든다. */
+.mm-del{display:block;margin:12px 0 0 auto;border:0;background:none;cursor:pointer;
+  font-size:11px;color:var(--ink3);font-family:inherit;padding:4px 2px}
 .mm-del:hover{color:var(--g0-ink)}
 .mm-sep{font-size:11.5px;letter-spacing:.14em;color:var(--ink3);margin:16px 0 9px}
 .mm-logs{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
