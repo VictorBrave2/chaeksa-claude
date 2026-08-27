@@ -13,7 +13,8 @@ if _r.returncode != 0:
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
 FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'calendar.js',
-         'compat.js', 'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js', 'app.js']
+         'compat.js', 'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js',
+         'gyeokguk.js', 'app.js']
 
 sw = io.open(os.path.join(APP, 'sw.js'), encoding='utf-8').read()
 cur = int(re.search(r'chaeksa-v(\d+)', sw).group(1))
@@ -29,3 +30,17 @@ for f in FILES:
 io.open(os.path.join(APP, 'index.html'), 'w', encoding='utf-8').write(html)
 print('version', new)
 print('tagged:', len(re.findall(r'\?v=%d' % new, html)))
+
+# -- 빠진 파일을 잡는다 --
+# FILES 목록에 안 적힌 스크립트는 ?v= 가 안 올라가고, URL 이 안 바뀌니
+# 브라우저가 영원히 옛 파일을 물고 있는다. 2026-08-28 gyeokguk.js 가 그랬다.
+_pat_v  = re.compile(r'src=.([A-Za-z0-9_.-]+\.js)\?v=(\d+)')
+_pat_no = re.compile(r'src=.([A-Za-z0-9_.-]+\.js)(?!\?)')
+_missed = [(m.group(1), m.group(2)) for m in _pat_v.finditer(html) if int(m.group(2)) != new]
+_notag  = [m.group(1) for m in _pat_no.finditer(html)]
+if _missed or _notag:
+    print()
+    print('!! 버전이 안 올라간 스크립트가 있습니다 - FILES 목록에 넣으세요')
+    for f, v in _missed: print('   %-28s ?v=%s  (현재 %d)' % (f, v, new))
+    for f in _notag:     print('   %-28s ?v= 없음' % f)
+    sys.exit(1)
