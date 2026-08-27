@@ -448,6 +448,30 @@ const 사례 = E.calc(Object.assign({ year: 1992, month: 4, day: 21, hour: 0, mi
   ok('L', 'L18 지지 충은 격 판정을 안 바꾼다', rs.length === 1 && a.name === b.name,
      '戌辰 격지 충이 있어도 ' + a.name + '격 · 충 없는 판(壬寅)도 ' + b.name + '격');
 }
+// L19 콘텐츠의 축은 흔들리지 않는다 — 궁통보감은 강약 재료에 안 흔들린다
+// 발행한 자료의 순위가 하루 만에 틀어진 원인이 「축을 강약에 걸어놓은 것」이었다.
+// 조후를 주축으로 올린 근거가 이 한 줄이다. 이 검사가 깨지면 콘텐츠가 다시 흔들린다.
+{
+  const C2 = window.ChaeksaClassic, P = E.UNSEONG_POWER, 원 = P.쇠;
+  const 입력 = [], 조후 = [], 강약 = [];
+  for (let i = 0; i < 300; i++) {
+    const y = 1960 + (i * 7919) % 60, m = 1 + (i * 104729) % 12,
+          d = 1 + (i * 1299709) % 28, hh = (i * 15485863) % 24;
+    const inp = Object.assign({ year: y, month: m, day: d, hour: hh, minute: 30, gender: 'M' }, 서울);
+    let X; try { X = E.calc(inp); } catch (e) { continue; }
+    입력.push(inp); 조후.push(C2.gungtong(X).score); 강약.push(X.analysis.strengthScore);
+  }
+  P.쇠 = 0.45;
+  let 조후바뀜 = 0, 강약바뀜 = 0;
+  입력.forEach((inp, k) => {
+    const X = E.calc(inp);
+    if (C2.gungtong(X).score !== 조후[k]) 조후바뀜++;
+    if (X.analysis.strengthScore !== 강약[k]) 강약바뀜++;
+  });
+  P.쇠 = 원;
+  ok('L', 'L19 궁통보감은 강약 재료에 안 흔들린다', 조후바뀜 === 0 && 강약바뀜 > 0,
+     '쇠 .62→.45 · 강약 ' + 강약바뀜 + '건 움직임 · 조후 ' + 조후바뀜 + '건');
+}
 return out.join('\n') + '\n\n실패 ' + fail.length + '건' + (fail.length ? '\n  ' + fail.join('\n  ') : '');
 })();
 

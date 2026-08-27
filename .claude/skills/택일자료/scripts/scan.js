@@ -53,23 +53,38 @@ function score(R) {
   const missing = a.missing.length;
   const balance = Math.abs(a.strengthScore - 0.5);
 
+  // ── 점수는 **안 흔들리는 것**으로만 짠다 (2026-08-28 재편) ──
+  //
+  // 예전엔 강약 편차가 -45 까지 먹는 지배 항이었다. 그런데 강약은 우리가 엔진을
+  // 고칠 때마다 바뀐다 — 십이운성 세기 하나(쇠 .62→.45)를 흔들었더니 표본 400 중
+  // 142건의 강약이 움직였다. 같은 흔들기에 **조후는 0건**이 움직였다.
+  // 궁통보감은 120칸 표와 「천간에 그 글자가 있나」로만 나오기 때문이다.
+  //
+  // 발행한 자료의 순위가 하루 만에 틀어진 원인이 그것이다. 축을 흔들리는 것에
+  // 걸어놨다. 그래서 **조후를 주축으로 올리고, 강약은 극단만 본다.**
+  //
+  //   강약을 연속량으로 점수에 넣으면 우리가 세기표를 만질 때마다 순위가 바뀐다.
+  //   극단 여부라는 이진으로 쓰면 라벨이 안 바뀌는 한 점수도 안 바뀐다.
+  //
+  // 자평진전(격 성패)은 여기 안 넣는다. 정격·변격·형충회합·행운론은 규칙화가
+  // 안 되는 자리라 **유료 상담**으로 넘긴다. 콘텐츠는 궁통보감으로 잡는다.
   let s = 100;
+  const jh = window.ChaeksaClassic ? window.ChaeksaClassic.gungtong(R) : null;
+  if (jh) s += ((jh.score - 25) / 25) * 35;   // 주축 — 50점 만점을 ±35 로 편다
   s -= missing * 13;              // 빈 오행 하나당
-  s -= balance * 90;              // 중화에서 먼 만큼
   s -= chung.length * 11;
   s += Math.min(8, root * 3);     // 뿌리는 가점
   s += (flow - 3) * 4;            // 유통 3칸을 기준으로 가감
-  // 조후 — 궁통보감 조후용신표(classic.js)로. 계절 근사를 표로 교체 (50→+10, 30→+2, 0→-10)
-  const jh = window.ChaeksaClassic ? window.ChaeksaClassic.gungtong(R) : null;
-  if (jh) s += ((jh.score - 25) / 25) * 10;
   if (a.gotMonth) s += 4;
+  // 강약은 **극단만** 본다. 0.15 아래 / 0.85 위는 어느 유파로 봐도 치우친 자리다.
+  if (balance > 0.35) s -= (balance - 0.35) * 60;
 
   return {
     점수: Math.max(0, Math.round(s)),
     강약: a.strength, 강약값: a.strengthScore,
     오행: ec.map((n, i) => EL[i] + n).join(' '),
     없는오행: a.missing.join('·') || '없음',
-    유통: flow + '/5', 통근: root,
+    유통: flow + '/5', 통근: root, 조후: jh ? jh.score : null,
     충: chung.join(', ') || '없음',
     합: hap.join(', ') || '없음',
   };
