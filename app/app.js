@@ -580,6 +580,9 @@
   function plNameOf(p) { return p.placeName || '서울'; }
 
   // 통변좌표 — 6층 적층 체용이 내놓는 오늘의 좌표
+  // 오늘의 통변좌표 — 무료 화면에서는 걷어냈다 (2026-08-28).
+  // 「통변좌표」도 「6층 적층」도 일반인이 읽을 말이 아니다.
+  // 함수와 엔진은 그대로 둔다. #coordBox 가 없으면 조용히 빠져나간다.
   function renderCoord() {
     const box = $('coordBox'); if (!box) return;
     if (!window.ChaeksaChaeyong) { box.classList.add('hide'); return; }
