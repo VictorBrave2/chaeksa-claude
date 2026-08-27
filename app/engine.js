@@ -370,6 +370,49 @@
     return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong, 합거 };
   }
 
+  // ───────── 삼합국(三合局) ─────────
+  // 申子辰 수국 · 亥卯未 목국 · 寅午戌 화국 · 巳酉丑 금국.
+  //
+  // 국이 서면 세 지지가 하나의 덩어리가 된다. 그러면 그 오행의 천간은
+  // 지지 하나가 아니라 **국 전체에게 명령을 내린다.**
+  //   「임수는 자수에서 제왕으로 받은 게 아니라 신자진 삼합에게 내린 명령이다」
+  //
+  // 이것은 「명령은 나눠 받는 게 아니라 한 번 제대로 전달되면 된다」는 원칙과
+  // 어긋나지 않는다. 나눠 받는 것이 아니라 **하나가 세 자리만큼 크게 받는 것**이다.
+  //
+  // 국의 성격은 왕지(子·卯·午·酉)가 정한다 — 생(生)에서 시작해 왕(旺)에서 성하고
+  // 고(庫)에서 거두는 한 순환이라, 그 셋을 왕지 하나로 본다.
+  //
+  // 반합(왕지 포함 둘)은 아직 넣지 않는다. 표본의 33% 에 걸리는데
+  // 「절반이면 얼마」를 우리가 지어내야 하기 때문이다.
+  const SAMHAP = [[8, 0, 4], [11, 3, 7], [2, 6, 10], [5, 9, 1]];
+  const SAMHAP_ELEM = [4, 0, 1, 3];   // 水 木 火 金
+
+  /** 자리 목록 [[지지, 자리무게], ...] 에서 완전 삼합국을 찾는다.
+   *  같은 글자가 여러 자리에 있으면 무게를 다 더한다(운이 겹쳐 얹히는 경우). */
+  function samhapOf(자리) {
+    const out = [];
+    SAMHAP.forEach((g, gi) => {
+      const 있 = 자리.filter(([b]) => g.indexOf(b) >= 0);
+      const 글자 = {};
+      있.forEach(([b]) => { 글자[b] = 1; });
+      if (Object.keys(글자).length !== 3) return;
+      out.push({ elem: SAMHAP_ELEM[gi], 왕지: g[1], 무게: 있.reduce((s, [, w]) => s + w, 0) });
+    });
+    return out;
+  }
+
+  /** 천간의 힘 — 통근한 자리 하나, 또는 그 천간이 부리는 국 전체. 센 쪽을 쓴다. */
+  function stemPower(st, 자리, 국) {
+    let best = Math.max.apply(null, 자리.map(([b, w]) => w * power(st, b)));
+    (국 || samhapOf(자리)).forEach(g => {
+      if (STEM_ELEM[st] !== g.elem) return;    // 국의 오행과 같은 천간만 국을 부린다
+      const v = g.무게 * power(st, g.왕지);
+      if (v > best) best = v;
+    });
+    return best;
+  }
+
   // ───────── 천간합(合去) ─────────
   // 甲己 · 乙庚 · 丙辛 · 丁壬 · 戊癸. 다섯 쌍이고 언제나 5칸 떨어져 있다.
   //
@@ -423,7 +466,8 @@
       [pillars.day.branch,   W.dayBranch],
     ];
     if (pillars.hour) 지지자리.push([pillars.hour.branch, W.hourBranch]);
-    const 천간힘 = (st) => Math.max(...지지자리.map(([b, w]) => w * power(st, b)));
+    const 국 = samhapOf(지지자리);
+    const 천간힘 = (st) => stemPower(st, 지지자리, 국);
 
     // 합거된 천간은 명령을 못 낸다 — 깎는 것이 아니라 0이다.
     const 합거 = natalHap(pillars);
@@ -486,5 +530,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);

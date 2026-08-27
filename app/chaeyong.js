@@ -132,7 +132,8 @@
       [p.day.branch,   W.dayBranch],
     ];
     if (p.hour) 뿌리터.push([p.hour.branch, W.hourBranch]);
-    const 천간힘 = (st) => Math.max(...뿌리터.map(([b, w]) => w * E.power(st, b)));
+    // 국(삼합)은 층마다 다시 본다 — 원국에 申子 만 있어도 운으로 辰 이 오면 수국이 선다.
+    const 천간힘 = (st) => E.stemPower(st, 뿌리터);
     // 판정 배수로 쓸 때는 0~1 로 눌러 쓴다. 최대는 월지(2.0)가 제왕(1.0)으로 받은 것.
     const 실허 = (st) => Math.min(1, 천간힘(st) / 2.0);
 
@@ -235,7 +236,7 @@
       // 뿌리를 어디에도 못 내린 운은 이름만 오는 것이라 힘을 못 쓴다.
       // 뿌리터에는 그 운 자신의 지지도 넣는다(제 지지에 앉는 경우).
       const 운뿌리 = 뿌리터.concat([[s.gz.branch, s.w.branch]]);
-      const 운힘 = Math.max(...운뿌리.map(([b, w]) => w * E.power(s.gz.stem, b)));
+      const 운힘 = E.stemPower(s.gz.stem, 운뿌리);
       const 운실허 = Math.min(1, 운힘 / 2.0);
       const value = Math.round(judge(bodyLab, group, extras) * 운실허 * 10) / 10;
 
