@@ -115,5 +115,26 @@ def build():
     print('wrote', out, os.path.getsize(out) // 1024, 'KB', base.size)
 
 
+def icons():
+    """앱 아이콘 — 탭·홈화면·공유 그림이 같은 얼굴이어야 한다.
+    원래는 금색 도넛(자리 표시)이라 브랜드와 따로 놀았다."""
+    for size in (192, 512):
+        pad = round(size * 0.10)
+        img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle([0, 0, size - 1, size - 1],
+                            radius=round(size * 0.22), fill=SEAL)
+        f = font('malgunbd.ttf', round(size * 0.62))
+        w = d.textlength('策', font=f)
+        # 글자 높이를 실측해 가운데에 앉힌다
+        box = d.textbbox((0, 0), '策', font=f)
+        d.text(((size - w) / 2, (size - (box[3] - box[1])) / 2 - box[1]),
+               '策', font=f, fill=(253, 243, 231))
+        out = os.path.join(APP, 'icon-%d.png' % size)
+        img.save(out, 'PNG', optimize=True)
+        print('wrote', out, os.path.getsize(out) // 1024, 'KB', img.size)
+
+
 if __name__ == '__main__':
     build()
+    icons()
