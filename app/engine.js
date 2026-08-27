@@ -330,6 +330,16 @@
     return rel * 2 + (same ? 0 : 1);
   }
   function analyze(pillars) {
+    // 化 한 지지는 국의 오행으로 센다 (아래 elemCount·gods 에서 쓴다)
+    const 化지지 = (() => {
+      const W = NATAL_WEIGHT, 자리 = [
+        [pillars.year.branch, W.yearBranch], [pillars.month.branch, W.monthBranch],
+        [pillars.day.branch, W.dayBranch]];
+      if (pillars.hour) 자리.push([pillars.hour.branch, W.hourBranch]);
+      const m = {};
+      samhapOf(자리).forEach(g => g.글자.forEach(b => { m[b] = g.elem; }));
+      return m;
+    })();
     const ds = pillars.day.stem;
     const elemCount = [0,0,0,0,0];
     const list = ['year','month','day','hour'].filter(k => pillars[k]);
@@ -337,7 +347,7 @@
     for (const k of list) {
       const pl = pillars[k];
       elemCount[STEM_ELEM[pl.stem]] += 1;
-      elemCount[BRANCH_ELEM[pl.branch]] += 1;
+      elemCount[化지지[pl.branch] != null ? 化지지[pl.branch] : BRANCH_ELEM[pl.branch]] += 1;
       gods[k] = {
         stem: k === 'day' ? null : TEN_GODS[tenGod(ds, pl.stem)],
         합거: false,   // 아래에서 채운다
@@ -380,9 +390,10 @@
   // 이것은 「명령은 나눠 받는 게 아니라 한 번 제대로 전달되면 된다」는 원칙과
   // 어긋나지 않는다. 나눠 받는 것이 아니라 **하나가 세 자리만큼 크게 받는 것**이다.
   //
-  // 국의 힘은 그 세 자리가 **각자 준 것의 합**이다. 왕지 하나로 셋을 대표시키는 판도
-  // 있으나(申을 제왕으로 올린다), 그것은 화(化)를 전제한 계산이다.
-  // 우리는 化 를 안 본다 — 申 은 여전히 금이고 辰 은 여전히 토다. 오행 개수도 안 바뀐다.
+  // 완전한 국은 **화(化)한다** — 자평진전. 辰월 丁 일간이 운에서 申 이나 子 를
+  // 만나 수국을 이루면 성격(成格)이라고 못박아 두었다. 맑아진다는 것이고, 곧 化 다.
+  // 그러면 申·辰 은 수로 작동한다. 오행 개수도, 일간이 받는 것도, 격도 다 바뀐다.
+  // 셋이 하나가 되었으므로 그 하나의 성격은 왕지가 정한다 — 申 도 子 처럼 쓴다.
   //
   // 반합(왕지 포함 둘)은 아직 넣지 않는다. 표본의 33% 에 걸리는데
   // 「절반이면 얼마」를 우리가 지어내야 하기 때문이다.
@@ -398,23 +409,26 @@
       const 글자 = {};
       있.forEach(([b]) => { 글자[b] = 1; });
       if (Object.keys(글자).length !== 3) return;
-      out.push({ elem: SAMHAP_ELEM[gi], 왕지: g[1], 자리: 있 });
+      out.push({ elem: SAMHAP_ELEM[gi], 왕지: g[1], 글자: g.slice(), 자리: 있,
+                 무게: 있.reduce((a, [, w]) => a + w, 0) });
     });
     return out;
   }
 
+  /** 化 한 지지 → 그 국의 왕지. 완전한 국을 이룬 세 지지는 왕지처럼 작동한다. */
+  function hwaOf(자리, 국) {
+    const m = {};
+    (국 || samhapOf(자리)).forEach(g => { g.글자.forEach(b => { m[b] = g; }); });
+    return m;
+  }
+
   /** 천간의 힘 — 통근한 자리 하나, 또는 그 천간이 부리는 국 전체. 센 쪽을 쓴다.
-   *
-   *  국의 힘은 **그 세 자리가 각자 준 것의 합**이다. 왕지 하나로 셋을 대표시키면
-   *  申(장생 .55)을 제왕(1.00)으로 올리는 셈인데, 그것은 이미 화(化)를 전제한
-   *  계산이다. 化 는 안 보기로 했으므로(오행 개수를 안 바꾼다) 세기도 각자 것으로 둔다.
-   *  국이 하는 일은 **셋을 하나로 묶어 한 뿌리로 세게 하는 것**이지, 셋을 왕지로
-   *  둔갑시키는 것이 아니다. */
+   *  국이 化 하면 셋이 다 왕지이므로 국의 힘 = 자리무게 합 × 왕지에서의 십이운성. */
   function stemPower(st, 자리, 국) {
     let best = Math.max.apply(null, 자리.map(([b, w]) => w * power(st, b)));
     (국 || samhapOf(자리)).forEach(g => {
       if (STEM_ELEM[st] !== g.elem) return;    // 국의 오행과 같은 천간만 국을 부린다
-      const v = g.자리.reduce((acc, [b, w]) => acc + w * power(st, b), 0);
+      const v = g.무게 * power(st, g.왕지);
       if (v > best) best = v;
     });
     return best;
@@ -449,12 +463,14 @@
   // 여기서부터는 계산이 아니라 판정이다. 판본이 갈리고, 어느 쪽을 잡느냐로
   // 결과가 크게 달라진다. 기계가 정할 수 없는 자리다.
   //
-  // 무료 엔진은 **가장 보수적인 쪽**으로 계산한다(化 안 봄, 반합 안 봄, 격합 안 봄).
+  // 무료 엔진은 **가장 보수적인 쪽**으로 계산한다(반합 안 봄, 격합 안 봄).
   // 그러나 갈린다는 사실을 숨기지 않는다 — 숨기면 무료가 조용히 틀린 답을 준다.
   // 「이 사주는 여기서 갈립니다」까지가 무료고, 「그래서 어느 쪽입니다」가 유료다.
+  //
+  // 완전 삼합의 化 는 여기 없다 — 자평진전이 못박아 둔 자리라 판정이 끝났다(C6).
   const BANHAP_W = 0.6;   // 반합을 국으로 볼 때의 임시 계수. 근거 없음 — 갈래 보여주기용
 
-  /** 이 사주에서 판정이 갈리는 자리들. */
+  /** 이 사주에서 판정이 갈리는 자리들. 기준은 본 계산(strengthOf)과 같다. */
   function forks(pillars) {
     const W = NATAL_WEIGHT, ds = pillars.day.stem, de = STEM_ELEM[ds];
     const 자리 = [
@@ -467,37 +483,34 @@
     // 갈래별 강약을 내는 국소 계산기 (본 계산을 건드리지 않는다)
     const 점수 = (opt) => {
       opt = opt || {};
+      const 국 = samhapOf(자리);
+      const 반 = [];
+      if (opt.반합) SAMHAP.forEach((g, gi) => {
+        const 있 = 자리.filter(([b]) => g.indexOf(b) >= 0);
+        const 종류 = {}; 있.forEach(([b]) => { 종류[b] = 1; });
+        if (Object.keys(종류).length === 2 && 종류[g[1]])
+          반.push({ elem: SAMHAP_ELEM[gi], 왕지: g[1], 무게: 있.reduce((a, [, w]) => a + w, 0) });
+      });
       const 힘 = (st) => {
-        let best = Math.max.apply(null, 자리.map(([b, w]) => w * power(st, b)));
-        SAMHAP.forEach((g, gi) => {
-          if (STEM_ELEM[st] !== SAMHAP_ELEM[gi]) return;
-          const 있 = 자리.filter(([b]) => g.indexOf(b) >= 0);
-          const 종류 = {}; 있.forEach(([b]) => { 종류[b] = 1; });
-          const k = Object.keys(종류).length;
-          if (k === 3 || (opt.반합 && k === 2 && 종류[g[1]])) {
-            const v = 있.reduce((a, [b, w]) => a + w * power(st, b), 0) * (k === 3 ? 1 : BANHAP_W);
-            if (v > best) best = v;
-          }
+        let best = stemPower(st, 자리, 국);
+        반.forEach(g => {
+          if (STEM_ELEM[st] !== g.elem) return;
+          const v = g.무게 * power(st, g.왕지) * BANHAP_W;
+          if (v > best) best = v;
         });
         return best;
       };
-      const 합거 = opt.격합 ? {} : natalHap(pillars);
+      const 합거 = natalHap(pillars);
+      if (opt.격합 && pillars.hour && isHap(pillars.month.stem, pillars.hour.stem)
+          && !합거.month && !합거.hour) { 합거.month = 'hour'; 합거.hour = 'month'; }
       const 명령 = (k, st) => (합거[k] ? 0 : 힘(st));
       const stems = [[STEM_ELEM[pillars.year.stem], 명령('year', pillars.year.stem)],
                      [STEM_ELEM[pillars.month.stem], 명령('month', pillars.month.stem)]];
       if (pillars.hour) stems.push([STEM_ELEM[pillars.hour.stem], 명령('hour', pillars.hour.stem)]);
-      // 化 — 국을 이룬 지지가 그 국의 오행으로 작동한다
-      const 化지지 = {};
-      if (opt.化) SAMHAP.forEach((g, gi) => {
-        const 종류 = {}; 자리.forEach(([b]) => { if (g.indexOf(b) >= 0) 종류[b] = 1; });
-        if (Object.keys(종류).length === 3) g.forEach(b => { 化지지[b] = SAMHAP_ELEM[gi]; });
-      });
+      const 化 = hwaOf(자리, 국);
       let sup = 0, tot = 0;
       stems.forEach(([el, w]) => { tot += w; if (siding(de, el) > 0) sup += w; });
-      자리.forEach(([b, w]) => {
-        tot += w;
-        sup += w * (化지지[b] != null ? (siding(de, 化지지[b]) > 0 ? 1 : 0) : power(ds, b));
-      });
+      자리.forEach(([b, w]) => { tot += w; sup += w * power(ds, 化[b] ? 化[b].왕지 : b); });
       const got = BRANCH_ELEM[pillars.month.branch] === de || BRANCH_ELEM[pillars.month.branch] === (de + 4) % 5;
       if (got) { sup += 0.6; tot += 0.6; }
       const v = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
@@ -512,26 +525,16 @@
       out.push({ 이름, 사실, 무료: `${기준.label} ${기준.score}`, 갈래, 다른쪽: `${b.label} ${b.score}` });
     };
 
-    // 1. 완전 삼합의 화(化)
-    SAMHAP.forEach((g, gi) => {
-      const 종류 = {}; 자리.forEach(([b]) => { if (g.indexOf(b) >= 0) 종류[b] = 1; });
-      if (Object.keys(종류).length !== 3) return;
-      재다('삼합의 化',
-        `${g.map(b => BRANCHES[b]).join('')} ${ELEM[SAMHAP_ELEM[gi]]}국이 다 모였다`,
-        `${g.map(b => BRANCHES[b]).join('')} 이 전부 ${ELEM[SAMHAP_ELEM[gi]]}로 바뀐다고 보면`,
-        { 化: true });
-    });
-    // 2. 반합을 국으로 볼 것인가
+    // 1. 반합을 국으로 볼 것인가
     SAMHAP.forEach((g, gi) => {
       const 종류 = {}; 자리.forEach(([b]) => { if (g.indexOf(b) >= 0) 종류[b] = 1; });
       const ks = Object.keys(종류);
       if (ks.length !== 2 || !종류[g[1]]) return;
       재다('반합',
         `${ks.map(b => BRANCHES[+b]).join('')} — ${ELEM[SAMHAP_ELEM[gi]]}국의 왕지를 낀 둘`,
-        '반합도 국으로 세면',
-        { 반합: true });
+        '반합도 국으로 세면', { 반합: true });
     });
-    // 3. 격합 — 일간을 사이에 둔 월간-시간의 합
+    // 2. 격합 — 일간을 사이에 둔 월간-시간의 합
     if (pillars.hour && isHap(pillars.month.stem, pillars.hour.stem)) {
       재다('격합',
         `월간 ${STEMS[pillars.month.stem]} 과 시간 ${STEMS[pillars.hour.stem]} 이 합이다 (일간을 사이에 둔다)`,
@@ -584,9 +587,11 @@
     // 궁통보감이 寅월 甲에겐 丙을, 卯월 甲에겐 庚을 쓰라고 정반대로 처방하는데도.
     const branches = 지지자리;
     if (pillars.hour) stems.push([STEM_ELEM[pillars.hour.stem], 명령('hour', pillars.hour.stem)]);
+    // 化 한 지지는 왕지로 받는다 — 셋이 하나가 되었으므로 제 글자가 아니라 국의 글자다.
+    const 化 = hwaOf(지지자리, 국);
     let sup = 0, tot = 0;
     for (const [elem, w] of stems) { tot += w; if (siding(de, elem) > 0) sup += w; }
-    for (const [br, w] of branches) { tot += w; sup += w * power(ds, br); }
+    for (const [br, w] of branches) { tot += w; sup += w * power(ds, 化[br] ? 化[br].왕지 : br); }
     // 왕상휴수사 — 득령이면 가산 0.6 (비대칭: 실령을 더 깎지는 않는다).
     // 본기 방식에서 득령의 무게가 월지 한 자리(2.0)뿐이라 건록·양인격의 21%가
     // 신약으로 떨어졌다. 가산 후 10%로, 앵커 7사례와 실령 사주 판정은 전부 보존.
@@ -632,5 +637,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, forks, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);

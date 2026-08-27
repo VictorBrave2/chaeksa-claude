@@ -23,7 +23,35 @@
       if (k !== 'day') { cheon.push(G(ds, p[k].stem)); all.push(G(ds, p[k].stem)); }
       E.HIDDEN[p[k].branch].forEach(h => all.push(G(ds, h)));
     });
-    const hid = E.HIDDEN[p.month.branch];
+    // ── 삼합국이 서면 격을 국으로 잡는다 (자평진전) ──
+    // 「진월 정화일간이 운에서 신금이나 자수가 오면 삼합을 이루고 성격이다」 —
+    // 맑아진다는 것이고 곧 化 다. 그러면 월지 辰 은 상관(土)이 아니라 관성(水)이다.
+    // 국을 이룬 지지는 국에 흡수되므로 그 지장간도 국의 천간 하나로 본다.
+    // 그러지 않으면 辰중 戊(상관)가 남아 정관격이 파격으로 잡힌다.
+    const W0 = E.NATAL_WEIGHT;
+    const 자리0 = [[p.year.branch, W0.yearBranch], [p.month.branch, W0.monthBranch],
+                   [p.day.branch, W0.dayBranch]];
+    if (p.hour) 자리0.push([p.hour.branch, W0.hourBranch]);
+    const 월국 = E.samhapOf(자리0).find(g => g.글자.indexOf(p.month.branch) >= 0) || null;
+    let 국천간 = null;
+    if (월국) {
+      // 국의 오행 천간 중 원국 천간에 투출한 것으로 정/편을 가른다. 없으면 왕지의 본기.
+      const 후보 = [0,1,2,3,4,5,6,7,8,9].filter(st => E.STEM_ELEM[st] === 월국.elem);
+      국천간 = 후보.find(st => ['year','month','hour'].some(k => p[k] && p[k].stem === st));
+      if (국천간 == null) 국천간 = E.HIDDEN[월국.왕지][0];
+      // 국에 먹힌 지지들의 지장간을 국의 천간 하나로 갈아끼운다
+      const 먹힌 = {}; 월국.글자.forEach(b => { 먹힌[b] = 1; });
+      const all2 = [];
+      ['year','month','day','hour'].forEach(k => {
+        if (!p[k]) return;
+        if (k !== 'day') all2.push(G(ds, p[k].stem));
+        if (먹힌[p[k].branch]) all2.push(G(ds, 국천간));
+        else E.HIDDEN[p[k].branch].forEach(h => all2.push(G(ds, h)));
+      });
+      all.length = 0; Array.prototype.push.apply(all, all2);
+    }
+
+    const hid = 월국 ? [국천간] : E.HIDDEN[p.month.branch];
     const mg = G(ds, hid[0]);
     const has = n => all.includes(n), hasG = g => all.some(x => GRP[x] === g);
     const cnt = g => all.filter(x => GRP[x] === g).length, tu = n => cheon.includes(n);
