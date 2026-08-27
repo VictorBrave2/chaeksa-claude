@@ -367,7 +367,8 @@
       (missing.length ? missing.slice() : [ELEM[elemCount.indexOf(Math.min.apply(null, elemCount))]]);
     // 합거된 자리를 십신에 표시한다 — 그 명령은 지금 없는 것이다.
     Object.keys(합거).forEach(k => { if (gods[k]) gods[k].합거 = true; });
-    return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong, 합거 };
+    const 지지관계 = branchRels(pillars);
+    return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong, 합거, 지지관계 };
   }
 
   // ───────── 삼합국(三合局) ─────────
@@ -466,6 +467,42 @@
     return out;
   }
 
+  // ───────── 지지 관계 — 사실만 낸다 ─────────
+  // 충 · 육합 · 삼합/반합 · 복음. **판정하지 않는다.**
+  //
+  // 격 성패에 충을 넣으려다 그만뒀다. 지지는 넷이면 쌍이 여섯이고 운이 얹히면
+  // 열다섯까지 간다. 거기에 관계가 여섯 종이고, 「가해자가 묶이면」 「피해자가
+  // 묶이면」 「합이 충을 푸나 충이 합을 깨나」가 또 갈린다. 고전이 완결된 판단
+  // 절차를 안 준다 — 명리가마다 다르다. 규칙으로 박으면 근거 없는 값이 된다.
+  //
+  //   천간   규칙화된다.      셋뿐이고 배치가 선형이라 인접이 명확하다
+  //   지지   규칙화 안 된다.  사실만 보여주고 판정은 사람이 한다
+  //
+  // 체용의 충 감점(-1)은 그대로 둔다. 연속량이라 부드럽고, 격처럼 이진 판정을
+  // 통째로 뒤집지 않는다. **같은 정보라도 어느 축에 넣느냐로 위험이 다르다.**
+  const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+  const SEAT_KO = ['연지', '월지', '일지', '시지'];
+
+  /** 원국 지지 여섯 쌍의 관계. 판정 없이 사실만. */
+  function branchRels(pillars) {
+    const bs = [pillars.year.branch, pillars.month.branch, pillars.day.branch];
+    if (pillars.hour) bs.push(pillars.hour.branch);
+    const out = [];
+    for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) {
+      const a = bs[i], b = bs[j];
+      let rel = null;
+      if (a === b) rel = '복음';
+      else if ((b - a + 12) % 12 === 6) rel = '충';
+      else if (YUKHAP[a] === b) rel = '육합';
+      else if (SAMHAP.some(g => g.indexOf(a) >= 0 && g.indexOf(b) >= 0)) rel = '삼합';
+      if (!rel) continue;
+      out.push({ rel, a: SEAT_KO[i], b: SEAT_KO[j],
+                 글자: BRANCHES[a] + BRANCHES[b],
+                 격지: (i === 1 || j === 1) });   // 월지가 걸렸는가
+    }
+    return out;
+  }
+
   // ───────── 판정이 갈리는 자리 ─────────
   // 여기서부터는 계산이 아니라 판정이다. 판본이 갈리고, 어느 쪽을 잡느냐로
   // 결과가 크게 달라진다. 기계가 정할 수 없는 자리다.
@@ -546,6 +583,13 @@
         `월간 ${STEMS[pillars.month.stem]} 과 시간 ${STEMS[pillars.hour.stem]} 이 합이다 (일간을 사이에 둔다)`,
         '격합도 합거로 세면', { 격합: true });
     }
+    // 3. 격지가 충을 맞았는가 — 점수로 재지 않는다. 격이 갈리는 자리라 알리기만 한다.
+    const 격충 = branchRels(pillars).filter(r => r.격지 && r.rel === '충');
+    격충.forEach(r => out.push({
+      이름: '격지 충', 사실: `${r.a} ↔ ${r.b} ${r.글자} 충 — 격을 잡는 월지가 맞고 있다`,
+      무료: '충을 격 판정에 안 쓴다', 갈래: '충으로 격이 깨진다고 보면',
+      다른쪽: '격 판정이 뒤집힐 수 있다',
+    }));
     return out;
   }
 
@@ -643,5 +687,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, branchRels, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);

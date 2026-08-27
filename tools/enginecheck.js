@@ -423,16 +423,30 @@ const 사례 = E.calc(Object.assign({ year: 1992, month: 4, day: 21, hour: 0, mi
 }
 // L17 갈림 — 판정이 필요한 자리를 엔진이 스스로 말한다
 {
-  let n = 0, 있 = 0;
+  let n = 0, 있 = 0; const 종 = {};
   for (let i = 0; i < 600; i++) {
     const y = 1960 + (i * 7919) % 60, m = 1 + (i * 104729) % 12,
           d = 1 + (i * 1299709) % 28, hh = (i * 15485863) % 24;
     let X; try { X = E.calc(Object.assign({ year: y, month: m, day: d, hour: hh, minute: 30, gender: i % 2 ? 'F' : 'M' }, 서울)); }
     catch (e) { continue; }
-    n++; if (E.forks(X.pillars).length) 있++;
+    n++; const g = E.forks(X.pillars);
+    if (g.length) 있++;
+    g.forEach(v => { 종[v.이름] = (종[v.이름] || 0) + 1; });
   }
   const 율 = 있 / n * 100;
-  ok('L', 'L17 갈림 표시 (반합·격합) 5~30%', 율 >= 5 && 율 <= 30, 있 + '/' + n + ' (' + 율.toFixed(1) + '%)');
+  const 세종 = ['반합', '격합', '격지 충'].every(k => 종[k] > 0);
+  ok('L', 'L17 갈림 — 세 종류가 다 잡히고 20~50%', 세종 && 율 >= 20 && 율 <= 50,
+     있 + '/' + n + ' (' + 율.toFixed(1) + '%) · ' + Object.keys(종).map(k => k + ' ' + 종[k]).join(' · '));
+}
+// L18 지지의 충은 격 판정을 안 바꾼다 — 사실만 내고 판정은 사람이 한다
+{
+  const 있 = 기둥('丁卯','庚戌','壬辰','丁未');   // 월지 戌 ↔ 일지 辰 충
+  const 없 = 기둥('丁卯','庚戌','壬寅','丁未');   // 같은 판에서 충만 없앤 것
+  const rs = E.branchRels(있).filter(r => r.rel === '충' && r.격지);
+  const a = T.gyeok({ pillars: 있, analysis: E.strengthOf(있) });
+  const b = T.gyeok({ pillars: 없, analysis: E.strengthOf(없) });
+  ok('L', 'L18 지지 충은 격 판정을 안 바꾼다', rs.length === 1 && a.name === b.name,
+     '戌辰 격지 충이 있어도 ' + a.name + '격 · 충 없는 판(壬寅)도 ' + b.name + '격');
 }
 return out.join('\n') + '\n\n실패 ' + fail.length + '건' + (fail.length ? '\n  ' + fail.join('\n  ') : '');
 })();
