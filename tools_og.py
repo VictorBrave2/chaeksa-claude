@@ -186,11 +186,57 @@ def kakao():
     print('wrote', out2, os.path.getsize(out2) // 1024, 'KB')
 
 
+def blog_title():
+    """네이버 블로그 타이틀(대문) — 966×280.
+
+    네이버 블로그 본문 폭이 966px이라 그보다 좁으면 좌우가 뜨고 넓으면 잘린다.
+    글자를 그림에 구워 넣고 '블로그 제목 표시'는 꺼야 한다 — 안 그러면
+    스킨 글꼴로 쓴 제목이 그림 위에 한 번 더 얹힌다.
+    """
+    W, H = 966, 280
+    base = vgrad((W, H), BG_TOP, BG_BOTTOM)
+
+    # 아래쪽 한지 결 — og 그림과 같은 손짓이어야 한 사람이 만든 것으로 보인다
+    band = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(band).ellipse([-200, 196, W + 200, H + 150],
+                                 fill=(230, 217, 189, 120))
+    base = Image.alpha_composite(base.convert('RGBA'), band).convert('RGB')
+    d = ImageDraw.Draw(base)
+
+    # 인장
+    d.rounded_rectangle([64, 92, 156, 184], radius=16, fill=SEAL)
+    f = font('malgunbd.ttf', 56)
+    d.text((110 - d.textlength('策', font=f) / 2, 106), '策',
+           font=f, fill=(253, 243, 231))
+
+    d.text((186, 96), '책사', font=font('malgunbd.ttf', 62), fill=INK)
+    d.text((188, 168), '나의 명리비서 · chaeksa.kr',
+           font=font('malgun.ttf', 20), fill=INK2)
+
+    # 오른쪽 한 줄 — 무엇을 파는 블로그인지 여기서 끝낸다
+    f2 = font('malgun.ttf', 19)
+    lines = ['절기 시각까지 천문 계산한 만세력 위에서', '기준을 공개하고 봅니다']
+    widest = max(d.textlength(t, font=f2) for t in lines)
+    for i, t in enumerate(lines):
+        w = d.textlength(t, font=f2)
+        d.text((W - 70 - w, 116 + i * 32), t, font=f2, fill=(138, 122, 88))
+    # 구분선은 글 덩어리 왼쪽에 세운다. 오른쪽에 두면 글이 잘린 것처럼 보인다.
+    x = W - 70 - widest - 30
+    d.line([x, 112, x, 176], fill=(205, 190, 160), width=2)
+
+    out = os.path.join(os.path.dirname(APP), 'marketing', '블로그-대문.png')
+    base.save(out, 'PNG', optimize=True)
+    print('wrote', out, os.path.getsize(out) // 1024, 'KB', base.size)
+
+
 if __name__ == '__main__':
     import sys
     if '--kakao' in sys.argv:
         kakao()
+    elif '--blog' in sys.argv:
+        blog_title()
     else:
         build()
         icons()
         kakao()
+        blog_title()
