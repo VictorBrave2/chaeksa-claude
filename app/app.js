@@ -317,6 +317,17 @@
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
 
+  // 주소 뒤 #탭이름 으로 바로 들어올 수 있게 한다. taekil.html 같은 바깥 페이지에서
+  // '상담 신청하기'를 눌렀을 때 홈으로 떨어지면 버튼 문구와 어긋난다.
+  // 없는 탭 이름이 오면 아무것도 안 한다 — 빈 화면을 띄우느니 홈이 낫다.
+  function goHash() {
+    const t = (location.hash || '').replace(/^#/, '');
+    if (t && document.querySelector('.tab[data-tab="' + t + '"]')) go(t);
+  }
+  window.addEventListener('hashchange', goHash);
+  // 초기 호출은 파일 끝에서 한다. 여기서 부르면 go() 가 renderNokpae() 등을 타는데
+  // 그 함수들이 쓰는 const 가 아직 선언 전이라 TDZ 오류가 난다.
+
   // ───── 시작 ─────
   function start(p) {
     if (!p.name) p.name = '당신';
@@ -1736,6 +1747,7 @@
   if (act) { start(People().toProfile(act)); booted = true; }
   else if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
   if (!booted) showLanding();
+  else goHash();          // #탭이름 으로 들어온 경우 그 탭을 연다
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
 })();
