@@ -723,6 +723,84 @@
       + '</svg>';
   }
 
+  // ── 지칠 때와 채울 때 ──
+  // 「나는 왜 이렇게 지칠까」는 여성향에서 크게 읽히는데 우리는 강약·용신·빈오행으로
+  // 이미 답을 갖고 있었다. 겁주지 않는다 — 무엇이 나를 깎는지 말하고,
+  // 반드시 무엇으로 채우는지를 같이 말한다. 깎는 말만 하고 끝내지 않는다.
+  const DRAIN = {
+    신약: [
+      ['책임이 몰릴 때', '해내야 할 일이 겹치면 남보다 빨리 바닥납니다. 맡기 전에 한 번 덜어내세요', '관성'],
+      ['챙길 것이 많을 때', '돈·살림·사람을 동시에 붙들면 손이 떨립니다. 순서를 정하면 견딜 만해집니다', '재성'],
+    ],
+    신강: [
+      ['받기만 할 때', '보살핌만 받고 있으면 오히려 답답해집니다. 내보낼 자리가 있어야 풀립니다', '인성'],
+      ['나눠야 할 때', '같은 것을 놓고 겨루는 자리에서 소모가 큽니다. 내 몫을 먼저 그어두세요', '비겁'],
+    ],
+    중화: [
+      ['한쪽으로 오래 기울 때', '어느 쪽으로든 오래 치우치면 지칩니다. 원래 균형으로 버티는 쪽입니다', '치우침'],
+    ],
+  };
+  const FILL = {
+    목: ['새로 시작하는 것', '계획을 세우고 뭔가를 벌이면 힘이 돕니다. 화분 하나, 산책 한 번도 됩니다'],
+    화: ['드러내는 것', '말하고 보여주면 풀립니다. 밝은 자리, 사람 만나는 자리가 약입니다'],
+    토: ['자리를 지키는 것', '규칙적인 일과와 익숙한 자리가 힘이 됩니다. 정리하면 마음도 정리됩니다'],
+    금: ['끊고 정리하는 것', '안 쓰는 것을 버리면 숨이 트입니다. 결정을 미루지 않는 쪽이 편합니다'],
+    수: ['쉬고 궁리하는 것', '혼자 있는 시간과 물가가 회복입니다. 읽고 생각하는 데서 채워집니다'],
+  };
+
+  function jichim(R) {
+    const a = R.analysis || E.strengthOf(R.pillars);
+    const 깎 = DRAIN[a.strength] || DRAIN['중화'];
+    const 채 = (a.yongCandidates || []).slice(0, 2).map(el => ({ 오행: el, 말: FILL[el] || ['―', ''] }));
+    const 빈 = (a.missing || []).map(el => ({ 오행: el, 말: FILL[el] || ['―', ''] }));
+    return { 강약: a.강약 || a.strength, 깎, 채, 빈 };
+  }
+
+  function drawJichim(name, v) {
+    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const wrap = (t, n) => {
+      const out = []; let cur = '';
+      String(t).split(' ').forEach(w => {
+        if ((cur + ' ' + w).trim().length <= (n || 27)) cur = (cur + ' ' + w).trim();
+        else { out.push(cur); cur = w; }
+      });
+      if (cur) out.push(cur);
+      return out.slice(0, 2);
+    };
+    let y = 158, body = '';
+    body += '<text x="44" y="' + y + '" font-size="11.5" fill="#9a8090" letter-spacing="2">이럴 때 지칩니다</text>'; y += 26;
+    v.깎.forEach(d => {
+      body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="15.5" font-weight="700" fill="#5a3a4a">' + es(d[0]) + '</text>'; y += 20;
+      wrap(d[1]).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#6a5460">' + es(l) + '</text>'; y += 17; });
+      y += 10;
+    });
+    y += 8;
+    body += '<line x1="44" y1="' + y + '" x2="316" y2="' + y + '" stroke="#e2d2da"/>'; y += 28;
+    body += '<text x="44" y="' + y + '" font-size="11.5" fill="#7d9484" letter-spacing="2">이것으로 채웁니다</text>'; y += 26;
+    v.채.forEach(k => {
+      body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="15.5" font-weight="700" fill="#2f4a36">'
+        + es(k.말[0]) + ' <tspan font-size="11.5" font-weight="400" fill="#7d9484">' + es(k.오행) + '</tspan></text>'; y += 20;
+      wrap(k.말[1]).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>'; y += 17; });
+      y += 10;
+    });
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
+      + '<defs><linearGradient id="jc" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#fbf5f7"/><stop offset="1" stop-color="#eff2ec"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="16" fill="url(#jc)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#dccdd4" stroke-width="1"/>'
+      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#9a8090" letter-spacing="4">지칠 때와 채울 때</text>'
+      + '<text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#4a3240">'
+      + es(name) + '님</text>'
+      + '<text x="180" y="112" text-anchor="middle" font-size="12" fill="#9a8090">' + es(v.강약) + ' · 기운이 도는 자리와 새는 자리</text>'
+      + body
+      + (v.빈.length
+        ? '<text x="44" y="500" font-size="11.5" fill="#9a8090">평생 얇은 고리 — ' + es(v.빈.map(b => b.오행).join('·'))
+          + ' : ' + es(v.빈.map(b => b.말[0]).join(' · ')) + '</text>' : '')
+      + '<text x="180" y="528" text-anchor="middle" font-size="11" fill="#9a8090">지치는 것은 약해서가 아니라 결이 그렇기 때문입니다</text>'
+      + '<text x="180" y="546" text-anchor="middle" font-size="10" fill="#c0aab4" letter-spacing="2">chaeksa.kr</text>'
+      + '</svg>';
+  }
+
   const REL_WORD = {
     비견: ['나란히 선 사람', '편한데, 같은 것을 원할 때는 겨루게 됩니다'],
     겁재: ['같은 것을 바라보는 사람', '가까울수록 나눠야 합니다. 안 그러면 뺏기는 기분이 듭니다'],
@@ -1646,5 +1724,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, naepyeon, drawNaepyeon, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

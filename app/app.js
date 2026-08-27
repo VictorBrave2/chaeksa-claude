@@ -315,6 +315,7 @@
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'inyeon') renderInyeon();
     if (tab === 'naepyeon') renderNaepyeon();
+    if (tab === 'jichim') renderJichim();
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
@@ -439,6 +440,10 @@
     const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
     if (T) {
       try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      try { const jc = T.jichim(R);
+        set('tiJcBig', jc.채.map(k => k.오행).join('·'));
+        set('tiJcSub', jc.깎[0][0] + ' 지치고 · ' + jc.채.map(k => k.말[0]).join('·') + '으로 채웁니다');
+      } catch (e) {}
       try { const np = T.naepyeon(R, today);
         set('tiNpBig', np.결.map(k => k.오행).join('·'));
         set('tiNpSub', np.결.map(k => k.이름).join(' · ') + '의 사람');
@@ -1609,6 +1614,25 @@
   }
 
   // ───── 연애·인연 — 도화첩 ─────
+  // ───── 지칠 때와 채울 때 ─────
+  let jcFor = null;
+  function renderJichim() {
+    const T = window.ChaeksaTypecard; if (!T || !T.jichim || !$('jcSvg')) return;
+    if (jcFor === R) return;
+    const v = T.jichim(R); jcFor = R;
+    $('jcSvg').innerHTML = T.drawJichim(profile.name || '당신', v);
+    const fl = $('jcFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    $('jcNote').textContent = '채우는 것은 ' + v.채.map(k => k.오행).join('·')
+      + (v.빈.length ? ' · 평생 얇은 고리는 ' + v.빈.map(b => b.오행).join('·') : '') + '입니다.';
+    $('btnJcShare').onclick = async () => {
+      const b = $('btnJcShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try { const r = await T.share($('jcSvg').innerHTML, '지칠때와채울때');
+        b.textContent = r === 'shared' ? '공유 완료!' : r === 'copied' ? '복사됐어요' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false; setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
+    };
+  }
+
   // ───── 내 편이 되어주는 사람 ─────
   let npFor = null;
   function renderNaepyeon() {
