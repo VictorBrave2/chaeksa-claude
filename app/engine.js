@@ -387,17 +387,11 @@
   /** 원국 천간끼리의 합거. 일간은 빼고, 붙어 있는 연간-월간만 본다.
    *  월간-시간은 일간을 사이에 둔 격합(隔合)이라 여기서는 세지 않는다.
    *
-   *  합은 1:1 일 때만 성립한다(쟁합불합 爭合不合). 같은 천간이 판에 둘이면
-   *  다투느라 못 묶는다. 그래서 합거는 고정이 아니다 — 뒤에 같은 천간이
-   *  하나 더 들어오면 짝을 나눠 가지므로 먼저 묶였던 명령이 돌아온다. */
+   *  쟁합(같은 천간이 둘이면 합이 안 된다)은 넣지 않는다. 시간을 합 상대로는
+   *  안 세면서 방해자로만 세는 것이 앞뒤가 안 맞았다 — 참여 못 하면 방해도 못 한다. */
   function natalHap(pillars) {
     const out = {};
-    if (!isHap(pillars.year.stem, pillars.month.stem)) return out;
-    const seats = [pillars.year.stem, pillars.month.stem];
-    if (pillars.hour) seats.push(pillars.hour.stem);
-    const cnt = (st) => seats.filter(v => v === st).length;
-    if (cnt(pillars.year.stem) !== 1 || cnt(pillars.month.stem) !== 1) return out;
-    out.year = 'month'; out.month = 'year';
+    if (isHap(pillars.year.stem, pillars.month.stem)) { out.year = 'month'; out.month = 'year'; }
     return out;
   }
 

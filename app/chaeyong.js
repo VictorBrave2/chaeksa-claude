@@ -148,29 +148,29 @@
     if (p.hour) { pushStem('hour', p.hour.stem); push(E.BRANCH_ELEM[p.hour.branch], W.hourBranch); }
 
     // ── 합거 판정 ──
-    // 합은 1:1 일 때만 성립한다(쟁합불합). 같은 천간이 판에 둘이면 다투느라 못 묶는다.
-    // 그래서 합거는 한 번 걸리고 끝나는 것이 아니라 **층마다 다시 판정한다** —
-    // 세운이 묶어놓은 정관을 그 해의 월운·일운이 풀 수 있다.
-    // 壬 이 하나 더 들어오면 丁 이 둘을 다 못 묶으므로 원국의 壬 이 명령을 되찾는다.
+    // 합에 묶인 천간은 명령을 못 낸다. 그 자리는 비고, 그 사람은 그동안
+    // 자기 명령이 아니라 운(해·달·날)의 천간이 주는 명령을 받는다.
+    //
+    // **운이 와서 합을 푸는 일은 없다.** 壬 운이 온 것은 정관이 와서 빈자리를
+    // 채운 것이지 원국의 壬 이 되살아난 것이 아니고, 丁 운이 온 것은 비견이
+    // 하나 더 온 것일 뿐 관과는 무관하다. 운은 언제나 제 십신으로 온다.
+    // (한때 쟁합으로 합이 풀리게 짰다가 걷어냈다 — 사장님 정의에서 벗어난 것이었다.)
     const 자리이름 = { year: '연간', month: '월간', hour: '시간' };
     const 운천간들 = [];        // 그 층까지 판에 올라온 운의 천간
     const 합거자리 = {};        // 자리 -> 묶은 쪽 이름
 
     function 합거재판정() {
       Object.keys(합거자리).forEach(k => delete 합거자리[k]);
-      Object.keys(천간칸).forEach(k => { 천간칸[k].w = 천간힘(천간칸[k].stem); });   // 일단 되살린다
-      const 판 = [];
-      Object.keys(천간칸).forEach(k => 판.push({ key: k, stem: 천간칸[k].stem, 원국: true, name: '원국' }));
-      운천간들.forEach((v, i) => 판.push({ key: '운' + i, stem: v.stem, 원국: false, name: v.name }));
-      for (let x = 0; x < 5; x++) {
-        const A = 판.filter(v => v.stem === x), B = 판.filter(v => v.stem === x + 5);
-        if (A.length !== 1 || B.length !== 1) continue;      // 쟁합·투합 — 합이 안 된다
-        const a = A[0], b = B[0];
-        // 원국끼리는 붙어 있는 연간-월간만. 일간을 사이에 둔 격합은 세지 않는다.
-        if (a.원국 && b.원국 && [a.key, b.key].sort().join('-') !== 'month-year') continue;
-        if (a.원국) { 합거자리[a.key] = b.name; 천간칸[a.key].w = 0; }
-        if (b.원국) { 합거자리[b.key] = a.name; 천간칸[b.key].w = 0; }
-      }
+      Object.keys(천간칸).forEach(k => { 천간칸[k].w = 천간힘(천간칸[k].stem); });
+      // 원국 내부 — 붙어 있는 연간-월간만
+      Object.keys(E.natalHap(p)).forEach(k => { 합거자리[k] = '원국'; 천간칸[k].w = 0; });
+      // 운 — 자리 없이 온다. 아직 안 묶인 원국 천간 중 명령이 가장 큰 하나를 데려간다.
+      운천간들.forEach(v => {
+        const 후보 = ['year', 'month', 'hour']
+          .filter(k => 천간칸[k] && !합거자리[k] && E.isHap(천간칸[k].stem, v.stem))
+          .sort((x, y) => 천간칸[y].w - 천간칸[x].w);
+        if (후보.length) { 합거자리[후보[0]] = v.name; 천간칸[후보[0]].w = 0; }
+      });
     }
     합거재판정();
     const 원국합거 = Object.keys(합거자리).slice();
@@ -247,9 +247,10 @@
       const 합거전 = Object.keys(합거자리);
       운천간들.push({ stem: s.gz.stem, name: s.name });
       합거재판정();
-      const 합거후 = Object.keys(합거자리);
-      const 묶임 = 합거후.filter(k => 합거전.indexOf(k) < 0);
-      const 풀림 = 합거전.filter(k => 합거후.indexOf(k) < 0);
+      const 묶임 = Object.keys(합거자리).filter(k => 합거전.indexOf(k) < 0);
+      // 빈 자리를 같은 천간이 채우러 왔는가 — 원국의 그것이 되살아난 것은 아니다.
+      const 채움 = Object.keys(합거자리)
+        .filter(k => 합거자리[k] !== '원국' && 천간칸[k].stem === s.gz.stem);
 
       // 판정이 끝났으니 이제 用을 體에 편입한다 (다음 층의 體가 된다)
       items.push({ elem: E.STEM_ELEM[s.gz.stem], w: 운힘 });
@@ -269,7 +270,7 @@
         rels: [...new Set(rels)],
         extras,
         합거묶임: 묶임.map(k => `${자리이름[k]} ${E.STEMS[천간칸[k].stem]}(${godOf(천간칸[k].stem)})`),
-        합거풀림: 풀림.map(k => `${자리이름[k]} ${E.STEMS[천간칸[k].stem]}(${godOf(천간칸[k].stem)})`),
+        빈자리채움: 채움.map(k => `${자리이름[k]} ${godOf(천간칸[k].stem)}`),
         note: buildNote(s.name, god, group, bodyLab, value, extras, rels, bodyLab !== afterLab ? afterLab : null),
       });
     }
