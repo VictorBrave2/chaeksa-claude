@@ -1133,10 +1133,21 @@
   function showCompat(you0) {
     const you = E.calc(you0), T = window.ChaeksaTypecard;
     const meName = profile.name || '나', youName = you0.name || '상대';
-    const v = T.relation(R, you, meName, youName);
+    const v = T.relation(R, you, meName, youName, today);
     const box = $('compatResult'); box.classList.remove('hide');
+    // 그 사람이 지금 지나는 운 — 관계의 뼈대 위에 「지금」을 얹는다
+    const n = v.지금;
+    const 지금절 = !n ? '' : `
+      <div class="nowbox">
+        <p class="nk">${esc(youName)}님은 지금</p>
+        ${n.대운 ? `<p class="nb">${esc(n.대운.말[0])}</p>
+          <p class="ns">${esc(n.대운.말[1])}</p>
+          <p class="nm">${esc(n.대운.나이)} · ${esc(n.대운.간지)} 대운 — ${esc(n.대운.십신)}</p>` : ''}
+        ${n.세운 ? `<p class="nm2">올해는 ${esc(n.세운.간지)} · ${esc(n.세운.십신)} — ${esc(n.세운.말[0])}</p>` : ''}
+      </div>`;
     box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
       <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
+      ${지금절}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
         <button class="btn small" id="btnAccShare">카드 저장·공유</button>

@@ -526,6 +526,39 @@
   // 핵심은 **서로에게 무엇인가**다. 상대의 일간에서 나를 보면 십신이 뒤집힌다 —
   // 「그 사람에게 당신은 정재」와 「당신에게 그 사람은 편관」은 다른 이야기다.
   // 이 뒤집기가 이 화면이 파는 것이고, 계산은 이미 있는 것으로 공짜다.
+  // ── 그 사람은 지금 ──
+  // 「우리 둘 사이」가 관계의 뼈대라면, 이것은 **지금 그 사람이 어디에 서 있는가**다.
+  // 같은 사람이라도 지나는 운에 따라 다르게 군다 — 그걸 말해주는 자리다.
+  //
+  // 상대의 대운·세운 십신으로 그가 지금 무엇에 마음을 두고 있는지 읽는다.
+  // 점치는 게 아니라 「지금 이 사람의 관심이 어느 쪽에 가 있다」를 말한다.
+  const NOW_WORD = {
+    비겁: ['제 사람들 쪽에 가 있습니다', '친구·동료와 어울리는 데 마음이 쏠려 있습니다. 둘만의 시간을 내기 어려울 수 있습니다'],
+    식상: ['하고 싶은 걸 하고 싶은 때입니다', '표현하고 만들어 내보이는 데 힘이 갑니다. 말이 많아지고 새 일을 벌이기 쉽습니다'],
+    재성: ['현실을 챙기는 때입니다', '돈·일·눈앞의 것에 마음이 가 있습니다. 바쁘고, 연락이 뜸해질 수 있습니다'],
+    관성: ['자리를 잡고 싶은 때입니다', '책임과 안정 쪽으로 기울어 있습니다. 관계를 정리하거나 매듭짓고 싶어 합니다'],
+    인성: ['안으로 들어가는 때입니다', '생각이 많고 배우거나 쉬고 싶어 합니다. 곁을 내주기까지 시간이 걸립니다'],
+  };
+  const GRP5 = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상',
+                 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
+
+  /** 상대가 지금 지나는 운을 읽는다. Ryou = 상대 사주, when = 기준 시각 */
+  function nowOf(Ryou, when) {
+    const ds = Ryou.pillars.day.stem;
+    const 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const du = E.currentDaeun(Ryou, when || new Date());
+    const tf = E.dateFortune((when || new Date()).getFullYear(),
+                             (when || new Date()).getMonth() + 1,
+                             (when || new Date()).getDate());
+    const 대 = du ? GRP5[신(du.stem)] : null;
+    const 세 = GRP5[신(tf.year.stem)];
+    return {
+      대운: du ? { 간지: E.fmt.pillar(du), 십신: 신(du.stem), 결: 대,
+                   나이: du.startAge + '~' + du.endAge + '세', 말: NOW_WORD[대] } : null,
+      세운: { 간지: E.fmt.pillar(tf.year), 십신: 신(tf.year.stem), 결: 세, 말: NOW_WORD[세] },
+    };
+  }
+
   const REL_WORD = {
     비견: ['나란히 선 사람', '편한데, 같은 것을 원할 때는 겨루게 됩니다'],
     겁재: ['같은 것을 바라보는 사람', '가까울수록 나눠야 합니다. 안 그러면 뺏기는 기분이 듭니다'],
@@ -539,7 +572,7 @@
     정인: ['나를 감싸주는 사람', '곁에 있으면 어리광이 나옵니다. 기대도 되는 사람입니다'],
   };
 
-  function relation(Rme, Ryou, nameA, nameB) {
+  function relation(Rme, Ryou, nameA, nameB, when) {
     const dsA = Rme.pillars.day.stem, dsB = Ryou.pillars.day.stem;
     const dbA = Rme.pillars.day.branch, dbB = Ryou.pillars.day.branch;
     const 신 = (from, to) => E.TEN_GODS[E.tenGod(from, to)];
@@ -595,7 +628,10 @@
     else if (부딪힘.length) 맺음 = '가만두면 어긋납니다. 서로 다르다는 것을 먼저 인정해야 갑니다';
     else 맺음 = '크게 끌리지도 부딪히지도 않습니다. 편안한 대신 잔잔합니다';
 
-    return { 나에게, 그에게, 끌림, 부딪힘, 채움, 맺음, nameA, nameB };
+    // 그 사람이 지금 어디에 서 있는가 — 같은 사람도 지나는 운에 따라 다르게 군다
+    let 지금 = null;
+    try { 지금 = nowOf(Ryou, when); } catch (e) {}
+    return { 나에게, 그에게, 끌림, 부딪힘, 채움, 맺음, 지금, nameA, nameB };
   }
 
   /** 우리 둘 사이 카드. 판결문이 아니라 한 장의 편지처럼 짠다. */
@@ -1446,5 +1482,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
