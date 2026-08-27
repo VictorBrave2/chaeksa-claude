@@ -392,8 +392,14 @@
   //
   // 완전한 국은 **화(化)한다** — 자평진전. 辰월 丁 일간이 운에서 申 이나 子 를
   // 만나 수국을 이루면 성격(成格)이라고 못박아 두었다. 맑아진다는 것이고, 곧 化 다.
-  // 그러면 申·辰 은 수로 작동한다. 오행 개수도, 일간이 받는 것도, 격도 다 바뀐다.
-  // 셋이 하나가 되었으므로 그 하나의 성격은 왕지가 정한다 — 申 도 子 처럼 쓴다.
+  //
+  // **化 는 십성을 버리고 국의 명령을 따르는 것이다.** 세기가 왕지급이 되는 것이 아니다.
+  // 축이 둘인데 섞으면 안 된다.
+  //   오행 소속(십신·통근) — 化 가 바꾼다. 申 은 재성이 아니라 관성이 된다.
+  //   십이운성(그 자리에서의 상태) — 글자 것이라 안 바뀐다. 申 은 여전히 申 이다.
+  //
+  // 따라오는 것이 하나 있다. 申 이 금이 아니게 되면 **庚 은 申 에 뿌리를 못 내린다.**
+  // 국에 먹힌 자리는 국의 오행 천간만 쓴다.
   //
   // 반합(왕지 포함 둘)은 아직 넣지 않는다. 표본의 33% 에 걸리는데
   // 「절반이면 얼마」를 우리가 지어내야 하기 때문이다.
@@ -423,12 +429,23 @@
   }
 
   /** 천간의 힘 — 통근한 자리 하나, 또는 그 천간이 부리는 국 전체. 센 쪽을 쓴다.
-   *  국이 化 하면 셋이 다 왕지이므로 국의 힘 = 자리무게 합 × 왕지에서의 십이운성. */
+   *
+   *  국에 먹힌 자리는 **국의 오행 천간만** 쓸 수 있다(십성이 국을 따라간 자리다).
+   *  국을 부리는 천간은 그 자리들을 **하나로 묶어** 쓴다 — 세기는 각자 제 것.
+   *  왕지로 둔갑시키지 않는다. 化 는 소속이 바뀌는 것이지 세기가 오르는 것이 아니다. */
   function stemPower(st, 자리, 국) {
-    let best = Math.max.apply(null, 자리.map(([b, w]) => w * power(st, b)));
-    (국 || samhapOf(자리)).forEach(g => {
-      if (STEM_ELEM[st] !== g.elem) return;    // 국의 오행과 같은 천간만 국을 부린다
-      const v = g.무게 * power(st, g.왕지);
+    const gs = 국 || samhapOf(자리);
+    const 化 = hwaOf(자리, gs);
+    let best = 0;
+    자리.forEach(([b, w]) => {
+      const g = 化[b];
+      if (g && STEM_ELEM[st] !== g.elem) return;   // 국에 먹힌 자리는 남이 못 쓴다
+      const v = w * power(st, b);
+      if (v > best) best = v;
+    });
+    gs.forEach(g => {
+      if (STEM_ELEM[st] !== g.elem) return;
+      const v = g.자리.reduce((acc, [b, w]) => acc + w * power(st, b), 0);
       if (v > best) best = v;
     });
     return best;
@@ -507,10 +524,9 @@
       const stems = [[STEM_ELEM[pillars.year.stem], 명령('year', pillars.year.stem)],
                      [STEM_ELEM[pillars.month.stem], 명령('month', pillars.month.stem)]];
       if (pillars.hour) stems.push([STEM_ELEM[pillars.hour.stem], 명령('hour', pillars.hour.stem)]);
-      const 化 = hwaOf(자리, 국);
       let sup = 0, tot = 0;
       stems.forEach(([el, w]) => { tot += w; if (siding(de, el) > 0) sup += w; });
-      자리.forEach(([b, w]) => { tot += w; sup += w * power(ds, 化[b] ? 化[b].왕지 : b); });
+      자리.forEach(([b, w]) => { tot += w; sup += w * power(ds, b); });
       const got = BRANCH_ELEM[pillars.month.branch] === de || BRANCH_ELEM[pillars.month.branch] === (de + 4) % 5;
       if (got) { sup += 0.6; tot += 0.6; }
       const v = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
@@ -587,11 +603,11 @@
     // 궁통보감이 寅월 甲에겐 丙을, 卯월 甲에겐 庚을 쓰라고 정반대로 처방하는데도.
     const branches = 지지자리;
     if (pillars.hour) stems.push([STEM_ELEM[pillars.hour.stem], 명령('hour', pillars.hour.stem)]);
-    // 化 한 지지는 왕지로 받는다 — 셋이 하나가 되었으므로 제 글자가 아니라 국의 글자다.
-    const 化 = hwaOf(지지자리, 국);
+    // 일간이 지지에서 받는 것은 십이운성이라 化 와 무관하다 — 축이 다르다.
+    // 申 이 수로 化 해도 丁 에게 申 은 여전히 목욕이다. 化 는 소속을 바꾸지 자리를 안 바꾼다.
     let sup = 0, tot = 0;
     for (const [elem, w] of stems) { tot += w; if (siding(de, elem) > 0) sup += w; }
-    for (const [br, w] of branches) { tot += w; sup += w * power(ds, 化[br] ? 化[br].왕지 : br); }
+    for (const [br, w] of branches) { tot += w; sup += w * power(ds, br); }
     // 왕상휴수사 — 득령이면 가산 0.6 (비대칭: 실령을 더 깎지는 않는다).
     // 본기 방식에서 득령의 무게가 월지 한 자리(2.0)뿐이라 건록·양인격의 21%가
     // 신약으로 떨어졌다. 가산 후 10%로, 앵커 7사례와 실령 사주 판정은 전부 보존.
