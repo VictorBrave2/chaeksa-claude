@@ -389,7 +389,12 @@
       const M = window.ChaeksaMemo; if (!M || !$('memoSub')) return;
       const pid = P2 && P2.active() ? P2.active().id : 'solo';
       const due = M.due(pid, today), next = M.upcoming(pid, today);
-      if (due.length) {
+      const 미기록 = M.tracks(pid).filter(t => !M.loggedThisMonth(t, today));
+      if (미기록.length) {
+        $('memoBadge').textContent = '이번 달';
+        $('memoTitle').textContent = '📓 ' + 미기록[0].q;
+        $('memoSub').textContent = '이번 달은 어떤지 눌러만 주세요' + (미기록.length > 1 ? ' (외 ' + (미기록.length - 1) + '건)' : '');
+      } else if (due.length) {
         $('memoBadge').textContent = '꺼낼 것';
         $('memoTitle').textContent = '📓 ' + due[0].q;
         $('memoSub').textContent = M.label(due[0].ym) + ' — 말씀하신 그때입니다' + (due.length > 1 ? ' (외 ' + (due.length - 1) + '건)' : '');
@@ -1047,9 +1052,79 @@
     </div>`;
   }
 
+  let memoKind = 'track';   // 기본은 '계속되는 일' — 비서가 값어치를 내는 쪽이다
+
+  function memoTrackRow(it) {
+    const M = window.ChaeksaMemo;
+    const logs = (it.logs || []).slice().reverse();
+    const 이번달 = M.loggedThisMonth(it, today);
+    const pat = M.pattern(it, R);
+    const 기록 = logs.length
+      ? `<div class="mm-logs">${logs.slice(0, 6).map(l => {
+          const o = M.OUTCOMES[l.result] || {};
+          return `<span class="mm-log" title="${esc(l.note || '')}"><b style="color:${o.col}">${o.mark}</b> ${M.label(l.ym).replace(/^\d+년 /, '')}</span>`;
+        }).join('')}${logs.length > 6 ? `<span class="mm-log mm-dim">외 ${logs.length - 6}달</span>` : ''}</div>`
+      : '<div class="mm-line">아직 기록이 없습니다.</div>';
+    // 말할 수 있는 것만 말한다. 두세 달로 단정하면 그게 점집이다.
+    let 패턴 = '';
+    const 조각 = [];
+    if (pat && pat.engine) {
+      pat.engine.forEach(e => 조각.push(e.side === '좋다'
+        ? `제가 <b>좋다</b>고 본 ${e.n}달 중 <b>${e.hit}달</b>이 실제로 괜찮으셨습니다`
+        : `제가 <b>아니라</b>고 본 ${e.n}달 중 <b>${e.hit}달</b>이 실제로 그랬습니다`));
+    }
+    if (pat && pat.god) {
+      if (pat.god.worst) 조각.push(`<b>${esc(pat.god.worst.g)}</b> 달이 유독 힘드셨습니다 (${pat.god.worst.n}달 중 ${pat.god.worst.bad}달)`);
+      if (pat.god.best) 조각.push(`<b>${esc(pat.god.best.g)}</b> 달은 나으셨습니다 (${pat.god.best.n}달 중 ${pat.god.best.good}달)`);
+    }
+    if (조각.length) 패턴 = `<div class="mm-pat">${pat.n}달치로 보면 — ${조각.join('. ')}.</div>`;
+    else if (pat && pat.need > 0) 패턴 = `<div class="mm-pat mm-dim">${pat.need}달만 더 쌓이면 말씀드릴 수 있습니다.</div>`;
+    else if (logs.length) 패턴 = `<div class="mm-pat mm-dim">아직 한쪽으로 기울지 않았습니다. 더 지켜보겠습니다.</div>`;
+    const 물음 = 이번달
+      ? '<div class="mm-line mm-dim">이번 달은 기록하셨습니다. 다시 누르면 덮어씁니다.</div>'
+      : '';
+    return `<div class="mm">
+      <div class="mm-head"><b>${esc(it.q)}</b><span class="mm-when">${logs.length}달째</span></div>
+      ${기록}${패턴}${물음}
+      <div class="mm-ask">이번 달은 어떻습니까?
+        <button class="chip" data-tid="${it.id}" data-r="good">○ 괜찮다</button>
+        <button class="chip" data-tid="${it.id}" data-r="soso">△ 그저 그렇다</button>
+        <button class="chip" data-tid="${it.id}" data-r="bad">✕ 힘들다</button></div>
+      <button class="mm-del" data-del="${it.id}" aria-label="지우기">지우기</button>
+    </div>`;
+  }
+
   function renderMemo() {
     const M = window.ChaeksaMemo; if (!M || !$('memoQ')) return;
     const pid = memoPersonId();
+    // 종류 고르기 — 무엇을 묻는지가 달라진다
+    $('memoKind').querySelectorAll('button').forEach(b => {
+      b.classList.toggle('on', b.dataset.kind === memoKind);
+      b.onclick = () => { memoKind = b.dataset.kind; renderMemo(); };
+    });
+    const 계속 = memoKind === 'track';
+    $('memoQLabel').textContent = 계속 ? '무엇이 계속 마음에 걸립니까' : '무엇을 하려 하십니까';
+    $('memoQ').placeholder = 계속 ? '예) 허리 통증 / 가게 매출 / 아이 성적 / 잠 못 드는 것'
+                                  : '예) 이직 / 계약 / 이사 / 시험';
+    $('memoWhen').classList.toggle('hide', 계속);
+    $('memoKindNote').textContent = 계속
+      ? '달마다 어땠는지 눌러 두시면, 어떤 달에 힘든지 제가 찾아 말씀드립니다.'
+      : '그 달이 왔을 때 먼저 꺼내 드립니다.';
+    $('btnMemoAdd').textContent = 계속 ? '이 일을 지켜본다' : '이 판단을 남긴다';
+
+    // 계속되는 일 목록
+    const tks = M.tracks(pid);
+    $('memoTrackCard').classList.toggle('hide', !tks.length);
+    $('memoTracks').innerHTML = tks.map(memoTrackRow).join('');
+    $('memoTracks').querySelectorAll('button[data-tid]').forEach(b => b.onclick = () => {
+      const note = prompt('한 줄로 남기시겠습니까? (건너뛰려면 비워두세요)') || '';
+      M.log(b.dataset.tid, today.getFullYear(), today.getMonth() + 1, b.dataset.r, note, R);
+      renderMemo(); renderHome(); renderToday();
+    });
+    $('memoTracks').querySelectorAll('button[data-del]').forEach(b => b.onclick = () => {
+      if (!confirm('이 기록을 지웁니다. 계속할까요?')) return;
+      M.remove(b.dataset.del); renderMemo(); renderHome(); renderToday();
+    });
     // 연·월 고르기 — 이번 달부터 24개월
     if (!$('memoY').options.length) {
       const ys = [today.getFullYear(), today.getFullYear() + 1, today.getFullYear() + 2];
@@ -1104,7 +1179,8 @@
     const M = window.ChaeksaMemo;
     const q = $('memoQ').value.trim();
     if (!q) { $('memoQ').focus(); return; }
-    M.add(memoPersonId(), q, +$('memoY').value, +$('memoM').value, R);
+    if (memoKind === 'track') M.track(memoPersonId(), q);
+    else M.add(memoPersonId(), q, +$('memoY').value, +$('memoM').value, R);
     $('memoQ').value = '';
     renderMemo(); renderHome(); renderToday();
   };
@@ -1112,9 +1188,21 @@
   // 비서가 먼저 말을 거는 자리 — 오늘 탭 맨 위
   function renderTodayMemo() {
     const M = window.ChaeksaMemo, box = $('todayMemo'); if (!M || !box) return;
-    const due = M.due(memoPersonId(), today);
-    box.classList.toggle('hide', !due.length);
-    if (!due.length) return;
+    const pid = memoPersonId();
+    const due = M.due(pid, today);
+    const 미기록 = M.tracks(pid).filter(t => !M.loggedThisMonth(t, today));
+    box.classList.toggle('hide', !due.length && !미기록.length);
+    if (!due.length && !미기록.length) return;
+    if (!due.length) {
+      // 계속 지켜보는 일 — 이번 달을 아직 안 적었다
+      const t0 = 미기록[0];
+      box.innerHTML = `<h2>📓 지켜보고 있는 것</h2>
+        <div class="brief" style="font-size:15px"><p><b>${esc(t0.q)}</b> — 이번 달은 어떻습니까?</p>
+        <p style="color:var(--ink2)">${(t0.logs || []).length}달치가 쌓여 있습니다${미기록.length > 1 ? ` (외 ${미기록.length - 1}건)` : ''}.</p></div>
+        <button class="btn ghost small" id="btnTodayMemoGo" style="margin-top:10px">비망록 열기</button>`;
+      $('btnTodayMemoGo').onclick = () => go('memo');
+      return;
+    }
     const it = due[0];
     const 지남 = it.ym < (today.getFullYear() * 100 + today.getMonth() + 1);
     box.innerHTML = `<h2>📓 말씀하신 것</h2>

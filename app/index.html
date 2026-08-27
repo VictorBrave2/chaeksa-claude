@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=155">
+<link rel="stylesheet" href="style.css?v=157">
 </head>
 <body>
 <div class="wrap">
@@ -258,16 +258,28 @@
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card">
         <h2>📓 비망록</h2>
-        <p class="hint" style="margin:0 0 14px">묻고 끝내면 점집이고, 남겨두면 비서입니다. 무엇을 언제 할지 적어두면 <b>그때의 판단을 함께 박제</b>해 뒀다가 그 달이 왔을 때 꺼내 드립니다.</p>
-        <label for="memoQ">무엇을 하려 하십니까</label>
-        <input id="memoQ" type="text" maxlength="60" placeholder="예) 이직 / 계약 / 이사 / 시험">
-        <label for="memoY" style="margin-top:12px">언제로 보고 계십니까</label>
-        <div style="display:flex;gap:8px">
-          <select id="memoY" aria-label="연"></select>
-          <select id="memoM" aria-label="월"></select>
+        <p class="hint" style="margin:0 0 14px">묻고 끝내면 점집이고, 남겨두면 비서입니다. 적어두면 <b>그때의 판단을 함께 박제</b>해 뒀다가 그 달이 왔을 때 꺼내 드립니다.</p>
+        <div id="memoKind" class="seg" style="margin-bottom:14px">
+          <button data-kind="track" class="on">계속되는 일</button>
+          <button data-kind="event">한 번의 결정</button>
         </div>
-        <p class="hint" id="memoPeek" style="margin-top:10px"></p>
+        <label for="memoQ" id="memoQLabel">무엇이 계속 마음에 걸립니까</label>
+        <input id="memoQ" type="text" maxlength="60" placeholder="예) 허리 통증 / 가게 매출 / 아이 성적 / 잠 못 드는 것">
+        <div id="memoWhen" class="hide">
+          <label for="memoY" style="margin-top:12px">언제로 보고 계십니까</label>
+          <div style="display:flex;gap:8px">
+            <select id="memoY" aria-label="연"></select>
+            <select id="memoM" aria-label="월"></select>
+          </div>
+          <p class="hint" id="memoPeek" style="margin-top:10px"></p>
+        </div>
+        <p class="hint" id="memoKindNote" style="margin-top:10px"></p>
         <button class="btn" id="btnMemoAdd">이 판단을 남긴다</button>
+      </section>
+
+      <section class="card hide" id="memoTrackCard">
+        <h2>계속되는 일</h2>
+        <div id="memoTracks"></div>
       </section>
 
       <section class="card hide" id="memoDueCard">
@@ -710,28 +722,28 @@
   </div>
 </div>
 
-<script src="config.js?v=155"></script>
-<script src="track.js?v=155"></script>
-<script src="cloud.js?v=155"></script>
-<script src="usage.js?v=155"></script>
-<script src="places.js?v=155"></script>
-<script src="people.js?v=155"></script>
-<script src="astro.js?v=155"></script>
-<script src="lunar.js?v=155"></script>
-<script src="engine.js?v=155"></script>
-<script src="chaeyong.js?v=155"></script>
-<script src="brief.js?v=155"></script>
-<script src="typecard.js?v=155"></script>
-<script src="memo.js?v=155"></script>
-<script src="classic.js?v=155"></script>
-<script src="calendar.js?v=155"></script>
-<script src="compat.js?v=155"></script>
-<script src="tongbyeon.js?v=155"></script>
-<script src="rules-wealth-love.js?v=155"></script>
-<script src="rules-health-study-move.js?v=155"></script>
-<script src="consult.js?v=155"></script>
-<script src="share.js?v=155"></script>
-<script src="ai.js?v=155"></script>
-<script src="app.js?v=155"></script>
+<script src="config.js?v=157"></script>
+<script src="track.js?v=157"></script>
+<script src="cloud.js?v=157"></script>
+<script src="usage.js?v=157"></script>
+<script src="places.js?v=157"></script>
+<script src="people.js?v=157"></script>
+<script src="astro.js?v=157"></script>
+<script src="lunar.js?v=157"></script>
+<script src="engine.js?v=157"></script>
+<script src="chaeyong.js?v=157"></script>
+<script src="brief.js?v=157"></script>
+<script src="typecard.js?v=157"></script>
+<script src="memo.js?v=157"></script>
+<script src="classic.js?v=157"></script>
+<script src="calendar.js?v=157"></script>
+<script src="compat.js?v=157"></script>
+<script src="tongbyeon.js?v=157"></script>
+<script src="rules-wealth-love.js?v=157"></script>
+<script src="rules-health-study-move.js?v=157"></script>
+<script src="consult.js?v=157"></script>
+<script src="share.js?v=157"></script>
+<script src="ai.js?v=157"></script>
+<script src="app.js?v=157"></script>
 </body>
 </html>

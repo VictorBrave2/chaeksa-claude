@@ -758,3 +758,9 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
   font-size:11px;color:var(--ink3);font-family:inherit;padding:2px 4px}
 .mm-del:hover{color:var(--g0-ink)}
 .mm-sep{font-size:11.5px;letter-spacing:.14em;color:var(--ink3);margin:16px 0 9px}
+.mm-logs{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.mm-log{font-size:12px;color:var(--ink2);background:var(--bg);border:1px solid var(--line);
+  border-radius:999px;padding:3px 9px;white-space:nowrap}
+.mm-pat{margin-top:9px;font-size:12.5px;line-height:1.65;color:var(--ink);
+  background:var(--accent-soft);border-radius:9px;padding:9px 11px}
+.mm-pat.mm-dim{background:none;padding:0;color:var(--ink3)}
