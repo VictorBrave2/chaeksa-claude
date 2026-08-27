@@ -394,6 +394,130 @@
       + '</svg>';
   }
 
+  // ── 인연이 오는 해 ──
+  // 2026-08-28 새로 만들었다. 여성향 검색어 1위권인데 지금까지 없었다.
+  //
+  // 통설을 그대로 쓴다 — **여성은 관성, 남성은 재성**이 배우자성이다.
+  // 그 글자가 하늘(세운 천간)에 오는 해, 배우자 자리(일지)와 지지가 합하는 해를 센다.
+  // 대운은 십 년을 통째로 물들이므로 따로 얹는다.
+  //
+  // 단정하지 않는다. 「이 해에 결혼합니다」가 아니라 「사람이 들어오기 쉬운 해」다.
+  // 이미 곁에 있는 사람과 깊어지는 해일 수도 있다 — 그렇게 말한다.
+  function inyeon(R, fromYear, n) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const W = E.NATAL_WEIGHT;
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 배우자오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;   // 남=재성 · 여=관성
+    const 배우자이름 = 남 ? '재성' : '관성';
+
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
+                  [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+
+    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+    const SAM = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
+    const 충 = (a, b) => ((b - a + 12) % 12) === 6;
+
+    const rows = [];
+    for (let i = 0; i < (n || 10); i++) {
+      const y = fromYear + i;
+      const tf = E.dateFortune(y, 6, 15);
+      const du = E.currentDaeun(R, new Date(y, 5, 15));
+      let s = 0; const 이유 = [];
+
+      // 하늘에 배우자성이 오는가 — 뜬 것과 뿌리 내린 것은 다르다
+      if (E.STEM_ELEM[tf.year.stem] === 배우자오행) {
+        const 힘 = E.stemPower(tf.year.stem, 자리.concat([[tf.year.branch, 1.0]]));
+        s += 28 + Math.min(22, Math.round(힘 * 12));
+        이유.push(힘 > 0.8 ? '인연의 글자가 뿌리까지 내리고 옵니다'
+                           : '인연의 글자가 하늘에 뜹니다');
+      }
+      // 배우자 자리가 어떻게 되는가
+      const yb = tf.year.branch;
+      if (YUKHAP[db] === yb) { s += 26; 이유.push('배우자 자리와 육합 — 곁이 채워지는 해입니다'); }
+      else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(yb) >= 0 && db !== yb)) {
+        s += 20; 이유.push('배우자 자리와 삼합 — 같이 굴러가는 해입니다');
+      } else if (충(db, yb) || 충(yb, db)) {
+        s -= 22; 이유.push('배우자 자리가 흔들립니다 — 정리되는 쪽일 수 있습니다');
+      }
+      // 대운은 십 년을 물들인다
+      if (du && E.STEM_ELEM[du.stem] === 배우자오행) { s += 16; 이유.push('지금 대운 자체가 인연 쪽으로 기울어 있습니다'); }
+      if (du && (YUKHAP[db] === du.branch)) { s += 10; 이유.push('대운의 자리도 배우자 자리와 합입니다'); }
+
+      rows.push({ 해: y, 간지: E.fmt.pillar(tf.year), 점수: s, 이유: 이유, gz: tf.year });
+    }
+
+    // 0~100으로 편다 — 이 기간 안에서의 서열이지 절대값이 아니다
+    const raw = rows.map(r => r.점수), hi = Math.max.apply(null, raw), lo = Math.min.apply(null, raw);
+    rows.forEach(r => { r.점수 = hi === lo ? 50 : Math.round((r.점수 - lo) / (hi - lo) * 100); });
+
+    const 좋은해 = rows.slice().sort((a, b) => b.점수 - a.점수).filter(r => r.이유.length).slice(0, 3);
+    const 첫해 = 좋은해.length ? 좋은해.slice().sort((a, b) => a.해 - b.해)[0] : null;
+
+    let 말;
+    if (!첫해) 말 = '앞으로 십 년 안에는 크게 움직이는 자리가 안 보입니다. 조용히 가는 구간입니다';
+    else if (첫해.해 === fromYear) 말 = '올해가 그 자리입니다';
+    else 말 = 첫해.해 + '년이 가장 가깝습니다';
+
+    return { 배우자이름, 남, rows, 좋은해, 첫해, 말 };
+  }
+
+  /** 인연이 오는 해 카드. 막대 열 개와 가장 가까운 해 한 줄. */
+  function drawInyeon(name, v) {
+    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const wrap = (t, n) => {
+      const out = []; let cur = '';
+      String(t).split(' ').forEach(w => {
+        if ((cur + ' ' + w).trim().length <= (n || 24)) cur = (cur + ' ' + w).trim();
+        else { out.push(cur); cur = w; }
+      });
+      if (cur) out.push(cur);
+      return out.slice(0, 3);
+    };
+    const rows = v.rows.slice(0, 10);
+    const w = 26, gap = 4, x0 = 46, base = 372, maxH = 118;
+    let bars = '';
+    rows.forEach((r, i) => {
+      const h = Math.max(4, Math.round(r.점수 / 100 * maxH));
+      const x = x0 + i * (w + gap);
+      const on = v.좋은해.some(g => g.해 === r.해);
+      bars += '<rect x="' + x + '" y="' + (base - h) + '" width="' + w + '" height="' + h + '" rx="4" fill="'
+        + (on ? '#c2708c' : '#e2cfc4') + '"/>';
+      bars += '<text x="' + (x + w / 2) + '" y="' + (base + 15) + '" text-anchor="middle" font-size="9.5" fill="'
+        + (on ? '#8a4a60' : '#a89486') + '">' + String(r.해).slice(2) + '</text>';
+    });
+    const 첫 = v.첫해;
+    const 이유줄 = 첫 ? wrap(첫.이유[0] || '', 26) : [];
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
+      + '<defs><linearGradient id="iy" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#fdf6f2"/><stop offset="1" stop-color="#f3e2dc"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="16" fill="url(#iy)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#dcc4bb" stroke-width="1"/>'
+      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#a5877a" letter-spacing="4">인연이 오는 해</text>'
+      + '<text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#4a3226">'
+      + es(name) + '님</text>'
+      + (첫
+        ? '<text x="180" y="126" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="34" font-weight="900" fill="#b0567a">'
+          + 첫.해 + '</text>'
+          + '<text x="180" y="150" text-anchor="middle" font-size="12.5" fill="#8a6a5c">' + es(첫.간지) + ' · 가장 가까운 자리</text>'
+        : '<text x="180" y="136" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="17" fill="#8a6a5c">조용히 가는 십 년입니다</text>')
+      + 이유줄.map((l, i) => '<text x="180" y="' + (182 + i * 19) + '" text-anchor="middle" font-size="12.5" fill="#6a5448">' + es(l) + '</text>').join('')
+      + '<text x="46" y="248" font-size="11" fill="#a5877a">앞으로 열 해 — 막대가 높을수록 인연 쪽으로 기웁니다</text>'
+      + bars
+      + '<line x1="46" y1="' + (base + 26) + '" x2="314" y2="' + (base + 26) + '" stroke="#e6d2c8"/>'
+      + (v.좋은해.length
+        ? v.좋은해.slice().sort((a, b) => a.해 - b.해).map((g, i) =>
+            '<text x="46" y="' + (426 + i * 22) + '" font-size="12.5" fill="#7a5a48">'
+            + g.해 + '년 ' + es(g.간지) + '</text>'
+            + '<text x="112" y="' + (426 + i * 22) + '" font-size="11.5" fill="#9a7f70">'
+            + es(wrap(g.이유[0] || '', 30)[0] || '') + '</text>').join('')
+        : '')
+      + '<text x="180" y="512" text-anchor="middle" font-size="11" fill="#a5877a">이 순위는 이 십 년 안에서의 서열입니다</text>'
+      + '<text x="180" y="530" text-anchor="middle" font-size="11" fill="#a5877a">이미 곁에 있는 사람과 깊어지는 해일 수도 있습니다</text>'
+      + '<text x="180" y="548" text-anchor="middle" font-size="10" fill="#c4ada0" letter-spacing="2">chaeksa.kr</text>'
+      + '</svg>';
+  }
+
   // ── 우리 둘 사이 ──
   // 2026-08-28 「공범 판결」을 걷어내고 다시 썼다.
   // 죄목·참작·선고로 짜여 있었는데(만나면 사건이 터짐죄 · 합동 소란죄 · 온기 독점죄)
@@ -1322,5 +1446,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=232">
+<link rel="stylesheet" href="style.css?v=233">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -168,6 +168,11 @@
           <span class="ti-k">나의 연애</span>
           <span class="ti-big" id="tiDoBig">🌸 桃花</span>
           <span class="ti-sub" id="tiDoSub">어떤 사람에게 끌리고, 어떻게 사랑하는가</span>
+        </button>
+        <button class="tile" data-open="inyeon">
+          <span class="ti-k">인연이 오는 해</span>
+          <span class="ti-big" id="tiInBig">💗 因緣</span>
+          <span class="ti-sub" id="tiInSub">앞으로 열 해 중 언제 기우는가</span>
         </button>
         <button class="tile" data-open="compat">
           <span class="ti-k">우리 둘 사이</span>
@@ -447,6 +452,22 @@
     </div>
 
     <!-- 독립 콘텐츠: 연애·인연 도화첩 -->
+    <!-- 독립 콘텐츠: 인연이 오는 해 -->
+    <div class="tab hide" data-tab="inyeon">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card warn hide" id="gu-inyeon"><b>성별을 아직 모른다고 하셨습니다.</b> 배우자성은 성별에 따라 재성·관성으로 갈립니다. 지금은 남성 기준으로 계산하고 있으니, 알게 되시면 프로필에서 고쳐주세요.</section>
+      <section class="card">
+        <h2>💗 인연이 오는 해</h2>
+        <p class="hint" style="margin:0 0 12px">앞으로 열 해 중 언제 인연 쪽으로 기우는지 봅니다.
+          배우자성이 하늘에 오는 해와, 배우자 자리(일지)가 합으로 채워지는 해를 셉니다.
+          <b>이 해에 결혼한다는 뜻이 아닙니다</b> — 사람이 들어오기 쉬운 해이고,
+          이미 곁에 있는 사람과 깊어지는 해일 수도 있습니다.</p>
+        <div id="inWrap" class="cardwrap"><div id="inFlip" class="cardflip"><div id="inSvg" class="cardsvg"></div></div>
+          <button class="btn small" id="btnInShare" style="margin-top:12px">카드 저장·공유</button></div>
+        <p class="hint" id="inNote" style="margin-top:10px"></p>
+      </section>
+    </div>
+
     <div class="tab hide" data-tab="dohwa">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card warn hide" id="gu-dohwa"><b>성별을 아직 모른다고 하셨습니다.</b> 배우자성은 성별에 따라 재성·관성으로 갈립니다. 지금은 남성 기준으로 계산해 보여드리고 있으니, 알게 되시면 프로필에서 고쳐주세요.</section>
@@ -790,29 +811,29 @@
   </div>
 </div>
 
-<script src="config.js?v=232"></script>
-<script src="track.js?v=232"></script>
-<script src="cloud.js?v=232"></script>
-<script src="usage.js?v=232"></script>
-<script src="places.js?v=232"></script>
-<script src="people.js?v=232"></script>
-<script src="astro.js?v=232"></script>
-<script src="lunar.js?v=232"></script>
-<script src="engine.js?v=232"></script>
-<script src="chaeyong.js?v=232"></script>
-<script src="brief.js?v=232"></script>
-<script src="typecard.js?v=232"></script>
-<script src="gyeokguk.js?v=232"></script>
-<script src="memo.js?v=232"></script>
-<script src="classic.js?v=232"></script>
-<script src="calendar.js?v=232"></script>
-<script src="compat.js?v=232"></script>
-<script src="tongbyeon.js?v=232"></script>
-<script src="rules-wealth-love.js?v=232"></script>
-<script src="rules-health-study-move.js?v=232"></script>
-<script src="consult.js?v=232"></script>
-<script src="share.js?v=232"></script>
-<script src="ai.js?v=232"></script>
-<script src="app.js?v=232"></script>
+<script src="config.js?v=233"></script>
+<script src="track.js?v=233"></script>
+<script src="cloud.js?v=233"></script>
+<script src="usage.js?v=233"></script>
+<script src="places.js?v=233"></script>
+<script src="people.js?v=233"></script>
+<script src="astro.js?v=233"></script>
+<script src="lunar.js?v=233"></script>
+<script src="engine.js?v=233"></script>
+<script src="chaeyong.js?v=233"></script>
+<script src="brief.js?v=233"></script>
+<script src="typecard.js?v=233"></script>
+<script src="gyeokguk.js?v=233"></script>
+<script src="memo.js?v=233"></script>
+<script src="classic.js?v=233"></script>
+<script src="calendar.js?v=233"></script>
+<script src="compat.js?v=233"></script>
+<script src="tongbyeon.js?v=233"></script>
+<script src="rules-wealth-love.js?v=233"></script>
+<script src="rules-health-study-move.js?v=233"></script>
+<script src="consult.js?v=233"></script>
+<script src="share.js?v=233"></script>
+<script src="ai.js?v=233"></script>
+<script src="app.js?v=233"></script>
 </body>
 </html>

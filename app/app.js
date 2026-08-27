@@ -313,6 +313,7 @@
     if (tab === 'chat') setTimeout(() => $('msgs').scrollTop = 1e9, 0);
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
+    if (tab === 'inyeon') renderInyeon();
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
@@ -437,6 +438,11 @@
     const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
     if (T) {
       try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      try {
+        const iy = T.inyeon(R, today.getFullYear(), 10);
+        if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
+        else set('tiInSub', '앞으로 열 해는 조용한 구간입니다');
+      } catch (e) {}
       if (others.length) { try { const kv = T.childCard(R, E.calc(People().toProfile(others[0])));
         set('tiKidBig', kv.name); set('tiKidSub', others[0].name + ' 기준 — 채워줄 것은 ' + (kv.need || '?')); } catch (e) {} }
       else set('tiKidSub', '아이를 등록하면 열립니다');
@@ -1570,6 +1576,29 @@
   }
 
   // ───── 연애·인연 — 도화첩 ─────
+  // ───── 인연이 오는 해 ─────
+  let inyeonFor = null;
+  function renderInyeon() {
+    const T = window.ChaeksaTypecard; if (!T || !T.inyeon || !$('inSvg')) return;
+    if ($('gu-inyeon')) $('gu-inyeon').classList.toggle('hide', !profile.genderUnknown);
+    if (inyeonFor === R) return;
+    const v = T.inyeon(R, today.getFullYear(), 10);
+    inyeonFor = R;
+    $('inSvg').innerHTML = T.drawInyeon(profile.name || '당신', v);
+    const fl = $('inFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    $('inNote').textContent = v.말 + ' · 배우자성은 ' + v.배우자이름
+      + '(' + (v.남 ? '남성 기준' : '여성 기준') + ')입니다. 이 순위는 열 해 안에서의 서열입니다.';
+    $('btnInShare').onclick = async () => {
+      const b = $('btnInShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('inSvg').innerHTML, '인연이오는해');
+        b.textContent = r === 'shared' ? '공유 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
+    };
+  }
+
   let dohwaFor = null;
   function renderDohwa() {
     const T = window.ChaeksaTypecard; if (!T || !$('dohwaSvg')) return;
