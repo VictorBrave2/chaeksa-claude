@@ -1642,6 +1642,10 @@
     const v = T.jichim(R); jcFor = R;
     $('jcSvg').innerHTML = T.drawJichim(profile.name || '당신', v);
     const fl = $('jcFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    { const nx = $('jcNext'); if (nx) nx.innerHTML = nextStep(
+      '이번 달은 어느 쪽으로 새고 있을까요', '타고난 결까지',
+      '무엇에 지치는지는 원국이 정합니다. 그런데 「지금」은 다릅니다 — 이번 달 어느 쪽으로 기울어 있고 언제 숨이 트이는지는 월운·일운까지 내려가야 보입니다.',
+      (profile.name || '') + '님 상담 — 요즘 왜 이렇게 지치는지, 언제 풀리는지 보고 싶습니다'); }
     $('jcNote').textContent = '채우는 것은 ' + v.채.map(k => k.오행).join('·')
       + (v.빈.length ? ' · 평생 얇은 고리는 ' + v.빈.map(b => b.오행).join('·') : '') + '입니다.';
     $('btnJcShare').onclick = async () => {
@@ -1662,6 +1666,10 @@
     npFor = R;
     $('npSvg').innerHTML = T.drawNaepyeon(profile.name || '당신', v);
     const fl = $('npFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    { const nx = $('npNext'); if (nx) nx.innerHTML = nextStep(
+      '지금 곁에 있는 사람은 어떤가요', '어떤 결이 힘이 되는지까지',
+      '결은 원국이 정하지만, 실제로 곁에 있는 사람이 나에게 어떻게 작용하는지는 두 사주를 마주 놓아야 나옵니다. 이번 달 그 사람이 나에게 어느 쪽으로 오는지도요.',
+      (profile.name || '') + '님 상담 — 지금 곁에 있는 사람이 저에게 어떤 사람인지 보고 싶습니다'); }
     $('npNote').textContent = '채워야 할 기운은 ' + v.결.map(k => k.오행).join('·')
       + '입니다. 생일을 아시는 분이라면 일간이 '
       + v.결.map(k => k.일간.join('·')).join(' 또는 ') + '인지 보시면 됩니다.';
@@ -1722,6 +1730,10 @@
         $('dohwaSvg').innerHTML = T.drawDohwa(profile.name || '당신', v);
         const fl = $('dohwaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('dohwaWrap').classList.remove('hide');
+        { const nx = $('dohwaNext'); if (nx) nx.innerHTML = nextStep(
+          '올해, 어느 달에 움직일까요', '타고난 연애의 결까지',
+          '결은 평생 가는 것이라 해 단위로도 보입니다. 그런데 「언제 움직이는가」는 다릅니다 — 올해 열두 달 중 어느 달에 사람이 들어오고 어느 달이 조용한지는 월운까지 내려가야 나옵니다.',
+          (profile.name || '') + '님 연애 상담 — 올해 어느 달에 움직이는지 보고 싶습니다'); }
         $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
         $('btnDohwaShare').onclick = async () => {
           const b = $('btnDohwaShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
