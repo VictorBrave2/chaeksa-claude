@@ -813,7 +813,10 @@
     }, {
       title: '祿牌', sub: '호조 재물 그릇 감정서', name: name,
       key: '재물 점수 ' + w.score, big: w.grade.han,
-      note: w.grade.note, rare: w.grade.name + (w.top == null ? '' : ' · 상위 ' + w.top + '%'),
+      note: w.grade.note,
+      // 상위 %는 위쪽 절반일 때만 앞세운다. 아래쪽 사람에게 등수를 큰 글씨로
+      // 박으면 그건 재미가 아니라 한 대 더 때리는 것이다(점수는 아래에 그대로 남는다).
+      rare: w.grade.name + (w.top != null && w.top <= 50 ? ' · 상위 ' + w.top + '%' : ''),
       lines: w.lines, foot: 'chaeksa.kr · 재성 세력·유통·구멍으로 계산',
     });
   }
@@ -926,7 +929,15 @@
     } else {
       lines.push('첫 대운 ' + list[0].d.startAge + '세부터 열 해마다 판이 바뀝니다');
     }
-    lines.push('가장 높은 구간은 ' + list[hi].d.startAge + '~' + list[hi].d.endAge + '세, 가장 낮은 구간은 ' + list[lo].d.startAge + '~' + list[lo].d.endAge + '세');
+    // 최고 구간이 과거면 '당신 전성기는 지났다'로 읽힌다. 앞에 남은 것을 함께 짚는다.
+    if (curIdx >= 0 && hi < curIdx) {
+      let ah = -1;
+      for (let i = curIdx + 1; i < n; i++) if (ah < 0 || list[i].v > list[ah].v) ah = i;
+      if (ah >= 0) lines.push('앞으로 남은 구간 중에는 ' + list[ah].d.startAge + '~' + list[ah].d.endAge + '세가 가장 높습니다');
+      else lines.push('가장 낮은 구간은 ' + list[lo].d.startAge + '~' + list[lo].d.endAge + '세였습니다');
+    } else {
+      lines.push('가장 높은 구간은 ' + list[hi].d.startAge + '~' + list[hi].d.endAge + '세, 가장 낮은 구간은 ' + list[lo].d.startAge + '~' + list[lo].d.endAge + '세');
+    }
     lines.push('곡선은 대운이 내 사주에 필요한 것을 갖고 오는가로 잽니다');
     return { list, hi, lo, curIdx, headIdx: hi, kind, kindNote: CURVE_KIND[kind],
              peak: list[hi].d, low: list[lo].d, lines,
