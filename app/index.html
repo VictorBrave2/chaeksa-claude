@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=148">
+<link rel="stylesheet" href="style.css?v=151">
 </head>
 <body>
 <div class="wrap">
@@ -149,6 +149,11 @@
         </button>
       </div>
       <div class="tiles">
+        <button class="tile" data-open="child">
+          <span class="ti-k">우리 아이</span>
+          <span class="ti-big" id="tiKidBig">👶 育兒</span>
+          <span class="ti-sub" id="tiKidSub">아이에게 무엇을 채워줘야 하나</span>
+        </button>
         <button class="tile" data-open="year">
           <span class="ti-k">열두 달 흐름</span>
           <span class="ti-big" id="tiYearBig">🗓 歲運</span>
@@ -274,6 +279,21 @@
         <a class="btn" id="btnTaekMail" href="#" style="display:block;text-align:center;text-decoration:none">📧 상담 문의하기</a>
         <p class="hint" style="margin-top:10px">개업·이전·계약 등 다른 택일도 같은 방식으로 봐드립니다.</p>
       </section>
+    </div>
+
+    <!-- 독립 콘텐츠: 우리 아이 -->
+    <div class="tab hide" data-tab="child">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>👶 우리 아이 설명서</h2>
+        <p class="hint" style="margin:0 0 12px">부모와 아이의 일간 관계, 그리고 아이에게 무엇을 채워줘야 하는지를 궁통보감 조후로 봅니다. 기준이 되는 부모는 지금 보고 있는 <b id="kidMe"></b>입니다.</p>
+        <label>아이를 고르세요</label>
+        <select id="kidPick" aria-label="아이 선택"></select>
+        <button class="btn" id="btnKid">육아첩 받기</button>
+        <button class="btn ghost" id="btnKidAdd">아이 등록하기</button>
+        <p class="hint" style="margin-top:10px">아직 태어나지 않았다면 <b>예정일과 예정 시각</b>으로 등록하시면 됩니다.</p>
+      </section>
+      <section class="card hide" id="kidResult"></section>
     </div>
 
     <!-- 독립 콘텐츠: 열두 달 흐름 -->
@@ -648,27 +668,27 @@
   </div>
 </div>
 
-<script src="config.js?v=148"></script>
-<script src="track.js?v=148"></script>
-<script src="cloud.js?v=148"></script>
-<script src="usage.js?v=148"></script>
-<script src="places.js?v=148"></script>
-<script src="people.js?v=148"></script>
-<script src="astro.js?v=148"></script>
-<script src="lunar.js?v=148"></script>
-<script src="engine.js?v=148"></script>
-<script src="chaeyong.js?v=148"></script>
-<script src="brief.js?v=148"></script>
-<script src="typecard.js?v=148"></script>
-<script src="classic.js?v=148"></script>
-<script src="calendar.js?v=148"></script>
-<script src="compat.js?v=148"></script>
-<script src="tongbyeon.js?v=148"></script>
-<script src="rules-wealth-love.js?v=148"></script>
-<script src="rules-health-study-move.js?v=148"></script>
-<script src="consult.js?v=148"></script>
-<script src="share.js?v=148"></script>
-<script src="ai.js?v=148"></script>
-<script src="app.js?v=148"></script>
+<script src="config.js?v=151"></script>
+<script src="track.js?v=151"></script>
+<script src="cloud.js?v=151"></script>
+<script src="usage.js?v=151"></script>
+<script src="places.js?v=151"></script>
+<script src="people.js?v=151"></script>
+<script src="astro.js?v=151"></script>
+<script src="lunar.js?v=151"></script>
+<script src="engine.js?v=151"></script>
+<script src="chaeyong.js?v=151"></script>
+<script src="brief.js?v=151"></script>
+<script src="typecard.js?v=151"></script>
+<script src="classic.js?v=151"></script>
+<script src="calendar.js?v=151"></script>
+<script src="compat.js?v=151"></script>
+<script src="tongbyeon.js?v=151"></script>
+<script src="rules-wealth-love.js?v=151"></script>
+<script src="rules-health-study-move.js?v=151"></script>
+<script src="consult.js?v=151"></script>
+<script src="share.js?v=151"></script>
+<script src="ai.js?v=151"></script>
+<script src="app.js?v=151"></script>
 </body>
 </html>

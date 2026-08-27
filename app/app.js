@@ -307,6 +307,7 @@
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
+    if (tab === 'child') renderKid();
     if (tab === 'taekil') wireTaekil();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
@@ -366,8 +367,13 @@
       set('tiCourtBig', ch.length ? '죄목 ' + ch.length + '건' : '무혐의');
       set('tiCourtSub', ch.length ? '형량과 양형 이유는 안에서' : '뒤져봤지만 걸린 게 없습니다');
     } catch (e) {}
+    const P2 = People();
+    const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
     if (T) {
       try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      if (others.length) { try { const kv = T.childCard(R, E.calc(People().toProfile(others[0])));
+        set('tiKidBig', kv.name); set('tiKidSub', others[0].name + ' 기준 — 채워줄 것은 ' + (kv.need || '?')); } catch (e) {} }
+      else set('tiKidSub', '아이를 등록하면 열립니다');
       try { const yf = T.yearFlow(R, today.getFullYear(), today);
         set('tiYearBig', yf.bestTxt);
         set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
@@ -377,8 +383,6 @@
       try { const l = T.love(R, new Date(), null); set('tiDoBig', l.key.slice(0, 2)); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
       try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
     }
-    const P2 = People();
-    const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
     set('tiAccSub', !others.length ? '사람을 한 명 더 등록하면 열립니다'
       : others.length === 1 ? others[0].name + '님과 대조해 보기'
       : others[0].name + ' 외 ' + (others.length - 1) + '명과 대조 가능');
@@ -986,6 +990,42 @@
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(body);
   }
+
+  // ───── 우리 아이 — 육아첩 ─────
+  function renderKid() {
+    const P = People(); if (!P || !$('kidPick')) return;
+    const me = P.active();
+    if ($('kidMe')) $('kidMe').textContent = me ? me.name : '';
+    const list = P.list().filter(p => !me || p.id !== me.id);
+    $('kidPick').innerHTML = list.length
+      ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('')
+      : '<option value="">등록된 아이가 없습니다</option>';
+    if (pendingPick && list.some(p => p.id === pendingPick)) $('kidPick').value = pendingPick;
+    pendingPick = null;
+    $('btnKid').disabled = !list.length;
+  }
+  $('btnKidAdd').onclick = () => openPersonForm(null);
+  $('btnKid').onclick = () => {
+    const P = People(), id = $('kidPick').value; if (!id) return;
+    const kid = P.get(id); if (!kid) return;
+    const T = window.ChaeksaTypecard;
+    const Rc = E.calc(P.toProfile(kid));
+    const v = T.childCard(R, Rc);
+    const box = $('kidResult'); box.classList.remove('hide');
+    box.innerHTML = `<h2>${esc(profile.name || '나')} → ${esc(kid.name)}</h2>
+      <div class="cardwrap"><div class="cardflip"><div class="cardsvg" id="kidSvg">${T.drawChild(profile.name || '나', kid.name, v)}</div></div>
+        <button class="btn small" id="btnKidShare">육아첩 자랑하기</button></div>`;
+    $('btnKidShare').onclick = async () => {
+      const b = $('btnKidShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('kidSvg').innerHTML, '육아첩_' + (kid.name || ''));
+        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '육아첩 자랑하기'; }, 2500);
+    };
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // ───── 열두 달 흐름 — 세운도 ─────
   let yearPick = today.getFullYear();

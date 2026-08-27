@@ -1115,5 +1115,84 @@
       + '</svg>';
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow };
+  // ── 우리 아이 — 육아첩(育兒帖) ──
+  // 블로그로 들어오는 사람이 곧 예비 부모다. 아이를 놓고 보는 자리가 없어 만든다.
+  // 축 둘: 부모 일간과 아이 일간의 오행 관계(생·극·비화) + 아이에게 무엇을 채워줄까(조후).
+  const KID_REL = {
+    생출: ['기꺼이 내주는 사이', '내 기운이 아이 쪽으로 흐릅니다. 주는 게 자연스러운 대신, 내가 비지 않게 챙겨야 합니다.'],
+    생입: ['나를 채워주는 아이', '아이가 나를 밀어 올립니다. 이 아이 덕에 내가 풀리는 일이 자주 생깁니다.'],
+    극출: ['내가 다잡는 사이', '내가 기준을 세우는 자리입니다. 옳은 말이라도 세게 나가면 아이가 닫힙니다.'],
+    극입: ['나를 긴장시키는 아이', '아이가 내 약한 곳을 정확히 건드립니다. 나를 자라게 하는 쪽으로 씁니다.'],
+    비화: ['거울 같은 사이', '결이 같아 말이 잘 통하는데, 같은 이유로 같은 실수를 합니다.'],
+    // 천간합(甲己·乙庚·丙辛·丁壬·戊癸)은 극 관계인데도 서로를 묶는다.
+    // 극으로만 말하면 반쪽이라 따로 뺀다.
+    간합: ['묶여 있는 사이', '극인데 합입니다. 부딪히면서도 결국 서로를 놓지 못하는 배치입니다.'],
+  };
+  // 조후용신 오행 → 부모가 채워줄 것
+  const KID_NEED = [
+    ['자라게 두는 것', '새로 시작할 자유와 넓은 마당. 가지치기는 나중에 해도 늦지 않습니다'],
+    ['밝게 하는 것', '칭찬과 무대. 잘한 걸 남 앞에서 말해주면 눈에 띄게 달라집니다'],
+    ['붙잡아 주는 것', '규칙과 되풀이되는 하루. 예측되는 일상이 이 아이의 바닥을 만듭니다'],
+    ['다듬는 것', '분명한 기준과 끝맺는 훈련. 시작만 하고 두는 걸 가장 조심합니다'],
+    ['흐르게 하는 것', '쉼과 혼자 있는 시간. 빈틈없이 채우면 오히려 멈춰 섭니다'],
+  ];
+  const GUNG = { year: '조상·초년', month: '부모·자라는 동안', day: '자기 자신', hour: '자녀·말년' };
+
+  function childCard(Rp, Rc) {
+    const B = global.ChaeksaBrief;
+    const pe = E.STEM_ELEM[Rp.analysis.dayStem], ce = E.STEM_ELEM[Rc.analysis.dayStem];
+    const ps = Rp.analysis.dayStem, cs = Rc.analysis.dayStem;
+    const rel = (ps - cs + 10) % 10 === 5 ? '간합'
+      : pe === ce ? '비화'
+      : (pe + 1) % 5 === ce ? '생출'
+      : (ce + 1) % 5 === pe ? '생입'
+      : (pe + 2) % 5 === ce ? '극출' : '극입';
+    const [relName, relNote] = KID_REL[rel];
+    // 아이에게 채워줄 것 — 궁통보감 조후용신의 오행
+    let needIdx = -1, needCh = '';
+    const C = global.ChaeksaClassic;
+    if (C && C.gungtong) {
+      try {
+        const g = C.gungtong(Rc);
+        needCh = g.need || '';
+        if (needCh) needIdx = E.STEM_ELEM[E.STEMS.indexOf(needCh)];
+      } catch (e) {}
+    }
+    const kidNick = B && B.MZ ? B.MZ.STEM[Rc.analysis.dayStem].nick : '';
+    // 자녀궁 = 부모의 시주. 없으면(시간 모름) 그 말을 그대로 한다.
+    const hp = Rp.pillars.hour;
+    let 궁 = '시간을 모르면 자녀궁은 비워둡니다 — 아이 쪽만 봅니다';
+    if (hp) {
+      const db = Rc.pillars.day.branch, hb = hp.branch;
+      궁 = (hb - db + 12) % 12 === 6 ? '내 자녀궁과 아이 일지가 충 — 부딪히는 만큼 오래 남는 사이'
+        : (hb + db === 13 || hb + db === 1) ? '내 자녀궁과 아이 일지가 합 — 붙어 있는 게 편한 사이'
+        : '내 자녀궁 ' + E.fmt.pillar(hp) + ' — 부딪힘도 끌림도 없는 담백한 자리';
+    }
+    const lines = [
+      '아이는 ' + E.fmt.stem(Rc.analysis.dayStem) + ' 일간 · ' + kidNick + (Rc.analysis.strength ? ' · ' + Rc.analysis.strength : ''),
+      relNote,
+      needIdx >= 0 ? '채워줄 것은 ' + KID_NEED[needIdx][0] + ' — ' + KID_NEED[needIdx][1]
+                   : '조후를 읽지 못했습니다 — 태어난 시간을 넣으면 정확해집니다',
+      궁,
+    ];
+    return { rel, name: relName, note: relNote.split('.')[0],
+             key: E.fmt.stem(Rc.analysis.dayStem) + ' 일간',
+             need: needIdx >= 0 ? KID_NEED[needIdx][0] : '', kidNick, lines };
+  }
+
+  function drawChild(parentName, kidName, v) {
+    return drawFrame({
+      id: 'kdw', grad: ['#f2f7fb', '#e8f0f7', '#dde8f2'], line: '#7d9bb5',
+      ink: '#2f4a5e', ink2: '#3f5568', ink3: '#6d8aa0', bigCol: '#2f4a5e', sealCol: '#b23a2a', seal: '育',
+      deco: '<path d="M30 118 Q180 110 330 120 M30 300 Q180 294 330 302" stroke="#7d9bb5" stroke-width="1" fill="none" opacity=".4"/>',
+    }, {
+      title: '育兒帖', sub: '우리 아이 설명서',
+      name: parentName + ' → ' + kidName,
+      key: v.key, big: v.name, note: v.note,
+      rare: v.need ? '채워줄 것 · ' + v.need : '',
+      lines: v.lines, foot: 'chaeksa.kr · 부모·아이 일간 관계와 조후로 봅니다',
+    });
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
