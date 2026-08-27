@@ -145,7 +145,11 @@ function run(CONFIG) {
   const gzAt = (d, hh, mm) => E.fmt.pillar(E.calc({
     year, month, day: d, hour: hh, minute: mm, gender,
     place, longitude: lon, tzOffset: null, solarCorrection: true }).pillars.month);
-  const cuts = (E.fmt.termsOfYear(year) || []).filter(t => t.m === month)
+  // termsOfYear(Y)는 '입춘 기준' 한 주기다. 그래서 Y년 1월의 절기(소한)는 Y-1 주기에 들어 있고,
+  // termsOfYear(Y)의 소한은 Y+1년 1월 것이다. 연도로 걸러내지 않으면 1월 자료에서
+  // 이듬해 절기를 집는다 — 2027년 1월은 소한 1/5 23:10인데 2028년 1/6 04:55을 가져왔다.
+  const cuts = [].concat(E.fmt.termsOfYear(year - 1) || [], E.fmt.termsOfYear(year) || [])
+    .filter(t => t.y === year && t.m === month)
     .sort((a, b) => a.d - b.d || a.hh - b.hh || a.mm - b.mm);
   const pts = [{ d: 1, hh: 0, mm: 0, probe: [1, 12, 0], label: `${month}/1` }]
     .concat(cuts.map(t => ({ d: t.d, hh: t.hh, mm: t.mm,
