@@ -81,7 +81,18 @@ const sc = samp.map(a=>a.strengthScore);
 const avg = Math.round(sc.reduce((a,b)=>a+b,0)/sc.length*1000)/1000;
 const pct = l => Math.round(samp.filter(a=>a.strength===l).length/samp.length*1000)/10;
 ok('C','표본수', samp.length===600, samp.length+'명');
-ok('C','평균 0.37~0.43', avg>=0.37&&avg<=0.43, '평균 '+avg);
+// 기대 중심은 방식에서 유도한다. 숫자를 박아두면 방식이 바뀔 때 검사가 거짓말한다.
+//   천간은 오행 이분법 — 다섯 중 둘(비겁·인성)만 도움이라 무작위면 0.40
+//   지지는 십이운성 눈금 — 열두 단계 값의 산술평균
+// 자리 무게로 가중해 섞는다. 득령 가산이 위로 밀므로 실측은 기대보다 조금 높게 나온다.
+const _W = E.NATAL_WEIGHT;
+const _간 = _W.yearStem + _W.monthStem + _W.hourStem;
+const _지 = _W.yearBranch + _W.monthBranch + _W.dayBranch + _W.hourBranch;
+const _운성 = E.UNSEONG_POWER
+  ? Object.keys(E.UNSEONG_POWER).reduce((a,k)=>a+E.UNSEONG_POWER[k],0)/12 : 0.40;
+const 기대중심 = Math.round((_간*0.40 + _지*_운성)/(_간+_지)*1000)/1000;
+ok('C', `평균 = 구조적 중심 ${기대중심} ±0.03`, Math.abs(avg-기대중심)<=0.03,
+   `평균 ${avg} (지지 방식의 기대값 ${Math.round(_운성*1000)/1000})`);
 ok('C','신약 45~62%', pct('신약')>=45&&pct('신약')<=62, '신약 '+pct('신약')+'%');
 ok('C','중화 15~25%', pct('중화')>=15&&pct('중화')<=25, '중화 '+pct('중화')+'%');
 out.push(`  · 신강 ${pct('신강')}% · 중화 ${pct('중화')}% · 신약 ${pct('신약')}%`);

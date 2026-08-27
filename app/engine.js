@@ -268,6 +268,34 @@
     if ((dayElemIdx - elemIdx + 5) % 5 === 1) return 1;          // 인성 (elem이 일간을 生)
     return -1;
   }
+  // ───────── 십이운성 (十二運星) ─────────
+  // 일간이 각 지지에서 겪는 열두 단계. 양간은 장생지에서 순행, 음간은 역행한다.
+  // 음양동생동사(음간도 양간과 같이 보는 판본)가 아니라 역행판을 쓴다 — 사용자 판정.
+  const UNSEONG = ['장생','목욕','관대','건록','제왕','쇠','병','사','묘','절','태','양'];
+  const JANGSAENG = [11, 6, 2, 9, 2, 9, 5, 0, 8, 3];   // 甲亥 乙午 丙寅 丁酉 戊寅 己酉 庚巳 辛子 壬申 癸卯
+
+  /** 천간 st 가 지지 br 에서 몇 단계인가 */
+  function unseong(st, br) {
+    const base = JANGSAENG[st];
+    return UNSEONG[STEM_YANG[st] === 1 ? (br - base + 12) % 12 : (base - br + 12) % 12];
+  }
+
+  // 단계별 세기. 삶의 곡선을 따라간다 — 오르는 길은 느리고 내리는 길은 가파르다.
+  //
+  //   제왕이 정점이고 혼자 솟는다. 건록·관대가 그 아래.
+  //   쇠는 제왕 직후라 아직 힘이 남아 장생보다 위다.
+  //   목욕은 「도움이 필요한 상태」지 강한 게 아니다 — 환경에 크게 휘둘린다.
+  //   양은 아직 길러지는 중이라 목욕보다 아래.
+  //   묘가 가장 낮다. 절은 태를 낳는 자리라 바닥은 아니되, 그 힘을 수치로 넣지는 않았다.
+  //
+  // 궁통보감 120칸에서 계절을 걷어내고 뽑은 순서(건록·제왕·관대 위, 묘·절·태 아래,
+  // 목욕 낮음)와 골격이 맞는다. 다만 그 표는 조후 처방이라 사(死)를 강하다고 오독하는
+  // 자리가 있어 값 자체는 쓰지 않았다.
+  const UNSEONG_POWER = {
+    제왕: 1.00, 건록: .82, 관대: .70, 쇠: .62, 장생: .55, 목욕: .50,
+    양: .30, 병: .20, 태: .15, 사: .08, 절: .05, 묘: 0,
+  };
+
   /** 강약 경계 — 이 프로젝트 전체에서 이 함수 하나만 쓴다 */
   const STRENGTH_LABEL = (score) => score >= .55 ? '신강' : (score >= .45 ? '중화' : '신약');
 
@@ -299,19 +327,27 @@
     const de = STEM_ELEM[ds];
     const gotMonth = BRANCH_ELEM[month] === de || BRANCH_ELEM[month] === (de + 4) % 5;
     const W = NATAL_WEIGHT;
-    const seats = [
-      [STEM_ELEM[pillars.year.stem],    W.yearStem],
-      [BRANCH_ELEM[pillars.year.branch], W.yearBranch],
-      [STEM_ELEM[pillars.month.stem],   W.monthStem],
-      [BRANCH_ELEM[pillars.month.branch], W.monthBranch],
-      [BRANCH_ELEM[pillars.day.branch], W.dayBranch],
+    // 천간은 오행으로 본다 — 십이운성은 '일간이 지지에서' 겪는 것이라 천간에 못 쓴다.
+    // (천간이 뿌리내렸는지는 별개 문제로 남아 있다. 지금은 안 본다)
+    const stems = [
+      [STEM_ELEM[pillars.year.stem],  W.yearStem],
+      [STEM_ELEM[pillars.month.stem], W.monthStem],
+    ];
+    // 지지는 십이운성으로 본다. 예전에는 지지 오행이 일간을 돕느냐만 보아
+    // 寅(건록)과 卯(제왕)를, 亥(장생)와 子(목욕)를 똑같이 세었다.
+    // 궁통보감이 寅월 甲에겐 丙을, 卯월 甲에겐 庚을 쓰라고 정반대로 처방하는데도.
+    const branches = [
+      [pillars.year.branch,  W.yearBranch],
+      [pillars.month.branch, W.monthBranch],
+      [pillars.day.branch,   W.dayBranch],
     ];
     if (pillars.hour) {
-      seats.push([STEM_ELEM[pillars.hour.stem], W.hourStem]);
-      seats.push([BRANCH_ELEM[pillars.hour.branch], W.hourBranch]);
+      stems.push([STEM_ELEM[pillars.hour.stem], W.hourStem]);
+      branches.push([pillars.hour.branch, W.hourBranch]);
     }
     let sup = 0, tot = 0;
-    for (const [elem, w] of seats) { tot += w; if (siding(de, elem) > 0) sup += w; }
+    for (const [elem, w] of stems) { tot += w; if (siding(de, elem) > 0) sup += w; }
+    for (const [br, w] of branches) { tot += w; sup += w * UNSEONG_POWER[unseong(ds, br)]; }
     // 왕상휴수사 — 득령이면 가산 0.6 (비대칭: 실령을 더 깎지는 않는다).
     // 본기 방식에서 득령의 무게가 월지 한 자리(2.0)뿐이라 건록·양인격의 21%가
     // 신약으로 떨어졌다. 가산 후 10%로, 앵커 7사례와 실령 사주 판정은 전부 보존.
@@ -362,5 +398,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, unseong, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);
