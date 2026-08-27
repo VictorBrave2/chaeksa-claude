@@ -97,7 +97,8 @@
     const key = ym(y, m);
     it.logs = (it.logs || []).filter(l => l.ym !== key);
     it.logs.push({ ym: key, result, note: String(note || '').slice(0, 120),
-                   verdict: judge(R, y, m), at: new Date().toISOString().slice(0, 10) });
+                   verdict: judge(R, y, m), say: respond(y, m, result, R),
+                   at: new Date().toISOString().slice(0, 10) });
     it.logs.sort((a, b) => a.ym - b.ym);
     save(arr);
     return it;
@@ -193,8 +194,61 @@
     return { n: logs.length, need: 0, engine: engine.length ? engine : null, god };
   }
 
+  /** 기록한 그 자리에서 곧바로 드리는 말.
+   *
+   *  패턴은 넉 달이 있어야 하지만 **다음 달 이야기는 지금 할 수 있다** —
+   *  그건 이 사람의 기록이 아니라 엔진이 이미 아는 것이기 때문이다.
+   *  힘들다고 누른 사람에게 "3달 더 모으세요"라고 답하면 그건 비서가 아니다.
+   *  다만 거짓 위로는 하지 않는다. 계속 눌리는 구간이면 언제 풀리는지를 찾아 준다.
+   */
+  function respond(y, m, result, R) {
+    const cur = judge(R, y, m);
+    if (!cur) return null;
+    const nx = m === 12 ? { y: y + 1, m: 1 } : { y, m: m + 1 };
+    const next = judge(R, nx.y, nx.m);
+    // 기준은 절대 점수가 아니라 **지금보다 나은가**이다.
+    // 절대선(75점)으로 잡았더니 점수대가 낮은 사주는 1년 내내 '힘을 아끼세요'만
+    // 나왔다. 그건 위로가 아니라 절망이다. 사람이 알고 싶은 건 '언제 지금보다
+    // 나아지나'이지 '언제 만개하나'가 아니다.
+    let relief = null;
+    for (let i = 1; i <= 24; i++) {
+      const t = m + i, yy = y + Math.floor((t - 1) / 12), mm = ((t - 1) % 12) + 1;
+      const j = judge(R, yy, mm);
+      if (j && j.score >= cur.score + 15) { relief = { y: yy, m: mm, j, away: i }; break; }
+    }
+    const 나쁨 = (j) => j && j.score <= cur.score - 12;
+    const 좋음 = (j) => j && j.score >= cur.score + 12;
+
+    if (result === 'bad') {
+      // 엔진이 좋게 봤는데 힘들었다 — 틀린 걸 인정하는 게 신뢰를 만든다
+      if (좋음(cur)) return { tone: 'miss',
+        text: '제가 이번 달을 ' + cur.grade + '으로 봤는데 힘드셨군요. 제 판단이 놓친 자리가 있습니다. 이런 기록이 쌓일수록 제가 정확해집니다.' };
+      if (좋음(next)) return { tone: 'up',
+        text: '이번 달은 저도 눌린다고 봤습니다. 다음 ' + nx.m + '월은 ' + next.grade + '이라 숨이 트입니다. 큰 결정은 그때로 미루셔도 됩니다.' };
+      if (relief) return { tone: 'wait',
+        text: '이번 달도 다음 달도 쉽지 않습니다. 다만 ' + relief.m + '월부터 결이 바뀝니다('
+            + relief.j.grade + '). ' + relief.away + '달 남았습니다 — 그때까지는 버티는 게 일입니다.' };
+      return { tone: 'hold',
+        text: '지금은 힘을 아끼실 때입니다. 이런 구간에 무리해서 벌인 일은 나중에 두 배로 돌아옵니다. '
+            + '지키는 것만으로 충분하고, 이 구간이 영영 가지는 않습니다.' };
+    }
+    if (result === 'good') {
+      if (좋음(next)) return { tone: 'keep',
+        text: '다행입니다. 다음 ' + nx.m + '월도 ' + next.grade + '이라 이어집니다. 벌일 일이 있으면 지금입니다.' };
+      if (나쁨(next)) return { tone: 'prep',
+        text: '좋으셨다니 다행입니다. 다만 다음 ' + nx.m + '월은 결이 달라집니다(' + next.grade + '). 해둘 것이 있으면 이달 안에 마치시는 게 낫습니다.' };
+      return { tone: 'keep', text: '다행입니다. 다음 ' + nx.m + '월도 이 정도는 갑니다.' };
+    }
+    // 그저 그렇다
+    if (좋음(next)) return { tone: 'up',
+      text: '다음 ' + nx.m + '월은 ' + next.grade + '입니다. 지금 고르고 계신 것이 있다면 그때 손대셔도 늦지 않습니다.' };
+    if (나쁨(next)) return { tone: 'prep',
+      text: '다음 ' + nx.m + '월은 조금 더 눌립니다(' + next.grade + '). 이번 달에 정리해둘 것을 정리해두시면 편합니다.' };
+    return { tone: 'flat', text: '다음 ' + nx.m + '월도 비슷합니다. 페이스를 지키시는 게 답입니다.' };
+  }
+
   const label = (n) => Math.floor(n / 100) + '년 ' + (n % 100) + '월';
 
   global.ChaeksaMemo = { list, add, setOutcome, remove, due, upcoming, stats, judge, label, OUTCOMES, ym,
-                         track, tracks, log, loggedThisMonth, pattern };
+                         track, tracks, log, loggedThisMonth, pattern, respond };
 })(window);

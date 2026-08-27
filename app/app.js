@@ -1065,6 +1065,11 @@
           return `<span class="mm-log" title="${esc(l.note || '')}"><b style="color:${o.col}">${o.mark}</b> ${M.label(l.ym).replace(/^\d+년 /, '')}</span>`;
         }).join('')}${logs.length > 6 ? `<span class="mm-log mm-dim">외 ${logs.length - 6}달</span>` : ''}</div>`
       : '<div class="mm-line">아직 기록이 없습니다.</div>';
+    // 기록한 그 자리에서 드리는 말이 먼저다. 패턴은 그다음.
+    const 마지막 = logs[0];
+    const 응답 = 마지막 && 마지막.say
+      ? `<div class="mm-say mm-${esc(마지막.say.tone)}">${esc(마지막.say.text)}</div>` : '';
+
     // 말할 수 있는 것만 말한다. 두세 달로 단정하면 그게 점집이다.
     let 패턴 = '';
     const 조각 = [];
@@ -1078,14 +1083,14 @@
       if (pat.god.best) 조각.push(`<b>${esc(pat.god.best.g)}</b> 달은 나으셨습니다 (${pat.god.best.n}달 중 ${pat.god.best.good}달)`);
     }
     if (조각.length) 패턴 = `<div class="mm-pat">${pat.n}달치로 보면 — ${조각.join('. ')}.</div>`;
-    else if (pat && pat.need > 0) 패턴 = `<div class="mm-pat mm-dim">${pat.need}달만 더 쌓이면 말씀드릴 수 있습니다.</div>`;
-    else if (logs.length) 패턴 = `<div class="mm-pat mm-dim">아직 한쪽으로 기울지 않았습니다. 더 지켜보겠습니다.</div>`;
+    else if (pat && pat.need > 0 && !응답) 패턴 = `<div class="mm-pat mm-dim">${pat.need}달만 더 쌓이면 어떤 달이 힘든지도 말씀드릴 수 있습니다.</div>`;
+    else if (logs.length >= 4) 패턴 = `<div class="mm-pat mm-dim">아직 한쪽으로 기울지 않았습니다. 더 지켜보겠습니다.</div>`;
     const 물음 = 이번달
       ? '<div class="mm-line mm-dim">이번 달은 기록하셨습니다. 다시 누르면 덮어씁니다.</div>'
       : '';
     return `<div class="mm">
       <div class="mm-head"><b>${esc(it.q)}</b><span class="mm-when">${logs.length}달째</span></div>
-      ${기록}${패턴}${물음}
+      ${기록}${응답}${패턴}${물음}
       <div class="mm-ask">이번 달은 어떻습니까?
         <button class="chip" data-tid="${it.id}" data-r="good">○ 괜찮다</button>
         <button class="chip" data-tid="${it.id}" data-r="soso">△ 그저 그렇다</button>

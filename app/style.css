@@ -764,3 +764,8 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .mm-pat{margin-top:9px;font-size:12.5px;line-height:1.65;color:var(--ink);
   background:var(--accent-soft);border-radius:9px;padding:9px 11px}
 .mm-pat.mm-dim{background:none;padding:0;color:var(--ink3)}
+.mm-say{margin-top:10px;font-size:13px;line-height:1.75;color:var(--ink);
+  border-left:3px solid var(--accent2);padding:2px 0 2px 11px}
+.mm-say.mm-up,.mm-say.mm-keep{border-left-color:#3e7d4f}
+.mm-say.mm-hold,.mm-say.mm-wait{border-left-color:#3a6ea5}
+.mm-say.mm-miss{border-left-color:#b23a2a}
