@@ -133,6 +133,13 @@ def icons():
         out = os.path.join(APP, 'icon-%d.png' % size)
         img.save(out, 'PNG', optimize=True)
         print('wrote', out, os.path.getsize(out) // 1024, 'KB', img.size)
+        if size == 512:
+            # 브라우저는 <link rel="icon">이 있어도 /favicon.ico를 직접 찾을 때가 있다.
+            # 파일이 없으면 방문자마다 콘솔에 404가 남는다. 실물을 둔다.
+            ico = os.path.join(APP, 'favicon.ico')
+            img.convert('RGB').save(ico, 'ICO',
+                                    sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+            print('wrote', ico, os.path.getsize(ico) // 1024, 'KB')
 
 
 if __name__ == '__main__':
