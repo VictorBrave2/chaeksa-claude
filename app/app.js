@@ -1631,11 +1631,11 @@
         $('btnDohwaShare').onclick = async () => {
           const b = $('btnDohwaShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
           try {
-            const r = await T.share($('dohwaSvg').innerHTML, '도화첩_' + v.name);
+            const r = await T.share($('dohwaSvg').innerHTML, '나의연애_' + v.name);
             b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 \u2014 Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
           } catch (e) { b.textContent = '다시 시도'; }
           b.disabled = false;
-          setTimeout(() => { b.textContent = '도화첩 자랑하기'; }, 2500);
+          setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
         };
       });
   }
