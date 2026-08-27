@@ -65,11 +65,36 @@
     });
 
     // 지장간까지 포함한 존재
+    //
+    // **국에 먹힌 지지는 제 십신으로 명령을 못 낸다.**
+    //   「진월 정화일간이 진토가 삼합되면 진토 상관명령을 잃는다.
+    //     천간에 무토가 오면 상관이 발동되는 것이고」 — 2026-08-28 사장님
+    // 辰중 戊 는 지장간이라 명령이 아니라 재료다. 국에 들면 그 자리가 수 명령을 받으므로
+    // 토로서의 노릇을 못 한다. 다만 戊 가 **천간에 투출하면** 그건 명령이므로 발동한다.
+    //
+    // 통근과는 축이 다르다 — 申 은 국에 들어도 庚 의 뿌리다(L11).
+    //   통근      천간이 지지에서 힘을 받는 통로.   국이 안 뺏는다
+    //   지장간 십신  그 자리가 무슨 노릇을 하는가.   국에 먹히면 잃는다
+    const 국 = E.samhapOf ? E.samhapOf(지지) : [];
+    const 먹힌 = {};
+    국.forEach(g => {
+      // 국의 오행 천간 중 원국에 투출한 것으로 정/편을 가른다. 없으면 왕지의 본기.
+      let st = null;
+      for (let i = 0; i < 10; i++) {
+        if (E.STEM_ELEM[i] !== g.elem) continue;
+        if (['year', 'month', 'hour'].some(k => p[k] && p[k].stem === i)) { st = i; break; }
+      }
+      if (st == null) st = E.HIDDEN[g.왕지][0];
+      g.글자.forEach(b => { 먹힌[b] = st; });
+    });
+
     const 전체 = {};
     ['year', 'month', 'day', 'hour'].forEach(k => {
       if (!p[k]) return;
       if (k !== 'day' && !합거[k]) { const g = 신(p[k].stem); 전체[g] = (전체[g] || 0) + 1; }
-      E.HIDDEN[p[k].branch].forEach(h => { const g = 신(h); 전체[g] = (전체[g] || 0) + 1; });
+      const b = p[k].branch;
+      if (먹힌[b] != null) { const g = 신(먹힌[b]); 전체[g] = (전체[g] || 0) + 1; return; }
+      E.HIDDEN[b].forEach(h => { const g = 신(h); 전체[g] = (전체[g] || 0) + 1; });
     });
 
     // 십신별 힘 — 천간의 힘 합. 일간은 지지에서 받은 것의 합(성질이 다르다).
