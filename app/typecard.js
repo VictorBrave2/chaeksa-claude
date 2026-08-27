@@ -722,12 +722,20 @@
     const max = Math.max(6, Math.floor(maxPx / size) - (lead || 0));
     const src = String(t);
     if (src.length <= max) return [[src, true]];
-    // 가운뎃점·줄표가 줄 끝에 홀로 남으면 보기 싫다. 앞말에 붙여 함께 움직이게 한다.
+    // 구분자는 줄 끝에도 줄 머리에도 오면 안 된다.
+    //  · 는 앞말에만 붙이면 이번엔 줄 끝에 '·'가 남는다(원래 증상 그대로).
+    //    'A · B · C'를 통째로 한 덩어리로 묶어 항상 안쪽에 오게 한다.
+    //  — 는 뒷말에 붙인다. '것 —'로 줄이 끝나는 것을 막는다.
+    const raw = src.split(' ');
     const w = [];
-    src.split(' ').forEach(x => {
-      if ((x === '·' || x === '—') && w.length) w[w.length - 1] += ' ' + x;
-      else w.push(x);
-    });
+    for (let i = 0; i < raw.length; i++) {
+      const x = raw[i];
+      if (x === '·' && w.length && i + 1 < raw.length) {
+        w[w.length - 1] += ' · ' + raw[++i];
+      } else if (x === '—' && i + 1 < raw.length) {
+        w.push('— ' + raw[++i]);
+      } else w.push(x);
+    }
     // 낱말 배열로 다룬다. 문자열로 두고 다시 쪼개면 '태양 ·'처럼 묶어둔 덩어리가
     // 풀려서 가운뎃점이 다음 줄 머리로 떨어진다 — 새 항목처럼 보인다.
     const out = []; let cur = [], first = true;
