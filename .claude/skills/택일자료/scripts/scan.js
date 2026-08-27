@@ -142,9 +142,16 @@ function run(CONFIG) {
   // dateFortune 은 시각을 안 받고 정오로 계산해서 경계일을 통째로 앞 절기에 넣어버리고,
   // rows 에서 읽으면 2시간 슬롯 해상도까지밖에 못 좁힌다. 그래서 절입 시각으로 직접 자른다.
   const hm = t => `${String(t.hh).padStart(2,'0')}:${String(t.mm).padStart(2,'0')}`;
-  const gzAt = (d, hh, mm) => E.fmt.pillar(E.calc({
-    year, month, day: d, hour: hh, minute: mm, gender,
-    place, longitude: lon, tzOffset: null, solarCorrection: true }).pillars.month);
+  // 절입 '그 분'에 찌르면 안 된다. 절기 시각에는 초가 있어서 10:46:32 이 입춘이면
+  // 10:46:00 출생은 아직 앞 절기다 — 2027년 2월이 실제로 그랬고, 입춘 앞뒤가
+  // 똑같이 辛丑월로 찍혀 나왔다. 구간을 여는 쪽은 1분 뒤를 찌른다.
+  // 그리고 입춘은 월주만이 아니라 **연주도** 가른다. 2월 자료에서 연주를 하나로
+  // 적으면 절입 전 며칠이 통째로 틀린다. 둘을 함께 돌려준다.
+  const gzAt = (d, hh, mm) => {
+    const P = E.calc({ year, month, day: d, hour: hh, minute: mm, gender,
+      place, longitude: lon, tzOffset: null, solarCorrection: true }).pillars;
+    return `${E.fmt.pillar(P.year)}년 ${E.fmt.pillar(P.month)}월`;
+  };
   // termsOfYear(Y)는 '입춘 기준' 한 주기다. 그래서 Y년 1월의 절기(소한)는 Y-1 주기에 들어 있고,
   // termsOfYear(Y)의 소한은 Y+1년 1월 것이다. 연도로 걸러내지 않으면 1월 자료에서
   // 이듬해 절기를 집는다 — 2027년 1월은 소한 1/5 23:10인데 2028년 1/6 04:55을 가져왔다.
@@ -153,11 +160,11 @@ function run(CONFIG) {
     .sort((a, b) => a.d - b.d || a.hh - b.hh || a.mm - b.mm);
   const pts = [{ d: 1, hh: 0, mm: 0, probe: [1, 12, 0], label: `${month}/1` }]
     .concat(cuts.map(t => ({ d: t.d, hh: t.hh, mm: t.mm,
-                             probe: [t.d, t.hh, t.mm], label: `${month}/${t.d} ${hm(t)}` })));
+                             probe: [t.d, t.hh, t.mm + 1], label: `${month}/${t.d} ${hm(t)}` })));
   const at = p => p.d * 1440 + p.hh * 60 + p.mm;
   const ps = pts.filter((p, i) => !pts[i + 1] || at(pts[i + 1]) > at(p));   // 절입이 1일 0시면 앞 구간은 없다
   const seg = ps.map((p, i) =>
-    `${p.label}~${ps[i + 1] ? ps[i + 1].label : `${month}/${last}`} ${gzAt(...p.probe)}월`);
+    `${p.label}~${ps[i + 1] ? ps[i + 1].label : `${month}/${last}`} ${gzAt(...p.probe)}`);
   const 절기 = cuts.map(t => `${t.name} ${t.m}/${t.d} ${hm(t)}`);
   // 전 기간에 공통으로 걸린 충 — 날짜를 골라도 못 피하는 것
   const 공통충 = rows.length
@@ -167,7 +174,7 @@ function run(CONFIG) {
   return {
     기간: `${year}년 ${month}월 · ${place} (경도 ${lon})`,
     연주: E.fmt.pillar(E.dateFortune(year, month, 15).year),
-    월주구간: seg,
+    연월주구간: seg,
     절기: 절기.length ? 절기 : '이 달에 절기 경계 없음',
     피할수없는충: 공통충.length ? 공통충 : '없음',
     후보수: rows.length,
