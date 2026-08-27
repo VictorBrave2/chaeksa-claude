@@ -31,19 +31,20 @@ const E = window.ChaeksaEngine, A = window.ChaeksaAstro, C = window.ChaeksaClass
 const out = [], fail = [];
 const ok = (sec, name, pass, note) => { out.push(`${pass?'O':'X'} [${sec}] ${name}${note?' — '+note:''}`); if(!pass) fail.push(`${sec}:${name}${note?' ('+note:''}${note?')':''}`); };
 
-// ── 앵커 A·B: 기둥 직접 지정 → 강약 재현 ──
+// ── 앵커 A·B: 기둥 직접 지정 → 강약 ──
+// **엔진의 strengthOf 를 그대로 부른다.** 예전에는 여기서 공식을 베껴 갖고 있었고,
+// 그래서 엔진에 십이운성과 천간 통근을 넣어도 앵커 점수가 안 움직였다.
+// 검사가 제 사본을 재고 있었던 것이다. 공식을 두 벌 두면 반드시 어긋난다.
 function scoreOf(P) {   // P = [[ys,yb],[ms,mb],[ds,db],[hs,hb]]
-  const [Y,M,D,H] = P, ds = D[0], de = E.STEM_ELEM[ds], W = E.NATAL_WEIGHT;
-  const got = E.BRANCH_ELEM[M[1]] === de || E.BRANCH_ELEM[M[1]] === (de+4)%5;
-  const seats = [[E.STEM_ELEM[Y[0]],W.yearStem],[E.BRANCH_ELEM[Y[1]],W.yearBranch],
-                 [E.STEM_ELEM[M[0]],W.monthStem],[E.BRANCH_ELEM[M[1]],W.monthBranch],
-                 [E.BRANCH_ELEM[D[1]],W.dayBranch],
-                 [E.STEM_ELEM[H[0]],W.hourStem],[E.BRANCH_ELEM[H[1]],W.hourBranch]];
-  let sup=0, tot=0;
-  for (const [el,w] of seats) { tot+=w; if (E.siding(de,el)>0) sup+=w; }
-  if (got) { sup+=0.6; tot+=0.6; }
-  const s = Math.round((sup/tot)*100)/100;
-  return { s, label: E.STRENGTH_LABEL(s) };
+  const [Y,M,D,H] = P;
+  const pillars = {
+    year:  { stem: Y[0], branch: Y[1] },
+    month: { stem: M[0], branch: M[1] },
+    day:   { stem: D[0], branch: D[1] },
+    hour:  { stem: H[0], branch: H[1] },
+  };
+  const r = E.strengthOf(pillars);
+  return { s: r.strengthScore, label: r.strength };
 }
 const ANCHORS = [
  ['A1 극신강 갑묘월', [[9,3],[0,2],[0,0],[6,6]], '신강'],

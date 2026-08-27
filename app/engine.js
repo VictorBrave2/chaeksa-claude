@@ -321,17 +321,41 @@
         hidden: HIDDEN[pl.branch].map(h => ({ stem: h, god: TEN_GODS[tenGod(ds, h)] })),
       };
     }
-    // 신강/신약: 자리 가중 세력 판정 (일간 자신은 주체이므로 세력에서 제외한다)
-    // 체용엔진(chaeyong.js)이 층을 쌓을 때 쓰는 것과 같은 공식·같은 경계를 쓴다.
-    const month = pillars.month.branch;
     const de = STEM_ELEM[ds];
+    // 강약은 strengthOf 한 곳에서만 낸다. 검사(enginecheck)도 같은 함수를 부른다.
+    const { strengthScore, strength, gotMonth } = strengthOf(pillars);
+    const missing = ELEM.filter((_, i) => elemCount[i] === 0);
+    const dominant = ELEM[elemCount.indexOf(Math.max(...elemCount))];
+    const yong = strength === '신약' ? [ELEM[(de + 4) % 5], ELEM[de]] : [ELEM[(de + 1) % 5], ELEM[(de + 2) % 5], ELEM[(de + 3) % 5]];
+    return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong };
+  }
+
+  /** 기둥만으로 강약을 낸다. analyze() 와 검사(enginecheck)가 **같은 이 함수**를 쓴다.
+   *  예전에는 검사가 공식을 베껴 갖고 있어서, 엔진을 고쳐도 검사는 제 사본만 재고 있었다. */
+  function strengthOf(pillars) {
+    const ds = pillars.day.stem, de = STEM_ELEM[ds], W = NATAL_WEIGHT;
+    const month = pillars.month.branch;
     const gotMonth = BRANCH_ELEM[month] === de || BRANCH_ELEM[month] === (de + 4) % 5;
-    const W = NATAL_WEIGHT;
-    // 천간은 오행으로 본다 — 십이운성은 '일간이 지지에서' 겪는 것이라 천간에 못 쓴다.
-    // (천간이 뿌리내렸는지는 별개 문제로 남아 있다. 지금은 안 본다)
+
+    // ── 천간 통근 ──
+    // 천간은 명령이고 지지는 그 명령을 받는 자다. 받을 지지가 없으면
+    // 전달되지 않은 명령이라 있으나 마나다. 뿌리 없는 칠살은 으르렁대기만 하고
+    // 못 문다 — 뿌리 얻은 칠살이라야 진짜로 친다.
+    //
+    // 명령은 한 번 제대로 전달되면 되는 것이지 여러 곳에서 나눠 받는 게 아니다.
+    // 그래서 네 지지 중 **가장 높이 앉은 자리 하나**로 본다. 제왕지가 받으면
+    // 온전히 전달되고, 없으면 건록·관대로 내려간다. 묘·절뿐이면 전달 안 된다.
+    //
+    // 전달도는 분자와 분모에 똑같이 곱한다. 전달 안 된 명령은 나를 돕지도 누르지도
+    // 못하기 때문이다. 그래서 이 값이 크다고 일간에게 좋은 게 아니다 —
+    // 나를 돕는 천간이 실하면 좋고, 나를 누르는 천간이 실하면 더 눌린다.
+    const allBranches = ['year','month','day','hour']
+      .filter(k => pillars[k]).map(k => pillars[k].branch);
+    const 전달도 = (st) => Math.max(...allBranches.map(b => UNSEONG_POWER[unseong(st, b)]));
+
     const stems = [
-      [STEM_ELEM[pillars.year.stem],  W.yearStem],
-      [STEM_ELEM[pillars.month.stem], W.monthStem],
+      [STEM_ELEM[pillars.year.stem],  W.yearStem  * 전달도(pillars.year.stem)],
+      [STEM_ELEM[pillars.month.stem], W.monthStem * 전달도(pillars.month.stem)],
     ];
     // 지지는 십이운성으로 본다. 예전에는 지지 오행이 일간을 돕느냐만 보아
     // 寅(건록)과 卯(제왕)를, 亥(장생)와 子(목욕)를 똑같이 세었다.
@@ -342,7 +366,7 @@
       [pillars.day.branch,   W.dayBranch],
     ];
     if (pillars.hour) {
-      stems.push([STEM_ELEM[pillars.hour.stem], W.hourStem]);
+      stems.push([STEM_ELEM[pillars.hour.stem], W.hourStem * 전달도(pillars.hour.stem)]);
       branches.push([pillars.hour.branch, W.hourBranch]);
     }
     let sup = 0, tot = 0;
@@ -352,13 +376,8 @@
     // 본기 방식에서 득령의 무게가 월지 한 자리(2.0)뿐이라 건록·양인격의 21%가
     // 신약으로 떨어졌다. 가산 후 10%로, 앵커 7사례와 실령 사주 판정은 전부 보존.
     if (gotMonth) { sup += 0.6; tot += 0.6; }
-    const strengthScore = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
-    const strength = STRENGTH_LABEL(strengthScore);
-    const missing = ELEM.filter((_, i) => elemCount[i] === 0);
-    const dominant = ELEM[elemCount.indexOf(Math.max(...elemCount))];
-    // 용신 후보(간이): 신강이면 식상·재·관 중 많은 것 설기, 신약이면 인·비
-    const yong = strength === '신약' ? [ELEM[(de + 4) % 5], ELEM[de]] : [ELEM[(de + 1) % 5], ELEM[(de + 2) % 5], ELEM[(de + 3) % 5]];
-    return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong };
+    const score = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
+    return { strengthScore: score, strength: STRENGTH_LABEL(score), gotMonth };
   }
 
   // ───────── 오늘/특정 날짜의 운 ─────────
@@ -398,5 +417,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, unseong, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, unseong, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);
