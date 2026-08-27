@@ -77,6 +77,13 @@
   }
 
   /** 격 이름 + 자평진전 성패. 성패는 gyeokguk.js 한 곳에서만 낸다. */
+  /** 카드에 새기는 판정 말 — 화면과 같은 말표(gyeokguk.js LABEL)를 쓴다.
+   *  공유되는 물건이라 여기가 옛말로 남으면 화면과 어긋난다. */
+  function 판정말(J) {
+    const L = (global.ChaeksaGyeok && global.ChaeksaGyeok.LABEL) || {};
+    return (L[J && J.판정] && L[J.판정].짧게) || (J && J.ok ? '온전' : '무너짐');
+  }
+
   function gyeok(R) {
     const name = gyeokName(R);
     const Gk = global.ChaeksaGyeok;
@@ -178,7 +185,7 @@
   <text x="180" y="316" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="150" font-weight="900" fill="${ELCOL[de]}">${stemCh}</text>
   <text x="180" y="360" text-anchor="middle" font-size="15" fill="#5c5546" letter-spacing="2">${stemKo} 일간 · ${E.fmt.branchKo(p.month.branch)}월생</text>
   <rect x="46" y="410" width="268" height="52" rx="10" fill="#ffffff" opacity=".55"/>
-  <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${J.ok ? '성격' : '파격'} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
+  <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${판정말(J)} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
   <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
@@ -272,7 +279,7 @@
   <text x="180" y="196" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="20" fill="#4a3a20">${esc(name)}의 전생은</text>
   <text x="180" y="248" text-anchor="middle" font-size="15" fill="#7a6a4a">${esc(pj.rank)}</text>
   <text x="180" y="300" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="30" font-weight="900" fill="#33291c">${esc(pj.job)}</text>
-  <text x="180" y="340" text-anchor="middle" font-size="13" fill="#8a7a58" letter-spacing="2">${esc(pj.gyeok.name)}격 ${pj.gyeok.ok ? '성격' : '파격'}의 명(命)이라</text>
+  <text x="180" y="340" text-anchor="middle" font-size="13" fill="#8a7a58" letter-spacing="2">${esc(pj.gyeok.name)}격 ${esc(판정말(pj.gyeok))}의 명(命)이라</text>
   <text x="180" y="404" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc(l1)}</text>
   <text x="180" y="426" text-anchor="middle" font-size="13.5" fill="#5c4c2e">${esc(l2)}</text>
   <g transform="translate(256,440)"><rect width="62" height="62" rx="8" fill="#b23a2a" opacity=".92"/>
