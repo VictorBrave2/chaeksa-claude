@@ -1028,12 +1028,21 @@
       </div>
       <p class="gk-sang" style="margin-bottom:8px">${esc(출처)}</p>
       <p class="gk-sang">${esc(한줄)}${J.상신 ? `<br>이 사주를 쓸 수 있게 해주는 것은 <b>${esc(J.상신)}</b>입니다` : ''}</p>
+      ${근거줄.length || 힘줄 || 관계 ? `<button class="gk-more" id="gkMore">계산 근거 보기 ▸</button>` : ''}
+      <div class="gk-detail hide" id="gkDetail">
       ${근거줄.length ? `<div class="gk-why">${근거줄.join('')}</div>` : ''}
       ${힘줄 ? `<p class="gk-force">천간이 지지에서 받은 힘 — ${힘줄}<br>
         <span style="color:var(--ink3)">0 은 그 십신이 천간에 안 떴거나 뿌리를 못 내렸다는 뜻입니다.
         격은 월지가 정하고 힘은 천간에서 오므로 둘이 어긋날 수 있습니다.</span></p>` : ''}
       ${관계}
+      </div>
       ${갈림}`;
+
+    const more = $('gkMore'), detail = $('gkDetail');
+    if (more && detail) more.onclick = () => {
+      const 열림 = !detail.classList.toggle('hide');
+      more.textContent = 열림 ? '계산 근거 접기 ▾' : '계산 근거 보기 ▸';
+    };
   }
 
   let shareReady = false;
@@ -1113,26 +1122,28 @@
   };
   $('btnCompatAdd').onclick = () => openPersonForm(null);
 
-  // 궁합 탭을 접고 공범 판결만 남겼다 — 점수·해설 없이 판결문 한 장이 결과의 전부다
+  // 우리 둘 사이 — 카드 한 장이 결과의 전부다.
+  // 머리는 「서로에게 무엇인가」. 상대 일간에서 나를 보면 십신이 뒤집힌다.
   function showCompat(you0) {
     const you = E.calc(you0), T = window.ChaeksaTypecard;
     const meName = profile.name || '나', youName = you0.name || '상대';
-    const v = T.accomplice(R, you, meName, youName);
+    const v = T.relation(R, you, meName, youName);
     const box = $('compatResult'); box.classList.remove('hide');
     box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
+      <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
       <div id="accWrap" class="cardwrap">
-        <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawAccomplice(meName, youName, v)}</div></div>
-        <button class="btn small" id="btnAccShare">판결문 자랑하기</button>
+        <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
+        <button class="btn small" id="btnAccShare">카드 저장·공유</button>
       </div>`;
     const fl = $('accFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     $('btnAccShare').onclick = async () => {
       const b = $('btnAccShare'); b.disabled = true; b.textContent = '만드는 중…';
       try {
-        const r = await T.share($('accSvg').innerHTML, '공범판결');
+        const r = await T.share($('accSvg').innerHTML, '우리둘사이');
         b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
       } catch (e) { b.textContent = '다시 시도'; }
       b.disabled = false;
-      setTimeout(() => { b.textContent = '판결문 자랑하기'; }, 2500);
+      setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
     };
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }

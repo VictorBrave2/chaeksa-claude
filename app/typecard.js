@@ -394,90 +394,133 @@
       + '</svg>';
   }
 
-  // ── 공범 판결 — 두 사람의 관계 축(충·합·복음) + 조후 상보(궁통보감 표) ──
-  // 조후 상보가 이 판결의 심장이다: 내 조후용신(원문 120칸)을 상대 천간이 갖고 있는가.
-  function accomplice(Rme, Ryou, nameA, nameB) {
-    const brA = ['year','month','day','hour'].filter(k=>Rme.pillars[k]).map(k=>Rme.pillars[k].branch);
-    const brB = ['year','month','day','hour'].filter(k=>Ryou.pillars[k]).map(k=>Ryou.pillars[k].branch);
-    const dA = Rme.pillars.day.branch, dB = Ryou.pillars.day.branch;
-    const YUKHAP = {0:1,1:0,2:11,11:2,3:10,10:3,4:9,9:4,5:8,8:5,6:7,7:6};
-    const SAM = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
-    const chung = (a,b)=>((b-a+12)%12)===6;
-    const 죄목 = [], 참작 = [];
-    if (chung(dA,dB)) 죄목.push('만나면 사건이 터짐죄 — 두 일지가 정면 충. 지루할 틈은 없음');
-    let crossChung = 0;
-    brA.forEach(a=>brB.forEach(b=>{ if(chung(a,b)) crossChung++; }));
-    if (crossChung >= 3) 죄목.push('합동 소란죄 — 지지 곳곳이 부딪힘(' + crossChung + '건). 일정이 자주 바뀜');
-    if (Rme.pillars.day.stem === Ryou.pillars.day.stem && dA === dB)
-      죄목.push('동일 수법 반복죄 — 일주가 같아 장단점까지 복제됨');
-    if (YUKHAP[dA] === dB) 참작.push('두 일지가 육합 — 붙어 있으면 서로 안정됨');
-    else if (SAM.some(g=>g.includes(dA)&&g.includes(dB)&&dA!==dB)) 참작.push('두 일지가 삼합 — 같은 팀으로 굴러감');
-    // 조후 상보 (궁통보감 표)
+  // ── 우리 둘 사이 ──
+  // 2026-08-28 「공범 판결」을 걷어내고 다시 썼다.
+  // 죄목·참작·선고로 짜여 있었는데(만나면 사건이 터짐죄 · 합동 소란죄 · 온기 독점죄)
+  // 심판의 은유라 여성향과 정면으로 어긋난다. 우리는 사주명리 학원이 아니다.
+  //
+  // 핵심은 **서로에게 무엇인가**다. 상대의 일간에서 나를 보면 십신이 뒤집힌다 —
+  // 「그 사람에게 당신은 정재」와 「당신에게 그 사람은 편관」은 다른 이야기다.
+  // 이 뒤집기가 이 화면이 파는 것이고, 계산은 이미 있는 것으로 공짜다.
+  const REL_WORD = {
+    비견: ['나란히 선 사람', '편한데, 같은 것을 원할 때는 겨루게 됩니다'],
+    겁재: ['같은 것을 바라보는 사람', '가까울수록 나눠야 합니다. 안 그러면 뺏기는 기분이 듭니다'],
+    식신: ['마음이 놓이는 사람', '곁에 있으면 말이 술술 나오고, 나답게 있어도 됩니다'],
+    상관: ['나를 자꾸 말하게 만드는 사람', '재미있습니다. 다만 오래 붙어 있으면 지치기도 합니다'],
+    편재: ['손에 쥐고 싶어지는 사람', '설레는데 붙잡기는 어렵습니다. 쥐려 할수록 빠져나갑니다'],
+    정재: ['아끼고 지키고 싶은 사람', '곁에 두면 안심이 됩니다. 오래 가는 쪽입니다'],
+    편관: ['긴장하게 만드는 사람', '눈을 못 떼는데 편하지는 않습니다. 끌림과 부담이 같이 옵니다'],
+    정관: ['기대게 되는 사람', '반듯해서 믿음이 갑니다. 답답할 때도 있지만 흔들리지 않습니다'],
+    편인: ['생각이 많아지게 하는 사람', '깊이 들어가게 됩니다. 가끔 답답하고, 가끔 위로가 됩니다'],
+    정인: ['나를 감싸주는 사람', '곁에 있으면 어리광이 나옵니다. 기대도 되는 사람입니다'],
+  };
+
+  function relation(Rme, Ryou, nameA, nameB) {
+    const dsA = Rme.pillars.day.stem, dsB = Ryou.pillars.day.stem;
+    const dbA = Rme.pillars.day.branch, dbB = Ryou.pillars.day.branch;
+    const 신 = (from, to) => E.TEN_GODS[E.tenGod(from, to)];
+
+    // 서로에게 무엇인가 — 이 화면의 머리다
+    const g1 = 신(dsA, dsB), g2 = 신(dsB, dsA);
+    const 나에게 = { 십신: g1, 말: REL_WORD[g1] || ['―', ''] };
+    const 그에게 = { 십신: g2, 말: REL_WORD[g2] || ['―', ''] };
+
+    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+    const SAM = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
+    const 충 = (a, b) => ((b - a + 12) % 12) === 6;
+
+    const 끌림 = [], 부딪힘 = [];
+
+    // 일간이 합이면 서로 끌린다 (甲己 乙庚 丙辛 丁壬 戊癸)
+    if ((dsA - dsB + 10) % 10 === 5) 끌림.push('두 사람의 일간이 서로 합입니다. 처음부터 끌리는 사이입니다');
+
+    // 일지 — 배우자궁끼리의 관계
+    if (YUKHAP[dbA] === dbB) 끌림.push('배우자 자리끼리 육합입니다. 붙어 있으면 둘 다 편안해집니다');
+    else if (SAM.some(g => g.indexOf(dbA) >= 0 && g.indexOf(dbB) >= 0 && dbA !== dbB))
+      끌림.push('배우자 자리끼리 삼합입니다. 같은 방향을 보고 굴러갑니다');
+    else if (충(dbA, dbB) || 충(dbB, dbA))
+      부딪힘.push('배우자 자리끼리 정면으로 부딪힙니다. 지루할 틈은 없지만 자주 흔들립니다');
+
+    // 지지 전체가 얼마나 부딪히나
+    const brA = ['year','month','day','hour'].filter(k => Rme.pillars[k]).map(k => Rme.pillars[k].branch);
+    const brB = ['year','month','day','hour'].filter(k => Ryou.pillars[k]).map(k => Ryou.pillars[k].branch);
+    let cross = 0;
+    brA.forEach(a => brB.forEach(b => { if (충(a, b)) cross++; }));
+    if (cross >= 3) 부딪힘.push('둘의 기둥이 여러 곳에서 어긋납니다(' + cross + '군데). 계획이 자주 바뀝니다');
+
+    if (dsA === dsB && dbA === dbB) 부딪힘.push('일주가 같습니다. 잘 통하는 만큼 약점도 똑같습니다');
+
+    // 서로 채워주는 것 — 궁통보감 조후용신
     const C = global.ChaeksaClassic;
-    let 조후 = null;
+    let 채움 = null;
     if (C) {
       const needA = C.gungtong(Rme).need, needB = C.gungtong(Ryou).need;
-      const stems = (R) => ['year','month','day','hour'].filter(k=>R.pillars[k]).map(k=>E.fmt.stem(R.pillars[k].stem));
-      const BhasA = stems(Ryou).includes(needA);   // 상대가 내 용신을 가짐
-      const AhasB = stems(Rme).includes(needB);
-      if (BhasA && AhasB) {
-        조후 = '상호';
-        참작.push('서로의 조후용신을 갖고 있음 — ' + nameA + '의 용신 ' + needA + '는 ' + nameB + '에게, ' + nameB + '의 용신 ' + needB + '는 ' + nameA + '에게 있음');
-      } else if (BhasA || AhasB) {
-        조후 = '일방';
-        const 부양자 = BhasA ? nameB : nameA, 수혜자 = BhasA ? nameA : nameB, 글자 = BhasA ? needA : needB;
-        죄목.push('온기 독점죄 — ' + 수혜자 + '의 용신 ' + 글자 + ', ' + 부양자 + ' 혼자 대주는 중. 고마운 줄 알 것');
-      }
+      const stems = (R) => ['year','month','day','hour'].filter(k => R.pillars[k])
+        .map(k => E.fmt.stem(R.pillars[k].stem));
+      const B가A를 = stems(Ryou).indexOf(needA) >= 0;
+      const A가B를 = stems(Rme).indexOf(needB) >= 0;
+      if (B가A를 && A가B를) 채움 = { 종류: '서로', 말: '서로에게 필요한 글자를 하나씩 갖고 있습니다. 같이 있으면 둘 다 숨이 트입니다' };
+      else if (B가A를) 채움 = { 종류: '받음', 말: nameB + '님이 ' + nameA + '님에게 필요한 것을 갖고 있습니다. 곁에 있으면 편해지는 쪽은 ' + nameA + '님입니다' };
+      else if (A가B를) 채움 = { 종류: '줌', 말: nameA + '님이 ' + nameB + '님에게 필요한 것을 갖고 있습니다. 기대는 쪽은 ' + nameB + '님입니다' };
     }
-    const 선고 = 죄목.length && 참작.length ? '공범 관계 인정. 다만 정상을 참작하여 형량은 평생 동행으로 한다'
-      : 죄목.length ? '공범 관계 인정. 형량: 평생 동행 (집행유예 없음)'
-      : 참작.length ? '무혐의. 오히려 공생 관계로 표창을 검토한다'
-      : '혐의 없음. 다만 서류상 남남처럼 심심할 수 있음';
-    return { 죄목, 참작, 조후, 선고 };
+
+    // 맺음 — 한 줄
+    let 맺음;
+    if (끌림.length && !부딪힘.length) 맺음 = '붙어 있을수록 편해지는 사이입니다';
+    else if (끌림.length && 부딪힘.length) 맺음 = '끌리는 만큼 부딪힙니다. 그 둘이 같은 이유에서 나옵니다';
+    else if (부딪힘.length) 맺음 = '가만두면 어긋납니다. 서로 다르다는 것을 먼저 인정해야 갑니다';
+    else 맺음 = '크게 끌리지도 부딪히지도 않습니다. 편안한 대신 잔잔합니다';
+
+    return { 나에게, 그에게, 끌림, 부딪힘, 채움, 맺음, nameA, nameB };
   }
-  function drawAccomplice(nameA, nameB, v) {
-    const esc4 = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const wrap = (t) => {   // 카드 폭에 맞게 두 줄까지 접기
+
+  /** 우리 둘 사이 카드. 판결문이 아니라 한 장의 편지처럼 짠다. */
+  function drawRelation(nameA, nameB, v) {
+    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const wrap = (t, n) => {
       const out = []; let cur = '';
-      t.split(' ').forEach(w => { if ((cur + ' ' + w).trim().length <= 24) cur = (cur + ' ' + w).trim(); else { out.push(cur); cur = w; } });
+      String(t).split(' ').forEach(w => {
+        if ((cur + ' ' + w).trim().length <= (n || 26)) cur = (cur + ' ' + w).trim();
+        else { out.push(cur); cur = w; }
+      });
       if (cur) out.push(cur);
-      return out.slice(0, 2);
+      return out.slice(0, 3);
     };
-    // 선고는 판결문의 맺음이라 자리가 고정이다. 죄목·참작은 그 위 띠(202~388) 안에서
-    // 세로 가운데에 앉힌다. 위에서부터 흘리면 죄목이 적을 때 아래가 통째로 빈다.
-    const blocks = v.죄목.map(t => ({ mark: '罪', col: '#8a3020', txt: '#4a3a28', ls: wrap(t) }))
-      .concat(v.참작.map(t => ({ mark: '恕', col: '#2f6b3a', txt: '#33502e', ls: wrap(t) })));
-    const blockH = blocks.reduce((h, b) => h + b.ls.length * 20 + 14, 0) - 14;
-    let y = Math.max(218, Math.round(202 + (186 - blockH) / 2));
-    let body = '';
-    // 죄목도 참작도 없으면 가운데가 통째로 빈다. 빈 판결문 대신 무혐의를 새긴다.
-    if (!blocks.length) {
-      body += '<text x="180" y="286" text-anchor="middle" font-family="Noto Serif KR,serif"'
-        + ' font-size="44" font-weight="900" fill="#8a7a58" letter-spacing="8" opacity=".85">無嫌疑</text>'
-        + '<text x="180" y="322" text-anchor="middle" font-size="13" fill="#7a6a48">조사 결과, 걸리는 것이 없습니다</text>';
-    }
-    blocks.forEach(b => {
-      body += '<text x="46" y="' + y + '" font-size="14" fill="' + b.col + '" font-weight="700">' + b.mark + '</text>';
-      b.ls.forEach((l, i) => { body += '<text x="74" y="' + (y + i*20) + '" font-size="13" fill="' + b.txt + '">' + esc4(l) + '</text>'; });
-      y += b.ls.length * 20 + 14;
-    });
-    const 선고줄 = wrap(v.선고);
-    y = 396;   // 선고 자리 고정
+    let y = 232, body = '';
+    const 줄 = (mark, col, txt, tcol) => {
+      const ls = wrap(txt);
+      body += '<text x="42" y="' + y + '" font-size="13" fill="' + col + '">' + mark + '</text>';
+      ls.forEach((l, i) => {
+        body += '<text x="66" y="' + (y + i * 19) + '" font-size="12.5" fill="' + (tcol || '#4a3f33') + '">' + es(l) + '</text>';
+      });
+      y += ls.length * 19 + 12;
+    };
+    v.끌림.forEach(t => 줄('♡', '#b0567a', t));
+    v.부딪힘.forEach(t => 줄('⚡', '#a06a2a', t));
+    if (v.채움) 줄('✦', '#3f7a5a', v.채움.말);
+
+    const 맺 = wrap(v.맺음, 24);
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
-      + '<defs><linearGradient id="ac" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#f6efe0"/><stop offset="1" stop-color="#e9dec6"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="16" fill="url(#ac)"/>'
-      + '<rect x="12" y="12" width="336" height="536" rx="10" fill="none" stroke="#5c4a30" stroke-width="2.5"/>'
-      + '<text x="180" y="82" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="38" font-weight="900" fill="#4a3820" letter-spacing="8">共犯判決</text>'
-      + '<text x="180" y="118" text-anchor="middle" font-size="12.5" fill="#7a6a48" letter-spacing="3">사주법원 궁합 전담부</text>'
-      + '<text x="180" y="158" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="17" font-weight="700" fill="#33291c">' + esc4(nameA) + ' · ' + esc4(nameB) + '</text>'
-      + '<line x1="40" y1="184" x2="320" y2="184" stroke="#c9b285" stroke-width="1.5"/>'
+      + '<defs><linearGradient id="rl" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#fbf4ee"/><stop offset="1" stop-color="#f2e4dd"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="16" fill="url(#rl)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#d9c3b8" stroke-width="1"/>'
+      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#a08878" letter-spacing="4">우리 둘 사이</text>'
+      + '<text x="180" y="84" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#4a3226">'
+      + es(nameA) + ' <tspan fill="#b0567a">∞</tspan> ' + es(nameB) + '</text>'
+      + '<line x1="42" y1="104" x2="318" y2="104" stroke="#e0cec4"/>'
+      // 서로에게 무엇인가 — 이 카드의 머리
+      + '<text x="42" y="132" font-size="11.5" fill="#a08878">' + es(nameA) + '님에게 ' + es(nameB) + '님은</text>'
+      + '<text x="42" y="156" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#4a3226">'
+      + es(v.나에게.말[0]) + ' <tspan font-size="12" font-weight="400" fill="#9a8474">' + es(v.나에게.십신) + '</tspan></text>'
+      + '<text x="42" y="186" font-size="11.5" fill="#a08878">' + es(nameB) + '님에게 ' + es(nameA) + '님은</text>'
+      + '<text x="42" y="210" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#4a3226">'
+      + es(v.그에게.말[0]) + ' <tspan font-size="12" font-weight="400" fill="#9a8474">' + es(v.그에게.십신) + '</tspan></text>'
       + body
-      + '<line x1="40" y1="' + (y+4) + '" x2="320" y2="' + (y+4) + '" stroke="#c9b285" stroke-width="1.5" stroke-dasharray="5 4"/>'
-      + 선고줄.map((l,i)=>'<text x="180" y="' + (y+34+i*21) + '" text-anchor="middle" font-size="13.5" font-weight="700" fill="#4a3820">' + esc4(l) + '</text>').join('')
-      + '<g transform="translate(276,452)"><rect width="52" height="52" rx="8" fill="#b23a2a" opacity=".92"/>'
-      + '<text x="26" y="34" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="22" font-weight="900" fill="#fdf3e7">策</text></g>'
-      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">chaeksa.kr · 궁통보감 원문 조후표로 계산한 상보</text>'
+      + '<line x1="42" y1="470" x2="318" y2="470" stroke="#e0cec4"/>'
+      + 맺.map((l, i) => '<text x="180" y="' + (498 + i * 20) + '" text-anchor="middle" font-family="Noto Serif KR,serif"'
+          + ' font-size="13.5" fill="#7a5a48">' + es(l) + '</text>').join('')
+      + '<text x="180" y="544" text-anchor="middle" font-size="10" fill="#bda898" letter-spacing="2">chaeksa.kr</text>'
       + '</svg>';
   }
 
@@ -1279,5 +1322,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
