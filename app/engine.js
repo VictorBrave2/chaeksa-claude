@@ -661,7 +661,14 @@
       const 국십신 = TEN_GODS[tenGod(ds, 국천간)];
       if (정기십신 !== 국십신) out.push({
         이름: '변격',
-        사실: `월지 ${BRANCHES[pillars.month.branch]}가 ${월국.글자.map(b => BRANCHES[b]).join('')} ${ELEM[월국.elem]}국에 들었다`,
+        // 한자 뒤의 조사는 우리말 읽기의 받침으로 고른다 — 「辰가」가 아니라 「辰이」다.
+        사실: (() => {
+          const ko = BRANCHES_KO[pillars.month.branch] || '';
+          const c = ko.charCodeAt(ko.length - 1);
+          const 받침 = c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 !== 0;
+          return `월지 ${BRANCHES[pillars.month.branch]}(${ko})${받침 ? '이' : '가'} `
+            + `${월국.글자.map(b => BRANCHES[b]).join('')} ${ELEM[월국.elem]}국에 들었다`;
+        })(),
         무료: `국으로 잡는다 — ${국십신}격 (자평진전)`,
         갈래: '국을 안 보고 월지 정기로 잡으면',
         다른쪽: `${정기십신}격 — 다른 사주가 된다`,

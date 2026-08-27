@@ -949,16 +949,14 @@
     if (card) card.classList.remove('hide');
 
     const cls = J.판정 === '섰다' ? 'ok' : (J.판정 === '깨졌다' ? 'no' : 'mid');
-    const 한줄 = {
-      섰다:   '성립 조건이 맞고 흠이 없습니다',
-      띠었다: '격은 섰는데 안에 거슬리는 것을 하나 띠었습니다',
-      구제됐다: '깨질 자리였는데 구해주는 것이 있어 살았습니다',
-      깨졌다: '격을 세울 상신이 없거나 깨는 것이 있습니다',
-    }[J.판정] || '';
+    // 화면에 쓰는 말은 gyeokguk.js 의 LABEL 한 곳에서만 정한다.
+    const L = (Gk.LABEL || {})[J.판정] || { 짧게: J.판정, 풀어서: '' };
+    const 근거말 = Gk.근거말 || {};
+    const 한줄 = L.풀어서;
 
     const 근거줄 = [];
     const 붙 = (lb, arr) => { (arr || []).forEach(t => 근거줄.push(
-      `<div><span class="lb">${esc(lb)}</span><span>${esc(t)}</span></div>`)); };
+      `<div><span class="lb">${esc(근거말[lb] || lb)}</span><span>${esc(t)}</span></div>`)); };
     const g = J.근거 || {};
     if (J.판정 === '구제됐다') { 붙('깨졌다', g.깨졌다); 붙('구제', g.구제); }
     else { 붙('섰다', g.섰다); 붙('띠었다', g.띠었다); if (!(g.섰다 || []).length) 붙('깨졌다', g.깨졌다); }
@@ -1000,17 +998,21 @@
     const 국 = (E.samhapOf ? E.samhapOf([[R.pillars.year.branch, 1], [mb, 2],
       [R.pillars.day.branch, 1]].concat(R.pillars.hour ? [[R.pillars.hour.branch, 1.5]] : []))
       : []).filter(x => x.글자.indexOf(mb) >= 0)[0];
+    // 한자 뒤의 조사는 우리말 읽기의 받침으로 고른다 — 「辰가」가 아니라 「辰이」다.
+    const 받침 = (ko) => { const c = (ko || '').charCodeAt((ko || '').length - 1);
+      return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 !== 0; };
+    const 이가 = (b) => 받침(f.branchKo(b)) ? '이' : '가';
     const 출처 = 국
-      ? `월지 ${f.branch(mb)}가 ${국.글자.map(b => f.branch(b)).join('')} ${E.ELEM[국.elem]}국에 들어 격이 국을 따릅니다`
-      : `월지 ${f.branch(mb)}(${f.branchKo(mb)})에서 나온 격입니다`;
+      ? `태어난 달의 ${f.branch(mb)}(${f.branchKo(mb)})${이가(mb)} ${국.글자.map(b => f.branch(b)).join('')} ${E.ELEM[국.elem]} 기운으로 뭉쳤습니다. 그 뭉친 기운이 이 사주의 중심입니다`
+      : `태어난 달의 ${f.branch(mb)}(${f.branchKo(mb)})에서 나온 것입니다`;
 
     box.innerHTML = `
       <div class="gk-head">
         <span class="nm">${esc(J.name)}격</span>
-        <span class="vd ${cls}">${esc(J.판정)}</span>
+        <span class="vd ${cls}">${esc(L.짧게)}</span>
       </div>
       <p class="gk-sang" style="margin-bottom:8px">${esc(출처)}</p>
-      <p class="gk-sang">${esc(한줄)}${J.상신 ? ` · 이 격을 세우는 것은 <b>${esc(J.상신)}</b>입니다` : ''}</p>
+      <p class="gk-sang">${esc(한줄)}${J.상신 ? `<br>이 사주를 쓸 수 있게 해주는 것은 <b>${esc(J.상신)}</b>입니다` : ''}</p>
       ${근거줄.length ? `<div class="gk-why">${근거줄.join('')}</div>` : ''}
       ${힘줄 ? `<p class="gk-force">천간이 지지에서 받은 힘 — ${힘줄}<br>
         <span style="color:var(--ink3)">0 은 그 십신이 천간에 안 떴거나 뿌리를 못 내렸다는 뜻입니다.
