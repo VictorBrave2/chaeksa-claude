@@ -1022,9 +1022,19 @@
   }
 
   // ───── 택일 1:1 상담 문의 ─────
-  // 카카오톡 채널 1:1 채팅 주소. 비워두면 카카오 버튼을 감추고 메일만 남긴다 —
-  // 눌러도 아무 데도 안 가는 버튼을 띄우느니 없는 게 낫다.
-  const KAKAO_CHAT = '';
+  // 카카오톡 채널. 채팅 주소(pf.kakao.com/_XXX/chat)든 채널 홈 주소(pf.kakao.com/_XXX)든
+  // 채널 ID(_XXX)만 적든 다 받는다 — 관리자센터에서 어느 쪽을 복사해 올지 모른다.
+  // 비워두면 카카오 버튼을 감추고 메일만 남긴다. 눌러도 아무 데도 안 가는 버튼을
+  // 띄우느니 없는 게 낫다.
+  const KAKAO_CHANNEL = '';
+
+  const KAKAO_CHAT = (() => {
+    const v = String(KAKAO_CHANNEL || '').trim();
+    if (!v) return '';
+    if (v.indexOf('open.kakao.com') >= 0) return v;          // 오픈채팅은 그대로
+    const id = (v.match(/_[A-Za-z0-9]+/) || [v])[0];
+    return 'https://pf.kakao.com/' + id + '/chat';
+  })();
 
   // 빈 창을 열면 무엇을 써야 할지 몰라 닫는다. 메일은 본문을 채워서 열 수 있지만
   // 카카오는 미리 채워주는 수단이 없다. 그래서 양식을 클립보드에 넣고 채팅을 연다.
@@ -1034,8 +1044,7 @@
     '출생 예정지 (시·군) :', '수술 가능한 날짜 범위 :',
     '아이 성별 :', '첫째인지 :', '',
     '(양력/음력을 함께 적어주시면 좋습니다)',
-  ].join('
-');
+  ].join('\n');
 
   function copyText(t) {
     try {
@@ -1068,6 +1077,10 @@
     if (!k || !KAKAO_CHAT) return;
     k.classList.remove('hide');
     if ($('taekKakaoNote')) $('taekKakaoNote').classList.remove('hide');
+    // 카카오가 켜지면 그쪽이 주인공이다. 메일은 뒤로 물러난다 —
+    // 반대로 카카오가 꺼져 있으면 메일이 유일한 문의 수단이라 주 버튼으로 남아야 한다.
+    a.className = 'btn ghost small';
+    a.textContent = '📧 메일이 편하시면';
     k.onclick = () => {
       const ok = copyText(TAEK_FORM);
       // 창 열기는 클릭 제스처 안에서 해야 팝업 차단에 안 걸린다
