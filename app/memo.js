@@ -292,8 +292,62 @@
              pillar: cur.pillar, daeun: du ? E.fmt.pillar(du) : null, turn };
   }
 
+  /** 적지 않은 것도 미리 짚는다.
+   *
+   *  비망록은 사용자가 적은 것만 챙긴다. 그건 반쪽이다. 진짜 비서라면
+   *  묻지 않아도 다가오는 것을 먼저 말해야 한다 — 특히 대운 교체처럼
+   *  십 년에 한 번 오면서 판을 통째로 바꾸는 자리는.
+   *
+   *  가까운 것부터 하나만 고른다. 여러 개를 늘어놓으면 아무것도 안 남는다.
+   */
+  function ahead(R, today) {
+    const E = global.ChaeksaEngine, T = global.ChaeksaTypecard;
+    if (!E || !T || !T.lifeCurve) return null;
+    const y = today.getFullYear(), m = today.getMonth() + 1;
+    const lc = T.lifeCurve(R, today);
+    const list = R.daeun.list;
+
+    // ① 대운 교체 — 십 년에 한 번. 3년 안이면 이것부터 말한다.
+    if (lc.curIdx >= 0 && lc.curIdx + 1 < list.length) {
+      const nx = list[lc.curIdx + 1];
+      const 해 = R.solarYear + nx.startAge;
+      const 남음 = 해 - y;
+      if (남음 >= 0 && 남음 <= 3) {
+        const 지금v = lc.list[lc.curIdx].v, 다음v = lc.list[lc.curIdx + 1].v;
+        const 방향 = 다음v >= 지금v + 12 ? '열리는 쪽입니다'
+                   : 다음v <= 지금v - 12 ? '조여지는 쪽입니다' : '결이 크게 달라집니다';
+        return { kind: '대운',
+          head: 남음 === 0 ? '올해 대운이 바뀝니다' : 해 + '년에 대운이 바뀝니다',
+          text: E.fmt.pillar(nx) + ' 대운으로 넘어갑니다(' + nx.startAge + '세부터). '
+              + '십 년에 한 번 판이 통째로 바뀌는 자리이고, ' + 방향 + '. '
+              + (남음 === 0 ? '올해 안에 자리를 잡아두시면 편합니다.' : 남음 + '년 남았습니다.') };
+      }
+    }
+    // ② 해가 바뀌며 크게 달라지는가
+    const 올 = judge(R, y, m), 내 = judge(R, y + 1, m);
+    if (올 && 내 && Math.abs(내.score - 올.score) >= 20) {
+      const 오름 = 내.score > 올.score;
+      return { kind: '세운',
+        head: (y + 1) + '년은 올해와 결이 다릅니다',
+        text: '같은 달을 놓고 보면 ' + (오름 ? '눈에 띄게 열립니다' : '지금보다 조여집니다') + '. '
+            + (오름 ? '올해 벌여둔 일이 내년에 힘을 받습니다.' : '올해 안에 마무리 지을 것을 정리해 두시면 편합니다.') };
+    }
+    // ③ 앞으로 여섯 달 안의 고비 — 가장 낮은 달
+    let low = null;
+    for (let i = 1; i <= 6; i++) {
+      const t = m + i, yy = y + Math.floor((t - 1) / 12), mm = ((t - 1) % 12) + 1;
+      const j = judge(R, yy, mm);
+      if (j && (!low || j.score < low.j.score)) low = { yy, mm, j };
+    }
+    if (low && 올 && low.j.score <= 올.score - 15) {
+      return { kind: '월운', head: low.mm + '월이 이번 반년의 고비입니다',
+        text: low.j.pillar + '월 · ' + low.j.grade + '. 큰 결정을 그 달에 몰지 않으시면 됩니다.' };
+    }
+    return null;
+  }
+
   const label = (n) => Math.floor(n / 100) + '년 ' + (n % 100) + '월';
 
   global.ChaeksaMemo = { list, add, setOutcome, remove, due, upcoming, stats, judge, label, OUTCOMES, ym,
-                         track, tracks, log, loggedThisMonth, pattern, respond, standing };
+                         track, tracks, log, loggedThisMonth, pattern, respond, standing, ahead };
 })(window);

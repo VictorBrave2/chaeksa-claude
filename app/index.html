@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=165">
+<link rel="stylesheet" href="style.css?v=168">
 </head>
 <body>
 <div class="wrap">
@@ -124,6 +124,10 @@
         <div class="st-head" id="stHead"></div>
         <p class="st-body" id="stBody"></p>
         <div class="st-meta" id="stMeta"></div>
+        <div class="st-ahead hide" id="stAhead">
+          <b id="stAheadHead"></b>
+          <span id="stAheadText"></span>
+        </div>
       </section>
 
       <div class="sec-label">콘텐츠</div>
@@ -378,6 +382,7 @@
     <!-- 독립 콘텐츠: 인생 곡선 -->
     <div class="tab hide" data-tab="life">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card warn hide" id="gu-life"><b>성별을 아직 모른다고 하셨습니다.</b> 대운은 성별에 따라 순행·역행이 갈립니다. 지금은 남성 기준으로 계산해 보여드리고 있으니, 알게 되시면 프로필에서 고쳐주세요.</section>
       <section class="card">
         <h2>📈 인생 곡선</h2>
         <p class="hint" style="margin:0 0 12px">대운 아홉 칸을 같은 잣대로 채점해 곡선으로 그립니다. 대운이 내 사주에 필요한 것을 갖고 오는지로 잽니다.</p>
@@ -403,6 +408,7 @@
     <!-- 독립 콘텐츠: 연애·인연 도화첩 -->
     <div class="tab hide" data-tab="dohwa">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card warn hide" id="gu-dohwa"><b>성별을 아직 모른다고 하셨습니다.</b> 배우자성은 성별에 따라 재성·관성으로 갈립니다. 지금은 남성 기준으로 계산해 보여드리고 있으니, 알게 되시면 프로필에서 고쳐주세요.</section>
       <section class="card">
         <h2>🌸 연애·인연 감정</h2>
         <p class="hint" style="margin:0 0 12px">배우자궁(일지)과 배우자성, 도화·홍염·천을귀인을 따져 연애 유형을 감정합니다. 두 사람 사이를 보는 건 심층 궁합에서 따로 다룹니다.</p>
@@ -664,6 +670,8 @@
     <div class="check"><input type="checkbox" id="pfNoTime"><label for="pfNoTime" style="margin:0">시간을 몰라요</label></div>
     <label>성별</label>
     <select id="pfG" aria-label="성별"><option value="M">남성</option><option value="F">여성</option></select>
+    <div class="check"><input type="checkbox" id="pfGUnknown"><label for="pfGUnknown" style="margin:0">아직 몰라요 (출산 예정)</label></div>
+    <p class="hint" id="pfGNote" style="margin-top:6px">사주 네 기둥은 성별과 무관하게 같습니다. <b>대운의 방향</b>과 <b>연애·인연</b>만 성별로 갈리니, 그 둘은 나중에 알려주시면 정확해집니다.</p>
     <label>태어난 곳</label>
     <select id="pfPlace" aria-label="태어난 곳"></select>
     <p class="hint">타인의 생년월일은 <b>본인의 동의를 받고</b> 입력해 주세요.</p>
@@ -735,28 +743,28 @@
   </div>
 </div>
 
-<script src="config.js?v=165"></script>
-<script src="track.js?v=165"></script>
-<script src="cloud.js?v=165"></script>
-<script src="usage.js?v=165"></script>
-<script src="places.js?v=165"></script>
-<script src="people.js?v=165"></script>
-<script src="astro.js?v=165"></script>
-<script src="lunar.js?v=165"></script>
-<script src="engine.js?v=165"></script>
-<script src="chaeyong.js?v=165"></script>
-<script src="brief.js?v=165"></script>
-<script src="typecard.js?v=165"></script>
-<script src="memo.js?v=165"></script>
-<script src="classic.js?v=165"></script>
-<script src="calendar.js?v=165"></script>
-<script src="compat.js?v=165"></script>
-<script src="tongbyeon.js?v=165"></script>
-<script src="rules-wealth-love.js?v=165"></script>
-<script src="rules-health-study-move.js?v=165"></script>
-<script src="consult.js?v=165"></script>
-<script src="share.js?v=165"></script>
-<script src="ai.js?v=165"></script>
-<script src="app.js?v=165"></script>
+<script src="config.js?v=168"></script>
+<script src="track.js?v=168"></script>
+<script src="cloud.js?v=168"></script>
+<script src="usage.js?v=168"></script>
+<script src="places.js?v=168"></script>
+<script src="people.js?v=168"></script>
+<script src="astro.js?v=168"></script>
+<script src="lunar.js?v=168"></script>
+<script src="engine.js?v=168"></script>
+<script src="chaeyong.js?v=168"></script>
+<script src="brief.js?v=168"></script>
+<script src="typecard.js?v=168"></script>
+<script src="memo.js?v=168"></script>
+<script src="classic.js?v=168"></script>
+<script src="calendar.js?v=168"></script>
+<script src="compat.js?v=168"></script>
+<script src="tongbyeon.js?v=168"></script>
+<script src="rules-wealth-love.js?v=168"></script>
+<script src="rules-health-study-move.js?v=168"></script>
+<script src="consult.js?v=168"></script>
+<script src="share.js?v=168"></script>
+<script src="ai.js?v=168"></script>
+<script src="app.js?v=168"></script>
 </body>
 </html>

@@ -22,7 +22,8 @@
   /** 생년월일 등 계산에 쓰이는 값만 추린다 */
   function birthOf(o) {
     const b = {};
-    ['year','month','day','hour','minute','gender','solarCorrection','calendar','lunarInput','place','placeName','longitude','tzOffset']
+    // 새 필드를 여기 안 넣으면 조용히 버려진다. genderUnknown이 그렇게 한 번 사라졌다.
+    ['year','month','day','hour','minute','gender','genderUnknown','solarCorrection','calendar','lunarInput','place','placeName','longitude','tzOffset']
       .forEach(k => { if (o[k] !== undefined) b[k] = o[k]; });
     return b;
   }

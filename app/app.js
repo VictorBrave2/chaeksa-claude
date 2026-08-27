@@ -105,6 +105,8 @@
     $('pfNoTime').checked = b.hour == null && !!p;
     $('pfH').disabled = $('pfMi').disabled = $('pfNoTime').checked;
     $('pfG').value = b.gender || 'M';
+    $('pfGUnknown').checked = !!b.genderUnknown;
+    $('pfG').disabled = $('pfGUnknown').checked;
     if ($('pfPlace')) $('pfPlace').value = b.place || 'KR:서울';
     $('pfDelete').classList.toggle('hide', !p || P.list().length <= 1);
     $('personForm').classList.remove('hide');
@@ -158,7 +160,7 @@
       year: sol.y, month: sol.m, day: sol.d,
       hour: noTime ? null : ($('pfH').value === '' ? null : +$('pfH').value),
       minute: noTime ? 0 : +($('pfMi').value || 0),
-      gender: $('pfG').value, solarCorrection: true,
+      gender: $('pfG').value, genderUnknown: $('pfGUnknown').checked, solarCorrection: true,
       calendar: pfCal,
       lunarInput: pfCal === 'lunar' ? { y: +$('pfY').value, m: +$('pfM').value, d: +$('pfD').value, leap: $('pfLeap').checked } : null,
     };
@@ -198,6 +200,8 @@
     ['pfY', 'pfM', 'pfD'].forEach(id => $(id).addEventListener('input', updatePfConv));
     $('pfLeap').addEventListener('change', updatePfConv);
     $('pfNoTime').onchange = (e) => { $('pfH').disabled = $('pfMi').disabled = e.target.checked; };
+    // 성별을 모르면 고를 수 없게 막는다 — 찍어놓고 아는 척하는 것보다 낫다
+    $('pfGUnknown').onchange = (e) => { $('pfG').disabled = e.target.checked; };
   }
 
   // ───── 출생지 ─────
@@ -342,6 +346,10 @@
       $('stMeta').innerHTML = `<span>이달 <b>${esc(st.pillar)}</b></span>`
         + (st.daeun ? `<span>대운 <b>${esc(st.daeun)}</b></span>` : '')
         + `<span>${esc(st.grade)}</span>`;
+      // 묻지 않아도 다가오는 것을 먼저 짚는다
+      const ah = M.ahead ? M.ahead(R, today) : null;
+      $('stAhead').classList.toggle('hide', !ah);
+      if (ah) { $('stAheadHead').textContent = ah.head; $('stAheadText').textContent = ' ' + ah.text; }
     })();
     // 만세력 4기둥 (원국 탭과 같은 그리기, 지장간·십신은 줄여서)
     const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
@@ -1295,6 +1303,7 @@
   // 표본이 필요 없어 즉시 그린다. 곡선은 원국과 대운만으로 나온다.
   function renderLife() {
     const T = window.ChaeksaTypecard; if (!T || !$('lifeSvg')) return;
+    if ($('gu-life')) $('gu-life').classList.toggle('hide', !profile.genderUnknown);
     const lc = T.lifeCurve(R, today);
     $('lifeSvg').innerHTML = T.drawLifeCurve(profile.name || '당신', lc);
     const fl = $('lifeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
@@ -1345,6 +1354,7 @@
   let dohwaFor = null;
   function renderDohwa() {
     const T = window.ChaeksaTypecard; if (!T || !$('dohwaSvg')) return;
+    if ($('gu-dohwa')) $('gu-dohwa').classList.toggle('hide', !profile.genderUnknown);
     if (dohwaFor === R) return;
     $('dohwaWrap').classList.add('hide'); $('dohwaNote').textContent = '';
     $('dohwaProg').classList.remove('hide');
