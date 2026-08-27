@@ -1036,6 +1036,11 @@
     return 'https://pf.kakao.com/' + id + '/chat';
   })();
 
+  // 채널 홈. '채널 추가'와 '대화하기' 버튼이 이미 붙어 있는 페이지다.
+  // 카카오 JS SDK로도 추가 버튼을 붙일 수 있지만 스크립트 2MB에 팝업 차단까지 얹힌다.
+  // 링크 한 줄로 되는 일에 그걸 들일 이유가 없다.
+  const KAKAO_HOME = KAKAO_CHAT.replace(/\/chat$/, '');
+
   // 빈 창을 열면 무엇을 써야 할지 몰라 닫는다. 메일은 본문을 채워서 열 수 있지만
   // 카카오는 미리 채워주는 수단이 없다. 그래서 양식을 클립보드에 넣고 채팅을 연다.
   const TAEK_FORM = [
@@ -1081,6 +1086,11 @@
     // 반대로 카카오가 꺼져 있으면 메일이 유일한 문의 수단이라 주 버튼으로 남아야 한다.
     a.className = 'btn ghost small';
     a.textContent = '📧 메일이 편하시면';
+    const ch = $('taekChannel'), cl = $('taekChannelLink');
+    if (ch && cl && KAKAO_HOME !== KAKAO_CHAT) {
+      cl.href = KAKAO_HOME;
+      ch.classList.remove('hide');
+    }
     k.onclick = () => {
       const ok = copyText(TAEK_FORM);
       // 창 열기는 클릭 제스처 안에서 해야 팝업 차단에 안 걸린다
