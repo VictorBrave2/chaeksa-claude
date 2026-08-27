@@ -183,7 +183,14 @@
         hap: rels.includes('육합') || rels.includes('삼합'),
         bokeum: rels.includes('복음'),
       };
-      const value = judge(bodyLab, group, extras);
+      // 뿌리 있는 운은 배로 강하게 온다.
+      // 운의 천간이 어디에 앉았는지를 본다 — 제 지지와 원국 지지를 통틀어 가장 높은 자리.
+      // 원국 천간과 달리 바닥을 0.5 로 둔다. 뿌리 없는 운도 오기는 오기 때문이다.
+      // 丁丑(묘) 운도 丁 은 온다. 다만 丁巳(제왕) 운의 절반이다.
+      const 뿌리자리 = carriedBranches.concat([s.gz.branch]);
+      const 실허 = 0.5 + 0.5 * Math.max.apply(null,
+        뿌리자리.map(b => E.UNSEONG_POWER[E.unseong(s.gz.stem, b)]));
+      const value = Math.round(judge(bodyLab, group, extras) * 실허 * 10) / 10;
 
       // 판정이 끝났으니 이제 用을 體에 편입한다 (다음 층의 體가 된다)
       items.push({ elem: E.STEM_ELEM[s.gz.stem], w: s.w.stem });
