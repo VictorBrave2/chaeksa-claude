@@ -85,7 +85,8 @@ window.__ready = function () {
       ['전생 교지', T.drawGyoji(nm, T.pastjob(R))],
       ['시즌', T.drawSeason(nm, R, T.seasonNow(R))],
       ['공범 판결', T.drawAccomplice(nm, you, T.accomplice(R, R2, nm, you))],
-      ['인생 곡선 · 대운도', T.drawLifeCurve(nm, T.lifeCurve(R, now))]
+      ['인생 곡선 · 대운도', T.drawLifeCurve(nm, T.lifeCurve(R, now))],
+      ['열두 달 흐름 · 세운도', T.drawYearFlow(nm, T.yearFlow(R, now.getFullYear(), now))]
     ];
     $('cards').innerHTML = list.map(function (x) {
       return '<div class="c"><b>' + x[0] + '</b>' + x[1] + '</div>';

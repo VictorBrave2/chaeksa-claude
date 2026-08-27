@@ -985,5 +985,135 @@
       + '</svg>';
   }
 
-  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve };
+  // ── 열두 달 흐름 — 세운도(歲運圖) ──
+  // 시간 축의 구멍을 메운다: 하루(오늘의 흐름) → **한 해** → 십 년(인생 곡선).
+  // 채점 잣대는 대운도·시즌과 같다. 축만 다르지 자가 다르면 카드끼리 싸운다.
+  const MONTH_MID = [0, 20, 19, 21, 20, 21, 21, 23, 23, 23, 23, 22, 22];  // 절기 안쪽 날짜
+  function pillarScore(R, pl) {
+    const a = R.analysis, de = E.STEM_ELEM[a.dayStem], ec = a.elemCount;
+    let sc = 0;
+    [E.STEM_ELEM[pl.stem], E.BRANCH_ELEM[pl.branch]].forEach(e => {
+      const sup = E.siding(de, e) > 0;
+      sc += a.strengthScore < 0.45 ? (sup ? 1 : 0)
+          : a.strengthScore > 0.55 ? (sup ? 0 : 1)
+          : ec[e] <= 1 ? 1 : ec[e] >= 3 ? 0 : 0.5;
+    });
+    let v = sc * 30;
+    const C = global.ChaeksaClassic;
+    if (C && C.gungtong) {
+      try {
+        const g = C.gungtong(R);
+        const elOf = (ch) => E.STEM_ELEM[E.STEMS.indexOf(ch)];
+        const el = [E.STEM_ELEM[pl.stem], E.BRANCH_ELEM[pl.branch]];
+        if (g.need && el.indexOf(elOf(g.need)) >= 0) v += 25;
+        else if (g.aux && g.aux.some(x => el.indexOf(elOf(x)) >= 0)) v += 12;
+      } catch (e) {}
+    }
+    const db = R.pillars.day.branch, b = pl.branch;
+    if ((db - b + 12) % 12 === 6) v -= 12;
+    else if (db + b === 13 || db + b === 1) v += 8;
+    else if (SAMHAP_L.some(gp => gp.indexOf(db) >= 0 && gp.indexOf(b) >= 0 && db !== b)) v += 6;
+    return Math.max(0, Math.min(100, Math.round(v)));
+  }
+
+  const YEAR_KIND = {
+    '상승하는 해': '뒤로 갈수록 열립니다',
+    '전반이 밝은 해': '앞쪽에 기회가 몰려 있습니다',
+    '한여름 같은 해': '가운데가 가장 뜨겁습니다',
+    '기복이 큰 해': '달마다 결이 달라집니다',
+    '잔잔한 해': '큰 파도 없이 갑니다',
+  };
+  function yearFlow(R, year, todayD) {
+    const now = todayD || new Date();
+    const months = [];
+    for (let m = 1; m <= 12; m++) {
+      const tf = E.dateFortune(year, m, MONTH_MID[m]);
+      months.push({ m, pl: tf.month, v: pillarScore(R, tf.month) });
+    }
+    const yp = E.dateFortune(year, 6, 21).year;          // 연주(입춘 이후로 안전한 날짜)
+    const yv = pillarScore(R, yp);
+    let hi = 0, lo = 0;
+    months.forEach((x, i) => { if (x.v > months[hi].v) hi = i; if (x.v < months[lo].v) lo = i; });
+    const vs = months.map(x => x.v);
+    const avg = (arr) => arr.reduce((p, c) => p + c, 0) / (arr.length || 1);
+    const q1 = avg(vs.slice(0, 4)), q2 = avg(vs.slice(4, 8)), q3 = avg(vs.slice(8));
+    const range = months[hi].v - months[lo].v;
+    // 실측: 열두 달 진폭은 최소 30 · 중앙 76. 22로 끊으면 한 명도 안 걸린다(35 → 1.5%).
+    const kind = range <= 35 ? '잔잔한 해'
+      : q3 - q1 >= 10 ? '상승하는 해'
+      : q1 - q3 >= 10 ? '전반이 밝은 해'
+      : q2 - Math.max(q1, q3) >= 8 ? '한여름 같은 해' : '기복이 큰 해';
+    const gradeOf = (v) => (SEASON_GRADE.find(g => v / 50 >= g.min) || SEASON_GRADE[4]);
+    const 올해 = now.getFullYear() === year;
+    const curM = 올해 ? now.getMonth() + 1 : 0;
+    // 남은 달 중 최고 — 지난 달을 최고라고 알려주면 쓸 데가 없다
+    let nextHi = -1;
+    months.forEach((x, i) => { if (x.m > curM && (nextHi < 0 || x.v > months[nextHi].v)) nextHi = i; });
+    const lines = [];
+    lines.push(year + '년은 ' + E.fmt.pillar(yp) + '년 — ' + gradeOf(yv).name + '. ' + gradeOf(yv).line);
+    if (올해 && nextHi >= 0) lines.push('남은 달 중 가장 좋은 때는 ' + months[nextHi].m + '월 — ' + gradeOf(months[nextHi].v).name);
+    else if (올해) lines.push('올해 가장 좋았던 달은 ' + months[hi].m + '월이었습니다');
+    else lines.push('가장 좋은 달은 ' + months[hi].m + '월 — ' + gradeOf(months[hi].v).name);
+    lines.push('가장 눌리는 달은 ' + months[lo].m + '월 — 큰 결정은 앞뒤 달로 옮기면 편합니다');
+    lines.push('달의 기운은 절기로 나눕니다. 달력 1일이 아니라 입절일이 경계입니다');
+    const 남은표기 = 올해 && nextHi >= 0;
+    return { year, months, hi, lo, curM, nextHi, 올해, 남은표기, kind, kindNote: YEAR_KIND[kind],
+             yearPillar: yp, yearScore: yv, lines,
+             bestTxt: (남은표기 ? months[nextHi].m : months[hi].m) + '월' };
+  }
+
+  function drawYearFlow(name, yf) {
+    const F = 'Noto Serif KR,serif';
+    const X0 = 42, X1 = 318, Y0 = 244, Y1 = 350;
+    const bw = (X1 - X0) / 12;
+    const bars = yf.months.map((x, i) => {
+      const h = Math.max(3, (Y1 - Y0) * (x.v / 100));
+      const bx = X0 + i * bw + 2, by = Y1 - h;
+      const isHi = i === yf.hi, isNext = yf.남은표기 && i === yf.nextHi, isCur = x.m === yf.curM;
+      const col = isNext ? '#2f6b4f' : isHi ? '#8a6a1e' : isCur ? '#b23a2a' : '#b9a575';
+      return '<rect x="' + bx.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + (bw - 4).toFixed(1)
+        + '" height="' + h.toFixed(1) + '" rx="2.5" fill="' + col + '" opacity="' + (isNext || isHi || isCur ? '.95' : '.55') + '"/>';
+    }).join('');
+    const labels = yf.months.map((x, i) => {
+      const cx = X0 + i * bw + bw / 2;
+      const on = x.m === yf.curM || (yf.남은표기 && i === yf.nextHi) || i === yf.hi;
+      return '<text x="' + cx.toFixed(1) + '" y="' + (Y1 + 14) + '" text-anchor="middle" font-size="9.5" '
+        + 'fill="' + (on ? '#4a3a28' : '#a08a5f') + '"' + (on ? ' font-weight="700"' : '') + '>' + x.m + '</text>';
+    }).join('');
+    const mark = yf.남은표기
+      ? '<text x="' + (X0 + yf.nextHi * bw + bw / 2).toFixed(1) + '" y="' + (Y1 - (Y1 - Y0) * (yf.months[yf.nextHi].v / 100) - 7).toFixed(1)
+        + '" text-anchor="middle" font-size="10" font-weight="700" fill="#2f6b4f">여기</text>' : '';
+    let by2 = 386, body = '';
+    yf.lines.forEach((l) => {
+      const ls = foldTxt(l, 274, 11.5, 2);
+      ls.forEach((L, j) => {
+        body += '<text x="42" y="' + (by2 + j * 16) + '" font-size="11.5" fill="#3f3a30">'
+          + escF((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+      });
+      by2 += (ls.length - 1) * 16 + 21;
+    });
+    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
+      + '<defs><linearGradient id="yfg" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#eef2ea"/><stop offset="1" stop-color="#dde5d9"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="26" fill="url(#yfg)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#7d9478" stroke-width="1.5" opacity=".7"/>'
+      + '<text x="180" y="78" text-anchor="middle" font-size="34" font-weight="900" fill="#33452f" letter-spacing="12">歲運圖</text>'
+      + '<text x="180" y="100" text-anchor="middle" font-size="11.5" fill="#6b7a66" letter-spacing="4">' + yf.year + '년 열두 달 흐름</text>'
+      + '<text x="180" y="124" text-anchor="middle" font-size="13" fill="#3f4d3b" font-weight="700">' + escF(name) + '</text>'
+      + '<line x1="42" y1="140" x2="318" y2="140" stroke="#7d9478" stroke-width="1" opacity=".55"/>'
+      + '<text x="180" y="172" text-anchor="middle" font-size="27" font-weight="900" fill="#33452f">' + escF(yf.kind) + '</text>'
+      + '<text x="180" y="194" text-anchor="middle" font-size="11.5" fill="#6b7a66">' + escF(yf.kindNote) + '</text>'
+      + '<text x="180" y="218" text-anchor="middle" font-size="12" fill="#2f6b4f" font-weight="700">'
+      + escF((yf.남은표기 ? '남은 달 중 최고는 ' : '가장 좋은 달은 ') + yf.bestTxt) + '</text>'
+      + '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="#b9c4b5" stroke-width="1"/>'
+      + bars + labels + mark
+      + '<text x="' + X1 + '" y="' + (Y1 + 14) + '" text-anchor="end" font-size="9" fill="#a0ae9c">월</text>'
+      + body
+      + '<g transform="translate(274,462)"><rect width="46" height="46" rx="8" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="23" y="31" text-anchor="middle" font-family="' + F + '" font-size="19" font-weight="900" fill="#fdf3e7">歲</text></g>'
+      + '<text x="180" y="534" text-anchor="middle" font-size="10.5" fill="#6b7a66" letter-spacing="1">chaeksa.kr · 절기로 나눈 열두 달을 같은 잣대로</text>'
+      + '</svg>';
+  }
+
+  global.ChaeksaTypecard = { mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow };
 })(window);

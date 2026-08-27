@@ -306,6 +306,7 @@
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'life') renderLife();
+    if (tab === 'year') renderYear();
     if (tab === 'taekil') wireTaekil();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
@@ -367,6 +368,9 @@
     } catch (e) {}
     if (T) {
       try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      try { const yf = T.yearFlow(R, today.getFullYear(), today);
+        set('tiYearBig', yf.bestTxt);
+        set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
       try { const lc = T.lifeCurve(R, today);
         set('tiLifeBig', lc.kind + '형'); set('tiLifeSub', '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
       try { const c = T.career(R, null); set('tiJikBig', c.group + '축'); set('tiJikSub', '25유형 중 어느 쪽인지 열어보기'); } catch (e) {}
@@ -981,6 +985,31 @@
     a.href = 'mailto:b01099991263@gmail.com?subject='
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(body);
+  }
+
+  // ───── 열두 달 흐름 — 세운도 ─────
+  let yearPick = today.getFullYear();
+  function renderYear() {
+    const T = window.ChaeksaTypecard; if (!T || !$('yearSvg')) return;
+    const ys = [today.getFullYear(), today.getFullYear() + 1];
+    $('yearSeg').innerHTML = ys.map(y =>
+      `<button data-y="${y}" class="${y === yearPick ? 'on' : ''}">${y}년</button>`).join('');
+    $('yearSeg').querySelectorAll('button').forEach(b => b.onclick = () => { yearPick = +b.dataset.y; renderYear(); });
+    const yf = T.yearFlow(R, yearPick, today);
+    $('yearSvg').innerHTML = T.drawYearFlow(profile.name || '당신', yf);
+    const fl = $('yearFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    $('yearWrap').classList.remove('hide');
+    $('yearNote').textContent = yf.year + '년 ' + E.fmt.pillar(yf.yearPillar) + '년 · '
+      + yf.kind + ' · ' + (yf.남은표기 ? '남은 달 중 최고 ' : '가장 좋은 달 ') + yf.bestTxt;
+    $('btnYearShare').onclick = async () => {
+      const b = $('btnYearShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('yearSvg').innerHTML, '세운도_' + yf.year);
+        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '세운도 자랑하기'; }, 2500);
+    };
   }
 
   // ───── 인생 곡선 — 대운도 ─────
