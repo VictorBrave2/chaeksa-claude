@@ -308,6 +308,7 @@
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
     if (tab === 'child') renderKid();
+    if (tab === 'memo') renderMemo();
     if (tab === 'taekil') wireTaekil();
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
@@ -383,6 +384,25 @@
       try { const l = T.love(R, new Date(), null); set('tiDoBig', l.key.slice(0, 2)); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
       try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
     }
+    // 비망록 배너 — 꺼낼 것이 있으면 그걸 먼저 말한다
+    (function () {
+      const M = window.ChaeksaMemo; if (!M || !$('memoSub')) return;
+      const pid = P2 && P2.active() ? P2.active().id : 'solo';
+      const due = M.due(pid, today), next = M.upcoming(pid, today);
+      if (due.length) {
+        $('memoBadge').textContent = '꺼낼 것';
+        $('memoTitle').textContent = '📓 ' + due[0].q;
+        $('memoSub').textContent = M.label(due[0].ym) + ' — 말씀하신 그때입니다' + (due.length > 1 ? ' (외 ' + (due.length - 1) + '건)' : '');
+      } else if (next.length) {
+        $('memoBadge').textContent = '비망록';
+        $('memoTitle').textContent = '📓 ' + next[0].q;
+        $('memoSub').textContent = M.label(next[0].ym) + '에 다시 꺼내 드리겠습니다';
+      } else {
+        $('memoBadge').textContent = '비망록';
+        $('memoTitle').textContent = '📓 판단 기록장';
+        $('memoSub').textContent = '물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다';
+      }
+    })();
     set('tiAccSub', !others.length ? '사람을 한 명 더 등록하면 열립니다'
       : others.length === 1 ? others[0].name + '님과 대조해 보기'
       : others[0].name + ' 외 ' + (others.length - 1) + '명과 대조 가능');
@@ -391,6 +411,7 @@
 
   // ───── 오늘 ─────
   function renderToday() {
+    renderTodayMemo();
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     const du = E.currentDaeun(R, today);
     const WD = ['일','월','화','수','목','금','토'];
@@ -989,6 +1010,118 @@
     a.href = 'mailto:b01099991263@gmail.com?subject='
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(body);
+  }
+
+  // 받침이 있으면 '이었습니다', 없으면 '였습니다'. 조사를 안 맞추면 기계가 쓴 티가 난다.
+  function josa(word, withBatchim, without) {
+    const c = String(word || '').trim().slice(-1).charCodeAt(0);
+    const has = c >= 0xAC00 && c <= 0xD7A3 ? (c - 0xAC00) % 28 !== 0 : false;
+    return (word || '') + (has ? withBatchim : without);
+  }
+
+  // ───── 비망록 — 판단 기록장 ─────
+  // 이 앱에서 유일하게 "시간이 지날수록 값이 커지는" 자리다.
+  // 카드는 한 번 보고 끝나지만 여기 쌓인 기록은 비서가 먼저 말을 걸 근거가 된다.
+  function memoPersonId() { const P = People(); const a = P && P.active(); return a ? a.id : 'solo'; }
+
+  function memoRow(it, opts) {
+    const M = window.ChaeksaMemo;
+    const v = it.verdict;
+    const 판단 = v ? `<span class="mm-grade">${esc(v.grade)}</span> <span class="mm-dim">${esc(v.pillar)}월 · ${v.score}점</span>` : '';
+    let 결과 = '';
+    if (it.outcome) {
+      const o = M.OUTCOMES[it.outcome.result] || {};
+      결과 = `<div class="mm-out"><b style="color:${o.col}">${o.mark} ${esc(o.label)}</b>${it.outcome.note ? ' — ' + esc(it.outcome.note) : ''}</div>`;
+    } else if (opts && opts.ask) {
+      결과 = `<div class="mm-ask">어떻게 되었습니까?
+        <button class="chip" data-id="${it.id}" data-r="good">○ 좋았다</button>
+        <button class="chip" data-id="${it.id}" data-r="soso">△ 그저 그랬다</button>
+        <button class="chip" data-id="${it.id}" data-r="bad">✕ 아니었다</button></div>`;
+    }
+    return `<div class="mm">
+      <div class="mm-head"><b>${esc(it.q)}</b><span class="mm-when">${M.label(it.ym)}</span></div>
+      <div class="mm-v">${판단}</div>
+      ${v && v.line ? `<div class="mm-line">${esc(v.line)}</div>` : ''}
+      ${결과}
+      <button class="mm-del" data-del="${it.id}" aria-label="지우기">지우기</button>
+    </div>`;
+  }
+
+  function renderMemo() {
+    const M = window.ChaeksaMemo; if (!M || !$('memoQ')) return;
+    const pid = memoPersonId();
+    // 연·월 고르기 — 이번 달부터 24개월
+    if (!$('memoY').options.length) {
+      const ys = [today.getFullYear(), today.getFullYear() + 1, today.getFullYear() + 2];
+      $('memoY').innerHTML = ys.map(y => `<option value="${y}">${y}년</option>`).join('');
+      $('memoM').innerHTML = Array.from({ length: 12 }, (_, i) =>
+        `<option value="${i + 1}"${i + 1 === today.getMonth() + 1 ? ' selected' : ''}>${i + 1}월</option>`).join('');
+    }
+    const peek = () => {
+      const j = M.judge(R, +$('memoY').value, +$('memoM').value);
+      $('memoPeek').innerHTML = j
+        ? `그 달은 <b>${esc(j.pillar)}월 · ${esc(j.grade)}</b> (${j.score}점) — ${esc(j.line)}`
+        : '';
+    };
+    $('memoY').onchange = peek; $('memoM').onchange = peek; peek();
+
+    const due = M.due(pid, today), next = M.upcoming(pid, today);
+    $('memoDueCard').classList.toggle('hide', !due.length);
+    $('memoNextCard').classList.toggle('hide', !next.length);
+    $('memoDue').innerHTML = due.map(it => memoRow(it, { ask: true })).join('');
+    $('memoNext').innerHTML = next.map(it => memoRow(it, {})).join('');
+
+    // 지난 것 중 결과가 적힌 것
+    const done = M.list(pid).filter(x => x.outcome);
+    if (done.length) {
+      $('memoDueCard').classList.remove('hide');
+      $('memoDue').innerHTML += `<div class="mm-sep">기록된 것</div>` + done.map(it => memoRow(it, {})).join('');
+    }
+
+    // 결과 버튼·삭제 배선
+    $('memoDue').querySelectorAll('button[data-r]').forEach(b => b.onclick = () => {
+      const note = prompt('한 줄로 남기시겠습니까? (건너뛰려면 비워두세요)') || '';
+      M.setOutcome(b.dataset.id, b.dataset.r, note);
+      renderMemo(); renderHome(); renderToday();
+    });
+    [$('memoDue'), $('memoNext')].forEach(box => box.querySelectorAll('button[data-del]').forEach(b => b.onclick = () => {
+      if (!confirm('이 기록을 지웁니다. 계속할까요?')) return;
+      M.remove(b.dataset.del); renderMemo(); renderHome(); renderToday();
+    }));
+
+    // 적중률
+    const st = M.stats(pid);
+    $('memoStatCard').classList.toggle('hide', st.total < 3);
+    if (st.total >= 3) {
+      const 줄 = [];
+      if (st.좋다한것.n) 줄.push(`<p>엔진이 <b>좋다</b>고 한 ${st.좋다한것.n}건 중 <b>${st.좋다한것.맞음}건</b>이 실제로 좋았습니다.</p>`);
+      if (st.아니라한것.n) 줄.push(`<p>엔진이 <b>아니라</b>고 한 ${st.아니라한것.n}건 중 <b>${st.아니라한것.맞음}건</b>이 실제로 그랬습니다.</p>`);
+      $('memoStat').innerHTML = 줄.join('') || '<p>아직 판단이 갈릴 만한 기록이 없습니다.</p>';
+    }
+  }
+
+  $('btnMemoAdd').onclick = () => {
+    const M = window.ChaeksaMemo;
+    const q = $('memoQ').value.trim();
+    if (!q) { $('memoQ').focus(); return; }
+    M.add(memoPersonId(), q, +$('memoY').value, +$('memoM').value, R);
+    $('memoQ').value = '';
+    renderMemo(); renderHome(); renderToday();
+  };
+
+  // 비서가 먼저 말을 거는 자리 — 오늘 탭 맨 위
+  function renderTodayMemo() {
+    const M = window.ChaeksaMemo, box = $('todayMemo'); if (!M || !box) return;
+    const due = M.due(memoPersonId(), today);
+    box.classList.toggle('hide', !due.length);
+    if (!due.length) return;
+    const it = due[0];
+    const 지남 = it.ym < (today.getFullYear() * 100 + today.getMonth() + 1);
+    box.innerHTML = `<h2>📓 말씀하신 것</h2>
+      <div class="brief" style="font-size:15px"><p>${esc(it.q)} — <b>${M.label(it.ym)}</b>${지남 ? '이 지났습니다.' : '입니다.'}</p>
+      ${it.verdict ? `<p style="color:var(--ink2)">그때 제 판단은 <b>${esc(josa(it.verdict.grade, '이었습니다', '였습니다'))}</b>. ${esc(it.verdict.line)}</p>` : ''}</div>
+      <button class="btn ghost small" data-open="memo" style="margin-top:10px">비망록 열기</button>`;
+    box.querySelector('[data-open]').onclick = () => go('memo');
   }
 
   // ───── 우리 아이 — 육아첩 ─────

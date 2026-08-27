@@ -740,3 +740,21 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .card h3.doc-h{font-family:var(--sans);margin:22px 0 10px;font-size:13px;font-weight:700;
   color:var(--ink2);letter-spacing:.02em;display:flex;align-items:center;gap:10px}
 .card h3.doc-h::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ── 비망록 ── */
+.mm{border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px;
+  background:var(--bg2);position:relative}
+.mm-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.mm-head b{font-size:15px}
+.mm-when{font-size:12.5px;color:var(--accent);font-weight:600;white-space:nowrap}
+.mm-v{margin-top:5px;font-size:12.5px}
+.mm-grade{font-weight:700;color:var(--ink)}
+.mm-dim{color:var(--ink3)}
+.mm-line{margin-top:5px;font-size:12.5px;color:var(--ink2);line-height:1.6}
+.mm-out{margin-top:9px;font-size:13px;color:var(--ink2);line-height:1.6}
+.mm-ask{margin-top:10px;font-size:12.5px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mm-ask .chip{font-size:12px;padding:5px 10px}
+.mm-del{position:absolute;top:11px;right:12px;border:0;background:none;cursor:pointer;
+  font-size:11px;color:var(--ink3);font-family:inherit;padding:2px 4px}
+.mm-del:hover{color:var(--g0-ink)}
+.mm-sep{font-size:11.5px;letter-spacing:.14em;color:var(--ink3);margin:16px 0 9px}
