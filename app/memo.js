@@ -249,8 +249,51 @@
     return { tone: 'flat', text: '다음 ' + nx.m + '월도 비슷합니다. 페이스를 지키시는 게 답입니다.' };
   }
 
+  /** 첫 화면 맨 위에 놓을 한 마디.
+   *
+   *  사주가 잘 풀리는 사람은 여기 안 온다. 세상을 즐기기 바쁘다.
+   *  들어오는 사람은 뜻대로 안 흘러가서 이유를 찾으러 온 사람이다.
+   *  그 사람에게 '686개 유형 중 한 장 뽑기'가 첫 마디여서는 안 된다.
+   *
+   *  말할 것은 셋: ①지금 어떤 구간인지 ②그게 당신 탓이 아니라는 것 ③언제 바뀌는지.
+   *  좋은 구간이면 굳이 위로하지 않는다 — 그때는 밀라고 말한다.
+   */
+  function standing(R, today) {
+    const T = global.ChaeksaTypecard, E = global.ChaeksaEngine;
+    if (!T || !T.yearFlow) return null;
+    const y = today.getFullYear(), m = today.getMonth() + 1;
+    const cur = judge(R, y, m);
+    if (!cur) return null;
+    const du = E.currentDaeun(R, today);
+    // 지금보다 나아지는 첫 달 (스물넉 달까지 본다)
+    let turn = null;
+    for (let i = 1; i <= 24; i++) {
+      const t = m + i, yy = y + Math.floor((t - 1) / 12), mm = ((t - 1) % 12) + 1;
+      const j = judge(R, yy, mm);
+      if (j && j.score >= cur.score + 15) { turn = { y: yy, m: mm, j, away: i }; break; }
+    }
+    const 눌림 = cur.score < 50;
+    const 좋음 = cur.score >= 75;
+    let head, body;
+    if (좋음) {
+      head = '지금은 밀어야 할 때입니다';
+      body = '이번 달은 ' + cur.grade + '입니다. 미뤄둔 일이 있으면 지금 꺼내세요. 이런 달은 자주 오지 않습니다.';
+    } else if (눌림) {
+      head = '지금은 눌리는 구간입니다';
+      body = '이번 달은 ' + cur.grade + '입니다. 애써도 더디게 가는 때가 있고, 지금이 그렇습니다. '
+           + (turn ? turn.m + '월부터 결이 바뀝니다 — ' + turn.away + '달 남았습니다.'
+                   : '이 구간이 영영 가지는 않습니다.');
+    } else {
+      head = '지금은 고르게 갑니다';
+      body = '이번 달은 ' + cur.grade + '입니다. 크게 밀어주지도 막지도 않으니 내 페이스가 답입니다.'
+           + (turn ? ' ' + turn.m + '월부터는 좀 더 열립니다.' : '');
+    }
+    return { head, body, grade: cur.grade, score: cur.score, 눌림, 좋음,
+             pillar: cur.pillar, daeun: du ? E.fmt.pillar(du) : null, turn };
+  }
+
   const label = (n) => Math.floor(n / 100) + '년 ' + (n % 100) + '월';
 
   global.ChaeksaMemo = { list, add, setOutcome, remove, due, upcoming, stats, judge, label, OUTCOMES, ym,
-                         track, tracks, log, loggedThisMonth, pattern, respond };
+                         track, tracks, log, loggedThisMonth, pattern, respond, standing };
 })(window);

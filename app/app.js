@@ -330,6 +330,19 @@
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
     const a = R.analysis;
+    // 첫 마디 — 오늘 여기 들어온 사람에게 제일 먼저 할 말
+    (function () {
+      const M = window.ChaeksaMemo; if (!M || !M.standing || !$('standing')) return;
+      const st = M.standing(R, today);
+      if (!st) { $('standing').classList.add('hide'); return; }
+      $('standing').classList.remove('hide');
+      $('standing').className = 'card standing' + (st.눌림 ? ' down' : st.좋음 ? ' up' : '');
+      $('stHead').textContent = st.head;
+      $('stBody').textContent = st.body;
+      $('stMeta').innerHTML = `<span>이달 <b>${esc(st.pillar)}</b></span>`
+        + (st.daeun ? `<span>대운 <b>${esc(st.daeun)}</b></span>` : '')
+        + `<span>${esc(st.grade)}</span>`;
+    })();
     // 만세력 4기둥 (원국 탭과 같은 그리기, 지장간·십신은 줄여서)
     const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
     $('hmPillars').innerHTML = order.map(([k, label]) => {

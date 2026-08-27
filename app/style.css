@@ -769,3 +769,12 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .mm-say.mm-up,.mm-say.mm-keep{border-left-color:#3e7d4f}
 .mm-say.mm-hold,.mm-say.mm-wait{border-left-color:#3a6ea5}
 .mm-say.mm-miss{border-left-color:#b23a2a}
+
+/* ── 첫 마디 — 힘들어서 들어온 사람에게 먼저 하는 말 ── */
+.standing{border-left:4px solid var(--line2)}
+.standing.down{border-left-color:#3a6ea5}
+.standing.up{border-left-color:#3e7d4f}
+.st-head{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+.st-body{margin-top:9px;font-size:14.5px;line-height:1.8;color:var(--ink2)}
+.st-meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:var(--ink3)}
+.st-meta b{color:var(--ink2);font-family:var(--serif);font-size:13px}
