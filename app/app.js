@@ -1175,6 +1175,10 @@
       <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
       ${지금절}
       ${달절}
+      ${nextStep('이번 달, 그 사람 마음은 어디로',
+        '대운과 올해까지',
+        '해 단위로는 「자리를 잡고 싶은 때」까지 나옵니다. 이번 달·다음 달 그 사람 마음이 어느 쪽으로 움직이는지, 좋은 달의 며칠이 실제로 열리는지는 월운·일운까지 내려가야 보입니다.',
+        (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다')}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
         <button class="btn small" id="btnAccShare">카드 저장·공유</button>
@@ -1227,6 +1231,22 @@
   // 채널 ID(_XXX)만 적든 다 받는다 — 관리자센터에서 어느 쪽을 복사해 올지 모른다.
   // 비워두면 카카오 버튼을 감추고 메일만 남긴다. 눌러도 아무 데도 안 가는 버튼을
   // 띄우느니 없는 게 낫다.
+  // ───── 「그 다음」 — 해에서 달·날로 내려가는 자리 ─────
+  // 무료는 「해」까지다. 달·날·시는 사람이 붙어서 봐야 하고, 그게 파는 것이다.
+  // 답을 감추는 게 아니라 **해상도를 파는 것**이다 — 어디까지 무료인지 먼저 밝힌다.
+  function nextStep(제목, 무료로본것, 물음, 문의말) {
+    const q = encodeURIComponent(문의말 || '');
+    return `<div class="nextbox">
+      <p class="nx-k">${esc(제목)}</p>
+      <p class="nx-free">여기까지가 무료입니다 — <b>${esc(무료로본것)}</b></p>
+      <p class="nx-q">${esc(물음)}</p>
+      <a class="btn kakao nx-cta" href="${KAKAO_CHAT}?_q=${q}" target="_blank" rel="noopener">
+        <span>💬</span>카카오로 물어보기</a>
+      <p class="nx-ft">달·날·시는 사람이 붙어서 봅니다. 값은 정해두지 않았습니다 —
+        받아보시고 도움이 되었다고 느끼시면 그때 마음만큼 해주시면 됩니다.</p>
+    </div>`;
+  }
+
   const KAKAO_CHANNEL = '_jdqxaX';   // 책사 채널 (검색용 아이디 chaeksa)
 
   const KAKAO_CHAT = (() => {
@@ -1666,6 +1686,12 @@
     inyeonFor = R;
     $('inSvg').innerHTML = T.drawInyeon(profile.name || '당신', v);
     const fl = $('inFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    const inNext = $('inNext');
+    if (inNext && v.첫해) inNext.innerHTML = nextStep(
+      '그 해, 어느 달일까요',
+      v.첫해.해 + '년까지',
+      '해가 나왔으면 그 다음은 달입니다. ' + v.첫해.해 + '년 열두 달 중 어느 달에 열리는지, 그때 무엇을 하면 좋은지는 월운까지 내려가야 보입니다.',
+      (profile.name || '') + '님 인연 시기 상담 — ' + v.첫해.해 + '년 중 어느 달인지 보고 싶습니다');
     $('inNote').textContent = v.말 + ' · 배우자성은 ' + v.배우자이름
       + '(' + (v.남 ? '남성 기준' : '여성 기준') + ')입니다. 이 순위는 열 해 안에서의 서열입니다.';
     $('btnInShare').onclick = async () => {
