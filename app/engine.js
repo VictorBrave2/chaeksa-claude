@@ -326,7 +326,21 @@
     const { strengthScore, strength, gotMonth } = strengthOf(pillars);
     const missing = ELEM.filter((_, i) => elemCount[i] === 0);
     const dominant = ELEM[elemCount.indexOf(Math.max(...elemCount))];
-    const yong = strength === '신약' ? [ELEM[(de + 4) % 5], ELEM[de]] : [ELEM[(de + 1) % 5], ELEM[(de + 2) % 5], ELEM[(de + 3) % 5]];
+    // 용신 후보(간이) — 라벨 셋을 셋으로 가른다.
+    //
+    // 예전에는 「신약이 아니면」으로 묶어 중화가 신강과 같은 처방을 받았다.
+    // 어느 쪽으로도 안 치우쳤다고 판정해놓고 덜어내라고 한 셈이라 앞뒤가 안 맞았고,
+    // 0.449 와 0.451 이 정반대 처방을 받는 벼랑도 거기서 생겼다.
+    //
+    // 중화는 억부로 처방할 것이 없다. 도울 필요도 덜어낼 필요도 없으니
+    // 남는 문제는 「없는 것」이다. 빠진 오행은 강약과 무관하게 평생 약한 고리가 된다.
+    // 월별 택일 자료가 '빈 오행 없음'을 만점 조건으로 쓰면서 정작 여기서는
+    // 그 값을 안 쓰고 있었다.
+    const yong =
+      strength === '신약' ? [ELEM[(de + 4) % 5], ELEM[de]] :
+      strength === '신강' ? [ELEM[(de + 1) % 5], ELEM[(de + 2) % 5], ELEM[(de + 3) % 5]] :
+      // 중화 — 빠진 오행을 채운다. 다 갖췄으면 가장 적은 것을 본다.
+      (missing.length ? missing.slice() : [ELEM[elemCount.indexOf(Math.min.apply(null, elemCount))]]);
     return { dayStem: ds, dayElem: ELEM[de], dayYang: STEM_YANG[ds] === 1, elemCount, gods, strength, strengthScore, gotMonth, missing, dominant, yongCandidates: yong };
   }
 
