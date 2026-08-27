@@ -1022,20 +1022,59 @@
   }
 
   // ───── 택일 1:1 상담 문의 ─────
-  // 빈 메일 창을 열면 무엇을 써야 할지 몰라 닫는다. 양식을 채워서 연다.
+  // 카카오톡 채널 1:1 채팅 주소. 비워두면 카카오 버튼을 감추고 메일만 남긴다 —
+  // 눌러도 아무 데도 안 가는 버튼을 띄우느니 없는 게 낫다.
+  const KAKAO_CHAT = '';
+
+  // 빈 창을 열면 무엇을 써야 할지 몰라 닫는다. 메일은 본문을 채워서 열 수 있지만
+  // 카카오는 미리 채워주는 수단이 없다. 그래서 양식을 클립보드에 넣고 채팅을 연다.
+  const TAEK_FORM = [
+    '출산택일 상담을 신청합니다.', '',
+    '아버지 생년월일시 :', '어머니 생년월일시 :',
+    '출생 예정지 (시·군) :', '수술 가능한 날짜 범위 :',
+    '아이 성별 :', '첫째인지 :', '',
+    '(양력/음력을 함께 적어주시면 좋습니다)',
+  ].join('
+');
+
+  function copyText(t) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t); return true;
+      }
+    } catch (e) { /* 아래로 흘린다 */ }
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove(); return true;
+    } catch (e) { return false; }
+  }
+
+  function flash(btn, msg) {
+    const old = btn.innerHTML;
+    btn.innerHTML = msg;
+    setTimeout(() => { btn.innerHTML = old; }, 2600);
+  }
+
   function wireTaekil() {
     const a = $('btnTaekMail'); if (!a || a.dataset.wired) return;
     a.dataset.wired = '1';
-    const body = [
-      '출산택일 상담을 신청합니다.', '',
-      '아버지 생년월일시 :', '어머니 생년월일시 :',
-      '출생 예정지 (시·군) :', '수술 가능한 날짜 범위 :',
-      '아이 성별 :', '첫째인지 :', '',
-      '(양력/음력을 함께 적어주시면 좋습니다)',
-    ].join('\n');
     a.href = 'mailto:b01099991263@gmail.com?subject='
       + encodeURIComponent('[책사] 출산택일 상담 문의')
-      + '&body=' + encodeURIComponent(body);
+      + '&body=' + encodeURIComponent(TAEK_FORM);
+
+    const k = $('btnTaekKakao');
+    if (!k || !KAKAO_CHAT) return;
+    k.classList.remove('hide');
+    if ($('taekKakaoNote')) $('taekKakaoNote').classList.remove('hide');
+    k.onclick = () => {
+      const ok = copyText(TAEK_FORM);
+      // 창 열기는 클릭 제스처 안에서 해야 팝업 차단에 안 걸린다
+      window.open(KAKAO_CHAT, '_blank', 'noopener');
+      flash(k, ok ? '양식을 복사했습니다 — 채팅창에 붙여넣으세요'
+                  : '채팅창을 열었습니다 — 위 양식을 적어 보내주세요');
+    };
   }
 
   // 받침이 있으면 '이었습니다', 없으면 '였습니다'. 조사를 안 맞추면 기계가 쓴 티가 난다.
