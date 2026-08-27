@@ -314,6 +314,7 @@
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'inyeon') renderInyeon();
+    if (tab === 'naepyeon') renderNaepyeon();
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
@@ -438,6 +439,10 @@
     const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
     if (T) {
       try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
+      try { const np = T.naepyeon(R, today);
+        set('tiNpBig', np.결.map(k => k.오행).join('·'));
+        set('tiNpSub', np.결.map(k => k.이름).join(' · ') + '의 사람');
+      } catch (e) {}
       try {
         const iy = T.inyeon(R, today.getFullYear(), 10);
         if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
@@ -1604,6 +1609,29 @@
   }
 
   // ───── 연애·인연 — 도화첩 ─────
+  // ───── 내 편이 되어주는 사람 ─────
+  let npFor = null;
+  function renderNaepyeon() {
+    const T = window.ChaeksaTypecard; if (!T || !T.naepyeon || !$('npSvg')) return;
+    if (npFor === R) return;
+    const v = T.naepyeon(R, today);
+    npFor = R;
+    $('npSvg').innerHTML = T.drawNaepyeon(profile.name || '당신', v);
+    const fl = $('npFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
+    $('npNote').textContent = '채워야 할 기운은 ' + v.결.map(k => k.오행).join('·')
+      + '입니다. 생일을 아시는 분이라면 일간이 '
+      + v.결.map(k => k.일간.join('·')).join(' 또는 ') + '인지 보시면 됩니다.';
+    $('btnNpShare').onclick = async () => {
+      const b = $('btnNpShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('npSvg').innerHTML, '내편이되는사람');
+        b.textContent = r === 'shared' ? '공유 완료!' : r === 'copied' ? '복사됐어요' : '다운로드 폴더에 저장했어요';
+      } catch (e) { b.textContent = '다시 시도'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
+    };
+  }
+
   // ───── 인연이 오는 해 ─────
   let inyeonFor = null;
   function renderInyeon() {

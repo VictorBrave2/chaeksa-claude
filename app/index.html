@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=237">
+<link rel="stylesheet" href="style.css?v=239">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -145,18 +145,9 @@
   <div id="app" class="hide">
     <!-- 홈 — 타일 · 만세력(사람 전환) · 타일 -->
     <div class="tab" data-tab="home">
-      <!-- 첫 마디 — 잘 풀리는 사람은 여기 안 온다. 뜻대로 안 되어 온 사람에게
-           먼저 할 말은 '카드 뽑기'가 아니라 '지금 어디에 계신지'다. -->
-      <section class="card standing" id="standing">
-        <div class="st-head" id="stHead"></div>
-        <p class="st-body" id="stBody"></p>
-        <div class="st-meta" id="stMeta"></div>
-        <div class="st-ahead hide" id="stAhead">
-          <b id="stAheadHead"></b>
-          <span id="stAheadText"></span>
-        </div>
-      </section>
-
+      <!-- 「지금 어디에 계신지」는 원국 탭으로 옮겼다 (2026-08-28).
+           앱을 열자마자 「지금은 눌리는 구간입니다」가 첫 인사일 수는 없다.
+           궁금해서 원국을 열어본 사람에게 할 말이지, 문을 열고 들어온 사람에게 할 말이 아니다. -->
       <div class="sec-label">콘텐츠</div>
 
       <!-- 2026-08-28 여성향으로 방향을 바꿨다.
@@ -187,6 +178,11 @@
         </button>
       </div>
       <div class="tiles">
+        <button class="tile" data-open="naepyeon">
+          <span class="ti-k">내 편이 되는 사람</span>
+          <span class="ti-big" id="tiNpBig">🍀 助</span>
+          <span class="ti-sub" id="tiNpSub">어떤 결의 사람을 곁에 두면 좋은가</span>
+        </button>
         <button class="tile" data-open="year">
           <span class="ti-k">올해의 나</span>
           <span class="ti-big" id="tiYearBig">🗓 歲運</span>
@@ -453,6 +449,20 @@
     </div>
 
     <!-- 독립 콘텐츠: 연애·인연 도화첩 -->
+    <!-- 독립 콘텐츠: 내 편이 되어주는 사람 -->
+    <div class="tab hide" data-tab="naepyeon">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>🍀 내 편이 되어주는 사람</h2>
+        <p class="hint" style="margin:0 0 12px">내가 지금 채워야 할 기운을 <b>타고난 사람</b>이 곁에 있으면 그 자리가 메워집니다.
+          어떤 결의 사람인지, 나에게 어떤 사이가 되는지 봅니다.
+          <b>피할 사람을 고르는 자리가 아닙니다</b> — 사람은 오행 하나로 정해지지 않습니다.</p>
+        <div id="npWrap" class="cardwrap"><div id="npFlip" class="cardflip"><div id="npSvg" class="cardsvg"></div></div>
+          <button class="btn small" id="btnNpShare" style="margin-top:12px">카드 저장·공유</button></div>
+        <p class="hint" id="npNote" style="margin-top:10px"></p>
+      </section>
+    </div>
+
     <!-- 독립 콘텐츠: 인연이 오는 해 -->
     <div class="tab hide" data-tab="inyeon">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
@@ -600,6 +610,16 @@
 
 
 
+      <!-- 지금 어디에 계신지 — 홈에서 옮겨왔다. 원국을 보러 온 사람에게는 맞는 말이다. -->
+      <section class="card standing" id="standing">
+        <div class="st-head" id="stHead"></div>
+        <p class="st-body" id="stBody"></p>
+        <div class="st-meta" id="stMeta"></div>
+        <div class="st-ahead hide" id="stAhead">
+          <b id="stAheadHead"></b>
+          <span id="stAheadText"></span>
+        </div>
+      </section>
       <section class="card">
         <h2>나의 사주 원국</h2>
         <div class="pillars" id="pillars"></div>
@@ -812,29 +832,29 @@
   </div>
 </div>
 
-<script src="config.js?v=237"></script>
-<script src="track.js?v=237"></script>
-<script src="cloud.js?v=237"></script>
-<script src="usage.js?v=237"></script>
-<script src="places.js?v=237"></script>
-<script src="people.js?v=237"></script>
-<script src="astro.js?v=237"></script>
-<script src="lunar.js?v=237"></script>
-<script src="engine.js?v=237"></script>
-<script src="chaeyong.js?v=237"></script>
-<script src="brief.js?v=237"></script>
-<script src="typecard.js?v=237"></script>
-<script src="gyeokguk.js?v=237"></script>
-<script src="memo.js?v=237"></script>
-<script src="classic.js?v=237"></script>
-<script src="calendar.js?v=237"></script>
-<script src="compat.js?v=237"></script>
-<script src="tongbyeon.js?v=237"></script>
-<script src="rules-wealth-love.js?v=237"></script>
-<script src="rules-health-study-move.js?v=237"></script>
-<script src="consult.js?v=237"></script>
-<script src="share.js?v=237"></script>
-<script src="ai.js?v=237"></script>
-<script src="app.js?v=237"></script>
+<script src="config.js?v=239"></script>
+<script src="track.js?v=239"></script>
+<script src="cloud.js?v=239"></script>
+<script src="usage.js?v=239"></script>
+<script src="places.js?v=239"></script>
+<script src="people.js?v=239"></script>
+<script src="astro.js?v=239"></script>
+<script src="lunar.js?v=239"></script>
+<script src="engine.js?v=239"></script>
+<script src="chaeyong.js?v=239"></script>
+<script src="brief.js?v=239"></script>
+<script src="typecard.js?v=239"></script>
+<script src="gyeokguk.js?v=239"></script>
+<script src="memo.js?v=239"></script>
+<script src="classic.js?v=239"></script>
+<script src="calendar.js?v=239"></script>
+<script src="compat.js?v=239"></script>
+<script src="tongbyeon.js?v=239"></script>
+<script src="rules-wealth-love.js?v=239"></script>
+<script src="rules-health-study-move.js?v=239"></script>
+<script src="consult.js?v=239"></script>
+<script src="share.js?v=239"></script>
+<script src="ai.js?v=239"></script>
+<script src="app.js?v=239"></script>
 </body>
 </html>

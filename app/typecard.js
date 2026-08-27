@@ -615,6 +615,114 @@
     return { rows, 좋은달, 나쁜달 };
   }
 
+  // ── 내 편이 되어주는 사람 ──
+  // 계산은 용신 하나로 끝난다. 내가 필요로 하는 오행을 **일간으로 쓰는 사람**이
+  // 곁에 있으면 그 기운이 채워진다. 「어떤 사람을 곁에 두면 좋은가」는
+  // 여성향에서 오래 읽히는 주제인데 우리는 용신을 이미 내고 있었다.
+  //
+  // 겁주지 않는다. 「이 사람을 피하세요」가 아니라 「지금은 이런 결이 힘이 됩니다」다.
+  // 사람은 오행 하나로 정해지지 않는다 — 그것도 화면에 적는다.
+  const ELEM_PERSON = {
+    목: ['자라는 결', '먼저 벌이고 밀고 나가는 쪽입니다. 계획을 세우고 사람을 모읍니다',
+         ['甲', '乙']],
+    화: ['밝히는 결', '드러내고 표현하는 쪽입니다. 곁에 있으면 분위기가 환해집니다',
+         ['丙', '丁']],
+    토: ['받쳐주는 결', '중재하고 품는 쪽입니다. 흔들릴 때 자리를 지켜 줍니다',
+         ['戊', '己']],
+    금: ['정리하는 결', '끊고 맺는 쪽입니다. 어지러운 것을 갈라 세워 줍니다',
+         ['庚', '辛']],
+    수: ['흐르게 하는 결', '궁리하고 이어주는 쪽입니다. 막힌 데를 돌아가게 합니다',
+         ['壬', '癸']],
+  };
+  const GOD_LEAN = {
+    비겁: '나란히 서서 같이 밀어주는 사이가 됩니다',
+    식상: '내 말을 꺼내게 해주는 사이가 됩니다',
+    재성: '현실을 챙겨 주는 사이가 됩니다',
+    관성: '기댈 자리를 만들어 주는 사이가 됩니다',
+    인성: '감싸주고 채워 주는 사이가 됩니다',
+  };
+
+  function naepyeon(R, when) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
+    const a = R.analysis || E.strengthOf(p);
+    const GRP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성',
+                  정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
+    const 용 = (a.yongCandidates || []).slice(0, 2);
+
+    const 결 = 용.map(el => {
+      const w = ELEM_PERSON[el] || ['―', '', []];
+      // 그 오행을 일간으로 쓰는 사람은 나에게 무슨 십신인가
+      const st = ['목','화','토','금','수'].indexOf(el) * 2;   // 양간
+      const g = E.TEN_GODS[E.tenGod(ds, st)];
+      return { 오행: el, 이름: w[0], 설명: w[1], 일간: w[2],
+               십신: g, 기울기: GOD_LEAN[GRP[g]] || '' };
+    });
+
+    // 지금 대운이 무엇을 데려오고 있는가 — 곁에 둘 사람도 때에 따라 다르다
+    const du = E.currentDaeun(R, when || new Date());
+    let 지금 = null;
+    if (du) {
+      const g = E.TEN_GODS[E.tenGod(ds, du.stem)];
+      const grp = GRP[g];
+      const 부족 = (a.missing || []);
+      지금 = {
+        간지: E.fmt.pillar(du), 십신: g, 결: grp,
+        말: grp === '관성' ? '지금은 눌리는 자리를 지나고 있습니다. 받쳐주는 사람이 특히 크게 옵니다'
+          : grp === '재성' ? '지금은 밖으로 나가는 자리입니다. 챙겨주는 사람보다 같이 뛰는 사람이 맞습니다'
+          : grp === '인성' ? '지금은 안으로 들어가는 자리입니다. 재촉하지 않는 사람이 편합니다'
+          : grp === '식상' ? '지금은 풀어내는 자리입니다. 들어주는 사람이 힘이 됩니다'
+          : '지금은 사람이 모이는 자리입니다. 곁이 넓어지기 쉽습니다',
+        빈오행: 부족,
+      };
+    }
+    return { 결, 지금, 강약: a.strength };
+  }
+
+  function drawNaepyeon(name, v) {
+    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const wrap = (t, n) => {
+      const out = []; let cur = '';
+      String(t).split(' ').forEach(w => {
+        if ((cur + ' ' + w).trim().length <= (n || 24)) cur = (cur + ' ' + w).trim();
+        else { out.push(cur); cur = w; }
+      });
+      if (cur) out.push(cur);
+      return out.slice(0, 2);
+    };
+    let y = 176, body = '';
+    v.결.forEach((k) => {
+      body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="17" font-weight="700" fill="#3f5a44">'
+        + es(k.이름) + ' <tspan font-size="12" font-weight="400" fill="#7d9484">' + es(k.오행)
+        + ' · ' + es(k.일간.join('·')) + ' 일간</tspan></text>';
+      y += 22;
+      wrap(k.설명, 27).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>'; y += 18; });
+      body += '<text x="44" y="' + y + '" font-size="12" fill="#7d9484">나에게는 ' + es(k.십신) + ' — ' + es(wrap(k.기울기, 30)[0] || '') + '</text>';
+      y += 30;
+    });
+    const 지 = v.지금 ? wrap(v.지금.말, 27) : [];
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
+      + '<defs><linearGradient id="np" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#f4f8f3"/><stop offset="1" stop-color="#e2ece2"/></linearGradient></defs>'
+      + '<rect width="360" height="560" rx="16" fill="url(#np)"/>'
+      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#c7d8c7" stroke-width="1"/>'
+      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#7d9484" letter-spacing="4">내 편이 되어주는 사람</text>'
+      + '<text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#2f4a36">'
+      + es(name) + '님에게 힘이 되는 결</text>'
+      + '<line x1="44" y1="112" x2="316" y2="112" stroke="#cfdccf"/>'
+      + '<text x="44" y="140" font-size="12" fill="#7d9484">지금 채워야 할 것 — '
+      + es(v.결.map(k => k.오행).join(' · ')) + ' · ' + es(v.강약) + '</text>'
+      + body
+      + (지.length
+        ? '<line x1="44" y1="' + Math.max(y, 420) + '" x2="316" y2="' + Math.max(y, 420) + '" stroke="#cfdccf"/>'
+          + '<text x="44" y="' + (Math.max(y, 420) + 26) + '" font-size="11.5" fill="#7d9484">지금 대운 ' + es(v.지금.간지) + ' · ' + es(v.지금.십신) + '</text>'
+          + 지.map((l, i) => '<text x="44" y="' + (Math.max(y, 420) + 48 + i * 18) + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>').join('')
+        : '')
+      + '<text x="180" y="516" text-anchor="middle" font-size="11" fill="#7d9484">사람은 오행 하나로 정해지지 않습니다</text>'
+      + '<text x="180" y="532" text-anchor="middle" font-size="11" fill="#7d9484">피할 사람을 고르는 자리가 아닙니다</text>'
+      + '<text x="180" y="548" text-anchor="middle" font-size="10" fill="#a8bda8" letter-spacing="2">chaeksa.kr</text>'
+      + '</svg>';
+  }
+
   const REL_WORD = {
     비견: ['나란히 선 사람', '편한데, 같은 것을 원할 때는 겨루게 됩니다'],
     겁재: ['같은 것을 바라보는 사람', '가까울수록 나눠야 합니다. 안 그러면 뺏기는 기분이 듭니다'],
@@ -1538,5 +1646,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, naepyeon, drawNaepyeon, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
