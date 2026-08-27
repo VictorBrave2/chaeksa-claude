@@ -1145,9 +1145,26 @@
           <p class="nm">${esc(n.대운.나이)} · ${esc(n.대운.간지)} 대운 — ${esc(n.대운.십신)}</p>` : ''}
         ${n.세운 ? `<p class="nm2">올해는 ${esc(n.세운.간지)} · ${esc(n.세운.십신)} — ${esc(n.세운.말[0])}</p>` : ''}
       </div>`;
+    // 두 분 다 좋은 달 — 우리는 택일 엔진을 갖고 있다. 한쪽만 좋은 달은 좋은 달이 아니다.
+    let 달절 = '';
+    try {
+      const bm = T.bothMonths(R, you, today, 12);
+      if (bm && bm.좋은달.length) 달절 = `
+        <div class="bmbox">
+          <p class="nk">두 분 다 좋은 달 — 앞으로 열두 달 중</p>
+          ${bm.좋은달.map(m => `<div class="bm">
+            <b>${m.연}년 ${m.월}월</b>
+            <span class="gz">${esc(m.간지)}</span>
+            <span class="rs">${esc([...new Set(m.이유)].slice(0,2).join(' · ') || '무난합니다')}</span>
+          </div>`).join('')}
+          ${bm.나쁜달 && bm.나쁜달.점수 < 40 ? `<p class="bmno">${bm.나쁜달.연}년 ${bm.나쁜달.월}월은 둘 중 한 분이 눌립니다 — 큰 결정은 피하시는 편이 낫습니다</p>` : ''}
+          <p class="bmft">결혼·상견례·여행처럼 <b>둘이 같이 정하는 날</b>에 쓰세요. 한 사람만 좋은 달은 뺐습니다.</p>
+        </div>`;
+    } catch (e) {}
     box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
       <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
       ${지금절}
+      ${달절}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
         <button class="btn small" id="btnAccShare">카드 저장·공유</button>

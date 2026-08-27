@@ -828,3 +828,15 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .nowbox .ns{font-size:13.5px;line-height:1.75;color:var(--ink2);margin:0 0 9px}
 .nowbox .nm,.nowbox .nm2{font-size:12px;color:var(--ink3);margin:0}
 .nowbox .nm2{margin-top:4px}
+
+/* 두 분 다 좋은 달 */
+.bmbox{border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin:0 0 16px;background:var(--bg2)}
+.bmbox .nk{font-size:12px;color:var(--ink3);margin:0 0 10px}
+.bmbox .bm{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;padding:7px 0}
+.bmbox .bm+.bm{border-top:1px solid var(--line)}
+.bmbox .bm b{font-family:"Gowun Batang","Noto Serif KR",serif;font-size:15.5px;color:var(--ink);
+  min-width:104px;font-variant-numeric:tabular-nums}
+.bmbox .bm .gz{font-size:12.5px;color:var(--accent)}
+.bmbox .bm .rs{font-size:12.5px;color:var(--ink2);flex:1 1 100%}
+.bmbox .bmno{font-size:12.5px;color:var(--ink3);margin:10px 0 0;line-height:1.7}
+.bmbox .bmft{font-size:12px;color:var(--ink3);margin:9px 0 0;line-height:1.7}

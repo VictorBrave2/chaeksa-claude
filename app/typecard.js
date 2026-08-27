@@ -559,6 +559,62 @@
     };
   }
 
+  // ── 두 분 다 좋은 달 ──
+  // 우리는 택일 엔진을 갖고 있는데 궁합 화면에서 안 쓰고 있었다.
+  // 결혼·상견례·여행 날짜를 잡는 자리는 「둘 다 좋은 달」이지 한쪽만 좋은 달이 아니다.
+  //
+  // **최저 점수로 고른다.** 한 사람만 높고 다른 사람이 낮으면 좋은 달이 아니다 —
+  // 세 고전을 나란히 볼 때 최저 기준으로 정렬하는 것과 같은 원칙이다.
+  function monthScoreFor(R, tf) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const a = R.analysis || E.strengthOf(p);
+    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+    const SAM = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
+    let s = 50; const 이유 = [];
+
+    // 이 사람이 필요로 하는 오행이 하늘에 오는가
+    const 용 = (R.analysis && R.analysis.yongCandidates) || [];
+    const el = E.ELEM[E.STEM_ELEM[tf.month.stem]];
+    if (용.indexOf(el) >= 0) { s += 28; 이유.push('필요한 ' + el + ' 기운이 옵니다'); }
+
+    // 배우자 자리(일지)가 어떻게 되는가 — 두 사람 사이를 보는 자리이므로 일지를 본다
+    const mb = tf.month.branch;
+    if (YUKHAP[db] === mb) { s += 22; 이유.push('배우자 자리와 합입니다'); }
+    else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(mb) >= 0 && db !== mb)) {
+      s += 16; 이유.push('배우자 자리와 삼합입니다');
+    } else if (((mb - db + 12) % 12) === 6) { s -= 30; 이유.push('배우자 자리가 흔들립니다'); }
+
+    // 강약에 맞는 쪽인가 — 신약이면 인성·비겁, 신강이면 식상·재성·관성
+    const g = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
+    const grp = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성',
+                  정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' }[g];
+    const 약 = a.strength === '신약';
+    if (약 && (grp === '인성' || grp === '비겁')) { s += 12; 이유.push('받쳐주는 기운입니다'); }
+    if (!약 && (grp === '식상' || grp === '재성')) { s += 12; 이유.push('밖으로 풀리는 기운입니다'); }
+    if (약 && grp === '관성') { s -= 14; 이유.push('눌리는 달입니다'); }
+    return { s: Math.max(0, Math.min(100, s)), 이유 };
+  }
+
+  /** 앞으로 n개월 중 두 사람 다 좋은 달. 최저 점수로 고른다. */
+  function bothMonths(Rme, Ryou, from, n) {
+    const rows = [];
+    const base = from || new Date();
+    for (let i = 0; i < (n || 12); i++) {
+      const d = new Date(base.getFullYear(), base.getMonth() + i, 15);
+      const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, 15);
+      const A = monthScoreFor(Rme, tf), B = monthScoreFor(Ryou, tf);
+      rows.push({
+        연: d.getFullYear(), 월: d.getMonth() + 1, 간지: E.fmt.pillar(tf.month),
+        a: A.s, b: B.s, 점수: Math.min(A.s, B.s),
+        이유: [].concat(A.이유.slice(0, 1), B.이유.slice(0, 1)),
+      });
+    }
+    const 좋은달 = rows.slice().sort((x, y) => y.점수 - x.점수).slice(0, 3)
+      .sort((x, y) => (x.연 - y.연) || (x.월 - y.월));
+    const 나쁜달 = rows.slice().sort((x, y) => x.점수 - y.점수)[0];
+    return { rows, 좋은달, 나쁜달 };
+  }
+
   const REL_WORD = {
     비견: ['나란히 선 사람', '편한데, 같은 것을 원할 때는 겨루게 됩니다'],
     겁재: ['같은 것을 바라보는 사람', '가까울수록 나눠야 합니다. 안 그러면 뺏기는 기분이 듭니다'],
@@ -1482,5 +1538,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
