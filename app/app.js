@@ -672,6 +672,14 @@
     const parts = [`총합 <b>${cy.sum > 0 ? '+' : ''}${cy.sum}</b> — ${cy.sum > 1 ? '전체적으로 흐름이 돕는 쪽' : (cy.sum < -1 ? '전체적으로 눌리는 쪽' : '한쪽으로 기울지 않은 상태')}입니다.`];
     if (cy.turns.length) parts.push(`흐름이 뒤집히는 지점: <b>${cy.turns.map(x => `${x.from} → ${x.to}`).join(', ')}</b>. 이 층에서 체감이 달라집니다.`);
     if (cy.shifted) parts.push(`층을 지나며 일간이 <b>${cy.natalStrength} → ${cy.finalStrength}</b>으로 옮겨갑니다.`);
+    // 총합은 '판이 어떤가'이고 촉발은 '지금 방아쇠가 당겨졌나'다. 둘은 다를 수 있다 —
+    // 판은 눌려 있는데 오늘 이 시각에 터지는 경우가 그것이다.
+    if (cy.triggerBy) {
+      const 세다 = Math.abs(cy.trigger) >= 1.5;
+      parts.push(`지금 방아쇠를 당기는 건 <b>${cy.triggerBy}</b>입니다`
+        + (cy.trigger > 0 ? ` — 터지면 풀리는 쪽(${'+' + cy.trigger})` : ` — 터지면 눌리는 쪽(${cy.trigger})`)
+        + (세다 ? '. 오늘 중 이 시간대를 특히 보세요.' : '.'));
+    }
     t.innerHTML = parts.join(' ');
   }
 

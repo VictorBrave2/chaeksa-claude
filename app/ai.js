@@ -209,6 +209,9 @@ ${prof}` : ''}`;
     L.push(`  총합 ${cy.sum > 0 ? '+' : ''}${cy.sum} (양수면 흐름이 돕는 쪽, 음수면 누르는 쪽)`);
     if (cy.turns && cy.turns.length) L.push(`  변곡점: ` + cy.turns.map(t => `${t.from}(${t.fromSign}) → ${t.to}(${t.toSign})`).join(', '));
     if (cy.shifted) L.push(`  층을 지나며 일간이 ${cy.natalStrength}에서 ${cy.finalStrength}으로 옮겨감`);
+    // 총합(판)과 촉발(방아쇠)은 다른 축이다. 둘 다 줘야 "판은 눌렸는데 지금 터진다"를 쓴다.
+    L.push(`  촉발 ${cy.trigger > 0 ? '+' : ''}${cy.trigger} — 짧은 주기일수록 무겁게 본 값. 지금 방아쇠가 얼마나 당겨졌나`);
+    if (cy.triggerBy) L.push(`  방아쇠 층: ${cy.triggerBy} (판을 깐 건 긴 주기지만 터지는 건 여기다)`);
     return L.join('\n');
   }
 

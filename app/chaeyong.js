@@ -36,6 +36,19 @@
     시운:  { stem: .2, branch: .3 },
   };
 
+  // 촉발 무게 — 세력 무게와 반대로 간다.
+  //
+  // 세력(WEIGHT)은 "무엇이 가능한 판인가"에 답한다. 판을 바꾸는 힘은 긴 주기에 있어서
+  // 대운이 제일 무겁다. 그건 그대로 맞다.
+  //
+  // 그런데 "언제 터지는가"는 다른 질문이다. 판은 이미 깔려 있고, 방아쇠는 짧은 주기가
+  // 당긴다 — 일운까지 잠잠하다가 시운에서 터진다. 한 벌의 무게로 두 질문에 답하려니
+  // 실측에서 시운이 강약을 4%만 뒤집고 점수를 0.011 움직였다. 6층을 쌓아놓고
+  // 마지막 층이 장식이었다.
+  //
+  // 그래서 무게를 두 벌 둔다. 층 구조는 그대로 쓰고 보는 각도만 바꾼다.
+  const TRIGGER = { 대운: .3, 세운: .5, 월운: .8, 일운: 1.3, 시운: 2.0 };
+
   const YUKHAP = { 0:1,1:0,2:11,11:2,3:10,10:3,4:9,9:4,5:8,8:5,6:7,7:6 };
   const SAMHAP = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
   function branchRel(a, b) {
@@ -212,6 +225,30 @@
       finalStrength: layers[layers.length - 1].strength,
       natalStrength: layers[0].strength,
       sum: Math.round(layers.filter(l => l.level > 1).reduce((s, l) => s + (l.value || 0), 0) * 10) / 10,
+      ...triggerOf(layers),
+    };
+  }
+
+  /** 촉발 — 지금 이 순간 방아쇠가 얼마나 당겨졌나.
+   *  각 층의 順/逆 판정(value)에 촉발 무게를 곱해 더한다. 무게 합으로 나눠
+   *  value 와 같은 -3~3 눈금에 놓는다. 그래야 두 숫자를 나란히 읽을 수 있다.
+   *  triggerBy 는 가장 크게 당긴 층이다 — "어디서 터지는가"에 해당한다. */
+  function triggerOf(layers) {
+    const ls = layers.filter(l => l.level > 1 && typeof l.value === 'number' && TRIGGER[l.name]);
+    if (!ls.length) return { trigger: 0, triggerBy: null, triggerParts: [] };
+    let num = 0, den = 0, top = null;
+    const parts = ls.map(l => {
+      const w = TRIGGER[l.name], pull = l.value * w;
+      num += pull; den += w;
+      if (!top || Math.abs(pull) > Math.abs(top.pull)) top = { name: l.name, pull, value: l.value };
+      return { name: l.name, value: l.value, w, pull: Math.round(pull * 100) / 100 };
+    });
+    const t = Math.round((num / den) * 10) / 10;
+    return {
+      trigger: t,
+      // 방아쇠는 실제로 당겨졌을 때만 이름을 준다. 미미하면 아무 일도 없는 것이다.
+      triggerBy: top && Math.abs(top.pull) >= 1 ? top.name : null,
+      triggerParts: parts,
     };
   }
 
@@ -413,5 +450,5 @@
              turns, baseline, spread: false, span: rows.length };
   }
 
-  global.ChaeksaChaeyong = { stack, hourCurve, hourScan, periodScan, dayCoord, WEIGHT, judge, strengthOf, hourPillarOf, HOUR_LABEL };
+  global.ChaeksaChaeyong = { stack, hourCurve, hourScan, periodScan, dayCoord, WEIGHT, TRIGGER, judge, strengthOf, hourPillarOf, HOUR_LABEL };
 })(window);
