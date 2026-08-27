@@ -6,6 +6,5 @@ Allow: /
 Disallow: /test.html
 Disallow: /lunar-test.html
 Disallow: /cards.html
-Disallow: /enginecheck.js
 
 Sitemap: https://chaeksa.kr/sitemap.xml

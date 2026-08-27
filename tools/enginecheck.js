@@ -1,8 +1,13 @@
 /* 엔진 정기점검 — 한 벌로 돌리는 회귀 검사.
  *
- * 실행:  개발 서버(python tools_bust.py 무관)를 띄우고 브라우저 콘솔에서
- *        fetch('/enginecheck.js').then(r=>r.text()).then(s=>console.log(eval(s)))
- *        또는 chaeksa.kr 콘솔에 이 파일 내용을 붙여넣는다.
+ * 이 파일은 app/ 밖에 둔다. 점검 도구가 라이브에 실려 나갈 이유가 없다.
+ *
+ * 실행:  cp tools/enginecheck.js app/_check.js
+ *        (개발 서버 브라우저 콘솔)
+ *        fetch('/_check.js').then(r=>r.text()).then(s=>console.log(eval(s)))
+ *        rm app/_check.js
+ *
+ *        chaeksa.kr 콘솔에 이 파일 내용을 붙여넣어도 된다.
  *
  * 무엇을 재는가 (docs/13_검증앵커.md 와 짝):
  *   A 강약 극단 앵커 7        기둥 직접 지정 → NATAL_WEIGHT·siding·STRENGTH_LABEL 재현
