@@ -238,9 +238,11 @@ def mobile_cover():
     그래서 한지 크림색을 쓰면 글자가 안 읽힌다 — 여기만 밤 테마로 간다.
     앱의 밤 배경(style.css의 data-theme=night)과 같은 남색이다.
 
-    커버 스타일마다 비율이 달라 가운데를 잘라 쓴다. 6:5 · 4:3 · 16:9 로 잘라
-    흰 글씨를 얹어 보고 세 경우 모두 안전한 띠를 찾았다 — 세로 24~56% 다.
-    처음엔 태그라인을 60%에 뒀는데 16:9 에서 네이버 글자와 겹쳤다.
+    실기기에서 커버는 폭에 맞춰 **거의 정사각**으로 뜨고, 네이버가 얹는 덩어리
+    (방문수 · 블로그명 · 프로필 · 버튼줄)가 **아래 절반**을 먹는다.
+    그래서 그림이 쓸 수 있는 자리는 위 45% 뿐이다.
+    처음엔 16:9로 잘릴 것을 가정해 24~56%에 뒀는데, 실물에서 태그라인이
+    '오늘 37 · 전체 3,502' 줄과 정면으로 겹쳤다. 계산보다 실기기가 맞다.
     아래쪽은 네이버 글자 자리라 비우고 어둡게 깐다.
 
     인장은 붉은색을 그대로 쓴다. 앱은 밤에 금색 인장으로 바뀌지만,
@@ -275,33 +277,33 @@ def mobile_cover():
     # 별 — 천문 계산으로 본다는 말을 그림이 대신한다. 자리는 고정한다(매번 달라지면 안 된다)
     rnd = random.Random(20270105)
     for _ in range(150):
-        x, y = rnd.randint(0, S), rnd.randint(0, int(S * 0.62))
+        x, y = rnd.randint(0, S), rnd.randint(0, int(S * 0.52))
         r = rnd.choice([1, 1, 1, 2, 2, 3])
         a = rnd.randint(30, 130) if r < 3 else rnd.randint(120, 200)
         d.ellipse([x - r, y - r, x + r, y + r], fill=(233, 235, 246, a))
 
     # 인장 — 세로 40% 언저리
-    sw = 260
-    sx, sy = (S - sw) // 2, int(S * 0.246)
+    sw = 232
+    sx, sy = (S - sw) // 2, int(S * 0.185)
     d.rounded_rectangle([sx, sy, sx + sw, sy + sw], radius=56, fill=SEAL)
-    f = font('malgunbd.ttf', 162)
+    f = font('malgunbd.ttf', 144)
     box = d.textbbox((0, 0), '策', font=f)
     d.text((S / 2 - (box[2] - box[0]) / 2 - box[0],
             sy + (sw - (box[3] - box[1])) / 2 - box[1]),
            '策', font=f, fill=(253, 243, 231))
 
     # 한 줄 — 블로그명은 네이버가 얹으니 여기 또 쓰지 않는다
-    f2 = font('malgun.ttf', 44)
+    f2 = font('malgun.ttf', 40)
     t = '절기 시각까지 천문 계산한 만세력'
-    d.text((S / 2 - d.textlength(t, font=f2) / 2, int(S * 0.497)), t, font=f2, fill=GOLD)
-    d.line([S / 2 - 60, int(S * 0.472), S / 2 + 60, int(S * 0.472)],
+    d.text((S / 2 - d.textlength(t, font=f2) / 2, int(S * 0.393)), t, font=f2, fill=GOLD)
+    d.line([S / 2 - 56, int(S * 0.372), S / 2 + 56, int(S * 0.372)],
            fill=GOLD + (110,), width=3)
 
     # 아래쪽은 네이버가 흰 글씨를 얹는 자리 — 어둡게 깔아 대비를 만든다
     shade = Image.new('L', (S, S), 0)
     sp = shade.load()
     for y in range(S):
-        t2 = max(0.0, (y / S - 0.56) / 0.44)
+        t2 = max(0.0, (y / S - 0.46) / 0.54)
         for x in range(0, S, 1):
             sp[x, y] = int(150 * t2 * t2)
     img = Image.composite(Image.new('RGB', (S, S), (8, 10, 22)), img, shade)
