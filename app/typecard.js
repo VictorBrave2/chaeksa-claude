@@ -722,12 +722,31 @@
     const max = Math.max(6, Math.floor(maxPx / size) - (lead || 0));
     const src = String(t);
     if (src.length <= max) return [[src, true]];
-    const out = []; let cur = '', first = true;
-    src.split(' ').forEach(w => {
-      if ((cur + ' ' + w).trim().length > max) { if (cur) { out.push([cur, first]); first = false; } cur = w; }
-      else cur = (cur + ' ' + w).trim();
+    // 가운뎃점·줄표가 줄 끝에 홀로 남으면 보기 싫다. 앞말에 붙여 함께 움직이게 한다.
+    const w = [];
+    src.split(' ').forEach(x => {
+      if ((x === '·' || x === '—') && w.length) w[w.length - 1] += ' ' + x;
+      else w.push(x);
     });
-    if (cur) out.push([cur, first]);
+    // 낱말 배열로 다룬다. 문자열로 두고 다시 쪼개면 '태양 ·'처럼 묶어둔 덩어리가
+    // 풀려서 가운뎃점이 다음 줄 머리로 떨어진다 — 새 항목처럼 보인다.
+    const out = []; let cur = [], first = true;
+    const len = (arr) => arr.join(' ').length;
+    for (let i = 0; i < w.length; i++) {
+      if (cur.length && len(cur.concat([w[i]])) > max) {
+        const last = cur[cur.length - 1];
+        // 줄 끝이 두 글자 이하면 다음 줄로 내린다 — '… 몇 / 배가 된다'를 막는다.
+        if (cur.length > 1 && last.length <= 2 && (last + ' ' + w[i]).length <= max) {
+          out.push([cur.slice(0, -1).join(' '), first]);
+          cur = [last, w[i]];
+        } else {
+          out.push([cur.join(' '), first]);
+          cur = [w[i]];
+        }
+        first = false;
+      } else cur.push(w[i]);
+    }
+    if (cur.length) out.push([cur.join(' '), first]);
     return out;
   }
 
@@ -751,8 +770,8 @@
     let y = top, svg = '';
     rows.forEach((L, i) => {
       if (L[1] && i) y += pick[2];
-      svg += '<text x="' + FR.bodyX + '" y="' + y + '" font-size="' + pick[0] + '" fill="' + col + '">'
-        + escF((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+      svg += '<text x="' + (L[1] ? FR.bodyX : FR.bodyX + 11) + '" y="' + y + '" font-size="' + pick[0] + '" fill="' + col + '">'
+        + escF((L[1] ? '· ' : '') + L[0]) + '</text>';
       y += pick[1];
     });
     return svg;
@@ -965,8 +984,8 @@
     lc.lines.forEach((l) => {
       const ls = foldTxt(l, 274, 11.5, 2);
       ls.forEach((L, j) => {
-        body += '<text x="42" y="' + (by + j * 16) + '" font-size="11.5" fill="#4a3a28">'
-          + escF((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+        body += '<text x="' + (L[1] ? 42 : 53) + '" y="' + (by + j * 16) + '" font-size="11.5" fill="#4a3a28">'
+          + escF((L[1] ? '· ' : '') + L[0]) + '</text>';
       });
       by += (ls.length - 1) * 16 + 21;
     });
@@ -1098,8 +1117,8 @@
     yf.lines.forEach((l) => {
       const ls = foldTxt(l, 274, 11.5, 2);
       ls.forEach((L, j) => {
-        body += '<text x="42" y="' + (by2 + j * 16) + '" font-size="11.5" fill="#3f3a30">'
-          + escF((L[1] ? '· ' : '  ') + L[0]) + '</text>';
+        body += '<text x="' + (L[1] ? 42 : 53) + '" y="' + (by2 + j * 16) + '" font-size="11.5" fill="#3f3a30">'
+          + escF((L[1] ? '· ' : '') + L[0]) + '</text>';
       });
       by2 += (ls.length - 1) * 16 + 21;
     });
