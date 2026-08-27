@@ -147,9 +147,33 @@
     push(E.BRANCH_ELEM[p.day.branch], W.dayBranch);
     if (p.hour) { pushStem('hour', p.hour.stem); push(E.BRANCH_ELEM[p.hour.branch], W.hourBranch); }
 
-    // 원국 안에서 이미 합거된 자리(붙어 있는 연간-월간)는 처음부터 명령이 없다.
-    const 합거자리 = {};
-    Object.keys(E.natalHap(p)).forEach(k => { 합거자리[k] = '원국'; if (천간칸[k]) 천간칸[k].w = 0; });
+    // ── 합거 판정 ──
+    // 합은 1:1 일 때만 성립한다(쟁합불합). 같은 천간이 판에 둘이면 다투느라 못 묶는다.
+    // 그래서 합거는 한 번 걸리고 끝나는 것이 아니라 **층마다 다시 판정한다** —
+    // 세운이 묶어놓은 정관을 그 해의 월운·일운이 풀 수 있다.
+    // 壬 이 하나 더 들어오면 丁 이 둘을 다 못 묶으므로 원국의 壬 이 명령을 되찾는다.
+    const 자리이름 = { year: '연간', month: '월간', hour: '시간' };
+    const 운천간들 = [];        // 그 층까지 판에 올라온 운의 천간
+    const 합거자리 = {};        // 자리 -> 묶은 쪽 이름
+
+    function 합거재판정() {
+      Object.keys(합거자리).forEach(k => delete 합거자리[k]);
+      Object.keys(천간칸).forEach(k => { 천간칸[k].w = 천간힘(천간칸[k].stem); });   // 일단 되살린다
+      const 판 = [];
+      Object.keys(천간칸).forEach(k => 판.push({ key: k, stem: 천간칸[k].stem, 원국: true, name: '원국' }));
+      운천간들.forEach((v, i) => 판.push({ key: '운' + i, stem: v.stem, 원국: false, name: v.name }));
+      for (let x = 0; x < 5; x++) {
+        const A = 판.filter(v => v.stem === x), B = 판.filter(v => v.stem === x + 5);
+        if (A.length !== 1 || B.length !== 1) continue;      // 쟁합·투합 — 합이 안 된다
+        const a = A[0], b = B[0];
+        // 원국끼리는 붙어 있는 연간-월간만. 일간을 사이에 둔 격합은 세지 않는다.
+        if (a.원국 && b.원국 && [a.key, b.key].sort().join('-') !== 'month-year') continue;
+        if (a.원국) { 합거자리[a.key] = b.name; 천간칸[a.key].w = 0; }
+        if (b.원국) { 합거자리[b.key] = a.name; 천간칸[b.key].w = 0; }
+      }
+    }
+    합거재판정();
+    const 원국합거 = Object.keys(합거자리).slice();
     // 득령 가산 — 분석엔진(engine.js analyze)과 같은 0.6. 두 곳이 다른 답을 내면 안 된다.
     if (E.siding(dayElem, E.BRANCH_ELEM[p.month.branch]) > 0) push(dayElem, 0.6);
 
@@ -220,16 +244,12 @@
       // 묶인 천간은 명령을 못 낸다. 깎이는 것이 아니라 없어지는 것이라 0이다.
       // 그 자리가 비면 그 사람은 이 층부터 자기 명령이 아니라 운이 주는 명령을 받는다.
       // 체용은 원래 층마다 운의 천간으로 십신을 잡으므로(godOf), 그 구조가 그대로 답이 된다.
-      let 합거된 = null;
-      const 합후보 = ['year', 'month', 'hour']
-        .filter(k => 천간칸[k] && !합거자리[k] && 천간칸[k].w > 0 && E.isHap(천간칸[k].stem, s.gz.stem));
-      if (합후보.length) {
-        // 같은 천간이 둘이면 명령이 가장 큰 하나가 끌려간다.
-        합후보.sort((x, y) => 천간칸[y].w - 천간칸[x].w);
-        합거된 = 합후보[0];
-        합거자리[합거된] = s.name;
-        천간칸[합거된].w = 0;
-      }
+      const 합거전 = Object.keys(합거자리);
+      운천간들.push({ stem: s.gz.stem, name: s.name });
+      합거재판정();
+      const 합거후 = Object.keys(합거자리);
+      const 묶임 = 합거후.filter(k => 합거전.indexOf(k) < 0);
+      const 풀림 = 합거전.filter(k => 합거후.indexOf(k) < 0);
 
       // 판정이 끝났으니 이제 用을 體에 편입한다 (다음 층의 體가 된다)
       items.push({ elem: E.STEM_ELEM[s.gz.stem], w: 운힘 });
@@ -248,11 +268,8 @@
         value, sign: SIGN(value),
         rels: [...new Set(rels)],
         extras,
-        합거: 합거된 ? {
-          자리: ({ year: '연간', month: '월간', hour: '시간' })[합거된],
-          천간: E.STEMS[({ year: p.year.stem, month: p.month.stem, hour: p.hour && p.hour.stem })[합거된]],
-          십신: godOf(({ year: p.year.stem, month: p.month.stem, hour: p.hour && p.hour.stem })[합거된]),
-        } : null,
+        합거묶임: 묶임.map(k => `${자리이름[k]} ${E.STEMS[천간칸[k].stem]}(${godOf(천간칸[k].stem)})`),
+        합거풀림: 풀림.map(k => `${자리이름[k]} ${E.STEMS[천간칸[k].stem]}(${godOf(천간칸[k].stem)})`),
         note: buildNote(s.name, god, group, bodyLab, value, extras, rels, bodyLab !== afterLab ? afterLab : null),
       });
     }
@@ -274,10 +291,11 @@
       coord: layers.filter(l => l.level > 1).map(l => l.value),
       coordText: layers.map(l => l.level === 1 ? `원국(${l.strength})` : `${l.name} ${l.god || ''} ${l.sign}${l.value > 0 ? '+' : ''}${l.value}${l.moved ? ' [' + l.moved + ']' : ''}`).join(' → '),
       turns, shifted,
+      원국합거: 원국합거.map(k => `${자리이름[k]} ${E.STEMS[천간칸[k].stem]}(${godOf(천간칸[k].stem)})`),
       합거: Object.keys(합거자리).map(k => ({
-        자리: ({ year: '연간', month: '월간', hour: '시간' })[k],
-        천간: E.STEMS[({ year: p.year.stem, month: p.month.stem, hour: p.hour && p.hour.stem })[k]],
-        십신: godOf(({ year: p.year.stem, month: p.month.stem, hour: p.hour && p.hour.stem })[k]),
+        자리: 자리이름[k],
+        천간: E.STEMS[천간칸[k].stem],
+        십신: godOf(천간칸[k].stem),
         묶은쪽: 합거자리[k],
       })),
       finalStrength: layers[layers.length - 1].strength,
