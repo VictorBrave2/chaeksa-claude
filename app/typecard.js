@@ -99,6 +99,13 @@
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
   const CACHE_KEY = 'chaeksa.typeSample.v8';   // v8: 천직 유형 분포 동승 (v7: 연애 暗緣 축)
   const N_SAMPLE = 10000;
+  /** 이미 만들어 둔 표본이 있으면 돌려준다. 없으면 null.
+   *  홈에서 새로 만들지 않는다 — 만 명을 돌리는 것이라 느리다. */
+  function cachedSample() {
+    try { const hit = JSON.parse(localStorage.getItem(CACHE_KEY)); return (hit && hit.n) ? hit : null; }
+    catch (e) { return null; }
+  }
+
   function buildSample(onTick, done) {
     try {
       const hit = JSON.parse(localStorage.getItem(CACHE_KEY));
@@ -1272,5 +1279,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

@@ -413,6 +413,21 @@
     $('tiMeStr').style.fontSize = '17px';
     const T = window.ChaeksaTypecard;
     const set = (id, txt) => { const el = $(id); if (el && txt) el.textContent = txt; };
+    // 유형 카드 — 표본을 이미 만들어 뒀으면 **내 등급을 타일에 미리 보여준다.**
+    // 「686개 중 하나」는 남 얘기고, 「SSR · 만 명 중 한 명」은 내 얘기다.
+    // 표본이 없으면(첫 방문) 기본 문구 그대로 두고, 뽑기 탭에서 만든다.
+    if (T && T.cachedSample) try {
+      const smp = T.cachedSample();
+      if (smp) {
+        const m = T.mine(R, smp);
+        if (m && m.rar) {
+          set('tiGachaBig', '🎴 ' + m.rar.tier);
+          set('tiGachaSub', m.rar.unique
+            ? '만 명 중 단 한 명 — 같은 카드가 없습니다'
+            : '만 명 중 ' + m.rar.count + '명 · 상위 ' + m.rar.pct + '%');
+        }
+      }
+    } catch (e) {}
     try {
       const ch = courtCharges().charges;
       set('tiCourtBig', ch.length ? '죄목 ' + ch.length + '건' : '무혐의');
