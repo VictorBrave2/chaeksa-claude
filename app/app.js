@@ -925,8 +925,94 @@
     $('monthly').innerHTML = ms.join('');
     renderProfileCard();
     renderShareCard();
+    renderGyeok();
     renderChaeyong();
   }
+
+  // ───── 격국 성패 · 형충회합 · 갈림 (2026-08-28) ─────
+  // 엔진이 내는 것을 무료 화면에 그대로 뿌린다.
+  // 판정은 넷이고(자평진전 논용신성패구응), 상신을 같이 말한다.
+  // 「갈림」은 판정이 사람 손에 넘어가는 자리다 — 숨기지 않고 알린다.
+  function renderGyeok() {
+    const box = $('gyeokBox'); if (!box) return;
+    const card = box.closest('.card');
+    const T = window.ChaeksaTypecard, Gk = window.ChaeksaGyeok;
+    if (!T || !Gk) { if (card) card.classList.add('hide'); return; }
+    let J; try { J = T.gyeok(R); } catch (e) { if (card) card.classList.add('hide'); return; }
+    if (!J || !J.판정) { if (card) card.classList.add('hide'); return; }
+    if (card) card.classList.remove('hide');
+
+    const cls = J.판정 === '섰다' ? 'ok' : (J.판정 === '깨졌다' ? 'no' : 'mid');
+    const 한줄 = {
+      섰다:   '성립 조건이 맞고 흠이 없습니다',
+      띠었다: '격은 섰는데 안에 거슬리는 것을 하나 띠었습니다',
+      구제됐다: '깨질 자리였는데 구해주는 것이 있어 살았습니다',
+      깨졌다: '격을 세울 상신이 없거나 깨는 것이 있습니다',
+    }[J.판정] || '';
+
+    const 근거줄 = [];
+    const 붙 = (lb, arr) => { (arr || []).forEach(t => 근거줄.push(
+      `<div><span class="lb">${esc(lb)}</span><span>${esc(t)}</span></div>`)); };
+    const g = J.근거 || {};
+    if (J.판정 === '구제됐다') { 붙('깨졌다', g.깨졌다); 붙('구제', g.구제); }
+    else { 붙('섰다', g.섰다); 붙('띠었다', g.띠었다); if (!(g.섰다 || []).length) 붙('깨졌다', g.깨졌다); }
+
+    const w = J.잰것 || {};
+    const 힘줄 = ['일간', '비겁', '식상', '재성', '관성', '인성']
+      .filter(k => w[k] != null)
+      .map(k => `${k} <b>${w[k].toFixed(2)}</b>`).join(' · ');
+
+    // 지지의 형충회합 — 순서대로 해소한 결과
+    let 관계 = '';
+    try {
+      const br = E.branchRels(R.pillars);
+      const 성 = (br.성립 || []).map(v =>
+        `<li>${esc(v.종류)} <b>${esc(v.글자)}</b> <span style="color:var(--ink3)">${esc((v.자리 || []).join('·'))}</span>${v.격지 ? ' <span style="color:var(--accent)">격지</span>' : ''}</li>`);
+      const 보 = (br.보류 || []).map(v =>
+        `<li class="off">${esc(v.종류)} ${esc(v.글자)} — ${esc(v.사유)}</li>`);
+      if (성.length || 보.length) 관계 = `<div class="gk-rel">
+        <p class="t">지지의 형충회합 — 삼합 &gt; 육합 &gt; 충 순서로 풀었습니다</p>
+        <ul>${성.join('')}${보.join('')}</ul></div>`;
+    } catch (e) {}
+
+    // 갈림 — 판정이 사람 손에 넘어가는 자리
+    let 갈림 = '';
+    try {
+      const fs = E.forks(R.pillars) || [];
+      if (fs.length) 갈림 = `<div class="gk-fork">
+        <p class="t">여기서 판정이 갈립니다</p>
+        <p class="arm" style="margin:-4px 0 10px">명리가에 따라 다르게 보는 자리입니다.
+          이 화면은 늘 보수적인 쪽으로 계산하고, 갈린다는 사실을 숨기지 않습니다.</p>
+        ${fs.map(v => `<div class="it"><b>${esc(v.이름)}</b> — ${esc(v.사실)}<br>
+          <span class="arm">이 화면의 판정 · ${esc(v.무료)}<br>
+          ${esc(v.갈래)} ${esc(v.다른쪽)}</span></div>`).join('')}
+        </div>`;
+    } catch (e) {}
+
+    // 격이 어디서 나왔는지 — 월지가 격을 정한다. 힘은 천간에서 오므로 축이 다르다.
+    const mb = R.pillars.month.branch;
+    const 국 = (E.samhapOf ? E.samhapOf([[R.pillars.year.branch, 1], [mb, 2],
+      [R.pillars.day.branch, 1]].concat(R.pillars.hour ? [[R.pillars.hour.branch, 1.5]] : []))
+      : []).filter(x => x.글자.indexOf(mb) >= 0)[0];
+    const 출처 = 국
+      ? `월지 ${f.branch(mb)}가 ${국.글자.map(b => f.branch(b)).join('')} ${E.ELEM[국.elem]}국에 들어 격이 국을 따릅니다`
+      : `월지 ${f.branch(mb)}(${f.branchKo(mb)})에서 나온 격입니다`;
+
+    box.innerHTML = `
+      <div class="gk-head">
+        <span class="nm">${esc(J.name)}격</span>
+        <span class="vd ${cls}">${esc(J.판정)}</span>
+      </div>
+      <p class="gk-sang" style="margin-bottom:8px">${esc(출처)}</p>
+      <p class="gk-sang">${esc(한줄)}${J.상신 ? ` · 이 격을 세우는 것은 <b>${esc(J.상신)}</b>입니다` : ''}</p>
+      ${근거줄.length ? `<div class="gk-why">${근거줄.join('')}</div>` : ''}
+      ${힘줄 ? `<p class="gk-force">천간이 지지에서 받은 힘 — ${힘줄}<br>
+        <span style="color:var(--ink3)">0 은 그 십신이 천간에 안 떴거나 뿌리를 못 내렸다는 뜻입니다.
+        격은 월지가 정하고 힘은 천간에서 오므로 둘이 어긋날 수 있습니다.</span></p>` : ''}
+      ${관계}
+      ${갈림}`;
+  }
+
   let shareReady = false;
   async function renderShareCard() {
     if (shareReady) return;

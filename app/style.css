@@ -785,3 +785,32 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .st-ahead b{color:var(--ink);font-weight:700}
 .card.warn{border-left:4px solid #c8a24a;font-size:13.5px;line-height:1.75;color:var(--ink2)}
 .card.warn b{color:var(--ink)}
+
+/* ── 격국 성패 · 형충회합 · 갈림 (2026-08-28) ────────────────────────── */
+.gk-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+.gk-head .nm{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.gk-head .vd{font-size:13px;padding:4px 11px;border-radius:999px;font-weight:600}
+.gk-head .vd.ok{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent2)}
+.gk-head .vd.mid{background:var(--bg2);color:var(--ink2);border:1px solid var(--line2)}
+.gk-head .vd.no{background:#f6e2dc;color:#9c5344;border:1px solid #e8c6bb}
+:root[data-theme="dark"] .gk-head .vd.no{background:#3a2420;color:#e0a394;border-color:#4d312a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gk-head .vd.no{background:#3a2420;color:#e0a394;border-color:#4d312a}}
+.gk-sang{font-size:13.5px;color:var(--ink2);margin:0 0 14px}
+.gk-sang b{color:var(--accent)}
+.gk-why{margin:0 0 14px;display:flex;flex-direction:column;gap:6px}
+.gk-why div{display:flex;gap:9px;font-size:13.5px;line-height:1.6}
+.gk-why .lb{flex:0 0 52px;color:var(--ink3);font-size:12.5px;padding-top:1px}
+.gk-force{font-size:12.5px;color:var(--ink3);line-height:1.9;border-top:1px solid var(--line);padding-top:11px;margin:0 0 4px;
+  font-variant-numeric:tabular-nums}
+.gk-force b{color:var(--ink2);font-weight:600}
+.gk-rel{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.gk-rel .t{font-size:12.5px;color:var(--ink3);margin:0 0 7px}
+.gk-rel ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.gk-rel li{font-size:13px;line-height:1.6;color:var(--ink2)}
+.gk-rel li.off{color:var(--ink3)}
+.gk-fork{margin-top:14px;border:1px solid var(--accent2);border-radius:10px;padding:14px 15px;background:var(--accent-soft)}
+.gk-fork .t{font-size:13px;font-weight:700;color:var(--accent);margin:0 0 9px}
+.gk-fork .it{font-size:13px;line-height:1.75;color:var(--ink2)}
+.gk-fork .it + .it{margin-top:10px;padding-top:10px;border-top:1px solid var(--accent2)}
+.gk-fork .it b{color:var(--ink)}
+.gk-fork .arm{color:var(--ink3);font-size:12.5px}
