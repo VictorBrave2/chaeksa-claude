@@ -653,6 +653,9 @@
   }
 
   // ───── 6차원 적층 체용 ─────
+  // 무료 화면에서는 카드를 걷어냈다 (2026-08-28) — 體·用·적층은 일반인이 읽을 말이 아니다.
+  // 함수와 엔진(chaeyong.js)은 그대로 둔다. 유료 상담에서 쓴다.
+  // #cyStack 이 없으면 여기서 조용히 빠져나간다.
   function renderChaeyong() {
     const box = $('cyStack'); if (!box || !window.ChaeksaChaeyong) return;
     const cy = ChaeksaChaeyong.stack(R, today);
