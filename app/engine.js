@@ -445,6 +445,101 @@
     return out;
   }
 
+  // ───────── 판정이 갈리는 자리 ─────────
+  // 여기서부터는 계산이 아니라 판정이다. 판본이 갈리고, 어느 쪽을 잡느냐로
+  // 결과가 크게 달라진다. 기계가 정할 수 없는 자리다.
+  //
+  // 무료 엔진은 **가장 보수적인 쪽**으로 계산한다(化 안 봄, 반합 안 봄, 격합 안 봄).
+  // 그러나 갈린다는 사실을 숨기지 않는다 — 숨기면 무료가 조용히 틀린 답을 준다.
+  // 「이 사주는 여기서 갈립니다」까지가 무료고, 「그래서 어느 쪽입니다」가 유료다.
+  const BANHAP_W = 0.6;   // 반합을 국으로 볼 때의 임시 계수. 근거 없음 — 갈래 보여주기용
+
+  /** 이 사주에서 판정이 갈리는 자리들. */
+  function forks(pillars) {
+    const W = NATAL_WEIGHT, ds = pillars.day.stem, de = STEM_ELEM[ds];
+    const 자리 = [
+      [pillars.year.branch,  W.yearBranch],
+      [pillars.month.branch, W.monthBranch],
+      [pillars.day.branch,   W.dayBranch],
+    ];
+    if (pillars.hour) 자리.push([pillars.hour.branch, W.hourBranch]);
+
+    // 갈래별 강약을 내는 국소 계산기 (본 계산을 건드리지 않는다)
+    const 점수 = (opt) => {
+      opt = opt || {};
+      const 힘 = (st) => {
+        let best = Math.max.apply(null, 자리.map(([b, w]) => w * power(st, b)));
+        SAMHAP.forEach((g, gi) => {
+          if (STEM_ELEM[st] !== SAMHAP_ELEM[gi]) return;
+          const 있 = 자리.filter(([b]) => g.indexOf(b) >= 0);
+          const 종류 = {}; 있.forEach(([b]) => { 종류[b] = 1; });
+          const k = Object.keys(종류).length;
+          if (k === 3 || (opt.반합 && k === 2 && 종류[g[1]])) {
+            const v = 있.reduce((a, [b, w]) => a + w * power(st, b), 0) * (k === 3 ? 1 : BANHAP_W);
+            if (v > best) best = v;
+          }
+        });
+        return best;
+      };
+      const 합거 = opt.격합 ? {} : natalHap(pillars);
+      const 명령 = (k, st) => (합거[k] ? 0 : 힘(st));
+      const stems = [[STEM_ELEM[pillars.year.stem], 명령('year', pillars.year.stem)],
+                     [STEM_ELEM[pillars.month.stem], 명령('month', pillars.month.stem)]];
+      if (pillars.hour) stems.push([STEM_ELEM[pillars.hour.stem], 명령('hour', pillars.hour.stem)]);
+      // 化 — 국을 이룬 지지가 그 국의 오행으로 작동한다
+      const 化지지 = {};
+      if (opt.化) SAMHAP.forEach((g, gi) => {
+        const 종류 = {}; 자리.forEach(([b]) => { if (g.indexOf(b) >= 0) 종류[b] = 1; });
+        if (Object.keys(종류).length === 3) g.forEach(b => { 化지지[b] = SAMHAP_ELEM[gi]; });
+      });
+      let sup = 0, tot = 0;
+      stems.forEach(([el, w]) => { tot += w; if (siding(de, el) > 0) sup += w; });
+      자리.forEach(([b, w]) => {
+        tot += w;
+        sup += w * (化지지[b] != null ? (siding(de, 化지지[b]) > 0 ? 1 : 0) : power(ds, b));
+      });
+      const got = BRANCH_ELEM[pillars.month.branch] === de || BRANCH_ELEM[pillars.month.branch] === (de + 4) % 5;
+      if (got) { sup += 0.6; tot += 0.6; }
+      const v = tot ? Math.round((sup / tot) * 100) / 100 : 0.5;
+      return { score: v, label: STRENGTH_LABEL(v) };
+    };
+
+    const 기준 = 점수();
+    const out = [];
+    const 재다 = (이름, 사실, 갈래, opt) => {
+      const b = 점수(opt);
+      if (b.score === 기준.score) return;
+      out.push({ 이름, 사실, 무료: `${기준.label} ${기준.score}`, 갈래, 다른쪽: `${b.label} ${b.score}` });
+    };
+
+    // 1. 완전 삼합의 화(化)
+    SAMHAP.forEach((g, gi) => {
+      const 종류 = {}; 자리.forEach(([b]) => { if (g.indexOf(b) >= 0) 종류[b] = 1; });
+      if (Object.keys(종류).length !== 3) return;
+      재다('삼합의 化',
+        `${g.map(b => BRANCHES[b]).join('')} ${ELEM[SAMHAP_ELEM[gi]]}국이 다 모였다`,
+        `${g.map(b => BRANCHES[b]).join('')} 이 전부 ${ELEM[SAMHAP_ELEM[gi]]}로 바뀐다고 보면`,
+        { 化: true });
+    });
+    // 2. 반합을 국으로 볼 것인가
+    SAMHAP.forEach((g, gi) => {
+      const 종류 = {}; 자리.forEach(([b]) => { if (g.indexOf(b) >= 0) 종류[b] = 1; });
+      const ks = Object.keys(종류);
+      if (ks.length !== 2 || !종류[g[1]]) return;
+      재다('반합',
+        `${ks.map(b => BRANCHES[+b]).join('')} — ${ELEM[SAMHAP_ELEM[gi]]}국의 왕지를 낀 둘`,
+        '반합도 국으로 세면',
+        { 반합: true });
+    });
+    // 3. 격합 — 일간을 사이에 둔 월간-시간의 합
+    if (pillars.hour && isHap(pillars.month.stem, pillars.hour.stem)) {
+      재다('격합',
+        `월간 ${STEMS[pillars.month.stem]} 과 시간 ${STEMS[pillars.hour.stem]} 이 합이다 (일간을 사이에 둔다)`,
+        '격합도 합거로 세면', { 격합: true });
+    }
+    return out;
+  }
+
   /** 기둥만으로 강약을 낸다. analyze() 와 검사(enginecheck)가 **같은 이 함수**를 쓴다.
    *  예전에는 검사가 공식을 베껴 갖고 있어서, 엔진을 고쳐도 검사는 제 사본만 재고 있었다. */
   function strengthOf(pillars) {
@@ -537,5 +632,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, forks, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);
