@@ -467,40 +467,87 @@
     return out;
   }
 
-  // ───────── 지지 관계 — 사실만 낸다 ─────────
-  // 충 · 육합 · 삼합/반합 · 복음. **판정하지 않는다.**
+  // ───────── 형충회합 — 순서대로 푼다 ─────────
+  // 규칙이 없어서 안 닫힌 게 아니라 **적용 순서가 없어서** 안 닫혔다.
+  // 순서를 정하면 그 자리에서 결정론이 된다.
   //
-  // 격 성패에 충을 넣으려다 그만뒀다. 지지는 넷이면 쌍이 여섯이고 운이 얹히면
-  // 열다섯까지 간다. 거기에 관계가 여섯 종이고, 「가해자가 묶이면」 「피해자가
-  // 묶이면」 「합이 충을 푸나 충이 합을 깨나」가 또 갈린다. 고전이 완결된 판단
-  // 절차를 안 준다 — 명리가마다 다르다. 규칙으로 박으면 근거 없는 값이 된다.
+  //   삼합 > 육합 > 충 > 형      — 2026-08-28 사장님 판정
   //
-  //   천간   규칙화된다.      셋뿐이고 배치가 선형이라 인접이 명확하다
-  //   지지   규칙화 안 된다.  사실만 보여주고 판정은 사람이 한다
+  // 형은 안 본다(B1). 그래서 우리에게 남는 순서는 삼합 > 반합 > 육합 > 충 이다.
+  // 반합이 육합보다 위인 것은 사장님 예시가 정해준다 —
+  //   「년지 유금 월지 묘목 일지 술토라서 묘술합으로 묘유충이 일어나지 않았으나
+  //     시지 오화가 있어서 오술삼합으로 묘유충이 성립된다」
+  // 午戌 반합이 卯戌 육합을 이겨야 이 문장이 성립한다.
   //
-  // 체용의 충 감점(-1)은 그대로 둔다. 연속량이라 부드럽고, 격처럼 이진 판정을
-  // 통째로 뒤집지 않는다. **같은 정보라도 어느 축에 넣느냐로 위험이 다르다.**
+  // **소진된다.** 한 지지는 하나와만 결합한다 — 戌 이 午 에게 가면 卯 를 놓는다.
+  // 이것은 통근과 층위가 다르다. 申 이 수국에 들어도 庚 의 뿌리인 것은
+  // **천간이 지지에서 받는 것**이라 소진이 없고, 지지끼리의 결합은 배타적이다.
+  //
+  // **합이 충을 막는다(貪合忘冲).** 합에 쓰인 자리는 충을 못 한다.
+  //
+  // 방합(삼회 寅卯辰 …)은 아직 안 넣는다. 삼합과의 우열을 안 정했다.
   const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
   const SEAT_KO = ['연지', '월지', '일지', '시지'];
 
-  /** 원국 지지 여섯 쌍의 관계. 판정 없이 사실만. */
-  function branchRels(pillars) {
-    const bs = [pillars.year.branch, pillars.month.branch, pillars.day.branch];
-    if (pillars.hour) bs.push(pillars.hour.branch);
-    const out = [];
-    for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) {
-      const a = bs[i], b = bs[j];
-      let rel = null;
-      if (a === b) rel = '복음';
-      else if ((b - a + 12) % 12 === 6) rel = '충';
-      else if (YUKHAP[a] === b) rel = '육합';
-      else if (SAMHAP.some(g => g.indexOf(a) >= 0 && g.indexOf(b) >= 0)) rel = '삼합';
-      if (!rel) continue;
-      out.push({ rel, a: SEAT_KO[i], b: SEAT_KO[j],
-                 글자: BRANCHES[a] + BRANCHES[b],
-                 격지: (i === 1 || j === 1) });   // 월지가 걸렸는가
+  /** 형충회합을 순서대로 해소한다.
+   *  @param 자리 [[지지, 자리이름], ...]  원국 넷 + (운이 있으면 그 지지)
+   *  @return { 성립:[...], 보류:[...] }   보류는 「왜 성립 못 했는가」까지 남긴다
+   */
+  function resolveBranches(자리) {
+    const 쓴 = {}, 성립 = [], 보류 = [];
+    const 첫자리 = (b) => { for (let i = 0; i < 자리.length; i++) if (자리[i][0] === b) return i; return -1; };
+    const 후보 = [];
+    // 완전 삼합 (3자)
+    SAMHAP.forEach(g => {
+      const 자 = g.map(첫자리);
+      if (자.every(i => i >= 0)) 후보.push({ 급: 3, 이름: '삼합', 자리들: 자, 글자: g.map(b => BRANCHES[b]).join('') });
+    });
+    // 반합 — 왕지 + 하나
+    SAMHAP.forEach(g => {
+      const 왕 = 첫자리(g[1]);
+      if (왕 < 0) return;
+      [g[0], g[2]].forEach(b => {
+        const j = 첫자리(b);
+        if (j >= 0) 후보.push({ 급: 2, 이름: '반합', 자리들: [왕, j], 글자: BRANCHES[g[1]] + BRANCHES[b] });
+      });
+    });
+    // 육합
+    for (let i = 0; i < 자리.length; i++) for (let j = i + 1; j < 자리.length; j++)
+      if (YUKHAP[자리[i][0]] === 자리[j][0])
+        후보.push({ 급: 1, 이름: '육합', 자리들: [i, j], 글자: BRANCHES[자리[i][0]] + BRANCHES[자리[j][0]] });
+
+    후보.sort((x, y) => y.급 - x.급);
+    후보.forEach(c => {
+      if (c.자리들.some(i => 쓴[i])) {
+        보류.push({ 종류: c.이름, 글자: c.글자, 사유: '이미 쓰인 자리라 성립 못 함' });
+        return;
+      }
+      c.자리들.forEach(i => { 쓴[i] = 1; });
+      성립.push({ 종류: c.이름, 글자: c.글자, 자리: c.자리들.map(i => 자리[i][1]),
+                  격지: c.자리들.some(i => 자리[i][1] === '월지') });
+    });
+    // 충 — 합에 안 쓰인 자리끼리만 (貪合忘冲)
+    for (let i = 0; i < 자리.length; i++) for (let j = i + 1; j < 자리.length; j++) {
+      const a = 자리[i][0], b = 자리[j][0];
+      if ((b - a + 12) % 12 !== 6) continue;
+      const 글자 = BRANCHES[a] + BRANCHES[b];
+      if (쓴[i] || 쓴[j])
+        보류.push({ 종류: '충', 글자,
+                    사유: `${자리[쓴[i] ? i : j][1]}가 합에 묶여 못 함 (貪合忘冲)` });
+      else
+        성립.push({ 종류: '충', 글자, 자리: [자리[i][1], 자리[j][1]],
+                    격지: 자리[i][1] === '월지' || 자리[j][1] === '월지' });
     }
-    return out;
+    return { 성립, 보류 };
+  }
+
+  /** 원국 지지의 형충회합. 순서대로 해소한 결과를 낸다. */
+  function branchRels(pillars, 추가) {
+    const 자리 = [[pillars.year.branch, '연지'], [pillars.month.branch, '월지'],
+                  [pillars.day.branch, '일지']];
+    if (pillars.hour) 자리.push([pillars.hour.branch, '시지']);
+    (추가 || []).forEach(v => 자리.push(v));
+    return resolveBranches(자리);
   }
 
   // ───────── 판정이 갈리는 자리 ─────────
@@ -584,9 +631,9 @@
         '격합도 합거로 세면', { 격합: true });
     }
     // 3. 격지가 충을 맞았는가 — 점수로 재지 않는다. 격이 갈리는 자리라 알리기만 한다.
-    const 격충 = branchRels(pillars).filter(r => r.격지 && r.rel === '충');
+    const 격충 = branchRels(pillars).성립.filter(r => r.격지 && r.종류 === '충');
     격충.forEach(r => out.push({
-      이름: '격지 충', 사실: `${r.a} ↔ ${r.b} ${r.글자} 충 — 격을 잡는 월지가 맞고 있다`,
+      이름: '격지 충', 사실: `${r.자리.join(' ↔ ')} ${r.글자} 충 — 격을 잡는 월지가 맞고 있다`,
       무료: '충을 격 판정에 안 쓴다', 갈래: '충으로 격이 깨진다고 보면',
       다른쪽: '격 판정이 뒤집힐 수 있다',
     }));
@@ -687,5 +734,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, branchRels, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, branchRels, resolveBranches, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);
