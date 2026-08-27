@@ -595,6 +595,25 @@
     return { s: Math.max(0, Math.min(100, s)), 이유 };
   }
 
+  /** 그 달 안에서 두 사람 다 좋은 **날**이 며칠인가.
+   *  날짜는 안 돌려준다 — 개수만 낸다. 날짜와 시각은 사람이 붙어서 보는 자리다.
+   *  「2월에 두 분 다 좋은 날이 4일 있습니다」까지가 무료고, 그 다음이 상담이다. */
+  function bothDays(Rme, Ryou, year, month) {
+    let 좋 = 0, 전체 = 0, 최고 = 0;
+    const last = new Date(year, month, 0).getDate();
+    for (let d = 1; d <= last; d++) {
+      let tf; try { tf = E.dateFortune(year, month, d); } catch (e) { continue; }
+      전체++;
+      // 달을 재던 것과 같은 자로 날을 잰다 — 월주 자리에 일주를 넣는다
+      const day = { month: tf.day };
+      const A = monthScoreFor(Rme, day), B = monthScoreFor(Ryou, day);
+      const m = Math.min(A.s, B.s);
+      if (m > 최고) 최고 = m;
+      if (m >= 70) 좋++;
+    }
+    return { 좋은날: 좋, 전체, 최고 };
+  }
+
   /** 앞으로 n개월 중 두 사람 다 좋은 달. 최저 점수로 고른다. */
   function bothMonths(Rme, Ryou, from, n) {
     const rows = [];
@@ -1724,5 +1743,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

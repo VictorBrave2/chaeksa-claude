@@ -1167,6 +1167,16 @@
             <span class="gz">${esc(m.간지)}</span>
             <span class="rs">${esc([...new Set(m.이유)].slice(0,2).join(' · ') || '무난합니다')}</span>
           </div>`).join('')}
+          ${(() => {
+            // 첫 좋은 달 안에 실제로 며칠이 열리는지 — 개수만 낸다
+            try {
+              const g = bm.좋은달[0];
+              const bd = T.bothDays(R, you, g.연, g.월);
+              if (bd && bd.좋은날 > 0) return `<p class="bmdays">${g.연}년 ${g.월}월 안에
+                <b>두 분 다 좋은 날이 ${bd.좋은날}일</b> 있습니다 — 날짜와 시각은 아래에서</p>`;
+            } catch (e) {}
+            return '';
+          })()}
           ${bm.나쁜달 && bm.나쁜달.점수 < 40 ? `<p class="bmno">${bm.나쁜달.연}년 ${bm.나쁜달.월}월은 둘 중 한 분이 눌립니다 — 큰 결정은 피하시는 편이 낫습니다</p>` : ''}
           <p class="bmft">결혼·상견례·여행처럼 <b>둘이 같이 정하는 날</b>에 쓰세요. 한 사람만 좋은 달은 뺐습니다.</p>
         </div>`;
@@ -1175,9 +1185,9 @@
       <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
       ${지금절}
       ${달절}
-      ${nextStep('이번 달, 그 사람 마음은 어디로',
-        '대운과 올해까지',
-        '해 단위로는 「자리를 잡고 싶은 때」까지 나옵니다. 이번 달·다음 달 그 사람 마음이 어느 쪽으로 움직이는지, 좋은 달의 며칠이 실제로 열리는지는 월운·일운까지 내려가야 보입니다.',
+      ${nextStep('그 달의 며칠, 그리고 몇 시',
+        '좋은 달과 그 안의 날 수까지',
+        '달까지는 여기서 나옵니다. 그런데 결혼도 상견례도 결국 「며칠 몇 시」로 잡습니다. 그 날들이 언제인지, 그중 어느 시각이 두 분께 열리는지는 일운·시운까지 내려가야 나옵니다. 진태양시로 분 단위까지 봅니다.',
         (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다')}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
