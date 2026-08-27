@@ -142,6 +142,55 @@ def icons():
             print('wrote', ico, os.path.getsize(ico) // 1024, 'KB')
 
 
+def kakao():
+    """카카오톡 채널 프로필 사진 — 640×640.
+
+    채팅 목록에서는 지름 40px 원으로 잘린다. 그래서 두 가지가 정해진다.
+      · 모서리는 안 보인다 → 중요한 건 내접원 안에 둔다
+      · 40px에서 글자는 안 읽힌다 → 채널명은 옆에 뜨니 인장 하나만 남긴다
+    앱 아이콘·og 그림과 같은 얼굴이어야 한다. 색과 글자를 그대로 쓴다.
+    """
+    S = 640
+    img = Image.new('RGB', (S, S), SEAL)
+
+    # 왼쪽 위에서 들어오는 빛 — 평면으로 두면 인쇄물처럼 죽는다
+    glow = Image.new('L', (S, S), 0)
+    ImageDraw.Draw(glow).ellipse([-S // 3, -S // 2, S, S // 2 + 60], fill=64)
+    glow = glow.filter(ImageFilter.GaussianBlur(90))
+    img = Image.composite(Image.new('RGB', (S, S), (214, 96, 66)), img, glow)
+
+    d = ImageDraw.Draw(img)
+
+    # 테두리는 원이어야 한다. 사각 테두리를 두면 네 모서리가 크롭에 잘려
+    # 선 네 토막으로 남는다 — 실제로 그렇게 나와서 원으로 바꿨다.
+    d.ellipse([48, 48, S - 49, S - 49], outline=(253, 243, 231), width=5)
+
+    f = font('malgunbd.ttf', 300)
+    box = d.textbbox((0, 0), '策', font=f)
+    d.text(((S - (box[2] - box[0])) / 2 - box[0],
+            (S - (box[3] - box[1])) / 2 - box[1]),
+           '策', font=f, fill=(253, 243, 231))
+
+    out = os.path.join(os.path.dirname(APP), 'marketing', '카카오-프로필.png')
+    img.save(out, 'PNG', optimize=True)
+    print('wrote', out, os.path.getsize(out) // 1024, 'KB', img.size)
+
+    # 잘렸을 때를 미리 본다. 올리고 나서 "글자가 잘렸네"를 하지 않으려고 둔다.
+    prev = img.copy()
+    mask = Image.new('L', (S, S), 0)
+    ImageDraw.Draw(mask).ellipse([0, 0, S - 1, S - 1], fill=255)
+    circ = Image.new('RGB', (S, S), (245, 245, 245))
+    circ.paste(prev, (0, 0), mask)
+    out2 = os.path.join(os.path.dirname(APP), 'marketing', '카카오-프로필-원형확인.png')
+    circ.save(out2, 'PNG', optimize=True)
+    print('wrote', out2, os.path.getsize(out2) // 1024, 'KB')
+
+
 if __name__ == '__main__':
-    build()
-    icons()
+    import sys
+    if '--kakao' in sys.argv:
+        kakao()
+    else:
+        build()
+        icons()
+        kakao()
