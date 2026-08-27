@@ -29,11 +29,12 @@
   // 원국 가중치는 분석엔진과 같은 것을 쓴다 (두 곳이 다른 답을 내지 않게)
   const WEIGHT = {
     natal: E.NATAL_WEIGHT,
-    대운:  { stem: .8, branch: 1.6 },
-    세운:  { stem: .6, branch: 1.0 },
-    월운:  { stem: .4, branch: .7 },
-    일운:  { stem: .3, branch: .5 },
-    시운:  { stem: .2, branch: .3 },
+    // stem 은 없앴다 — 운의 천간도 통근한 지지에서 힘을 얻는다.
+    대운:  { branch: 1.6 },
+    세운:  { branch: 1.0 },
+    월운:  { branch: .7 },
+    일운:  { branch: .5 },
+    시운:  { branch: .3 },
   };
 
   // 촉발 무게 — 세력 무게와 반대로 간다.
@@ -121,12 +122,26 @@
     const W = WEIGHT.natal;
     const items = [];
     const push = (elem, w) => items.push({ elem, w });
-    push(E.STEM_ELEM[p.year.stem], W.yearStem);
+
+    // 천간은 자체 무게가 없다. 통근한 지지의 자리 무게 × 그 자리의 십이운성 세기가
+    // 곧 그 천간의 힘이다(engine.js strengthOf 와 같은 규칙). 뜬 천간은 0 이다.
+    // 뿌리를 찾는 자리는 그때까지 누적된 지지 전부다 — 운이 얹히면 늘어난다.
+    const 뿌리터 = [
+      [p.year.branch,  W.yearBranch],
+      [p.month.branch, W.monthBranch],
+      [p.day.branch,   W.dayBranch],
+    ];
+    if (p.hour) 뿌리터.push([p.hour.branch, W.hourBranch]);
+    const 천간힘 = (st) => Math.max(...뿌리터.map(([b, w]) => w * E.power(st, b)));
+    // 판정 배수로 쓸 때는 0~1 로 눌러 쓴다. 최대는 월지(2.0)가 제왕(1.0)으로 받은 것.
+    const 실허 = (st) => Math.min(1, 천간힘(st) / 2.0);
+
+    push(E.STEM_ELEM[p.year.stem],  천간힘(p.year.stem));
     push(E.BRANCH_ELEM[p.year.branch], W.yearBranch);
-    push(E.STEM_ELEM[p.month.stem], W.monthStem);
+    push(E.STEM_ELEM[p.month.stem], 천간힘(p.month.stem));
     push(E.BRANCH_ELEM[p.month.branch], W.monthBranch);
     push(E.BRANCH_ELEM[p.day.branch], W.dayBranch);
-    if (p.hour) { push(E.STEM_ELEM[p.hour.stem], W.hourStem); push(E.BRANCH_ELEM[p.hour.branch], W.hourBranch); }
+    if (p.hour) { push(E.STEM_ELEM[p.hour.stem], 천간힘(p.hour.stem)); push(E.BRANCH_ELEM[p.hour.branch], W.hourBranch); }
     // 득령 가산 — 분석엔진(engine.js analyze)과 같은 0.6. 두 곳이 다른 답을 내면 안 된다.
     if (E.siding(dayElem, E.BRANCH_ELEM[p.month.branch]) > 0) push(dayElem, 0.6);
 
@@ -183,19 +198,20 @@
         hap: rels.includes('육합') || rels.includes('삼합'),
         bokeum: rels.includes('복음'),
       };
-      // 뿌리 있는 운은 배로 강하게 온다.
-      // 운의 천간이 어디에 앉았는지를 본다 — 제 지지와 원국 지지를 통틀어 가장 높은 자리.
-      // 원국 천간과 달리 바닥을 0.5 로 둔다. 뿌리 없는 운도 오기는 오기 때문이다.
-      // 丁丑(묘) 운도 丁 은 온다. 다만 丁巳(제왕) 운의 절반이다.
-      const 뿌리자리 = carriedBranches.concat([s.gz.branch]);
-      const 실허 = 0.5 + 0.5 * Math.max.apply(null,
-        뿌리자리.map(b => E.power(s.gz.stem, b)));
-      const value = Math.round(judge(bodyLab, group, extras) * 실허 * 10) / 10;
+      // 운의 천간도 원국 천간과 같은 규칙으로 잰다.
+      // 힘 = 통근한 지지의 자리 무게 × 그 자리의 십이운성 세기. 바닥은 없다 —
+      // 뿌리를 어디에도 못 내린 운은 이름만 오는 것이라 힘을 못 쓴다.
+      // 뿌리터에는 그 운 자신의 지지도 넣는다(제 지지에 앉는 경우).
+      const 운뿌리 = 뿌리터.concat([[s.gz.branch, s.w.branch]]);
+      const 운힘 = Math.max(...운뿌리.map(([b, w]) => w * E.power(s.gz.stem, b)));
+      const 운실허 = Math.min(1, 운힘 / 2.0);
+      const value = Math.round(judge(bodyLab, group, extras) * 운실허 * 10) / 10;
 
       // 판정이 끝났으니 이제 用을 體에 편입한다 (다음 층의 體가 된다)
-      items.push({ elem: E.STEM_ELEM[s.gz.stem], w: s.w.stem });
+      items.push({ elem: E.STEM_ELEM[s.gz.stem], w: 운힘 });
       items.push({ elem: E.BRANCH_ELEM[s.gz.branch], w: s.w.branch });
       carriedBranches.push(s.gz.branch);
+      뿌리터.push([s.gz.branch, s.w.branch]);   // 다음 층부터는 이 지지도 뿌리터가 된다
       score = strengthOf(items, dayElem);
       const afterLab = label(score);
 

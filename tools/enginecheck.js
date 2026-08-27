@@ -86,11 +86,26 @@ ok('C','표본수', samp.length===600, samp.length+'명');
 //   천간은 오행 이분법 — 다섯 중 둘(비겁·인성)만 도움이라 무작위면 0.40
 //   지지는 십이운성 눈금 — 열두 단계 값의 산술평균
 // 자리 무게로 가중해 섞는다. 득령 가산이 위로 밀므로 실측은 기대보다 조금 높게 나온다.
+// 천간은 이제 고정 무게가 없다 — 통근한 지지에서 힘을 얻는다.
+// 그래서 기대 무게를 표본에서 직접 잰다. 숫자를 박아두면 방식이 바뀔 때 검사가 거짓말한다.
 const _W = E.NATAL_WEIGHT;
-const _간 = _W.yearStem + _W.monthStem + _W.hourStem;
 const _지 = _W.yearBranch + _W.monthBranch + _W.dayBranch + _W.hourBranch;
-const _운성 = E.UNSEONG_POWER
-  ? Object.keys(E.UNSEONG_POWER).reduce((a,k)=>a+E.UNSEONG_POWER[k],0)/12 : 0.40;
+const _운성 = Object.keys(E.UNSEONG_POWER).reduce((a,k)=>a+E.UNSEONG_POWER[k],0)/12;
+let _간합 = 0, _간수 = 0;
+for (let i = 0; i < 300; i++) {
+  const y=1955+(i*7919)%51, m=1+(i*104729)%12, d=1+(i*1299709)%28, hh=(i*15485863)%24;
+  let R; try { R = mk(y,m,d,hh,i%2?'F':'M'); } catch(e) { continue; }
+  const p = R.pillars;
+  const 터 = [[p.year.branch,_W.yearBranch],[p.month.branch,_W.monthBranch],
+              [p.day.branch,_W.dayBranch],[p.hour.branch,_W.hourBranch]];
+  ['year','month','hour'].forEach(k => {
+    _간합 += Math.max.apply(null, 터.map(([b,w]) => w * E.power(p[k].stem, b)));
+    _간수++;
+  });
+}
+const _간평균 = _간수 ? _간합/_간수 : 0;
+const _간 = _간평균 * 3;                       // 천간 세 자리의 기대 무게 합
+// 천간은 오행 이분법(다섯 중 둘만 도움이라 0.40), 지지는 십이운성 눈금
 const 기대중심 = Math.round((_간*0.40 + _지*_운성)/(_간+_지)*1000)/1000;
 ok('C', `평균 = 구조적 중심 ${기대중심} ±0.03`, Math.abs(avg-기대중심)<=0.03,
    `평균 ${avg} (지지 방식의 기대값 ${Math.round(_운성*1000)/1000})`);

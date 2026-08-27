@@ -261,7 +261,8 @@
   // 예전 일지 1.5 는 근거가 없었다. 좌하(딛고 선 자리)도 배우자궁도 근거가 못 된다 —
   // 배우자궁은 배우자의 모습을 보는 자리지 내 세력이 아니다. 그 1.5 를 근거 있는
   // 시지로 넘기고, 일지는 연지와 동률로 내렸다.
-  const NATAL_WEIGHT = { yearStem: .5, yearBranch: 1.0, monthStem: .8, monthBranch: 2.0, dayBranch: 1.0, hourStem: .5, hourBranch: 1.5 };
+  // 천간 자리 가중은 없앴다 — 천간의 힘은 통근에서 나온다(아래 strengthOf 참조).
+  const NATAL_WEIGHT = { yearBranch: 1.0, monthBranch: 2.0, dayBranch: 1.0, hourBranch: 1.5 };
   /** 오행 하나가 일간에게 도움(비겁·인성)이면 +1, 소모(식상·재성·관성)면 -1 */
   function siding(dayElemIdx, elemIdx) {
     if (elemIdx === dayElemIdx) return 1;                        // 비겁
@@ -373,38 +374,38 @@
     const month = pillars.month.branch;
     const gotMonth = BRANCH_ELEM[month] === de || BRANCH_ELEM[month] === (de + 4) % 5;
 
-    // ── 천간 통근 ──
+    // ── 천간의 힘은 통근에서 나온다 ──
     // 천간은 명령이고 지지는 그 명령을 받는 자다. 받을 지지가 없으면
     // 전달되지 않은 명령이라 있으나 마나다. 뿌리 없는 칠살은 으르렁대기만 하고
     // 못 문다 — 뿌리 얻은 칠살이라야 진짜로 친다.
     //
-    // 명령은 한 번 제대로 전달되면 되는 것이지 여러 곳에서 나눠 받는 게 아니다.
-    // 그래서 네 지지 중 **가장 높이 앉은 자리 하나**로 본다. 제왕지가 받으면
-    // 온전히 전달되고, 없으면 건록·관대로 내려간다. 묘·절뿐이면 전달 안 된다.
+    // 그러니 천간에 고정 무게를 주면 안 된다. 예전에는 연간 .5 월간 .8 시간 .5 를
+    // 박아두고 거기에 전달도를 곱했는데, 그 셋은 근거 없는 숫자였다.
     //
-    // 전달도는 분자와 분모에 똑같이 곱한다. 전달 안 된 명령은 나를 돕지도 누르지도
-    // 못하기 때문이다. 그래서 이 값이 크다고 일간에게 좋은 게 아니다 —
-    // 나를 돕는 천간이 실하면 좋고, 나를 누르는 천간이 실하면 더 눌린다.
-    const allBranches = ['year','month','day','hour']
-      .filter(k => pillars[k]).map(k => pillars[k].branch);
-    const 전달도 = (st) => Math.max(...allBranches.map(b => power(st, b)));
-
-    const stems = [
-      [STEM_ELEM[pillars.year.stem],  W.yearStem  * 전달도(pillars.year.stem)],
-      [STEM_ELEM[pillars.month.stem], W.monthStem * 전달도(pillars.month.stem)],
-    ];
-    // 지지는 십이운성으로 본다. 예전에는 지지 오행이 일간을 돕느냐만 보아
-    // 寅(건록)과 卯(제왕)를, 亥(장생)와 子(목욕)를 똑같이 세었다.
-    // 궁통보감이 寅월 甲에겐 丙을, 卯월 甲에겐 庚을 쓰라고 정반대로 처방하는데도.
-    const branches = [
+    //   천간의 힘 = 통근한 지지의 자리 무게 × 그 지지에서의 십이운성 세기
+    //
+    // 명령은 한 번 제대로 전달되면 되는 것이지 여러 곳에서 나눠 받는 게 아니다.
+    // 그래서 가장 세게 받은 자리 하나로 본다. 어느 지지가 받았는지가 무게를 정하므로
+    // 월지가 받은 명령이 연지가 받은 것보다 무겁다.
+    //
+    // 천간이 놓인 자리(연·월·시)는 힘에 관여하지 않는다. 뜬 것은 어디 떠 있어도 뜬 것이다.
+    const 지지자리 = [
       [pillars.year.branch,  W.yearBranch],
       [pillars.month.branch, W.monthBranch],
       [pillars.day.branch,   W.dayBranch],
     ];
-    if (pillars.hour) {
-      stems.push([STEM_ELEM[pillars.hour.stem], W.hourStem * 전달도(pillars.hour.stem)]);
-      branches.push([pillars.hour.branch, W.hourBranch]);
-    }
+    if (pillars.hour) 지지자리.push([pillars.hour.branch, W.hourBranch]);
+    const 천간힘 = (st) => Math.max(...지지자리.map(([b, w]) => w * power(st, b)));
+
+    const stems = [
+      [STEM_ELEM[pillars.year.stem],  천간힘(pillars.year.stem)],
+      [STEM_ELEM[pillars.month.stem], 천간힘(pillars.month.stem)],
+    ];
+    // 지지는 십이운성으로 본다. 예전에는 지지 오행이 일간을 돕느냐만 보아
+    // 寅(건록)과 卯(제왕)를, 亥(장생)와 子(목욕)를 똑같이 세었다.
+    // 궁통보감이 寅월 甲에겐 丙을, 卯월 甲에겐 庚을 쓰라고 정반대로 처방하는데도.
+    const branches = 지지자리;
+    if (pillars.hour) stems.push([STEM_ELEM[pillars.hour.stem], 천간힘(pillars.hour.stem)]);
     let sup = 0, tot = 0;
     for (const [elem, w] of stems) { tot += w; if (siding(de, elem) > 0) sup += w; }
     for (const [br, w] of branches) { tot += w; sup += w * power(ds, br); }
