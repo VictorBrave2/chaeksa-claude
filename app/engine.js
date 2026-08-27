@@ -280,6 +280,18 @@
     return UNSEONG[STEM_YANG[st] === 1 ? (br - base + 12) % 12 : (base - br + 12) % 12];
   }
 
+  /** 그 지지에 st 의 뿌리(같은 오행)가 암장되어 있는가 */
+  function rooted(st, br) {
+    return HIDDEN[br].some(h => STEM_ELEM[h] === STEM_ELEM[st]);
+  }
+
+  /** 십이운성 세기. 묘(墓)만 통근 여부로 갈린다 — 아래 설명 참조. */
+  function power(st, br) {
+    const u = unseong(st, br);
+    if (u === '묘') return rooted(st, br) ? UNSEONG_POWER.묘고 : UNSEONG_POWER.묘;
+    return UNSEONG_POWER[u];
+  }
+
   // 단계별 세기. 삶의 곡선을 따라간다 — 오르는 길은 느리고 내리는 길은 가파르다.
   //
   //   제왕이 정점이고 혼자 솟는다. 건록·관대가 그 아래.
@@ -291,9 +303,19 @@
   // 궁통보감 120칸에서 계절을 걷어내고 뽑은 순서(건록·제왕·관대 위, 묘·절·태 아래,
   // 목욕 낮음)와 골격이 맞는다. 다만 그 표는 조후 처방이라 사(死)를 강하다고 오독하는
   // 자리가 있어 값 자체는 쓰지 않았다.
+  //
+  // 묘(墓)는 한 칸이 아니라 두 칸이다. 자평진전 「論十干得時不旺失時不弱」 —
+  //   「양간에게 1묘고지는 천간의 1비견보다 뿌리가 강하다. 을이 술을 만나거나
+  //    정이 축을 만나는 경우처럼 술중에는 암장된 목이 없고 축에는 암장된 화가 없다.」
+  //
+  // 실제로 갈린다. 양간의 묘지에는 제 오행이 암장되어 있고 음간의 묘지에는 없다.
+  //   甲未[己丁乙] 乙 있음 · 丙戌[戊辛丁] 丁 있음 · 庚丑[己癸辛] 辛 있음 · 壬辰[戊乙癸] 癸 있음
+  //   乙戌[戊辛丁] 목 없음 · 丁丑[己癸辛] 화 없음 · 辛辰[戊乙癸] 금 없음 · 癸未[己丁乙] 수 없음
+  //
+  // 갇힌 것과 없는 것은 다르다. 뿌리가 있으면 0.20(1비견보다 크다), 없으면 0.
   const UNSEONG_POWER = {
     제왕: 1.00, 건록: .82, 관대: .70, 쇠: .62, 장생: .55, 목욕: .50,
-    양: .30, 병: .20, 태: .15, 사: .08, 절: .05, 묘: 0,
+    양: .30, 병: .20, 묘고: .20, 태: .15, 사: .08, 절: .05, 묘: 0,
   };
 
   /** 강약 경계 — 이 프로젝트 전체에서 이 함수 하나만 쓴다 */
@@ -365,7 +387,7 @@
     // 나를 돕는 천간이 실하면 좋고, 나를 누르는 천간이 실하면 더 눌린다.
     const allBranches = ['year','month','day','hour']
       .filter(k => pillars[k]).map(k => pillars[k].branch);
-    const 전달도 = (st) => Math.max(...allBranches.map(b => UNSEONG_POWER[unseong(st, b)]));
+    const 전달도 = (st) => Math.max(...allBranches.map(b => power(st, b)));
 
     const stems = [
       [STEM_ELEM[pillars.year.stem],  W.yearStem  * 전달도(pillars.year.stem)],
@@ -385,7 +407,7 @@
     }
     let sup = 0, tot = 0;
     for (const [elem, w] of stems) { tot += w; if (siding(de, elem) > 0) sup += w; }
-    for (const [br, w] of branches) { tot += w; sup += w * UNSEONG_POWER[unseong(ds, br)]; }
+    for (const [br, w] of branches) { tot += w; sup += w * power(ds, br); }
     // 왕상휴수사 — 득령이면 가산 0.6 (비대칭: 실령을 더 깎지는 않는다).
     // 본기 방식에서 득령의 무게가 월지 한 자리(2.0)뿐이라 건록·양인격의 21%가
     // 신약으로 떨어졌다. 가산 후 10%로, 앵커 7사례와 실령 사주 판정은 전부 보존.
@@ -431,5 +453,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, unseong, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);

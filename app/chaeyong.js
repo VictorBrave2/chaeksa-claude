@@ -189,7 +189,7 @@
       // 丁丑(묘) 운도 丁 은 온다. 다만 丁巳(제왕) 운의 절반이다.
       const 뿌리자리 = carriedBranches.concat([s.gz.branch]);
       const 실허 = 0.5 + 0.5 * Math.max.apply(null,
-        뿌리자리.map(b => E.UNSEONG_POWER[E.unseong(s.gz.stem, b)]));
+        뿌리자리.map(b => E.power(s.gz.stem, b)));
       const value = Math.round(judge(bodyLab, group, extras) * 실허 * 10) / 10;
 
       // 판정이 끝났으니 이제 用을 體에 편입한다 (다음 층의 體가 된다)
