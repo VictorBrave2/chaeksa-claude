@@ -1026,7 +1026,7 @@
   // 채널 ID(_XXX)만 적든 다 받는다 — 관리자센터에서 어느 쪽을 복사해 올지 모른다.
   // 비워두면 카카오 버튼을 감추고 메일만 남긴다. 눌러도 아무 데도 안 가는 버튼을
   // 띄우느니 없는 게 낫다.
-  const KAKAO_CHANNEL = '';
+  const KAKAO_CHANNEL = '_jdqxaX';   // 책사 채널 (검색용 아이디 chaeksa)
 
   const KAKAO_CHAT = (() => {
     const v = String(KAKAO_CHANNEL || '').trim();
