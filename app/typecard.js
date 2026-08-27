@@ -470,8 +470,12 @@
     const tongro = jae > 0 && sik > 0 ? 14 : sik > 0 ? 5 : 0;
     const him = a.strength === '중화' ? 25 : a.strength === '신강' ? 22 : 10;
     const wEl = (E.STEM_ELEM[ds] + 2) % 5;                 // 재 = 일간이 극하는 오행
-    const GOJI = [7, 10, 4, 1, 4];                         // 고지: 목未 화戌 토辰 금丑 수辰
-    const gotgan = ['year', 'month', 'day', 'hour'].some(k => p[k] && p[k].branch === GOJI[wEl]) ? 6 : 0;
+    // 고지(庫地) — 사고(四庫)뿐이다. 목未 화戌 금丑 수辰.
+    // 토는 고지가 없다. 예전에 토를 辰으로 넣어 수와 겹쳐뒀는데 근거 없는 값이었다.
+    // 그래서 재성이 토인 갑·을 일간은 이 가점을 못 받는다 — 그게 맞다.
+    const GOJI = [7, 10, null, 1, 4];
+    const gojiB = GOJI[wEl];
+    const gotgan = gojiB !== null && ['year', 'month', 'day', 'hour'].some(k => p[k] && p[k].branch === gojiB) ? 6 : 0;
     const gungeop = bi >= 3 && jae > 0 ? -15 : 0;          // 군겁쟁재
     const jaeda = jae >= 25 && a.strength === '신약' ? -15 : 0; // 재다신약
     return { score: Math.max(0, Math.min(100, jae + tongro + him + gotgan + gungeop + jaeda)),
