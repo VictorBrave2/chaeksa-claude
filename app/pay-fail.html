@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>결제가 취소되었습니다 · 책사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
+  .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
+  .doc p{font-size:14.5px;line-height:1.85;color:var(--ink2)}
+  .mark{font-size:40px;line-height:1}
+  .btn{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:11px;
+       text-decoration:none;font-size:14px;font-weight:700}
+  .btn.go{background:var(--accent);color:#fff}
+  .btn.sub{color:var(--ink3)}
+  .warn{font-size:12.5px;color:var(--ink3);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="mark">🌙</div>
+  <h1 id="h">결제가 취소되었습니다</h1>
+  <p id="msg">결제되지 않았습니다. 돈은 빠져나가지 않았습니다.</p>
+  <p class="warn" id="code"></p>
+  <p><a class="btn go" href="./">책사로 돌아가기</a></p>
+  <p><a class="btn sub" href="https://pf.kakao.com/_jdqxaX/chat" target="_blank" rel="noopener">카카오로 물어보기</a></p>
+</div>
+
+<script src="config.js"></script>
+<script src="cloud.js"></script>
+<script src="pay.js"></script>
+<script>
+(function () {
+  var m = localStorage.getItem('chaeksa.theme') || 'auto';
+  var h = new Date().getHours();
+  var night = m === 'night' || (m === 'auto' && (h < 6 || h >= 18));
+  document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
+
+  var q = new URLSearchParams(location.search);
+  var code = q.get('code'), message = q.get('message'), orderId = q.get('orderId');
+
+  // 사용자가 창을 닫은 것과 카드가 거절된 것은 다른 일이다. 토스가 준 말을 그대로 보여준다.
+  if (message) document.getElementById('msg').textContent =
+    message + ' 결제되지 않았으므로 돈은 빠져나가지 않았습니다.';
+  if (code) document.getElementById('code').textContent = '코드 ' + code;
+
+  // 열어둔 주문을 닫는다. 안 해도 결제는 안 되지만, 'open' 인 채 남으면 나중에 헷갈린다.
+  if (orderId && window.ChaeksaPay) {
+    ChaeksaPay.markFailed({ orderId: orderId, code: code, message: message }).catch(function () {});
+  }
+})();
+</script>
+</body>
+</html>
