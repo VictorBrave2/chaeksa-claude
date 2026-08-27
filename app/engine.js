@@ -330,16 +330,6 @@
     return rel * 2 + (same ? 0 : 1);
   }
   function analyze(pillars) {
-    // 化 한 지지는 국의 오행으로 센다 (아래 elemCount·gods 에서 쓴다)
-    const 化지지 = (() => {
-      const W = NATAL_WEIGHT, 자리 = [
-        [pillars.year.branch, W.yearBranch], [pillars.month.branch, W.monthBranch],
-        [pillars.day.branch, W.dayBranch]];
-      if (pillars.hour) 자리.push([pillars.hour.branch, W.hourBranch]);
-      const m = {};
-      samhapOf(자리).forEach(g => g.글자.forEach(b => { m[b] = g.elem; }));
-      return m;
-    })();
     const ds = pillars.day.stem;
     const elemCount = [0,0,0,0,0];
     const list = ['year','month','day','hour'].filter(k => pillars[k]);
@@ -347,7 +337,7 @@
     for (const k of list) {
       const pl = pillars[k];
       elemCount[STEM_ELEM[pl.stem]] += 1;
-      elemCount[化지지[pl.branch] != null ? 化지지[pl.branch] : BRANCH_ELEM[pl.branch]] += 1;
+      elemCount[BRANCH_ELEM[pl.branch]] += 1;
       gods[k] = {
         stem: k === 'day' ? null : TEN_GODS[tenGod(ds, pl.stem)],
         합거: false,   // 아래에서 채운다
@@ -393,13 +383,20 @@
   // 완전한 국은 **화(化)한다** — 자평진전. 辰월 丁 일간이 운에서 申 이나 子 를
   // 만나 수국을 이루면 성격(成格)이라고 못박아 두었다. 맑아진다는 것이고, 곧 化 다.
   //
-  // **化 는 십성을 버리고 국의 명령을 따르는 것이다.** 세기가 왕지급이 되는 것이 아니다.
-  // 축이 둘인데 섞으면 안 된다.
-  //   오행 소속(십신·통근) — 化 가 바꾼다. 申 은 재성이 아니라 관성이 된다.
-  //   십이운성(그 자리에서의 상태) — 글자 것이라 안 바뀐다. 申 은 여전히 申 이다.
+  // **국이 서면 그 셋이 함께 하나의 명령을 받는다.** 그뿐이다.
   //
-  // 따라오는 것이 하나 있다. 申 이 금이 아니게 되면 **庚 은 申 에 뿌리를 못 내린다.**
-  // 국에 먹힌 자리는 국의 오행 천간만 쓴다.
+  //   금이 수로 **바뀌는 것이 아니다.** 申 은 여전히 금이고 庚 의 뿌리다.
+  //   辰 도 여전히 토다. 오행 개수는 안 바뀐다. **재성을 잃지 않는다.**
+  //   申·辰·子 가 **수라는 명령을 함께 받을 뿐**이다.
+  //
+  // 그러니 化 의 효과는 하나다 — **壬 이 국 전체에 명령을 내린다.**
+  // 천간은 명령이고 지지는 받는 자인데(C1), 국은 그 받는 자가 셋이 뭉친 것이다.
+  //
+  // 세기는 각 자리 제 것이다. 왕지로 둔갑시키지 않는다.
+  // 「申 이 수가 된다」가 아니라 「申 이 수 명령을 받는다」이기 때문이다.
+  //
+  // 격(格)만은 국을 따른다 — 자평진전이 「삼합을 이루고 성격」이라 못박은 자리다.
+  // 격은 「이 자리가 무슨 명령을 받는가」로 잡는 것이라 국이 곧 격이 된다.
   //
   // 반합(왕지 포함 둘)은 아직 넣지 않는다. 표본의 33% 에 걸리는데
   // 「절반이면 얼마」를 우리가 지어내야 하기 때문이다.
@@ -430,21 +427,14 @@
 
   /** 천간의 힘 — 통근한 자리 하나, 또는 그 천간이 부리는 국 전체. 센 쪽을 쓴다.
    *
-   *  국에 먹힌 자리는 **국의 오행 천간만** 쓸 수 있다(십성이 국을 따라간 자리다).
-   *  국을 부리는 천간은 그 자리들을 **하나로 묶어** 쓴다 — 세기는 각자 제 것.
-   *  왕지로 둔갑시키지 않는다. 化 는 소속이 바뀌는 것이지 세기가 오르는 것이 아니다. */
+   *  국을 부리는 천간은 그 자리들을 **하나로 묶어** 쓴다 — 세기는 각자 제 것이다.
+   *  국이 섰다고 남의 뿌리를 뺏지는 않는다. 申 은 수 명령을 받으면서도 여전히
+   *  금이고 庚 의 뿌리다. 한 지지가 두 몫을 하는 것이 이상한 일이 아니다 —
+   *  지장간이 원래 그렇게 생겼다. */
   function stemPower(st, 자리, 국) {
-    const gs = 국 || samhapOf(자리);
-    const 化 = hwaOf(자리, gs);
-    let best = 0;
-    자리.forEach(([b, w]) => {
-      const g = 化[b];
-      if (g && STEM_ELEM[st] !== g.elem) return;   // 국에 먹힌 자리는 남이 못 쓴다
-      const v = w * power(st, b);
-      if (v > best) best = v;
-    });
-    gs.forEach(g => {
-      if (STEM_ELEM[st] !== g.elem) return;
+    let best = Math.max.apply(null, 자리.map(([b, w]) => w * power(st, b)));
+    (국 || samhapOf(자리)).forEach(g => {
+      if (STEM_ELEM[st] !== g.elem) return;    // 국의 오행과 같은 천간만 국을 부린다
       const v = g.자리.reduce((acc, [b, w]) => acc + w * power(st, b), 0);
       if (v > best) best = v;
     });
