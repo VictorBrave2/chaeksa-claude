@@ -301,7 +301,12 @@
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
   // ───── 탭 ─────
+  // 원국을 넣은 적이 있는가. 없으면 탭들이 담긴 #app 자체가 hide 라 탭만 켜도 안 보인다.
+  const hasProfile = () => !!((People() && People().active()) || localStorage.getItem(KEY));
+
   function go(tab) {
+    // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
+    if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
     window.scrollTo({ top: 0 });
@@ -320,11 +325,24 @@
   // 주소 뒤 #탭이름 으로 바로 들어올 수 있게 한다. taekil.html 같은 바깥 페이지에서
   // '상담 신청하기'를 눌렀을 때 홈으로 떨어지면 버튼 문구와 어긋난다.
   // 없는 탭 이름이 오면 아무것도 안 한다 — 빈 화면을 띄우느니 홈이 낫다.
-  function goHash() {
+  // 사주 없이도 읽을 수 있는 탭. 나머지는 원국이 있어야 그려진다.
+  const NO_PROFILE_TABS = ['taekil'];
+
+  function goHash(booted) {
     const t = (location.hash || '').replace(/^#/, '');
-    if (t && document.querySelector('.tab[data-tab="' + t + '"]')) go(t);
+    if (!t || !document.querySelector('.tab[data-tab="' + t + '"]')) return;
+    // 검색으로 들어오는 사람은 프로필이 없다. taekil.html 의 '상담 신청하기'가
+    // #taekil 로 보내는데 랜딩이 뜨면 버튼이 안 먹는 것과 같다.
+    if (!booted && NO_PROFILE_TABS.indexOf(t) < 0) return;
+    if (!booted) {
+      // 탭은 #app 안에 있고 원국이 없으면 #app 이 hide 다. 랜딩을 접고 그 자리를 내준다.
+      $('landing').classList.add('hide');
+      $('formCard').classList.add('hide');
+      $('app').classList.remove('hide');
+    }
+    go(t);
   }
-  window.addEventListener('hashchange', goHash);
+  window.addEventListener('hashchange', () => goHash(!!(People() && People().active())));
   // 초기 호출은 파일 끝에서 한다. 여기서 부르면 go() 가 renderNokpae() 등을 타는데
   // 그 함수들이 쓰는 const 가 아직 선언 전이라 TDZ 오류가 난다.
 
@@ -1747,7 +1765,7 @@
   if (act) { start(People().toProfile(act)); booted = true; }
   else if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
   if (!booted) showLanding();
-  else goHash();          // #탭이름 으로 들어온 경우 그 탭을 연다
+  goHash(booted);         // #탭이름 으로 들어온 경우 그 탭을 연다
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
 })();
