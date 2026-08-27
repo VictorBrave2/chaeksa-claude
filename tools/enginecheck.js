@@ -448,6 +448,14 @@ const 사례 = E.calc(Object.assign({ year: 1992, month: 4, day: 21, hour: 0, mi
   ok('L', 'L18 지지 충은 격 판정을 안 바꾼다', rs.length === 1 && a.name === b.name,
      '戌辰 격지 충이 있어도 ' + a.name + '격 · 충 없는 판(壬寅)도 ' + b.name + '격');
 }
+// L21 변격 감지가 격 판정과 어긋나지 않는다 (두 벌이 어긋나면 안 된다)
+{
+  const p = 기둥('壬申','甲辰','丁卯','庚子');
+  const f = E.forks(p).filter(v => v.이름 === '변격')[0];
+  const J = T.gyeok({ pillars: p, analysis: E.strengthOf(p) });
+  ok('L', 'L21 변격 감지 = 격 판정', !!f && f.무료.indexOf(J.name) >= 0,
+     f ? 'forks "' + f.무료 + '" · gyeok ' + J.name + '격' : '변격이 안 잡힘');
+}
 // L20 형충회합의 순서 — 삼합 > 육합 > 충 (사장님 예시가 앵커다)
 //   「년지 유금 월지 묘목 일지 술토라서 묘술합으로 묘유충이 일어나지 않았으나
 //     시지 오화가 있어서 오술삼합으로 묘유충이 성립된다」

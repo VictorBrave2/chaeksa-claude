@@ -630,13 +630,43 @@
         `월간 ${STEMS[pillars.month.stem]} 과 시간 ${STEMS[pillars.hour.stem]} 이 합이다 (일간을 사이에 둔다)`,
         '격합도 합거로 세면', { 격합: true });
     }
-    // 3. 격지가 충을 맞았는가 — 점수로 재지 않는다. 격이 갈리는 자리라 알리기만 한다.
+    // ── 아래 둘은 점수로 재지 않는다. **감지하고 알리기만 한다.** ──
+    //
+    // 부분만 넣으면 안 되는 것들이 있다. 충을 넣으면 방합이 물려 오고,
+    // 삼합을 넣으면 충이 물려 온다. 반쪽으로 박으면 안 넣느니만 못하다.
+    // 그래서 판정은 사람에게 넘기고, 엔진은 「여기가 그 자리다」만 말한다.
+
+    // 3. 격지가 충을 맞았는가
     const 격충 = branchRels(pillars).성립.filter(r => r.격지 && r.종류 === '충');
     격충.forEach(r => out.push({
       이름: '격지 충', 사실: `${r.자리.join(' ↔ ')} ${r.글자} 충 — 격을 잡는 월지가 맞고 있다`,
-      무료: '충을 격 판정에 안 쓴다', 갈래: '충으로 격이 깨진다고 보면',
+      무료: '충을 격 판정에 안 쓴다',
+      갈래: '충으로 격이 깨진다고 보면 · 형까지 보면 이 충이 무력해질 수도',
       다른쪽: '격 판정이 뒤집힐 수 있다',
     }));
+
+    // 4. 변격 — 월지가 국에 들어 격이 월지 정기가 아니라 국으로 잡힌다
+    const 월국 = samhapOf(자리).filter(g => g.글자.indexOf(pillars.month.branch) >= 0)[0];
+    if (월국) {
+      const 정기십신 = TEN_GODS[tenGod(ds, HIDDEN[pillars.month.branch][0])];
+      // 국의 십신은 **typecard.gyeok 과 같은 규칙**으로 낸다 —
+      // 국 오행 천간 중 원국에 투출한 것으로 정/편을 가르고, 없으면 왕지의 본기.
+      // 여기서 왕지 본기만 쓰면 gyeok 은 정관격, forks 는 편관격이 되어 두 벌이 어긋난다.
+      let 국천간 = null;
+      for (let st = 0; st < 10; st++) {
+        if (STEM_ELEM[st] !== 월국.elem) continue;
+        if (['year', 'month', 'hour'].some(k => pillars[k] && pillars[k].stem === st)) { 국천간 = st; break; }
+      }
+      if (국천간 == null) 국천간 = HIDDEN[월국.왕지][0];
+      const 국십신 = TEN_GODS[tenGod(ds, 국천간)];
+      if (정기십신 !== 국십신) out.push({
+        이름: '변격',
+        사실: `월지 ${BRANCHES[pillars.month.branch]}가 ${월국.글자.map(b => BRANCHES[b]).join('')} ${ELEM[월국.elem]}국에 들었다`,
+        무료: `국으로 잡는다 — ${국십신}격 (자평진전)`,
+        갈래: '국을 안 보고 월지 정기로 잡으면',
+        다른쪽: `${정기십신}격 — 다른 사주가 된다`,
+      });
+    }
     return out;
   }
 
