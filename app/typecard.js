@@ -16,7 +16,9 @@
   const G = (ds, s) => E.TEN_GODS[E.tenGod(ds, s)];
 
   // ── 격 판정 (자평진전 간이 규칙 — 상담 스킬과 같은 판) ──
-  function gyeok(R) {
+  /** 격 **이름**만 정한다. 성패는 gyeokguk.js 가 원문 조항으로 낸다.
+   *  예전에는 여기서 이름과 성패를 같이 냈는데, 성패 조건이 원문의 반쪽이었다. */
+  function gyeokName(R) {
     const p = R.pillars, ds = p.day.stem, cheon = [], all = [];
     ['year','month','day','hour'].forEach(k => {
       if (!p[k]) return;
@@ -61,9 +63,7 @@
       // 실측에서 양인격의 48%가 음간으로 잘못 잡히고 있었다.
       const yang = E.STEM_YANG[ds] === 1;
       const wang = [0, 3, 6, 9].includes(p.month.branch);
-      const nm = (mg === '겁재' && yang && wang) ? '양인' : '건록';
-      const ok = tu('정관') || tu('편관') || tu('정재') || tu('편재') || tu('식신') || tu('상관');
-      return { name: nm, ok: ok ? 1 : 0 };
+      return (mg === '겁재' && yang && wang) ? '양인' : '건록';
     }
     let gs = null;
     for (const h of hid) {                       // 투출한 지장간 우선, 비겁은 격이 아니다
@@ -72,16 +72,17 @@
     }
     if (gs == null) { for (const h of hid) { if (GRP[G(ds, h)] !== '비겁') { gs = h; break; } } }
     if (gs == null) gs = hid[0];
-    const gek = G(ds, gs), grp = GRP[gek];
-    let ok = 0;
-    if (gek === '정관') ok = !has('상관') && !has('편관') && (hasG('재성') || hasG('인성')) ? 1 : 0;
-    else if (grp === '재성') ok = cnt('비겁') < 3 && (hasG('식상') || hasG('관성')) ? 1 : 0;
-    else if (gek === '정인') ok = !tu('정재') && !tu('편재') && hasG('관성') ? 1 : 0;
-    else if (gek === '식신') ok = !has('편인') && (hasG('재성') || has('편관')) ? 1 : 0;
-    else if (gek === '편관') ok = (has('식신') || hasG('인성')) ? 1 : 0;
-    else if (gek === '상관') ok = !has('정관') && (hasG('재성') || hasG('인성')) ? 1 : 0;
-    else ok = !has('식신') && hasG('재성') ? 1 : 0;
-    return { name: gek === '비견' ? '건록' : gek === '겁재' ? '양인' : gek, ok };
+    const gek = G(ds, gs);
+    return gek === '비견' ? '건록' : gek === '겁재' ? '양인' : gek;
+  }
+
+  /** 격 이름 + 자평진전 성패. 성패는 gyeokguk.js 한 곳에서만 낸다. */
+  function gyeok(R) {
+    const name = gyeokName(R);
+    const Gk = global.ChaeksaGyeok;
+    if (!Gk) return { name: name, ok: 0, 판정: '미상' };
+    const J = Gk.judge(R, name);
+    return { name: name, ok: J.ok, 판정: J.판정, 상신: J.상신, 근거: J.근거, 잰것: J.잰것 };
   }
 
   const keyOf = (R, J) => `${J.name}|${J.ok}|${R.analysis.strength}|${R.pillars.day.stem}|${R.pillars.month.branch}`;
@@ -1264,5 +1265,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, gyeok, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, accomplice, drawAccomplice, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

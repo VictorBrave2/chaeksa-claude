@@ -201,10 +201,17 @@
              기신무리: !!deduct, 감점: deduct, 사유: why, score };
   }
 
-  /** 자평진전 50점 — 격 판정은 typecard.gyeok(양인 교정판)을 그대로 쓴다. 성격 50 / 파격 0. */
+  /** 자평진전 50점 — 격 판정은 typecard.gyeok(→ gyeokguk.js 원문 조항)을 그대로 쓴다.
+   *  원문이 넷으로 가르므로 점수도 넷이다. 예전에는 성격 50 / 파격 0 두 칸이었다.
+   *
+   *  이 배점은 우리가 정한 것이다(D1). 원문은 점수를 안 매긴다.
+   *  다만 순서는 원문이 정한다 — 섰다 > 구제됐다 > 띠었다 > 깨졌다. */
+  const JP_SCORE = { 섰다: 50, 구제됐다: 40, 띠었다: 30, 깨졌다: 0 };
   function japyung(R) {
     const J = global.ChaeksaTypecard.gyeok(R);
-    return { 격: J.name, 성: J.ok, score: J.ok ? 50 : 0 };
+    const s = JP_SCORE[J.판정];
+    return { 격: J.name, 성: J.ok, 판정: J.판정, 상신: J.상신,
+             score: s == null ? (J.ok ? 50 : 0) : s };
   }
 
   /** 합계 100점. 두 축의 근거를 그대로 돌려준다. */
