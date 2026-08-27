@@ -1,2 +1,8 @@
 .claude/
 *.log
+
+# 점검 도구를 배포 폴더에 잠깐 복사할 때 딸려 들어가지 않게
+app/_check.js
+app/_scan_tmp.js
+app/_cmp.js
+app/_u.js
