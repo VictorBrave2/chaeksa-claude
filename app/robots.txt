@@ -3,8 +3,6 @@ User-agent: *
 Allow: /
 
 # 시험용 페이지는 색인하지 않는다 — 검색 결과에 뜨면 신뢰만 깎인다
-Disallow: /test.html
-Disallow: /lunar-test.html
 Disallow: /cards.html
 
 Sitemap: https://chaeksa.kr/sitemap.xml
