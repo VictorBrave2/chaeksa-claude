@@ -30,6 +30,9 @@
     free: { label: '무료', period: 'life', limits: { brief: 5, chat: 5, consult: 1, profile: 1, compat: 1 } },
     // 구독: 매달 초기화.
     member: { label: '구독', period: 'month', limits: { brief: 62, chat: 100, consult: 15, profile: 4, compat: 20 } },
+    // 슈퍼: 운영자 확인용. 서버(schema-9)의 ai_usage_limit 과 같은 값이어야 한다.
+    // 켜는 곳은 여기가 아니라 JWT 의 app_metadata 다 — server/schema-9.sql 참고.
+    super: { label: '책사', period: 'life', limits: { brief: 100000, chat: 100000, consult: 100000, profile: 100000, compat: 100000 } },
   };
 
   const month = () => new Date().toISOString().slice(0, 7);
@@ -41,7 +44,8 @@
     if (!C.signedIn()) return 'guest';
     try {
       const s = C.session();
-      if (s && s.user && s.user.app_metadata && s.user.app_metadata.plan === 'member') return 'member';
+      const p = s && s.user && s.user.app_metadata && s.user.app_metadata.plan;
+      if (p === 'member' || p === 'super') return p;
     } catch (e) {}
     return 'free';
   }

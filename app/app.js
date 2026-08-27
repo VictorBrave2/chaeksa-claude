@@ -511,6 +511,7 @@
     $('actText').textContent = String(b.action || '').replace(/^\s*👉\s*/, '');
     // 흐름 읽기 — 근거만 남긴다
     $('brief').innerHTML = b.paragraphs.map(t => `<p>${t}</p>`).join('');
+    mountSuper();
     renderCoord();
     renderHours();
     // 이번 주
@@ -609,6 +610,31 @@
       <p class="hint">책사는 보정한 쪽으로 계산합니다. 바꾸시려면 위 이름 옆 ▾ → 고치기에서 끄실 수 있습니다.</p>`;
   }
   function plNameOf(p) { return p.placeName || '서울'; }
+
+  // ── 슈퍼계정 — 유료 수준 화면을 되단다 ──
+  // 체용 카드·통변좌표는 무료 화면에서 걷어냈지만(2026-08-28) 함수와 엔진은 남겼고,
+  // DOM 이 없으면 조용히 빠져나가게 되어 있다. 그러니 슈퍼계정이면 DOM 만
+  // 다시 만들어주면 그대로 그려진다 — 렌더 코드를 두 벌 만들지 않는다.
+  // 등급은 JWT 의 app_metadata.plan 에서 온다(Supabase 서명이라 위조 불가).
+  // 켜는 법은 server/schema-9.sql. 화면 DOM 이야 누구나 devtools 로 만들 수 있지만
+  // 그래봐야 자기 브라우저에서 계산 결과를 보는 것뿐이고, 돈이 걸린 AI 한도는
+  // 서버(ai_usage_bump)가 따로 강제한다.
+  function mountSuper() {
+    try { if (!window.ChaeksaUsage || ChaeksaUsage.plan() !== 'super') return; } catch (e) { return; }
+    if (!$('coordBox')) {
+      const cta = $('aiBriefCta');
+      if (cta) cta.insertAdjacentHTML('afterend', '<div class="coord" id="coordBox"></div>');
+    }
+    if (!$('chaeyongCard')) {
+      const g = $('gyeokCard');
+      if (g) g.insertAdjacentHTML('afterend', `<section class="card" id="chaeyongCard">
+        <h2>6차원 적층 체용 <span style="font-size:11px;color:var(--ink3);font-weight:400">상담 전용 · 슈퍼계정에만 보입니다</span></h2>
+        <p class="hint" style="margin:0 0 12px">원국 위에 대운·세운·월운·일운·시운을 한 층씩 얹으며, 그때마다 體(나)와 用(들어오는 기운)의 관계를 다시 판정합니다.</p>
+        <div id="cyStack"></div>
+        <p class="hint" id="cyTurn"></p>
+      </section>`);
+    }
+  }
 
   // 통변좌표 — 6층 적층 체용이 내놓는 오늘의 좌표
   // 오늘의 통변좌표 — 무료 화면에서는 걷어냈다 (2026-08-28).
@@ -963,6 +989,7 @@
     renderProfileCard();
     renderShareCard();
     renderGyeok();
+    mountSuper();
     renderChaeyong();
   }
 
