@@ -1323,6 +1323,35 @@
   // 노력의 가시화: 같은 결과라도 일하는 과정을 본 사람이 더 신뢰한다(카약의 항공사
   // 스캔). 우리는 흉내낼 필요가 없다 — 진짜 계산이니 원장을 그대로 보여주면 된다.
   // 줄도 숫자도 전부 실측이다. 지어낸 줄이 하나라도 섞이면 이 장치 전체가 거짓이 된다.
+  // 달과 달 사이의 이음말 — 낱장 카드를 흐름으로 잇는다.
+  // 명리가는 달을 따로 읽지 않는다: 「앞 달에 정리된 자리가 이 달에 채워진다」로 읽는다.
+  const LINK_LOVE = {
+    'shake>open': '앞 달의 흔들림으로 비워진 자리가 이 달에 채워집니다 — 정리 뒤에 오는 만남이라 더 단단한 결입니다.',
+    'open>shake': '앞 달에 가까워졌을수록 이 달은 말을 아끼세요 — 채워진 자리가 흔들리는 순서로 옵니다.',
+    'quiet>open': '조용히 고여 있던 기운이 이 달에 열립니다 — 준비하고 있던 사람에게 먼저 옵니다.',
+    'open>open': '앞 달의 흐름이 그대로 이어집니다 — 시작된 것이 깊어지는 달입니다.',
+    'shake>quiet': '흔들림이 지나가고 가라앉는 달입니다 — 애쓰지 않아도 됩니다.',
+    'open>quiet': '앞 달에 시작된 것이 있다면, 이 달은 그것을 익히는 시간입니다.',
+  };
+  const LINK_MONEY = {
+    'leak>open': '앞 달에 새어 나간 자리를 이 달의 벌이가 메웁니다.',
+    'open>leak': '앞 달에 벌어들인 것에 이 달 나누자는 손이 붙습니다 — 번 것을 지키는 달로 쓰세요.',
+    'open>open': '벌이의 흐름이 이어집니다 — 판을 키워도 받쳐 주는 연속입니다.',
+    'quiet>open': '고요히 준비된 것이 이 달에 돈이 되기 시작합니다.',
+    'leak>quiet': '샜던 자리가 아물어 가는 달입니다 — 조급해하지 마세요.',
+    'open>quiet': '앞 달의 벌이를 정리해 앉히는 달입니다.',
+  };
+  // 시진 줄은 같은 짝이 반복되면 데이터 덤프처럼 보인다 — 시진별로 날을 묶는다.
+  function 시진묶기(좋은, 월) {
+    const 무리 = {};
+    좋은.forEach(d => {
+      if (!d.시진 || !d.시진.length) return;
+      const k = d.시진.join('·');
+      (무리[k] = 무리[k] || []).push(월 + '/' + d.일);
+    });
+    return Object.keys(무리).map(k => '<b>' + esc(k) + '</b>에 ' + 무리[k].join('·')).join(' / ');
+  }
+
   function paidReveal(box, 원장, make, after) {
     // 원장: { 머리:[문자열...], 달줄:[{말, 표}...], 꼬리:[문자열...], 검토수 }
     const esc2 = esc;
@@ -2062,12 +2091,15 @@
         ],
       };
       paidReveal(box, 원장, () => {
-        const 본문 = 달표.map(r => {
+        const 상태들 = 달표.map(r => r.점수 >= 56 ? 'open' : (r.이유.some(t => t.indexOf('흔들') >= 0) ? 'shake' : 'quiet'));
+        const 본문 = 달표.map((r, i) => {
           const 열림 = r.점수 >= 56;
           const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [], 상대: false };
-          const 상태 = 열림 ? 'open' : (r.이유.some(t => t.indexOf('흔들') >= 0) ? 'shake' : 'quiet');
+          const 상태 = 상태들[i];
+          const 이음 = i > 0 ? LINK_LOVE[상태들[i - 1] + '>' + 상태] : null;
           return `<div class="pb-dd${열림 ? ' pb-open' : ''}">
             <div class="pb-scene">${T.달그림('love', r.월, 상태)}</div>
+            ${이음 ? `<p class="pb-link">${esc(이음)}</p>` : ''}
             <b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
             <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%"></i></div>
             ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
@@ -2079,7 +2111,7 @@
                  ${dd.조심.length ? `<p class="pb-avoid">비켜 갈 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날이 겹칩니다 — 고백·상견례·담판 금지)</span></p>` : ''}`
               : `<p class="pb-say">${esc(r.결)}</p>
                  ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(dd.좋은[0].왜 || '이 달 안의 서열')}${dd.좋은.length > 1 ? ' 등' : ''}</span></p>` : ''}
-                 ${상태 === 'open' && dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
+                 ${상태 === 'open' && 시진묶기(dd.좋은, r.월) ? `<p class="pb-days">그날 중에서도 — ${시진묶기(dd.좋은, r.월)}</p>` : ''}
                  ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}`}
           </div>`;
         }).join('');
@@ -2099,8 +2131,16 @@
         열두달: 달표.map(r => {
           const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [] };
           const o = { 때: r.연 + '년 ' + r.월 + '월 ' + r.간지, 이유: r.이유, 결: r.결, 열림: r.점수 >= 56 };
-          if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => r.월 + '/' + x.일 + '(' + x.요일 + ')');
-          if (dd.조심.length) o.조심할날 = dd.조심.map(x => r.월 + '/' + x.일);
+          const st = (rr) => rr.점수 >= 56 ? 'open' : (rr.이유.some(t2 => t2.indexOf('흔들') >= 0) ? 'shake' : 'quiet');
+          const idx = 달표.indexOf(r);
+          if (idx > 0) { const L = LINK_LOVE[st(달표[idx - 1]) + '>' + st(r)]; if (L) o.이음 = L; }
+          if (st(r) === 'shake') {
+            o.지침 = '이 달은 새 만남의 날을 고르는 달이 아니라 정리·정돈의 달이다. 날 추천 금지';
+            if (dd.조심.length) o.비켜갈날 = dd.조심.map(x => r.월 + '/' + x.일);
+          } else {
+            if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => r.월 + '/' + x.일 + '(' + x.요일 + ')');
+            if (dd.조심.length) o.조심할날 = dd.조심.map(x => r.월 + '/' + x.일);
+          }
           return o;
         }),
         먼해: v.미래.filter(r => r.점수 >= 70).map(r => r.해),
@@ -2198,11 +2238,14 @@
         ],
       };
       paidReveal(box, 원장, () => {
-        const 본문 = 달표.map(r => {
+        const 상태들 = 달표.map(r => r.점수 >= 56 ? 'open' : (r.십신 === '겁재' ? 'leak' : 'quiet'));
+        const 본문 = 달표.map((r, i) => {
           const 열림 = r.점수 >= 56, 샘 = r.십신 === '겁재';
           const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [], 상대: false };
+          const 이음 = i > 0 ? LINK_MONEY[상태들[i - 1] + '>' + 상태들[i]] : null;
           return `<div class="pb-dd${열림 ? ' pb-open' : ''}${샘 ? ' pb-leak' : ''}">
             <div class="pb-scene">${T.달그림('wealth', r.월, 열림 ? 'open' : (샘 ? 'leak' : 'quiet'))}</div>
+            ${이음 ? `<p class="pb-link">${esc(이음)}</p>` : ''}
             <b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span> <span class="pb-god">${esc(r.십신)}</span>
             <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%${샘 ? ';background:#b4534f' : ''}"></i></div>
             ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
@@ -2212,7 +2255,7 @@
                  ${dd.조심.length ? `<p class="pb-avoid">비켜 갈 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손이 겹치는 날)</span></p>` : ''}`
               : `<p class="pb-say">${esc(GOD_FLOW[r.십신] || '')}</p>
                  ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
-                 ${열림 && dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
+                 ${열림 && 시진묶기(dd.좋은, r.월) ? `<p class="pb-days">그날 중에서도 — ${시진묶기(dd.좋은, r.월)}</p>` : ''}
                  ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}`}
           </div>`;
         }).join('');
@@ -2235,6 +2278,11 @@
           const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [] };
           const o = { 때: r.연 + '년 ' + r.월 + '월 ' + r.간지, 이유: r.이유,
                       결: (T.GOD_MEANING && T.GOD_MEANING[r.십신]) || '', 열림: r.점수 >= 56, 샘: r.십신 === '겁재' };
+          {
+            const st2 = (rr) => rr.점수 >= 56 ? 'open' : (rr.십신 === '겁재' ? 'leak' : 'quiet');
+            const idx2 = 달표.indexOf(r);
+            if (idx2 > 0) { const L = LINK_MONEY[st2(달표[idx2 - 1]) + '>' + st2(r)]; if (L) o.이음 = L; }
+          }
           if (o.샘) {
             o.지침 = '이 달은 돈 걸린 날을 고르는 달이 아니라 지키는 달이다. 날 추천 금지';
             if (dd.조심.length) o.비켜갈날 = dd.조심.map(x => r.월 + '/' + x.일);
