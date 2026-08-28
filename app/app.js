@@ -2011,19 +2011,20 @@
           if (r) 달표.push({ 연: yy, 월: mm, 간지: r.간지, 점수: r.점수, 이유: r.이유, 결: r.결 });
         }
         const 열린수 = 달표.filter(r => r.점수 >= 56).length;
+        // 모든 달이 완전한 카드다. 조용한 달도 「조용함」 한 줄로 끝내지 않는다 —
+        // 그 달의 결, 그 안에서 나은 날, 조심할 날까지. 아끼면 환불감이다.
         const 본문 = 달표.map(r => {
-          if (r.점수 >= 56) {
-            let days = []; try { days = T.inyeonDays(R, r.연, r.월) || []; } catch (e) {}
-            return `<div class="pb-dd"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
-              ${r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')}
-              <p class="pb-say">${esc(r.결)}</p>
-              ${days.length ? `<p class="pb-days">날을 고르면 — ${days.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}</p>` : ''}
-            </div>`;
-          }
-          return `<div class="pb-row"><b>${r.연 !== y0 && r.월 === 1 ? r.연 + '년 ' : ''}${r.월}월</b>
-            <span class="gz2">${esc(r.간지)}</span>
-            <div class="pb-bar"><i style="width:${r.점수}%"></i></div>
-            <span class="pb-rs">${esc(r.이유[0] || '조용한 달')}</span></div>`;
+          const 열림 = r.점수 >= 56;
+          let dd = { 좋은: [], 조심: [], 상대: false };
+          try { dd = T.inyeonDays(R, r.연, r.월) || dd; } catch (e) {}
+          return `<div class="pb-dd${열림 ? ' pb-open' : ''}"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
+            <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%"></i></div>
+            ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
+              : `<p class="pb-why">◦ 인연의 글자가 크게 들지 않는 달 — 흐름은 평온합니다</p>`}
+            <p class="pb-say">${esc(r.결)}</p>
+            ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(dd.좋은[0].왜 || '이 달 안의 서열')}${dd.좋은.length > 1 ? ' 등' : ''}</span></p>` : ''}
+            ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}
+          </div>`;
         }).join('');
         const 먼 = v.미래.filter(r => r.점수 >= 70).map(r => r.해);
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
@@ -2046,7 +2047,11 @@
             const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
             if (!r) continue;
             const o = { 때: yy + '년 ' + mm + '월', 이유: r.이유, 열림: r.점수 >= 56 };
-            if (o.열림) { try { o.날짜 = (T.inyeonDays(R, yy, mm) || []).map(x => mm + '/' + x.일 + '(' + x.요일 + ')'); } catch (e) {} }
+            try {
+              const dd = T.inyeonDays(R, yy, mm);
+              if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => mm + '/' + x.일 + '(' + x.요일 + ')');
+              if (dd.조심.length) o.조심할날 = dd.조심.map(x => mm + '/' + x.일);
+            } catch (e) {}
             out.push(o);
           }
           return out;
@@ -2118,19 +2123,19 @@
         }
         const 열린수 = 달표.filter(r => r.점수 >= 56).length;
         const 샘달 = 달표.filter(r => r.십신 === '겁재');
+        // 모든 달이 완전한 카드다 — 결 서술(GOD_FLOW)·날·조심할 날까지.
         const 본문 = 달표.map(r => {
-          if (r.점수 >= 56) {
-            let days = []; try { days = T.재물날들(R, r.연, r.월) || []; } catch (e) {}
-            return `<div class="pb-dd"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
-              ${r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')}
-              ${days.length ? `<p class="pb-days">날을 고르면 — ${days.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
-            </div>`;
-          }
-          const 샘 = r.십신 === '겁재';
-          return `<div class="pb-row"><b>${r.연 !== y0 && r.월 === 1 ? r.연 + '년 ' : ''}${r.월}월</b>
-            <span class="gz2">${esc(r.간지)}</span>
-            <div class="pb-bar"><i style="width:${Math.max(r.점수, 8)}%${샘 ? ';background:#b4534f' : ''}"></i></div>
-            <span class="pb-rs">${esc(r.이유[0] || '고요한 달')}</span></div>`;
+          const 열림 = r.점수 >= 56, 샘 = r.십신 === '겁재';
+          let dd = { 좋은: [], 조심: [], 상대: false };
+          try { dd = T.재물날들(R, r.연, r.월) || dd; } catch (e) {}
+          return `<div class="pb-dd${열림 ? ' pb-open' : ''}${샘 ? ' pb-leak' : ''}"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span> <span class="pb-god">${esc(r.십신)}</span>
+            <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%${샘 ? ';background:#b4534f' : ''}"></i></div>
+            ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
+              : `<p class="pb-why">◦ 돈의 글자가 크게 들지 않는 달 — 흐름은 잔잔합니다</p>`}
+            <p class="pb-say">${esc(GOD_FLOW[r.십신] || '')}</p>
+            ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
+            ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}
+          </div>`;
         }).join('');
         const 먼 = v.미래.filter(r => r.점수 >= 70 && !r.샘).map(r => r.해);
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
@@ -2155,7 +2160,11 @@
             const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
             if (!r) continue;
             const o = { 때: yy + '년 ' + mm + '월', 이유: r.이유, 열림: r.점수 >= 56, 샘: r.십신 === '겁재' };
-            if (o.열림) { try { o.날짜 = (T.재물날들(R, yy, mm) || []).map(x => mm + '/' + x.일 + '(' + x.요일 + ')'); } catch (e) {} }
+            try {
+              const dd = T.재물날들(R, yy, mm);
+              if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => mm + '/' + x.일 + '(' + x.요일 + ')');
+              if (dd.조심.length) o.조심할날 = dd.조심.map(x => mm + '/' + x.일);
+            } catch (e) {}
             out.push(o);
           }
           return out;

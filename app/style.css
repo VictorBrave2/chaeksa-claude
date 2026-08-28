@@ -924,3 +924,7 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .pb-ai p{font-size:13.5px;line-height:1.95;color:var(--ink);margin:0 0 10px}
 .pb-ai p:last-child{margin-bottom:0}
 .pb-ai-load{color:var(--ink3) !important;font-size:12.5px !important}
+
+.pb-dd.pb-open{border-color:var(--accent-line);background:var(--accent-soft)}
+.pb-dd.pb-leak{border-color:rgba(180,83,79,.4)}
+.pb-inbar{margin:6px 0 4px}

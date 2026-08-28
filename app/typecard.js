@@ -696,17 +696,18 @@
 
     // 열리는 달은 날짜까지 내려간다 — 같은 잣대를 날에 또 한 번
     const 날들 = {};
-    열림.slice(0, 3).forEach(m => { 날들[m] = inyeonDays(R, year, m); });
+    열림.slice(0, 3).forEach(m => { 날들[m] = inyeonDays(R, year, m).좋은; });
     return { 머리, rows, 열림, 조용, 날들 };
   }
 
-  /** 인연 — 한 달 안의 날들. inyeonMonths 가 쓰던 날 잣대를 아무 달에나. */
+  /** 인연 — 한 달 안의 날들. 좋은 날과 조심할 날을 같이 낸다.
+   *  크게 열린 날이 없는 달에도 그 안의 서열은 있다 — 상대 상위를 준다(상대:true). */
   function inyeonDays(R, year, m) {
     const p = R.pillars, de = E.STEM_ELEM[p.day.stem], db = p.day.branch;
     const 남 = ((R.input && R.input.gender) || 'M') === 'M';
     const 배우자오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
     const 배우자이름 = 남 ? '재성' : '관성';
-    const last = new Date(year, m, 0).getDate(), hits = [];
+    const last = new Date(year, m, 0).getDate(), all = [];
     for (let d = 1; d <= last; d++) {
       let tf; try { tf = E.dateFortune(year, m, d); } catch (e) { continue; }
       let sc = 0; const why = [];
@@ -714,11 +715,19 @@
       const dbb = tf.day.branch;
       if (YUKHAP12[db] === dbb) { sc += 3; why.push('배우자 자리와 합'); }
       else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(dbb) >= 0 && db !== dbb)) { sc += 2; why.push('배우자 자리와 삼합'); }
-      else if (충12(db, dbb)) sc -= 3;
-      if (sc >= 3) hits.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
-                               간지: E.fmt.pillar(tf.day), 왜: why.join(' · ') });
+      else if (충12(db, dbb)) { sc -= 3; why.push('배우자 자리를 치는 날'); }
+      all.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
+                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc });
     }
-    return hits.slice(0, 8);
+    let 좋은 = all.filter(x => x.sc >= 3).slice(0, 8);
+    let 상대 = false;
+    if (!좋은.length) {
+      상대 = true;
+      좋은 = all.filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc).slice(0, 4)
+               .sort((a, b) => a.일 - b.일);
+    }
+    const 조심 = all.filter(x => x.sc <= -3).slice(0, 4);
+    return { 좋은, 조심, 상대 };
   }
 
   /** 두 사람 — 그 달의 날짜 전부 + 좋은 날의 시진과 시계 창. bothDays 와 같은 자다.
@@ -964,23 +973,31 @@
     return { 월: m, 간지: E.fmt.pillar(tf.month), 십신: g, 점수: Math.max(0, Math.min(100, sc)), 이유 };
   }
 
-  /** 재물 — 한 달 안에서 돈이 도는 날들. 같은 잣대를 날에 내린다. */
+  /** 재물 — 한 달 안의 날들. 돈이 도는 날과 새기 쉬운 날을 같이 낸다. */
   function 재물날들(R, y, m) {
     const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
     const 재오행 = (de + 2) % 5;
-    const last = new Date(y, m, 0).getDate(), hits = [];
+    const last = new Date(y, m, 0).getDate(), all = [];
     for (let d = 1; d <= last; d++) {
       let tf; try { tf = E.dateFortune(y, m, d); } catch (e) { continue; }
       let sc = 0; const why = [];
       const g = E.TEN_GODS[E.tenGod(ds, tf.day.stem)];
       if (g === '편재' || g === '정재') { sc += 3; why.push('재성의 날'); }
       else if (g === '식신' || g === '상관') { sc += 2; why.push('벌이의 날'); }
-      else if (g === '겁재') sc -= 3;
+      else if (g === '겁재') { sc -= 3; why.push('나눠 갖는 손의 날'); }
       if (E.BRANCH_ELEM[tf.day.branch] === 재오행) { sc += 2; why.push('돈의 뿌리'); }
-      if (sc >= 3) hits.push({ 일: d, 요일: '일월화수목금토'[new Date(y, m - 1, d).getDay()],
-                               간지: E.fmt.pillar(tf.day), 왜: why.join(' · ') });
+      all.push({ 일: d, 요일: '일월화수목금토'[new Date(y, m - 1, d).getDay()],
+                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc });
     }
-    return hits.slice(0, 8);
+    let 좋은 = all.filter(x => x.sc >= 3).slice(0, 8);
+    let 상대 = false;
+    if (!좋은.length) {
+      상대 = true;
+      좋은 = all.filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc).slice(0, 4)
+               .sort((a, b) => a.일 - b.일);
+    }
+    const 조심 = all.filter(x => x.sc <= -3).slice(0, 4);
+    return { 좋은, 조심, 상대 };
   }
 
   function moneyStory(R, now) {
@@ -1054,7 +1071,7 @@
     for (let m = 1; m <= 12; m++) { const r = 재물월점수(R, year, m); if (r) rows.push(r); }
     const 열림 = rows.filter(r => r.점수 >= 56).map(r => r.월);
     const 날들 = {};
-    열림.slice(0, 3).forEach(m => { 날들[m] = 재물날들(R, year, m); });
+    열림.slice(0, 3).forEach(m => { 날들[m] = 재물날들(R, year, m).좋은; });
     const 조용 = rows.slice().sort((a, b) => a.점수 - b.점수)[0];
     return { rows, 열림, 날들, 조용 };
   }
