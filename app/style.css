@@ -943,3 +943,5 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
   font-variant-numeric:tabular-nums;margin:4px 0 6px;min-height:14px}
 @keyframes lgin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){.pb-lg-line{animation:none}}
+
+.ls-pul{font-size:13px;line-height:1.85;color:var(--ink2);margin:6px 0 0}

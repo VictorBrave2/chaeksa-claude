@@ -1992,6 +1992,7 @@
             <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
           <p class="ls-say">${esc(g.말)}</p>
           ${g.달 ? `<p class="ls-month">그중에서도 <b>${g.달.해}년 ${esc(g.달.말)}</b> 무렵이 짙습니다</p>` : ''}
+          ${g.풀이 ? `<p class="ls-pul">${esc(g.풀이)}</p>` : ''}
           <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
         </div>`).join('')
       : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 열린 구간이 안 보입니다 —
@@ -2125,6 +2126,7 @@
             <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
           <p class="ls-say">${esc(g.말)}</p>
           ${g.달 ? `<p class="ls-month">그중에서도 <b>${g.달.해}년 ${esc(g.달.말)}</b> 무렵이 짙습니다</p>` : ''}
+          ${g.풀이 ? `<p class="ls-pul">${esc(g.풀이)}</p>` : ''}
           <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
         </div>`).join('')
       : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 벌린 구간이 안 보입니다 —
