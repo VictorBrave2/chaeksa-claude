@@ -887,3 +887,10 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .pb-dd{margin:7px 0;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:13px}
 .pb-dd>b{color:var(--ink)}
 .pb-avoid{font-size:12.5px;color:var(--ink3);margin:8px 0 2px}
+
+/* 진단 — 엔진 근거로 만든 그 사람만의 이유. 잠금 카드와 유료 머리에 같은 얼굴로 */
+.nx-diag{margin:12px 0;padding:13px 15px;border-left:3px solid var(--accent);border-radius:0 11px 11px 0;background:var(--accent-soft)}
+.nx-diag p{font-size:13px;line-height:1.85;color:var(--ink);margin:0 0 7px}
+.nx-diag p:last-child{margin-bottom:0}
+.nx-diag-k{font-size:11px !important;letter-spacing:2px;color:var(--accent) !important;margin-bottom:8px !important}
+.nx-diag.pbd{margin:4px 0 14px}

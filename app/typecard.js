@@ -781,6 +781,107 @@
     return { rows, 좋은, 조심, 주들 };
   }
 
+  // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
+  //
+  // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
+  // 시기가 전부다」라는 **자기만의 이유**를 봤을 때다. 그 이유를 지어내지 않는다 —
+  // 엔진이 이미 재 놓은 것(투출·합거·통근·암장·격국 성패·강약)에서 꺼낸다.
+  // 관통 원칙 그대로: 천간은 명령, 뿌리 없으면 0, 합거는 명령 없음.
+  //
+  // 톤: 겁주지 않는다. 「없다」는 결핍이 아니라 「운이 데려오는 구조」다.
+  // 모든 진단이 「그래서 언제인지가 중요하다」로 닫혀야 결제의 의미가 선다.
+
+  /** 인연 — 배우자성이 원국에서 어떤 형편인가. 이것이 「왜 시기인가」의 근거다. */
+  function inyeonWhy(R) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const W = E.NATAL_WEIGHT;
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
+    const 이름 = 남 ? '재성' : '관성';
+    const 글자 = '인연의 글자(' + 이름 + ')';
+
+    const slots = [['year', p.year.stem], ['month', p.month.stem]];
+    if (p.hour) slots.push(['hour', p.hour.stem]);
+    const 투 = slots.filter(x => E.STEM_ELEM[x[1]] === 오행);
+
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
+                  [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+    const branches = [p.year.branch, p.month.branch, db].concat(p.hour ? [p.hour.branch] : []);
+    const 암 = branches.some(b => (E.HIDDEN[b] || []).some(st => E.STEM_ELEM[st] === 오행));
+    const 궁충 = branches.some(b => ((b - db + 12) % 12) === 6);
+    const 합거 = E.natalHap(p);
+
+    let 상태, 말;
+    if (투.length) {
+      const k = 투[0][0], st = 투[0][1];
+      if (합거[k]) {
+        상태 = '합거';
+        말 = [글자 + '가 원국 하늘에 떠 있는데, 다른 글자와 합으로 묶여 있습니다.',
+              '묶인 글자는 제 노릇을 못 합니다 — 인연이 곁을 지나가도 내 것으로 매듭이 잘 안 지어지는 형국입니다.',
+              '이건 흠이 아니라 시계입니다. 이 묶임을 흔드는 운이 오는 해에 몰아서 움직입니다. 그래서 당신께는 「언제」가 남들보다 훨씬 무겁습니다.'];
+      } else if (E.stemPower(st, 자리) === 0) {
+        상태 = '무근';
+        말 = [글자 + '는 하늘에 떠 있는데, 지지에 뿌리가 없습니다.',
+              '뿌리 없는 글자는 시작은 만들어도 오래 잇지 못합니다 — 만남은 있는데 매듭이 안 지어졌던 이유가 여기 있습니다.',
+              '이 글자에 뿌리가 되어 주는 운이 들어오는 해 — 그때가 진짜입니다. 그래서 해와 달을 골라야 합니다.'];
+      } else {
+        상태 = '유근';
+        말 = [글자 + '가 하늘에 떠서 뿌리까지 내리고 있습니다. 인연의 힘 자체는 갖춘 사주입니다.',
+              '이런 사주의 물음은 「오느냐」가 아니라 「어느 것을 잡아 언제 매듭짓느냐」입니다.',
+              '글자가 겹치거나 배우자 자리가 움직이는 해에 갈림길이 옵니다 — 그 해와 달을 미리 아는 것이 이 사주의 요령입니다.'];
+      }
+    } else if (암) {
+      상태 = '암장';
+      말 = [글자 + '가 하늘에는 없고 지지 속에 숨어 있습니다.',
+            '숨은 글자는 밖으로 드러나질 않아서, 좋은 사람이 곁에 있어도 잘 안 보이고 잘 안 잡힙니다.',
+            '이 글자가 하늘에 뜨는 해 — 그때 비로소 보이고 잡힙니다. 그래서 당신께는 「언제」를 아는 것이 곧 「누구」를 아는 것입니다.'];
+    } else {
+      상태 = '무';
+      말 = ['원국에 ' + 글자 + '가 없습니다. 결핍이 아닙니다 — 운이 데려오는 구조라는 뜻입니다.',
+            '평소에는 조용하다가, 그 글자가 운에서 들어오는 해에 몰아서 옵니다. 놓치면 다음 파도까지 다시 조용합니다.',
+            '그래서 이 사주는 「언제」가 사실상 전부입니다.'];
+    }
+    if (궁충) 말.push('한 가지 더 — 배우자 자리(일지)를 치는 글자가 원국에 있습니다. 해를 잘못 고르면 시작하고도 흔들립니다. 이것까지 넣어 달을 골랐습니다.');
+    return { 상태, 이름, 말 };
+  }
+
+  /** 두 사람 — 이 조합이 왜 날을 골라야 하는가. 십신 관계와 일지 관계에서 꺼낸다. */
+  function coupleWhy(Rme, Ryou, nameA, nameB) {
+    const dsA = Rme.pillars.day.stem, dsB = Ryou.pillars.day.stem;
+    const dbA = Rme.pillars.day.branch, dbB = Ryou.pillars.day.branch;
+    const GRP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성',
+                  정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
+    const g안 = GRP[E.TEN_GODS[E.tenGod(dsA, dsB)]];   // 나에게 상대는
+    const g밖 = GRP[E.TEN_GODS[E.tenGod(dsB, dsA)]];   // 상대에게 나는
+    const 말 = [];
+    const 긴장 = g안 === '관성' || g밖 === '관성';
+    const 소모 = g안 === '비겁' && g밖 === '비겁';
+    if (긴장) 말.push('두 분은 한쪽이 한쪽을 누르는 결이 섞여 있습니다. 나쁜 조합이 아니라 팽팽한 조합입니다 — 다만 기운이 눌리는 날에 만나면 그 팽팽함이 다툼으로 나옵니다. 그래서 이 조합은 날이 절반입니다.');
+    else if (소모) 말.push('두 분은 같은 것을 놓고 나란히 서는 결입니다. 편한 대신, 둘 다 지친 날에는 서로 기댈 데가 없어집니다. 둘 다 차 있는 날을 고르는 것이 요령입니다.');
+    else 말.push('두 분은 한쪽이 한쪽을 살리는 결이 있습니다. 바탕은 순한 조합이라, 좋은 날을 고르면 그 순함이 그대로 삽니다.');
+    const rel = ((dbB - dbA + 12) % 12);
+    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+    if (YUKHAP[dbA] === dbB) 말.push('배우자 자리끼리는 합입니다 — 바탕이 붙어 있어 웬만한 날은 무난하게 흘러갑니다. 큰 날만 제대로 고르면 됩니다.');
+    else if (rel === 6) 말.push('배우자 자리끼리 충입니다 — 같이 있으면 흔들리기 쉬운 날이 남들보다 많습니다. 이 조합일수록 두 분 다 좋은 날이 값집니다. 그래서 이 계산을 만들었습니다.');
+    return { 말 };
+  }
+
+  /** 이번 달 — 이 사주가 왜 날을 골라야 하는가. 강약과 격국 성패에서 꺼낸다. */
+  function monthWhy(R) {
+    const a = R.analysis || E.strengthOf(R.pillars);
+    const 말 = [];
+    if (a.strength === '신약') 말.push('당신 사주는 쓸 수 있는 힘이 정해져 있는 쪽입니다. 아무 날에나 벌이면 새고, 받쳐주는 날에 몰아치면 남습니다 — 그래서 날의 서열이 남들보다 값집니다.');
+    else if (a.strength === '신강') 말.push('당신 사주는 힘이 안에 고이는 쪽입니다. 내보낼 자리가 있는 날에 움직여야 풀리고, 고이는 날에 웅크리면 답답해집니다 — 그 날들을 갈라 드립니다.');
+    else 말.push('당신 사주는 치우침이 적어 날의 결을 그대로 탑니다 — 좋은 날은 좋게, 눌리는 날은 눌리게 옵니다. 그래서 달력이 곧 지침입니다.');
+    try {
+      const J = gyeok(R);
+      if (J && (J.판정 === '깨졌다' || J.판정 === '구제됐다'))
+        말.push('격국으로는 받쳐주는 글자가 아쉬운 사주라, 운이 받쳐주는 날을 디디는 것이 더 중요합니다. 그 날들을 표시해 뒀습니다.');
+    } catch (e) {}
+    return { 말 };
+  }
+
   // ── 내 편이 되어주는 사람 ──
   // 계산은 용신 하나로 끝난다. 내가 필요로 하는 오행을 **일간으로 쓰는 사람**이
   // 곁에 있으면 그 기운이 채워진다. 「어떤 사람을 곁에 두면 좋은가」는
@@ -1890,5 +1991,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

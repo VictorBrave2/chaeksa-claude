@@ -1220,7 +1220,9 @@
           // 시진은 이 지역 시계로 몇 시인지, 피할 날은 언제인지까지가 2만원이다.
           const lon = profile.longitude || 127.0;
           const plname = plNameOf(profile);
+          const cw = T.coupleWhy ? T.coupleWhy(R, you, meName, youName) : null;
           return '<div class="paidbox"><p class="pb-k">결제 열람 — 날짜와 시각까지</p>'
+            + (cw ? '<div class="nx-diag pbd"><p class="nx-diag-k">왜 두 분께는 날이 중요한가</p>' + cw.말.map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' : '')
             + '<p class="pb-lede">두 분 <b>각자의 점수 중 낮은 쪽</b>으로 골랐습니다 — 한 분만 좋은 날은 좋은 날이 아니기 때문입니다. 시계 시각은 <b>' + esc(plname) + ' 기준 진태양시 보정</b>을 이미 반영한 값입니다.</p>'
             + bmKeep.좋은달.map(g => {
                 let cd; try { cd = T.coupleDates(R, you, g.연, g.월, lon); } catch (e) { return ''; }
@@ -1241,8 +1243,9 @@
         }
         return nextStep('그 달의 며칠, 그리고 몇 시',
           '좋은 달과 그 안의 날 수까지',
-          '달까지는 여기서 나옵니다. 그런데 결혼도 상견례도 결국 「며칠 몇 시」로 잡습니다. 그 날들이 언제인지, 그중 어느 시각이 두 분께 열리는지는 일운·시운까지 내려가야 나옵니다. 진태양시로 분 단위까지 봅니다.',
-          (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다', 'relation');
+          '결혼도 상견례도 결국 「며칠 몇 시」로 잡습니다. 그 날들이 언제인지, 어느 시각이 두 분께 열리는지를 진태양시 보정까지 넣어 보여드립니다.',
+          (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다', 'relation',
+          T.coupleWhy ? T.coupleWhy(R, you, meName, youName).말 : null);
       })()}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
@@ -1313,8 +1316,12 @@
     }).catch(() => {});
   }
 
-  function nextStep(제목, 무료로본것, 물음, 문의말, 상품) {
+  function nextStep(제목, 무료로본것, 물음, 문의말, 상품, 진단) {
     const q = encodeURIComponent(문의말 || '');
+    // 진단 — 엔진이 이 사람 원국에서 읽은 「왜 당신께는 시기가 중요한가」.
+    // 일반 문구는 아무도 안 산다. 자기 얘기라야 지갑이 열린다.
+    const diag = (진단 && 진단.length)
+      ? `<div class="nx-diag"><p class="nx-diag-k">당신의 원국에서 읽은 것</p>${진단.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
     // 결제가 열려 있고 이 자리에 붙는 상품이 있으면 결제가 앞, 카카오가 뒤.
     // 결제 전에는 카카오(마음만큼)만 — 없는 버튼을 보여주지 않는다.
     const payBtn = (payReady && 상품)
@@ -1323,6 +1330,7 @@
     return `<div class="nextbox">
       <p class="nx-k">${esc(제목)}</p>
       <p class="nx-free">여기까지가 무료입니다 — <b>${esc(무료로본것)}</b></p>
+      ${diag}
       <p class="nx-q">${esc(물음)}</p>
       ${payBtn}
       <a class="btn kakao nx-cta" href="${KAKAO_CHAT}?_q=${q}" target="_blank" rel="noopener">
@@ -1345,7 +1353,8 @@
     if (!paid) {
       box.innerHTML = nextStep('이번 달 서른 날', '오늘과 이번 주까지',
         m + '월 한 달 전체 — 어느 날이 풀리고 어느 날을 조심할지는 일운까지 내려가야 보입니다. 달이 바뀌면 새 달을 새로 봅니다.',
-        (profile.name || '') + '님 ' + m + '월 일운 — 좋은 날과 조심할 날을 보고 싶습니다', 'month');
+        (profile.name || '') + '님 ' + m + '월 일운 — 좋은 날과 조심할 날을 보고 싶습니다', 'month',
+        T.monthWhy ? T.monthWhy(R).말 : null);
       return;
     }
     const v = T.myDays(R, y, m);
@@ -1371,7 +1380,9 @@
       const nv = T.myDays(R, ny, nm);
       예고 = `<p class="pb-ft">${nm}월에는 풀리는 날이 ${nv.좋은.length}일 있습니다 — 달이 바뀌면 새로 열어보세요.</p>`;
     } catch (e) {}
+    const mw = T.monthWhy ? T.monthWhy(R) : null;
     box.innerHTML = `<h2>${m}월 일운 달력<span class="h2sub">결제 열람 · ${y}년</span></h2>
+      ${mw ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 당신께는 날의 서열인가</p>${mw.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       <div class="pb-grid">` + v.rows.map(r => {
         const cls = r.점수 >= 72 ? ' good' : (r.점수 <= 30 ? ' bad' : '');
         return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
@@ -1838,7 +1849,9 @@
       // 열리는 달은 날짜까지 내리고, 잣대를 공개한다. 이게 2만원의 생김새다.
       const y = v.첫해.해, im = T.inyeonMonths(R, y);
       const h = im.머리;
-      const 머리말 = `<p class="pb-lede">${y}년은 <b>${esc(h.세운간지)}</b>의 해 — ${esc(profile.name || '당신')}님께는
+      const why = T.inyeonWhy ? T.inyeonWhy(R) : null;
+      const 진단절 = why ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 당신께는 이 답인가</p>${why.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
+      const 머리말 = 진단절 + `<p class="pb-lede">${y}년은 <b>${esc(h.세운간지)}</b>의 해 — ${esc(profile.name || '당신')}님께는
         <b>${esc(h.세운십신)}</b>의 해입니다${h.대운간지 ? `, ${esc(h.대운간지)} 대운(${esc(h.대운십신)}) 위에 얹혀 옵니다` : ''}.
         아래는 이 해 열두 달을 <b>${esc(h.배우자이름)}(인연의 글자)</b>과 <b>배우자 자리(일지)의 합·충</b>으로 잰 것입니다.</p>`;
       const 달들 = im.rows.map(r => {
@@ -1863,8 +1876,9 @@
         } else if (inNext && v.첫해) inNext.innerHTML = nextStep(
       '그 해, 어느 달일까요',
       v.첫해.해 + '년까지',
-      '해가 나왔으면 그 다음은 달입니다. ' + v.첫해.해 + '년 열두 달 중 어느 달에 열리는지, 그때 무엇을 하면 좋은지는 월운까지 내려가야 보입니다.',
-      (profile.name || '') + '님 인연 시기 상담 — ' + v.첫해.해 + '년 중 어느 달인지 보고 싶습니다', 'inyeon');
+      v.첫해.해 + '년 열두 달 중 어느 달에 열리는지, 열리는 달의 날짜까지 같은 잣대로 내려가 보여드립니다.',
+      (profile.name || '') + '님 인연 시기 상담 — ' + v.첫해.해 + '년 중 어느 달인지 보고 싶습니다', 'inyeon',
+      T.inyeonWhy ? T.inyeonWhy(R).말 : null);
     $('inNote').textContent = v.말 + ' · 배우자성은 ' + v.배우자이름
       + '(' + (v.남 ? '남성 기준' : '여성 기준') + ')입니다. 이 순위는 열 해 안에서의 서열입니다.';
     $('btnInShare').onclick = async () => {
@@ -1898,7 +1912,8 @@
         { const nx = $('dohwaNext'); if (nx) nx.innerHTML = nextStep(
           '올해, 어느 달에 움직일까요', '타고난 연애의 결까지',
           '결은 평생 가는 것이라 해 단위로도 보입니다. 그런데 「언제 움직이는가」는 다릅니다 — 올해 열두 달 중 어느 달에 사람이 들어오고 어느 달이 조용한지는 월운까지 내려가야 나옵니다.',
-          (profile.name || '') + '님 연애 상담 — 올해 어느 달에 움직이는지 보고 싶습니다', 'inyeon'); }
+          (profile.name || '') + '님 연애 상담 — 올해 어느 달에 움직이는지 보고 싶습니다', 'inyeon',
+          T.inyeonWhy ? T.inyeonWhy(R).말 : null); }
         $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
         $('btnDohwaShare').onclick = async () => {
           const b = $('btnDohwaShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
