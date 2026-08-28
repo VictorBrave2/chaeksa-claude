@@ -2072,10 +2072,15 @@
             <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%"></i></div>
             ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
               : `<p class="pb-why">◦ 인연의 글자가 크게 들지 않는 달 — 흐름은 평온합니다</p>`}
-            <p class="pb-say">${esc(r.결)}</p>
-            ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(dd.좋은[0].왜 || '이 달 안의 서열')}${dd.좋은.length > 1 ? ' 등' : ''}</span></p>` : ''}
-            ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
-            ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}
+            ${상태 === 'shake'
+              // 위 층이 아래 층을 다스린다 — 흔들리는 달에 「날을 고르면」을 내밀면
+              // 판정과 추천이 서로 딴소리가 된다. 이 달은 날을 고르는 달이 아니다.
+              ? `<p class="pb-say">이 달은 새 만남의 날을 고르는 달이 아닙니다 — 어긋난 것을 정리하고 마음을 정돈하는 데 쓰면 오히려 남는 달입니다. 피할 수 없는 약속이 있다면 아래 날만은 비켜 가세요.</p>
+                 ${dd.조심.length ? `<p class="pb-avoid">비켜 갈 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날이 겹칩니다 — 고백·상견례·담판 금지)</span></p>` : ''}`
+              : `<p class="pb-say">${esc(r.결)}</p>
+                 ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(dd.좋은[0].왜 || '이 달 안의 서열')}${dd.좋은.length > 1 ? ' 등' : ''}</span></p>` : ''}
+                 ${상태 === 'open' && dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
+                 ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}`}
           </div>`;
         }).join('');
         const 먼 = v.미래.filter(r => r.점수 >= 70).map(r => r.해);
@@ -2202,10 +2207,13 @@
             <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%${샘 ? ';background:#b4534f' : ''}"></i></div>
             ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
               : `<p class="pb-why">◦ 돈의 글자가 크게 들지 않는 달 — 흐름은 잔잔합니다</p>`}
-            <p class="pb-say">${esc(GOD_FLOW[r.십신] || '')}</p>
-            ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
-            ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
-            ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}
+            ${샘
+              ? `<p class="pb-say">이 달은 돈 걸린 날을 고르는 달이 아니라 지키는 달입니다 — 계약·동업·큰 지출은 다음 달로 미루는 것이 이 달의 최선입니다. 피할 수 없다면 아래 날만은 비켜 가세요.</p>
+                 ${dd.조심.length ? `<p class="pb-avoid">비켜 갈 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손이 겹치는 날)</span></p>` : ''}`
+              : `<p class="pb-say">${esc(GOD_FLOW[r.십신] || '')}</p>
+                 ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
+                 ${열림 && dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
+                 ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}`}
           </div>`;
         }).join('');
         const 먼 = v.미래.filter(r => r.점수 >= 70 && !r.샘).map(r => r.해);
@@ -2227,8 +2235,13 @@
           const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [] };
           const o = { 때: r.연 + '년 ' + r.월 + '월 ' + r.간지, 이유: r.이유,
                       결: (T.GOD_MEANING && T.GOD_MEANING[r.십신]) || '', 열림: r.점수 >= 56, 샘: r.십신 === '겁재' };
-          if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => r.월 + '/' + x.일 + '(' + x.요일 + ')');
-          if (dd.조심.length) o.조심할날 = dd.조심.map(x => r.월 + '/' + x.일);
+          if (o.샘) {
+            o.지침 = '이 달은 돈 걸린 날을 고르는 달이 아니라 지키는 달이다. 날 추천 금지';
+            if (dd.조심.length) o.비켜갈날 = dd.조심.map(x => r.월 + '/' + x.일);
+          } else {
+            if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => r.월 + '/' + x.일 + '(' + x.요일 + ')');
+            if (dd.조심.length) o.조심할날 = dd.조심.map(x => r.월 + '/' + x.일);
+          }
           return o;
         }),
         먼해: v.미래.filter(r => r.점수 >= 70 && !r.샘).map(r => r.해),
