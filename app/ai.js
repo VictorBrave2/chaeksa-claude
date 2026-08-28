@@ -16,9 +16,10 @@
        브리핑 1회  하이쿠 약 5원 · 소네트 약 11원 · 오퍼스 약 28원
      기본값은 '균형'. 설정에서 바꿀 수 있다. */
   const TIERS = {
+    // story(결제 콘텐츠 본문)는 어느 등급에서도 opus — 돈 낸 사람의 글을 아끼지 않는다.
     quality: { brief: 'claude-opus-5',   chat: 'claude-opus-5',   consult: 'claude-opus-5',   profile: 'claude-opus-5', compat: 'claude-opus-5',  story: 'claude-opus-5' },
-    balanced:{ brief: 'claude-haiku-4-5', chat: 'claude-sonnet-5', consult: 'claude-sonnet-5', profile: 'claude-opus-5', compat: 'claude-sonnet-5', story: 'claude-sonnet-5' },
-    thrifty: { brief: 'claude-haiku-4-5', chat: 'claude-haiku-4-5', consult: 'claude-sonnet-5', profile: 'claude-sonnet-5', compat: 'claude-haiku-4-5', story: 'claude-sonnet-5' },
+    balanced:{ brief: 'claude-haiku-4-5', chat: 'claude-sonnet-5', consult: 'claude-sonnet-5', profile: 'claude-opus-5', compat: 'claude-sonnet-5', story: 'claude-opus-5' },
+    thrifty: { brief: 'claude-haiku-4-5', chat: 'claude-haiku-4-5', consult: 'claude-sonnet-5', profile: 'claude-sonnet-5', compat: 'claude-haiku-4-5', story: 'claude-opus-5' },
   };
   const modelFor = (task) => {
     const s = settings();

@@ -21,7 +21,7 @@
   const KEY_L = 'chaeksa.usageLife';    // 초기화 없음 (무료 체험)
 
   // 1회 예상 원가(원). 실측 토큰 + 프롬프트 캐싱 반영.
-  const COST = { brief: 5.4, chat: 10.6, consult: 32.4, profile: 29.7, compat: 20.2, story: 200 };
+  const COST = { brief: 5.4, chat: 10.6, consult: 32.4, profile: 29.7, compat: 20.2, story: 950 };
 
   const PLANS = {
     // 비로그인: AI 없음. 계산 기능은 전부 열려 있다.
