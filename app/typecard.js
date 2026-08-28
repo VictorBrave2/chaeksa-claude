@@ -707,6 +707,14 @@
   //   재물  open 항아리와 엽전 · leak 기울어 새는 항아리 · quiet 밭고랑과 새싹
   function 달그림(kind, 월, 상태) {
     const 계절 = (월 >= 3 && 월 <= 5) ? 0 : (월 >= 6 && 월 <= 8) ? 1 : (월 >= 9 && 월 <= 11) ? 2 : 3;
+    // 일러스트가 준비되면 이미지를 쓴다 — app/art/ 에 24장(연애 3상태×4계절 + 재물 3상태×4계절).
+    // 경우의 수가 유한하니 실시간 생성이 아니라 사전 생성이 맞다: 원가 0·지연 0·그림체 일관.
+    // 파일이 들어오고 config.js 의 CHAEKSA_ART 가 켜져야 이미지로 바뀐다. 그전엔 SVG.
+    if (global.CHAEKSA_ART) {
+      const SEASON = ['spring', 'summer', 'autumn', 'winter'][계절];
+      return '<img src="art/' + kind + '-' + 상태 + '-' + SEASON + '.webp?v=' + global.CHAEKSA_ART
+        + '" alt="" loading="lazy" style="width:100%;height:74px;object-fit:cover;display:block;border-radius:9px">';
+    }
     const P = [
       { s1: '#f7e8ec', s2: '#fdf6ee', hill: '#d9b8c4', ac: '#c96f85', ink: '#8a6470' },   // 봄
       { s1: '#e3eef0', s2: '#f3f8f2', hill: '#9dbfae', ac: '#4e8d7c', ink: '#5c7a6e' },   // 여름
