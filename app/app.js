@@ -2210,7 +2210,15 @@
     if (pb) pb.classList.toggle('hide', !inn);
     if (pn) pn.classList.toggle('hide', !inn);
     if (inn) {
-      $('cloudWho').textContent = C.email() || '로그인됨';
+      // 등급을 같이 보여준다 — 슈퍼/구독이 실제로 붙었는지 화면에서 바로 확인할 수 있게.
+      // (등급이 안 보이면 로그아웃→재로그인으로 새 토큰을 받아야 한다)
+      let grade = '';
+      try {
+        const p = window.ChaeksaUsage && ChaeksaUsage.plan();
+        if (p === 'super') grade = ' · 책사(전체 열람)';
+        else if (p === 'member') grade = ' · 구독';
+      } catch (e) {}
+      $('cloudWho').textContent = (C.email() || '로그인됨') + grade;
       const at = localStorage.getItem('chaeksa.sync');
       $('cloudWhen').textContent = at ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '';
     }

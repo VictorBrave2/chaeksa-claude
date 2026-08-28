@@ -38,13 +38,24 @@
   const month = () => new Date().toISOString().slice(0, 7);
   const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
 
+  // 등급은 JWT payload 에서 직접 읽는다. session().user 는 me()를 불러야 채워지는데
+  // 카카오 리다이렉트 직후에는 토큰만 있고 user 가 없다 — 그걸 읽으면 슈퍼계정도
+  // 영원히 free 로 보인다(2026-08-29 실제로 그랬다). 토큰 안의 app_metadata 는
+  // Supabase 가 서명해 넣은 값이라 그 자체가 정본이다.
+  function jwtPlan(s) {
+    try {
+      const b = s.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const j = JSON.parse(atob(b));
+      return (j.app_metadata && j.app_metadata.plan) || null;
+    } catch (e) { return null; }
+  }
   function plan() {
     const C = global.ChaeksaCloud;
     if (!C || !C.enabled()) return 'free';          // 서버 미설정(개발 중)에는 무료로 본다
     if (!C.signedIn()) return 'guest';
     try {
       const s = C.session();
-      const p = s && s.user && s.user.app_metadata && s.user.app_metadata.plan;
+      const p = jwtPlan(s) || (s && s.user && s.user.app_metadata && s.user.app_metadata.plan);
       if (p === 'member' || p === 'super') return p;
     } catch (e) {}
     return 'free';
