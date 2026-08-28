@@ -1995,11 +1995,35 @@
     const box = $('lsNext');
     if (paid) {
       paidReveal(box, [
+        '올해 남은 달과 내년부터 살피는 중…',
         '앞으로 여섯 해에 배우자성이 드는 자리를 재는 중…',
         '열리는 해의 열두 달을 같은 잣대로 내리는 중…',
         '열린 달 안에서 날을 고르는 중…',
         '배우자 자리의 합·충을 대조하는 중…',
       ], () => {
+        // 「지금부터」가 먼저다. 2026년 사람에게 첫 답이 2030년이면
+        // 「4년을 기다리라고?」가 된다. 큰 파도 전의 물결부터 짚는다 —
+        // 해 전체가 조용해도 그 안의 서열은 있다(늘 서열로만 말한다).
+        const 가까운 = (() => {
+          const rowsAll = [];
+          const y0 = today.getFullYear(), m1 = today.getMonth() + 2;   // 다음 달부터
+          [y0, y0 + 1].forEach(yy => {
+            let im; try { im = T.inyeonMonths(R, yy); } catch (e) { return; }
+            im.rows.forEach(r => { if (yy > y0 || r.월 >= m1) rowsAll.push({ 연: yy, 월: r.월, 간지: r.간지, 점수: r.점수, 십신: r.십신, 결: r.결, 이유: r.이유 }); });
+          });
+          return rowsAll.slice().sort((a, b) => b.점수 - a.점수).slice(0, 4)
+            .sort((a, b) => (a.연 - b.연) || (a.월 - b.월));
+        })();
+        const 가까운절 = 가까운.length ? `<p class="pb-h"><b>지금부터 — 올해 남은 달과 내년</b></p>
+          <p class="pb-lede">크게 열리는 해가 오기 전에도 물결은 있습니다. 이 두 해 안에서의 서열로 나은 달부터 짚었습니다.</p>`
+          + 가까운.map(r => {
+              let days = []; try { days = T.inyeonDays(R, r.연, r.월) || []; } catch (e) {}
+              return `<div class="pb-dd"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
+                ${r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('') || `<p class="pb-why">◦ 크게 드는 것은 없는 달 — 두 해 안에서는 나은 자리입니다</p>`}
+                <p class="pb-say">${esc(r.결)}</p>
+                ${days.length ? `<p class="pb-days">날을 고르면 — ${days.map(d => `<b>${r.월}/${d.일}(${d.요일})</b>`).join(' ')}</p>` : ''}
+              </div>`;
+            }).join('') : '';
         // 열리는 해 전부(최대 3)를 해→달→날로 편다. 첫 해만 주는 건 반쪽이다.
         const 열린해들 = v.미래.filter(r => r.점수 >= 56).slice(0, 3);
         const 대상 = 열린해들.length ? 열린해들 : (v.첫열림 ? [v.첫열림] : []);
@@ -2021,6 +2045,8 @@
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 미래</p>
           <p class="pb-lede">과거를 짚은 <b>같은 잣대</b>로 앞으로 여섯 해를 쟀고,
             열리는 해는 <b>달과 날까지</b> 내렸습니다.</p>
+          ${가까운절}
+          <p class="pb-h"><b>크게 열리는 해</b></p>
           ${v.미래.map(r => `<div class="pb-row"><b>${r.해}</b>
             <span class="gz2">만 ${r.나이}살</span>
             <div class="pb-bar"><i style="width:${r.점수}%"></i></div>
@@ -2030,6 +2056,17 @@
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리와 합·삼합·충인가, 대운이 무엇을 데려오는가. 시각(시진)까지 필요하시면 카카오로 물어보세요 — 사람이 진태양시로 봐드립니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'love', {
         진단: T.inyeonWhy ? T.inyeonWhy(R).말 : null,
+        가까운물결: (() => {
+          const out = []; const y0 = today.getFullYear(), m1 = today.getMonth() + 2;
+          try {
+            [y0, y0 + 1].forEach(yy => {
+              const im = T.inyeonMonths(R, yy);
+              im.rows.forEach(r => { if (yy > y0 || r.월 >= m1) out.push({ 연: yy, 월: r.월, 점수: r.점수, 이유: r.이유 }); });
+            });
+          } catch (e) {}
+          return out.sort((a, b) => b.점수 - a.점수).slice(0, 4)
+            .map(r => ({ 때: r.연 + '년 ' + r.월 + '월', 이유: r.이유 }));
+        })(),
         과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 이유: g.이유 })),
         흔들린해: v.흔들린해.map(h => h.해 + '년(만 ' + h.나이 + '살)'),
         현재: v.현재.말,
@@ -2098,11 +2135,32 @@
     const box = $('msNext');
     if (paid) {
       paidReveal(box, [
+        '올해 남은 달과 내년부터 살피는 중…',
         '앞으로 여섯 해에 재성이 드는 자리를 재는 중…',
         '벌리는 해의 열두 달을 같은 잣대로 내리는 중…',
         '돈이 도는 날을 고르는 중…',
         '새는 해(겁재)를 대조하는 중…',
       ], () => {
+        // 지금부터가 먼저다 — 큰 파도 전의 물결. 두 해 안에서의 서열로 짚는다.
+        const 가까운 = (() => {
+          const rowsAll = [];
+          const y0 = today.getFullYear(), m1 = today.getMonth() + 2;
+          [y0, y0 + 1].forEach(yy => {
+            let dr; try { dr = T.wealthDrill(R, yy); } catch (e) { return; }
+            dr.rows.forEach(r => { if (yy > y0 || r.월 >= m1) rowsAll.push({ 연: yy, 월: r.월, 간지: r.간지, 점수: r.점수, 십신: r.십신, 이유: r.이유 }); });
+          });
+          return rowsAll.slice().sort((a, b) => b.점수 - a.점수).slice(0, 4)
+            .sort((a, b) => (a.연 - b.연) || (a.월 - b.월));
+        })();
+        const 가까운절 = 가까운.length ? `<p class="pb-h"><b>지금부터 — 올해 남은 달과 내년</b></p>
+          <p class="pb-lede">크게 벌리는 해가 오기 전에도 물결은 있습니다. 이 두 해 안에서의 서열로 나은 달부터 짚었습니다.</p>`
+          + 가까운.map(r => {
+              let days = []; try { days = T.재물날들(R, r.연, r.월) || []; } catch (e) {}
+              return `<div class="pb-dd"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
+                ${r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('') || `<p class="pb-why">◦ 크게 드는 것은 없는 달 — 두 해 안에서는 나은 자리입니다</p>`}
+                ${days.length ? `<p class="pb-days">날을 고르면 — ${days.map(d => `<b>${r.월}/${d.일}(${d.요일})</b>`).join(' ')}</p>` : ''}
+              </div>`;
+            }).join('') : '';
         const 열린해들 = v.미래.filter(r => r.점수 >= 56 && !r.샘).slice(0, 3);
         const 대상 = 열린해들.length ? 열린해들 : (v.첫열림 ? [v.첫열림] : []);
         const 해절 = 대상.map(yr => {
@@ -2121,6 +2179,8 @@
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 미래</p>
           <p class="pb-lede">과거를 짚은 <b>같은 잣대</b>로 앞으로 여섯 해를 쟀고,
             벌리는 해는 <b>달과 날까지</b> 내렸습니다. 벌리는 해만큼 <b>지킬 해</b>가 중요합니다.</p>
+          ${가까운절}
+          <p class="pb-h"><b>크게 벌리는 해</b></p>
           ${v.미래.map(r => `<div class="pb-row"><b>${r.해}</b>
             <span class="gz2">만 ${r.나이}살</span>
             <div class="pb-bar"><i style="width:${r.점수}%${r.샘 ? ';background:#b4534f' : ''}"></i></div>
@@ -2131,6 +2191,17 @@
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가(뿌리까지), 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 대운이 무엇을 데려오는가. 사업 개시·계약처럼 되돌리기 어려운 날은 후보를 들고 카카오로 물어보세요 — 판정이 갈리는 자리를 사람이 봐드립니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'wealth', {
         진단: T.wealthWhy ? T.wealthWhy(R).말 : null,
+        가까운물결: (() => {
+          const out = []; const y0 = today.getFullYear(), m1 = today.getMonth() + 2;
+          try {
+            [y0, y0 + 1].forEach(yy => {
+              const dr = T.wealthDrill(R, yy);
+              dr.rows.forEach(r => { if (yy > y0 || r.월 >= m1) out.push({ 연: yy, 월: r.월, 점수: r.점수, 이유: r.이유 }); });
+            });
+          } catch (e) {}
+          return out.sort((a, b) => b.점수 - a.점수).slice(0, 4)
+            .map(r => ({ 때: r.연 + '년 ' + r.월 + '월', 이유: r.이유 }));
+        })(),
         강약: v.강약,
         과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 이유: g.이유 })),
         샌해: v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)'),

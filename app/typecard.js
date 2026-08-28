@@ -696,22 +696,29 @@
 
     // 열리는 달은 날짜까지 내려간다 — 같은 잣대를 날에 또 한 번
     const 날들 = {};
-    열림.slice(0, 3).forEach(m => {
-      const last = new Date(year, m, 0).getDate(), hits = [];
-      for (let d = 1; d <= last; d++) {
-        let tf; try { tf = E.dateFortune(year, m, d); } catch (e) { continue; }
-        let sc = 0; const why = [];
-        if (E.STEM_ELEM[tf.day.stem] === 배우자오행) { sc += 3; why.push(배우자이름 + '의 날'); }
-        const dbb = tf.day.branch;
-        if (YUKHAP12[db] === dbb) { sc += 3; why.push('배우자 자리와 합'); }
-        else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(dbb) >= 0 && db !== dbb)) { sc += 2; why.push('배우자 자리와 삼합'); }
-        else if (충12(db, dbb)) sc -= 3;
-        if (sc >= 3) hits.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
-                                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · ') });
-      }
-      날들[m] = hits.slice(0, 8);
-    });
+    열림.slice(0, 3).forEach(m => { 날들[m] = inyeonDays(R, year, m); });
     return { 머리, rows, 열림, 조용, 날들 };
+  }
+
+  /** 인연 — 한 달 안의 날들. inyeonMonths 가 쓰던 날 잣대를 아무 달에나. */
+  function inyeonDays(R, year, m) {
+    const p = R.pillars, de = E.STEM_ELEM[p.day.stem], db = p.day.branch;
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 배우자오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
+    const 배우자이름 = 남 ? '재성' : '관성';
+    const last = new Date(year, m, 0).getDate(), hits = [];
+    for (let d = 1; d <= last; d++) {
+      let tf; try { tf = E.dateFortune(year, m, d); } catch (e) { continue; }
+      let sc = 0; const why = [];
+      if (E.STEM_ELEM[tf.day.stem] === 배우자오행) { sc += 3; why.push(배우자이름 + '의 날'); }
+      const dbb = tf.day.branch;
+      if (YUKHAP12[db] === dbb) { sc += 3; why.push('배우자 자리와 합'); }
+      else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(dbb) >= 0 && db !== dbb)) { sc += 2; why.push('배우자 자리와 삼합'); }
+      else if (충12(db, dbb)) sc -= 3;
+      if (sc >= 3) hits.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
+                               간지: E.fmt.pillar(tf.day), 왜: why.join(' · ') });
+    }
+    return hits.slice(0, 8);
   }
 
   /** 두 사람 — 그 달의 날짜 전부 + 좋은 날의 시진과 시계 창. bothDays 와 같은 자다.
@@ -2307,5 +2314,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, wealthDrill, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
