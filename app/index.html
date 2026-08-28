@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=250">
+<link rel="stylesheet" href="style.css?v=251">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -214,6 +214,11 @@
           <span class="ti-k">나에게 맞는 일</span>
           <span class="ti-big" id="tiJikBig">🧭 天職</span>
           <span class="ti-sub" id="tiJikSub">타고난 결이 어느 쪽인지</span>
+        </button>
+        <button class="tile" data-open="moneystory">
+          <span class="ti-k">너의 재물 스토리</span>
+          <span class="ti-big">🧧 財運</span>
+          <span class="ti-sub">돈이 들어왔던 그 무렵을 맞혀보겠습니다</span>
         </button>
         <button class="tile" data-open="nokpae">
           <span class="ti-k">나의 재물 그릇</span>
@@ -511,6 +516,18 @@
       </section>
     </div>
 
+    <div class="tab hide" data-tab="moneystory">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>🧧 너의 재물 스토리</h2>
+        <p class="hint" style="margin:0 0 12px">생년월일시만으로 돈이 들어왔던 구간과 샜던 해를 짚어 봅니다.
+          맞는지는 당신 통장이 압니다 — 같은 잣대로 앞도 잽니다. 재성은 남녀 구분이 없습니다.</p>
+        <div id="msBody"></div>
+      </section>
+      <section class="card" style="padding-top:6px">
+        <div id="msNext"></div>
+      </section>
+    </div>
     <div class="tab hide" data-tab="lovestory">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card warn hide" id="gu-lovestory"><b>성별을 아직 모른다고 하셨습니다.</b> 배우자성은 성별에 따라 재성·관성으로 갈립니다. 지금은 남성 기준입니다 — 프로필에서 고치면 다시 계산합니다.</section>
@@ -880,30 +897,30 @@
   </div>
 </div>
 
-<script src="config.js?v=250"></script>
-<script src="track.js?v=250"></script>
-<script src="cloud.js?v=250"></script>
-<script src="usage.js?v=250"></script>
-<script src="places.js?v=250"></script>
-<script src="people.js?v=250"></script>
-<script src="astro.js?v=250"></script>
-<script src="lunar.js?v=250"></script>
-<script src="engine.js?v=250"></script>
-<script src="chaeyong.js?v=250"></script>
-<script src="brief.js?v=250"></script>
-<script src="typecard.js?v=250"></script>
-<script src="gyeokguk.js?v=250"></script>
-<script src="memo.js?v=250"></script>
-<script src="classic.js?v=250"></script>
-<script src="calendar.js?v=250"></script>
-<script src="compat.js?v=250"></script>
-<script src="tongbyeon.js?v=250"></script>
-<script src="rules-wealth-love.js?v=250"></script>
-<script src="rules-health-study-move.js?v=250"></script>
-<script src="consult.js?v=250"></script>
-<script src="share.js?v=250"></script>
-<script src="ai.js?v=250"></script>
-<script src="pay.js?v=250"></script>
-<script src="app.js?v=250"></script>
+<script src="config.js?v=251"></script>
+<script src="track.js?v=251"></script>
+<script src="cloud.js?v=251"></script>
+<script src="usage.js?v=251"></script>
+<script src="places.js?v=251"></script>
+<script src="people.js?v=251"></script>
+<script src="astro.js?v=251"></script>
+<script src="lunar.js?v=251"></script>
+<script src="engine.js?v=251"></script>
+<script src="chaeyong.js?v=251"></script>
+<script src="brief.js?v=251"></script>
+<script src="typecard.js?v=251"></script>
+<script src="gyeokguk.js?v=251"></script>
+<script src="memo.js?v=251"></script>
+<script src="classic.js?v=251"></script>
+<script src="calendar.js?v=251"></script>
+<script src="compat.js?v=251"></script>
+<script src="tongbyeon.js?v=251"></script>
+<script src="rules-wealth-love.js?v=251"></script>
+<script src="rules-health-study-move.js?v=251"></script>
+<script src="consult.js?v=251"></script>
+<script src="share.js?v=251"></script>
+<script src="ai.js?v=251"></script>
+<script src="pay.js?v=251"></script>
+<script src="app.js?v=251"></script>
 </body>
 </html>

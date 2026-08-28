@@ -314,6 +314,7 @@
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'lovestory') renderLoveStory();
+    if (tab === 'moneystory') renderMoneyStory();
     if (tab === 'inyeon') renderInyeon();
     if (tab === 'naepyeon') renderNaepyeon();
     if (tab === 'jichim') renderJichim();
@@ -1312,7 +1313,7 @@
     // 뒤늦게 도착하면 캐시를 풀어 다음 탭 방문 때 유료 화면으로 다시 그려진다.
     ChaeksaPay.paidLoad().then(rows => {
       if (!rows || !rows.length) return;
-      inyeonFor = null; lsFor = null;
+      inyeonFor = null; lsFor = null; msFor = null;
       try { renderMyMonth(); } catch (e) {}
     }).catch(() => {});
   }
@@ -1954,6 +1955,63 @@
         '과거를 짚은 그 잣대가 그대로 앞을 잽니다. 앞으로 여섯 해 중 어느 해가 열리는지, 그 해의 어느 달·어느 날인지까지 같은 자로 내려갑니다.',
         nm + '님 연애 시기 — 앞으로 언제 열리는지 보고 싶습니다', 'inyeon',
         T.inyeonWhy ? T.inyeonWhy(R).말 : null);
+    }
+  }
+
+  // ── 너의 재물 스토리 — 연애 스토리와 같은 틀, 잣대만 돈 ──
+  let msFor = null;
+  function renderMoneyStory() {
+    const T = window.ChaeksaTypecard; if (!T || !T.moneyStory || !$('msBody')) return;
+    if (msFor === R) return;
+    const v = T.moneyStory(R, today);
+    if (!v) { $('msBody').innerHTML = '<p class="hint">생년을 알아야 연표를 그립니다.</p>'; return; }
+    msFor = R;
+    const nm = profile.name || '당신';
+
+    const 과거절 = v.과거.length
+      ? v.과거.map(g => `<div class="ls-item">
+          <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
+            <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
+          <p class="ls-say">${esc(g.말)}</p>
+          <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
+        </div>`).join('')
+      : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 벌린 구간이 안 보입니다 —
+         못 버는 사주가 아니라 <b>아직 재성의 파도가 안 온 사주</b>입니다. 이런 원국일수록 올 때 크게 옵니다.</p></div>`;
+    const 샌절 = v.샌해.length
+      ? `<p class="ls-shake">그리고 ${v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)').join(' · ')} 무렵은
+         나눠 갖는 손(겁재)이 온 해 — 지출이 커졌거나 돈이 샜기 쉬운 자리입니다.</p>` : '';
+
+    const 현재절 = `<div class="ls-now ls-${v.현재.판 === '들어옴' ? 'open' : v.현재.판 === '조용' ? 'quiet' : 'mid'}">
+      <p class="ls-now-k">그래서, 지금은</p>
+      <p class="ls-now-say">${esc(v.현재.말)}</p>
+      ${v.현재.이유.length ? `<p class="ls-why">◦ ${esc(v.현재.이유.join(' · '))}</p>` : ''}
+    </div>`;
+
+    $('msBody').innerHTML = `<p class="ls-lede">${esc(nm)}님의 원국에서 <b>재성(돈의 글자)</b>과
+      <b>겁재(나눠 갖는 손)</b>가 움직인 해를 만 ${v.시작나이}살부터 짚었습니다. 맞는지는 통장이 압니다.</p>
+      ${과거절}${샌절}${현재절}
+      <p class="ls-honest">잣대 공개 — 재성이 하늘에 오는가(뿌리까지), 벌이를 만드는 식상인가, 나눠 가는 겁재인가,
+      대운이 무엇을 데려오는가. ${v.강약 === '신약' ? '신약이라 재성 해의 가산을 줄여 계산했습니다(재다신약). ' : ''}단정이 아니라 「이 기준으로는」입니다. 틀렸다면 알려주세요 — 기준을 공개하는 이유입니다.</p>`;
+
+    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
+    const box = $('msNext');
+    if (paid) {
+      box.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — 앞으로 여섯 해</p>
+        <p class="pb-lede">과거를 짚은 <b>같은 잣대</b>로 앞을 쟀습니다. 벌리는 해만큼 <b>지킬 해</b>가 중요합니다.</p>
+        ${v.미래.map(r => `<div class="pb-row"><b>${r.해}</b>
+          <span class="gz2">만 ${r.나이}살</span>
+          <div class="pb-bar"><i style="width:${r.점수}%${r.샘 ? ';background:#b4534f' : ''}"></i></div>
+          <span class="pb-rs">${esc(r.이유[0] || '')}</span></div>`).join('')}
+        ${v.첫열림 ? `<p class="pb-h"><b>${v.첫열림.해}년(만 ${v.첫열림.나이}살)이 먼저 벌립니다</b> — ${esc(v.첫열림.이유.join(' · '))}</p>` : ''}
+        ${v.지킬해.length ? `<p class="pb-avoid">지킬 해 — ${v.지킬해.map(r => r.해 + '년').join(' · ')} :
+          동업·보증·큰 지출은 이 해들을 피해서. 새는 해에 안 잃는 것이 버는 해에 버는 것과 같은 무게입니다.</p>` : ''}
+        <p class="pb-ft">벌리는 해가 오기 전에 판을 깔아두는 것 — 조용한 해의 일입니다. 구체적으로 어느 달부터인지는 「이번 달 일운」과 상담이 잇습니다.</p></div>`;
+    } else {
+      box.innerHTML = nextStep('미래 — 언제 벌리고 언제 지켜야 하는가',
+        '과거의 구간과 지금의 판까지',
+        '과거를 짚은 그 잣대가 그대로 앞을 잽니다. 앞으로 여섯 해 중 벌리는 해가 언제인지 — 그리고 그만큼 중요한, 새는 해가 언제인지까지.',
+        nm + '님 재물 시기 — 앞으로 언제 벌리는지 보고 싶습니다', 'wealth',
+        T.wealthWhy ? T.wealthWhy(R).말 : null);
     }
   }
 

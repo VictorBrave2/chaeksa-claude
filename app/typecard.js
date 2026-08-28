@@ -873,6 +873,150 @@
     return { 이름, 남, 과거: 찍은과거, 흔들린해, 현재, 미래, 첫열림, 시작나이: 17 };
   }
 
+  // ── 너의 재물 스토리 — 연애 스토리와 같은 틀, 잣대만 돈으로 ──
+  //
+  // 무료: 과거(들어왔던 구간·샜던 해) + 현재(모이는지 새는지).
+  // 유료: 미래(언제 벌리고 언제 지켜야 하는가).
+  //
+  // 잣대 — 지어내지 않는다. 재성(일간이 극하는 오행) = 돈의 글자, 남녀 무관.
+  //   벌리는 해   재성이 하늘에 뜨는 해(뿌리 보너스) · 식상 해(벌이를 만드는 결)
+  //   새는 해     겁재 해(나눠 갖는 손) · 비견 해
+  //   재다신약    신약이 재성 해를 만나면 「돈은 오는데 쥐기 버겁다」 — 가산을 줄이고 말로 밝힌다
+  //   대운        재성 대운 = 버는 10년 바탕 · 겁재 대운 = 지키는 10년
+
+  function 재물해점수(R, y) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
+    const 재오행 = (de + 2) % 5;
+    const a = R.analysis || E.strengthOf(p);
+    const 신약 = a.strength === '신약';
+    const W = E.NATAL_WEIGHT;
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
+                  [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+    let tf, du;
+    try { tf = E.dateFortune(y, 6, 15); du = E.currentDaeun(R, new Date(y, 5, 15)); }
+    catch (e) { return null; }
+
+    let sc = 30; const 이유 = []; let 샘 = false;
+    const g = E.TEN_GODS[E.tenGod(ds, tf.year.stem)];
+    if (g === '편재' || g === '정재') {
+      const 힘 = E.stemPower(tf.year.stem, 자리.concat([[tf.year.branch, 1.0]]));
+      let add = 26 + Math.min(14, Math.round(힘 * 10));
+      if (신약) { add = Math.round(add * 0.7); 이유.push('재성이 온 해 — 다만 신약이라 들어와도 바쁘고 버거운 모양입니다'); }
+      else 이유.push(힘 > 0.8 ? '재성이 뿌리까지 내리고 온 해 — 크게 들어오는 결' : '재성이 하늘에 뜬 해');
+      sc += add;
+    } else if (g === '식신' || g === '상관') {
+      sc += 14; 이유.push('벌이를 만드는 결(식상)이 온 해 — 일이 돈이 되는 길목');
+    } else if (g === '겁재') {
+      sc -= 20; 샘 = true; 이유.push('나눠 갖는 손(겁재)이 온 해 — 동업·보증·큰 지출이 새기 쉬운 자리');
+    } else if (g === '비견') {
+      sc -= 8; 이유.push('내 몫을 지켜야 하는 해');
+    }
+    if (E.BRANCH_ELEM[tf.year.branch] === 재오행) { sc += 10; 이유.push('돈의 뿌리가 지지로 들어온 해'); }
+    if (du) {
+      const dg = E.TEN_GODS[E.tenGod(ds, du.stem)];
+      if (dg === '편재' || dg === '정재') { sc += 10; 이유.push('대운 자체가 재물을 데려오는 10년'); }
+      else if (dg === '겁재') { sc -= 10; 이유.push('대운이 지키는 쪽인 10년'); }
+      else if (dg === '식신' || dg === '상관') sc += 6;
+    }
+    return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 샘 };
+  }
+
+  function moneyStory(R, now) {
+    const birthY = R.input && R.input.year;
+    if (!birthY) return null;
+    const nowY = (now || new Date()).getFullYear();
+    const a = R.analysis || E.strengthOf(R.pillars);
+
+    // 과거 — 만 20살부터 (돈은 연애보다 늦게 시작한다)
+    const 과거 = [];
+    for (let y = birthY + 20; y < nowY; y++) {
+      const r = 재물해점수(R, y);
+      if (r) { r.나이 = y - birthY; 과거.push(r); }
+    }
+    const 구간들 = [];
+    let cur = null;
+    과거.forEach(r => {
+      if (r.점수 >= 56) {
+        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.이유 = r.이유; } }
+        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 이유: r.이유 }; 구간들.push(cur); }
+      } else cur = null;
+    });
+    구간들.forEach(g => {
+      g.말 = g.최고 >= 76 ? '이 무렵 돈이 눈에 띄게 들어왔을 가능성이 높습니다'
+           : g.최고 >= 64 ? '이 무렵 벌이가 늘었거나, 돈 되는 자리가 열렸기 쉽습니다'
+           : '이 무렵은 돈이 돌기 시작한 자리입니다';
+    });
+    const 찍은과거 = 구간들.slice().sort((x, y2) => y2.최고 - x.최고).slice(0, 3)
+      .sort((x, y2) => x.시작 - y2.시작);
+    const 샌해 = 과거.filter(r => r.샘 && r.점수 <= 40).map(r => ({ 해: r.해, 나이: r.나이 })).slice(-3);
+
+    // 현재
+    const 올해 = 재물해점수(R, nowY);
+    let 현재;
+    if (올해.샘) 현재 = { 판: '샘', 말: '지금은 새기 쉬운 구간입니다. 들어오는 게 없어서가 아니라 — 나가는 손이 같이 와 있는 자리입니다. 이런 해에는 지키는 것이 버는 것입니다. 동업·보증·큰 지출은 해를 넘겨서 하세요.' };
+    else if (올해.점수 >= 70) 현재 = { 판: '들어옴', 말: '지금은 들어오는 구간입니다. 벌이를 벌일 때고, 이런 해의 기회는 미루면 그냥 지나갑니다.' };
+    else if (올해.점수 >= 56) 현재 = { 판: '벌이', 말: '지금은 벌이가 만들어지는 구간입니다. 큰돈이 꽂히는 해라기보다, 일이 돈이 되는 길이 놓이는 해 — 여기서 깐 판이 다음 재성 해에 돈이 됩니다.' };
+    else 현재 = { 판: '조용', 말: '지금은 재물 기운이 조용한 구간입니다. 무리해서 벌이를 벌이기보다 쌓고 배우는 쪽이 남습니다 — 조용한 해에 쌓은 것이 열리는 해에 밑천이 됩니다.' };
+    현재.점수 = 올해.점수; 현재.이유 = 올해.이유;
+
+    // 미래
+    const 미래 = [];
+    for (let y = nowY + 1; y <= nowY + 6; y++) {
+      const r = 재물해점수(R, y);
+      if (r) { r.나이 = y - birthY; 미래.push(r); }
+    }
+    const 첫열림 = 미래.filter(r => r.점수 >= 56)[0] || 미래.slice().sort((x, y2) => y2.점수 - x.점수)[0];
+    const 지킬해 = 미래.filter(r => r.샘);
+
+    return { 강약: a.strength, 과거: 찍은과거, 샌해, 현재, 미래, 첫열림, 지킬해, 시작나이: 20 };
+  }
+
+  /** 재물 진단 — 재성이 원국에서 어떤 형편인가. 「왜 시기인가」의 근거. */
+  function wealthWhy(R) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const W = E.NATAL_WEIGHT;
+    const 재오행 = (de + 2) % 5;
+    const slots = [['year', p.year.stem], ['month', p.month.stem]];
+    if (p.hour) slots.push(['hour', p.hour.stem]);
+    const 투 = slots.filter(x => E.STEM_ELEM[x[1]] === 재오행);
+    const 겁재투 = slots.some(x => E.TEN_GODS[E.tenGod(ds, x[1])] === '겁재');
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
+                  [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+    const branches = [p.year.branch, p.month.branch, db].concat(p.hour ? [p.hour.branch] : []);
+    const 암 = branches.some(b => (E.HIDDEN[b] || []).some(st => E.STEM_ELEM[st] === 재오행));
+    const 합거 = E.natalHap(p);
+
+    let 말;
+    if (투.length) {
+      const k = 투[0][0], st = 투[0][1];
+      if (합거[k]) {
+        말 = ['돈의 글자(재성)가 원국에 떠 있는데, 다른 글자와 합으로 묶여 있습니다.',
+              '내 돈인데 내 마음대로 안 되는 형국입니다 — 벌어도 어딘가에 걸려 있기 쉽습니다.',
+              '이 묶임을 흔드는 운이 오는 해에 풀립니다. 그래서 당신께는 「언제」가 액수보다 먼저입니다.'];
+      } else if (E.stemPower(st, 자리) === 0) {
+        말 = ['돈의 글자(재성)가 하늘에 떠 있는데, 뿌리가 없습니다.',
+              '뿌리 없는 재물은 스쳐 지나갑니다 — 들어온 것 같은데 남지 않았던 이유가 여기 있습니다.',
+              '이 글자에 뿌리가 들어오는 해 — 그때가 쥐는 해입니다. 그 해를 알아야 합니다.'];
+      } else {
+        말 = ['돈의 글자(재성)가 하늘에 떠서 뿌리까지 내리고 있습니다. 버는 힘은 갖춘 사주입니다.',
+              '이런 사주의 물음은 「버느냐」가 아니라 「언제 크게 벌리고 언제 지키느냐」입니다.',
+              '벌리는 해와 새는 해가 갈리는 지점을 미리 아는 것 — 그것이 이 사주의 요령입니다.'];
+      }
+    } else if (암) {
+      말 = ['돈의 글자(재성)가 하늘에는 없고 지지 속에 숨어 있습니다.',
+            '숨은 재물은 티가 안 납니다 — 남들 눈에 안 띄게 모으는 결이지만, 기회도 조용히 왔다 조용히 갑니다.',
+            '이 글자가 하늘에 뜨는 해에 벌립니다. 그 해를 놓치지 않는 것이 이 사주의 전부입니다.'];
+    } else {
+      말 = ['원국에 돈의 글자(재성)가 없습니다. 결핍이 아닙니다 — 운이 벌이를 데려오는 구조라는 뜻입니다.',
+            '평소에는 잔잔하다가, 재성이 운에서 들어오는 해에 몰아서 벌립니다. 그때 벌어 둔 것이 다음 파도까지의 양식입니다.',
+            '그래서 이 사주는 「언제」가 사실상 전부입니다.'];
+    }
+    if (겁재투) 말.push('한 가지 더 — 나눠 갖는 손(겁재)이 원국 하늘에 떠 있습니다. 벌리는 해에는 그 손도 같이 옵니다. 새는 해를 아는 것이 버는 해를 아는 것만큼 중요합니다.');
+    return { 말 };
+  }
+
   // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
   //
   // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
@@ -2083,5 +2227,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
