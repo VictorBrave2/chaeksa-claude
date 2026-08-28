@@ -912,3 +912,8 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .ls-honest{font-size:11.5px;line-height:1.75;color:var(--ink3);margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}
 
 .ls-month{font-size:13px;color:var(--accent);margin:4px 0 0;font-weight:500}
+
+/* 유료 계단 로딩 */
+.pb-load{font-size:13px;color:var(--ink2);padding:10px 0 8px;min-height:20px}
+.pb-loadbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
+.pb-loadbar i{display:block;height:100%;background:var(--accent);transition:width .55s ease}

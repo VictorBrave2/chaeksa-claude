@@ -947,14 +947,33 @@
     const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
     const 재오행 = (de + 2) % 5;
     let tf; try { tf = E.dateFortune(y, m, 15); } catch (e) { return null; }
-    let sc = 30;
+    let sc = 30; const 이유 = [];
     const g = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
-    if (g === '편재' || g === '정재') sc += 26;
-    else if (g === '식신' || g === '상관') sc += 14;
-    else if (g === '겁재') sc -= 20;
-    else if (g === '비견') sc -= 8;
-    if (E.BRANCH_ELEM[tf.month.branch] === 재오행) sc += 10;
-    return { 월: m, 점수: Math.max(0, Math.min(100, sc)) };
+    if (g === '편재' || g === '정재') { sc += 26; 이유.push('재성이 달의 하늘에 옵니다 — 돈이 도는 달'); }
+    else if (g === '식신' || g === '상관') { sc += 14; 이유.push('벌이를 만드는 결(식상) — 일을 벌이면 돈이 되는 달'); }
+    else if (g === '겁재') { sc -= 20; 이유.push('나눠 갖는 손(겁재) — 지출·동업 조심'); }
+    else if (g === '비견') { sc -= 8; 이유.push('내 몫을 지키는 달'); }
+    if (E.BRANCH_ELEM[tf.month.branch] === 재오행) { sc += 10; 이유.push('돈의 뿌리가 지지로 들어옵니다'); }
+    return { 월: m, 간지: E.fmt.pillar(tf.month), 십신: g, 점수: Math.max(0, Math.min(100, sc)), 이유 };
+  }
+
+  /** 재물 — 한 달 안에서 돈이 도는 날들. 같은 잣대를 날에 내린다. */
+  function 재물날들(R, y, m) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
+    const 재오행 = (de + 2) % 5;
+    const last = new Date(y, m, 0).getDate(), hits = [];
+    for (let d = 1; d <= last; d++) {
+      let tf; try { tf = E.dateFortune(y, m, d); } catch (e) { continue; }
+      let sc = 0; const why = [];
+      const g = E.TEN_GODS[E.tenGod(ds, tf.day.stem)];
+      if (g === '편재' || g === '정재') { sc += 3; why.push('재성의 날'); }
+      else if (g === '식신' || g === '상관') { sc += 2; why.push('벌이의 날'); }
+      else if (g === '겁재') sc -= 3;
+      if (E.BRANCH_ELEM[tf.day.branch] === 재오행) { sc += 2; why.push('돈의 뿌리'); }
+      if (sc >= 3) hits.push({ 일: d, 요일: '일월화수목금토'[new Date(y, m - 1, d).getDay()],
+                               간지: E.fmt.pillar(tf.day), 왜: why.join(' · ') });
+    }
+    return hits.slice(0, 8);
   }
 
   function moneyStory(R, now) {
@@ -1020,6 +1039,17 @@
     }
 
     return { 강약: a.strength, 과거: 찍은과거, 샌해, 현재, 미래, 첫열림, 지킬해, 시작나이: 20 };
+  }
+
+  /** 재물 미래 드릴 — 열리는 해의 열두 달과, 열린 달의 날들. */
+  function wealthDrill(R, year) {
+    const rows = [];
+    for (let m = 1; m <= 12; m++) { const r = 재물월점수(R, year, m); if (r) rows.push(r); }
+    const 열림 = rows.filter(r => r.점수 >= 56).map(r => r.월);
+    const 날들 = {};
+    열림.slice(0, 3).forEach(m => { 날들[m] = 재물날들(R, year, m); });
+    const 조용 = rows.slice().sort((a, b) => a.점수 - b.점수)[0];
+    return { rows, 열림, 날들, 조용 };
   }
 
   /** 재물 진단 — 재성이 원국에서 어떤 형편인가. 「왜 시기인가」의 근거. */
@@ -2277,5 +2307,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, wealthDrill, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
