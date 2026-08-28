@@ -921,22 +921,47 @@
     try { tf = E.dateFortune(y, 6, 15); du = E.currentDaeun(R, new Date(y, 5, 15)); }
     catch (e) { return null; }
     let sc = 20; const 이유 = []; let 충맞음 = false;
+    // 세부 — 문장 조립기가 쓸 실제 글자들. 라벨만 남기면 말이 무뎌진다.
+    const 세부 = { 간지: E.fmt.pillar(tf.year), 세간: tf.year.stem, 세지: tf.year.branch,
+                   성투: false, 힘: 0, 관계: null, 대운성: false, 대운간지: du ? E.fmt.pillar(du) : null };
     if (E.STEM_ELEM[tf.year.stem] === 오행) {
       const 힘 = E.stemPower(tf.year.stem, 자리.concat([[tf.year.branch, 1.0]]));
       sc += 26 + Math.min(16, Math.round(힘 * 10));
+      세부.성투 = true; 세부.힘 = 힘;
       이유.push(힘 > 0.8 ? 이름 + '이 뿌리까지 내리고 온 해' : 이름 + '이 하늘에 뜬 해');
     }
     const yb = tf.year.branch;
-    if (YUKHAP12[db] === yb) { sc += 24; 이유.push('배우자 자리와 합'); }
+    if (YUKHAP12[db] === yb) { sc += 24; 세부.관계 = '육합'; 이유.push('배우자 자리와 합'); }
     else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(yb) >= 0 && db !== yb)) {
-      sc += 18; 이유.push('배우자 자리와 삼합');
-    } else if (충12(db, yb)) { sc -= 20; 충맞음 = true; 이유.push('배우자 자리가 흔들린 해'); }
+      sc += 18; 세부.관계 = '삼합'; 이유.push('배우자 자리와 삼합');
+    } else if (충12(db, yb)) { sc -= 20; 충맞음 = true; 세부.관계 = '충'; 이유.push('배우자 자리가 흔들린 해'); }
     if (du) {
-      if (E.STEM_ELEM[du.stem] === 오행) { sc += 12; 이유.push('대운 자체가 ' + 이름 + '을 데려오는 10년'); }
+      if (E.STEM_ELEM[du.stem] === 오행) { sc += 12; 세부.대운성 = true; 이유.push('대운 자체가 ' + 이름 + '을 데려오는 10년'); }
       if (YUKHAP12[db] === du.branch) sc += 8;
       else if (충12(db, du.branch)) sc -= 8;
     }
-    return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 충: 충맞음 };
+    return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 충: 충맞음, 세부 };
+  }
+
+  // 글자를 사람 말로 — 「辛(신)」 「卯(묘)」. 조사는 우리말 읽기의 받침으로 고른다.
+  const 간말 = (st) => E.STEMS[st] + '(' + E.STEMS_KO[st] + ')';
+  const 지말 = (b) => E.BRANCHES[b] + '(' + E.BRANCHES_KO[b] + ')';
+  const 이가 = (ko) => ((ko.charCodeAt(ko.length - 1) - 0xAC00) % 28) ? '이' : '가';
+  const 을를 = (ko) => ((ko.charCodeAt(ko.length - 1) - 0xAC00) % 28) ? '을' : '를';
+
+  /** 연애 구간 서술 — 그 해의 실제 글자로 문장을 짠다. 해마다 문장이 다르다. */
+  function 연애서술(d, db, 이름) {
+    const 문 = [];
+    if (d.성투) {
+      문.push('그해(' + d.간지 + ') 하늘에 당신의 인연 글자 ' + 간말(d.세간) + 이가(E.STEMS_KO[d.세간]) + ' 떠올랐습니다'
+        + (d.힘 > 0.8 ? ' — 뿌리까지 내려 힘이 실린 채로, 스치는 호감이 아니라 이어질 힘이 있는 만남으로 옵니다.'
+                       : ' — 인연이 눈앞에 모습을 드러내는 해입니다.'));
+    }
+    if (d.관계 === '육합') 문.push('그리고 그해의 ' + 지말(d.세지) + 이가(E.BRANCHES_KO[d.세지]) + ' 당신의 배우자 자리 ' + 지말(db) + 을를(E.BRANCHES_KO[db]) + ' 끌어안는 합이었습니다 — 마음이 기울고 곁을 내주게 되는 결입니다.');
+    else if (d.관계 === '삼합') 문.push('그해의 ' + 지말(d.세지) + '는 당신의 배우자 자리 ' + 지말(db) + '와 삼합으로 맞물립니다 — 같이 다니고 같이 겪으며 가까워지는 결입니다.');
+    else if (d.관계 === '충') 문.push('다만 그해의 ' + 지말(d.세지) + 이가(E.BRANCHES_KO[d.세지]) + ' 배우자 자리 ' + 지말(db) + 을를(E.BRANCHES_KO[db]) + ' 정면으로 치는 해라, 함께여도 흔들리기 쉬웠습니다.');
+    if (d.대운성) 문.push('이 모든 것이 ' + (d.대운간지 ? d.대운간지 + ' ' : '') + '대운 — 10년 바탕이 인연을 밀어주는 시기 위에서 일어났습니다. 우연이 아니라 흐름이었다는 뜻입니다.');
+    return 문.join(' ');
   }
 
   // 한 해 안에서 절정 달 무리를 찾는다 — 최고 달을 잡고, 점수가 크게 안 꺾이는
@@ -975,28 +1000,16 @@
     let cur = null;
     과거.forEach(r => {
       if (r.점수 >= 56) {
-        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.최고해 = r.해; cur.이유 = r.이유; } }
-        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 최고해: r.해, 이유: r.이유 }; 구간들.push(cur); }
+        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.최고해 = r.해; cur.이유 = r.이유; cur.최고세부 = r.세부; } }
+        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 최고해: r.해, 이유: r.이유, 최고세부: r.세부 }; 구간들.push(cur); }
       } else cur = null;
     });
     구간들.forEach(g => {
       g.말 = g.최고 >= 76 ? '이 무렵 연애했을 가능성이 높습니다'
            : g.최고 >= 64 ? '이 무렵 누군가 있었거나, 시작될 뻔한 자리입니다'
            : '만남이 스쳐 갔기 쉬운 자리입니다';
-      // 풀이(10층) — 이 해가 「어떤 종류의 해」였는지를 이유에서 펼친다. 룰이라 0원.
-      const 풀 = [];
-      const R이유 = g.이유.join(' ');
-      if (R이유.indexOf('뿌리까지') >= 0)
-        풀.push('인연의 글자가 하늘에 떠서 뿌리까지 내린 해였습니다 — 스치는 호감이 아니라 이어질 힘이 있는 만남이 오는 종류의 해입니다.');
-      else if (R이유.indexOf('하늘에 뜬') >= 0 || R이유.indexOf('하늘에 뜹') >= 0)
-        풀.push('인연의 글자가 하늘에 모습을 드러낸 해였습니다 — 고백을 받거나 소개가 들어오는 식으로, 인연이 눈앞에 나타나는 해입니다.');
-      if (R이유.indexOf('자리와 합') >= 0)
-        풀.push('배우자 자리가 붙은 해라 마음이 기울고 곁을 내주게 됩니다 — 관계가 한 걸음 깊어지는 결입니다.');
-      else if (R이유.indexOf('삼합') >= 0)
-        풀.push('배우자 자리가 함께 움직인 해라, 같이 다니고 같이 겪으며 가까워지는 결입니다.');
-      if (R이유.indexOf('대운') >= 0)
-        풀.push('게다가 10년 바탕 자체가 인연을 데려오는 시기 위였습니다 — 이 무렵의 만남은 우연이 아니라 흐름이었습니다.');
-      g.풀이 = 풀.join(' ');
+      // 풀이(10층) — 절정 해의 실제 글자로 조립한다. 해마다 문장이 다르다.
+      if (g.최고세부) g.풀이 = 연애서술(g.최고세부, R.pillars.day.branch, 이름);
       // 절정 해의 달까지 내려간다 — 같은 잣대(inyeonMonths)로
       try {
         const im = inyeonMonths(R, g.최고해);
@@ -1053,10 +1066,14 @@
     catch (e) { return null; }
 
     let sc = 30; const 이유 = []; let 샘 = false;
+    const 세부 = { 간지: E.fmt.pillar(tf.year), 세간: tf.year.stem, 세지: tf.year.branch,
+                   십신: null, 힘: 0, 신약: 신약, 뿌리: false, 대운성: false, 대운간지: du ? E.fmt.pillar(du) : null };
     const g = E.TEN_GODS[E.tenGod(ds, tf.year.stem)];
+    세부.십신 = g;
     if (g === '편재' || g === '정재') {
       const 힘 = E.stemPower(tf.year.stem, 자리.concat([[tf.year.branch, 1.0]]));
       let add = 26 + Math.min(14, Math.round(힘 * 10));
+      세부.힘 = 힘;
       if (신약) { add = Math.round(add * 0.7); 이유.push('재성이 온 해 — 다만 신약이라 들어와도 바쁘고 버거운 모양입니다'); }
       else 이유.push(힘 > 0.8 ? '재성이 뿌리까지 내리고 온 해 — 크게 들어오는 결' : '재성이 하늘에 뜬 해');
       sc += add;
@@ -1067,14 +1084,30 @@
     } else if (g === '비견') {
       sc -= 8; 이유.push('내 몫을 지켜야 하는 해');
     }
-    if (E.BRANCH_ELEM[tf.year.branch] === 재오행) { sc += 10; 이유.push('돈의 뿌리가 지지로 들어온 해'); }
+    if (E.BRANCH_ELEM[tf.year.branch] === 재오행) { sc += 10; 세부.뿌리 = true; 이유.push('돈의 뿌리가 지지로 들어온 해'); }
     if (du) {
       const dg = E.TEN_GODS[E.tenGod(ds, du.stem)];
-      if (dg === '편재' || dg === '정재') { sc += 10; 이유.push('대운 자체가 재물을 데려오는 10년'); }
+      if (dg === '편재' || dg === '정재') { sc += 10; 세부.대운성 = true; 이유.push('대운 자체가 재물을 데려오는 10년'); }
       else if (dg === '겁재') { sc -= 10; 이유.push('대운이 지키는 쪽인 10년'); }
       else if (dg === '식신' || dg === '상관') sc += 6;
     }
-    return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 샘 };
+    return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 샘, 세부 };
+  }
+
+  /** 재물 구간 서술 — 그 해의 실제 글자로. */
+  function 재물서술(d) {
+    const 문 = [];
+    if (d.십신 === '편재' || d.십신 === '정재') {
+      문.push('그해(' + d.간지 + ') 하늘에 당신의 돈 글자 ' + 간말(d.세간) + 이가(E.STEMS_KO[d.세간]) + ' 떠올랐습니다'
+        + (d.힘 > 0.8 ? ' — 뿌리까지 내려, 스쳐 가는 돈이 아니라 쥐어지는 돈이 오는 해입니다.'
+                       : ' — 벌이의 기회가 눈에 보이게 나타나는 해입니다.'));
+      if (d.신약) 문.push('다만 당신은 힘이 밖에서 채워지는 사주라, 들어온 만큼 몸이 바쁘고 버거움도 같이 왔기 쉽습니다.');
+    } else if (d.십신 === '식신' || d.십신 === '상관') {
+      문.push('그해는 ' + 간말(d.세간) + ' — 당신이 만들어내는 기운의 해였습니다. 일이 돈이 되는 길목이 놓여, 이때 벌인 판이 뒤의 밑천이 됩니다.');
+    }
+    if (d.뿌리) 문.push('게다가 그해의 ' + 지말(d.세지) + '로 돈의 뿌리가 지지까지 들어와, 바닥이 받쳐 준 해였습니다.');
+    if (d.대운성) 문.push('이 모든 것이 ' + (d.대운간지 ? d.대운간지 + ' ' : '') + '대운 — 10년 바탕이 재물을 밀어주는 시기 위에서 일어났습니다.');
+    return 문.join(' ');
   }
 
   function 재물월점수(R, y, m) {
@@ -1147,27 +1180,15 @@
     let cur = null;
     과거.forEach(r => {
       if (r.점수 >= 56) {
-        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.최고해 = r.해; cur.이유 = r.이유; } }
-        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 최고해: r.해, 이유: r.이유 }; 구간들.push(cur); }
+        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.최고해 = r.해; cur.이유 = r.이유; cur.최고세부 = r.세부; } }
+        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 최고해: r.해, 이유: r.이유, 최고세부: r.세부 }; 구간들.push(cur); }
       } else cur = null;
     });
     구간들.forEach(g => {
       g.말 = g.최고 >= 76 ? '이 무렵 돈이 눈에 띄게 들어왔을 가능성이 높습니다'
            : g.최고 >= 64 ? '이 무렵 벌이가 늘었거나, 돈 되는 자리가 열렸기 쉽습니다'
            : '이 무렵은 돈이 돌기 시작한 자리입니다';
-      const 풀 = [];
-      const R이유 = g.이유.join(' ');
-      if (R이유.indexOf('뿌리까지') >= 0)
-        풀.push('돈의 글자가 하늘에 떠서 뿌리까지 내린 해였습니다 — 스쳐 가는 돈이 아니라 쥐어지는 돈이 오는 종류의 해입니다.');
-      else if (R이유.indexOf('재성이') >= 0)
-        풀.push('돈의 글자가 하늘에 뜬 해였습니다 — 벌이의 기회가 눈에 보이게 나타나는 해입니다.');
-      if (R이유.indexOf('식상') >= 0)
-        풀.push('일이 돈이 되는 길목이 놓인 해라, 이때 벌인 판이 뒤의 밑천이 됩니다.');
-      if (R이유.indexOf('신약이라') >= 0)
-        풀.push('다만 몸이 바빠지는 만큼 버거움도 같이 오는 구조라, 들어온 만큼 정신없었기 쉽습니다.');
-      if (R이유.indexOf('대운') >= 0)
-        풀.push('10년 바탕 자체가 재물을 데려오는 시기 위였습니다 — 흐름이 밀어준 무렵입니다.');
-      g.풀이 = 풀.join(' ');
+      if (g.최고세부) g.풀이 = 재물서술(g.최고세부);
       // 절정 해의 달까지 — 재물 월 잣대로
       try {
         const rows = [];
