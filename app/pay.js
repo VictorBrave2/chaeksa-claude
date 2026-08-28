@@ -171,6 +171,12 @@
     return _paidRows;
   }
   function paidFor(code) {
+    // 슈퍼계정(검수용)은 전부 열린다. 등급은 JWT 의 app_metadata 라 위조 불가 —
+    // AI 한도를 풀 때와 같은 자리에서 읽는다. 검수자가 결제 없이 유료 화면을 본다.
+    try {
+      const U = global.ChaeksaUsage;
+      if (U && U.plan && U.plan() === 'super') return { id: 'super', product: code, super: true };
+    } catch (e) {}
     if (!_paidRows) return null;
     const now = new Date();
     for (const r of _paidRows) {
