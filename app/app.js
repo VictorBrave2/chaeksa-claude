@@ -1913,6 +1913,7 @@
           <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
             <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
           <p class="ls-say">${esc(g.말)}</p>
+          ${g.달 ? `<p class="ls-month">그중에서도 <b>${g.달.해}년 ${esc(g.달.말)}</b> 무렵이 짙습니다</p>` : ''}
           <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
         </div>`).join('')
       : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 열린 구간이 안 보입니다 —
@@ -1973,6 +1974,7 @@
           <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
             <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
           <p class="ls-say">${esc(g.말)}</p>
+          ${g.달 ? `<p class="ls-month">그중에서도 <b>${g.달.해}년 ${esc(g.달.말)}</b> 무렵이 짙습니다</p>` : ''}
           <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
         </div>`).join('')
       : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 벌린 구간이 안 보입니다 —
@@ -2002,7 +2004,7 @@
           <span class="gz2">만 ${r.나이}살</span>
           <div class="pb-bar"><i style="width:${r.점수}%${r.샘 ? ';background:#b4534f' : ''}"></i></div>
           <span class="pb-rs">${esc(r.이유[0] || '')}</span></div>`).join('')}
-        ${v.첫열림 ? `<p class="pb-h"><b>${v.첫열림.해}년(만 ${v.첫열림.나이}살)이 먼저 벌립니다</b> — ${esc(v.첫열림.이유.join(' · '))}</p>` : ''}
+        ${v.첫열림 ? `<p class="pb-h"><b>${v.첫열림.해}년(만 ${v.첫열림.나이}살)이 먼저 벌립니다</b> — ${esc(v.첫열림.이유.join(' · '))}${v.첫열림.달 ? `<br><span class="pb-days-why">그 해에서도 <b>${esc(v.첫열림.달)}</b>이 절정입니다</span>` : ''}</p>` : ''}
         ${v.지킬해.length ? `<p class="pb-avoid">지킬 해 — ${v.지킬해.map(r => r.해 + '년').join(' · ')} :
           동업·보증·큰 지출은 이 해들을 피해서. 새는 해에 안 잃는 것이 버는 해에 버는 것과 같은 무게입니다.</p>` : ''}
         <p class="pb-ft">벌리는 해가 오기 전에 판을 깔아두는 것 — 조용한 해의 일입니다. 구체적으로 어느 달부터인지는 「이번 달 일운」과 상담이 잇습니다.</p></div>`;

@@ -819,6 +819,21 @@
     return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 충: 충맞음 };
   }
 
+  // 한 해 안에서 절정 달 무리를 찾는다 — 최고 달을 잡고, 점수가 크게 안 꺾이는
+  // 이웃 달로 넓힌다. 「그 해 무렵」보다 「그 해 4~5월 무렵」이 백 배 세다.
+  function 절정달(점수들) {   // [{월,점수}...] 12개
+    if (!점수들.length) return null;
+    let best = 점수들[0];
+    점수들.forEach(r => { if (r.점수 > best.점수) best = r; });
+    if (best.점수 < 56) return null;
+    const idx = 점수들.indexOf(best);
+    let a = idx, b = idx;
+    while (a > 0 && 점수들[a - 1].점수 >= best.점수 - 8 && 점수들[a - 1].점수 >= 56) a--;
+    while (b < 점수들.length - 1 && 점수들[b + 1].점수 >= best.점수 - 8 && 점수들[b + 1].점수 >= 56) b++;
+    const 시작 = 점수들[a].월, 끝 = 점수들[b].월;
+    return { 시작, 끝, 말: 시작 === 끝 ? 시작 + '월' : 시작 + '~' + 끝 + '월' };
+  }
+
   function loveStory(R, now) {
     const birthY = R.input && R.input.year;
     if (!birthY) return null;
@@ -840,14 +855,20 @@
     let cur = null;
     과거.forEach(r => {
       if (r.점수 >= 56) {
-        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.이유 = r.이유; } }
-        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 이유: r.이유 }; 구간들.push(cur); }
+        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.최고해 = r.해; cur.이유 = r.이유; } }
+        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 최고해: r.해, 이유: r.이유 }; 구간들.push(cur); }
       } else cur = null;
     });
     구간들.forEach(g => {
       g.말 = g.최고 >= 76 ? '이 무렵 연애했을 가능성이 높습니다'
            : g.최고 >= 64 ? '이 무렵 누군가 있었거나, 시작될 뻔한 자리입니다'
            : '만남이 스쳐 갔기 쉬운 자리입니다';
+      // 절정 해의 달까지 내려간다 — 같은 잣대(inyeonMonths)로
+      try {
+        const im = inyeonMonths(R, g.최고해);
+        const pk = 절정달(im.rows.map(r => ({ 월: r.월, 점수: r.점수 })));
+        if (pk) g.달 = { 해: g.최고해, 말: pk.말 };
+      } catch (e) {}
     });
     const 찍은과거 = 구간들.slice().sort((a, b) => b.최고 - a.최고).slice(0, 3)
       .sort((a, b) => a.시작 - b.시작);
@@ -922,6 +943,20 @@
     return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 샘 };
   }
 
+  function 재물월점수(R, y, m) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
+    const 재오행 = (de + 2) % 5;
+    let tf; try { tf = E.dateFortune(y, m, 15); } catch (e) { return null; }
+    let sc = 30;
+    const g = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
+    if (g === '편재' || g === '정재') sc += 26;
+    else if (g === '식신' || g === '상관') sc += 14;
+    else if (g === '겁재') sc -= 20;
+    else if (g === '비견') sc -= 8;
+    if (E.BRANCH_ELEM[tf.month.branch] === 재오행) sc += 10;
+    return { 월: m, 점수: Math.max(0, Math.min(100, sc)) };
+  }
+
   function moneyStory(R, now) {
     const birthY = R.input && R.input.year;
     if (!birthY) return null;
@@ -938,14 +973,21 @@
     let cur = null;
     과거.forEach(r => {
       if (r.점수 >= 56) {
-        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.이유 = r.이유; } }
-        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 이유: r.이유 }; 구간들.push(cur); }
+        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.최고해 = r.해; cur.이유 = r.이유; } }
+        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 최고해: r.해, 이유: r.이유 }; 구간들.push(cur); }
       } else cur = null;
     });
     구간들.forEach(g => {
       g.말 = g.최고 >= 76 ? '이 무렵 돈이 눈에 띄게 들어왔을 가능성이 높습니다'
            : g.최고 >= 64 ? '이 무렵 벌이가 늘었거나, 돈 되는 자리가 열렸기 쉽습니다'
            : '이 무렵은 돈이 돌기 시작한 자리입니다';
+      // 절정 해의 달까지 — 재물 월 잣대로
+      try {
+        const rows = [];
+        for (let m = 1; m <= 12; m++) { const r = 재물월점수(R, g.최고해, m); if (r) rows.push(r); }
+        const pk = 절정달(rows);
+        if (pk) g.달 = { 해: g.최고해, 말: pk.말 };
+      } catch (e) {}
     });
     const 찍은과거 = 구간들.slice().sort((x, y2) => y2.최고 - x.최고).slice(0, 3)
       .sort((x, y2) => x.시작 - y2.시작);
@@ -968,6 +1010,14 @@
     }
     const 첫열림 = 미래.filter(r => r.점수 >= 56)[0] || 미래.slice().sort((x, y2) => y2.점수 - x.점수)[0];
     const 지킬해 = 미래.filter(r => r.샘);
+    if (첫열림) {
+      try {
+        const rows = [];
+        for (let m = 1; m <= 12; m++) { const r = 재물월점수(R, 첫열림.해, m); if (r) rows.push(r); }
+        const pk = 절정달(rows);
+        if (pk) 첫열림.달 = pk.말;
+      } catch (e) {}
+    }
 
     return { 강약: a.strength, 과거: 찍은과거, 샌해, 현재, 미래, 첫열림, 지킬해, 시작나이: 20 };
   }
