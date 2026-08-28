@@ -154,5 +154,40 @@
 
   const won = (n) => Number(n || 0).toLocaleString('ko-KR') + '원';
 
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say };
+  // ── 결제한 것을 판독한다 ──
+  // 무료 화면이 렌더될 때 「이 사람이 이걸 샀는가」를 동기로 물을 수 있어야 한다.
+  // 그래서 앱이 뜰 때 paidLoad() 로 한 번 받아 두고, paidFor() 는 그 캐시만 읽는다.
+  // 캐시가 아직이면 null — 무료로 그려진다. 결제 직후에는 착지 페이지에서
+  // 앱으로 돌아오며 새로 뜨므로 자연히 다시 받는다.
+  //
+  // 이건 화면 편의지 방어가 아니다 — 열리는 건 브라우저 계산 결과일 뿐이고,
+  // 서버 비용이 걸린 것(AI)은 서버가 따로 강제한다. devtools 로 열어봐야
+  // 자기 사주 계산을 자기가 보는 것이다.
+  let _paidRows = null;
+  async function paidLoad() {
+    if (_paidRows) return _paidRows;
+    const rows = await mine();
+    _paidRows = rows.filter((r) => r.status === 'paid');
+    return _paidRows;
+  }
+  function paidFor(code) {
+    if (!_paidRows) return null;
+    const now = new Date();
+    for (const r of _paidRows) {
+      // product 열이 정식이고, 옛 주문은 id 접두(ck_코드_)로도 읽힌다
+      const c = r.product || (String(r.id || '').match(/^ck_([a-z]+)_/) || [])[1];
+      if (c !== code) continue;
+      const at = new Date(r.paidAt || r.at);
+      if (isNaN(at)) continue;
+      if (code === 'month') {
+        // 이번 달 일운은 결제한 그 달만 — 달이 바뀌면 새로 사는 상품이다
+        if (at.getFullYear() === now.getFullYear() && at.getMonth() === now.getMonth()) return r;
+      } else if (now - at < 366 * 864e5) {
+        return r;   // 나머지는 1년 열람
+      }
+    }
+    return null;
+  }
+
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor };
 })(window);

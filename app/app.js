@@ -522,6 +522,7 @@
       wk.push(`<div class="wd ${i === 0 ? 'today' : ''}">${WD[d.getDay()]} ${d.getDate()}<b>${f.pillar(sc.tf.day)}</b>${sc.god}<i class="g${sc.grade}"></i></div>`);
     }
     $('week').innerHTML = wk.join('');
+    renderMyMonth();
     // AI 브리핑
     loadAiBrief();
   }
@@ -1183,9 +1184,9 @@
         ${n.세운 ? `<p class="nm2">올해는 ${esc(n.세운.간지)} · ${esc(n.세운.십신)} — ${esc(n.세운.말[0])}</p>` : ''}
       </div>`;
     // 두 분 다 좋은 달 — 우리는 택일 엔진을 갖고 있다. 한쪽만 좋은 달은 좋은 달이 아니다.
-    let 달절 = '';
+    let 달절 = '', bmKeep = null;
     try {
-      const bm = T.bothMonths(R, you, today, 12);
+      const bm = T.bothMonths(R, you, today, 12); bmKeep = bm;
       if (bm && bm.좋은달.length) 달절 = `
         <div class="bmbox">
           <p class="nk">두 분 다 좋은 달 — 앞으로 열두 달 중</p>
@@ -1212,10 +1213,27 @@
       <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
       ${지금절}
       ${달절}
-      ${nextStep('그 달의 며칠, 그리고 몇 시',
-        '좋은 달과 그 안의 날 수까지',
-        '달까지는 여기서 나옵니다. 그런데 결혼도 상견례도 결국 「며칠 몇 시」로 잡습니다. 그 날들이 언제인지, 그중 어느 시각이 두 분께 열리는지는 일운·시운까지 내려가야 나옵니다. 진태양시로 분 단위까지 봅니다.',
-        (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다')}
+      ${(() => {
+        const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('relation');
+        if (paid && bmKeep && bmKeep.좋은달.length && T.coupleDates) {
+          // 결제 열람 — 달을 재던 그 자로 날과 시진을 잰다
+          return '<div class="paidbox"><p class="pb-k">결제 열람 — 날짜까지</p>'
+            + bmKeep.좋은달.map(g => {
+                let cd; try { cd = T.coupleDates(R, you, g.연, g.월); } catch (e) { return ''; }
+                const days = cd.좋은날;
+                return '<p class="pb-h"><b>' + g.연 + '년 ' + g.월 + '월</b> — 두 분 다 좋은 날 ' + days.length + '일</p>'
+                  + (days.length
+                     ? days.map(r => '<p class="pb-d">' + g.월 + '/' + r.일 + ' (' + r.요일 + ') '
+                         + esc(r.간지) + (r.시진 ? ' · ' + esc(r.시진.join(' · ')) : '') + '</p>').join('')
+                     : '<p class="pb-d">이 달 안에는 두 분 다 좋은 날이 적습니다 — 다른 달을 보세요</p>');
+              }).join('')
+            + '<p class="pb-ft">시진의 시계 시각은 진태양시 보정(지역별 23~34분)이 걸립니다 — 분 단위 확정이 필요하시면 카카오로 물어보세요.</p></div>';
+        }
+        return nextStep('그 달의 며칠, 그리고 몇 시',
+          '좋은 달과 그 안의 날 수까지',
+          '달까지는 여기서 나옵니다. 그런데 결혼도 상견례도 결국 「며칠 몇 시」로 잡습니다. 그 날들이 언제인지, 그중 어느 시각이 두 분께 열리는지는 일운·시운까지 내려가야 나옵니다. 진태양시로 분 단위까지 봅니다.',
+          (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다', 'relation');
+      })()}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
         <button class="btn small" id="btnAccShare">카드 저장·공유</button>
@@ -1271,17 +1289,64 @@
   // ───── 「그 다음」 — 해에서 달·날로 내려가는 자리 ─────
   // 무료는 「해」까지다. 달·날·시는 사람이 붙어서 봐야 하고, 그게 파는 것이다.
   // 답을 감추는 게 아니라 **해상도를 파는 것**이다 — 어디까지 무료인지 먼저 밝힌다.
-  function nextStep(제목, 무료로본것, 물음, 문의말) {
+  // 결제가 준비됐는지 — pay.html 로 보내는 버튼을 세울지 정한다.
+  // 스크립트 평가 때 한 번 물어 캐시한다. 응답이 오기 전 렌더는 카카오만 보인다(무해).
+  let payReady = false;
+  if (window.ChaeksaPay) {
+    ChaeksaPay.state().then(s => { payReady = !!(s && s.ready); }).catch(() => {});
+    // 결제 이력도 미리 받아 둔다 — 무료 카드가 그려질 때 동기로 물을 수 있게.
+    // 뒤늦게 도착하면 캐시를 풀어 다음 탭 방문 때 유료 화면으로 다시 그려진다.
+    ChaeksaPay.paidLoad().then(rows => {
+      if (!rows || !rows.length) return;
+      inyeonFor = null;
+      try { renderMyMonth(); } catch (e) {}
+    }).catch(() => {});
+  }
+
+  function nextStep(제목, 무료로본것, 물음, 문의말, 상품) {
     const q = encodeURIComponent(문의말 || '');
+    // 결제가 열려 있고 이 자리에 붙는 상품이 있으면 결제가 앞, 카카오가 뒤.
+    // 결제 전에는 카카오(마음만큼)만 — 없는 버튼을 보여주지 않는다.
+    const payBtn = (payReady && 상품)
+      ? `<a class="btn nx-cta" href="pay.html?p=${상품}" style="background:var(--accent);color:#fff;border-color:var(--accent)">
+          <span>💳</span>결제하고 바로 보기</a>` : '';
     return `<div class="nextbox">
       <p class="nx-k">${esc(제목)}</p>
       <p class="nx-free">여기까지가 무료입니다 — <b>${esc(무료로본것)}</b></p>
       <p class="nx-q">${esc(물음)}</p>
+      ${payBtn}
       <a class="btn kakao nx-cta" href="${KAKAO_CHAT}?_q=${q}" target="_blank" rel="noopener">
         <span>💬</span>카카오로 물어보기</a>
-      <p class="nx-ft">달·날·시는 사람이 붙어서 봅니다. 값은 정해두지 않았습니다 —
-        받아보시고 도움이 되었다고 느끼시면 그때 마음만큼 해주시면 됩니다.</p>
+      <p class="nx-ft">${payBtn ? '결제하시면 이 자리에서 바로 열립니다. 카카오 상담은 사람이 붙어서 보고, 값은 정해두지 않았습니다 — 받아보시고 마음만큼.'
+                                : '달·날·시는 사람이 붙어서 봅니다. 값은 정해두지 않았습니다 — 받아보시고 도움이 되었다고 느끼시면 그때 마음만큼 해주시면 됩니다.'}</p>
     </div>`;
+  }
+
+  // ── 이번 달 일운 달력 — 달마다 다시 사는 상품 ──
+  // 무료는 오늘과 이번 주까지. 서른 날 전체는 결제한 그 달만 열린다.
+  function renderMyMonth() {
+    const T = window.ChaeksaTypecard;
+    const wkEl = $('week'), wkCard = wkEl && wkEl.closest('.card');
+    if (!T || !T.myDays || !wkCard || !R) return;
+    let box = $('myMonth');
+    if (!box) { wkCard.insertAdjacentHTML('afterend', '<section class="card" id="myMonth"></section>'); box = $('myMonth'); }
+    const y = today.getFullYear(), m = today.getMonth() + 1;
+    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month');
+    if (!paid) {
+      box.innerHTML = nextStep('이번 달 서른 날', '오늘과 이번 주까지',
+        m + '월 한 달 전체 — 어느 날이 풀리고 어느 날을 조심할지는 일운까지 내려가야 보입니다. 달이 바뀌면 새 달을 새로 봅니다.',
+        (profile.name || '') + '님 ' + m + '월 일운 — 좋은 날과 조심할 날을 보고 싶습니다', 'month');
+      return;
+    }
+    const v = T.myDays(R, y, m);
+    box.innerHTML = `<h2>${m}월 일운 달력<span class="h2sub">결제 열람 · ${y}년</span></h2>
+      <div class="pb-grid">` + v.rows.map(r => {
+        const cls = r.점수 >= 72 ? ' good' : (r.점수 <= 30 ? ' bad' : '');
+        return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
+          <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span></div>`;
+      }).join('') + `</div>
+      <p class="pb-ft">${v.좋은.length ? '풀리는 날 — <b>' + v.좋은.join('·') + '일</b>' : '크게 열리는 날이 없는 달입니다'}${v.조심.length ? ' · 조심할 날 — <b>' + v.조심.join('·') + '일</b>' : ''}</p>
+      <p class="pb-ft">같은 달 안에서의 서열입니다 · 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 그려드립니다.</p>`;
   }
 
   const KAKAO_CHANNEL = '_jdqxaX';   // 책사 채널 (검색용 아이디 chaeksa)
@@ -1732,11 +1797,25 @@
     $('inSvg').innerHTML = T.drawInyeon(profile.name || '당신', v);
     const fl = $('inFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     const inNext = $('inNext');
-    if (inNext && v.첫해) inNext.innerHTML = nextStep(
+    const paidIn = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
+    if (inNext && v.첫해 && paidIn && T.inyeonMonths) {
+      // 결제 열람 — 해 카드와 같은 잣대(배우자성·배우자 자리)를 달에 내린다
+      const y = v.첫해.해, im = T.inyeonMonths(R, y);
+      inNext.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — ${y}년 열두 달</p>`
+        + im.rows.map(r => `<div class="pb-row"><b>${r.월}월</b>
+            <span class="gz2">${esc(r.간지)}</span>
+            <div class="pb-bar"><i style="width:${r.점수}%"></i></div>
+            <span class="pb-rs">${esc(r.이유[0] || '')}</span></div>`).join('')
+        + `<p class="pb-ft">${im.열림.length
+              ? '열리는 달 — <b>' + im.열림.join('·') + '월</b>'
+              : '크게 열리는 달이 없는 해입니다 — 다음 해가 나은지 카카오로 물어보세요'}${
+            im.조용 ? ' · ' + im.조용.월 + '월은 조용한 달입니다' : ''}</p>
+          <p class="pb-ft">해 카드와 같은 잣대를 달에 내린 것입니다 · 같은 해 안에서의 서열입니다.</p></div>`;
+    } else if (inNext && v.첫해) inNext.innerHTML = nextStep(
       '그 해, 어느 달일까요',
       v.첫해.해 + '년까지',
       '해가 나왔으면 그 다음은 달입니다. ' + v.첫해.해 + '년 열두 달 중 어느 달에 열리는지, 그때 무엇을 하면 좋은지는 월운까지 내려가야 보입니다.',
-      (profile.name || '') + '님 인연 시기 상담 — ' + v.첫해.해 + '년 중 어느 달인지 보고 싶습니다');
+      (profile.name || '') + '님 인연 시기 상담 — ' + v.첫해.해 + '년 중 어느 달인지 보고 싶습니다', 'inyeon');
     $('inNote').textContent = v.말 + ' · 배우자성은 ' + v.배우자이름
       + '(' + (v.남 ? '남성 기준' : '여성 기준') + ')입니다. 이 순위는 열 해 안에서의 서열입니다.';
     $('btnInShare').onclick = async () => {
@@ -1770,7 +1849,7 @@
         { const nx = $('dohwaNext'); if (nx) nx.innerHTML = nextStep(
           '올해, 어느 달에 움직일까요', '타고난 연애의 결까지',
           '결은 평생 가는 것이라 해 단위로도 보입니다. 그런데 「언제 움직이는가」는 다릅니다 — 올해 열두 달 중 어느 달에 사람이 들어오고 어느 달이 조용한지는 월운까지 내려가야 나옵니다.',
-          (profile.name || '') + '님 연애 상담 — 올해 어느 달에 움직이는지 보고 싶습니다'); }
+          (profile.name || '') + '님 연애 상담 — 올해 어느 달에 움직이는지 보고 싶습니다', 'inyeon'); }
         $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
         $('btnDohwaShare').onclick = async () => {
           const b = $('btnDohwaShare'); b.disabled = true; b.textContent = '만드는 중\u2026';

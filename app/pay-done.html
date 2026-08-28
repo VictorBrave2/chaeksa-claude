@@ -80,8 +80,18 @@
         +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
         +   '<div class="row"><span>주문번호</span><span style="font-size:11.5px">' + esc(orderId) + '</span></div>'
         + '</div>'
-        + '<p>결과는 <b>카카오 채널</b>로 보내드립니다. 아직 대화를 시작하지 않으셨다면 아래에서 열어주세요.</p>'
-        + '<p><a class="btn go" href="https://pf.kakao.com/_jdqxaX/chat" target="_blank" rel="noopener">카카오로 이어가기</a></p>'
+        + (function () {
+            // 무엇을 샀는지는 주문번호가 안다: ck_<상품>_...
+            var code = (String(orderId).match(/^ck_([a-z]+)_/) || [])[1];
+            if (code === 'taekil') return ''
+              + '<p>출산택일은 <b>사람이 직접 계산</b>합니다. 결과는 카카오 채널로 보내드립니다 (보통 2~3일).</p>'
+              + '<p><a class="btn go" href="https://pf.kakao.com/_jdqxaX/chat" target="_blank" rel="noopener">카카오로 이어가기</a></p>';
+            var back = { inyeon: '인연이 오는 해 화면에 그 해 열두 달이',
+                         relation: '우리 둘 사이 화면에 날짜와 시진이',
+                         month: '오늘 탭에 이번 달 일운 달력이' }[code];
+            return '<p>' + (back ? back + ' <b>바로 열렸습니다.</b>' : '결제하신 내용이 앱에서 열렸습니다.')
+              + '</p><p><a class="btn go" href="./">책사로 돌아가서 보기</a></p>';
+          })()
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
         + '<p><a class="btn sub" href="./">책사로 돌아가기</a></p>'
         + (r.saveWarning ? '<p class="warn">결제는 되었으나 주문 기록에 문제가 있었습니다. 주문번호를 남겨 두세요.</p>' : ''));

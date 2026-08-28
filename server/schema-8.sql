@@ -35,11 +35,13 @@ create policy products_read on public.products
 
 -- 가격은 여기서 한 번만 정한다. 나중에 바꿀 때는 update 로 -- do nothing 이라
 -- 이 파일을 다시 돌려도 이미 있는 가격을 덮어쓰지 않는다.
+-- taekil 만 사람이 붙는 상담이다. 나머지 셋은 결제하면 앱에서 바로 열린다 —
+-- 무료가 멈춘 자리(해·달·개수)에서 같은 잣대로 한 단계 내려간 화면이다.
 insert into public.products (code, name, amount, blurb, sort) values
-  ('taekil',   '출산택일 상담',  30000, '기간을 정해 12시진 전수 계산하고, 판정이 갈리는 자리를 짚어 드립니다', 10),
-  ('inyeon',   '인연 시기 상담', 20000, '어느 해가 아니라 어느 달·어느 주간인지까지',                          20),
-  ('relation', '두 사람 상담',   20000, '서로에게 무엇인지와, 두 분 다 좋은 날',                              30),
-  ('month',    '이번 달 풀이',   10000, '대운·세운 아래 이번 달과 다음 달이 어디로 기우는지',                  40)
+  ('taekil',   '출산택일 1:1 상담', 30000, '기간 전체를 12시진 전수 계산한 보고서를 사람이 만들어 카카오로 드립니다', 10),
+  ('inyeon',   '인연 시기 — 달까지', 20000, '무료는 어느 해까지. 결제하면 그 해 열두 달이 앱에서 바로 열립니다',      20),
+  ('relation', '두 사람 — 날짜까지', 20000, '무료는 좋은 달과 날 수까지. 결제하면 날짜와 시진이 바로 열립니다',       30),
+  ('month',    '이번 달 일운 달력',  10000, '이번 달 서른 날의 흐름이 바로 열립니다. 달이 바뀌면 새로 사는 것입니다', 40)
 on conflict (code) do nothing;
 
 -- == 주문 ==========================================================
@@ -166,7 +168,7 @@ begin
   if auth.uid() is null then return '[]'::json; end if;
   return coalesce((
     select json_agg(json_build_object(
-             'id', id, 'name', name, 'amount', amount, 'status', status,
+             'id', id, 'product', product, 'name', name, 'amount', amount, 'status', status,
              'receipt', receipt_url, 'at', created_at, 'paidAt', paid_at) order by created_at desc)
     from public.orders
    where user_id = auth.uid() and created_at > now() - interval '2 years'

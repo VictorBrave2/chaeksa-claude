@@ -854,3 +854,22 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .bmbox .bmdays{font-size:13px;color:var(--ink2);margin:11px 0 0;line-height:1.75;
   padding-top:11px;border-top:1px solid var(--line)}
 .bmbox .bmdays b{color:var(--accent)}
+
+/* 유료 열람 — 결제한 사람에게 열리는 해상도 (paidbox) */
+.paidbox{margin-top:14px;padding:16px 18px;border-radius:14px;border:1px solid var(--accent-line);background:var(--accent-soft)}
+.paidbox .pb-k{font-size:11.5px;color:var(--accent);letter-spacing:2px;margin:0 0 10px}
+.pb-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13px}
+.pb-row>b{width:34px;flex:none}
+.pb-row .gz2{font-family:var(--serif);font-size:12px;color:var(--ink3);flex:none}
+.pb-bar{flex:1;height:7px;border-radius:4px;background:var(--line);overflow:hidden;min-width:46px}
+.pb-bar i{display:block;height:100%;background:var(--accent)}
+.pb-rs{font-size:11.5px;color:var(--ink3);max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb-h{font-size:13.5px;margin:12px 0 4px;color:var(--ink)}
+.pb-d{font-size:13px;color:var(--ink2);margin:2px 0 2px 8px}
+.pb-ft{font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.7}
+.pb-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.pb-cell{border:1px solid var(--line);border-radius:8px;padding:6px 2px;text-align:center;font-size:10.5px;color:var(--ink3)}
+.pb-cell b{display:block;font-size:13px;color:var(--ink)}
+.pb-cell.good{border-color:var(--accent-line);background:var(--accent-soft)}
+.pb-cell.bad{opacity:.45}
+.pb-cell.now{outline:2px solid var(--accent);outline-offset:-1px}

@@ -634,6 +634,87 @@
     return { rows, 좋은달, 나쁜달 };
   }
 
+  // ── 유료 해상도 — 결제한 사람에게만 그려지는 계산 ──
+  // 무료가 멈춘 자리에서 같은 자로 한 단계 내려간다. 새 잣대를 만들지 않는다 —
+  // 해를 재던 inyeon 의 잣대로 달을 재고, 달을 재던 monthScoreFor 의 잣대로
+  // 날과 시진을 잰다 (bothDays 가 이미 하던 「월주 자리에 일주를 넣는」 수법).
+  // 잣대가 두 벌이면 무료와 유료가 서로 다른 말을 하게 된다.
+
+  /** 인연 시기 — 그 해 열두 달. inyeon 과 같은 잣대를 달에 내린다. */
+  function inyeonMonths(R, year) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 배우자오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
+    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+    const SAM = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
+    const 충 = (a, b) => ((b - a + 12) % 12) === 6;
+    const rows = [];
+    for (let m = 1; m <= 12; m++) {
+      let tf; try { tf = E.dateFortune(year, m, 15); } catch (e) { continue; }
+      let s = 30; const 이유 = [];
+      if (E.STEM_ELEM[tf.month.stem] === 배우자오행) {
+        s += 28; 이유.push('인연의 글자가 달의 하늘에 옵니다');
+      }
+      const mb = tf.month.branch;
+      if (YUKHAP[db] === mb) { s += 26; 이유.push('배우자 자리와 합 — 곁이 채워지는 달입니다'); }
+      else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(mb) >= 0 && db !== mb)) {
+        s += 20; 이유.push('배우자 자리와 삼합 — 같이 움직이는 달입니다');
+      } else if (충(db, mb)) { s -= 22; 이유.push('배우자 자리가 흔들리는 달 — 서두르지 마세요'); }
+      rows.push({ 월: m, 간지: E.fmt.pillar(tf.month), 점수: Math.max(0, Math.min(100, s)), 이유 });
+    }
+    const 열림 = rows.filter(r => r.점수 >= 56).map(r => r.월);
+    const 조용 = rows.slice().sort((a, b) => a.점수 - b.점수)[0];
+    return { rows, 열림, 조용 };
+  }
+
+  /** 두 사람 — 그 달의 날짜 전부 + 좋은 날의 시진. bothDays 와 같은 자다. */
+  function coupleDates(Rme, Ryou, year, month) {
+    const last = new Date(year, month, 0).getDate();
+    const rows = [];
+    for (let d = 1; d <= last; d++) {
+      let tf; try { tf = E.dateFortune(year, month, d); } catch (e) { continue; }
+      const day = { month: tf.day };
+      const A = monthScoreFor(Rme, day), B = monthScoreFor(Ryou, day);
+      rows.push({ 일: d, 요일: '일월화수목금토'[new Date(year, month - 1, d).getDay()],
+                  간지: E.fmt.pillar(tf.day), 점수: Math.min(A.s, B.s),
+                  이유: [].concat(A.이유.slice(0, 1), B.이유.slice(0, 1)) });
+    }
+    const 좋은날 = rows.filter(r => r.점수 >= 70);
+    // 상위 날의 시진 — 시두법(일간이 시간을 정한다)으로 12시진을 세우고 같은 자로 잰다.
+    // 시계 시각은 진태양시 보정(지역별 23~34분)이 걸리므로 여기서는 시진까지만 말한다.
+    const HOUR_KO = ['子 23~01시', '丑 01~03시', '寅 03~05시', '卯 05~07시', '辰 07~09시', '巳 09~11시',
+                     '午 11~13시', '未 13~15시', '申 15~17시', '酉 17~19시', '戌 19~21시', '亥 21~23시'];
+    좋은날.slice(0, 5).forEach(r => {
+      let tf; try { tf = E.dateFortune(year, month, r.일); } catch (e) { return; }
+      const dstem = tf.day.stem, best = [];
+      for (let hb = 0; hb < 12; hb++) {
+        const hs = ((dstem % 5) * 2 + hb) % 10;
+        const hp = { month: { stem: hs, branch: hb } };
+        const m = Math.min(monthScoreFor(Rme, hp).s, monthScoreFor(Ryou, hp).s);
+        best.push([hb, m]);
+      }
+      best.sort((a, b) => b[1] - a[1]);
+      r.시진 = best.slice(0, 2).map(x => HOUR_KO[x[0]]);
+    });
+    return { rows, 좋은날 };
+  }
+
+  /** 이번 달 풀이 — 한 사람의 일운 한 달. 달마다 다시 사는 상품이다. */
+  function myDays(R, year, month) {
+    const last = new Date(year, month, 0).getDate();
+    const rows = [];
+    for (let d = 1; d <= last; d++) {
+      let tf; try { tf = E.dateFortune(year, month, d); } catch (e) { continue; }
+      const A = monthScoreFor(R, { month: tf.day });
+      const g = E.TEN_GODS[E.tenGod(R.pillars.day.stem, tf.day.stem)];
+      rows.push({ 일: d, 요일: '일월화수목금토'[new Date(year, month - 1, d).getDay()],
+                  간지: E.fmt.pillar(tf.day), 십신: g, 점수: A.s, 이유: A.이유 });
+    }
+    const 좋은 = rows.filter(r => r.점수 >= 72).map(r => r.일);
+    const 조심 = rows.filter(r => r.점수 <= 30).map(r => r.일);
+    return { rows, 좋은, 조심 };
+  }
+
   // ── 내 편이 되어주는 사람 ──
   // 계산은 용신 하나로 끝난다. 내가 필요로 하는 오행을 **일간으로 쓰는 사람**이
   // 곁에 있으면 그 기운이 채워진다. 「어떤 사람을 곁에 두면 좋은가」는
@@ -1743,5 +1824,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
