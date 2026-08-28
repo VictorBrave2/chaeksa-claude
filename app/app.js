@@ -313,6 +313,7 @@
     if (tab === 'chat') setTimeout(() => $('msgs').scrollTop = 1e9, 0);
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
+    if (tab === 'lovestory') renderLoveStory();
     if (tab === 'inyeon') renderInyeon();
     if (tab === 'naepyeon') renderNaepyeon();
     if (tab === 'jichim') renderJichim();
@@ -1311,7 +1312,7 @@
     // 뒤늦게 도착하면 캐시를 풀어 다음 탭 방문 때 유료 화면으로 다시 그려진다.
     ChaeksaPay.paidLoad().then(rows => {
       if (!rows || !rows.length) return;
-      inyeonFor = null;
+      inyeonFor = null; lsFor = null;
       try { renderMyMonth(); } catch (e) {}
     }).catch(() => {});
   }
@@ -1890,6 +1891,70 @@
       b.disabled = false;
       setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
     };
+  }
+
+  // ── 너의 연애 스토리 — 과거를 맞히면 미래를 산다 ──
+  // 무료: 과거 구간 찍기 + 현재 판. 유료(인연 시기 상품): 미래.
+  // 과거와 미래가 같은 잣대라는 것이 이 화면의 값어치다 — 그래서 그 말을 화면에 적는다.
+  let lsFor = null;
+  function renderLoveStory() {
+    const T = window.ChaeksaTypecard; if (!T || !T.loveStory || !$('lsBody')) return;
+    if ($('gu-lovestory')) $('gu-lovestory').classList.toggle('hide', !profile.genderUnknown);
+    if (lsFor === R) return;
+    const v = T.loveStory(R, today);
+    if (!v) { $('lsBody').innerHTML = '<p class="hint">생년을 알아야 연표를 그립니다.</p>'; return; }
+    lsFor = R;
+    const nm = profile.name || '당신';
+
+    // 과거 — 연표. 맞는지는 본인이 안다. 그래서 단정 대신 「가능성」으로 말한다.
+    const 과거절 = v.과거.length
+      ? v.과거.map(g => `<div class="ls-item">
+          <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
+            <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
+          <p class="ls-say">${esc(g.말)}</p>
+          <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
+        </div>`).join('')
+      : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 열린 구간이 안 보입니다 —
+         연애가 늦는 사주가 아니라, <b>아직 파도가 안 온 사주</b>입니다. 이런 원국일수록 올 때 크게 옵니다.</p></div>`;
+    const 흔들절 = v.흔들린해.length
+      ? `<p class="ls-shake">그리고 ${v.흔들린해.map(h => h.해 + '년(만 ' + h.나이 + '살)').join(' · ')} 무렵은
+         배우자 자리가 흔들린 해 — 정리나 다툼이 있었기 쉬운 자리입니다.</p>` : '';
+
+    // 현재 — 찍는다. 틀릴 수 있음을 숨기지 않는다.
+    const 현재절 = `<div class="ls-now ls-${v.현재.판 === '열림' ? 'open' : v.현재.판 === '조용' ? 'quiet' : 'mid'}">
+      <p class="ls-now-k">그래서, 지금은</p>
+      <p class="ls-now-say">${esc(v.현재.말)}</p>
+      ${v.현재.이유.length ? `<p class="ls-why">◦ ${esc(v.현재.이유.join(' · '))}</p>` : ''}
+    </div>`;
+
+    $('lsBody').innerHTML = `<p class="ls-lede">${esc(nm)}님의 원국에서 <b>${esc(v.이름)}(인연의 글자)</b>과
+      <b>배우자 자리(일지)</b>가 움직인 해를 만 ${v.시작나이}살부터 짚었습니다. 맞는지는 ${esc(nm)}님이 아십니다.</p>
+      ${과거절}${흔들절}${현재절}
+      <p class="ls-honest">잣대 공개 — ${esc(v.이름)}이 하늘에 오는가(뿌리까지), 일지와 합·삼합·충인가, 대운이 무엇을 데려오는가.
+      단정이 아니라 「이 기준으로는」입니다. 틀렸다면 그것도 알려주세요 — 기준을 공개하는 이유입니다.</p>`;
+
+    // 미래 — 여기부터 유료. 과거를 맞힌 그 잣대가 그대로 미래를 잰다.
+    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
+    const box = $('lsNext');
+    if (paid) {
+      const im = v.첫열림 ? T.inyeonMonths(R, v.첫열림.해) : null;
+      box.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — 다음 이야기</p>
+        <p class="pb-lede">과거를 짚은 <b>같은 잣대</b>로 앞을 쟀습니다.</p>
+        ${v.미래.map(r => `<div class="pb-row"><b>${r.해}</b>
+          <span class="gz2">만 ${r.나이}살</span>
+          <div class="pb-bar"><i style="width:${r.점수}%"></i></div>
+          <span class="pb-rs">${esc(r.이유[0] || '')}</span></div>`).join('')}
+        ${v.첫열림 ? `<p class="pb-h"><b>${v.첫열림.해}년(만 ${v.첫열림.나이}살)이 먼저 열립니다</b> — ${esc(v.첫열림.이유.join(' · '))}</p>` : ''}
+        ${im ? `<p class="pb-days">그 해에서 달을 고르면 — ${im.열림.length ? im.열림.map(m => `<b>${m}월</b>`).join(' ') : '크게 열리는 달이 없어 초입부터 보셔야 합니다'}
+          ${im.열림.length && im.날들[im.열림[0]] && im.날들[im.열림[0]].length ? `<br><span class="pb-days-why">${im.열림[0]}월이면 — ${im.날들[im.열림[0]].map(d => im.열림[0] + '/' + d.일).join(' · ')}</span>` : ''}</p>` : ''}
+        <p class="pb-ft">더 깊은 달·날은 「인연이 오는 해」 화면에 전부 열려 있습니다.</p></div>`;
+    } else {
+      box.innerHTML = nextStep('미래 — 언제 연애하게 되는가',
+        '과거의 구간과 지금의 판까지',
+        '과거를 짚은 그 잣대가 그대로 앞을 잽니다. 앞으로 여섯 해 중 어느 해가 열리는지, 그 해의 어느 달·어느 날인지까지 같은 자로 내려갑니다.',
+        nm + '님 연애 시기 — 앞으로 언제 열리는지 보고 싶습니다', 'inyeon',
+        T.inyeonWhy ? T.inyeonWhy(R).말 : null);
+    }
   }
 
   let dohwaFor = null;

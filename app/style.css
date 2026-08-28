@@ -894,3 +894,19 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .nx-diag p:last-child{margin-bottom:0}
 .nx-diag-k{font-size:11px !important;letter-spacing:2px;color:var(--accent) !important;margin-bottom:8px !important}
 .nx-diag.pbd{margin:4px 0 14px}
+
+/* 너의 연애 스토리 */
+.ls-lede{font-size:13.5px;line-height:1.85;color:var(--ink2);margin:0 0 14px}
+.ls-item{padding:12px 0 10px;border-left:3px solid var(--accent-line);padding-left:14px;margin:0 0 10px;border-radius:0 8px 8px 0}
+.ls-when{display:flex;align-items:baseline;gap:8px}
+.ls-when b{font-family:var(--serif);font-size:16px;color:var(--ink)}
+.ls-when span{font-size:12px;color:var(--ink3)}
+.ls-say{font-size:14px;line-height:1.8;color:var(--ink);margin:4px 0 0}
+.ls-why{font-size:12px;color:var(--ink3);margin:4px 0 0}
+.ls-shake{font-size:12.5px;line-height:1.8;color:var(--ink3);margin:6px 0 14px;padding-left:14px}
+.ls-now{margin:16px 0 10px;padding:15px 17px;border-radius:13px;border:1px solid var(--line)}
+.ls-now.ls-open{border-color:var(--accent-line);background:var(--accent-soft)}
+.ls-now.ls-quiet{background:transparent}
+.ls-now-k{font-size:11px;letter-spacing:2px;color:var(--accent);margin:0 0 7px}
+.ls-now-say{font-size:14.5px;line-height:1.85;color:var(--ink);margin:0}
+.ls-honest{font-size:11.5px;line-height:1.75;color:var(--ink3);margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}

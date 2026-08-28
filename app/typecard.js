@@ -781,6 +781,98 @@
     return { rows, 좋은, 조심, 주들 };
   }
 
+  // ── 너의 연애 스토리 — 과거를 맞히면 미래를 산다 ──
+  //
+  // 무료: 과거(연애했을 가능성이 높은 구간을 찍는다) + 현재(연애 중인지 아닌지).
+  // 유료: 미래(언제 할 가능성이 높은지). 과거가 맞아야 미래에 지갑이 열린다 —
+  // 그래서 과거와 미래를 **같은 잣대**로 잰다. 과거를 맞힌 그 자가 미래를 재는 자다.
+  //
+  // 잣대는 인연 잣대 그대로: 배우자성(남 재성·여 관성)이 하늘에 오는가(뿌리까지),
+  // 배우자 자리(일지)와 합·삼합·충이 되는가. 대운은 10년 바탕으로 얹는다.
+  // 정직성: 단정하지 않는다 — 「가능성이 높습니다」까지만. 기준을 밝힌다.
+
+  function 연애해점수(R, y, 오행, 이름) {
+    const p = R.pillars, db = p.day.branch;
+    const W = E.NATAL_WEIGHT;
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
+                  [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+    let tf, du;
+    try { tf = E.dateFortune(y, 6, 15); du = E.currentDaeun(R, new Date(y, 5, 15)); }
+    catch (e) { return null; }
+    let sc = 20; const 이유 = []; let 충맞음 = false;
+    if (E.STEM_ELEM[tf.year.stem] === 오행) {
+      const 힘 = E.stemPower(tf.year.stem, 자리.concat([[tf.year.branch, 1.0]]));
+      sc += 26 + Math.min(16, Math.round(힘 * 10));
+      이유.push(힘 > 0.8 ? 이름 + '이 뿌리까지 내리고 온 해' : 이름 + '이 하늘에 뜬 해');
+    }
+    const yb = tf.year.branch;
+    if (YUKHAP12[db] === yb) { sc += 24; 이유.push('배우자 자리와 합'); }
+    else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(yb) >= 0 && db !== yb)) {
+      sc += 18; 이유.push('배우자 자리와 삼합');
+    } else if (충12(db, yb)) { sc -= 20; 충맞음 = true; 이유.push('배우자 자리가 흔들린 해'); }
+    if (du) {
+      if (E.STEM_ELEM[du.stem] === 오행) { sc += 12; 이유.push('대운 자체가 ' + 이름 + '을 데려오는 10년'); }
+      if (YUKHAP12[db] === du.branch) sc += 8;
+      else if (충12(db, du.branch)) sc -= 8;
+    }
+    return { 해: y, 점수: Math.max(0, Math.min(100, sc)), 이유, 충: 충맞음 };
+  }
+
+  function loveStory(R, now) {
+    const birthY = R.input && R.input.year;
+    if (!birthY) return null;
+    const de = E.STEM_ELEM[R.pillars.day.stem];
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
+    const 이름 = 남 ? '재성' : '관성';
+    const nowY = (now || new Date()).getFullYear();
+
+    // ── 과거: 만 17세부터 작년까지 ──
+    const from = birthY + 17;
+    const 과거 = [];
+    for (let y = from; y < nowY; y++) {
+      const r = 연애해점수(R, y, 오행, 이름);
+      if (r) { r.나이 = y - birthY; 과거.push(r); }
+    }
+    // 이어진 좋은 해를 구간으로 묶는다 — 연애는 해 하나로 끝나지 않는다
+    const 구간들 = [];
+    let cur = null;
+    과거.forEach(r => {
+      if (r.점수 >= 56) {
+        if (cur && r.해 === cur.끝 + 1) { cur.끝 = r.해; cur.끝나이 = r.나이; if (r.점수 > cur.최고) { cur.최고 = r.점수; cur.이유 = r.이유; } }
+        else { cur = { 시작: r.해, 끝: r.해, 시작나이: r.나이, 끝나이: r.나이, 최고: r.점수, 이유: r.이유 }; 구간들.push(cur); }
+      } else cur = null;
+    });
+    구간들.forEach(g => {
+      g.말 = g.최고 >= 76 ? '이 무렵 연애했을 가능성이 높습니다'
+           : g.최고 >= 64 ? '이 무렵 누군가 있었거나, 시작될 뻔한 자리입니다'
+           : '만남이 스쳐 갔기 쉬운 자리입니다';
+    });
+    const 찍은과거 = 구간들.slice().sort((a, b) => b.최고 - a.최고).slice(0, 3)
+      .sort((a, b) => a.시작 - b.시작);
+    const 흔들린해 = 과거.filter(r => r.충 && r.점수 <= 40).map(r => ({ 해: r.해, 나이: r.나이 })).slice(-3);
+
+    // ── 현재 ──
+    const 올해 = 연애해점수(R, nowY, 오행, 이름);
+    let 현재;
+    if (올해.점수 >= 70) 현재 = { 판: '열림', 말: '지금은 인연의 문이 열려 있는 구간입니다. 연애 중이시라면 그 관계가 굴러가는 때이고, 아니시라면 — 이 기준으로는 혼자 계실 이유가 없는 자리입니다.' };
+    else if (올해.점수 >= 56) 현재 = { 판: '문턱', 말: '지금은 문턱의 구간입니다. 연애 중일 수도, 시작 직전일 수도 있는 어중간한 자리 — 어느 쪽이든 올해 안에 방향이 정해지기 쉽습니다.' };
+    else if (올해.충) 현재 = { 판: '흔들림', 말: '지금은 배우자 자리가 흔들리는 구간입니다. 연애 중이시라면 삐걱거리기 쉽고, 최근에 정리가 있었다 해도 이 기준으로는 이상하지 않습니다.' };
+    else 현재 = { 판: '조용', 말: '지금은 인연의 기운이 조용한 구간입니다. 연애 중이 아닐 가능성이 높습니다 — 다만 조용한 것은 멈춘 것이 아니라 다음 파도 전의 바다입니다.' };
+    현재.점수 = 올해.점수; 현재.이유 = 올해.이유;
+
+    // ── 미래 (유료에서 보여줄 것) ──
+    const 미래 = [];
+    for (let y = nowY + 1; y <= nowY + 6; y++) {
+      const r = 연애해점수(R, y, 오행, 이름);
+      if (r) { r.나이 = y - birthY; 미래.push(r); }
+    }
+    const 첫열림 = 미래.filter(r => r.점수 >= 56)[0] || 미래.slice().sort((a, b) => b.점수 - a.점수)[0];
+
+    return { 이름, 남, 과거: 찍은과거, 흔들린해, 현재, 미래, 첫열림, 시작나이: 17 };
+  }
+
   // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
   //
   // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
@@ -1991,5 +2083,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
