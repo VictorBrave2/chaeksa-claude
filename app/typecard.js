@@ -700,6 +700,76 @@
     return { 머리, rows, 열림, 조용, 날들 };
   }
 
+  // ── 달 삽화 — 웹툰의 컷처럼, 달마다 그 달의 상태를 그린다 ──
+  // AI 이미지가 아니라 파라메트릭 SVG 다: 결정적(같은 달 같은 그림)·0원·한지 그림체.
+  // 계절이 배경을 정하고 상태가 소재를 정한다.
+  //   연애  open 꽃가지와 나비 · shake 바람과 흩날리는 잎 · quiet 달과 물결
+  //   재물  open 항아리와 엽전 · leak 기울어 새는 항아리 · quiet 밭고랑과 새싹
+  function 달그림(kind, 월, 상태) {
+    const 계절 = (월 >= 3 && 월 <= 5) ? 0 : (월 >= 6 && 월 <= 8) ? 1 : (월 >= 9 && 월 <= 11) ? 2 : 3;
+    const P = [
+      { s1: '#f7e8ec', s2: '#fdf6ee', hill: '#d9b8c4', ac: '#c96f85', ink: '#8a6470' },   // 봄
+      { s1: '#e3eef0', s2: '#f3f8f2', hill: '#9dbfae', ac: '#4e8d7c', ink: '#5c7a6e' },   // 여름
+      { s1: '#f4e4d3', s2: '#faf1e4', hill: '#c99a6a', ac: '#b3562e', ink: '#8a6a4e' },   // 가을
+      { s1: '#e4e8f0', s2: '#f2f4f8', hill: '#a8b4c8', ac: '#6a7a96', ink: '#68748a' },   // 겨울
+    ][계절];
+    const id = 'sc' + kind.charAt(0) + 월 + 상태.charAt(0);
+    let art = '';
+    if (kind === 'love') {
+      if (상태 === 'open') {
+        art = '<path d="M20 78 Q80 60 150 64 Q200 66 250 52" fill="none" stroke="' + P.ink + '" stroke-width="2.4" opacity=".7"/>'
+          + [ [60,64],[95,60],[130,62],[168,63],[205,58],[238,54] ].map((c,i) =>
+              '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + (i % 2 ? 5 : 6.4) + '" fill="' + P.ac + '" opacity=".85"/>'
+            + '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="1.8" fill="#fff" opacity=".9"/>').join('')
+          + '<g opacity=".8"><circle cx="288" cy="34" r="4" fill="' + P.ac + '"/><circle cx="295" cy="30" r="4" fill="' + P.ac + '" opacity=".7"/></g>'
+          + '<g opacity=".6"><circle cx="315" cy="52" r="3.2" fill="' + P.ac + '"/><circle cx="321" cy="49" r="3.2" fill="' + P.ac + '" opacity=".7"/></g>'
+          + '<circle cx="322" cy="20" r="10" fill="#f3d9a0" opacity=".8"/>';
+      } else if (상태 === 'shake') {
+        art = [ [30,30],[10,52],[50,70] ].map(o =>
+            '<path d="M' + o[0] + ' ' + o[1] + ' q 60 -8 120 4" fill="none" stroke="' + P.ink + '" stroke-width="1.6" opacity=".45"/>').join('')
+          + [ [190,34],[228,50],[262,28],[300,58],[250,70] ].map(o =>
+            '<ellipse cx="' + o[0] + '" cy="' + o[1] + '" rx="4.6" ry="2.6" fill="' + P.ac + '" opacity=".7" transform="rotate(' + ((o[0] * 7) % 70 - 35) + ' ' + o[0] + ' ' + o[1] + ')"/>').join('');
+      } else {
+        art = '<circle cx="300" cy="26" r="13" fill="#f0e6c8" opacity=".95"/><circle cx="306" cy="22" r="11" fill="' + P.s1 + '"/>'
+          + [ 66, 74, 82 ].map((y,i) =>
+            '<path d="M' + (30 + i * 12) + ' ' + y + ' q 40 -6 80 0 t 80 0 t 80 0" fill="none" stroke="' + P.ink + '" stroke-width="1.4" opacity="' + (0.5 - i * 0.12) + '"/>').join('');
+      }
+    } else {
+      if (상태 === 'open') {
+        art = '<path d="M150 42 q -26 4 -26 24 q 0 18 26 18 q 26 0 26 -18 q 0 -20 -26 -24" fill="#a8795a" opacity=".9"/>'
+          + '<ellipse cx="150" cy="42" rx="15" ry="5" fill="#8a5f45"/>'
+          + [ [208,72],[224,72],[216,60] ].map(c =>
+              '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="9" fill="#d9b56a" stroke="#b3925a" stroke-width="1.4"/>'
+            + '<rect x="' + (c[0] - 3) + '" y="' + (c[1] - 3) + '" width="6" height="6" fill="' + P.s2 + '"/>').join('')
+          + '<path d="M266 78 q 6 -30 2 -46 m 2 46 q 10 -26 18 -34" fill="none" stroke="#b99b4e" stroke-width="2.2" opacity=".85"/>'
+          + [ [268,36],[274,42],[282,44],[286,50] ].map(c => '<ellipse cx="' + c[0] + '" cy="' + c[1] + '" rx="3.4" ry="1.8" fill="#d9b56a"/>').join('');
+      } else if (상태 === 'leak') {
+        art = '<g transform="rotate(14 150 60)"><path d="M150 38 q -26 4 -26 24 q 0 18 26 18 q 26 0 26 -18 q 0 -20 -26 -24" fill="#a8795a" opacity=".9"/>'
+          + '<ellipse cx="150" cy="38" rx="15" ry="5" fill="#8a5f45"/>'
+          + '<path d="M138 62 l 10 12" stroke="#6e4a34" stroke-width="1.6" opacity=".8"/></g>'
+          + [ [178,76],[190,84],[200,78] ].map(c => '<ellipse cx="' + c[0] + '" cy="' + c[1] + '" rx="2.6" ry="3.6" fill="#7ea4c4" opacity=".8"/>').join('')
+          + [ [232,80],[252,74],[272,82] ].map(c =>
+              '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="7.4" fill="#d9b56a" stroke="#b3925a" stroke-width="1.2" opacity=".7"/>'
+            + '<rect x="' + (c[0] - 2.5) + '" y="' + (c[1] - 2.5) + '" width="5" height="5" fill="' + P.s2 + '"/>').join('');
+      } else {
+        art = [ 64, 74, 84 ].map((y,i) =>
+            '<path d="M20 ' + y + ' q 80 ' + (6 - i * 2) + ' 160 0 t 160 0" fill="none" stroke="' + P.ink + '" stroke-width="1.6" opacity="' + (0.42 - i * 0.1) + '"/>').join('')
+          + [ [120,58],[230,54] ].map(c =>
+              '<path d="M' + c[0] + ' ' + (c[1] + 14) + ' l 0 -12" stroke="#5c8a5c" stroke-width="2"/>'
+            + '<ellipse cx="' + (c[0] - 4) + '" cy="' + c[1] + '" rx="4.6" ry="2.6" fill="#79a879" transform="rotate(-28 ' + (c[0] - 4) + ' ' + c[1] + ')"/>'
+            + '<ellipse cx="' + (c[0] + 4) + '" cy="' + c[1] + '" rx="4.6" ry="2.6" fill="#79a879" transform="rotate(28 ' + (c[0] + 4) + ' ' + c[1] + ')"/>').join('');
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" preserveAspectRatio="xMidYMid slice" style="width:100%;height:74px;display:block;border-radius:9px">'
+      + '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="' + P.s1 + '"/><stop offset="1" stop-color="' + P.s2 + '"/></linearGradient></defs>'
+      + '<rect width="360" height="96" fill="url(#' + id + ')"/>'
+      + '<path d="M0 84 Q 90 66 180 78 T 360 74 L 360 96 L 0 96 Z" fill="' + P.hill + '" opacity=".38"/>'
+      + art
+      + '<text x="348" y="90" text-anchor="end" font-size="9" fill="' + P.ink + '" opacity=".55">' + 월 + '月</text>'
+      + '</svg>';
+  }
+
   const HOUR12_KO = ['子 23~01시', '丑 01~03시', '寅 03~05시', '卯 05~07시', '辰 07~09시', '巳 09~11시',
                      '午 11~13시', '未 13~15시', '申 15~17시', '酉 17~19시', '戌 19~21시', '亥 21~23시'];
   /** 그날의 12시진을 시두법으로 세우고, 채점 함수로 상위 둘을 고른다.
@@ -2370,5 +2440,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

@@ -1965,6 +1965,7 @@
     // 과거 — 연표. 맞는지는 본인이 안다. 그래서 단정 대신 「가능성」으로 말한다.
     const 과거절 = v.과거.length
       ? v.과거.map(g => `<div class="ls-item">
+          <div class="pb-scene">${T.달그림 ? T.달그림('love', g.달 ? parseInt(g.달.말) || 4 : 4, 'open') : ''}</div>
           <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
             <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
           <p class="ls-say">${esc(g.말)}</p>
@@ -1978,7 +1979,9 @@
          배우자 자리가 흔들린 해 — 정리나 다툼이 있었기 쉬운 자리입니다.</p>` : '';
 
     // 현재 — 찍는다. 틀릴 수 있음을 숨기지 않는다.
+    const 현재상태 = v.현재.판 === '열림' ? 'open' : v.현재.판 === '흔들림' ? 'shake' : 'quiet';
     const 현재절 = `<div class="ls-now ls-${v.현재.판 === '열림' ? 'open' : v.현재.판 === '조용' ? 'quiet' : 'mid'}">
+      <div class="pb-scene">${T.달그림 ? T.달그림('love', today.getMonth() + 1, 현재상태) : ''}</div>
       <p class="ls-now-k">그래서, 지금은</p>
       <p class="ls-now-say">${esc(v.현재.말)}</p>
       ${v.현재.이유.length ? `<p class="ls-why">◦ ${esc(v.현재.이유.join(' · '))}</p>` : ''}
@@ -2017,7 +2020,10 @@
           const 열림 = r.점수 >= 56;
           let dd = { 좋은: [], 조심: [], 상대: false };
           try { dd = T.inyeonDays(R, r.연, r.월) || dd; } catch (e) {}
-          return `<div class="pb-dd${열림 ? ' pb-open' : ''}"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
+          const 상태 = 열림 ? 'open' : (r.이유.some(t => t.indexOf('흔들') >= 0) ? 'shake' : 'quiet');
+          return `<div class="pb-dd${열림 ? ' pb-open' : ''}">
+            <div class="pb-scene">${T.달그림('love', r.월, 상태)}</div>
+            <b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span>
             <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%"></i></div>
             ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
               : `<p class="pb-why">◦ 인연의 글자가 크게 들지 않는 달 — 흐름은 평온합니다</p>`}
@@ -2080,6 +2086,7 @@
 
     const 과거절 = v.과거.length
       ? v.과거.map(g => `<div class="ls-item">
+          <div class="pb-scene">${T.달그림 ? T.달그림('wealth', g.달 ? parseInt(g.달.말) || 9 : 9, 'open') : ''}</div>
           <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
             <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
           <p class="ls-say">${esc(g.말)}</p>
@@ -2092,7 +2099,9 @@
       ? `<p class="ls-shake">그리고 ${v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)').join(' · ')} 무렵은
          나눠 갖는 손(겁재)이 온 해 — 지출이 커졌거나 돈이 샜기 쉬운 자리입니다.</p>` : '';
 
+    const 현재상태2 = v.현재.판 === '들어옴' || v.현재.판 === '벌이' ? 'open' : v.현재.판 === '샘' ? 'leak' : 'quiet';
     const 현재절 = `<div class="ls-now ls-${v.현재.판 === '들어옴' ? 'open' : v.현재.판 === '조용' ? 'quiet' : 'mid'}">
+      <div class="pb-scene">${T.달그림 ? T.달그림('wealth', today.getMonth() + 1, 현재상태2) : ''}</div>
       <p class="ls-now-k">그래서, 지금은</p>
       <p class="ls-now-say">${esc(v.현재.말)}</p>
       ${v.현재.이유.length ? `<p class="ls-why">◦ ${esc(v.현재.이유.join(' · '))}</p>` : ''}
@@ -2129,7 +2138,9 @@
           const 열림 = r.점수 >= 56, 샘 = r.십신 === '겁재';
           let dd = { 좋은: [], 조심: [], 상대: false };
           try { dd = T.재물날들(R, r.연, r.월) || dd; } catch (e) {}
-          return `<div class="pb-dd${열림 ? ' pb-open' : ''}${샘 ? ' pb-leak' : ''}"><b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span> <span class="pb-god">${esc(r.십신)}</span>
+          return `<div class="pb-dd${열림 ? ' pb-open' : ''}${샘 ? ' pb-leak' : ''}">
+            <div class="pb-scene">${T.달그림('wealth', r.월, 열림 ? 'open' : (샘 ? 'leak' : 'quiet'))}</div>
+            <b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span> <span class="pb-god">${esc(r.십신)}</span>
             <div class="pb-bar pb-inbar"><i style="width:${Math.max(r.점수, 6)}%${샘 ? ';background:#b4534f' : ''}"></i></div>
             ${r.이유.length ? r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
               : `<p class="pb-why">◦ 돈의 글자가 크게 들지 않는 달 — 흐름은 잔잔합니다</p>`}

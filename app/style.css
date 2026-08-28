@@ -928,3 +928,7 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .pb-dd.pb-open{border-color:var(--accent-line);background:var(--accent-soft)}
 .pb-dd.pb-leak{border-color:rgba(180,83,79,.4)}
 .pb-inbar{margin:6px 0 4px}
+
+.pb-scene{margin:-2px -2px 8px;overflow:hidden;border-radius:9px}
+.ls-item .pb-scene{margin:0 0 8px}
+.ls-now .pb-scene{margin:-4px -6px 10px}
