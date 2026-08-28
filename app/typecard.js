@@ -637,38 +637,86 @@
   // ── 유료 해상도 — 결제한 사람에게만 그려지는 계산 ──
   // 무료가 멈춘 자리에서 같은 자로 한 단계 내려간다. 새 잣대를 만들지 않는다 —
   // 해를 재던 inyeon 의 잣대로 달을 재고, 달을 재던 monthScoreFor 의 잣대로
-  // 날과 시진을 잰다 (bothDays 가 이미 하던 「월주 자리에 일주를 넣는」 수법).
-  // 잣대가 두 벌이면 무료와 유료가 서로 다른 말을 하게 된다.
+  // 날과 시진을 잰다. 잣대가 두 벌이면 무료와 유료가 서로 다른 말을 한다.
+  //
+  // 그리고 **숫자만 주지 않는다.** 2만원을 낸 사람에게 막대 열두 개는 모욕이다.
+  // 달마다 무슨 일이 일어나고 무엇을 하면 되는지까지 말해야 보고서다.
 
-  /** 인연 시기 — 그 해 열두 달. inyeon 과 같은 잣대를 달에 내린다. */
+  // 그 달의 하늘이 나에게 무엇으로 오는가 — 만남의 자리에서 읽는 열 가지 결
+  const INYEON_GOD = {
+    비견: '또래가 모이는 달입니다. 모임에 얼굴을 내밀면 자연스럽게 이어집니다',
+    겁재: '사람은 많은데 경쟁도 붙는 달입니다. 여럿이 겨루는 자리보다 소개받는 자리가 낫습니다',
+    식신: '표현이 부드러워지는 달입니다. 편하게 웃게 되는 자리에서 인연이 붙습니다',
+    상관: '말이 튀는 달입니다. 매력은 사는데 말로 어긋나기도 쉽습니다 — 들어주는 쪽으로',
+    편재: '움직임이 많은 달입니다. 나가야 만납니다 — 여행이든 외출이든 밖이 기회입니다',
+    정재: '차분히 실속을 보는 달입니다. 오래 볼 사람인지 가리기에 좋습니다',
+    편관: '긴장이 붙는 달입니다. 마음이 급해지기 쉬우니 큰 결정은 천천히 하세요',
+    정관: '격식 있는 자리가 열리는 달입니다. 소개·상견례 같은 공식 자리에 좋습니다',
+    편인: '생각이 안으로 도는 달입니다. 억지로 나가기보다 나를 정비하는 편이 낫습니다',
+    정인: '보살핌을 받는 달입니다. 어른의 소개, 오래 아는 사람의 다리가 힘을 씁니다',
+  };
+  const YUKHAP12 = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
+  const SAM12 = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
+  const 충12 = (a, b) => ((b - a + 12) % 12) === 6;
+
+  /** 인연 시기 — 그 해 열두 달 + 열리는 달의 날짜. inyeon 과 같은 잣대를 내린다. */
   function inyeonMonths(R, year) {
     const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
     const 남 = ((R.input && R.input.gender) || 'M') === 'M';
     const 배우자오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
-    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
-    const SAM = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
-    const 충 = (a, b) => ((b - a + 12) % 12) === 6;
+    const 배우자이름 = 남 ? '재성' : '관성';
+
+    // 머리말 재료 — 그 해가 어떤 맥락 위에 있는가
+    const yf = E.dateFortune(year, 6, 15);
+    const du = E.currentDaeun(R, new Date(year, 5, 15));
+    const 머리 = {
+      해: year, 세운간지: E.fmt.pillar(yf.year), 세운십신: E.TEN_GODS[E.tenGod(ds, yf.year.stem)],
+      대운간지: du ? E.fmt.pillar(du) : null, 대운십신: du ? E.TEN_GODS[E.tenGod(ds, du.stem)] : null,
+      배우자이름,
+    };
+
     const rows = [];
     for (let m = 1; m <= 12; m++) {
       let tf; try { tf = E.dateFortune(year, m, 15); } catch (e) { continue; }
-      let s = 30; const 이유 = [];
+      let sc = 30; const 이유 = [];
+      const 십신 = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
       if (E.STEM_ELEM[tf.month.stem] === 배우자오행) {
-        s += 28; 이유.push('인연의 글자가 달의 하늘에 옵니다');
+        sc += 28; 이유.push(배우자이름 + '이 달의 하늘에 옵니다 — 인연의 글자입니다');
       }
       const mb = tf.month.branch;
-      if (YUKHAP[db] === mb) { s += 26; 이유.push('배우자 자리와 합 — 곁이 채워지는 달입니다'); }
-      else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(mb) >= 0 && db !== mb)) {
-        s += 20; 이유.push('배우자 자리와 삼합 — 같이 움직이는 달입니다');
-      } else if (충(db, mb)) { s -= 22; 이유.push('배우자 자리가 흔들리는 달 — 서두르지 마세요'); }
-      rows.push({ 월: m, 간지: E.fmt.pillar(tf.month), 점수: Math.max(0, Math.min(100, s)), 이유 });
+      if (YUKHAP12[db] === mb) { sc += 26; 이유.push('배우자 자리와 합 — 곁이 채워지는 달입니다'); }
+      else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(mb) >= 0 && db !== mb)) {
+        sc += 20; 이유.push('배우자 자리와 삼합 — 같이 움직이게 되는 달입니다');
+      } else if (충12(db, mb)) { sc -= 22; 이유.push('배우자 자리가 흔들리는 달 — 새 시작보다 정리가 되는 쪽입니다'); }
+      rows.push({ 월: m, 간지: E.fmt.pillar(tf.month), 점수: Math.max(0, Math.min(100, sc)),
+                  십신, 결: INYEON_GOD[십신] || '', 이유 });
     }
     const 열림 = rows.filter(r => r.점수 >= 56).map(r => r.월);
     const 조용 = rows.slice().sort((a, b) => a.점수 - b.점수)[0];
-    return { rows, 열림, 조용 };
+
+    // 열리는 달은 날짜까지 내려간다 — 같은 잣대를 날에 또 한 번
+    const 날들 = {};
+    열림.slice(0, 3).forEach(m => {
+      const last = new Date(year, m, 0).getDate(), hits = [];
+      for (let d = 1; d <= last; d++) {
+        let tf; try { tf = E.dateFortune(year, m, d); } catch (e) { continue; }
+        let sc = 0; const why = [];
+        if (E.STEM_ELEM[tf.day.stem] === 배우자오행) { sc += 3; why.push(배우자이름 + '의 날'); }
+        const dbb = tf.day.branch;
+        if (YUKHAP12[db] === dbb) { sc += 3; why.push('배우자 자리와 합'); }
+        else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(dbb) >= 0 && db !== dbb)) { sc += 2; why.push('배우자 자리와 삼합'); }
+        else if (충12(db, dbb)) sc -= 3;
+        if (sc >= 3) hits.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
+                                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · ') });
+      }
+      날들[m] = hits.slice(0, 8);
+    });
+    return { 머리, rows, 열림, 조용, 날들 };
   }
 
-  /** 두 사람 — 그 달의 날짜 전부 + 좋은 날의 시진. bothDays 와 같은 자다. */
-  function coupleDates(Rme, Ryou, year, month) {
+  /** 두 사람 — 그 달의 날짜 전부 + 좋은 날의 시진과 시계 창. bothDays 와 같은 자다.
+   *  lon 을 주면 시진을 그 지역의 시계 시각으로 바꿔 준다 (진태양시 보정). */
+  function coupleDates(Rme, Ryou, year, month, lon) {
     const last = new Date(year, month, 0).getDate();
     const rows = [];
     for (let d = 1; d <= last; d++) {
@@ -680,23 +728,31 @@
                   이유: [].concat(A.이유.slice(0, 1), B.이유.slice(0, 1)) });
     }
     const 좋은날 = rows.filter(r => r.점수 >= 70);
-    // 상위 날의 시진 — 시두법(일간이 시간을 정한다)으로 12시진을 세우고 같은 자로 잰다.
-    // 시계 시각은 진태양시 보정(지역별 23~34분)이 걸리므로 여기서는 시진까지만 말한다.
-    const HOUR_KO = ['子 23~01시', '丑 01~03시', '寅 03~05시', '卯 05~07시', '辰 07~09시', '巳 09~11시',
-                     '午 11~13시', '未 13~15시', '申 15~17시', '酉 17~19시', '戌 19~21시', '亥 21~23시'];
-    좋은날.slice(0, 5).forEach(r => {
+    const 피할날 = rows.filter(r => r.점수 <= 32).slice(0, 5);
+
+    // 좋은 날의 시진 — 시두법으로 12시진을 세우고 같은 자로 잰다.
+    // 시계 창: 시진은 진태양시 기준이라, 시계로는 지역 보정만큼 밀린다 (서울 약 32분).
+    const HB_KO = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    const two = (n) => (n < 10 ? '0' : '') + n;
+    좋은날.slice(0, 6).forEach(r => {
       let tf; try { tf = E.dateFortune(year, month, r.일); } catch (e) { return; }
       const dstem = tf.day.stem, best = [];
       for (let hb = 0; hb < 12; hb++) {
         const hs = ((dstem % 5) * 2 + hb) % 10;
         const hp = { month: { stem: hs, branch: hb } };
-        const m = Math.min(monthScoreFor(Rme, hp).s, monthScoreFor(Ryou, hp).s);
-        best.push([hb, m]);
+        best.push([hb, Math.min(monthScoreFor(Rme, hp).s, monthScoreFor(Ryou, hp).s)]);
       }
       best.sort((a, b) => b[1] - a[1]);
-      r.시진 = best.slice(0, 2).map(x => HOUR_KO[x[0]]);
+      // 시계 창으로 바꾼다 — solar = clock + offset 이므로 clock = solar − offset
+      const off = lon ? Math.round(-E.solarOffsetMin(year, month, r.일, lon)) : 0;
+      r.시진 = best.slice(0, 2).map(x => {
+        const hb = x[0], s0 = (23 + hb * 2) % 24;
+        const c0 = (s0 * 60 + off + 1440) % 1440, c1 = (c0 + 120) % 1440;
+        const w = two(Math.floor(c0 / 60)) + ':' + two(c0 % 60) + '~' + two(Math.floor(c1 / 60)) + ':' + two(c1 % 60);
+        return HB_KO[hb] + '시 ' + (lon ? '시계 ' + w : '');
+      });
     });
-    return { rows, 좋은날 };
+    return { rows, 좋은날, 피할날 };
   }
 
   /** 이번 달 풀이 — 한 사람의 일운 한 달. 달마다 다시 사는 상품이다. */
@@ -710,9 +766,19 @@
       rows.push({ 일: d, 요일: '일월화수목금토'[new Date(year, month - 1, d).getDay()],
                   간지: E.fmt.pillar(tf.day), 십신: g, 점수: A.s, 이유: A.이유 });
     }
-    const 좋은 = rows.filter(r => r.점수 >= 72).map(r => r.일);
-    const 조심 = rows.filter(r => r.점수 <= 30).map(r => r.일);
-    return { rows, 좋은, 조심 };
+    const 좋은 = rows.filter(r => r.점수 >= 72);
+    const 조심 = rows.filter(r => r.점수 <= 30);
+    // 주 단위 흐름 — 일주일씩 끊어 가장 큰 결을 하나씩 말한다
+    const 주들 = [];
+    for (let w = 0; w * 7 < rows.length; w++) {
+      const part = rows.slice(w * 7, w * 7 + 7);
+      if (!part.length) break;
+      const avg = part.reduce((a, r) => a + r.점수, 0) / part.length;
+      const top = part.slice().sort((a, b) => b.점수 - a.점수)[0];
+      const low = part.slice().sort((a, b) => a.점수 - b.점수)[0];
+      주들.push({ 시작: part[0].일, 끝: part[part.length - 1].일, 평균: Math.round(avg), top, low });
+    }
+    return { rows, 좋은, 조심, 주들 };
   }
 
   // ── 내 편이 되어주는 사람 ──

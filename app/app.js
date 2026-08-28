@@ -1216,18 +1216,28 @@
       ${(() => {
         const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('relation');
         if (paid && bmKeep && bmKeep.좋은달.length && T.coupleDates) {
-          // 결제 열람 — 달을 재던 그 자로 날과 시진을 잰다
-          return '<div class="paidbox"><p class="pb-k">결제 열람 — 날짜까지</p>'
+          // 결제 열람 — 달을 재던 그 자로 날과 시진을 잰다. 날마다 왜 좋은지,
+          // 시진은 이 지역 시계로 몇 시인지, 피할 날은 언제인지까지가 2만원이다.
+          const lon = profile.longitude || 127.0;
+          const plname = plNameOf(profile);
+          return '<div class="paidbox"><p class="pb-k">결제 열람 — 날짜와 시각까지</p>'
+            + '<p class="pb-lede">두 분 <b>각자의 점수 중 낮은 쪽</b>으로 골랐습니다 — 한 분만 좋은 날은 좋은 날이 아니기 때문입니다. 시계 시각은 <b>' + esc(plname) + ' 기준 진태양시 보정</b>을 이미 반영한 값입니다.</p>'
             + bmKeep.좋은달.map(g => {
-                let cd; try { cd = T.coupleDates(R, you, g.연, g.월); } catch (e) { return ''; }
+                let cd; try { cd = T.coupleDates(R, you, g.연, g.월, lon); } catch (e) { return ''; }
                 const days = cd.좋은날;
-                return '<p class="pb-h"><b>' + g.연 + '년 ' + g.월 + '월</b> — 두 분 다 좋은 날 ' + days.length + '일</p>'
+                return '<p class="pb-h"><b>' + g.연 + '년 ' + g.월 + '월</b> — 두 분 다 좋은 날 ' + days.length + '일'
+                  + (g.이유 && g.이유.length ? ' <span class="pb-god">' + esc([...new Set(g.이유)].slice(0, 2).join(' · ')) + '</span>' : '') + '</p>'
                   + (days.length
-                     ? days.map(r => '<p class="pb-d">' + g.월 + '/' + r.일 + ' (' + r.요일 + ') '
-                         + esc(r.간지) + (r.시진 ? ' · ' + esc(r.시진.join(' · ')) : '') + '</p>').join('')
-                     : '<p class="pb-d">이 달 안에는 두 분 다 좋은 날이 적습니다 — 다른 달을 보세요</p>');
+                     ? days.map(r => '<div class="pb-dd"><b>' + g.월 + '/' + r.일 + ' (' + r.요일 + ') ' + esc(r.간지) + '</b>'
+                         + (r.이유 && r.이유.length ? '<p class="pb-why">◦ ' + esc([...new Set(r.이유)].join(' · ')) + '</p>' : '')
+                         + (r.시진 ? '<p class="pb-why">◦ 그날 중에서도 — ' + esc(r.시진.join(' / ')) + '</p>' : '')
+                         + '</div>').join('')
+                     : '<p class="pb-d">이 달 안에는 두 분 다 좋은 날이 적습니다 — 다른 달을 보세요</p>')
+                  + (cd.피할날.length ? '<p class="pb-avoid">피하실 날 — ' + cd.피할날.map(r => g.월 + '/' + r.일).join(' · ')
+                      + ' <span class="pb-days-why">(' + esc(cd.피할날[0].이유[0] || '한 분이 눌리는 날') + ')</span></p>' : '');
               }).join('')
-            + '<p class="pb-ft">시진의 시계 시각은 진태양시 보정(지역별 23~34분)이 걸립니다 — 분 단위 확정이 필요하시면 카카오로 물어보세요.</p></div>';
+            + '<p class="pb-ft">잣대 공개 — 각자에게 필요한 오행이 오는가, 배우자 자리(일지)와 합·충이 되는가, 강약에 맞는 기운인가. 두 분의 점수 중 <b>낮은 쪽</b>이 그날의 점수입니다.</p>'
+            + '<p class="pb-ft">결혼식처럼 되돌릴 수 없는 큰 날은 여기서 고른 후보를 들고 카카오로 한 번 물어보세요 — 판정이 갈리는 자리가 있는지 사람이 봐드립니다.</p></div>';
         }
         return nextStep('그 달의 며칠, 그리고 몇 시',
           '좋은 달과 그 안의 날 수까지',
@@ -1339,14 +1349,39 @@
       return;
     }
     const v = T.myDays(R, y, m);
+    // 달력 한 장으로 끝내지 않는다 — 주 단위로 흐름을 말하고, 좋은 날과 조심할 날은
+    // 왜 그런지까지 말한다. 1만원이면 읽을거리가 있어야 한다.
+    const 주절 = v.주들.map(w => {
+      const g = w.top.십신;
+      return `<div class="pb-dd"><b>${w.시작}~${w.끝}일</b> <span class="pb-god">${w.평균 >= 60 ? '순한 주' : w.평균 <= 42 ? '무거운 주' : '보통 주'}</span>
+        <p class="pb-why">◦ 가장 좋은 날은 <b>${w.top.일}일(${w.top.요일})</b> ${esc(w.top.간지)} · ${esc(g)} — ${esc(GOD_FLOW[g] || '')}</p>
+        ${w.low.점수 <= 35 ? `<p class="pb-why">◦ ${w.low.일}일(${w.low.요일})은 눌립니다 — 큰 결정은 미루세요</p>` : ''}
+      </div>`;
+    }).join('');
+    const 좋은절 = v.좋은.length
+      ? v.좋은.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)} · ${esc(r.십신)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ''}</p>`).join('')
+      : '<p class="pb-why">◦ 크게 열리는 날이 없는 달입니다 — 무리해서 일을 벌이기보다 다음 달을 준비하는 달로 쓰세요</p>';
+    const 조심절 = v.조심.length
+      ? v.조심.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ' — 기운이 눌리는 날입니다'}</p>`).join('')
+      : '';
+    // 다음 달 예고 — 달마다 다시 사는 상품의 고리
+    let 예고 = '';
+    try {
+      const ny = m === 12 ? y + 1 : y, nm = m === 12 ? 1 : m + 1;
+      const nv = T.myDays(R, ny, nm);
+      예고 = `<p class="pb-ft">${nm}월에는 풀리는 날이 ${nv.좋은.length}일 있습니다 — 달이 바뀌면 새로 열어보세요.</p>`;
+    } catch (e) {}
     box.innerHTML = `<h2>${m}월 일운 달력<span class="h2sub">결제 열람 · ${y}년</span></h2>
       <div class="pb-grid">` + v.rows.map(r => {
         const cls = r.점수 >= 72 ? ' good' : (r.점수 <= 30 ? ' bad' : '');
         return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
           <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span></div>`;
       }).join('') + `</div>
-      <p class="pb-ft">${v.좋은.length ? '풀리는 날 — <b>' + v.좋은.join('·') + '일</b>' : '크게 열리는 날이 없는 달입니다'}${v.조심.length ? ' · 조심할 날 — <b>' + v.조심.join('·') + '일</b>' : ''}</p>
-      <p class="pb-ft">같은 달 안에서의 서열입니다 · 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 그려드립니다.</p>`;
+      <p class="pb-h"><b>주 단위로 읽으면</b></p>${주절}
+      <p class="pb-h"><b>풀리는 날${v.좋은.length ? ' — ' + v.좋은.map(r => r.일).join('·') + '일' : ''}</b></p>${좋은절}
+      ${조심절 ? `<p class="pb-h"><b>조심할 날 — ${v.조심.map(r => r.일).join('·')}일</b></p>${조심절}` : ''}
+      <p class="pb-ft">잣대 공개 — 필요한 오행이 오는 날인가, 일지와 합·충이 되는 날인가, 강약에 맞는 기운인가. 같은 달 안에서의 서열입니다. 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 12시진 곡선으로 그려드립니다.</p>
+      ${예고}`;
   }
 
   const KAKAO_CHANNEL = '_jdqxaX';   // 책사 채널 (검색용 아이디 chaeksa)
@@ -1799,19 +1834,33 @@
     const inNext = $('inNext');
     const paidIn = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
     if (inNext && v.첫해 && paidIn && T.inyeonMonths) {
-      // 결제 열람 — 해 카드와 같은 잣대(배우자성·배우자 자리)를 달에 내린다
+      // 결제 열람 — 막대 열두 개로 끝내지 않는다. 달마다 서술하고,
+      // 열리는 달은 날짜까지 내리고, 잣대를 공개한다. 이게 2만원의 생김새다.
       const y = v.첫해.해, im = T.inyeonMonths(R, y);
-      inNext.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — ${y}년 열두 달</p>`
-        + im.rows.map(r => `<div class="pb-row"><b>${r.월}월</b>
+      const h = im.머리;
+      const 머리말 = `<p class="pb-lede">${y}년은 <b>${esc(h.세운간지)}</b>의 해 — ${esc(profile.name || '당신')}님께는
+        <b>${esc(h.세운십신)}</b>의 해입니다${h.대운간지 ? `, ${esc(h.대운간지)} 대운(${esc(h.대운십신)}) 위에 얹혀 옵니다` : ''}.
+        아래는 이 해 열두 달을 <b>${esc(h.배우자이름)}(인연의 글자)</b>과 <b>배우자 자리(일지)의 합·충</b>으로 잰 것입니다.</p>`;
+      const 달들 = im.rows.map(r => {
+        const open = im.열림.indexOf(r.월) >= 0;
+        const days = im.날들[r.월];
+        return `<div class="pb-month${open ? ' open' : ''}">
+          <div class="pb-row"><b>${r.월}월</b>
             <span class="gz2">${esc(r.간지)}</span>
             <div class="pb-bar"><i style="width:${r.점수}%"></i></div>
-            <span class="pb-rs">${esc(r.이유[0] || '')}</span></div>`).join('')
-        + `<p class="pb-ft">${im.열림.length
-              ? '열리는 달 — <b>' + im.열림.join('·') + '월</b>'
-              : '크게 열리는 달이 없는 해입니다 — 다음 해가 나은지 카카오로 물어보세요'}${
-            im.조용 ? ' · ' + im.조용.월 + '월은 조용한 달입니다' : ''}</p>
-          <p class="pb-ft">해 카드와 같은 잣대를 달에 내린 것입니다 · 같은 해 안에서의 서열입니다.</p></div>`;
-    } else if (inNext && v.첫해) inNext.innerHTML = nextStep(
+            <span class="pb-god">${esc(r.십신)}</span></div>
+          ${r.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')}
+          <p class="pb-say">${esc(r.결)}</p>
+          ${open && days && days.length ? `<p class="pb-days">그중 날을 고르면 — ${days.map(d =>
+            `<b>${r.월}/${d.일}(${d.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(days[0].왜)} 등 같은 잣대로 고른 날들입니다</span></p>` : ''}
+        </div>`;
+      }).join('');
+      inNext.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — ${y}년 열두 달</p>
+        ${머리말}${달들}
+        <p class="pb-ft"><b>${im.열림.length ? '열리는 달 — ' + im.열림.join('·') + '월' : '크게 열리는 달이 없는 해입니다 — 이럴 때는 다음 해 초입을 같이 보는 게 맞습니다. 카카오로 물어보세요'}</b>${im.조용 ? ' · ' + im.조용.월 + '월이 가장 조용합니다' : ''}</p>
+        <p class="pb-ft">잣대 공개 — 해 카드와 같습니다: ${esc(h.배우자이름)}이 하늘에 오는가, 배우자 자리(일지)와 합·삼합·충이 되는가. 같은 해 안에서의 서열이라 다른 해와 점수를 비교하시면 안 됩니다. 대운은 성별로 순역이 갈립니다.</p>
+        <p class="pb-ft">읽으시다 「내 사주는 판정이 갈린다」는 표시를 원국 탭에서 보셨다면, 그 갈림이 이 달 서열을 바꿀 수 있습니다 — 그건 사람이 봐야 해서 카카오로 물어보시면 됩니다.</p></div>`;
+        } else if (inNext && v.첫해) inNext.innerHTML = nextStep(
       '그 해, 어느 달일까요',
       v.첫해.해 + '년까지',
       '해가 나왔으면 그 다음은 달입니다. ' + v.첫해.해 + '년 열두 달 중 어느 달에 열리는지, 그때 무엇을 하면 좋은지는 월운까지 내려가야 보입니다.',
