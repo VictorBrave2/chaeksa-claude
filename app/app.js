@@ -2023,6 +2023,7 @@
               : `<p class="pb-why">◦ 인연의 글자가 크게 들지 않는 달 — 흐름은 평온합니다</p>`}
             <p class="pb-say">${esc(r.결)}</p>
             ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(dd.좋은[0].왜 || '이 달 안의 서열')}${dd.좋은.length > 1 ? ' 등' : ''}</span></p>` : ''}
+            ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
             ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}
           </div>`;
         }).join('');
@@ -2134,6 +2135,7 @@
               : `<p class="pb-why">◦ 돈의 글자가 크게 들지 않는 달 — 흐름은 잔잔합니다</p>`}
             <p class="pb-say">${esc(GOD_FLOW[r.십신] || '')}</p>
             ${dd.좋은.length ? `<p class="pb-days">${dd.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${dd.좋은.map(d2 => `<b>${r.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
+            ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).length ? `<p class="pb-days">그날 중에서도 — ${dd.좋은.filter(d2 => d2.시진 && d2.시진.length).slice(0, 4).map(d2 => `${r.월}/${d2.일} <b>${esc(d2.시진.join('·'))}</b>`).join(' / ')}</p>` : ''}
             ${dd.조심.length ? `<p class="pb-avoid">조심할 날 — ${dd.조심.map(d2 => r.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}
           </div>`;
         }).join('');

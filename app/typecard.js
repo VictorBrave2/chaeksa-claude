@@ -700,6 +700,20 @@
     return { 머리, rows, 열림, 조용, 날들 };
   }
 
+  const HOUR12_KO = ['子 23~01시', '丑 01~03시', '寅 03~05시', '卯 05~07시', '辰 07~09시', '巳 09~11시',
+                     '午 11~13시', '未 13~15시', '申 15~17시', '酉 17~19시', '戌 19~21시', '亥 21~23시'];
+  /** 그날의 12시진을 시두법으로 세우고, 채점 함수로 상위 둘을 고른다.
+   *  시계 변환은 안 한다(지역 보정 23~34분) — 시진까지만 말하고 분 단위는 상담 몫. */
+  function 좋은시진(dayStem, score) {
+    const best = [];
+    for (let hb = 0; hb < 12; hb++) {
+      const hs = ((dayStem % 5) * 2 + hb) % 10;
+      best.push([hb, score(hs, hb)]);
+    }
+    best.sort((a, b) => b[1] - a[1]);
+    return best.slice(0, 2).filter(x => x[1] > 0).map(x => HOUR12_KO[x[0]]);
+  }
+
   /** 인연 — 한 달 안의 날들. 좋은 날과 조심할 날을 같이 낸다.
    *  크게 열린 날이 없는 달에도 그 안의 서열은 있다 — 상대 상위를 준다(상대:true). */
   function inyeonDays(R, year, m) {
@@ -726,6 +740,18 @@
       좋은 = all.filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc).slice(0, 4)
                .sort((a, b) => a.일 - b.일);
     }
+    // 좋은 날은 시진까지 — 그날의 하늘(시간)에 배우자성이 오는 시, 일지와 합하는 시
+    좋은.forEach(x => {
+      let tf; try { tf = E.dateFortune(year, m, x.일); } catch (e) { return; }
+      x.시진 = 좋은시진(tf.day.stem, (hs, hb) => {
+        let v = 0;
+        if (E.STEM_ELEM[hs] === 배우자오행) v += 3;
+        if (YUKHAP12[db] === hb) v += 3;
+        else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(hb) >= 0 && db !== hb)) v += 2;
+        else if (충12(db, hb)) v -= 3;
+        return v;
+      });
+    });
     const 조심 = all.filter(x => x.sc <= -3).slice(0, 4);
     return { 좋은, 조심, 상대 };
   }
@@ -996,6 +1022,19 @@
       좋은 = all.filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc).slice(0, 4)
                .sort((a, b) => a.일 - b.일);
     }
+    // 좋은 날은 시진까지 — 계약서에 도장 찍는 시간을 고르는 자리다
+    좋은.forEach(x => {
+      let tf; try { tf = E.dateFortune(y, m, x.일); } catch (e) { return; }
+      x.시진 = 좋은시진(tf.day.stem, (hs, hb) => {
+        let v = 0;
+        const g = E.TEN_GODS[E.tenGod(ds, hs)];
+        if (g === '편재' || g === '정재') v += 3;
+        else if (g === '식신' || g === '상관') v += 2;
+        else if (g === '겁재') v -= 3;
+        if (E.BRANCH_ELEM[hb] === 재오행) v += 2;
+        return v;
+      });
+    });
     const 조심 = all.filter(x => x.sc <= -3).slice(0, 4);
     return { 좋은, 조심, 상대 };
   }

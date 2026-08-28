@@ -30,7 +30,7 @@ const ALLOWED_TASKS = new Set(['brief', 'chat', 'consult', 'profile', 'compat', 
 const MAX_TOKENS = 2200;
 // story(유료 스토리 서술)만 길게 허용한다. 2만원짜리 결제 콘텐츠의 본문이라
 // 400자 요약이 아니라 3천 자 보고서가 맞다. 원가 ~80원 - 상품가의 0.4%.
-const MAX_TOKENS_STORY = 6000;
+const MAX_TOKENS_STORY = 12000;
 
 // 간이 IP 제한(인스턴스 메모리). 재시작마다 초기화되고 인스턴스마다 따로 세므로
 // 이것만으로는 방어가 아니다. 진짜 방어는 ai_usage_bump, 최종 방어선은 Anthropic 콘솔 한도.
