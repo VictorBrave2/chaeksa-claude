@@ -28,6 +28,9 @@ const UPSTREAM = 'https://api.anthropic.com/v1/messages';
 const ALLOWED_MODELS = new Set(['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5']);
 const ALLOWED_TASKS = new Set(['brief', 'chat', 'consult', 'profile', 'compat', 'story']);
 const MAX_TOKENS = 2200;
+// story(유료 스토리 서술)만 길게 허용한다. 2만원짜리 결제 콘텐츠의 본문이라
+// 400자 요약이 아니라 3천 자 보고서가 맞다. 원가 ~80원 - 상품가의 0.4%.
+const MAX_TOKENS_STORY = 6000;
 
 // 간이 IP 제한(인스턴스 메모리). 재시작마다 초기화되고 인스턴스마다 따로 세므로
 // 이것만으로는 방어가 아니다. 진짜 방어는 ai_usage_bump, 최종 방어선은 Anthropic 콘솔 한도.
@@ -147,13 +150,13 @@ module.exports = async (req, res) => {
   if (!body || !Array.isArray(body.messages)) {
     return res.status(400).json({ type: 'error', error: { message: 'Bad request' } });
   }
+  const task = ALLOWED_TASKS.has(req.headers['x-chaeksa-task']) ? req.headers['x-chaeksa-task'] : 'chat';
   if (!ALLOWED_MODELS.has(body.model)) body.model = 'claude-opus-5';
-  body.max_tokens = Math.min(body.max_tokens || 800, MAX_TOKENS);
+  body.max_tokens = Math.min(body.max_tokens || 800, task === 'story' ? MAX_TOKENS_STORY : MAX_TOKENS);
 
   // ── 사용자 확인 + 계량 ──────────────────────────────────
   const auth = req.headers.authorization || '';
   const userToken = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  const task = ALLOWED_TASKS.has(req.headers['x-chaeksa-task']) ? req.headers['x-chaeksa-task'] : 'chat';
   const enforcing = true;   // 기본값이 코드에 있으므로 항상 강제한다
 
   if (enforcing) {

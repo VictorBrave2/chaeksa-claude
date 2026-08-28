@@ -1388,7 +1388,7 @@
           + String(t).split(/[\r\n]+/).filter(Boolean).map(x => '<p>' + esc(x) + '</p>').join('');
       };
       if (cached) { draw(cached); return; }
-      el.innerHTML = '<p class="pb-ai-k">책사의 말</p><p class="pb-ai-load">계산을 읽고, 말로 잇는 중…</p>';
+      el.innerHTML = '<p class="pb-ai-k">책사의 말</p><p class="pb-ai-load">위 계산을 처음부터 끝까지 읽고 긴 글을 쓰는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
       const out = await AI.storyTell(kind, facts);
       try { localStorage.setItem(key, out); } catch (e) {}
       draw(out);
@@ -2029,11 +2029,25 @@
           ${조용해들.length ? `<p class="pb-ft">나머지 해(${조용해들.map(r => r.해).join('·')})는 인연보다 다른 일이 앞서는 해입니다 — 그 해들은 억지로 만들기보다 나를 채우는 해로 쓰세요.</p>` : ''}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리와 합·삼합·충인가, 대운이 무엇을 데려오는가. 시각(시진)까지 필요하시면 카카오로 물어보세요 — 사람이 진태양시로 봐드립니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'love', {
-        이름: profile.name || null,
-        과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 달: g.달 ? g.달.해 + '년 ' + g.달.말 : null })),
+        진단: T.inyeonWhy ? T.inyeonWhy(R).말 : null,
+        과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 이유: g.이유 })),
+        흔들린해: v.흔들린해.map(h => h.해 + '년(만 ' + h.나이 + '살)'),
         현재: v.현재.말,
-        미래: v.미래.filter(r => r.점수 >= 56).map(r => ({ 해: r.해, 나이: '만 ' + r.나이 + '살', 이유: r.이유 })),
-        첫열림: v.첫열림 && v.첫열림.해,
+        미래: v.미래.filter(r => r.점수 >= 56).slice(0, 3).map(r => {
+          const o = { 해: r.해, 나이: '만 ' + r.나이 + '살', 이유: r.이유 };
+          try {
+            const im = T.inyeonMonths(R, r.해);
+            o.열리는달 = im.열림;
+            o.날짜 = {};
+            im.열림.slice(0, 2).forEach(m => {
+              const d = im.날들[m];
+              if (d && d.length) o.날짜[m + '월'] = d.map(x => m + '/' + x.일 + '(' + x.요일 + ')');
+            });
+            if (im.조용) o.조용한달 = im.조용.월;
+          } catch (e) {}
+          return o;
+        }),
+        조용한해: v.미래.filter(r => r.점수 < 56).map(r => r.해),
       }));
     } else {
       box.innerHTML = nextStep('미래 — 언제 연애하게 되는가',
@@ -2116,13 +2130,27 @@
             동업·보증·큰 지출은 이 해들을 피해서. 새는 해에 안 잃는 것이 버는 해에 버는 것과 같은 무게입니다.</p>` : ''}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가(뿌리까지), 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 대운이 무엇을 데려오는가. 사업 개시·계약처럼 되돌리기 어려운 날은 후보를 들고 카카오로 물어보세요 — 판정이 갈리는 자리를 사람이 봐드립니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'wealth', {
-        이름: profile.name || null,
-        과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 달: g.달 ? g.달.해 + '년 ' + g.달.말 : null })),
-        샌해: v.샌해.map(h => h.해 + '년'),
+        진단: T.wealthWhy ? T.wealthWhy(R).말 : null,
+        강약: v.강약,
+        과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 이유: g.이유 })),
+        샌해: v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)'),
         현재: v.현재.말,
-        미래: v.미래.filter(r => r.점수 >= 56).map(r => ({ 해: r.해, 나이: '만 ' + r.나이 + '살', 이유: r.이유 })),
+        미래: v.미래.filter(r => r.점수 >= 56 && !r.샘).slice(0, 3).map(r => {
+          const o = { 해: r.해, 나이: '만 ' + r.나이 + '살', 이유: r.이유 };
+          try {
+            const dr = T.wealthDrill(R, r.해);
+            o.열리는달 = dr.열림;
+            o.날짜 = {};
+            dr.열림.slice(0, 2).forEach(m => {
+              const d = dr.날들[m];
+              if (d && d.length) o.날짜[m + '월'] = d.map(x => m + '/' + x.일 + '(' + x.요일 + ')');
+            });
+            if (dr.조용) o.조용한달 = dr.조용.월;
+          } catch (e) {}
+          return o;
+        }),
         지킬해: v.지킬해.map(r => r.해 + '년'),
-        첫열림: v.첫열림 && v.첫열림.해,
+        조용한해: v.미래.filter(r => r.점수 < 56 && !r.샘).map(r => r.해),
       }));
     } else {
       box.innerHTML = nextStep('미래 — 언제 벌리고 언제 지켜야 하는가',
