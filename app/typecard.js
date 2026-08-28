@@ -1238,6 +1238,58 @@
     return { 말 };
   }
 
+  // ── 서술 자료집 — LLM에게 원국 전부를 넘긴다 ──
+  //
+  // 「책사의 말」이 애매했던 원인: 엔진이 넘기던 것이 「4월 · 재성이 옵니다」 같은
+  // 라벨 조각뿐이라, LLM이 원국도 대운도 격국도 모른 채 살을 붙였다.
+  // 엔진은 그보다 백 배를 안다 — 사주 여덟 글자, 강약 수치, 오행 분포, 빈 오행,
+  // 격국 성패, 조후 용신, 대운 맥락. 전부 묶어서 넘기면 서술이 뿌리를 갖는다.
+  // 여기 있는 값은 전부 엔진 실측이다 — LLM은 이 밖을 말할 수 없다.
+  function dossier(R, when) {
+    const p = R.pillars, a = R.analysis || E.strengthOf(p), ds = p.day.stem;
+    const 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const gz = (x) => E.fmt.pillar(x);
+    const d = {};
+    d.사주 = [gz(p.year), gz(p.month), gz(p.day)].concat(p.hour ? [gz(p.hour)] : []).join(' ');
+    d.일간 = E.STEMS[ds] + '(' + E.STEMS_KO[ds] + ') · ' + E.ELEM[E.STEM_ELEM[ds]] + ' 일간';
+    d.강약 = a.strength + (a.strengthScore != null ? ' ' + a.strengthScore : '') + (a.gotMonth ? ' · 득령' : ' · 실령');
+    d.오행분포 = E.ELEM.map((e, i) => e + (a.elemCount ? a.elemCount[i] : '?')).join(' ');
+    if (a.missing && a.missing.length) d.빈오행 = a.missing.join('·') + ' — 평생 얇은 고리';
+    if (a.yongCandidates && a.yongCandidates.length) d.채워야할오행 = a.yongCandidates.join('·');
+    d.천간의노릇 = { 연간: 신(p.year.stem) + ' ' + E.STEMS[p.year.stem], 월간: 신(p.month.stem) + ' ' + E.STEMS[p.month.stem] };
+    if (p.hour) d.천간의노릇.시간 = 신(p.hour.stem) + ' ' + E.STEMS[p.hour.stem];
+    d.배우자자리 = '일지 ' + E.BRANCHES[p.day.branch] + '(' + E.BRANCHES_KO[p.day.branch] + ')';
+    try {
+      const J = gyeok(R);
+      if (J && J.격) {
+        const L = global.ChaeksaGyeok && global.ChaeksaGyeok.LABEL && global.ChaeksaGyeok.LABEL[J.판정];
+        d.격국 = { 격: J.격, 판정: (L && L.짧게) || J.판정 };
+        if (J.상신) d.격국.상신 = J.상신;
+      }
+    } catch (e) {}
+    try {
+      const g = global.ChaeksaClassic && global.ChaeksaClassic.gungtong(R);
+      if (g && g.need) d.조후 = { 계절의약: g.need + (g.aux ? ' · 보좌 ' + g.aux : ''),
+        형편: g.hasMain ? '주용신이 하늘에 떠 있음 — 계절이 필요로 하는 것을 갖춤'
+             : (g.hasAux ? '보좌만 떠 있음' : '하늘에 없음 — 운에서 채워야 함') };
+    } catch (e) {}
+    try {
+      const du = E.currentDaeun(R, when || new Date());
+      if (du) d.대운 = { 간지: gz(du), 십신: 신(du.stem),
+        구간: (du.startAge != null ? du.startAge + '~' + du.endAge + '세' : '') };
+    } catch (e) {}
+    try {
+      const y = (when || new Date()).getFullYear();
+      const tf = E.dateFortune(y, 6, 15);
+      d.올해세운 = y + '년 ' + gz(tf.year) + ' — ' + 신(tf.year.stem);
+    } catch (e) {}
+    try {
+      const 합 = E.natalHap(p);
+      if (합 && Object.keys(합).length) d.합거 = '원국 천간합으로 명령을 잃은 자리 있음(' + Object.keys(합).join('·') + ')';
+    } catch (e) {}
+    return d;
+  }
+
   // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
   //
   // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
@@ -2448,5 +2500,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
