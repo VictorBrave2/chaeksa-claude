@@ -932,3 +932,14 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .pb-scene{margin:-2px -2px 8px;overflow:hidden;border-radius:9px}
 .ls-item .pb-scene{margin:0 0 8px}
 .ls-now .pb-scene{margin:-4px -6px 10px}
+
+/* 계산 원장 로딩 */
+.pb-ledger{max-height:168px;overflow:hidden;padding:6px 2px;font-size:12.5px;line-height:1.9}
+.pb-lg-line{color:var(--ink2);transition:opacity .5s;animation:lgin .35s ease-out}
+.pb-lg-line.dim{opacity:.35}
+.pb-lg-h{color:var(--ink);font-weight:500}
+.pb-lg-mark{display:inline-block;width:18px;color:var(--accent)}
+.pb-lgfoot{display:flex;justify-content:flex-end;font-size:11px;color:var(--ink3);
+  font-variant-numeric:tabular-nums;margin:4px 0 6px;min-height:14px}
+@keyframes lgin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.pb-lg-line{animation:none}}

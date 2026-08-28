@@ -1318,27 +1318,49 @@
     }).catch(() => {});
   }
 
-  // 유료 화면의 계단식 공개 — 계산은 즉석이지만, 단계를 보여주며 연다.
-  // 값을 낸 사람에게 계산의 무게가 보여야 한다. 거짓말은 아니다 —
-  // 메시지는 실제로 지금 하는 계산의 이름이다.
-  function paidReveal(box, 단계들, make, after) {
-    box.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람</p>
-      <p class="pb-load">${esc(단계들[0])}</p>
-      <div class="pb-loadbar"><i style="width:8%"></i></div></div>`;
-    const txt = box.querySelector('.pb-load'), bar = box.querySelector('.pb-loadbar i');
-    let i = 0;
-    const tick = () => {
-      i++;
-      if (i < 단계들.length) {
-        txt.textContent = 단계들[i];
-        bar.style.width = Math.round(8 + (i / 단계들.length) * 88) + '%';
-        setTimeout(tick, 650);
-      } else {
+  // ── 계산 원장 로딩 — 로딩 자체가 「기준 공개」다 ──
+  // 추상적인 「…재는 중」이 아니라 실제 중간 결과를 한 줄씩 찍는다.
+  // 노력의 가시화: 같은 결과라도 일하는 과정을 본 사람이 더 신뢰한다(카약의 항공사
+  // 스캔). 우리는 흉내낼 필요가 없다 — 진짜 계산이니 원장을 그대로 보여주면 된다.
+  // 줄도 숫자도 전부 실측이다. 지어낸 줄이 하나라도 섞이면 이 장치 전체가 거짓이 된다.
+  function paidReveal(box, 원장, make, after) {
+    // 원장: { 머리:[문자열...], 달줄:[{말, 표}...], 꼬리:[문자열...], 검토수 }
+    const esc2 = esc;
+    box.innerHTML = '<div class="paidbox"><p class="pb-k">결제 열람 — 계산 중</p>'
+      + '<div class="pb-ledger" aria-live="polite"></div>'
+      + '<div class="pb-lgfoot"><span class="pb-lgcount"></span></div>'
+      + '<div class="pb-loadbar"><i style="width:4%"></i></div></div>';
+    const led = box.querySelector('.pb-ledger'), bar = box.querySelector('.pb-loadbar i');
+    const cnt = box.querySelector('.pb-lgcount');
+    const 줄들 = [];
+    (원장.머리 || []).forEach(t => 줄들.push({ t, cls: 'h', ms: 700 }));
+    (원장.달줄 || []).forEach(m => 줄들.push({ t: m.말, 표: m.표, cls: 'm', ms: 430 }));
+    (원장.꼬리 || []).forEach(t => 줄들.push({ t, cls: 'h', ms: 750 }));
+    const total = 줄들.length;
+    let i = 0, seen = 0;
+    const step = () => {
+      if (i >= total) {
         bar.style.width = '100%';
-        setTimeout(() => { box.innerHTML = make(); if (after) try { after(box); } catch (e) {} }, 250);
+        setTimeout(() => { box.innerHTML = make(); if (after) try { after(box); } catch (e) {} }, 420);
+        return;
       }
+      const L = 줄들[i];
+      const div = document.createElement('div');
+      div.className = 'pb-lg-line pb-lg-' + L.cls;
+      div.innerHTML = (L.표 ? '<span class="pb-lg-mark">' + L.표 + '</span>' : '') + esc2(L.t);
+      led.appendChild(div);
+      // 원장은 위로 흘러간다 — 최근 여섯 줄만 또렷하게
+      const lines = led.querySelectorAll('.pb-lg-line');
+      if (lines.length > 6) lines[lines.length - 7].classList.add('dim');
+      if (lines.length > 10) lines[lines.length - 11].remove();
+      led.scrollTop = led.scrollHeight;
+      if (L.cls === 'm') { seen++; }
+      if (원장.검토수) cnt.textContent = '대조한 경우 ' + Math.round((i + 1) / total * 원장.검토수).toLocaleString('ko-KR') + '가지';
+      bar.style.width = Math.round(4 + (i + 1) / total * 92) + '%';
+      i++;
+      setTimeout(step, L.ms);
     };
-    setTimeout(tick, 650);
+    setTimeout(step, 350);
   }
 
   function nextStep(제목, 무료로본것, 물음, 문의말, 상품, 진단) {
@@ -1997,29 +2019,51 @@
     const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
     const box = $('lsNext');
     if (paid) {
-      paidReveal(box, [
-        '다가오는 열두 달에 배우자성이 드는 자리를 재는 중…',
-        '열리는 달 안에서 날을 고르는 중…',
-        '배우자 자리의 합·충을 대조하는 중…',
-      ], () => {
-        // 지금부터 열두 달, 시간순으로 전부. 먼 해는 맺음의 한 문장이면 된다 —
-        // 2026년 사람에게 필요한 것은 다음 달이지 2030년이 아니다.
-        const y0 = today.getFullYear(), mIdx = today.getMonth();
-        const 캐시 = {};
-        const 달표 = [];
-        for (let i = 1; i <= 12; i++) {
-          const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
-          if (!(yy in 캐시)) { try { 캐시[yy] = T.inyeonMonths(R, yy); } catch (e) { 캐시[yy] = null; } }
-          const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
-          if (r) 달표.push({ 연: yy, 월: mm, 간지: r.간지, 점수: r.점수, 이유: r.이유, 결: r.결 });
-        }
-        const 열린수 = 달표.filter(r => r.점수 >= 56).length;
-        // 모든 달이 완전한 카드다. 조용한 달도 「조용함」 한 줄로 끝내지 않는다 —
-        // 그 달의 결, 그 안에서 나은 날, 조심할 날까지. 아끼면 환불감이다.
+      // 계산을 먼저 끝내고, 그 실제 결과를 원장으로 재생한 뒤 화면을 편다.
+      const y0 = today.getFullYear(), mIdx = today.getMonth();
+      const 캐시 = {};
+      const 달표 = [];
+      for (let i = 1; i <= 12; i++) {
+        const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
+        if (!(yy in 캐시)) { try { 캐시[yy] = T.inyeonMonths(R, yy); } catch (e) { 캐시[yy] = null; } }
+        const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
+        if (r) 달표.push({ 연: yy, 월: mm, 간지: r.간지, 점수: r.점수, 이유: r.이유, 결: r.결 });
+      }
+      const 날정보 = {};
+      let 좋은합 = 0, 조심합 = 0, 총일 = 0;
+      달표.forEach(r => {
+        let dd = { 좋은: [], 조심: [], 상대: false };
+        try { dd = T.inyeonDays(R, r.연, r.월) || dd; } catch (e) {}
+        날정보[r.연 + '-' + r.월] = dd;
+        좋은합 += dd.좋은.filter(x => x.sc >= 3).length; 조심합 += dd.조심.length;
+        총일 += new Date(r.연, r.월, 0).getDate();
+      });
+      const 검토수 = 12 + 총일 + 좋은합 * 12;
+      const 열린수 = 달표.filter(r => r.점수 >= 56).length;
+      const 사주줄 = [R.pillars.year, R.pillars.month, R.pillars.day].concat(R.pillars.hour ? [R.pillars.hour] : [])
+        .map(x => f.pillar(x)).join(' ');
+      const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+      const 원장 = {
+        검토수,
+        머리: [
+          '원국을 폅니다 — ' + 사주줄,
+          '인연의 글자: ' + (남 ? '재성' : '관성') + ' · 배우자 자리: ' + E.BRANCHES[R.pillars.day.branch],
+          '잣대를 겁니다 — 투출·통근·합거, 과거 연표를 짚은 그 자 그대로',
+        ],
+        달줄: 달표.map(r => ({
+          표: r.점수 >= 56 ? '◉' : (r.이유.some(t => t.indexOf('흔들') >= 0) ? '△' : '―'),
+          말: r.연 + '.' + r.월 + ' ' + r.간지 + ' — ' + (r.이유[0] || '조용'),
+        })),
+        꼬리: [
+          총일 + '일을 하루씩 검토 — 좋은 날 ' + 좋은합 + ' · 조심할 날 ' + 조심합,
+          '시두법으로 좋은 날의 12시진 대조 — ' + (좋은합 * 12) + '자리',
+          '합 ' + 검토수.toLocaleString('ko-KR') + '가지 경우를 대조했습니다 — 두루마리를 폅니다',
+        ],
+      };
+      paidReveal(box, 원장, () => {
         const 본문 = 달표.map(r => {
           const 열림 = r.점수 >= 56;
-          let dd = { 좋은: [], 조심: [], 상대: false };
-          try { dd = T.inyeonDays(R, r.연, r.월) || dd; } catch (e) {}
+          const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [], 상대: false };
           const 상태 = 열림 ? 'open' : (r.이유.some(t => t.indexOf('흔들') >= 0) ? 'shake' : 'quiet');
           return `<div class="pb-dd${열림 ? ' pb-open' : ''}">
             <div class="pb-scene">${T.달그림('love', r.월, 상태)}</div>
@@ -2035,8 +2079,8 @@
         }).join('');
         const 먼 = v.미래.filter(r => r.점수 >= 70).map(r => r.해);
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
-          <p class="pb-lede">다음 달부터 열두 달을 시간순으로 쟀습니다. ${열린수
-            ? `열리는 달이 <b>${열린수}개</b> — 그 달들은 날짜까지 내렸습니다.`
+          <p class="pb-lede">다음 달부터 열두 달, ${검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${열린수
+            ? `열리는 달이 <b>${열린수}개</b> — 그 달들은 날짜와 시진까지 내렸습니다.`
             : '크게 열리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}</p>
           ${본문}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리(일지)와 합·삼합·충인가.${먼.length ? ` 더 멀리는 <b>${먼.join('·')}년</b>이 크게 열리는 해입니다 — 가까워지면 다시 보세요.` : ''} 시각(시진)까지 필요하시면 카카오로 물어보세요 — 사람이 진태양시로 봐드립니다.</p></div>`;
@@ -2045,24 +2089,13 @@
         과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null })),
         흔들린해: v.흔들린해.map(h => h.해 + '년(만 ' + h.나이 + '살)'),
         현재: v.현재.말,
-        열두달: (() => {
-          const out = []; const y0 = today.getFullYear(), mIdx = today.getMonth();
-          const 캐시 = {};
-          for (let i = 1; i <= 12; i++) {
-            const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
-            if (!(yy in 캐시)) { try { 캐시[yy] = T.inyeonMonths(R, yy); } catch (e) { 캐시[yy] = null; } }
-            const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
-            if (!r) continue;
-            const o = { 때: yy + '년 ' + mm + '월', 이유: r.이유, 열림: r.점수 >= 56 };
-            try {
-              const dd = T.inyeonDays(R, yy, mm);
-              if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => mm + '/' + x.일 + '(' + x.요일 + ')');
-              if (dd.조심.length) o.조심할날 = dd.조심.map(x => mm + '/' + x.일);
-            } catch (e) {}
-            out.push(o);
-          }
-          return out;
-        })(),
+        열두달: 달표.map(r => {
+          const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [] };
+          const o = { 때: r.연 + '년 ' + r.월 + '월', 이유: r.이유, 열림: r.점수 >= 56 };
+          if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => r.월 + '/' + x.일 + '(' + x.요일 + ')');
+          if (dd.조심.length) o.조심할날 = dd.조심.map(x => r.월 + '/' + x.일);
+          return o;
+        }),
         먼해: v.미래.filter(r => r.점수 >= 70).map(r => r.해),
       }));
     } else {
@@ -2116,28 +2149,50 @@
     const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
     const box = $('msNext');
     if (paid) {
-      paidReveal(box, [
-        '다가오는 열두 달에 재성이 드는 자리를 재는 중…',
-        '돈이 도는 날을 고르는 중…',
-        '새는 달(겁재)을 대조하는 중…',
-      ], () => {
-        // 지금부터 열두 달, 시간순으로 전부. 벌리는 달은 날짜까지, 새는 달은 경고로.
-        const y0 = today.getFullYear(), mIdx = today.getMonth();
-        const 캐시 = {};
-        const 달표 = [];
-        for (let i = 1; i <= 12; i++) {
-          const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
-          if (!(yy in 캐시)) { try { 캐시[yy] = T.wealthDrill(R, yy); } catch (e) { 캐시[yy] = null; } }
-          const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
-          if (r) 달표.push({ 연: yy, 월: mm, 간지: r.간지, 십신: r.십신, 점수: r.점수, 이유: r.이유 });
-        }
-        const 열린수 = 달표.filter(r => r.점수 >= 56).length;
-        const 샘달 = 달표.filter(r => r.십신 === '겁재');
-        // 모든 달이 완전한 카드다 — 결 서술(GOD_FLOW)·날·조심할 날까지.
+      const y0 = today.getFullYear(), mIdx = today.getMonth();
+      const 캐시 = {};
+      const 달표 = [];
+      for (let i = 1; i <= 12; i++) {
+        const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
+        if (!(yy in 캐시)) { try { 캐시[yy] = T.wealthDrill(R, yy); } catch (e) { 캐시[yy] = null; } }
+        const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
+        if (r) 달표.push({ 연: yy, 월: mm, 간지: r.간지, 십신: r.십신, 점수: r.점수, 이유: r.이유 });
+      }
+      const 날정보 = {};
+      let 좋은합 = 0, 조심합 = 0, 총일 = 0;
+      달표.forEach(r => {
+        let dd = { 좋은: [], 조심: [], 상대: false };
+        try { dd = T.재물날들(R, r.연, r.월) || dd; } catch (e) {}
+        날정보[r.연 + '-' + r.월] = dd;
+        좋은합 += dd.좋은.filter(x => x.sc >= 3).length; 조심합 += dd.조심.length;
+        총일 += new Date(r.연, r.월, 0).getDate();
+      });
+      const 검토수 = 12 + 총일 + 좋은합 * 12;
+      const 열린수 = 달표.filter(r => r.점수 >= 56).length;
+      const 샘달 = 달표.filter(r => r.십신 === '겁재');
+      const 사주줄 = [R.pillars.year, R.pillars.month, R.pillars.day].concat(R.pillars.hour ? [R.pillars.hour] : [])
+        .map(x => f.pillar(x)).join(' ');
+      const 원장 = {
+        검토수,
+        머리: [
+          '원국을 폅니다 — ' + 사주줄,
+          '돈의 글자: 재성 · 새는 손: 겁재 · ' + (v.강약 === '신약' ? '신약이라 재성 가산을 줄여 잽니다(재다신약)' : '강약: ' + v.강약),
+          '잣대를 겁니다 — 재성 투출·식상·겁재, 과거 연표를 짚은 그 자 그대로',
+        ],
+        달줄: 달표.map(r => ({
+          표: r.점수 >= 56 ? '◉' : (r.십신 === '겁재' ? '✕' : '―'),
+          말: r.연 + '.' + r.월 + ' ' + r.간지 + ' — ' + (r.이유[0] || '잔잔'),
+        })),
+        꼬리: [
+          총일 + '일을 하루씩 검토 — 돈이 도는 날 ' + 좋은합 + ' · 새기 쉬운 날 ' + 조심합,
+          '시두법으로 좋은 날의 12시진 대조 — ' + (좋은합 * 12) + '자리',
+          '합 ' + 검토수.toLocaleString('ko-KR') + '가지 경우를 대조했습니다 — 장부를 폅니다',
+        ],
+      };
+      paidReveal(box, 원장, () => {
         const 본문 = 달표.map(r => {
           const 열림 = r.점수 >= 56, 샘 = r.십신 === '겁재';
-          let dd = { 좋은: [], 조심: [], 상대: false };
-          try { dd = T.재물날들(R, r.연, r.월) || dd; } catch (e) {}
+          const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [], 상대: false };
           return `<div class="pb-dd${열림 ? ' pb-open' : ''}${샘 ? ' pb-leak' : ''}">
             <div class="pb-scene">${T.달그림('wealth', r.월, 열림 ? 'open' : (샘 ? 'leak' : 'quiet'))}</div>
             <b>${r.연}년 ${r.월}월</b> <span class="gz2">${esc(r.간지)}</span> <span class="pb-god">${esc(r.십신)}</span>
@@ -2152,10 +2207,10 @@
         }).join('');
         const 먼 = v.미래.filter(r => r.점수 >= 70 && !r.샘).map(r => r.해);
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
-          <p class="pb-lede">다음 달부터 열두 달을 시간순으로 쟀습니다. ${열린수
-            ? `돈이 도는 달이 <b>${열린수}개</b> — 그 달들은 날짜까지 내렸습니다.`
+          <p class="pb-lede">다음 달부터 열두 달, ${검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${열린수
+            ? `돈이 도는 달이 <b>${열린수}개</b> — 날짜와 시진까지 내렸습니다.`
             : '크게 벌리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}${샘달.length
-            ? ` 붉은 막대(${샘달.map(r => r.월 + '월').join('·')})는 <b>새기 쉬운 달</b>입니다 — 동업·보증·큰 지출을 피하세요.` : ''}</p>
+            ? ` 붉은 표(${샘달.map(r => r.월 + '월').join('·')})는 <b>새기 쉬운 달</b> — 동업·보증·큰 지출을 피하세요.` : ''}</p>
           ${본문}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가, 벌이를 만드는 식상인가, 나눠 가는 겁재인가.${먼.length ? ` 더 멀리는 <b>${먼.join('·')}년</b>이 크게 벌리는 해입니다 — 가까워지면 다시 보세요.` : ''} 되돌리기 어려운 계약 날은 후보를 들고 카카오로 — 판정이 갈리는 자리를 사람이 봐드립니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'wealth', {
@@ -2164,24 +2219,13 @@
         과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null })),
         샌해: v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)'),
         현재: v.현재.말,
-        열두달: (() => {
-          const out = []; const y0 = today.getFullYear(), mIdx = today.getMonth();
-          const 캐시 = {};
-          for (let i = 1; i <= 12; i++) {
-            const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
-            if (!(yy in 캐시)) { try { 캐시[yy] = T.wealthDrill(R, yy); } catch (e) { 캐시[yy] = null; } }
-            const r = 캐시[yy] && 캐시[yy].rows[mm - 1];
-            if (!r) continue;
-            const o = { 때: yy + '년 ' + mm + '월', 이유: r.이유, 열림: r.점수 >= 56, 샘: r.십신 === '겁재' };
-            try {
-              const dd = T.재물날들(R, yy, mm);
-              if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => mm + '/' + x.일 + '(' + x.요일 + ')');
-              if (dd.조심.length) o.조심할날 = dd.조심.map(x => mm + '/' + x.일);
-            } catch (e) {}
-            out.push(o);
-          }
-          return out;
-        })(),
+        열두달: 달표.map(r => {
+          const dd = 날정보[r.연 + '-' + r.월] || { 좋은: [], 조심: [] };
+          const o = { 때: r.연 + '년 ' + r.월 + '월', 이유: r.이유, 열림: r.점수 >= 56, 샘: r.십신 === '겁재' };
+          if (dd.좋은.length) o[dd.상대 ? '그달에서나은날' : '좋은날'] = dd.좋은.map(x => r.월 + '/' + x.일 + '(' + x.요일 + ')');
+          if (dd.조심.length) o.조심할날 = dd.조심.map(x => r.월 + '/' + x.일);
+          return o;
+        }),
         먼해: v.미래.filter(r => r.점수 >= 70 && !r.샘).map(r => r.해),
       }));
     } else {
