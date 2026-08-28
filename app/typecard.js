@@ -1245,20 +1245,53 @@
   // 엔진은 그보다 백 배를 안다 — 사주 여덟 글자, 강약 수치, 오행 분포, 빈 오행,
   // 격국 성패, 조후 용신, 대운 맥락. 전부 묶어서 넘기면 서술이 뿌리를 갖는다.
   // 여기 있는 값은 전부 엔진 실측이다 — LLM은 이 밖을 말할 수 없다.
+  // 십신 하나하나의 뜻과 삶에서의 생김새 — 엔진의 1을 10으로 펼치는 표.
+  // 화면(GOD_FLOW)보다 길게 쓴다: LLM이 이걸 100으로 펼칠 재료다.
+  const GOD_MEANING = {
+    비견: '나와 같은 기운. 자존심·독립·또래를 뜻한다. 이 기운의 시기는 내 것을 세우는 때라, 연애나 동업에서는 내 몫 주장이 세져 부딪히기 쉽고, 혼자 힘으로 뭔가를 이루고 싶어진다',
+    겁재: '나와 같은 오행의 다른 얼굴. 경쟁·지출·나눠 가짐을 뜻한다. 사람은 모이는데 돈이 새고, 같은 것을 놓고 겨루게 되기 쉬운 자리다. 동업·보증·큰 지출을 조심하는 자리',
+    식신: '내가 낳는 기운. 표현·여유·의식주·즐거움을 뜻한다. 즐기면서 하면 돌아오는 결이라, 만남에서는 편안한 웃음이 되고 돈에서는 일이 밥이 되는 길목이 된다',
+    상관: '튀는 표현. 재능·말·파격을 뜻한다. 매력과 끼가 살아나지만 말이 앞서 윗사람·격식과 부딪히기 쉽다. 보여주는 일에는 좋고, 참아야 하는 자리에는 나쁘다',
+    편재: '움직이는 재물. 기회·활동·유통을 뜻한다. 앉아서 오는 게 아니라 나가야 잡히는 돈이고, 남성에게는 인연의 글자이기도 하다. 발이 넓어지고 판이 커지는 기운',
+    정재: '차곡차곡 모으는 재물. 실속·관리·성실을 뜻한다. 지키는 돈이고 오래 보는 인연이다. 화려하진 않아도 남는 것이 있는 기운',
+    편관: '나를 강하게 누르는 힘. 시련·단련·권위를 뜻한다. 감당하면 실력과 자리가 되고, 못 감당하면 압박과 소모가 된다. 여성에게는 강한 남성의 글자이기도 하다',
+    정관: '나를 반듯하게 누르는 힘. 질서·직장·명예를 뜻한다. 인정받는 자리·공식적인 관계에 좋고, 여성에게는 남편의 글자다',
+    편인: '비스듬한 배움. 직관·궁리·혼자만의 시간을 뜻한다. 안으로 파고드는 기운이라 공부·기획에는 좋고, 밖으로 벌이는 일에는 발이 무거워진다',
+    정인: '바른 배움과 보살핌. 문서·자격·어른의 도움을 뜻한다. 받는 자리라 기댈 곳이 생기고, 소개나 추천 같은 다리가 힘을 쓴다',
+  };
+  const 강약뜻 = {
+    신약: '일간을 돕는 기운이 적다는 뜻. 모자란 게 아니라 밖에서 채워지는 구조다 — 좋은 사람과 좋은 때를 만나면 남보다 크게 가고, 혼자 소모전을 하면 빨리 지친다. 그래서 이 사주는 「때」를 아는 것이 힘의 절반이다',
+    신강: '일간을 돕는 기운이 많다는 뜻. 힘이 안에 고이는 구조라, 내보낼 곳(일·표현·활동)이 있어야 풀리고 웅크리면 답답해진다',
+    중화: '치우침이 적다는 뜻. 운이 좋으면 좋은 대로, 눌리면 눌리는 대로 결을 비교적 그대로 탄다. 그래서 달력이 곧 지침이 된다',
+  };
+
   function dossier(R, when) {
     const p = R.pillars, a = R.analysis || E.strengthOf(p), ds = p.day.stem;
     const 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
     const gz = (x) => E.fmt.pillar(x);
     const d = {};
     d.사주 = [gz(p.year), gz(p.month), gz(p.day)].concat(p.hour ? [gz(p.hour)] : []).join(' ');
-    d.일간 = E.STEMS[ds] + '(' + E.STEMS_KO[ds] + ') · ' + E.ELEM[E.STEM_ELEM[ds]] + ' 일간';
-    d.강약 = a.strength + (a.strengthScore != null ? ' ' + a.strengthScore : '') + (a.gotMonth ? ' · 득령' : ' · 실령');
-    d.오행분포 = E.ELEM.map((e, i) => e + (a.elemCount ? a.elemCount[i] : '?')).join(' ');
-    if (a.missing && a.missing.length) d.빈오행 = a.missing.join('·') + ' — 평생 얇은 고리';
-    if (a.yongCandidates && a.yongCandidates.length) d.채워야할오행 = a.yongCandidates.join('·');
-    d.천간의노릇 = { 연간: 신(p.year.stem) + ' ' + E.STEMS[p.year.stem], 월간: 신(p.month.stem) + ' ' + E.STEMS[p.month.stem] };
-    if (p.hour) d.천간의노릇.시간 = 신(p.hour.stem) + ' ' + E.STEMS[p.hour.stem];
-    d.배우자자리 = '일지 ' + E.BRANCHES[p.day.branch] + '(' + E.BRANCHES_KO[p.day.branch] + ')';
+    d.일간 = E.STEMS[ds] + '(' + E.STEMS_KO[ds] + ') · ' + E.ELEM[E.STEM_ELEM[ds]] + ' 일간 — 이 사람 자신을 나타내는 글자';
+    d.강약 = a.strength + (a.strengthScore != null ? ' ' + a.strengthScore : '')
+      + (a.gotMonth ? ' · 득령(태어난 계절이 나를 돕는다)' : ' · 실령(태어난 계절이 나를 돕지 않아, 힘을 계절 밖에서 얻어야 한다)')
+      + ' — ' + (강약뜻[a.strength] || '');
+    d.오행분포 = E.ELEM.map((e, i) => e + (a.elemCount ? a.elemCount[i] : '?')).join(' ')
+      + ' — 여덟 글자가 어떤 재료로 이루어졌는가';
+    if (a.missing && a.missing.length) d.빈오행 = a.missing.join('·')
+      + ' — 원국에 아예 없는 재료. 평생 얇은 고리라, 이 기운이 운에서 들어오는 때가 유난히 크게 느껴진다';
+    if (a.yongCandidates && a.yongCandidates.length) d.채워야할오행 = a.yongCandidates.join('·')
+      + ' — 이 기운이 오는 때에 힘이 돌고, 이 기운을 가진 사람이 곁에 오면 편해진다';
+    const 노릇 = (st, 자리말) => {
+      const g = 신(st);
+      return g + ' ' + E.STEMS[st] + ' — ' + 자리말 + '. ' + (GOD_MEANING[g] || '');
+    };
+    d.천간의노릇 = {
+      연간: 노릇(p.year.stem, '이른 시기·집안·바깥에서 크게 보이는 자리'),
+      월간: 노릇(p.month.stem, '청년기·사회생활의 자리, 가장 힘있는 자리'),
+    };
+    if (p.hour) d.천간의노릇.시간 = 노릇(p.hour.stem, '말년·내밀한 자리, 그리고 늘 곁에 두는 것');
+    d.배우자자리 = '일지 ' + E.BRANCHES[p.day.branch] + '(' + E.BRANCHES_KO[p.day.branch]
+      + ') — 배우자가 앉는 자리이자 내 속마음의 방. 운의 글자가 이 자리와 합하면 곁이 채워지고, 치면 흔들린다';
     try {
       const J = gyeok(R);
       if (J && J.격) {
@@ -1275,13 +1308,18 @@
     } catch (e) {}
     try {
       const du = E.currentDaeun(R, when || new Date());
-      if (du) d.대운 = { 간지: gz(du), 십신: 신(du.stem),
-        구간: (du.startAge != null ? du.startAge + '~' + du.endAge + '세' : '') };
+      if (du) {
+        const g = 신(du.stem);
+        d.대운 = { 간지: gz(du), 십신: g,
+          구간: (du.startAge != null ? du.startAge + '~' + du.endAge + '세' : ''),
+          뜻: '대운은 10년 단위의 큰 바탕이다. 지금 이 사람은 ' + g + '의 10년 위에 서 있다 — ' + (GOD_MEANING[g] || '') };
+      }
     } catch (e) {}
     try {
       const y = (when || new Date()).getFullYear();
       const tf = E.dateFortune(y, 6, 15);
-      d.올해세운 = y + '년 ' + gz(tf.year) + ' — ' + 신(tf.year.stem);
+      const sg = 신(tf.year.stem);
+      d.올해세운 = y + '년 ' + gz(tf.year) + ' — ' + sg + '의 해. ' + (GOD_MEANING[sg] || '');
     } catch (e) {}
     try {
       const 합 = E.natalHap(p);
@@ -2500,5 +2538,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
