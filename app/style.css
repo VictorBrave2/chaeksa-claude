@@ -917,3 +917,10 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .pb-load{font-size:13px;color:var(--ink2);padding:10px 0 8px;min-height:20px}
 .pb-loadbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
 .pb-loadbar i{display:block;height:100%;background:var(--accent);transition:width .55s ease}
+
+/* 책사의 말 — 유료 화면의 AI 서술 */
+.pb-ai{margin-top:16px;padding:15px 17px;border-radius:12px;background:var(--card,#fff);border:1px solid var(--accent-line)}
+.pb-ai-k{font-size:11px;letter-spacing:2px;color:var(--accent);margin:0 0 9px}
+.pb-ai p{font-size:13.5px;line-height:1.95;color:var(--ink);margin:0 0 10px}
+.pb-ai p:last-child{margin-bottom:0}
+.pb-ai-load{color:var(--ink3) !important;font-size:12.5px !important}

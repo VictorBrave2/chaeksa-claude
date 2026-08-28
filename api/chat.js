@@ -26,7 +26,7 @@
  */
 const UPSTREAM = 'https://api.anthropic.com/v1/messages';
 const ALLOWED_MODELS = new Set(['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5']);
-const ALLOWED_TASKS = new Set(['brief', 'chat', 'consult', 'profile', 'compat']);
+const ALLOWED_TASKS = new Set(['brief', 'chat', 'consult', 'profile', 'compat', 'story']);
 const MAX_TOKENS = 2200;
 
 // 간이 IP 제한(인스턴스 메모리). 재시작마다 초기화되고 인스턴스마다 따로 세므로

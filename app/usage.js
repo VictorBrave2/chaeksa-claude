@@ -21,18 +21,18 @@
   const KEY_L = 'chaeksa.usageLife';    // 초기화 없음 (무료 체험)
 
   // 1회 예상 원가(원). 실측 토큰 + 프롬프트 캐싱 반영.
-  const COST = { brief: 5.4, chat: 10.6, consult: 32.4, profile: 29.7, compat: 20.2 };
+  const COST = { brief: 5.4, chat: 10.6, consult: 32.4, profile: 29.7, compat: 20.2, story: 9.8 };
 
   const PLANS = {
     // 비로그인: AI 없음. 계산 기능은 전부 열려 있다.
-    guest: { label: '둘러보기', period: 'life', limits: { brief: 0, chat: 0, consult: 0, profile: 0, compat: 0 } },
+    guest: { label: '둘러보기', period: 'life', limits: { brief: 0, chat: 0, consult: 0, profile: 0, compat: 0, story: 0 } },
     // 무료: 평생 체험분. 소진되면 규칙 기반으로 계속 사용.
-    free: { label: '무료', period: 'life', limits: { brief: 5, chat: 5, consult: 1, profile: 1, compat: 1 } },
+    free: { label: '무료', period: 'life', limits: { brief: 5, chat: 5, consult: 1, profile: 1, compat: 1, story: 24 } },
     // 구독: 매달 초기화.
-    member: { label: '구독', period: 'month', limits: { brief: 62, chat: 100, consult: 15, profile: 4, compat: 20 } },
+    member: { label: '구독', period: 'month', limits: { brief: 62, chat: 100, consult: 15, profile: 4, compat: 20, story: 60 } },
     // 슈퍼: 운영자 확인용. 서버(schema-9)의 ai_usage_limit 과 같은 값이어야 한다.
     // 켜는 곳은 여기가 아니라 JWT 의 app_metadata 다 — server/schema-9.sql 참고.
-    super: { label: '책사', period: 'life', limits: { brief: 100000, chat: 100000, consult: 100000, profile: 100000, compat: 100000 } },
+    super: { label: '책사', period: 'life', limits: { brief: 100000, chat: 100000, consult: 100000, profile: 100000, compat: 100000, story: 100000 } },
   };
 
   const month = () => new Date().toISOString().slice(0, 7);

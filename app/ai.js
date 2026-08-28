@@ -16,9 +16,9 @@
        브리핑 1회  하이쿠 약 5원 · 소네트 약 11원 · 오퍼스 약 28원
      기본값은 '균형'. 설정에서 바꿀 수 있다. */
   const TIERS = {
-    quality: { brief: 'claude-opus-5',   chat: 'claude-opus-5',   consult: 'claude-opus-5',   profile: 'claude-opus-5', compat: 'claude-opus-5' },
-    balanced:{ brief: 'claude-haiku-4-5', chat: 'claude-sonnet-5', consult: 'claude-sonnet-5', profile: 'claude-opus-5', compat: 'claude-sonnet-5' },
-    thrifty: { brief: 'claude-haiku-4-5', chat: 'claude-haiku-4-5', consult: 'claude-sonnet-5', profile: 'claude-sonnet-5', compat: 'claude-haiku-4-5' },
+    quality: { brief: 'claude-opus-5',   chat: 'claude-opus-5',   consult: 'claude-opus-5',   profile: 'claude-opus-5', compat: 'claude-opus-5',  story: 'claude-opus-5' },
+    balanced:{ brief: 'claude-haiku-4-5', chat: 'claude-sonnet-5', consult: 'claude-sonnet-5', profile: 'claude-opus-5', compat: 'claude-sonnet-5', story: 'claude-sonnet-5' },
+    thrifty: { brief: 'claude-haiku-4-5', chat: 'claude-haiku-4-5', consult: 'claude-sonnet-5', profile: 'claude-sonnet-5', compat: 'claude-haiku-4-5', story: 'claude-sonnet-5' },
   };
   const modelFor = (task) => {
     const s = settings();
@@ -275,6 +275,25 @@ ${prof}` : ''}`;
   }
 
   // 오늘 브리핑 (날짜별 캐시)
+  /** 유료 스토리의 「책사의 말」 — 엔진이 계산한 사실을 사람의 말로 잇는다.
+   * 사실은 이미 화면에 표로 떠 있다. AI 의 일은 숫자를 내는 게 아니라
+   * 조리 있게, 위로가 되게, 다음 걸음이 궁금해지게 말하는 것뿐이다.
+   * 사실 밖의 연도·숫자는 금지 — 지어내면 표와 어긋나서 바로 들킨다. */
+  async function storyTell(kind, facts) {
+    const 주제 = kind === 'wealth' ? '재물' : '인연';
+    const sys = '너는 사주명리 비서 「책사」다. 화면에는 규칙 엔진이 계산한 ' + 주제 + ' 연표가 이미 표로 떠 있고, 아래 [계산된 사실]이 그 내용이다.\n'
+      + '너의 일은 이 사실을 사람의 말로 잇는 것이다. 규칙:\n'
+      + '1) 사실에 없는 연도·달·날짜·숫자를 절대 새로 만들지 마라. 사실에 있는 것만 언급한다.\n'
+      + '2) 따뜻하고 단단한 존댓말. 겁주지 않는다. 단정 대신 「~하기 쉽습니다」.\n'
+      + '3) 350~450자, 문단 2~3개. 한자·전문용어(십신·재성 같은 말) 쓰지 않는다 — 이미 표에 있다.\n'
+      + '4) 흐름: 과거 구간 하나를 짚어 공감 → 지금 구간의 의미를 위로로 → 열리는 해·달이 오기 전까지 무엇을 하면 좋은지 하나, 구체적으로 → 마지막 한 문장은 다음 걸음: '
+      + (kind === 'wealth' ? '「달이 바뀌면 이번 달 흐름을 새로 볼 수 있다」' : '「그 해가 가까워지면 달과 날을 다시 보자」')
+      + ' 같은 자연스러운 이어짐 하나.\n'
+      + '[계산된 사실]\n' + JSON.stringify(facts);
+    return dehanja(await call(sys, [{ role: 'user', content: 주제 + ' 이야기를 이어서 말해줘.' }],
+      { task: 'story', maxTokens: 700 }));
+  }
+
   async function dailyBrief(r, today) {
     const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
     const cached = localStorage.getItem(ck);
@@ -409,5 +428,5 @@ ${list}
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { task: 'compat', maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { dehanja, deepNarrate, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, deepNarrate, storyTell, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);

@@ -1321,7 +1321,7 @@
   // 유료 화면의 계단식 공개 — 계산은 즉석이지만, 단계를 보여주며 연다.
   // 값을 낸 사람에게 계산의 무게가 보여야 한다. 거짓말은 아니다 —
   // 메시지는 실제로 지금 하는 계산의 이름이다.
-  function paidReveal(box, 단계들, make) {
+  function paidReveal(box, 단계들, make, after) {
     box.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람</p>
       <p class="pb-load">${esc(단계들[0])}</p>
       <div class="pb-loadbar"><i style="width:8%"></i></div></div>`;
@@ -1335,7 +1335,7 @@
         setTimeout(tick, 650);
       } else {
         bar.style.width = '100%';
-        setTimeout(() => { box.innerHTML = make(); }, 250);
+        setTimeout(() => { box.innerHTML = make(); if (after) try { after(box); } catch (e) {} }, 250);
       }
     };
     setTimeout(tick, 650);
@@ -1363,6 +1363,38 @@
       <p class="nx-ft">${payBtn ? '결제하시면 이 자리에서 바로 열립니다. 카카오 상담은 사람이 붙어서 보고, 값은 정해두지 않았습니다 — 받아보시고 마음만큼.'
                                 : '달·날·시는 사람이 붙어서 봅니다. 값은 정해두지 않았습니다 — 받아보시고 도움이 되었다고 느끼시면 그때 마음만큼 해주시면 됩니다.'}</p>
     </div>`;
+  }
+
+  // ── 책사의 말 — 유료 화면 끝에 AI 서술을 얹는다 ──
+  // 사실(연표·점수·날짜)은 룰 엔진이 이미 표로 냈다. AI 의 일은 그 사실을
+  // 조리 있게, 위로가 되게, 다음 걸음이 궁금해지게 잇는 것뿐이다.
+  // 숫자는 프롬프트가 막는다(사실 밖 언급 금지) — 지어내면 위의 표와 어긋나 바로 들킨다.
+  // 같은 사주·같은 달엔 캐시를 쓴다: 원가는 상품당 한 번 ~10원.
+  // AI 가 안 되면(비로그인·한도·장애) 조용히 뺀다 — 규칙 화면만으로 완결이다.
+  async function aiNarrate(box, kind, facts) {
+    try {
+      if (!window.ChaeksaAI || !AI.ready()) return;
+      const pb = box.querySelector('.paidbox'); if (!pb) return;
+      const key = 'chaeksa.storyai.' + kind + '.'
+        + f.pillar(R.pillars.year) + f.pillar(R.pillars.month) + f.pillar(R.pillars.day)
+        + '.' + today.toISOString().slice(0, 7);
+      let cached = null;
+      try { cached = localStorage.getItem(key); } catch (e) {}
+      const el = document.createElement('div');
+      el.className = 'pb-ai';
+      pb.appendChild(el);
+      const draw = (t) => {
+        el.innerHTML = '<p class="pb-ai-k">책사의 말</p>'
+          + String(t).split(/[\r\n]+/).filter(Boolean).map(x => '<p>' + esc(x) + '</p>').join('');
+      };
+      if (cached) { draw(cached); return; }
+      el.innerHTML = '<p class="pb-ai-k">책사의 말</p><p class="pb-ai-load">계산을 읽고, 말로 잇는 중…</p>';
+      const out = await AI.storyTell(kind, facts);
+      try { localStorage.setItem(key, out); } catch (e) {}
+      draw(out);
+    } catch (e) {
+      const el = box.querySelector('.pb-ai'); if (el) el.remove();
+    }
   }
 
   // ── 이번 달 일운 달력 — 달마다 다시 사는 상품 ──
@@ -1996,7 +2028,13 @@
           ${해절}
           ${조용해들.length ? `<p class="pb-ft">나머지 해(${조용해들.map(r => r.해).join('·')})는 인연보다 다른 일이 앞서는 해입니다 — 그 해들은 억지로 만들기보다 나를 채우는 해로 쓰세요.</p>` : ''}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리와 합·삼합·충인가, 대운이 무엇을 데려오는가. 시각(시진)까지 필요하시면 카카오로 물어보세요 — 사람이 진태양시로 봐드립니다.</p></div>`;
-      });
+      }, (bx) => aiNarrate(bx, 'love', {
+        이름: profile.name || null,
+        과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 달: g.달 ? g.달.해 + '년 ' + g.달.말 : null })),
+        현재: v.현재.말,
+        미래: v.미래.filter(r => r.점수 >= 56).map(r => ({ 해: r.해, 나이: '만 ' + r.나이 + '살', 이유: r.이유 })),
+        첫열림: v.첫열림 && v.첫열림.해,
+      }));
     } else {
       box.innerHTML = nextStep('미래 — 언제 연애하게 되는가',
         '과거의 구간과 지금의 판까지',
@@ -2077,7 +2115,15 @@
           ${v.지킬해.length ? `<p class="pb-avoid">지킬 해 — ${v.지킬해.map(r => r.해 + '년').join(' · ')} :
             동업·보증·큰 지출은 이 해들을 피해서. 새는 해에 안 잃는 것이 버는 해에 버는 것과 같은 무게입니다.</p>` : ''}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가(뿌리까지), 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 대운이 무엇을 데려오는가. 사업 개시·계약처럼 되돌리기 어려운 날은 후보를 들고 카카오로 물어보세요 — 판정이 갈리는 자리를 사람이 봐드립니다.</p></div>`;
-      });
+      }, (bx) => aiNarrate(bx, 'wealth', {
+        이름: profile.name || null,
+        과거: v.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 달: g.달 ? g.달.해 + '년 ' + g.달.말 : null })),
+        샌해: v.샌해.map(h => h.해 + '년'),
+        현재: v.현재.말,
+        미래: v.미래.filter(r => r.점수 >= 56).map(r => ({ 해: r.해, 나이: '만 ' + r.나이 + '살', 이유: r.이유 })),
+        지킬해: v.지킬해.map(r => r.해 + '년'),
+        첫열림: v.첫열림 && v.첫열림.해,
+      }));
     } else {
       box.innerHTML = nextStep('미래 — 언제 벌리고 언제 지켜야 하는가',
         '과거의 구간과 지금의 판까지',

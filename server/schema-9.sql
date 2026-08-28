@@ -19,10 +19,11 @@ returns integer language sql immutable as $$
     when p_plan = 'super' then 100000
     when p_plan = 'member' then
       case p_task when 'brief' then 62 when 'chat' then 100 when 'consult' then 15
-                  when 'profile' then 4 when 'compat' then 20 else 0 end
+                  when 'profile' then 4 when 'compat' then 20 when 'story' then 60 else 0 end
     else
+      -- story 는 결제 콘텐츠의 서술이라 무료에도 여유를 둔다(캐시가 있어 실사용은 상품당 몇 번).
       case p_task when 'brief' then 5 when 'chat' then 5 when 'consult' then 1
-                  when 'profile' then 1 when 'compat' then 1 else 0 end
+                  when 'profile' then 1 when 'compat' then 1 when 'story' then 24 else 0 end
     end;
 $$;
 
@@ -62,7 +63,7 @@ begin
   if v_uid is null then
     return json_build_object('ok', false, 'reason', 'unauthenticated');
   end if;
-  if p_task not in ('brief','chat','consult','profile','compat') then
+  if p_task not in ('brief','chat','consult','profile','compat','story') then
     return json_build_object('ok', false, 'reason', 'bad_task');
   end if;
 
