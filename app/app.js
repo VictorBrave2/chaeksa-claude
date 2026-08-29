@@ -377,12 +377,12 @@
     const el = $('chong'); if (!el) return;
     const T = window.ChaeksaTypecard;
     if (!T || !T.간명자료 || !profile) { el.classList.add('hide'); return; }
-    const ck = 'chaeksa.ganmyeong.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
-    const state = String(R) + '|' + !!localStorage.getItem(ck);
+    const 캐시 = 간명캐시();
+    const state = String(R) + '|' + !!캐시;
     if (chongFor === state) return;
     chongFor = state;
     el.classList.remove('hide');
-    if (localStorage.getItem(ck)) {
+    if (캐시) {
       el.innerHTML = `<p class="hero-eyebrow">간명 — ${esc(nim())}의 사주를 통변합니다</p><div id="chongGm"></div>`;
       mountGanmyeong($('chongGm'), 'home');
       return;
@@ -2028,10 +2028,28 @@
   let gmFor = null;
   // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
   // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
+  const 간명키 = () => {
+    const i = (R && R.input) || profile || {};
+    return 'chaeksa.ganmyeong.' + [i.year, i.month, i.day, i.hour].join('.');
+  };
+  /** 현재 키의 캐시. 없으면 떠돌이(키 표기가 달라진 옛 캐시)를 주워 현재 키로 이관한다. */
+  function 간명캐시() {
+    const ck = 간명키();
+    let t = localStorage.getItem(ck);
+    if (!t) {
+      const 떠돌이 = Object.keys(localStorage).filter(k => k.indexOf('chaeksa.ganmyeong.') === 0 && k.indexOf('.grade.') < 0 && k !== ck);
+      if (떠돌이.length === 1) {
+        t = localStorage.getItem(떠돌이[0]);
+        try { localStorage.setItem(ck, t); localStorage.removeItem(떠돌이[0]);
+          console.warn('간명 캐시 키 이관:', 떠돌이[0], '→', ck); } catch (e) {}
+      } else if (떠돌이.length) { try { console.warn('간명 캐시 여러 개:', 떠돌이, '현재 키:', ck); } catch (e) {} }
+    }
+    return t;
+  }
   function 간명예열() {
     // 문진에 답하는 30~60초 동안 뒤에서 미리 굽는다 — 첫 화면이 기다리지 않게.
     if (!R || !profile || !window.ChaeksaAI || !ChaeksaAI.ready || !ChaeksaAI.ready()) return;
-    const ck = 'chaeksa.ganmyeong.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
+    const ck = 간명키();
     if (localStorage.getItem(ck) || 간명예열.busy) return;
     간명예열.busy = true;
     try {
@@ -2054,10 +2072,9 @@
   }
   async function mountGanmyeong(el, whereTag) {
     const T = window.ChaeksaTypecard, AI = window.ChaeksaAI;
-    const pk = [profile.year, profile.month, profile.day, profile.hour].join('.');
-    const cacheKey = 'chaeksa.ganmyeong.' + pk;
-    const gradeKey = 'chaeksa.ganmyeong.grade.' + pk;
-    let text = localStorage.getItem(cacheKey);
+    const cacheKey = 간명키();
+    const gradeKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.grade.');
+    let text = 간명캐시();
     if (!text) {
       el.innerHTML = '<p class="hint">간명 중입니다 — 엔진이 잰 사실을 펴서 문항을 세우고 있습니다 (약 1분). 이 화면을 벗어나도 계속 굽습니다.</p>';
       if (간명예열.busy) return;   // 예열이 이미 굽는 중 — 끝나면 다시 그려진다
@@ -2065,7 +2082,9 @@
       try {
         const facts = T.간명자료(R, today);
         text = await AI.ganmyeong(facts);
-        localStorage.setItem(cacheKey, text);
+        try { localStorage.setItem(cacheKey, text);
+          if (localStorage.getItem(cacheKey) !== text) throw new Error('저장 검증 실패');
+        } catch (e2) { try { console.warn('간명 캐시 저장 실패:', e2); } catch (e3) {} }
       } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; return; }
     }
     const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
