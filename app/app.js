@@ -1235,6 +1235,7 @@
                      ? days.map(r => '<div class="pb-dd"><b>' + g.월 + '/' + r.일 + ' (' + r.요일 + ') ' + esc(r.간지) + '</b>'
                          + (r.이유 && r.이유.length ? '<p class="pb-why">◦ ' + esc([...new Set(r.이유)].join(' · ')) + '</p>' : '')
                          + (r.시진 ? '<p class="pb-why">◦ 그날 중에서도 — ' + esc(r.시진.join(' / ')) + '</p>' : '')
+                         + (r.협기 ? '<p class="pb-why">◦ ' + esc(r.협기) + '</p>' : '')
                          + '</div>').join('')
                      : '<p class="pb-d">이 달 안에는 두 분 다 좋은 날이 적습니다 — 다른 달을 보세요</p>')
                   + (cd.피할날.length ? '<p class="pb-avoid">피하실 날 — ' + cd.피할날.map(r => g.월 + '/' + r.일).join(' · ')
@@ -1450,7 +1451,7 @@
       </div>`;
     }).join('');
     const 좋은절 = v.좋은.length
-      ? v.좋은.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)} · ${esc(r.십신)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ''}</p>`).join('')
+      ? v.좋은.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)} · ${esc(r.십신)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ''}${r.협기 ? `<br><span class="pb-days-why">${esc(r.협기)}</span>` : ''}</p>`).join('')
       : '<p class="pb-why">◦ 크게 열리는 날이 없는 달입니다 — 무리해서 일을 벌이기보다 다음 달을 준비하는 달로 쓰세요</p>';
     const 조심절 = v.조심.length
       ? v.조심.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ' — 기운이 눌리는 날입니다'}</p>`).join('')
@@ -2038,6 +2039,7 @@
                  ${m.조심날.length ? `<p class="pb-avoid">비켜 갈 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판 금지)</span></p>` : ''}`
               : `<p class="pb-say">${esc(m.결)}</p>
                  ${m.좋은날.length ? `<p class="pb-days">${m.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${m.좋은날.map(d2 => `<b>${m.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(m.좋은날[0].왜 || '이 달 안의 서열')}${m.좋은날.length > 1 ? ' 등' : ''}</span></p>` : ''}
+                 ${m.좋은날.some(d2 => d2.협기) ? `<p class="pb-days"><span class="pb-days-why">${m.좋은날.filter(d2 => d2.협기).map(d2 => `${d2.일}일 ${esc(d2.협기.replace('민력 ', ''))}`).join(' / ')} — 민력(협기) 대조</span></p>` : ''}
                  ${m.시진무리.length ? `<p class="pb-days">그날 중에서도 — ${m.시진무리.map(g => `<b>${esc(g.시진)}</b>에 ${g.날들.join('·')}`).join(' / ')}</p>` : ''}
                  ${m.조심날.length ? `<p class="pb-avoid">조심할 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}`}
           </div>`).join('');
@@ -2124,6 +2126,7 @@
                  ${m.조심날.length ? `<p class="pb-avoid">비켜 갈 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손이 겹치는 날)</span></p>` : ''}`
               : `<p class="pb-say">${esc(m.결)}</p>
                  ${m.좋은날.length ? `<p class="pb-days">${m.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${m.좋은날.map(d2 => `<b>${m.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
+                 ${m.좋은날.some(d2 => d2.협기) ? `<p class="pb-days"><span class="pb-days-why">${m.좋은날.filter(d2 => d2.협기).map(d2 => `${d2.일}일 ${esc(d2.협기.replace('민력 ', ''))}`).join(' / ')} — 민력(협기) 대조</span></p>` : ''}
                  ${m.시진무리.length ? `<p class="pb-days">그날 중에서도 — ${m.시진무리.map(g => `<b>${esc(g.시진)}</b>에 ${g.날들.join('·')}`).join(' / ')}</p>` : ''}
                  ${m.조심날.length ? `<p class="pb-avoid">조심할 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}`}
           </div>`).join('');

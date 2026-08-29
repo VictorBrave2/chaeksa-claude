@@ -797,6 +797,18 @@
       .map(x => HOUR12_KO[x[0]]);
   }
 
+  /** 협기(민력) 대조 줄 — 순위엔 손대지 않는다. 만인 공통 축은 보조 축이다.
+   *  「민력이 길일이라 한 날이 당신 사주엔 아닌 이유」의 대조가 이 줄의 값이다. */
+  function 협기줄(tf, 용사) {
+    const H = (typeof ChaeksaHyeopgi !== 'undefined') ? ChaeksaHyeopgi : (typeof window !== 'undefined' ? window.ChaeksaHyeopgi : null);
+    if (!H) return '';
+    const v = H.용사판(tf, 용사); if (!v) return '';
+    let t = '민력 ' + v.건제.이름;
+    if (v.길.length) t += ' · ' + v.길.join('·');
+    if (v.흉.length) t += ' · ' + v.흉.join('·') + ' 겹침';
+    return t;
+  }
+
   /** 인연 — 한 달 안의 날들. 좋은 날과 조심할 날을 같이 낸다.
    *  크게 열린 날이 없는 달에도 그 안의 서열은 있다 — 상대 상위를 준다(상대:true). */
   function inyeonDays(R, year, m) {
@@ -814,7 +826,7 @@
       else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(dbb) >= 0 && db !== dbb)) { sc += 2; why.push('배우자 자리와 삼합'); }
       else if (충12(db, dbb)) { sc -= 3; why.push('배우자 자리를 치는 날'); }
       all.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
-                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc });
+                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc, 협기: 협기줄(tf, '혼인') });
     }
     let 좋은 = all.filter(x => x.sc >= 3).slice(0, 8);
     let 상대 = false;
@@ -850,7 +862,7 @@
       const A = monthScoreFor(Rme, day), B = monthScoreFor(Ryou, day);
       rows.push({ 일: d, 요일: '일월화수목금토'[new Date(year, month - 1, d).getDay()],
                   간지: E.fmt.pillar(tf.day), 점수: Math.min(A.s, B.s),
-                  이유: [].concat(A.이유.slice(0, 1), B.이유.slice(0, 1)) });
+                  이유: [].concat(A.이유.slice(0, 1), B.이유.slice(0, 1)), 협기: 협기줄(tf, '혼인') });
     }
     const 좋은날 = rows.filter(r => r.점수 >= 70);
     const 피할날 = rows.filter(r => r.점수 <= 32).slice(0, 5);
@@ -1360,7 +1372,7 @@
       else if (g === '겁재') { sc -= 3; why.push('나눠 갖는 손의 날'); }
       if (E.BRANCH_ELEM[tf.day.branch] === 재오행) { sc += 2; why.push('돈의 뿌리'); }
       all.push({ 일: d, 요일: '일월화수목금토'[new Date(y, m - 1, d).getDay()],
-                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc });
+                 간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc, 협기: 협기줄(tf, '개업') });
     }
     let 좋은 = all.filter(x => x.sc >= 3).slice(0, 8);
     let 상대 = false;
