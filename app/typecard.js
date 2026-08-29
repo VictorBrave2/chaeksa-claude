@@ -2035,7 +2035,42 @@
       // 갈리는 것이 결함이 아니라 콘텐츠다 — 어디서 갈리는지가 곧 기준 공개다.
       자평진전: 자평재료(R),
       궁통보감: 조후재료(R),
+      억부: 억부재료(R),
+      천직: 천직재료(R),
+      운로: 운로재료(R, now),
+      궁위한방: (function () { try { return 첫확인(R, now).한방 || null; } catch (e) { return null; } })(),
     };
+  }
+
+  /** 억부의 축 — 무엇이 이 사람을 깎고 무엇이 채우는가 */
+  function 억부재료(R) {
+    try {
+      const j = jichim(R); if (!j) return null;
+      return {
+        강약: j.강약,
+        깎는것: (j.깎 || []).map(k => ({ 때: k[0], 풀이: k[1], 십신: k[2] })),
+        채우는것: (j.채 || []).map(k => ({ 오행: k.오행, 말: k.말[0], 풀이: k.말[1] })),
+        빈오행: (j.빈 || []).map(k => k.오행),
+      };
+    } catch (e) { return null; }
+  }
+
+  /** 천직의 축 — 타고난 결이 어느 쪽인가 (25유형) */
+  function 천직재료(R) {
+    try {
+      const c = career(R, null); if (!c) return null;
+      return { 축: c.group, 유형: c.name, 풀이: c.note || null,
+               일들: String(c.jobs || '').slice(0, 90), 근거: (c.lines || []).slice(0, 3) };
+    } catch (e) { return null; }
+  }
+
+  /** 운로의 축 — 대운이라는 무대가 어떻게 흘러가는가 */
+  function 운로재료(R, now) {
+    try {
+      const l = lifeCurve(R, now); if (!l) return null;
+      return { 결: l.kind, 풀이: l.kindNote || null, 최고구간: l.peakTxt || null,
+               근거: (l.lines || []).slice(0, 3) };
+    } catch (e) { return null; }
   }
 
   /** 자평진전의 축 — 격이 섰는가 무너졌는가, 무엇이 받치고 무엇이 걸리는가 */
