@@ -75,34 +75,44 @@ def gen(prompt, quality, use_ref):
     return base64.b64decode(d['data'][0]['b64_json'])
 
 
-def main():
+def 한장(r, quality):
     from PIL import Image
+    fn = r['file']
+    use_ref = fn.startswith('love') and os.path.exists(REF)
+    png = gen(r['prompt'] + CROP_HINT, quality, use_ref)
+    raw_path = os.path.join(RAW, fn.replace('.webp', '.png'))
+    io.open(raw_path, 'wb').write(png)
+    im = Image.open(raw_path)
+    if im.width > 1536:
+        im = im.resize((1536, int(im.height * 1536 / im.width)), Image.LANCZOS)
+    im.save(os.path.join(ART, fn), 'WEBP', quality=82)
+    return os.path.getsize(os.path.join(ART, fn)) // 1024
+
+
+def main():
     quality = 'high' if '--quality' in sys.argv and 'high' in sys.argv else 'medium'
     only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
+    # 병렬 — 240장을 240분 기다릴 이유가 없다. 계정 등급의 분당 한도에 걸리면
+    # 알아서 실패→재시도가 되니, 기본 4로 두고 한도가 높으면 --workers 8.
+    workers = int(sys.argv[sys.argv.index('--workers') + 1]) if '--workers' in sys.argv else 4
     os.makedirs(RAW, exist_ok=True)
     rows = json.load(io.open(PROMPTS, encoding='utf-8'))
     todo = [r for r in rows if (only and only in r['file'])
             or (not only and not os.path.exists(os.path.join(ART, r['file'])))]
-    print('%d장 생성 예정 (품질 %s)' % (len(todo), quality))
+    print('%d장 생성 예정 (품질 %s · 동시 %d)' % (len(todo), quality, workers))
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     ok = fail = 0
-    for i, r in enumerate(todo, 1):
-        fn = r['file']
-        use_ref = fn.startswith('love') and os.path.exists(REF)
-        try:
-            png = gen(r['prompt'] + CROP_HINT, quality, use_ref)
-            raw_path = os.path.join(RAW, fn.replace('.webp', '.png'))
-            io.open(raw_path, 'wb').write(png)
-            im = Image.open(raw_path)
-            if im.width > 1536:
-                im = im.resize((1536, int(im.height * 1536 / im.width)), Image.LANCZOS)
-            im.save(os.path.join(ART, fn), 'WEBP', quality=82)
-            ok += 1
-            print('[%d/%d] %s  %dKB' % (i, len(todo), fn,
-                  os.path.getsize(os.path.join(ART, fn)) // 1024))
-        except Exception as e:
-            fail += 1
-            print('[%d/%d] %s  실패: %s' % (i, len(todo), fn, str(e)[:120]))
-            time.sleep(5)
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(한장, r, quality): r['file'] for r in todo}
+        for i, f in enumerate(as_completed(futs), 1):
+            fn = futs[f]
+            try:
+                kb = f.result()
+                ok += 1
+                print('[%d/%d] %s  %dKB' % (i, len(todo), fn, kb))
+            except Exception as e:
+                fail += 1
+                print('[%d/%d] %s  실패: %s' % (i, len(todo), fn, str(e)[:120]))
     print('끝 — 성공 %d · 실패 %d. 실패분은 다시 돌리면 그 장만 재시도됩니다.' % (ok, fail))
 
 
