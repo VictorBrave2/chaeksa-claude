@@ -387,7 +387,8 @@
       mountGanmyeong($('chongGm'), 'home');
       return;
     }
-    간명예열();
+    // 자동 굽기 금지(2026-08-30 「켤 때마다 굽는데… 클릭으로 바꾸던가」) —
+    // 앱을 여는 것만으로 돈이 나가면 안 된다. 버튼이 방아쇠다.
     const 특 = [
       ['三百年 고전을 원문으로 새겼습니다', '격국의 뼈대 「자평진전」 · 계절의 약방문 「궁통보감」 · 청 황실이 편찬한 택일의 법전 「흠정협기변방서」 — 요약본이 아니라 원문을 판본까지 밝혀 채록해, 그 조문대로 계산합니다.'],
       ['계산은 천문학입니다', '월주가 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 일치합니다. 출생지 경도의 진태양시 보정까지, 계산은 AI가 아니라 엔진이 합니다. 말로 때우는 AI 사주와 여기서 갈립니다.'],
@@ -395,16 +396,25 @@
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 그런 살 상당수는 이미 260년 전 청나라 국가 검증(흠정협기변방서 辨譌)에서 「술사의 날조」로 판정돼 삭제됐습니다.'],
       ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 말한 것은 전부 잰 것 — 그래서 채점을 받을 수 있고, 그 성적표가 이 간명의 자격입니다.'],
     ];
-    el.innerHTML = `<p class="hero-eyebrow">지금 ${esc(nim())}의 사주를 간명하고 있습니다 — 약 1~2분</p>
-      <p class="pb-lede"><b>새로고침하지 마시고 잠시만요</b> — 이 화면이 스스로 열립니다.<br>기다리시는 동안, 이 간명이 다른 곳과 다른 다섯 가지입니다.</p>
+    el.innerHTML = `<p class="hero-eyebrow">${esc(nim())}의 간명서</p>
+      <p class="pb-lede">번호 문항으로 통변하고, 맞는지는 당신이 채점합니다 — 빗나간 것도 숨기지 않습니다.</p>
+      <button class="btn" id="chongBake">간명서 받기 — 약 1~2분</button>
+      <p class="hint">한 번 구우면 저장됩니다 — 다시 굽지 않습니다.</p>
       <div id="chongFeats"></div>
-      <p class="hint" id="chongWait">간명 중…</p>`;
-    const box = $('chongFeats');
-    특.forEach((f, i) => setTimeout(() => { if (!box || !box.isConnected) return;
-      box.insertAdjacentHTML('beforeend', `<div class="nx-diag" style="margin-top:10px"><p class="nx-diag-k">${i + 1} · ${f[0]}</p><p>${f[1]}</p></div>`); }, i === 0 ? 0 : i * 6000));
-    let sec = 0; const tick = setInterval(() => { const w = $('chongWait');
-      if (!w || !w.isConnected) { clearInterval(tick); return; }
-      sec += 5; w.textContent = '간명 중… ' + sec + '초'; }, 5000);
+      <p class="hint hide" id="chongWait">간명 중…</p>`;
+    $('chongBake').onclick = () => {
+      $('chongBake').disabled = true;
+      $('chongBake').textContent = '간명 중 — 새로고침하지 마시고 잠시만요';
+      $('chongWait').classList.remove('hide');
+      간명예열();
+      const box = $('chongFeats');
+      box.insertAdjacentHTML('beforeend', '<p class="pb-lede" style="margin-top:12px">기다리시는 동안 — 이 간명이 다른 곳과 다른 다섯 가지입니다.</p>');
+      특.forEach((f, i) => setTimeout(() => { if (!box || !box.isConnected) return;
+        box.insertAdjacentHTML('beforeend', `<div class="nx-diag" style="margin-top:10px"><p class="nx-diag-k">${i + 1} · ${f[0]}</p><p>${f[1]}</p></div>`); }, i === 0 ? 0 : i * 6000));
+      let sec = 0; const tick = setInterval(() => { const w = $('chongWait');
+        if (!w || !w.isConnected) { clearInterval(tick); return; }
+        sec += 5; w.textContent = '간명 중… ' + sec + '초'; }, 5000);
+    };
   }
   window.renderChongSoon = () => { chongFor = null; renderChong(); };
 
