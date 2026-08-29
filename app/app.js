@@ -2115,7 +2115,18 @@
     el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
       grades[b.dataset.i] = b.dataset.v;
       localStorage.setItem(gradeKey, JSON.stringify(grades));
-      if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('ganmyeong_grade', { i: +b.dataset.i, v: b.dataset.v, at: whereTag }); } catch (e) {}
+      // 채점은 서버에도 남는다(schema-11) — 적중률 공개와 잣대 벼리기의 원천.
+      // 실패해도 조용히: 화면은 localStorage 로 이미 답했다.
+      (async () => { try {
+        const C = window.ChaeksaCloud; if (!C || !C.token) return;
+        const tok = await C.token(); if (!tok) return;
+        const cfg = window.CHAEKSA_SUPABASE || {};
+        await fetch(cfg.url + '/rest/v1/rpc/ganmyeong_grade_put', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', apikey: cfg.anonKey, authorization: 'Bearer ' + tok },
+          body: JSON.stringify({ p_pk: cacheKey.replace('chaeksa.ganmyeong.', ''), p_item: +b.dataset.i, p_grade: b.dataset.v }),
+        });
+      } catch (e) {} })();
       mountGanmyeong(el, whereTag);
     });
   }
