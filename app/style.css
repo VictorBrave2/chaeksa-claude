@@ -92,6 +92,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:4px
   border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:var(--s3);
   box-shadow:var(--shadow);position:relative;z-index:1;
 }
+/* 카드 머리의 금선 — 색만 바꾼 평평한 상자와 「공들인 물건」을 가르는 한 줄 */
+.card::before{content:"";position:absolute;left:22px;right:22px;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-line),transparent);pointer-events:none}
 .card h2{
   font-family:var(--letter);font-size:var(--t4);font-weight:700;color:var(--ink);
   letter-spacing:-.015em;margin-bottom:var(--s2);
@@ -438,6 +441,48 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 .lp-today b{font-family:var(--serif);font-size:20px;font-weight:900;color:var(--accent)}
 .lp-today span:last-child{font-size:12.5px;color:var(--ink2)}
 .lp-cta{max-width:320px;margin:20px auto 0}
+/* ───── 장면 히어로 ─────
+   첫 화면은 글이 아니라 장면이어야 한다. 삽화(app/art)를 계절에 맞춰 깔고
+   그 위에 글을 얹는다. 낮·밤 어느 쪽이든 이 블록만은 밤으로 고정한다 —
+   장면은 한 세계여야 하고, 그림 위의 글은 밝아야 읽힌다. */
+.lp-hero.scene{
+  position:relative;overflow:hidden;border-radius:22px;background:#161433;
+  padding:40px 22px 34px;margin:0 0 18px;box-shadow:0 14px 40px rgba(30,20,60,.22);
+}
+.lp-hero.scene::before{
+  content:"";position:absolute;inset:0;background-image:var(--hero-art,none);
+  background-size:cover;background-position:50% 28%;
+}
+.lp-hero.scene::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(18,16,48,.28) 0%,rgba(18,16,48,.70) 46%,rgba(18,16,48,.95) 100%);
+}
+.lp-hero.scene>*{position:relative;z-index:1}
+.lp-hero.scene h1{color:#f7f3ff;text-shadow:0 2px 20px rgba(0,0,0,.55)}
+.lp-hero.scene .lp-lead{color:#dbd5f0}
+.lp-hero.scene .lp-lead b{color:#e6c98a}
+.lp-hero.scene .lp-seal{box-shadow:0 6px 24px rgba(0,0,0,.45)}
+.lp-hero.scene .lp-today{background:rgba(230,201,138,.13);border-color:rgba(230,201,138,.42)}
+.lp-hero.scene .lp-today-label{color:#bdb5d8}
+.lp-hero.scene .lp-today b{color:#e6c98a}
+.lp-hero.scene .lp-today span:last-child{color:#dbd5f0}
+.lp-hero.scene .hint{color:#c3bcdc}
+
+/* 홈 첫 줄 — 책사가 이름을 부른다. 메뉴판이 첫 인사일 수는 없다. */
+.home-greet{
+  text-align:center;font-family:var(--letter);font-size:16.5px;color:var(--ink2);
+  margin:2px 0 18px;line-height:1.9;letter-spacing:-.01em;
+}
+.home-greet b{color:var(--ink);font-weight:700}
+.home-greet i{display:block;font-style:normal;font-size:11.5px;letter-spacing:.24em;
+  color:var(--accent);margin-top:7px}
+.home-greet::after{content:"";display:block;width:48px;height:1px;margin:15px auto 0;
+  background:linear-gradient(90deg,transparent,var(--accent-line),transparent)}
+
+/* 서신을 기다리는 자리에도 장면을 둔다 */
+.gm-scene{width:100%;aspect-ratio:3/1;object-fit:cover;object-position:50% 28%;
+  display:block;border-radius:14px;margin:0 0 16px}
+
 .lp-feat{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}
 .lp-feat:last-child{border:0;padding-bottom:0}
 .lp-feat i{

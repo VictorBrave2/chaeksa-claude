@@ -359,7 +359,7 @@
     $('landing').classList.add('hide'); $('formCard').classList.add('hide');
     $('btnSettings').classList.remove('hide');
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
-    $('subtitle').textContent = `${nim()}의 명리비서`;
+    $('subtitle').textContent = `${nim()}의 책사`;
     renderPeopleBtn();
     renderToday(); renderMe(); renderCal(); renderPartners(); renderChat(); renderHome();
     if (window.ChaeksaConsult) { ChaeksaConsult.renderHome(); refreshConsultBadge(); }
@@ -383,7 +383,7 @@
     chongFor = state;
     el.classList.remove('hide');
     if (캐시) {
-      el.innerHTML = `<p class="hero-eyebrow">${esc(nim())}께 드리는 서신</p><div id="chongGm"></div>`;
+      el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}께 드리는 서신</p><div id="chongGm"></div>`;
       mountGanmyeong($('chongGm'), 'home');
       return;
     }
@@ -468,6 +468,14 @@
     // 홈이 표본 굽기를 기다리게 되면 첫 화면이 멈춘다.
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     $('tiTodayGz').textContent = f.pillar(tf.day);
+    // 책사가 나를 기억하는 느낌 — 메뉴판이 첫 인사일 수는 없다(docs/21).
+    // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
+    const gr = $('homeGreet');
+    if (gr) {
+      gr.classList.remove('hide');
+      gr.innerHTML = '<b>' + esc(nim()) + '</b>, 오늘은 ' + esc(f.pillar(tf.day)) + '일입니다.'
+        + '<i>' + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날</i>';
+    }
     $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
     $('tiMeStr').style.fontSize = '17px';
     const T = window.ChaeksaTypecard;
@@ -2656,11 +2664,28 @@
     location.reload();
   };
 
+  /** 오늘이 어느 계절인가 — 삽화 파일 이름에 쓴다 (달 기준, 삽화 대장과 같은 규칙) */
+  function 계절이름() {
+    return ['winter', 'winter', 'spring', 'spring', 'spring', 'summer',
+            'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'][today.getMonth()];
+  }
+  /** 장면 한 컷 — 그림이 꺼져 있으면 아무것도 내놓지 않는다 */
+  function 장면() {
+    if (!window.CHAEKSA_ART) return '';
+    return '<img class="gm-scene" alt="" src="art/love-open-' + 계절이름() + '.webp?v=' + window.CHAEKSA_ART + '">';
+  }
   // ───── 랜딩 ─────
   function showLanding() {
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     $('lpGanji').textContent = f.pillar(tf.day) + '일';
     $('lpGanjiKo').textContent = f.pillarKo(tf.day) + ' · ' + f.stemElem(tf.day.stem) + '의 날';
+    // 첫 화면은 글이 아니라 장면이다 — 오늘의 계절에 맞는 삽화를 깐다.
+    // 그림이 없으면 class 를 안 붙여 옛 글자 히어로로 돌아간다(안전한 되돌림).
+    const hero = $('lpHero');
+    if (hero && window.CHAEKSA_ART) {
+      hero.style.setProperty('--hero-art', 'url("art/love-open-' + 계절이름() + '.webp?v=' + window.CHAEKSA_ART + '")');
+      hero.classList.add('scene');
+    }
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
     $('btnSettings').classList.add('hide');
