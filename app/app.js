@@ -2161,6 +2161,15 @@
           console.warn('간명 캐시 키 이관:', 떠돌이[0], '→', ck); } catch (e) {}
       } else if (떠돌이.length) { try { console.warn('간명 캐시 여러 개:', 떠돌이, '현재 키:', ck); } catch (e) {} }
     }
+    // 없으면 그 자리에서 조립한다 (chaeksadan.js). 원가 0원·지연 0초라 굽기를 기다릴 이유가 없다.
+    // 이미 구워진 의논이 있는 분은 위에서 걸려 그대로 쓴다 — 아무도 제 것을 잃지 않는다.
+    // 한 번 조립하면 저장한다: 채점은 발언 번호로 붙으므로 글이 흔들리면 성적이 어긋난다.
+    if (!t && R && window.ChaeksaDan) {
+      try {
+        t = ChaeksaDan.의논(R, today);
+        if (t) localStorage.setItem(ck, t);
+      } catch (e) { try { console.warn('의논 조립 실패:', e); } catch (e2) {} t = null; }
+    }
     return t;
   }
   // ── 굽기와 기다림을 갈라놓는다 (2026-08-30 「토큰만 먹고 출력이 안 된다」) ──
@@ -2299,13 +2308,12 @@
     const parts = text.split(/(?=[①-⑳])/);
     // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
     const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
+    // 발언 한 줄을 그리는 일은 전역 발언줄() 하나가 한다 — 여기서 따로 그리다가
+    // 이름 바꾸기(축→책사 이름)가 무료 의논에만 안 먹은 적이 있다(2026-08-30).
     const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
       t = t.trim(); if (!t) return '';
       if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); return ''; }
-      const m = t.match(발언자류);
-      if (m) return '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
-        + '<span class="gm-who">' + 얼굴(m[2]) + esc(m[2]) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
-      return '<p>' + esc(t) + '</p>';
+      return 발언줄(t);
     }).join('');
     const 머리 = parts[0] || '';
     const 발언자 = [];
