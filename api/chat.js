@@ -33,7 +33,7 @@ const MAX_TOKENS = 2200;
 const MAX_TOKENS_STORY = 12000;
 // 굽기를 우리 손으로 끊는 시각. Vercel 함수 상한(vercel.json 120초)보다 짧아야
 // 자물쇠를 풀고 계량을 되돌릴 기회가 남는다 — 상한에 걸려 죽으면 그 기회가 없다.
-const BAKE_LIMIT_MS = 95000;
+const BAKE_LIMIT_MS = 110000;
 
 // 간이 IP 제한(인스턴스 메모리). 재시작마다 초기화되고 인스턴스마다 따로 세므로
 // 이것만으로는 방어가 아니다. 진짜 방어는 ai_usage_bump, 최종 방어선은 Anthropic 콘솔 한도.
