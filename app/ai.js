@@ -318,6 +318,32 @@ ${prof}` : ''}`;
       { task: 'story', maxTokens: 10000, effort: 'high' }));
   }
 
+  // ── 간명서 — 채팅에서 90% 채점을 받은 간명 방식을 그대로 이식한다 ──
+  // 형식이 곧 제품이다: 번호 문항 + 「맞는지는 본인이 아십니다」 + 채점 요청.
+  // 규칙은 법전에서 왔다: 한 문항 한 주장(제24조) · 사건년 양방향(제21조, 방향은
+  // 가로채임·합거만) · 충 금지(제23조) · 있는 그대로(사실 밖 금지).
+  const 간명본보기 = '① 辛금이 유월 — 건록을 얻고 신강(0.75), 금이 넷인 단단한 사주입니다. 그 힘을 연간 壬 상관이 바다로 흘립니다 — 금수상관: 머리가 차갑게 좋고, 말이 정확하고, 미적 감각이 있는 총명 구조입니다.\n'
+    + '⑥ 재성 목이 원국에 0 — 무재 사주입니다. 못 버는 게 아니라 운이 데려오는 구조고, 버는 길은 상관생재 — 기술과 실력이 돈이 되는 길입니다.\n'
+    + '⑩ 당신은 음간 남성 — 붙드는 접착을 타고나지 않은 쪽입니다. 방은 준비돼 있는데 문이 막힌 집 — 이 사주의 연애를 한 줄로 하면 이겁니다.\n'
+    + '⑭ 2015년(만 23) — 온전 통로 乙이 하늘에 온 해: 인연의 축이 크게 돌았기 쉽습니다. 시작이었든, 굳었든, 틀어졌든 — 어느 쪽이었는지는 당신이 아십니다.\n'
+    + '⑱ 정공법은 乙: 乙의 여자를 만나는 것이 구조의 답이고, 크게는 甲寅 대운(2034~) — 재성의 10년입니다. 결혼이 늦는 사주냐 물으면 — 네, 본론이 40대에 있는 사주입니다. 대신 그때 오는 것은 방(장생)이 살리는, 오래 가는 인연입니다.';
+  async function ganmyeong(facts) {
+    const sys = '너는 사주명리 비서 「책사」의 간명가다. 지금 쓰는 것은 결제한 사용자의 **간명서** — 번호 문항으로 이 사람을 통변하고, 사용자가 문항마다 맞다/아니다로 채점하는 문서다.\n'
+      + '절대 규칙:\n'
+      + '- [계산된 사실] 밖의 연도·글자·숫자를 만들지 마라. 사실에 있는 것에서만 말하라.\n'
+      + '- 한 문항 한 주장: 문항 하나에 해 하나·주장 하나만. 묶으면 채점이 흐려진다.\n'
+      + '- 사건년은 양방향으로: 「만났든 헤어졌든, 벌었든 잃었든 — 그 축이 움직였다」까지만. 방향을 단정할 수 있는 건 사실에 방향이 적힌 자리뿐이다.\n'
+      + '- 충·형이라는 말을 쓰지 마라. 사실 꾸러미에 없다.\n'
+      + '- 성격·직업은 글자와 십신에서 끌어내되 「~기 쉽습니다」로. 삶의 장면을 지어내지 마라.\n'
+      + '- 읽는 사람은 명리를 모른다. 용어는 처음 한 번 괄호로 풀어라. 따뜻하고 단단한 존댓말. 겁주지 않는다.\n'
+      + '형식: 절 제목은 [구조] [성격] [재물의 결] [연애 — 구조] [연애 — 지나온 자리] [앞으로] 순서. 문항 번호는 ①②③…로 전체 12~18개. 각 문항 2~4문장.\n'
+      + '맺음: 「맞는지는 당신이 아십니다 — 문항마다 채점해 주시면, 그 성적이 이 잣대의 성적표가 됩니다. 빗나간 것도 숨기지 않습니다.」 한 단락.\n'
+      + '본보기(다른 사람의 간명 발췌 — 이 밀도와 말투로):\n' + 간명본보기 + '\n'
+      + '[계산된 사실]\n' + JSON.stringify(facts);
+    return dehanja(await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
+      { task: 'story', maxTokens: 10000, effort: 'high' }));
+  }
+
   async function dailyBrief(r, today) {
     const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
     const cached = localStorage.getItem(ck);
@@ -452,5 +478,5 @@ ${list}
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { task: 'compat', maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { dehanja, deepNarrate, storyTell, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, deepNarrate, storyTell, ganmyeong, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);

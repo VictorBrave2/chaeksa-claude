@@ -313,6 +313,7 @@
     if (tab === 'chat') setTimeout(() => $('msgs').scrollTop = 1e9, 0);
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
+    if (tab === 'ganmyeong') renderGanmyeong();
     if (tab === 'lovestory') renderLoveStory();
     if (tab === 'moneystory') renderMoneyStory();
     if (tab === 'inyeon') renderInyeon();
@@ -2099,6 +2100,60 @@
   // 무료: 과거 구간 찍기 + 현재 판. 유료(인연 시기 상품): 미래.
   // 과거와 미래가 같은 잣대라는 것이 이 화면의 값어치다 — 그래서 그 말을 화면에 적는다.
   let lsFor = null;
+  // ── 간명서 — 번호 문항 통변 + 문항별 [맞다/애매/아니다] ──
+  // 채팅 간명이 친구 채점 90%를 받았다. 그 형식(문항·채점·정직)이 제품이다.
+  let gmFor = null;
+  async function renderGanmyeong() {
+    const el = $('gmBody'); if (!el || !R || !profile) return;
+    const T = window.ChaeksaTypecard, AI = window.ChaeksaAI;
+    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && (ChaeksaPay.paidFor('inyeon') || ChaeksaPay.paidFor('wealth'));
+    if (!paid) {
+      el.innerHTML = nextStep('당신 한 사람의 간명서',
+        '번호 문항으로 통변하고, 당신이 채점합니다',
+        '구조·성격·재물·연애·지나온 해를 문항 하나에 주장 하나씩 담아 짚습니다. 문항마다 맞다/아니다를 눌러 주시면 — 빗나간 것까지 성적표로 남기는, 기준을 공개하는 간명입니다.',
+        '간명서를 받고 싶습니다', 'ganmyeong', null);
+      return;
+    }
+    const pk = [profile.year, profile.month, profile.day, profile.hour].join('.');
+    const cacheKey = 'chaeksa.ganmyeong.' + pk;
+    const gradeKey = 'chaeksa.ganmyeong.grade.' + pk;
+    if (gmFor === R + '|' + (localStorage.getItem(gradeKey) || '')) return;
+    gmFor = R + '|' + (localStorage.getItem(gradeKey) || '');
+    let text = localStorage.getItem(cacheKey);
+    if (!text) {
+      el.innerHTML = '<p class="hint">간명 중입니다 — 엔진이 잰 사실을 펴서 문항을 세우고 있습니다 (약 1분)…</p>';
+      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 간명가를 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; gmFor = null; return; }
+      try {
+        const facts = T.간명자료(R, today);
+        text = await AI.ganmyeong(facts);
+        localStorage.setItem(cacheKey, text);
+      } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; gmFor = null; return; }
+    }
+    const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
+    const parts = text.split(/(?=[①-⑳])/);
+    const 머리 = parts[0] || '';
+    const html = ['<div class="nx-diag">' + 머리.split('\n').map(t => t.trim() ? '<p>' + esc(t) + '</p>' : '').join('') + '</div>'];
+    parts.slice(1).forEach((chunk, i) => {
+      const g = grades[i];
+      html.push('<div class="nx-diag" style="margin-top:10px">'
+        + chunk.split('\n').map(t => t.trim() ? '<p>' + esc(t) + '</p>' : '').join('')
+        + '<p style="margin-top:8px">'
+        + ['y:맞다', 'm:애매', 'n:아니다'].map(o => { const [v, lb] = o.split(':');
+            return '<button class="btn-ghost gmg" data-i="' + i + '" data-v="' + v + '" style="margin-right:6px' + (g === v ? ';font-weight:800;text-decoration:underline' : '') + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
+        + '</p></div>');
+    });
+    const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
+    html.push('<p class="pb-ft">채점 ' + answered + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + Object.values(grades).filter(v => v === 'n').length
+      + '. 이 성적은 기기에 남고, 잣대를 벼리는 데 쓰입니다.</p>');
+    el.innerHTML = html.join('');
+    el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
+      grades[b.dataset.i] = b.dataset.v;
+      localStorage.setItem(gradeKey, JSON.stringify(grades));
+      if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('ganmyeong_grade', { i: +b.dataset.i, v: b.dataset.v }); } catch (e) {}
+      gmFor = null; renderGanmyeong();
+    });
+  }
+
   function renderLoveStory() {
     const T = window.ChaeksaTypecard; if (!T || !T.loveStory || !$('lsBody') || !R || !profile) return;
     if ($('gu-lovestory')) $('gu-lovestory').classList.toggle('hide', !profile.genderUnknown);

@@ -2008,6 +2008,29 @@
     return { 겹, 달들: 두번달(y, st) };
   }
 
+  /** 간명서 재료 — 엔진이 잰 것 전부를 한 꾸러미로. AI는 이 밖을 말하지 못한다. */
+  function 간명자료(R, now) {
+    now = now || new Date();
+    const L = reading(R, 'love', now), M = reading(R, 'money', now);
+    const ms = 모습(R, now);
+    let fc = null; try { fc = 첫확인(R, now); } catch (e) {}
+    const 요약달 = rd => (rd.달들 || []).filter(m => m.열림).map(m => ({
+      연: m.연, 월: m.월, 간지: m.간지, 이유: m.이유, 결: m.결,
+      좋은날: (m.좋은날 || []).slice(0, 4).map(d => m.월 + '/' + d.일 + '(' + d.요일 + ')' + (d.왜 ? ' — ' + d.왜 : '')) }));
+    const a = R.analysis;
+    return {
+      사주: L.사주줄, 일간: E.STEMS[R.pillars.day.stem], 강약: a.strength + ' ' + a.strengthScore,
+      오행분포: a.elemCount, 빈오행: a.missing,
+      대운: (R.daeun && R.daeun.list || []).slice(0, 6).map(d => E.fmt.pillar(d) + ' 만' + d.startAge + '~' + d.endAge),
+      겉속: ms.격차, 시기모습: { 과거: ms.과거, 현재: ms.현재 },
+      인연진단: L.진단, 인연결론: L.결론, 재물진단: M.진단, 재물결론: M.결론,
+      과거연대기: fc ? fc.연대기 : [],
+      연애과거구간: (L.과거 || []).map(g => ({ 구간: g.시작 + '~' + g.끝, 나이: g.시작나이 + '~' + g.끝나이, 말: g.말, 이유: g.이유, 달: g.달 || null })),
+      연애현재: L.현재, 재물현재: M.현재, 지킬해: M.지킬해, 샌해: M.샌해,
+      열리는달_인연: 요약달(L), 열리는달_재물: 요약달(M),
+    };
+  }
+
   /** kind: 'love' | 'wealth'. 사주 하나에 대한 단일 판단서. */
   function reading(R, kind, now) {
     now = now || new Date();
@@ -3498,5 +3521,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
