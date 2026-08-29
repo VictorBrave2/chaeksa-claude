@@ -713,8 +713,10 @@
     // 'love' | 'wealth' | 'all' | 0 — 들어온 종류만 켠다 (연애 12장 먼저 도착, 2026-08-29)
     if (global.CHAEKSA_ART && (global.CHAEKSA_ART === 'all' || global.CHAEKSA_ART === kind)) {
       const SEASON = ['spring', 'summer', 'autumn', 'winter'][계절];
+      // 그림이 3:1 규격이므로 그 비율 그대로 편다 — 높이 고정(74px)은 얼굴을 잘랐다(2026-08-29).
+      // 비율이 다른 장(2:1 등)만 cover로 맞추되, 얼굴이 있는 위쪽을 남긴다(object-position 상단 치우침).
       return '<img src="art/' + kind + '-' + 상태 + '-' + SEASON + '.webp?v=' + global.CHAEKSA_ART
-        + '" alt="" loading="lazy" style="width:100%;height:74px;object-fit:cover;display:block;border-radius:9px">';
+        + '" alt="" loading="lazy" style="width:100%;aspect-ratio:3/1;object-fit:cover;object-position:50% 30%;display:block;border-radius:9px">';
     }
     const P = [
       { s1: '#f7e8ec', s2: '#fdf6ee', hill: '#d9b8c4', ac: '#c96f85', ink: '#8a6470' },   // 봄
