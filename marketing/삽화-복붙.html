@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>삽화 24장 · 복붙 프롬프트</title>
+<title>삽화 복붙 프롬프트</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
  :root{ --ink:#222; --sub:#888; --line:#e8e8e8; --pt:#8c4419; color-scheme:light; }
@@ -33,7 +33,7 @@
 </style>
 
 <div class="bar">
-  <b>삽화 24장 — 복사 → 이미지 생성기에 붙여넣기 → 그대로 저장</b> <span class="prog" id="prog"></span>
+  <b>삽화 프롬프트 — 기본 24장 + 연애 변주 24장</b> <span class="prog" id="prog"></span>
   <p>버튼 한 번이 프롬프트 전체(인물 고정 문구 포함)입니다. 나온 그림은 <b>파일명 그대로</b>
   <code>app/art/</code>에 저장하세요(webp 권장, png면 알려주세요). 글자·낙관이 그림에 들어가면 다시 뽑으세요.
   연애 12장은 <b>한 채팅방에서 연속으로</b> 뽑아야 같은 남자로 나옵니다. 다 넣고 「그림 넣었어」 한마디면 제가 스위치를 켭니다.</p>
@@ -58,6 +58,30 @@ const ITEMS = [
 ['love-quiet-summer.webp','연애 · 조용한 달 · 여름',LOCK+`A calm summer night, he reads by lantern light near an open window, moths of light drifting, one seat empty beside him, deep teal tones, serene waiting.`],
 ['love-quiet-autumn.webp','연애 · 조용한 달 · 가을',LOCK+`Full moon over silver grass, he stands with hands in coat pockets gazing at the moon in profile, breath visible in cool air, warm grey and pale gold, contemplative.`],
 ['love-quiet-winter.webp','연애 · 조용한 달 · 겨울',LOCK+`The grand duke by a frost-covered window inside a warm study, fireplace glow on his face, looking out at falling snow with quiet longing, indigo night outside, amber warmth inside.`],
+['love-open-spring-2.webp','연애 변주2 · 열리는 봄',LOCK+`In a sunlit spring garden, he catches a drifting petal just in front of the viewer's face, eyes meeting the viewer with a slow smile, soft white shirt, warm morning light, petals everywhere.`],
+['love-open-summer-2.webp','연애 변주2 · 열리는 여름',LOCK+`On a night festival street, he wins a small goldfish prize and offers it toward the viewer with a boyish grin, lantern light and distant fireworks, teal night with warm gold.`],
+['love-open-autumn-2.webp','연애 변주2 · 열리는 가을',LOCK+`In a quiet library aisle of golden afternoon light, he leans on a bookshelf and lowers the book to look at the viewer, dust motes glowing, amber and deep brown tones, intimate.`],
+['love-open-winter-2.webp','연애 변주2 · 열리는 겨울',LOCK+`Under falling snow at a streetlamp, he unwinds his own scarf as if to wrap it around the viewer, breath visible, soft smile, indigo evening with warm lamplight.`],
+['love-shake-spring-2.webp','연애 변주2 · 흔들리는 봄',LOCK+`At a train platform in petal-filled wind, he stands a few steps away with an unsent letter in his hand, looking down, pale pink and grey, the train light approaching.`],
+['love-shake-summer-2.webp','연애 변주2 · 흔들리는 여름',LOCK+`Under one umbrella held out but untouched, rain streaking between him and the viewer, his jaw set, unsaid words in his eyes, slate and teal tones.`],
+['love-shake-autumn-2.webp','연애 변주2 · 흔들리는 가을',LOCK+`On a windswept bridge of swirling leaves, he grips the railing looking at the river below, coat collar up, burnt orange and ash tones, the distance of things unsaid.`],
+['love-shake-winter-2.webp','연애 변주2 · 흔들리는 겨울',LOCK+`In a snowstorm he walks ahead then half-stops, gloved fist tightening, not turning around, cold indigo whiteout with one red camellia petal on his shoulder.`],
+['love-quiet-spring-2.webp','연애 변주2 · 조용한 봄',LOCK+`At dawn he waters a small potted plum tree on a windowsill, sleeves rolled, calm and unhurried, pale lavender morning, tender domestic quiet.`],
+['love-quiet-summer-2.webp','연애 변주2 · 조용한 여름',LOCK+`On a wooden porch at dusk he fans a small charcoal brazier for tea, two cups set out, fireflies low over the grass, deep green-teal calm.`],
+['love-quiet-autumn-2.webp','연애 변주2 · 조용한 가을',LOCK+`He writes a letter by a window of falling ginkgo leaves, pen paused mid-line as he looks out, warm grey and pale gold, patient longing.`],
+['love-quiet-winter-2.webp','연애 변주2 · 조용한 겨울',LOCK+`In a warm kitchen at night he stirs a pot slowly, snow piling on the window ledge, a second bowl waiting, amber light in indigo night.`],
+['love-open-spring-3.webp','연애 변주3 · 열리는 봄',LOCK+`Riding a bicycle slowly through a petal storm, he looks back over his shoulder at the viewer and laughs, jacket flaring, bright pink and white morning.`],
+['love-open-summer-3.webp','연애 변주3 · 열리는 여름',LOCK+`Waist-deep in a clear shallow stream with sleeves rolled, he splashes water toward the viewer playfully, sunlight breaking on the ripples, vivid jade and gold.`],
+['love-open-autumn-3.webp','연애 변주3 · 열리는 가을',LOCK+`At an orchard he reaches up to pick a persimmon, then turns to offer it to the viewer, ladder against the tree, warm amber harvest light.`],
+['love-open-winter-3.webp','연애 변주3 · 열리는 겨울',LOCK+`Kneeling to finish a small snowman, he places his own hat on it and looks up at the viewer with a grin, falling snow, indigo dusk with lamplight.`],
+['love-shake-spring-3.webp','연애 변주3 · 흔들리는 봄',LOCK+`Two cups of tea gone cold at an outdoor table, he sits alone as petals fill the empty chair opposite, gaze on the middle distance, muted pink-grey.`],
+['love-shake-summer-3.webp','연애 변주3 · 흔들리는 여름',LOCK+`He stands in a doorway at night as summer rain pours behind him, drenched, hand raised to knock but not knocking, moody slate and teal.`],
+['love-shake-autumn-3.webp','연애 변주3 · 흔들리는 가을',LOCK+`In a harvested empty field he lets the wind take a letter from his open hand, leaves and paper spiraling away together, ash and burnt orange.`],
+['love-shake-winter-3.webp','연애 변주3 · 흔들리는 겨울',LOCK+`Through a frosted cafe window from outside, he watches a lit table where no one sits anymore, snow gathering on his shoulders, cold indigo, one warm window.`],
+['love-quiet-spring-3.webp','연애 변주3 · 조용한 봄',LOCK+`Lying in spring grass with a book open over his face, one hand holding a small blossom to the sky, utterly at peace, soft green and pink noon.`],
+['love-quiet-summer-3.webp','연애 변주3 · 조용한 여름',LOCK+`He repairs a paper lantern by lamplight with careful hands, moths circling, night garden behind, deep teal serenity.`],
+['love-quiet-autumn-3.webp','연애 변주3 · 조용한 가을',LOCK+`On a temple stair he feeds grains to sparrows at his feet, maple leaves drifting, unhurried profile in pale gold afternoon.`],
+['love-quiet-winter-3.webp','연애 변주3 · 조용한 겨울',LOCK+`He wipes fog from a window with his sleeve and sets a single camellia in a small vase on the sill, snowlight, warm amber against indigo.`],
 ['wealth-open-spring.webp','재물 · 벌리는 달 · 봄 — 곳간이 찬다',STYLE+`A traditional Korean brass bowl holding sprouting green seedlings and a few old Korean coins catching spring light, plum petals on the table, fresh green and gold tones, abundance beginning.`],
 ['wealth-open-summer.webp','재물 · 벌리는 달 · 여름',STYLE+`Lush green rice paddies in summer sun, heavy with growth, a stream of clear water flowing in, vivid jade and gold-green tones, vigorous prosperity.`],
 ['wealth-open-autumn.webp','재물 · 벌리는 달 · 가을',STYLE+`Golden rice stalks bowing heavy with grain at harvest, traditional Korean earthenware jars full beside them, warm amber and gold tones, rich harvest satisfaction.`],
@@ -77,7 +101,8 @@ const done=new Set(JSON.parse(localStorage.getItem(KEY)||'[]'));
 const list=document.getElementById('list');
 let lastSec='';
 ITEMS.forEach(([fn,ko,pr],i)=>{
-  const sec=fn.startsWith('love')?'연애 12장 — 같은 채팅방에서 연속으로 (같은 남자여야 합니다)':'재물 12장 — 사람 없는 풍경';
+  const sec=/^love.*-[23]\.webp$/.test(fn)?'연애 변주 24장 — 역시 같은 채팅방에서 (한 화면 안 같은 그림 반복을 없앱니다)'
+    : fn.startsWith('love')?'연애 12장 — 같은 채팅방에서 연속으로 (같은 남자여야 합니다)':'재물 12장 — 사람 없는 풍경';
   if(sec!==lastSec){ lastSec=sec; const h=document.createElement('h2');
     h.innerHTML=sec.replace(/ — (.+)/,' <small>— $1</small>'); list.appendChild(h); }
   const d=document.createElement('div'); d.className='card'+(done.has(fn)?' done':'');
@@ -99,6 +124,6 @@ ITEMS.forEach(([fn,ko,pr],i)=>{
   };
   list.appendChild(d);
 });
-function prog(){ document.getElementById('prog').textContent=' · '+done.size+' / 24 완료'; }
+function prog(){ document.getElementById('prog').textContent=' · '+done.size+' / '+ITEMS.length+' 완료'; }
 prog();
 </script>

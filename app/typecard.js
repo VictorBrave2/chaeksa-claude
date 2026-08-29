@@ -707,6 +707,12 @@
   //   재물  open 항아리와 엽전 · leak 기울어 새는 항아리 · quiet 밭고랑과 새싹
   function 달그림(kind, 월, 상태) {
     const 계절 = (월 >= 3 && 월 <= 5) ? 0 : (월 >= 6 && 월 <= 8) ? 1 : (월 >= 9 && 월 <= 11) ? 2 : 3;
+    // 변주 — 같은 화면에 「조용한 봄」이 석 달 걸리면 같은 그림이 세 번 나온다. 그게 빈약함의
+    // 실체라, 조합당 몇 벌(CHAEKSA_ART_VAR)을 두고 월로 골라 한 화면 안 중복을 없앤다.
+    // 난수가 아니라 월 결정이라 같은 달은 늘 같은 컷이다. 1벌이면 종전과 동일.
+    const 벌 = (global.CHAEKSA_ART_VAR && global.CHAEKSA_ART_VAR[kind]) || 1;
+    const 변주 = 벌 > 1 ? (월 % 벌) + 1 : 1;
+    const 꼬리 = 변주 > 1 ? '-' + 변주 : '';
     // 일러스트가 준비되면 이미지를 쓴다 — app/art/ 에 24장(연애 3상태×4계절 + 재물 3상태×4계절).
     // 경우의 수가 유한하니 실시간 생성이 아니라 사전 생성이 맞다: 원가 0·지연 0·그림체 일관.
     // 파일이 들어오고 config.js 의 CHAEKSA_ART 가 켜져야 이미지로 바뀐다. 그전엔 SVG.
@@ -715,7 +721,7 @@
       const SEASON = ['spring', 'summer', 'autumn', 'winter'][계절];
       // 그림이 3:1 규격이므로 그 비율 그대로 편다 — 높이 고정(74px)은 얼굴을 잘랐다(2026-08-29).
       // 비율이 다른 장(2:1 등)만 cover로 맞추되, 얼굴이 있는 위쪽을 남긴다(object-position 상단 치우침).
-      return '<img src="art/' + kind + '-' + 상태 + '-' + SEASON + '.webp?v=' + global.CHAEKSA_ART
+      return '<img src="art/' + kind + '-' + 상태 + '-' + SEASON + 꼬리 + '.webp?v=' + global.CHAEKSA_ART
         + '" alt="" loading="lazy" style="width:100%;aspect-ratio:3/1;object-fit:cover;object-position:50% 30%;display:block;border-radius:9px">';
     }
     const P = [
