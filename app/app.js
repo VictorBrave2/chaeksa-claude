@@ -1549,7 +1549,11 @@
       if (cached) { draw(cached); return; }
       el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">위 계산을 놓고 책사단이 의논하는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
       if (facts && facts.열두달) facts = Object.assign({}, facts, { 열두달: 달줄이기(facts.열두달) });
-      const out = await AI.storyTell(kind, facts);
+      // 원국을 직접 보여준다 — 엔진 결론만 주면 LLM 이 조립공이 된다(2026-08-30 「다 열어봐」).
+      // chartText 는 여덟 글자·일간·지장간·대운과 「직접 판단하라」는 지침을 함께 담는다.
+      const 실을것 = Object.assign({}, facts);
+      try { if (AI.chartText) 실을것.원국 = AI.chartText(R, today); } catch (e) {}
+      const out = await AI.storyTell(kind, 실을것);
       try { localStorage.setItem(key, out); } catch (e) {}
       draw(out);
     } catch (e) {
