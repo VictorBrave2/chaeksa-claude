@@ -2045,11 +2045,13 @@
           <p class="pb-lede">다음 달부터 열두 달, ${rd.검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${rd.열린수
             ? `열리는 달이 <b>${rd.열린수}개</b> — 그 달들은 날짜와 시진까지 내렸습니다.`
             : '크게 열리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}</p>
+          ${rd.결론.length ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">책사의 판단 — 엔진이 이어 놓은 결론</p>${rd.결론.map(t => `<p class="pb-vd">◆ ${esc(t)}</p>`).join('')}</div>` : ''}
           ${본문}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리(일지)와 합·삼합·충인가, 도화·일간합·조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 열리는 해입니다 — 가까워지면 다시 보세요.` : ''} 시각의 분 단위는 카카오로 물어보세요 — 사람이 진태양시로 봐드립니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'love', {
         자료집: T.dossier ? T.dossier(R, today) : null,
         진단: rd.진단,
+        결론: rd.결론,
         과거: rd.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 풀이: g.풀이 || null })),
         흔들린해: (rd.흔들린해 || []).map(h => h.해 + '년(만 ' + h.나이 + '살)'),
         현재: rd.현재.말,
@@ -2126,6 +2128,7 @@
                  ${m.조심날.length ? `<p class="pb-avoid">조심할 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}`}
           </div>`).join('');
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
+          ${rd.결론.length ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">책사의 판단 — 엔진이 이어 놓은 결론</p>${rd.결론.map(t => `<p class="pb-vd">◆ ${esc(t)}</p>`).join('')}</div>` : ''}
           <p class="pb-lede">다음 달부터 열두 달, ${rd.검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${rd.열린수
             ? `돈이 도는 달이 <b>${rd.열린수}개</b> — 날짜와 시진까지 내렸습니다.`
             : '크게 벌리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}${rd.샘달들.length
@@ -2135,6 +2138,7 @@
       }, (bx) => aiNarrate(bx, 'wealth', {
         자료집: T.dossier ? T.dossier(R, today) : null,
         진단: rd.진단,
+        결론: rd.결론,
         강약: rd.강약,
         과거: rd.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 풀이: g.풀이 || null })),
         샌해: (rd.샌해 || []).map(h => h.해 + '년(만 ' + h.나이 + '살)'),

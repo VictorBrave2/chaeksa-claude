@@ -948,3 +948,7 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 
 .pb-link{font-size:12.5px;line-height:1.75;color:var(--accent);margin:0 0 8px;font-style:normal;
   padding:7px 11px;background:var(--accent-soft);border-radius:8px}
+
+.pb-verdict{margin:4px 0 14px;padding:13px 15px;border:1.5px solid var(--accent);border-radius:12px;background:var(--card,#fff)}
+.pb-vd{font-size:13.5px;line-height:1.85;color:var(--ink);margin:0 0 9px}
+.pb-vd:last-child{margin-bottom:0}

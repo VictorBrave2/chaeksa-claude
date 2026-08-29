@@ -1741,6 +1741,96 @@
     return Object.keys(무리).map(k => ({ 시진: k, 날들: 무리[k] }));
   }
 
+  // ── 결론 사슬 — 웹사이트와 채팅의 격차를 닫는 층 ──
+  //
+  // 채팅의 내가 매번 손으로 잇던 추론(「乙이 庚을 채간다 → 辛 통로가 온전하다 →
+  // 辛이 오는 해는 2031 → 그 해가 진짜다」)을 엔진이 직접 계산해 문장으로 내놓는다.
+  // LLM에게 원자(낱 사실)만 주면 사슬을 스스로 만들다 흐려진다 — 사슬째 준다.
+  function 인연결론(R, now) {
+    now = now || new Date();
+    const nowY = now.getFullYear();
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;
+    const 이름 = 남 ? '재성' : '관성';
+    const 원국간 = [p.year.stem, p.month.stem].concat(p.hour ? [p.hour.stem] : []);
+    const 문 = [];
+
+    // 앞으로 8년을 미리 재 둔다 — 결론은 해와 이어져야 결론이다
+    const rows = [];
+    for (let y = nowY; y <= nowY + 8; y++) {
+      try { const r = 연애해점수(R, y, 오행, 이름); if (r) rows.push(r); } catch (e) {}
+    }
+    const 해들 = (pred) => rows.filter(pred).map(r => r.해);
+
+    // 1) 통로 결론 — 온전한 글자와 막힌 글자, 각각이 오는 해까지
+    [오행 * 2, 오행 * 2 + 1].forEach(st => {
+      const 손 = 원국간.find(o => E.isHap(o, st) && E.STEM_ELEM[o] !== 오행);
+      const 그글자해 = 해들(r => r.세부 && r.세부.세간 === st);
+      if (손 !== undefined) {
+        if (그글자해.length) 문.push('막힌 통로 — ' + E.STEMS[st] + '(' + E.STEMS_KO[st] + ')으로 오는 인연은 원국의 '
+          + E.STEMS[손] + '(' + E.STEMS_KO[손] + ')이 합으로 먼저 채갑니다. 그 글자가 오는 '
+          + 그글자해.join('·') + '년은 스치기 쉬운 해이니 기대를 얹지 마세요.');
+      } else if (그글자해.length) {
+        문.push('온전한 통로 — ' + E.STEMS[st] + '(' + E.STEMS_KO[st] + ')으로 오는 인연은 아무도 채가지 못합니다. 그 글자가 하늘에 오는 '
+          + 그글자해.join('·') + '년이 당신의 진짜 해입니다.');
+      }
+    });
+    // 2) 합거 해방 결론
+    const 해방해 = 해들(r => r.세부 && r.세부.합거해방);
+    if (해방해.length) 문.push('묶임이 풀리는 해 — 원국의 ' + 이름 + '은 합으로 묶여 있지만, '
+      + 해방해.join('·') + '년에는 하늘이 새 글자를 직접 데려옵니다. 묶임과 무관하게 움직이는 해입니다.');
+    // 3) 혼잡 정화 결론
+    const 정화 = rows.find(r => r.세부 && r.세부.혼잡정화);
+    if (정화) 문.push('맑아지는 해 — 겹쳐 있던 ' + 이름 + ' 중 ' + E.STEMS[정화.세부.혼잡정화.걷힘]
+      + '이 걷히고 ' + E.STEMS[정화.세부.혼잡정화.남음] + '만 남는 ' + 정화.해 + '년이 매듭짓기 좋은 자리입니다.');
+    // 4) 삼합 완성 결론 — 가장 큰 응기
+    const 삼합해 = 해들(r => r.세부 && r.세부.삼합완성);
+    if (삼합해.length) 문.push('가장 큰 응기 — ' + 삼합해.join('·') + '년에는 대운과 세운이 당신의 배우자 자리('
+      + E.BRANCHES[db] + ')와 삼합 한 벌을 완성합니다. 고전이 꼽는 혼인의 해입니다.');
+    // 5) 원국 궁충이 세운 합으로 잠시 묶이는 해 — 흔들리는 원국의 숨구멍
+    const 치는지 = [p.year.branch, p.month.branch].concat(p.hour ? [p.hour.branch] : [])
+      .find(b => ((b - db + 12) % 12) === 6);
+    if (치는지 !== undefined) {
+      const 숨해 = [];
+      for (let y = nowY; y <= nowY + 8; y++) {
+        try { const tf = E.dateFortune(y, 6, 15); if (YUKHAP12[치는지] === tf.year.branch) 숨해.push(y); } catch (e) {}
+      }
+      if (숨해.length) 문.push('흔들림이 묶이는 해 — 배우자 자리를 치던 원국의 ' + E.BRANCHES[치는지]
+        + '을 세운이 합으로 붙드는 ' + 숨해.join('·') + '년에는 궁이 모처럼 고요합니다. 큰 걸음은 이런 해에 옮기세요.');
+    }
+    return 문;
+  }
+
+  /** 재물 결론 — 같은 사슬을 돈으로. */
+  function 재물결론(R, now) {
+    now = now || new Date();
+    const nowY = now.getFullYear();
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
+    const 재오행 = (de + 2) % 5;
+    const 원국간 = [p.year.stem, p.month.stem].concat(p.hour ? [p.hour.stem] : []);
+    const 문 = [];
+    const rows = [];
+    for (let y = nowY; y <= nowY + 8; y++) {
+      try { const r = 재물해점수(R, y); if (r) rows.push(r); } catch (e) {}
+    }
+    [재오행 * 2, 재오행 * 2 + 1].forEach(st => {
+      const 손 = 원국간.find(o => E.isHap(o, st) && E.STEM_ELEM[o] !== 재오행);
+      const 그글자해 = rows.filter(r => r.세부 && r.세부.세간 === st).map(r => r.해);
+      if (손 !== undefined) {
+        if (그글자해.length) 문.push('막힌 통로 — ' + E.STEMS[st] + '(' + E.STEMS_KO[st] + ')으로 오는 돈은 원국의 '
+          + E.STEMS[손] + '(' + E.STEMS_KO[손] + ')이 합으로 먼저 채갑니다. ' + 그글자해.join('·')
+          + '년의 벌이는 정산이 야박하기 쉬우니 계약서를 두껍게 쓰세요.');
+      } else if (그글자해.length) {
+        문.push('온전한 통로 — ' + E.STEMS[st] + '(' + E.STEMS_KO[st] + ')으로 오는 돈은 온전히 당신 몫입니다. '
+          + 그글자해.join('·') + '년이 벌리는 해입니다.');
+      }
+    });
+    const 뺏김해 = rows.filter(r => r.세부 && (r.세부.뺏김 || r.세부.가로채임)).map(r => r.해);
+    if (뺏김해.length) 문.push('지킬 해 — ' + 뺏김해.join('·') + '년에는 합의 손이 재성에 닿습니다. 동업·보증·빌려주기는 이 해들을 비켜 가세요.');
+    return 문;
+  }
+
   /** kind: 'love' | 'wealth'. 사주 하나에 대한 단일 판단서. */
   function reading(R, kind, now) {
     now = now || new Date();
@@ -1834,7 +1924,10 @@
       return o;
     });
 
-    return { kind, 사주줄, 진단: why.말, 과거: v.과거, 흔들린해: v.흔들린해 || null,
+    let 결론 = [];
+    try { 결론 = love ? 인연결론(R, now) : 재물결론(R, now); } catch (e) {}
+
+    return { kind, 사주줄, 진단: why.말, 결론, 과거: v.과거, 흔들린해: v.흔들린해 || null,
              샌해: v.샌해 || null, 지킬해: v.지킬해 || null, 강약: v.강약 || null,
              현재: v.현재, 달들, 먼해, 검토수, 원장, 열두달AI,
              열린수: 달들.filter(m => m.열림).length,
@@ -3072,5 +3165,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, reading, whoLovesMe, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
