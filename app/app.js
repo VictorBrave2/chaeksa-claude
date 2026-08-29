@@ -559,19 +559,19 @@
       const 미기록 = M.tracks(pid).filter(t => !M.loggedThisMonth(t, today));
       if (미기록.length) {
         $('memoBadge').textContent = '이번 달';
-        $('memoTitle').textContent = '📓 ' + 미기록[0].q;
+        $('memoTitle').textContent = '記 · ' + 미기록[0].q;
         $('memoSub').textContent = '이번 달은 어떤지 눌러만 주세요' + (미기록.length > 1 ? ' (외 ' + (미기록.length - 1) + '건)' : '');
       } else if (due.length) {
         $('memoBadge').textContent = '꺼낼 것';
-        $('memoTitle').textContent = '📓 ' + due[0].q;
+        $('memoTitle').textContent = '記 · ' + due[0].q;
         $('memoSub').textContent = M.label(due[0].ym) + ' — 말씀하신 그때입니다' + (due.length > 1 ? ' (외 ' + (due.length - 1) + '건)' : '');
       } else if (next.length) {
         $('memoBadge').textContent = '비망록';
-        $('memoTitle').textContent = '📓 ' + next[0].q;
+        $('memoTitle').textContent = '記 · ' + next[0].q;
         $('memoSub').textContent = M.label(next[0].ym) + '에 다시 꺼내 드리겠습니다';
       } else {
         $('memoBadge').textContent = '비망록';
-        $('memoTitle').textContent = '📓 판단 기록장';
+        $('memoTitle').textContent = '記 · 판단 기록장';
         $('memoSub').textContent = '물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다';
       }
     })();
@@ -1821,7 +1821,7 @@
     if (!due.length) {
       // 계속 지켜보는 일 — 이번 달을 아직 안 적었다
       const t0 = 미기록[0];
-      box.innerHTML = `<h2>📓 지켜보고 있는 것</h2>
+      box.innerHTML = `<h2>記 · 지켜보고 있는 것</h2>
         <div class="brief" style="font-size:15px"><p><b>${esc(t0.q)}</b> — 이번 달은 어떻습니까?</p>
         <p style="color:var(--ink2)">${(t0.logs || []).length}달치가 쌓여 있습니다${미기록.length > 1 ? ` (외 ${미기록.length - 1}건)` : ''}.</p></div>
         <button class="btn ghost small" id="btnTodayMemoGo" style="margin-top:10px">비망록 열기</button>`;
@@ -1830,7 +1830,7 @@
     }
     const it = due[0];
     const 지남 = it.ym < (today.getFullYear() * 100 + today.getMonth() + 1);
-    box.innerHTML = `<h2>📓 말씀하신 것</h2>
+    box.innerHTML = `<h2>記 · 말씀하신 것</h2>
       <div class="brief" style="font-size:15px"><p>${esc(it.q)} — <b>${M.label(it.ym)}</b>${지남 ? '이 지났습니다.' : '입니다.'}</p>
       ${it.verdict ? `<p style="color:var(--ink2)">그때 제 판단은 <b>${esc(josa(it.verdict.grade, '이었습니다', '였습니다'))}</b>. ${esc(it.verdict.line)}</p>` : ''}</div>
       <button class="btn ghost small" data-open="memo" style="margin-top:10px">비망록 열기</button>`;
