@@ -491,7 +491,9 @@
         + '<p class="hs-name">' + esc(nim()) + '</p>'
         + '<p class="hs-day">오늘은 ' + esc(f.pillar(tf.day)) + '일 — '
         + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날입니다</p>'
-        + '<button class="hs-say" type="button"><span class="cs-who">' + esc(이름0) + '</span>'
+        + '<p class="hs-who">' + esc(이름of(이름0)) + '</p>'
+        + '<p class="hs-role">' + esc(직함of(이름0)) + ' · ' + esc(이름0) + '</p>'
+        + '<button class="hs-say" type="button">'
         + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button></div>';
       const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
     }
@@ -504,7 +506,7 @@
         '<button class="cm' + (i === 오늘 ? ' on' : '') + '" type="button" data-i="' + i + '">'
         + '<span class="cm-face"><img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">'
         + '<span class="cm-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
-        + '<span class="cm-name">' + esc(이름) + '</span></button>').join('');
+        + '<span class="cm-name">' + esc(이름of(이름)) + '</span></button>').join('');
       // 회의 그림을 도열의 배경으로 깐다 — 「떼로 나와 있다」를 여기서 맡는다
       ev.innerHTML = '<section class="corps">'
         + '<div class="corps-bg"></div>'
@@ -1347,7 +1349,7 @@
                       + ' <span class="pb-days-why">(' + esc(cd.피할날[0].이유[0] || '한 분이 눌리는 날') + ')</span></p>' : '');
               }).join('')
             + '<p class="pb-ft">잣대 공개 — 각자에게 필요한 오행이 오는가, 배우자 자리(일지)와 합·충이 되는가, 강약에 맞는 기운인가. 두 분의 점수 중 <b>낮은 쪽</b>이 그날의 점수입니다.</p>'
-            + '<p class="pb-ft">결혼식처럼 되돌릴 수 없는 큰 날은 여기서 고른 후보를 들고 카카오로 한 번 물어보세요 — 판정이 갈리는 자리가 있는지 사람이 봐드립니다.</p></div>';
+            + '<p class="pb-ft">결혼식처럼 되돌릴 수 없는 큰 날은 후보를 여럿 두고 보시는 편이 낫습니다 — 판정이 갈리는 자리가 있으면 원국 탭에 표시해 둡니다.</p></div>';
         }
         return nextStep('그 달의 며칠, 그리고 몇 시',
           '좋은 달과 그 안의 날 수까지',
@@ -1478,8 +1480,8 @@
     // 일반 문구는 아무도 안 산다. 자기 얘기라야 지갑이 열린다.
     const diag = (진단 && 진단.length)
       ? `<div class="nx-diag"><p class="nx-diag-k">당신의 원국에서 읽은 것</p>${진단.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
-    // 결제가 열려 있고 이 자리에 붙는 상품이 있으면 결제가 앞, 카카오가 뒤.
-    // 결제 전에는 카카오(마음만큼)만 — 없는 버튼을 보여주지 않는다.
+    // 다음 걸음은 결제 하나다. 결제가 아직이면 버튼을 안 세우고 「곧 열립니다」로 둔다 —
+    // 눌러도 아무 데도 안 가는 버튼과, 궁정에 어울리지 않는 상담 창구를 둘 다 걷었다.
     const payBtn = (payReady && 상품)
       ? `<a class="btn nx-cta" href="pay.html?p=${상품}" style="background:var(--accent);color:#fff;border-color:var(--accent)">
           <span>💳</span>결제하고 바로 보기</a>` : '';
@@ -1489,10 +1491,8 @@
       ${diag}
       <p class="nx-q">${esc(물음)}</p>
       ${payBtn}
-      <a class="btn kakao nx-cta" href="${KAKAO_CHAT}?_q=${q}" target="_blank" rel="noopener">
-        <span>💬</span>카카오로 물어보기</a>
-      <p class="nx-ft">${payBtn ? '결제하시면 이 자리에서 바로 열립니다. 카카오 상담은 사람이 붙어서 보고, 값은 정해두지 않았습니다 — 받아보시고 마음만큼.'
-                                : '달·날·시는 사람이 붙어서 봅니다. 값은 정해두지 않았습니다 — 받아보시고 도움이 되었다고 느끼시면 그때 마음만큼 해주시면 됩니다.'}</p>
+      <p class="nx-ft">${payBtn ? '결제하시면 이 자리에서 바로 열립니다 — 달과 날과 시각까지.'
+                                : '달·날·시각은 곧 이 자리에서 열립니다.'}</p>
     </div>`;
   }
 
@@ -1584,7 +1584,9 @@
       ${예고}`;
   }
 
-  const KAKAO_CHANNEL = '_jdqxaX';   // 책사 채널 (검색용 아이디 chaeksa)
+  // 2026-08-30 「카카오로 물어보기도 다 치우자」 — 비워두면 카카오 버튼이 스스로 숨고
+  // 메일만 남는다(그렇게 만들어 두었다). 채널 아이디는 되살릴 때를 위해 주석으로 남긴다: '_jdqxaX'
+  const KAKAO_CHANNEL = '';
 
   const KAKAO_CHAT = (() => {
     const v = String(KAKAO_CHANNEL || '').trim();
@@ -2059,9 +2061,9 @@
       }).join('');
       inNext.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — ${y}년 열두 달</p>
         ${머리말}${달들}
-        <p class="pb-ft"><b>${im.열림.length ? '열리는 달 — ' + im.열림.join('·') + '월' : '크게 열리는 달이 없는 해입니다 — 이럴 때는 다음 해 초입을 같이 보는 게 맞습니다. 카카오로 물어보세요'}</b>${im.조용 ? ' · ' + im.조용.월 + '월이 가장 조용합니다' : ''}</p>
+        <p class="pb-ft"><b>${im.열림.length ? '열리는 달 — ' + im.열림.join('·') + '월' : '크게 열리는 달이 없는 해입니다 — 이럴 때는 다음 해 초입을 같이 보는 게 맞습니다'}</b>${im.조용 ? ' · ' + im.조용.월 + '월이 가장 조용합니다' : ''}</p>
         <p class="pb-ft">잣대 공개 — 해 카드와 같습니다: ${esc(h.배우자이름)}이 하늘에 오는가, 배우자 자리(일지)와 합·삼합·충이 되는가. 같은 해 안에서의 서열이라 다른 해와 점수를 비교하시면 안 됩니다. 대운은 성별로 순역이 갈립니다.</p>
-        <p class="pb-ft">읽으시다 「내 사주는 판정이 갈린다」는 표시를 원국 탭에서 보셨다면, 그 갈림이 이 달 서열을 바꿀 수 있습니다 — 그건 사람이 봐야 해서 카카오로 물어보시면 됩니다.</p></div>`;
+        <p class="pb-ft">읽으시다 「내 사주는 판정이 갈린다」는 표시를 원국 탭에서 보셨다면, 그 갈림이 이 달 서열을 바꿀 수 있습니다 — 갈리는 자리는 원국 탭에 그대로 적어 두었습니다.</p></div>`;
         } else if (inNext && v.첫해) inNext.innerHTML = nextStep(
       '그 해, 어느 달일까요',
       v.첫해.해 + '년까지',
@@ -2093,10 +2095,23 @@
   // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
   // 오늘 나온 책사 — [초상 키, 이름, 데려갈 화면, 아뢰는 말]
   // 말은 권유지 판단이 아니다. 명리 주장은 각 화면이 제 계산으로 한다.
-  // 초상이 아직 없을 때 얼굴 자리에 세울 인장 — 이름 첫 글자를 쓰면 궁통보감·궁위가 겹친다
+  // 초상이 아직 없을 때 얼굴 자리에 세울 인장
   const 책사인장 = { 자평진전: '格', 궁통보감: '候', 억부: '抑', 궁위: '宮',
                      인연: '緣', 재물: '財', 천직: '職', 운로: '運',
                      협기: '擇', 좌장: '策' };
+  // 이름과 직함 — 「억부」는 학술 용어지 사람 이름이 아니다. 부를 이름을 주되
+  // 축(고전 이름)은 직함으로 남긴다: 그것이 우리 신뢰 자산이라 버릴 수 없다.
+  // AI 는 계속 축 이름으로 적고, 화면이 그릴 때만 이름으로 바꿔 세운다 —
+  // 그래야 이미 구워진 의논도 판을 안 올리고 새 이름으로 열린다.
+  const 책사이름 = {
+    자평진전: ['정율', '법도를 보는'], 궁통보감: ['온서', '계절을 보는'],
+    억부:     ['형준', '저울을 든'],   궁위:     ['성아', '자리를 읽는'],
+    인연:     ['연희', '인연을 맡은'], 재물:     ['계상', '셈에 밝은'],
+    천직:     ['장현', '일을 보는'],   운로:     ['현로', '멀리 보는'],
+    협기:     ['검명', '살을 검증한'], 좌장:     ['태윤', '책사단을 이끄는'],
+  };
+  const 이름of = (축) => (책사이름[축] || [축])[0];
+  const 직함of = (축) => (책사이름[축] || ['', ''])[1] || '';
   const 오늘의책사 = [
     ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
     ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
@@ -2126,7 +2141,8 @@
     const m = t.match(발언자류);
     if (!m) return '<p>' + esc(t) + '</p>';
     return '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
-      + '<span class="gm-who">' + 얼굴(m[2]) + esc(m[2]) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
+      + '<span class="gm-who" title="' + esc(직함of(m[2]) + ' ' + m[2]) + '">'
+      + 얼굴(m[2]) + esc(이름of(m[2])) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
   }
   const GM_VER = 'v12';  // v12: 책사단 열 사람 · 호칭 공주님 (docs/22)
   const 간명키 = () => {
@@ -2452,7 +2468,7 @@
             : '크게 열리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}</p>
           ${rd.결론.length ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">책사의 판단 — 엔진이 이어 놓은 결론</p>${rd.결론.map(t => `<p class="pb-vd">◆ ${esc(t)}</p>`).join('')}</div>` : ''}
           ${본문}
-          <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리(일지)와 합·삼합·충인가, 도화·일간합·조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 열리는 해입니다 — 가까워지면 다시 보세요.` : ''} 시각의 분 단위는 카카오로 물어보세요 — 사람이 진태양시로 봐드립니다.</p></div>`;
+          <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리(일지)와 합·삼합·충인가, 도화·일간합·조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 열리는 해입니다 — 가까워지면 다시 보세요.` : ''} 시각은 태어나신 곳의 경도로 진태양시까지 보정해 잽니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'love', {
         자료집: T.dossier ? T.dossier(R, today) : null,
         진단: rd.진단,
@@ -2540,7 +2556,7 @@
             : '크게 벌리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}${rd.샘달들.length
             ? ` 붉은 표(${rd.샘달들.map(m => m + '월').join('·')})는 <b>새기 쉬운 달</b> — 동업·보증·큰 지출을 피하세요.` : ''}</p>
           ${본문}
-          <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가, 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 벌리는 해입니다 — 가까워지면 다시 보세요.` : ''} 되돌리기 어려운 계약 날은 후보를 들고 카카오로 — 판정이 갈리는 자리를 사람이 봐드립니다.</p></div>`;
+          <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가, 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 벌리는 해입니다 — 가까워지면 다시 보세요.` : ''} 되돌리기 어려운 계약 날은 후보를 여럿 두고 보세요 — 갈리는 자리는 원국 탭에 적어 두었습니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'wealth', {
         자료집: T.dossier ? T.dossier(R, today) : null,
         진단: rd.진단,
@@ -2836,9 +2852,9 @@
   $('btnStart').onclick = enterOrLogin;
   $('btnStart2').onclick = enterOrLogin;
   if (게이트켜짐() && !ChaeksaCloud.signedIn()) {
-    $('btnStart').textContent = '좋아요, 맞혀보세요 — 카카오 1초';
+    $('btnStart').textContent = '제 이야기로 의논해 주세요';
     if ($('lpStartHint')) $('lpStartHint').textContent = '로그인하고 생년월일시만 넣으면 1분 안에 간명서가 나옵니다.';
-    if ($('btnStart2')) $('btnStart2').textContent = '카카오로 시작하기';
+    if ($('btnStart2')) $('btnStart2').textContent = '제 이야기로 의논해 주세요';
   }
 
   // ───── 외부 브리지 (consult.js에서 사용) ─────
