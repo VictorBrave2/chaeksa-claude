@@ -2180,6 +2180,7 @@
               <p class="pb-say">${esc(인.인물)}</p>
               <p class="pb-why">◦ ${esc(인.다가옴)}</p>
               <p class="pb-why">◦ ${esc(인.위치)}</p>
+              ${인.가로채임 ? `<p class="pb-avoid">${esc(인.가로채임)}</p>` : ''}
               ${인.합 ? `<p class="pb-say">그리고 이 글자는 당신의 일간을 곧장 끌어당기는 합입니다 — 서로가 서로를 알아보는 짝이라, 만나면 빠르게 가까워집니다.</p>` : ''}
             </div>`;
             nx.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — 어떤 사람이 당신을 사랑하는가</p>
