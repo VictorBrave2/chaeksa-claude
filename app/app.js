@@ -2052,6 +2052,12 @@
     const ck = 간명키();
     if (localStorage.getItem(ck) || 간명예열.busy) return;
     간명예열.busy = true;
+    // 굽는 도중의 새로고침이 요청을 죽인다 — 「하도 새로고침하니까」(2026-08-30 실증).
+    // 굽는 동안만 이탈 확인을 걸고, 끝나면 바로 푼다.
+    if (!간명예열.guard) {
+      간명예열.guard = (e) => { if (간명예열.busy) { e.preventDefault(); e.returnValue = ''; } };
+      window.addEventListener('beforeunload', 간명예열.guard);
+    }
     try {
       ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today))
         .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })

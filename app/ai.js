@@ -341,8 +341,9 @@ ${prof}` : ''}`;
       + '맺음: 「맞는지는 당신이 아십니다 — 문항마다 채점해 주시면, 그 성적이 이 잣대의 성적표가 됩니다. 빗나간 것도 숨기지 않습니다.」 한 단락.\n'
       + '본보기(다른 사람의 간명 발췌 — 이 밀도와 말투로):\n' + 간명본보기 + '\n'
       + '[계산된 사실]\n' + JSON.stringify(facts);
+    // 8000이면 12~18문이 넉넉하다 — 길이를 줄이면 굽는 시간이 줄고, 새로고침 유혹도 준다
     return dehanja(await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 10000, effort: 'high' }));
+      { task: 'story', maxTokens: 8000, effort: 'high' }));
   }
 
   async function dailyBrief(r, today) {
