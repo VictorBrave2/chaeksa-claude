@@ -2142,6 +2142,65 @@
     return { 격차, 과거: 지난.map(짓기), 현재: 지금 ? 짓기(지금) : null };
   }
 
+  // ── 첫확인 — 입력 직후 첫 3초에 던지는 한 방 ──
+  //
+  // 순서 설계(2026-08-29 사용자 확정): 랜딩→로그인→입력까지는 그대로,
+  // 그 다음은 총평 벽이 아니라 「과거의 가장 센 한 해」를 질문 하나로 던진다.
+  // 본인 손으로 [맞습니다]를 누르는 순간 자기설득이 걸리고, 우리는 적중률이 쌓인다.
+  //
+  // 서술 규칙 — 사건년 양방향(2026-08-29 교정 「헤어질 수도 만날 수도, 벌 수도
+  // 잃을 수도 — 변질되는 자리」): 글자의 움직임은 「어느 축이 언제 움직였나」까지만
+  // 확정한다. 방향은 법이 주는 경우(가로채임=뺏김, 합거=잃음)에만 말한다.
+  function 첫확인(R, now) {
+    now = now || new Date();
+    const p = R.pillars, ds = p.day.stem, db = p.day.branch;
+    const 태어난해 = R.input.year, 올해 = now.getFullYear();
+    const 나이 = y => y - 태어난해;
+    const 궁본기 = E.HIDDEN[db][0];
+    const 겁재간 = (ds % 2 === 0) ? ds + 1 : ds - 1;   // 같은 오행 다른 극성
+    const 겁재떠 = ['year', 'month', 'hour'].some(k => p[k] && p[k].stem === 겁재간);
+    const 재오행 = (E.STEM_ELEM[ds] + 2) % 5;
+    const 사건들 = [];
+    for (let y = 태어난해 + 17; y < 올해; y++) {
+      let tf; try { tf = E.dateFortune(y, 6, 15); } catch (e) { continue; }
+      const ys = tf.year.stem, yb = tf.year.branch, a = 나이(y);
+      // ① 배우자궁 충 — 제일 세다. 아무도 조용한 해로 기억하지 않는다.
+      if (((yb - db + 12) % 12) === 6) 사건들.push({ 해: y, 나이: a, 점수: 10,
+        문장: '관계 하나가 크게 출렁이지 않았습니까 — 정리했든, 정리당했든.',
+        근거: '그해의 지지 ' + E.BRANCHES[yb] + '가 배우자 자리(' + E.BRANCHES[db] + ')를 정면으로 쳤습니다(충). 방향은 단정하지 않습니다 — 흔들린 것만 글자가 보증합니다.' });
+      // ② 궁 본기 투출 — 궁 속에만 있던 글자가 하늘로 나온 해
+      if (ys === 궁본기) {
+        const 합됨 = ['year', 'month', 'hour'].some(k => p[k] && ((p[k].stem + 5) % 10 === ys || (ys + 5) % 10 === p[k].stem));
+        사건들.push({ 해: y, 나이: a, 점수: 합됨 ? 9 : 8,
+          문장: '인연의 축이 크게 돌지 않았습니까 — 시작이었든, 굳었든, 틀어졌든.',
+          근거: '배우자 자리 속에만 있던 글자 ' + E.STEMS[ys] + '이 이 해 하늘로 나왔습니다' + (합됨 ? ' — 그리고 당신 원국의 글자가 바로 합으로 잡았습니다' : '') + '.' });
+      }
+      // ③ 가로채임 — 방향을 말할 수 있는 유일한 자리 (법이 방향을 준다)
+      if (겁재떠 && (ys + 5) % 10 === 겁재간 && E.STEM_ELEM[ys] === 재오행)
+        사건들.push({ 해: y, 나이: a, 점수: 9,
+          문장: '다 잡은 줄 알았던 것이 옆으로 새지 않았습니까 — 마음이든 돈이든.',
+          근거: '재의 글자 ' + E.STEMS[ys] + '이 온 해인데, 원국에 떠 있는 ' + E.STEMS[겁재간] + '(겁재)이 먼저 합으로 데려갔습니다. 이 자리만은 방향이 글자에 있습니다 — 내 몫이 남에게 가는 결입니다.' });
+      // ④ 시주 복음 — 태어난 시의 간지가 그대로 돌아온 해
+      if (p.hour && ys === p.hour.stem && yb === p.hour.branch)
+        사건들.push({ 해: y, 나이: a, 점수: 7,
+          문장: '유난히 조용하지 않은 해 아니었습니까 — 들어왔든 나갔든.',
+          근거: '태어난 시의 두 글자(' + E.STEMS[ys] + E.BRANCHES[yb] + ')가 이 해 그대로 다시 왔습니다.' });
+      // ⑤ 재성 투출 + 지지 뿌리 — 재의 축 전체가 움직인 해
+      if (E.STEM_ELEM[ys] === 재오행 && E.BRANCH_ELEM[yb] === 재오행)
+        사건들.push({ 해: y, 나이: a, 점수: 6,
+          문장: '재의 축이 움직이지 않았습니까 — 만났든 헤어졌든, 벌었든 잃었든.',
+          근거: '재의 글자 ' + E.STEMS[ys] + '이 뿌리(' + E.BRANCHES[yb] + ')까지 갖추고 온 해입니다. 재는 변질되는 자리라 방향은 말하지 않습니다.' });
+    }
+    if (!사건들.length) return null;
+    // 한 방: 점수 최대, 같으면 최근 해(기억이 선명한 쪽)
+    const 한방 = 사건들.slice().sort((a, b) => b.점수 - a.점수 || b.해 - a.해)[0];
+    // 연대기: 해 순서, 한 해 하나(최고점만), 최대 6개
+    const by = {};
+    사건들.forEach(e => { if (!by[e.해] || by[e.해].점수 < e.점수) by[e.해] = e; });
+    const 연대기 = Object.values(by).sort((a, b) => a.해 - b.해).slice(-6);
+    return { 한방, 연대기 };
+  }
+
   // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
   //
   // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
@@ -3429,5 +3488,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
