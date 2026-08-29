@@ -310,7 +310,6 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
     window.scrollTo({ top: 0 });
-    if (tab === 'chat') setTimeout(() => $('msgs').scrollTop = 1e9, 0);
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'ganmyeong') renderGanmyeong();
@@ -322,7 +321,6 @@
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
-    if (tab === 'child') renderKid();
     if (tab === 'memo') renderMemo();
     if (tab === 'taekil') wireTaekil();
   }
@@ -361,8 +359,7 @@
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = `${nim()}의 책사단`;
     renderPeopleBtn();
-    renderToday(); renderMe(); renderCal(); renderPartners(); renderChat(); renderHome();
-    if (window.ChaeksaConsult) { ChaeksaConsult.renderHome(); refreshConsultBadge(); }
+    renderToday(); renderMe(); renderCal(); renderPartners(); renderHome();
     go('home');
   }
 
@@ -439,30 +436,6 @@
       $('stAhead').classList.toggle('hide', !ah);
       if (ah) { $('stAheadHead').textContent = ah.head; $('stAheadText').textContent = ' ' + ah.text; }
     })();
-    // 만세력 4기둥 (원국 탭과 같은 그리기, 지장간·십신은 줄여서)
-    const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
-    $('hmPillars').innerHTML = order.map(([k, label]) => {
-      const pl = R.pillars[k];
-      if (!pl) return `<div class="pillar"><div class="t">${label}</div><div class="han" style="color:var(--ink3)">?</div><div class="ko">시간 모름</div></div>`;
-      return `<div class="pillar ${k === 'day' ? 'day' : ''}"><div class="t">${label}</div>
-        <div class="han ${elemClass(pl.stem, true)}">${f.stem(pl.stem)}</div><div class="ko">${f.stemKo(pl.stem)}</div>
-        <div class="han ${elemClass(pl.branch, false)}" style="margin-top:4px">${f.branch(pl.branch)}</div><div class="ko">${f.branchKo(pl.branch)}</div></div>`;
-    }).join('');
-    const ec = a.elemCount, EL5 = ['목','화','토','금','수'];
-    $('hmMeta').innerHTML = `<b>${nim()}</b> · ${f.stem(a.dayStem)} 일간 · <b>${a.strength}</b> ${a.strengthScore}
-      · ${ec.map((n,i)=>`${EL5[i]}${n}`).join(' ')}${a.missing.length ? ` · 빈 오행 <b>${a.missing.join('·')}</b>` : ''}`;
-    // 사람 전환 칩 — 만세력이 프로필을 갈아끼우는 자리다
-    const P = People();
-    const list = P ? P.list() : [];
-    const act = P && P.active();
-    $('hmPeople').innerHTML = list.map(x =>
-      `<button data-pid="${x.id}" class="${act && x.id === act.id ? 'on' : ''}">${esc(x.name)}</button>`).join('')
-      + `<button data-pid="__add">＋</button>`;
-    $('hmPeople').querySelectorAll('button').forEach(b => b.onclick = () => {
-      if (b.dataset.pid === '__add') { openPeople(); return; }
-      P.setActive(b.dataset.pid);
-      start(P.toProfile(P.active()));
-    });
     // 타일 미리보기 — 고정 문구는 남의 얘기로 읽힌다. 내 사주에서 나온 사실을 걸되
     // 결론은 감춰서 열어보게 만든다. 표본(1만 명)이 필요한 값은 여기서 쓰지 않는다 —
     // 홈이 표본 굽기를 기다리게 되면 첫 화면이 멈춘다.
@@ -540,15 +513,9 @@
         }
       }
     } catch (e) {}
-    try {
-      const ch = courtCharges().charges;
-      set('tiCourtBig', ch.length ? '죄목 ' + ch.length + '건' : '무혐의');
-      set('tiCourtSub', ch.length ? '형량과 양형 이유는 안에서' : '뒤져봤지만 걸린 게 없습니다');
-    } catch (e) {}
     const P2 = People();
     const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
     if (T) {
-      try { const pj = T.pastjob(R); set('tiPastSub', pj.rank + ' 그 무엇'); } catch (e) {}
       try { const jc = T.jichim(R);
         set('tiJcBig', jc.채.map(k => k.오행).join('·'));
         set('tiJcSub', jc.깎[0][0] + ' 지치고 · ' + jc.채.map(k => k.말[0]).join('·') + '으로 채웁니다');
@@ -562,9 +529,6 @@
         if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
         else set('tiInSub', '앞으로 열 해는 조용한 구간입니다');
       } catch (e) {}
-      if (others.length) { try { const kv = T.childCard(R, E.calc(People().toProfile(others[0])));
-        set('tiKidBig', kv.name); set('tiKidSub', others[0].name + ' 기준 — 채워줄 것은 ' + (kv.need || '?')); } catch (e) {} }
-      else set('tiKidSub', '아이를 등록하면 열립니다');
       try { const yf = T.yearFlow(R, today.getFullYear(), today);
         set('tiYearBig', yf.bestTxt);
         set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
@@ -894,78 +858,11 @@
       ${season}`;
   }
 
-  // 사주 법정 — 죄목은 전부 계산에서 나온다. 문장은 brief.js의 ROAST 자산.
-  // 홈 타일이 '죄목 몇 건'을 미리 보여줘야 해서 계산부를 따로 뺐다.
-  function courtCharges() {
-    const a = R.analysis, p2 = R.pillars;
-    const list = ['year','month','day','hour'].filter(k => p2[k]);
-    const br = list.map(k => p2[k].branch);
-    const GRP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
-    // 천간 + 지지 정기의 십신을 센다 (일간 자신 제외)
-    const gods = [];
-    list.forEach(k => {
-      if (k !== 'day') gods.push(E.TEN_GODS[E.tenGod(a.dayStem, p2[k].stem)]);
-      gods.push(E.TEN_GODS[E.tenGod(a.dayStem, E.HIDDEN[p2[k].branch][0])]);
-    });
-    const cnt = (g) => gods.filter(x => GRP[x] === g).length;
-    const has = (n) => gods.includes(n);
-    let chung = 0;
-    for (let i = 0; i < br.length; i++) for (let j = i + 1; j < br.length; j++)
-      if (((br[j] - br[i] + 12) % 12) === 6) chung++;
-    const inSet = (set) => br.filter(b => set.includes(b)).length;
-    const ec = a.elemCount;
-    const de = E.STEM_ELEM[a.dayStem];
-    const root = br.filter(b => E.HIDDEN[b].some(h => E.STEM_ELEM[h] === de)).length;
-    let flow = 0;
-    for (let st2 = 0; st2 < 5; st2++) { let n = 0; for (let i = 0; i < 5; i++) { if (ec[(st2 + i) % 5] > 0) n++; else break; } flow = Math.max(flow, n); }
 
-    const hit = {
-      재다신약: a.strength === '신약' && cnt('재성') >= 3,
-      관살혼잡: has('정관') && has('편관'),
-      상관견관: has('상관') && has('정관'),
-      비겁과다: cnt('비겁') >= 3,
-      인성과다: cnt('인성') >= 3,
-      식상과다: cnt('식상') >= 3,
-      도화: inSet([0,3,6,9]) >= 2,
-      역마: inSet([2,5,8,11]) >= 2,
-      화개: inSet([1,4,7,10]) >= 3,
-      다충: chung >= 2,
-      신강비겁: a.strength === '신강' && cnt('비겁') >= 2,
-      신약무인성: a.strength === '신약' && cnt('인성') === 0,
-      무화: ec[1] === 0, 무수: ec[4] === 0, 무토: ec[2] === 0, 무금: ec[3] === 0, 무목: ec[0] === 0,
-    };
-    const charges = ChaeksaBrief.ROAST.filter(r => hit[r.key]).slice(0, 4);
-    const mercy = flow >= 5 ? '유통' : a.missing.length === 0 ? '구족' : root >= 3 ? '통근' : a.strength === '중화' ? '중화' : '기본';
-    const mercyText = ChaeksaBrief.MERCY.find(m => m.key === mercy).text;
-    return { charges, mercyText };
-  }
-
-  function renderCourt() {
-    const a = R.analysis, p2 = R.pillars;
-    const { charges, mercyText } = courtCharges();
-    const $v = $('verdict');
-    if (!charges.length) {
-      $v.innerHTML = `<div class="vh"><div class="no">판결</div><div class="tt">무혐의</div></div>
-        <div class="vb"><div class="mercy">이 법정이 뒤져봤지만 잡아낼 죄목이 없습니다.
-        이렇게 무난하게 균형 잡힌 사주가 오히려 드뭅니다. 석방.</div></div>`;
-      return;
-    }
-    $v.innerHTML = `
-      <div class="vh"><div class="no">사주법원 제${(a.dayStem + 1)}형사부 · 사건번호 ${R.solarYear}고단${f.pillar(p2.day)}</div>
-        <div class="tt">${nimSafe()}의 원국에 대한 판결</div></div>
-      <div class="vb">
-        ${charges.map((c, i) => `<div class="chg"><div class="ct"><em>죄목 ${i + 1}</em>${c.title}</div><div class="cx">${c.text}</div></div>`).join('')}
-        <div class="mercy"><b>양형 이유</b> — ${mercyText}</div>
-        <div class="foot">선고: 종신형 (사주는 평생 유지됩니다) · 항소 불가 — 재발급이 안 됩니다<br>
-        ※ 재미로 보는 과장 해석입니다. 진지한 풀이는 아래에 있습니다.</div>
-      </div>`;
-  }
 
   function renderMe() {
     const a = R.analysis, du = E.currentDaeun(R, today);
     renderMzDeck();
-    $('btnVerdict').onclick = () => { renderCourt(); $('verdict').classList.remove('hide'); $('btnVerdict').textContent = '다시 봐도 유죄'; };
-    $('verdict').classList.add('hide'); $('btnVerdict').textContent = '판결 받기';
     // 오늘의 금지령 — 탭 열면 바로 그린다 (매일 콘텐츠는 문턱이 없어야 한다)
     (function renderBan() {
       const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
@@ -984,26 +881,6 @@
       };
     })();
 
-    // 전생 직업소 — 조회 즉시 교지 발급. 문장은 brief.js PASTJOB.
-    $('pastjobWrap').classList.add('hide'); $('btnPastjob').textContent = '전생 조회하기';
-    $('btnPastjob').onclick = () => {
-      const T = window.ChaeksaTypecard;
-      const pj = T.pastjob(R);
-      $('pastjobSvg').innerHTML = T.drawGyoji(profile.name || '당신', pj);
-      const fl = $('pastjobFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
-      $('pastjobWrap').classList.remove('hide');
-      $('pastjobNote').textContent = `${pj.gyeok.name}격 × ${f.stemElem(R.analysis.dayStem)} 일간 — 150가지 중 이 조합입니다`;
-      $('btnPastjob').textContent = '다시 조회해도 이 전생';
-      $('btnPastjobShare').onclick = async () => {
-        const b = $('btnPastjobShare'); b.disabled = true; b.textContent = '만드는 중…';
-        try {
-          const r = await T.share($('pastjobSvg').innerHTML, `전생_${pj.job.replace(/[^가-힣a-zA-Z]/g, '')}`);
-          b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-        } catch (e) { b.textContent = '다시 시도'; }
-        b.disabled = false;
-        setTimeout(() => { b.textContent = '교지 자랑하기'; }, 2500);
-      };
-    };
     // 유형 카드 뽑기 — 첫 뽑기 때 표본을 만들고(몇 초, 그게 드럼롤이다) 캐시한다
     $('gachaWrap').classList.add('hide'); $('btnGacha').textContent = '카드 뽑기';
     $('btnGacha').onclick = () => {
@@ -1881,41 +1758,6 @@
     box.querySelector('[data-open]').onclick = () => go('memo');
   }
 
-  // ───── 우리 아이 — 육아첩 ─────
-  function renderKid() {
-    const P = People(); if (!P || !$('kidPick')) return;
-    const me = P.active();
-    if ($('kidMe')) $('kidMe').textContent = me ? me.name : '';
-    const list = P.list().filter(p => !me || p.id !== me.id);
-    $('kidPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('')
-      : '<option value="">등록된 아이가 없습니다</option>';
-    if (pendingPick && list.some(p => p.id === pendingPick)) $('kidPick').value = pendingPick;
-    pendingPick = null;
-    $('btnKid').disabled = !list.length;
-  }
-  $('btnKidAdd').onclick = () => openPersonForm(null);
-  $('btnKid').onclick = () => {
-    const P = People(), id = $('kidPick').value; if (!id) return;
-    const kid = P.get(id); if (!kid) return;
-    const T = window.ChaeksaTypecard;
-    const Rc = E.calc(P.toProfile(kid));
-    const v = T.childCard(R, Rc);
-    const box = $('kidResult'); box.classList.remove('hide');
-    box.innerHTML = `<h2>${esc(profile.name || '나')} → ${esc(kid.name)}</h2>
-      <div class="cardwrap"><div class="cardflip"><div class="cardsvg" id="kidSvg">${T.drawChild(profile.name || '나', kid.name, v)}</div></div>
-        <button class="btn small" id="btnKidShare">육아첩 자랑하기</button></div>`;
-    $('btnKidShare').onclick = async () => {
-      const b = $('btnKidShare'); b.disabled = true; b.textContent = '만드는 중…';
-      try {
-        const r = await T.share($('kidSvg').innerHTML, '육아첩_' + (kid.name || ''));
-        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-      } catch (e) { b.textContent = '다시 시도'; }
-      b.disabled = false;
-      setTimeout(() => { b.textContent = '육아첩 자랑하기'; }, 2500);
-    };
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   // ───── 열두 달 흐름 — 세운도 ─────
   let yearPick = today.getFullYear();
@@ -2698,38 +2540,6 @@
       });
   }
 
-  // ───── 비서 채팅 ─────
-  let history = [];
-  const SUGGEST = ['이번 주 흐름 어때?', '지금 대운에서 내가 집중할 건?', '이직 고민 중인데 시기가 어때?', '내 사주에서 제일 큰 강점은?', '요즘 사람 관계가 힘든데 왜 그럴까?'];
-  function renderChat() {
-    try { history = JSON.parse(localStorage.getItem(HK())) || []; } catch (e) { history = []; }
-    const box = $('msgs');
-    box.innerHTML = history.length ? history.map(m => `<div class="msg ${m.role === 'user' ? 'u' : 'a'}">${esc(m.content)}</div>`).join('') : `<div class="msg a">안녕하세요, ${nimSafe()}. 저는 ${nimSafe()}의 사주를 전부 알고 있는 책사예요. 고민이든 궁금한 거든 편하게 물어보세요.</div>`;
-    $('suggest').innerHTML = SUGGEST.map(s => `<button>${s}</button>`).join('');
-    $('suggest').querySelectorAll('button').forEach(b => b.onclick = () => { $('q').value = b.textContent; ask(); });
-    const ok = AI.ready();
-    $('q').disabled = $('btnAsk').disabled = !ok;
-    $('chatHint').innerHTML = ok ? '' : '설정에서 API 키를 넣으면 비서가 답합니다. <a href="#" id="openSet" style="color:var(--accent)">설정 열기</a>';
-    const a = $('openSet'); if (a) a.onclick = (e) => { e.preventDefault(); openSettings(); };
-    box.scrollTop = 1e9;
-  }
-  // esc 는 위(15행)에 정의되어 있다 — 채팅 표시에도 같은 것을 쓴다
-  async function ask() {
-    const q = $('q').value.trim(); if (!q) return;
-    $('q').value = '';
-    const box = $('msgs');
-    box.insertAdjacentHTML('beforeend', `<div class="msg u">${esc(q)}</div><div class="msg t" id="typing">비서가 생각 중…</div>`); box.scrollTop = 1e9;
-    $('btnAsk').disabled = true;
-    try {
-      const a = await AI.chat(R, today, history, q);
-      history.push({ role: 'user', content: q }, { role: 'assistant', content: a });
-      localStorage.setItem(HK(), JSON.stringify(history.slice(-30)));
-      $('typing').outerHTML = `<div class="msg a">${esc(a)}</div>`;
-    } catch (e) { $('typing').outerHTML = `<div class="msg t">답을 가져오지 못했어요: ${esc(e.message)}</div>`; }
-    $('btnAsk').disabled = false; box.scrollTop = 1e9;
-  }
-  $('btnAsk').onclick = ask;
-  $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') ask(); });
 
   // ───── 설정 ─────
   // 원가는 '내 키'를 넣은 사람에게만 뜻이 있다. 책사 서버를 쓰는 사람에게는
@@ -2788,7 +2598,7 @@
     const cur = AI.settings();
     AI.saveSettings({ apiKey: $('apiKey').value.trim(), tier: cur.tier || 'balanced', proxyUrl: $('proxyUrl').value.trim() });
     $('settings').classList.add('hide');
-    if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); loadAiBrief(); renderChat(); renderProfileCard(); }
+    if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); loadAiBrief(); renderProfileCard(); }
   };
   $('btnReset').onclick = () => {
     if (!confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) return;
@@ -2891,13 +2701,7 @@
     result: () => R,
     profile: () => profile,
     today: () => today,
-    refreshConsultBadge,
   };
-  function refreshConsultBadge() {
-    const dot = $('consultDot');
-    if (!dot || !window.ChaeksaConsult) return;
-    dot.classList.toggle('hide', ChaeksaConsult.openCount() === 0);
-  }
 
   // ───── 서버 동기화 ─────
   const Cloud = () => window.ChaeksaCloud;
