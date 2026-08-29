@@ -782,7 +782,7 @@
                      '午 11~13시', '未 13~15시', '申 15~17시', '酉 17~19시', '戌 19~21시', '亥 21~23시'];
   /** 그날의 12시진을 시두법으로 세우고, 채점 함수로 상위 둘을 고른다.
    *  시계 변환은 안 한다(지역 보정 23~34분) — 시진까지만 말하고 분 단위는 상담 몫. */
-  function 좋은시진(dayStem, score) {
+  function 좋은시진(dayStem, score, tf) {
     const best = [];
     for (let hb = 0; hb < 12; hb++) {
       const hs = ((dayStem % 5) * 2 + hb) % 10;
@@ -794,19 +794,29 @@
     // 넘어갈 수도 있는 거고」. 택일자료의 원칙 그대로다 — 주간·야간을 함부로
     // 자르지 말 것. 그게 가능한 사람에게 최선을 감추는 건 자료가 아니다.
     return best.slice(0, 2).filter(x => x[1] > 0)
-      .map(x => HOUR12_KO[x[0]]);
+      .map(x => HOUR12_KO[x[0]] + (tf ? 시꼬리(tf, x[0]) : ''));
   }
 
   /** 협기(민력) 대조 줄 — 순위엔 손대지 않는다. 만인 공통 축은 보조 축이다.
    *  「민력이 길일이라 한 날이 당신 사주엔 아닌 이유」의 대조가 이 줄의 값이다. */
+  function 협기층() {
+    return (typeof ChaeksaHyeopgi !== 'undefined') ? ChaeksaHyeopgi : (typeof window !== 'undefined' ? window.ChaeksaHyeopgi : null);
+  }
   function 협기줄(tf, 용사) {
-    const H = (typeof ChaeksaHyeopgi !== 'undefined') ? ChaeksaHyeopgi : (typeof window !== 'undefined' ? window.ChaeksaHyeopgi : null);
-    if (!H) return '';
+    const H = 협기층(); if (!H) return '';
     const v = H.용사판(tf, 용사); if (!v) return '';
+    const n = H.날신살(tf);
     let t = '민력 ' + v.건제.이름;
+    if (n.황도) t += '·' + n.황도.이름 + (n.황도.길 ? '(황도)' : '(흑도)');
     if (v.길.length) t += ' · ' + v.길.join('·');
     if (v.흉.length) t += ' · ' + v.흉.join('·') + ' 겹침';
     return t;
+  }
+  // 시진에 붙이는 민력 꺼림 — 오불우시·순중공망시 (권7). 순위 불변, 표시만.
+  function 시꼬리(tf, hb) {
+    const H = 협기층(); if (!H || !H.시꺼림) return '';
+    const k = H.시꺼림(tf.day.stem, tf.day.branch, hb);
+    return k.length ? '(민력 ' + k.join('·') + ')' : '';
   }
 
   /** 인연 — 한 달 안의 날들. 좋은 날과 조심할 날을 같이 낸다.
@@ -845,7 +855,7 @@
         else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(hb) >= 0 && db !== hb)) v += 2;
         else if (충12(db, hb)) v -= 3;
         return v;
-      });
+      }, tf);
     });
     const 조심 = all.filter(x => x.sc <= -3).slice(0, 4);
     return { 좋은, 조심, 상대 };
@@ -886,7 +896,7 @@
         const hb = x[0], s0 = (23 + hb * 2) % 24;
         const c0 = (s0 * 60 + off + 1440) % 1440, c1 = (c0 + 120) % 1440;
         const w = two(Math.floor(c0 / 60)) + ':' + two(c0 % 60) + '~' + two(Math.floor(c1 / 60)) + ':' + two(c1 % 60);
-        return HB_KO[hb] + '시 ' + (lon ? '시계 ' + w : '');
+        return HB_KO[hb] + '시 ' + (lon ? '시계 ' + w : '') + 시꼬리(tf, hb);
       });
     });
     return { rows, 좋은날, 피할날 };
@@ -900,8 +910,11 @@
       let tf; try { tf = E.dateFortune(year, month, d); } catch (e) { continue; }
       const A = monthScoreFor(R, { month: tf.day });
       const g = E.TEN_GODS[E.tenGod(R.pillars.day.stem, tf.day.stem)];
+      const H0 = 협기층();
+      const n0 = H0 ? H0.날신살(tf) : null;
       rows.push({ 일: d, 요일: '일월화수목금토'[new Date(year, month - 1, d).getDay()],
-                  간지: E.fmt.pillar(tf.day), 십신: g, 점수: A.s, 이유: A.이유 });
+                  간지: E.fmt.pillar(tf.day), 십신: g, 점수: A.s, 이유: A.이유,
+                  협기: n0 ? '민력 ' + n0.건제.이름 + (n0.황도 ? '·' + n0.황도.이름 + (n0.황도.길 ? '(황도)' : '(흑도)') : '') : '' });
     }
     const 좋은 = rows.filter(r => r.점수 >= 72);
     const 조심 = rows.filter(r => r.점수 <= 30);
@@ -1392,7 +1405,7 @@
         else if (g === '겁재') v -= 3;
         if (E.BRANCH_ELEM[hb] === 재오행) v += 2;
         return v;
-      });
+      }, tf);
     });
     const 조심 = all.filter(x => x.sc <= -3).slice(0, 4);
     return { 좋은, 조심, 상대 };
