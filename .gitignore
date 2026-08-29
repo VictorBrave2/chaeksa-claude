@@ -8,3 +8,6 @@ app/_cmp.js
 app/_u.js
 삽화원본/
 .openai_key
+
+# 원본 PNG 는 장당 2MB 다 — 저장소에 넣지 않는다 (변환본만 app/art 로 간다)
+책사들 삽화/
