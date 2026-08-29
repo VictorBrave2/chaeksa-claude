@@ -196,11 +196,12 @@ module.exports = async (req, res) => {
     });
     const text = await upstream.text();
     if (upstream.ok && cachePk && userToken) {
-      // 성공한 간명은 서버에 저장 — 응답 본문에서 글만 뽑는다
+      // 성공한 간명은 서버에 저장 — 반드시 await: 응답을 먼저 보내면 Vercel이
+      // 함수를 얼려 저장이 증발한다(2026-08-30 「pc에도 굽고 모바일에도 굽는다」의 원인).
       try {
         const j = JSON.parse(text);
         const body = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
-        if (body) rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken).catch(() => {});
+        if (body) await rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken);
       } catch (e) {}
     }
     if (!upstream.ok && enforcing && userToken) {
