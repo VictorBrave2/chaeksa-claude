@@ -12,7 +12,7 @@ if _r.returncode != 0:
     sys.exit(1)
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
-FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'calendar.js',
+FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'hyeopgi.js', 'classic.js', 'calendar.js',
          'compat.js', 'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js',
          'gyeokguk.js', 'pay.js', 'app.js']
 
