@@ -2182,7 +2182,11 @@
     const 발언자 = [];
     let 밀린 = [];
     const html = ['<div class="nx-diag">' + 문단화(머리, 밀린) + '</div>'];
-    parts.slice(1).forEach((chunk, i) => {
+    // 홈에서는 앞부분만 — 전문과 채점은 전용 탭이 한다.
+    // 스무 발언을 홈에 다 펴면 첫 화면이 마흔여섯 화면이 된다(2026-08-30 실측 37,600px).
+    const 홈맛보기 = (whereTag === 'home' && !submitted);
+    const 보일수 = 홈맛보기 ? 5 : parts.length - 1;
+    parts.slice(1, 1 + 보일수).forEach((chunk, i) => {
       const g = grades[i];
       const 이번 = [];
       const 본문 = 문단화(chunk, 이번);
@@ -2191,12 +2195,21 @@
       밀린 = 이번;
       html.push('<div class="nx-diag" style="margin-top:10px">'
         + 본문
-        + '<div class="gm-grade">'
+        + (홈맛보기 ? '' : '<div class="gm-grade">'
         + ['y:맞아요', 'm:글쎄요', 'n:아니에요'].map(o => { const [v, lb] = o.split(':');
             return '<button class="gmg' + (g === v ? ' on' : '') + '" data-i="' + i + '" data-v="' + v + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
-        + '</div></div>');
+        + '</div>') + '</div>');
     });
     const 전체문 = parts.length - 1;
+    if (홈맛보기) {
+      const 남은 = 전체문 - 보일수;
+      if (남은 > 0) html.push('<button class="btn" id="gmMore">이어서 읽기 — 남은 '
+        + 남은 + '개 발언과 채점</button>');
+      el.innerHTML = html.join('');
+      const mb = el.querySelector('#gmMore');
+      if (mb) mb.onclick = () => go('ganmyeong');
+      return;
+    }
     const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
     const misses = Object.values(grades).filter(v => v === 'n').length;
     html.push('<p class="pb-ft">' + answered + ' / ' + 전체문 + '문장에 답하셨습니다 — 맞아요 ' + hits + ' · 글쎄요 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니에요 ' + misses
