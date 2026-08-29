@@ -233,7 +233,9 @@ module.exports = async (req, res) => {
       try {
         const j = JSON.parse(text);
         const body = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
-        if (body) { await rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken); 저장됨 = true; }
+        // 천장에 닿아 끝을 못 맺은 글은 저장하지 않는다 — 캐시에 굳으면 영원히 잘린 채 열린다.
+        const 잘림 = j.stop_reason === 'max_tokens';
+        if (body && !잘림) { await rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken); 저장됨 = true; }
       } catch (e) {}
       // 200인데 본문이 비었다(사고량이 max_tokens를 다 먹은 경우). 저장할 게 없으면
       // 자물쇠라도 풀어야 한다 — 안 그러면 3분간 아무도 못 굽고 아무도 못 받는다.

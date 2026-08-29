@@ -200,6 +200,13 @@ ${prof}` : ''}`;
     if (j.usage) global.__chaeksaLastUsage = j.usage;
     if (global.ChaeksaUsage && !s.apiKey) global.ChaeksaUsage.record(task);
     if (j.stop_reason === 'refusal') throw new Error('이 질문에는 답하지 않는 게 좋겠어요. 다른 방식으로 물어봐 주세요.');
+    // 잘린 글을 받아 캐시에 굳히면 「맺음말 없는 간명서」가 영원히 남는다.
+    // 짧은 브리핑은 천장에 닿는 게 정상이라 strict 를 켠 곳에서만 실패로 다룬다.
+    if (opts.strict && j.stop_reason === 'max_tokens') {
+      const err = new Error('간명이 길이 제한에 걸려 끝을 못 맺었습니다.');
+      err.truncated = true;
+      throw err;
+    }
     return (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
   }
 
@@ -388,14 +395,15 @@ ${prof}` : ''}`;
       + 간명본보기 + '\n\n'
       + '위 본보기의 밀도·리듬·따뜻함을 그대로 가져오되, 내용은 오직 아래 [계산된 사실]에서만 가져와라. 본보기의 글자·연도를 베끼면 안 된다.\n'
       + '[계산된 사실]\n' + JSON.stringify(facts);
-    // 길이·사고량은 굽는 시간이다. 프록시(Vercel)의 상한이 120초라 그 안에 들어와야 한다 —
-    // 8000/high 로 두었더니 벽에 걸려 죽고, 죽은 굽기가 토큰만 태웠다(2026-08-30 실물 제보).
-    // 5000/medium: 12~18문에 넉넉하고, 본보기(v9)가 이미 말투를 잡아주므로 사고량은 덜 든다.
-    // 채점이 떨어지면 여기 한 줄만 high 로 되돌린다.
+    // 굽는 시간을 정하는 건 effort 다. max_tokens 는 천장일 뿐 목표가 아니라서,
+    // 낮추면 시간이 주는 게 아니라 글이 잘린다(사고 토큰도 이 천장을 함께 쓴다).
+    // 그래서 시간은 high→medium 으로 줄이고, 천장은 7000 으로 넉넉히 남긴다.
+    // 진짜 시간 방어는 프록시의 BAKE_LIMIT_MS(95초)다.
+    // 채점이 떨어지면 effort 한 낱말만 high 로 되돌린다 — 이제 벽에 걸려도 깨끗이 실패한다.
     // dehanja 금지 — 간명서는 글자가 주인공이라 辛(신)·子(자)를 살려야 한다.
     // dehanja를 태우면 辛(신)→신(신)이 된다 (2026-08-30 실물 제보).
     return await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 5000, effort: 'medium', cachePk });
+      { task: 'story', maxTokens: 7000, effort: 'medium', strict: true, cachePk });
   }
 
   async function dailyBrief(r, today) {

@@ -2137,7 +2137,7 @@
           const 원인 = (err && err.blocked && err.blocked.body) || (err && err.message) || String(err);
           try { console.warn('간명 실패:', err); } catch (e2) {}
           // 시간초과는 토큰을 이미 쓴 실패다 — 자동 재시도를 걸지 않는다. 손으로만 다시.
-          const 자동 = !(err && err.timeout) && !(err && err.blocked) && (간명예열.fails || 0) < 1;
+          const 자동 = !(err && (err.timeout || err.truncated || err.blocked)) && (간명예열.fails || 0) < 1;
           간명예열.fails = (간명예열.fails || 0) + 1;
           if (자동) {
             간명말('간명가를 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
