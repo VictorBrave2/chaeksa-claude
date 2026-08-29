@@ -374,7 +374,7 @@
     if (!el) return;
     if (!T || !T.loveStory || !T.inyeonWhy) { el.classList.add('hide'); return; }
     // 첫확인 답 상태가 바뀌면 다시 그려야 하므로 chongFor 캐시는 답까지 포함한다
-    const fcKey = 'chaeksa.firstcheck.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
+    const fcKey = 'chaeksa.personcheck.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
     const fcAns = localStorage.getItem(fcKey) || '';   // 'y'/'n' 이어붙인 문자열 (예: 'yn')
     if (chongFor === R + '|' + fcAns) return;
     chongFor = R + '|' + fcAns;
@@ -384,45 +384,61 @@
     try { LS = T.loveStory(R, today); } catch (e) {}
     try { MS = T.모습 ? T.모습(R, today) : null; } catch (e) {}
     const a = R.analysis;
-    const 진단들 = []
+    // 문진(사람문)으로 쓴 문장은 결함 블록에서 뺀다 — 아래에서 사람문을 고른 뒤 거른다
+    let 진단들 = []
       .concat(LW && LW.말 ? LW.말.slice(0, 3) : [])
       .concat(MW && MW.말 ? MW.말.slice(0, 2) : []);
     const 과거들 = LS && LS.과거 ? LS.과거.slice(0, 2) : [];
     const paidL = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
     const paidM = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
     el.classList.remove('hide');
-    // ── 첫확인 문진 — 축 다른 질문 최대 3개를 하나씩. 답하기 전엔 질문이 화면의 전부다 ──
-    // 총알이 하나면 빗나갈 때 회복이 없다. 셋 중 둘이면 「용하다」, 셋 다 빗나가면 정직하게.
+    // ── 사람문진 — 「당신은 이런 사람입니다」 최대 3문 (2026-08-29: 날짜 말고 사람으로) ──
+    // 재료는 지어내지 않는다: 승인된 구조 진단(inyeonWhy·wealthWhy)과 겉속 격차(측정+사전)뿐.
+    // 날짜 연대기는 답한 뒤 공개 단계에서 스토리로 푼다.
     let FC = null; try { FC = T.첫확인 ? T.첫확인(R, today) : null; } catch (e) {}
-    const 문수 = FC && FC.질문들 ? FC.질문들.length : 0;
-    if (FC && fcAns.length < 문수) {
-      const i = fcAns.length, q = FC.질문들[i];
+    const 사람문 = [];
+    if (MS && MS.격차) 사람문.push(MS.격차.다름
+      ? { 문장: `남들에게는 「${MS.격차.겉십신}」(${MS.격차.겉뜻})의 사람으로 읽히기 쉽지만, 속은 「${MS.격차.속십신}」(${MS.격차.속뜻})으로 움직이는 사람입니다. 그 간극은 본인만 압니다.`,
+          근거: `월주 하늘(사회에 내걸린 자리)의 글자 ${MS.격차.겉글자} = ${MS.격차.겉십신} · 일지(바탕) 속 글자 ${MS.격차.속글자} = ${MS.격차.속십신} — 두 자리의 십신이 다릅니다.` }
+      : { 문장: `겉과 속이 같은 결의 사람입니다 — 보이는 그대로가 진짜라, 꾸밈이 안 통하는 대신 오해도 적게 삽니다. (「${MS.격차.속십신}」 — ${MS.격차.속뜻})`,
+          근거: `월주 하늘의 글자와 일지 속 글자가 같은 십신(${MS.격차.속십신})입니다.` });
+    // 진단 중에서도 「본인이 맞다/아니다 할 수 있는」 사람 서술을 고른다.
+    // 「재성이 지지 속에 숨어 있다」 같은 차트 사실은 본인이 확인할 수 없어 문진감이 아니다.
+    const 사람서술 = 말들 => (말들 || []).findIndex(t => t.length >= 45 && (t.indexOf('당신') >= 0 || t.indexOf('결') >= 0 || t.indexOf('쪽') >= 0));
+    const li = LW && LW.말 ? 사람서술(LW.말) : -1;
+    if (li >= 0) 사람문.push({ 문장: LW.말[li], 근거: '인연 구조 진단 — 원국의 글자 배치에서 그대로 나온 문장입니다.' });
+    const mi = MW && MW.말 ? 사람서술(MW.말) : -1;
+    if (mi >= 0) 사람문.push({ 문장: MW.말[mi], 근거: '재물 구조 진단 — 원국의 글자 배치에서 그대로 나온 문장입니다.' });
+    진단들 = 진단들.filter(t => !사람문.some(q => q.문장 === t));
+    const 문수 = Math.min(사람문.length, 3);
+    if (문수 && fcAns.length < 문수) {
+      const i = fcAns.length, q = 사람문[i];
       el.innerHTML = `
-        <p class="hero-eyebrow">${문수 > 1 ? `확인 ${i + 1} / ${문수}` : '먼저 하나만 확인하겠습니다'}</p>
-        <p class="ls-say" style="font-size:1.1em"><b>${q.해}년(만 ${q.나이}살) 무렵, ${esc(q.문장)}</b></p>
+        <p class="hero-eyebrow">당신은 이런 사람입니다${문수 > 1 ? ` — ${i + 1} / ${문수}` : ''}</p>
+        <p class="ls-say" style="font-size:1.08em"><b>${esc(q.문장)}</b></p>
         <button class="btn" id="fcYes">맞습니다</button>
         <button class="btn-ghost" id="fcNo" style="margin-top:8px;width:100%">아닙니다</button>
-        <p class="hint">${i === 0 ? '생년월일시만으로 짚은 것입니다. 다 답하시면 어떻게 알았는지부터 보여드립니다 — 기준을 공개하는 것이 책사의 방식입니다.' : '기억이 안 나면 「아닙니다」를 누르셔도 됩니다 — 빗나간 것도 숨기지 않습니다.'}</p>`;
+        <p class="hint">${i === 0 ? '생년월일시만으로 짚은 것입니다. 다 답하시면 어떻게 알았는지부터 보여드립니다 — 기준을 공개하는 것이 책사의 방식입니다.' : '아니면 「아닙니다」를 누르셔도 됩니다 — 빗나간 것도 숨기지 않습니다.'}</p>`;
       const answer = v => { localStorage.setItem(fcKey, fcAns + v);
-        if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('firstcheck', { i, hit: v, kind: q.점수, axis: q.축 }); } catch (e) {}
+        if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('personcheck', { i, hit: v }); } catch (e) {}
         chongFor = null; renderChong(); window.scrollTo({ top: 0 }); };
       if ($('fcYes')) $('fcYes').onclick = () => answer('y');
       if ($('fcNo')) $('fcNo').onclick = () => answer('n');
       return;
     }
     const 맞은수 = (fcAns.match(/y/g) || []).length;
-    const 성적표 = !FC ? '' : 문수 <= 1
-      ? (fcAns === 'y' ? `<p class="pb-lede"><b>어떻게 알았는가</b> — ${esc(FC.한방.근거)}</p>`
-                        : `<p class="pb-lede">아니라고 하셨습니다 — 숨기지 않겠습니다. 아래 연대기에서 몇 해나 맞는지 세어보세요. 그게 이 잣대의 성적표입니다.</p>`)
-      : (맞은수 === 문수 ? `<p class="pb-lede"><b>${문수}개 전부 맞았습니다.</b> 지어낸 게 아닙니다 — 각 해의 글자 근거가 아래 있습니다. 이 잣대 그대로 앞을 재겠습니다.</p>`
-        : 맞은수 > 0 ? `<p class="pb-lede"><b>${문수}개 중 ${맞은수}개.</b> 빗나간 것도 남겨둡니다 — 기준을 공개하는 잣대는 성적표도 공개합니다. 각 해의 근거가 아래 있습니다.</p>`
+    const 성적표 = !문수 ? '' : 문수 <= 1
+      ? (fcAns[0] === 'y' ? `<p class="pb-lede"><b>어떻게 알았는가</b> — ${esc(사람문[0].근거)}</p>`
+                           : `<p class="pb-lede">아니라고 하셨습니다 — 숨기지 않겠습니다. 근거를 그대로 보여드리니, 어디서 어긋나는지 보십시오.</p>`)
+      : (맞은수 === 문수 ? `<p class="pb-lede"><b>${문수}개 전부 맞았습니다.</b> 지어낸 게 아닙니다 — 각 문장의 글자 근거가 아래 있습니다. 이 잣대 그대로 당신의 지나온 해와 다가올 해를 재겠습니다.</p>`
+        : 맞은수 > 0 ? `<p class="pb-lede"><b>${문수}개 중 ${맞은수}개.</b> 빗나간 것도 남겨둡니다 — 기준을 공개하는 잣대는 성적표도 공개합니다. 각 문장의 근거가 아래 있습니다.</p>`
         : `<p class="pb-lede">${문수}개 다 아니라고 하셨습니다 — 드문 경우입니다. 이 잣대가 당신 사주 어디서 어긋나는지가 오히려 단서가 됩니다. 근거를 그대로 보여드립니다.</p>`);
-    const 첫절 = FC ? `
+    const 첫절 = (문수 || FC) ? `
       ${성적표}
-      ${문수 > 1 ? `<div class="nx-diag"><p class="nx-diag-k">묻고 답한 해들 — 글자 근거</p>
-        ${FC.질문들.map((q2, k) => `<p><b>${q2.해}년(만 ${q2.나이}살)</b> ${fcAns[k] === 'y' ? '○ 맞음' : '× 아님'} — <span class="pb-days-why">${esc(q2.근거)}</span></p>`).join('')}</div>` : ''}
-      <div class="nx-diag"><p class="nx-diag-k">같은 잣대로 짚은 지난 해들</p>
-        ${FC.연대기.map(e => `<p><b>${e.해}년(만 ${e.나이}살)</b> — ${esc(e.문장)}<br><span class="pb-days-why">${esc(e.근거)}</span></p>`).join('')}</div>` : '';
+      ${문수 ? `<div class="nx-diag"><p class="nx-diag-k">물었던 문장들 — 글자 근거</p>
+        ${사람문.slice(0, 문수).map((q2, k) => `<p>${fcAns[k] === 'y' ? '○ 맞음' : '× 아님'} — ${esc(q2.문장)}<br><span class="pb-days-why">${esc(q2.근거)}</span></p>`).join('')}</div>` : ''}
+      ${FC ? `<div class="nx-diag"><p class="nx-diag-k">이 구조가 지나온 해들 — 글자가 기억하는 대로</p>
+        ${FC.연대기.map(e => `<p><b>${e.해}년(만 ${e.나이}살)</b> — ${esc(e.문장)}<br><span class="pb-days-why">${esc(e.근거)}</span></p>`).join('')}</div>` : ''}` : '';
     el.innerHTML = `${첫절}
       <p class="hero-eyebrow">총평 — ${esc(nim())}의 사주 구조</p>
       <p class="pb-lede"><b>${f.stem(a.dayStem)} 일간 · ${esc(a.strength)}</b>
