@@ -392,19 +392,19 @@
     const 특 = [
       ['三百年 고전을 원문으로 새겼습니다', '격국의 뼈대 「자평진전」 · 계절의 약방문 「궁통보감」 · 청 황실이 편찬한 택일의 법전 「흠정협기변방서」 — 요약본이 아니라 원문을 판본까지 밝혀 채록해, 그 조문대로 계산합니다.'],
       ['계산은 천문학입니다', '월주가 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 일치합니다. 출생지 경도의 진태양시 보정까지, 계산은 AI가 아니라 엔진이 합니다. 말로 때우는 AI 사주와 여기서 갈립니다.'],
-      ['실간명 채점, 문항 적중 90%', '이 엔진의 간명을 실제 인물이 문항별로 채점했습니다 — 20문 중 18문 적중. 곧 나올 당신의 간명서도 문항마다 [맞다/아니다]로 직접 채점하실 수 있습니다. 빗나간 것도 숨기지 않습니다.'],
+      ['틀리면 틀렸다고 남깁니다', '지난 서신은 스무 문장 가운데 열여덟이 맞았습니다. 당신께 드릴 서신도 문장마다 [맞아요/아니에요]로 답하실 수 있고, 빗나간 문장은 지우지 않고 그대로 둡니다.'],
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 그런 살 상당수는 이미 260년 전 청나라 국가 검증(흠정협기변방서 辨譌)에서 「술사의 날조」로 판정돼 삭제됐습니다.'],
-      ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 말한 것은 전부 잰 것 — 그래서 채점을 받을 수 있고, 그 성적표가 이 간명의 자격입니다.'],
+      ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 적은 것은 전부 잰 것 — 그래서 맞는지 틀리는지 답을 받을 수 있습니다.'],
     ];
-    el.innerHTML = `<p class="hero-eyebrow">${esc(nim())}의 간명서</p>
-      <p class="pb-lede">번호 문항으로 통변하고, 맞는지는 당신이 채점합니다 — 빗나간 것도 숨기지 않습니다.</p>
-      <button class="btn" id="chongBake">간명서 받기 — 약 1~2분</button>
-      <p class="hint">무료 간명서 받기는 단 한 번입니다.</p>
+    el.innerHTML = `<p class="hero-eyebrow">${esc(nim())}께 드리는 서신</p>
+      <p class="pb-lede">당신이 어떤 사람인지, 지나온 해 가운데 어느 해가 흔들렸는지 — 한 통에 적어 올리겠습니다.</p>
+      <button class="btn" id="chongBake">서신을 받겠습니다 — 약 1~2분</button>
+      <p class="hint">값을 받지 않는 서신은 한 통뿐입니다.</p>
       <div id="chongFeats"></div>
       <p class="hint hide" id="chongWait">간명 중…</p>`;
     $('chongBake').onclick = () => {
       $('chongBake').disabled = true;
-      $('chongBake').textContent = '간명 중 — 새로고침하지 마시고 잠시만요';
+      $('chongBake').textContent = '적는 중입니다 — 새로고침하지 마시고 잠시만요';
       $('chongWait').classList.remove('hide');
       간명예열();
       const box = $('chongFeats');
@@ -2080,7 +2080,7 @@
     // 빈 응답을 캐시하면 화면이 영원히 빈 채로 「받았다」고 믿는다 — 실패로 다룬다.
     if (!t || String(t).length < 100) {
       간명예열.busy = false;
-      간명말('간명이 비어서 돌아왔습니다 — [다시 시도]를 눌러 주세요.', true);
+      간명말('서신이 비어서 돌아왔습니다 — [다시 시도]를 눌러 주세요.', true);
       return;
     }
     try { localStorage.setItem(간명키(), t); } catch (e) {}
@@ -2106,12 +2106,12 @@
     간명예열.rounds = (간명예열.rounds || 0) + 1;
     if (간명예열.rounds > 25) {           // 5분
       간명예열.busy = false;
-      간명말('간명이 예상보다 오래 걸립니다 — 잠시 뒤 [다시 시도]를 눌러 주세요.', true);
+      간명말('서신이 예상보다 오래 걸립니다 — 잠시 뒤 [다시 시도]를 눌러 주세요.', true);
       return;
     }
     간명서버읽기().then(t => {
       if (t) { 간명도착(t); return; }
-      간명말('간명 중… 굽고 있습니다 (' + (간명예열.rounds * 12) + '초). 이 화면을 벗어나도 계속됩니다.');
+      간명말('적는 중입니다 (' + (간명예열.rounds * 12) + '초). 이 화면을 벗어나셔도 계속됩니다.');
       setTimeout(간명폴링, 12000);
     });
   }
@@ -2140,9 +2140,9 @@
           const 자동 = !(err && (err.timeout || err.truncated || err.blocked)) && (간명예열.fails || 0) < 1;
           간명예열.fails = (간명예열.fails || 0) + 1;
           if (자동) {
-            간명말('간명가를 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
+            간명말('서신을 적지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
             setTimeout(간명예열, 20000);
-          } else 간명말('간명가를 부르지 못했습니다 — ' + 원인.slice(0, 120), true);
+          } else 간명말('서신을 적지 못했습니다 — ' + 원인.slice(0, 120), true);
         });
     }).catch(() => { 간명예열.busy = false; });
   }
@@ -2156,9 +2156,9 @@
     const gradeKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.grade.');
     let text = 간명캐시();
     if (!text) {
-      el.innerHTML = '<p class="hint">간명 중입니다 — 엔진이 잰 사실을 펴서 문항을 세우고 있습니다 (약 1분). 이 화면을 벗어나도 계속 굽습니다.</p>';
+      el.innerHTML = '<p class="hint">서신을 적고 있습니다 — 잰 것을 펴서 문장을 세우는 중입니다 (약 1분). 이 화면을 벗어나셔도 계속 적습니다.</p>';
       if (간명예열.busy) return;   // 이미 굽는 중 — 끝나면 다시 그려진다
-      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 간명가를 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
+      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 서신을 적어 드릴 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
       // 서버에 구워진 것이 있으면 공짜로 가져온다. 없으면 굽는 문(간명예열)을 두드린다 —
       // 여기서 직접 굽지 않는 이유: 굽는 입구가 둘이면 자물쇠 밖에서 겹쳐 굽는다.
       text = await 간명서버읽기();
@@ -2174,9 +2174,9 @@
       const hits0 = Object.values(grades).filter(v => v === 'y').length;
       const n0 = Object.keys(grades).length;
       el.innerHTML = '<div class="nx-diag">'
-        + '<p class="nx-diag-k">간명서 — 채점 완료</p>'
-        + '<p>' + n0 + '문 중 맞다 ' + hits0 + '문으로 제출하셨습니다. 간명서는 저장돼 있습니다.</p>'
-        + '<button class="btn-ghost" id="gmUnfold">간명서 다시 보기 ▾</button></div>'
+        + '<p class="nx-diag-k">서신 — 답을 마치셨습니다</p>'
+        + '<p>' + n0 + '문장 가운데 ' + hits0 + '문장이 맞다고 답해 주셨습니다. 서신은 그대로 간직돼 있습니다.</p>'
+        + '<button class="btn-ghost" id="gmUnfold">서신 다시 읽기 ▾</button></div>'
         + '<div class="nx-diag pbd" style="margin-top:12px">'
         + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
         + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
@@ -2211,34 +2211,34 @@
       html.push('<div class="nx-diag" style="margin-top:10px">'
         + 본문
         + '<div class="gm-grade">'
-        + ['y:맞다', 'm:애매', 'n:아니다'].map(o => { const [v, lb] = o.split(':');
+        + ['y:맞아요', 'm:글쎄요', 'n:아니에요'].map(o => { const [v, lb] = o.split(':');
             return '<button class="gmg' + (g === v ? ' on' : '') + '" data-i="' + i + '" data-v="' + v + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
         + '</div></div>');
     });
     const 전체문 = parts.length - 1;
     const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
     const misses = Object.values(grades).filter(v => v === 'n').length;
-    html.push('<p class="pb-ft">채점 ' + answered + ' / ' + 전체문 + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + misses
-      + '. 이 성적은 남고, 잣대를 벼리는 데 쓰입니다.</p>');
+    html.push('<p class="pb-ft">' + answered + ' / ' + 전체문 + '문장에 답하셨습니다 — 맞아요 ' + hits + ' · 글쎄요 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니에요 ' + misses
+      + '. 답해 주신 것은 그대로 남아, 이 잣대를 벼리는 데 쓰입니다.</p>');
     // ── 채점의 끝에는 문이 있어야 한다 — 제출이 그 문의 손잡이다 ──
     if (submitted) {
       html.unshift('<p style="text-align:right;margin:0"><button class="btn-ghost" id="gmFold">접기 ▴</button></p>');
     }
     if (!submitted && answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
       html.push('<div class="nx-diag pbd" style="margin-top:14px">'
-        + '<p class="nx-diag-k">채점을 제출해 주세요</p>'
-        + '<p>' + answered + ' / ' + 전체문 + '문에 답하셨습니다. 제출하시면 이 성적이 잣대의 공개 성적표에 쌓입니다 — 빗나간 것도 그대로.</p>'
-        + '<button class="btn" id="gmSubmit">채점 제출하기</button></div>');
+        + '<p class="nx-diag-k">답을 보내 주시겠어요</p>'
+        + '<p>' + answered + ' / ' + 전체문 + '문장에 답하셨습니다. 보내 주시면 빗나간 문장까지 그대로 공개 기록에 쌓입니다 — 그것이 이 집의 방식입니다.</p>'
+        + '<button class="btn" id="gmSubmit">답을 보내겠습니다</button></div>');
     }
     if (submitted) {
       const 머리말 = misses === 0 && answered === 전체문
-        ? 전체문 + '문 전부 맞았습니다 — 이 잣대가 당신에게 맞습니다.'
-        : hits + '문이 맞았습니다.' + (misses ? ' 빗나간 ' + misses + '문은 그대로 성적표에 남습니다 — 그것까지가 이 집의 방식입니다.' : '');
+        ? '한 문장도 빗나가지 않았습니다 — 이 잣대가 당신에게 꼭 맞습니다.'
+        : hits + '문장이 맞았습니다.' + (misses ? ' 빗나간 ' + misses + '문장은 지우지 않고 그대로 남깁니다.' : '');
       html.push('<div class="nx-diag pbd" style="margin-top:14px">'
-        + '<p class="nx-diag-k">채점을 마치셨습니다</p>'
+        + '<p class="nx-diag-k">답을 받았습니다</p>'
         + '<p>' + 머리말 + ' 지나온 해를 이만큼 짚은 잣대라면, 다음 물음은 하나입니다 — <b>「그래서 언제인가」</b>. 같은 잣대로 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
-        + '<button class="btn" id="gmNextLove">나의 사랑 이야기 — 다음 장 열기</button>'
-        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">나의 재물 이야기 열기</button>'
+        + '<button class="btn" id="gmNextLove">당신의 사랑 이야기 — 다음 장 열기</button>'
+        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">당신의 재물 이야기 열기</button>'
         + '</div>');
     }
     el.innerHTML = html.join('');
