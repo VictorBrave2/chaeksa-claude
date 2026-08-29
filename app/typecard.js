@@ -1496,6 +1496,144 @@
     return d;
   }
 
+  // ── 판단서(reading) — 병목의 근원을 자르는 층 ──
+  //
+  // 이번에 겪은 병목 아홉 개(낱장 상태·월-일 모순·달-달 단절·화면과 AI 사실의
+  // 어긋남…)의 뿌리는 하나였다: 화면마다 계산기에서 조각을 직접 뽑아 조립했고,
+  // 「한 사람에 대한 하나의 판단」이 어디에도 없었다. 조각이 n개면 어긋날 자리는
+  // n²개라, 어긋남을 쌍마다 기워야 했다.
+  //
+  // 그래서 이 층이 있다. 사주당 한 번, 통독해서 판단서를 만든다 — 상태의 누적,
+  // 달 사이의 이음, 위 층이 아래 층을 다스리는 규율까지 **여기서** 정해진다.
+  // 화면과 AI 는 판단서의 조각을 그릴 뿐, 스스로 판단하지 않는다.
+  // 두 번 조립이 사라지므로 화면과 AI 가 어긋날 길 자체가 없다.
+
+  const 이음_연애 = {
+    'shake>open': '앞 달의 흔들림으로 비워진 자리가 이 달에 채워집니다 — 정리 뒤에 오는 만남이라 더 단단한 결입니다.',
+    'open>shake': '앞 달에 가까워졌을수록 이 달은 말을 아끼세요 — 채워진 자리가 흔들리는 순서로 옵니다.',
+    'quiet>open': '조용히 고여 있던 기운이 이 달에 열립니다 — 준비하고 있던 사람에게 먼저 옵니다.',
+    'open>open': '앞 달의 흐름이 그대로 이어집니다 — 시작된 것이 깊어지는 달입니다.',
+    'shake>quiet': '흔들림이 지나가고 가라앉는 달입니다 — 애쓰지 않아도 됩니다.',
+    'open>quiet': '앞 달에 시작된 것이 있다면, 이 달은 그것을 익히는 시간입니다.',
+  };
+  const 이음_재물 = {
+    'leak>open': '앞 달에 새어 나간 자리를 이 달의 벌이가 메웁니다.',
+    'open>leak': '앞 달에 벌어들인 것에 이 달 나누자는 손이 붙습니다 — 번 것을 지키는 달로 쓰세요.',
+    'open>open': '벌이의 흐름이 이어집니다 — 판을 키워도 받쳐 주는 연속입니다.',
+    'quiet>open': '고요히 준비된 것이 이 달에 돈이 되기 시작합니다.',
+    'leak>quiet': '샜던 자리가 아물어 가는 달입니다 — 조급해하지 마세요.',
+    'open>quiet': '앞 달의 벌이를 정리해 앉히는 달입니다.',
+  };
+  function 시진묶음글(좋은, 월) {
+    const 무리 = {};
+    좋은.forEach(d => {
+      if (!d.시진 || !d.시진.length) return;
+      const k = d.시진.join('·');
+      (무리[k] = 무리[k] || []).push(월 + '/' + d.일);
+    });
+    return Object.keys(무리).map(k => ({ 시진: k, 날들: 무리[k] }));
+  }
+
+  /** kind: 'love' | 'wealth'. 사주 하나에 대한 단일 판단서. */
+  function reading(R, kind, now) {
+    now = now || new Date();
+    const love = kind === 'love';
+    const v = love ? loveStory(R, now) : moneyStory(R, now);
+    if (!v) return null;
+    const why = love ? inyeonWhy(R) : wealthWhy(R);
+    const p = R.pillars;
+    const 사주줄 = [p.year, p.month, p.day].concat(p.hour ? [p.hour] : []).map(x => E.fmt.pillar(x)).join(' ');
+
+    // ── 다가오는 열두 달 — 상태·이음·규율까지 여기서 확정 ──
+    const y0 = now.getFullYear(), mIdx = now.getMonth();
+    const 연캐시 = {};
+    const 달들 = [];
+    for (let i = 1; i <= 12; i++) {
+      const d = new Date(y0, mIdx + i, 1), yy = d.getFullYear(), mm = d.getMonth() + 1;
+      if (!(yy in 연캐시)) {
+        try { 연캐시[yy] = love ? inyeonMonths(R, yy) : wealthDrill(R, yy); }
+        catch (e) { 연캐시[yy] = null; }
+      }
+      const r = 연캐시[yy] && 연캐시[yy].rows[mm - 1];
+      if (!r) continue;
+      let dd = { 좋은: [], 조심: [], 상대: false };
+      try { dd = (love ? inyeonDays(R, yy, mm) : 재물날들(R, yy, mm)) || dd; } catch (e) {}
+      const 상태 = r.점수 >= 56 ? 'open'
+        : (love ? (r.이유.some(t => t.indexOf('흔들') >= 0) ? 'shake' : 'quiet')
+                : (r.십신 === '겁재' ? 'leak' : 'quiet'));
+      달들.push({ 연: yy, 월: mm, 간지: r.간지, 점수: r.점수, 십신: r.십신 || null,
+                  이유: r.이유, 결: love ? r.결 : (GOD_MEANING[r.십신] || ''),
+                  상태, 열림: 상태 === 'open',
+                  좋은날: dd.좋은, 조심날: dd.조심, 상대: dd.상대,
+                  시진무리: 상태 === 'open' ? 시진묶음글(dd.좋은, mm) : [] });
+    }
+    // 이음 — 달과 달을 잇는다
+    const 표 = love ? 이음_연애 : 이음_재물;
+    달들.forEach((m, i) => { if (i > 0) m.이음 = 표[달들[i - 1].상태 + '>' + m.상태] || null; });
+    // 규율 — 위 층이 아래 층을 다스린다. 흔들/새는 달엔 날을 권하지 않는다.
+    달들.forEach(m => {
+      if (m.상태 === 'shake') {
+        m.지침 = '이 달은 새 만남의 날을 고르는 달이 아닙니다 — 어긋난 것을 정리하고 마음을 정돈하는 데 쓰면 오히려 남는 달입니다. 피할 수 없는 약속이 있다면 비켜 갈 날만은 피하세요.';
+        m.좋은날 = []; m.시진무리 = [];
+      } else if (m.상태 === 'leak') {
+        m.지침 = '이 달은 돈 걸린 날을 고르는 달이 아니라 지키는 달입니다 — 계약·동업·큰 지출은 다음 달로 미루는 것이 최선입니다.';
+        m.좋은날 = []; m.시진무리 = [];
+      }
+    });
+    // 검토수 — 원장과 화면 머리가 같은 숫자를 쓴다
+    let 좋은합 = 0, 총일 = 0;
+    달들.forEach(m => {
+      총일 += new Date(m.연, m.월, 0).getDate();
+      좋은합 += m.좋은날.filter(x => x.sc >= 3).length;
+    });
+    const 검토수 = 12 + 총일 + 좋은합 * 12;
+    const 먼해 = (v.미래 || []).filter(r => r.점수 >= 70 && (love || !r.샘)).map(r => r.해);
+
+    // ── 원장(로딩에 재생할 실제 계산 흔적)도 판단서가 만든다 ──
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 원장 = {
+      검토수,
+      머리: love ? [
+        '원국을 폅니다 — ' + 사주줄,
+        '인연의 글자: ' + (남 ? '재성' : '관성') + ' · 배우자 자리: ' + E.BRANCHES[p.day.branch],
+        '잣대를 겁니다 — 투출·통근·합거·도화·조후, 과거 연표를 짚은 그 자 그대로',
+      ] : [
+        '원국을 폅니다 — ' + 사주줄,
+        '돈의 글자: 재성 · 새는 손: 겁재' + (v.강약 === '신약' ? ' · 신약이라 재성 가산을 줄여 잽니다' : ''),
+        '잣대를 겁니다 — 재성 투출·식상·겁재·조후, 과거 연표를 짚은 그 자 그대로',
+      ],
+      달줄: 달들.map(m => ({
+        표: m.상태 === 'open' ? '◉' : (m.상태 === 'shake' ? '△' : (m.상태 === 'leak' ? '✕' : '―')),
+        말: m.연 + '.' + m.월 + ' ' + m.간지 + ' — ' + (m.이유[0] || (love ? '조용' : '잔잔')),
+      })),
+      꼬리: [
+        총일 + '일을 하루씩 검토 — ' + (love ? '좋은 날 ' : '돈이 도는 날 ') + 좋은합 + ' · 조심할 날 ' + 달들.reduce((a, m) => a + m.조심날.length, 0),
+        '시두법으로 좋은 날의 12시진 대조 — ' + (좋은합 * 12) + '자리',
+        '합 ' + 검토수.toLocaleString('ko-KR') + '가지 경우를 대조했습니다 — ' + (love ? '두루마리를 폅니다' : '장부를 폅니다'),
+      ],
+    };
+
+    // ── AI 에게 줄 조각 — 화면과 같은 원천이라 어긋날 길이 없다 ──
+    const 열두달AI = 달들.map(m => {
+      const o = { 때: m.연 + '년 ' + m.월 + '월 ' + m.간지, 이유: m.이유, 결: m.결, 열림: m.열림 };
+      if (m.이음) o.이음 = m.이음;
+      if (m.지침) {
+        o.지침 = m.지침 + ' 날 추천 금지.';
+        if (m.조심날.length) o.비켜갈날 = m.조심날.map(x => m.월 + '/' + x.일);
+      } else {
+        if (m.좋은날.length) o[m.상대 ? '그달에서나은날' : '좋은날'] = m.좋은날.map(x => m.월 + '/' + x.일 + '(' + x.요일 + ')');
+        if (m.조심날.length) o.조심할날 = m.조심날.map(x => m.월 + '/' + x.일);
+      }
+      return o;
+    });
+
+    return { kind, 사주줄, 진단: why.말, 과거: v.과거, 흔들린해: v.흔들린해 || null,
+             샌해: v.샌해 || null, 지킬해: v.지킬해 || null, 강약: v.강약 || null,
+             현재: v.현재, 달들, 먼해, 검토수, 원장, 열두달AI,
+             열린수: 달들.filter(m => m.열림).length,
+             샘달들: 달들.filter(m => m.상태 === 'leak').map(m => m.월) };
+  }
+
   // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
   //
   // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
@@ -2706,5 +2844,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, reading, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
