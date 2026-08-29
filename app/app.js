@@ -476,27 +476,40 @@
     const sc = $('homeScene');
     if (sc) {
       sc.classList.remove('hide');
+      // 맞이하는 말이 먼저다 — 사실 통보는 그 다음이다.
+      // 「기다리고 있었습니다」는 연출이지 명리 주장이 아니다(판정은 엔진, 전달은 우리 몫).
       const 글 = '<div class="hs-veil"></div><div class="hs-body">'
+        + '<p class="hs-hail">공주님, 기다리고 있었습니다.</p>'
         + '<p class="hs-name">' + esc(nim()) + '</p>'
-        + '<p class="hs-day">오늘은 ' + esc(f.pillar(tf.day)) + '일입니다</p>'
-        + '<p class="hs-sub">' + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날</p></div>';
+        + '<p class="hs-day">오늘은 ' + esc(f.pillar(tf.day)) + '일 — '
+        + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날입니다</p></div>';
       // 그림이 꺼져 있으면 img 를 아예 두지 않는다 — 빈 액자를 보여줄 이유가 없다
       sc.innerHTML = (window.CHAEKSA_ART ? '<img alt="" id="homeSceneArt">' : '') + 글;
       회의장면(u => { const a = $('homeSceneArt'); if (a) a.src = u; });
     }
-    // 오늘 나온 책사 — 하루에 하나. 열 사람이 돌아가며 제 화면으로 데려간다.
-    // 이것이 예전 타일 벽을 대신한다: 스무 개를 한꺼번에 늘어놓지 않는다.
+    // 책사단이 도열한다 — 대접의 핵심은 「나를 위해 여럿이 나와 있다」이다.
+    // 겸사겸사 서랍에 숨은 화면들의 문이 되기도 한다: 열 사람이 곧 열 개의 문.
     const ev = $('todayEnvoy');
     if (ev) {
-      const [k, 이름, 탭, 말] = 오늘의책사[날번호() % 오늘의책사.length];
-      ev.innerHTML = '<button class="envoy" type="button">'
-        + '<img class="ev-face" src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">'
-        + '<span class="ev-body"><span class="ev-k">오늘 나온 책사</span>'
-        + '<span class="ev-name">' + esc(이름) + '</span>'
-        + '<span class="ev-say">' + esc(말) + '</span></span>'
-        + '<span class="ev-go">▸</span></button>';
-      // data-open 은 시작할 때 한 번만 묶인다 — 나중에 그린 버튼은 손으로 묶어야 한다
-      ev.querySelector('.envoy').onclick = () => go(탭);
+      const 오늘 = 날번호() % 오늘의책사.length;
+      const 줄 = 오늘의책사.map(([k, 이름], i) =>
+        '<button class="cm' + (i === 오늘 ? ' on' : '') + '" type="button" data-i="' + i + '">'
+        + '<span class="cm-face"><img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">'
+        + '<span class="cm-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
+        + '<span class="cm-name">' + esc(이름) + '</span></button>').join('');
+      const [, 이름0, 탭0, 말0] = 오늘의책사[오늘];
+      ev.innerHTML = '<section class="corps">'
+        + '<p class="corps-k">책사단 열 사람이 나와 있습니다</p>'
+        + '<div class="corps-row">' + 줄 + '</div>'
+        + '<button class="corps-say" type="button">'
+        + '<span class="cs-who">' + esc(이름0) + '</span>'
+        + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button>'
+        + '</section>';
+      // data-open 은 시작할 때 한 번만 묶인다 — 나중에 그린 것은 손으로 묶는다
+      ev.querySelectorAll('.cm').forEach(b => {
+        b.onclick = () => go(오늘의책사[+b.dataset.i][2]);
+      });
+      ev.querySelector('.corps-say').onclick = () => go(탭0);
     }
     $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
     $('tiMeStr').style.fontSize = '17px';
@@ -2072,6 +2085,10 @@
   // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
   // 오늘 나온 책사 — [초상 키, 이름, 데려갈 화면, 아뢰는 말]
   // 말은 권유지 판단이 아니다. 명리 주장은 각 화면이 제 계산으로 한다.
+  // 초상이 아직 없을 때 얼굴 자리에 세울 인장 — 이름 첫 글자를 쓰면 궁통보감·궁위가 겹친다
+  const 책사인장 = { 자평진전: '格', 궁통보감: '候', 억부: '抑', 궁위: '宮',
+                     인연: '緣', 재물: '財', 천직: '職', 운로: '運',
+                     협기: '擇', 좌장: '策' };
   const 오늘의책사 = [
     ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
     ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],

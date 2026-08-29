@@ -481,19 +481,49 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 .hs-day{font-family:var(--letter);font-size:16px;color:#e2ddf3;margin:5px 0 0}
 .hs-sub{font-size:11px;letter-spacing:.22em;color:#e6c98a;margin:10px 0 0}
 
-/* 오늘 나온 책사 — 하루에 하나. 스무 개를 한꺼번에 늘어놓지 않는다. */
-.envoy{display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;
-  font-family:inherit;color:var(--ink);margin:0 0 16px;padding:15px 16px;border-radius:18px;
-  border:1px solid var(--accent-line);background:linear-gradient(135deg,var(--accent-soft),var(--card));
-  transition:transform .06s ease}
-.envoy:active{transform:scale(.99)}
-.ev-face{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 22%;
-  flex:0 0 54px;border:1px solid var(--accent-line);background:var(--bg2)}
-.ev-body{display:flex;flex-direction:column;gap:3px;min-width:0}
-.ev-k{font-size:10.5px;letter-spacing:.22em;color:var(--accent)}
-.ev-name{font-family:var(--letter);font-size:17px;font-weight:700}
-.ev-say{font-size:12.5px;color:var(--ink2);line-height:1.55}
-.ev-go{margin-left:auto;color:var(--accent);font-size:18px;flex:0 0 auto}
+.hs-hail{font-family:var(--letter);font-size:15px;color:#e6c98a;margin:0 0 8px;letter-spacing:.01em}
+
+/* ───── 책사단 도열 ─────
+   대접의 핵심은 「나를 위해 여럿이 나와 있다」이다. 하루에 한 사람만 보여주면
+   그건 알림이지 궁정이 아니다. 열 사람을 세우고 오늘 나온 이만 밝힌다.
+   서랍에 숨은 화면들의 문 노릇도 한다 — 열 사람이 곧 열 개의 문. */
+.corps{border:1px solid var(--accent-line);border-radius:18px;padding:16px 14px 14px;
+  margin:0 0 16px;background:linear-gradient(135deg,var(--accent-soft),var(--card))}
+.corps-k{font-size:10.5px;letter-spacing:.22em;color:var(--accent);margin:0 0 13px;text-align:center}
+.corps-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 4px}
+.cm{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;
+  padding:0;cursor:pointer;font-family:inherit;color:var(--ink3);transition:transform .06s ease}
+.cm:active{transform:scale(.94)}
+.cm-face{position:relative;width:44px;height:44px;border-radius:50%;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1px solid var(--line2);opacity:.55;transition:.18s}
+.cm-face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.cm-seal{font-family:var(--serif);font-size:17px;font-weight:900;color:var(--ink3)}
+.cm-name{font-size:9.5px;letter-spacing:-.02em;line-height:1.2;text-align:center}
+.cm.on{color:var(--accent)}
+.cm.on .cm-face{opacity:1;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.cm.on .cm-seal{color:var(--accent)}
+.corps-say{display:flex;align-items:center;gap:9px;width:100%;margin:14px 0 0;padding:11px 12px;
+  border-radius:13px;border:1px solid var(--line);background:var(--card2);cursor:pointer;
+  font-family:inherit;text-align:left;color:var(--ink)}
+.cs-who{flex:0 0 auto;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--accent);
+  background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:999px;padding:3px 9px}
+.cs-txt{font-size:12.5px;color:var(--ink2);line-height:1.5}
+.cs-go{margin-left:auto;color:var(--accent);flex:0 0 auto}
+
+/* 들어서면 차례로 일어선다 — 「이미 준비되어 있었다」는 느낌은 이런 데서 온다 */
+@keyframes 일어서기{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+[data-tab="home"] > .home-scene,
+[data-tab="home"] > #chong,
+[data-tab="home"] > #todayEnvoy{animation:일어서기 .5s ease both}
+[data-tab="home"] > #chong{animation-delay:.08s}
+[data-tab="home"] > #todayEnvoy{animation-delay:.16s}
+@media (prefers-reduced-motion:reduce){
+  [data-tab="home"] > .home-scene,
+  [data-tab="home"] > #chong,
+  [data-tab="home"] > #todayEnvoy{animation:none}
+}
+
 
 /* 서신을 기다리는 자리에도 장면을 둔다 */
 /* 회의록 — 누가 한 말인지 눈에 걸려야 회의로 읽힌다 */
