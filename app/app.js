@@ -428,6 +428,7 @@
         <button class="btn" id="fcYes">맞습니다</button>
         <button class="btn-ghost" id="fcNo" style="margin-top:8px;width:100%">아닙니다</button>
         <p class="hint">${i === 0 ? '생년월일시만으로 짚은 것입니다. 다 답하시면 어떻게 알았는지부터 보여드립니다 — 기준을 공개하는 것이 책사의 방식입니다.' : '아니면 「아닙니다」를 누르셔도 됩니다 — 빗나간 것도 숨기지 않습니다.'}</p>`;
+      간명예열();   // 답하는 동안 뒤에서 간명서를 굽는다
       const answer = v => { localStorage.setItem(fcKey, fcAns + v);
         if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('personcheck', { i, hit: v }); } catch (e) {}
         chongFor = null; renderChong(); window.scrollTo({ top: 0 }); };
@@ -448,6 +449,14 @@
         ${사람문.slice(0, 문수).map((q2, k) => `<p>${fcAns[k] === 'y' ? '○ 맞음' : '× 아님'} — ${esc(q2.문장)}<br><span class="pb-days-why">${esc(q2.근거)}</span></p>`).join('')}</div>` : ''}
       ${FC ? `<div class="nx-diag"><p class="nx-diag-k">이 구조가 지나온 해들 — 글자가 기억하는 대로</p>
         ${FC.연대기.map(e => `<p><b>${e.해}년(만 ${e.나이}살)</b> — ${esc(e.문장)}<br><span class="pb-days-why">${esc(e.근거)}</span></p>`).join('')}</div>` : ''}` : '';
+    // 간명서가 첫 화면의 몸통이 됐다 — 아래 총평 블록들은 간명서가 대체한다(무료).
+    el.innerHTML = `${첫절}
+      <p class="hero-eyebrow">간명 — ${esc(nim())}의 사주를 통변합니다</p>
+      <div id="chongGm"><p class="hint">간명 중…</p></div>`;
+    mountGanmyeong($('chongGm'), 'home');
+    window.renderChongSoon = () => { const g = $('chongGm'); if (g) mountGanmyeong(g, 'home'); };
+    return;
+    /* eslint-disable no-unreachable */
     el.innerHTML = `${첫절}
       <p class="hero-eyebrow">총평 — ${esc(nim())}의 사주 구조</p>
       <p class="pb-lede"><b>${f.stem(a.dayStem)} 일간 · ${esc(a.strength)}</b>
@@ -2103,31 +2112,39 @@
   // ── 간명서 — 번호 문항 통변 + 문항별 [맞다/애매/아니다] ──
   // 채팅 간명이 친구 채점 90%를 받았다. 그 형식(문항·채점·정직)이 제품이다.
   let gmFor = null;
+  // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
+  // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
+  function 간명예열() {
+    // 문진에 답하는 30~60초 동안 뒤에서 미리 굽는다 — 첫 화면이 기다리지 않게.
+    if (!R || !profile || !window.ChaeksaAI || !ChaeksaAI.ready || !ChaeksaAI.ready()) return;
+    const ck = 'chaeksa.ganmyeong.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
+    if (localStorage.getItem(ck) || 간명예열.busy) return;
+    간명예열.busy = true;
+    try {
+      ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today))
+        .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })
+        .catch(() => { 간명예열.busy = false; });
+    } catch (e) { 간명예열.busy = false; }
+  }
   async function renderGanmyeong() {
     const el = $('gmBody'); if (!el || !R || !profile) return;
+    await mountGanmyeong(el, 'tab');
+  }
+  async function mountGanmyeong(el, whereTag) {
     const T = window.ChaeksaTypecard, AI = window.ChaeksaAI;
-    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && (ChaeksaPay.paidFor('inyeon') || ChaeksaPay.paidFor('wealth'));
-    if (!paid) {
-      el.innerHTML = nextStep('당신 한 사람의 간명서',
-        '번호 문항으로 통변하고, 당신이 채점합니다',
-        '구조·성격·재물·연애·지나온 해를 문항 하나에 주장 하나씩 담아 짚습니다. 문항마다 맞다/아니다를 눌러 주시면 — 빗나간 것까지 성적표로 남기는, 기준을 공개하는 간명입니다.',
-        '간명서를 받고 싶습니다', 'ganmyeong', null);
-      return;
-    }
     const pk = [profile.year, profile.month, profile.day, profile.hour].join('.');
     const cacheKey = 'chaeksa.ganmyeong.' + pk;
     const gradeKey = 'chaeksa.ganmyeong.grade.' + pk;
-    if (gmFor === R + '|' + (localStorage.getItem(gradeKey) || '')) return;
-    gmFor = R + '|' + (localStorage.getItem(gradeKey) || '');
     let text = localStorage.getItem(cacheKey);
     if (!text) {
-      el.innerHTML = '<p class="hint">간명 중입니다 — 엔진이 잰 사실을 펴서 문항을 세우고 있습니다 (약 1분)…</p>';
-      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 간명가를 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; gmFor = null; return; }
+      el.innerHTML = '<p class="hint">간명 중입니다 — 엔진이 잰 사실을 펴서 문항을 세우고 있습니다 (약 1분). 이 화면을 벗어나도 계속 굽습니다.</p>';
+      if (간명예열.busy) return;   // 예열이 이미 굽는 중 — 끝나면 다시 그려진다
+      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 간명가를 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
       try {
         const facts = T.간명자료(R, today);
         text = await AI.ganmyeong(facts);
         localStorage.setItem(cacheKey, text);
-      } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; gmFor = null; return; }
+      } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; return; }
     }
     const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
     const parts = text.split(/(?=[①-⑳])/);
@@ -2149,8 +2166,8 @@
     el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
       grades[b.dataset.i] = b.dataset.v;
       localStorage.setItem(gradeKey, JSON.stringify(grades));
-      if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('ganmyeong_grade', { i: +b.dataset.i, v: b.dataset.v }); } catch (e) {}
-      gmFor = null; renderGanmyeong();
+      if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('ganmyeong_grade', { i: +b.dataset.i, v: b.dataset.v, at: whereTag }); } catch (e) {}
+      mountGanmyeong(el, whereTag);
     });
   }
 
