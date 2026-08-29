@@ -2019,6 +2019,8 @@
       좋은날: (m.좋은날 || []).slice(0, 4).map(d => m.월 + '/' + d.일 + '(' + d.요일 + ')' + (d.왜 ? ' — ' + d.왜 : '')) }));
     const a = R.analysis;
     return {
+      오늘: now.getFullYear() + '년 ' + (now.getMonth() + 1) + '월 ' + now.getDate() + '일',
+      올해: now.getFullYear() + '년 (만 ' + (now.getFullYear() - R.input.year) + '살)',
       사주: L.사주줄, 일간: E.STEMS[R.pillars.day.stem], 강약: a.strength + ' ' + a.strengthScore,
       오행분포: a.elemCount, 빈오행: a.missing,
       대운: (R.daeun && R.daeun.list || []).slice(0, 6).map(d => E.fmt.pillar(d) + ' 만' + d.startAge + '~' + d.endAge),
