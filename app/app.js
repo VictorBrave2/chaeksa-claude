@@ -2496,8 +2496,8 @@
   $('btnStart').onclick = enterOrLogin;
   $('btnStart2').onclick = enterOrLogin;
   if (게이트켜짐() && !ChaeksaCloud.signedIn()) {
-    $('btnStart').textContent = '카카오로 1초 시작 — 총평까지 무료';
-    if ($('lpStartHint')) $('lpStartHint').textContent = '로그인하면 총평·구조 진단·과거 스토리까지 무료로 바로 나옵니다.';
+    $('btnStart').textContent = '카카오로 1초 시작 — 간명서 무료';
+    if ($('lpStartHint')) $('lpStartHint').textContent = '로그인하고 생년월일시만 넣으면 1분 안에 간명서가 나옵니다.';
     if ($('btnStart2')) $('btnStart2').textContent = '카카오로 시작하기';
   }
 
