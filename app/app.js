@@ -2180,6 +2180,13 @@
     // AI가 마크다운을 섞어도 화면엔 순수 글만 — 이미 구워진 캐시도 여기서 같이 씻긴다
     text = text.replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *-{3,} *$/gm, '').replace(/^ *[*•] +/gm, '');
     const parts = text.split(/(?=[①-⑳])/);
+    // 좌장의 맺음은 채점 대상이 아니다 — 스무 발언 뒤에 오는 회의의 끝이다.
+    // 떼어내지 않으면 마지막 발언 카드에 끼어 「맞아요/아니에요」가 붙는다.
+    let 맺음글 = '';
+    if (parts.length > 1) {
+      const 끝 = parts[parts.length - 1], k = 끝.indexOf('\n\n〔좌장〕');
+      if (k >= 0) { 맺음글 = 끝.slice(k + 2).trim(); parts[parts.length - 1] = 끝.slice(0, k); }
+    }
     // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
     const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
     // 발언 한 줄을 그리는 일은 전역 발언줄() 하나가 한다 — 여기서 따로 그리다가
@@ -2219,8 +2226,10 @@
       el.innerHTML = html.join('');
       const mb = el.querySelector('#gmMore');
       if (mb) mb.onclick = () => go('ganmyeong');
-      return;
+      return;   // 맺음은 홈에서 보이지 않는다 — 다 읽으신 분께만 나오는 말이다
     }
+    // 회의를 맺는 말. 채점 알약을 달지 않는다 — 좌장은 판정하지 않고 앉힌다.
+    if (맺음글) html.push('<div class="nx-diag gm-close" style="margin-top:16px">' + 발언줄(맺음글) + '</div>');
     const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
     const misses = Object.values(grades).filter(v => v === 'n').length;
     html.push('<p class="pb-ft">' + answered + ' / ' + 전체문 + '문장에 답하셨습니다 — 맞아요 ' + hits + ' · 글쎄요 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니에요 ' + misses

@@ -1096,3 +1096,8 @@ details.fold > .tiles { margin-top: 10px; }
   border: 1px solid var(--line, #8886); background: transparent; color: inherit;
   font: inherit; font-size: .92em; cursor: pointer; }
 .gm-grade .gmg.on { border-color: var(--accent, #b8860b); color: var(--accent, #b8860b); font-weight: 700; }
+
+/* 좌장의 맺음 — 회의를 닫는 말. 채점하지 않는 자리라 알약이 없고,
+   금테로 둘러 스무 발언과 결이 다르다는 것을 눈으로 먼저 알린다. */
+.gm-close{border-left-color:var(--g3);background:var(--g3-bg)}
+.gm-close .gm-who{color:var(--g3-ink)}
