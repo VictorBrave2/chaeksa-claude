@@ -2059,7 +2059,7 @@
       window.addEventListener('beforeunload', 간명예열.guard);
     }
     try {
-      ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today))
+      ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today), ck.replace('chaeksa.ganmyeong.', ''))
         .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })
         .catch(err => { 간명예열.busy = false;
           간명예열.fails = (간명예열.fails || 0) + 1;
@@ -2087,7 +2087,7 @@
       if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 간명가를 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
       try {
         const facts = T.간명자료(R, today);
-        text = await AI.ganmyeong(facts);
+        text = await AI.ganmyeong(facts, cacheKey.replace('chaeksa.ganmyeong.', ''));
         try { localStorage.setItem(cacheKey, text);
           if (localStorage.getItem(cacheKey) !== text) throw new Error('저장 검증 실패');
         } catch (e2) { try { console.warn('간명 캐시 저장 실패:', e2); } catch (e3) {} }

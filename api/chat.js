@@ -103,7 +103,7 @@ module.exports = async (req, res) => {
 
   res.setHeader('Access-Control-Allow-Origin', originOk ? origin || '*' : 'null');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'content-type, anthropic-version, anthropic-beta, authorization, x-chaeksa-task');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, anthropic-version, anthropic-beta, authorization, x-chaeksa-task, x-chaeksa-cache');
   res.setHeader('Vary', 'Origin');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -159,6 +159,17 @@ module.exports = async (req, res) => {
   const userToken = auth.startsWith('Bearer ') ? auth.slice(7) : '';
   const enforcing = true;   // 기본값이 코드에 있으므로 항상 강제한다
 
+  // 간명서 서버 캐시 (schema-10) — 같은 사주는 두 번 굽지 않는다. bump 전에 본다:
+  // 캐시 적중은 과금도 계량도 없다. 「굽는 중 새로고침」으로 죽은 요청의 결과도
+  // 아래 put 이 저장하므로(클라이언트가 떠나도 함수는 끝까지 돈다) 토큰이 녹지 않는다.
+  const cachePk = String(req.headers['x-chaeksa-cache'] || '').slice(0, 40);
+  if (cachePk && userToken) {
+    const hit = await rpc('ganmyeong_get', { p_pk: cachePk }, userToken);
+    if (hit && hit.ok && hit.hit && hit.body) {
+      return res.status(200).json({ content: [{ type: 'text', text: hit.body }], cached: true });
+    }
+  }
+
   if (enforcing) {
     if (!userToken) {
       return res.status(401).json({ type: 'error', error: { type: 'auth', message: 'AI 비서는 로그인하면 열립니다. 로그인 후 다시 시도해 주세요.' } });
@@ -184,6 +195,14 @@ module.exports = async (req, res) => {
       body: JSON.stringify(body),
     });
     const text = await upstream.text();
+    if (upstream.ok && cachePk && userToken) {
+      // 성공한 간명은 서버에 저장 — 응답 본문에서 글만 뽑는다
+      try {
+        const j = JSON.parse(text);
+        const body = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
+        if (body) rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken).catch(() => {});
+      } catch (e) {}
+    }
     if (!upstream.ok && enforcing && userToken) {
       // 사용자는 아무것도 못 받았다. 센 것을 되돌린다.
       rpc('ai_usage_refund', { p_task: task }, userToken).catch(() => {});

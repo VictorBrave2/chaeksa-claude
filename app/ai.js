@@ -144,6 +144,7 @@ ${prof}` : ''}`;
       // 프록시가 서버에서 인증·계량한다 (api/chat.js + server/schema-5.sql).
       // 토큰이 없으면 안 실어 보낸다 — 서버가 401로 막고, 그 메시지를 그대로 보여준다.
       headers['x-chaeksa-task'] = task;
+      if (opts.cachePk) headers['x-chaeksa-cache'] = opts.cachePk;
       try {
         const C = global.ChaeksaCloud;
         const tok = C && C.token ? await C.token() : null;
@@ -327,7 +328,7 @@ ${prof}` : ''}`;
     + '⑩ 당신은 음간 남성 — 붙드는 접착을 타고나지 않은 쪽입니다. 방은 준비돼 있는데 문이 막힌 집 — 이 사주의 연애를 한 줄로 하면 이겁니다.\n'
     + '⑭ 2015년(만 23) — 온전 통로 乙이 하늘에 온 해: 인연의 축이 크게 돌았기 쉽습니다. 시작이었든, 굳었든, 틀어졌든 — 어느 쪽이었는지는 당신이 아십니다.\n'
     + '⑱ 정공법은 乙: 乙의 여자를 만나는 것이 구조의 답이고, 크게는 甲寅 대운(2034~) — 재성의 10년입니다. 결혼이 늦는 사주냐 물으면 — 네, 본론이 40대에 있는 사주입니다. 대신 그때 오는 것은 방(장생)이 살리는, 오래 가는 인연입니다.';
-  async function ganmyeong(facts) {
+  async function ganmyeong(facts, cachePk) {
     const sys = '너는 사주명리 비서 「책사」의 간명가다. 지금 쓰는 것은 결제한 사용자의 **간명서** — 번호 문항으로 이 사람을 통변하고, 사용자가 문항마다 맞다/아니다로 채점하는 문서다.\n'
       + '절대 규칙:\n'
       + '- [계산된 사실] 밖의 연도·글자·숫자를 만들지 마라. 사실에 있는 것에서만 말하라.\n'
@@ -343,7 +344,7 @@ ${prof}` : ''}`;
       + '[계산된 사실]\n' + JSON.stringify(facts);
     // 8000이면 12~18문이 넉넉하다 — 길이를 줄이면 굽는 시간이 줄고, 새로고침 유혹도 준다
     return dehanja(await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 8000, effort: 'high' }));
+      { task: 'story', maxTokens: 8000, effort: 'high', cachePk }));
   }
 
   async function dailyBrief(r, today) {
