@@ -399,7 +399,7 @@
     el.innerHTML = `<p class="hero-eyebrow">${esc(nim())}의 간명서</p>
       <p class="pb-lede">번호 문항으로 통변하고, 맞는지는 당신이 채점합니다 — 빗나간 것도 숨기지 않습니다.</p>
       <button class="btn" id="chongBake">간명서 받기 — 약 1~2분</button>
-      <p class="hint">한 번 구우면 저장됩니다 — 다시 굽지 않습니다.</p>
+      <p class="hint">무료 간명서 받기는 단 한 번입니다.</p>
       <div id="chongFeats"></div>
       <p class="hint hide" id="chongWait">간명 중…</p>`;
     $('chongBake').onclick = () => {
