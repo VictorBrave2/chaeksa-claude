@@ -365,8 +365,55 @@
     go('home');
   }
 
+  // ───── 총평 — 로그인·입력 직후 제일 먼저 보는 카드 ─────
+  // 순서가 전략이다: 총평(구조) → 결함 → 과거(본인이 검증) → 현재 → 미래는 결제.
+  // 과거를 맞힌 잣대가 미래를 잰다는 사실을 화면에 적는다 — 스토리 틀 그대로.
+  let chongFor = null;
+  function renderChong() {
+    const el = $('chong'); const T = window.ChaeksaTypecard;
+    if (!el) return;
+    if (!T || !T.loveStory || !T.inyeonWhy) { el.classList.add('hide'); return; }
+    if (chongFor === R) return;
+    chongFor = R;
+    let LW = null, MW = null, LS = null;
+    try { LW = T.inyeonWhy(R); } catch (e) {}
+    try { MW = T.wealthWhy ? T.wealthWhy(R) : null; } catch (e) {}
+    try { LS = T.loveStory(R, today); } catch (e) {}
+    const a = R.analysis;
+    const 진단들 = []
+      .concat(LW && LW.말 ? LW.말.slice(0, 3) : [])
+      .concat(MW && MW.말 ? MW.말.slice(0, 2) : []);
+    const 과거들 = LS && LS.과거 ? LS.과거.slice(0, 2) : [];
+    const paidL = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
+    const paidM = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
+    el.classList.remove('hide');
+    el.innerHTML = `
+      <p class="hero-eyebrow">총평 — ${esc(nim())}의 사주 구조</p>
+      <p class="pb-lede"><b>${f.stem(a.dayStem)} 일간 · ${esc(a.strength)}</b>
+        ${a.missing.length ? ` · 빈 오행 <b>${a.missing.join('·')}</b>` : ''} —
+        성격 풀이가 아니라 <b>구조</b>를 말씀드립니다. 구조는 반복되기 때문입니다.</p>
+      ${진단들.length ? `<div class="nx-diag"><p class="nx-diag-k">이 사주의 구조 — 결함까지</p>
+        ${진단들.map(t => '<p>' + esc(t) + '</p>').join('')}</div>` : ''}
+      ${과거들.length ? `<div class="nx-diag"><p class="nx-diag-k">그래서 과거에 이런 일이 있었을 겁니다</p>
+        ${과거들.map(g => `<p><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
+          (만 ${g.시작나이 === g.끝나이 ? g.시작나이 : g.시작나이 + '~' + g.끝나이}살) — ${esc(g.말)}</p>`).join('')}
+        <p class="hint">맞는지는 ${esc(nim())}이 아십니다. 여기가 이 계산의 시험대입니다.</p></div>` : ''}
+      ${LS && LS.현재 ? `<p class="ls-say"><b>그리고 지금 —</b> ${esc(LS.현재.말)}</p>` : ''}
+      <div class="nx-diag pbd">
+        <p class="nx-diag-k">여기까지가 무료입니다</p>
+        <p>과거를 짚은 <b>그 잣대가 그대로 앞을 잽니다</b> — 앞으로 열두 달이 언제 열리고
+        언제 새는지, 달·날·시각까지. 그 미래 스토리부터가 유료입니다.</p>
+        <button class="btn" id="chongLove">${paidL ? '연애 미래 스토리 보기' : '연애 미래 스토리 열기'}</button>
+        <button class="btn" id="chongMoney" style="margin-top:8px">${paidM ? '재물 미래 스토리 보기' : '재물 미래 스토리 열기'}</button>
+      </div>`;
+    const bl = $('chongLove'), bm = $('chongMoney');
+    if (bl) bl.onclick = () => go('lovestory');
+    if (bm) bm.onclick = () => go('moneystory');
+  }
+
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
+    renderChong();
     const a = R.analysis;
     // 첫 마디 — 오늘 여기 들어온 사람에게 제일 먼저 할 말
     (function () {
@@ -2371,8 +2418,26 @@
     $('btnSettings').classList.remove('hide');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  $('btnStart').onclick = showForm;
-  $('btnStart2').onclick = showForm;
+  // ── 로그인 게이트 ──
+  // 로그인 없이는 무료도 없다 (2026-08-29 결정). 이유: 비로그인 사용자는 결제로
+  // 이어지지 않고, 로그인해야 재방문 고리(누가 왔었는지)와 카카오 채널이 이어진다.
+  // 클라우드가 안 붙은 빌드(로컬 dev)는 게이트를 끈다 — 개발이 막히면 안 된다.
+  const 게이트켜짐 = () => !!(window.ChaeksaCloud && ChaeksaCloud.enabled());
+  const 손님 = () => 게이트켜짐() && !ChaeksaCloud.signedIn();
+  function enterOrLogin() {
+    if (손님()) {
+      try { ChaeksaCloud.signInWith('kakao'); } catch (e) { showForm(); }
+      return;
+    }
+    showForm();
+  }
+  $('btnStart').onclick = enterOrLogin;
+  $('btnStart2').onclick = enterOrLogin;
+  if (게이트켜짐() && !ChaeksaCloud.signedIn()) {
+    $('btnStart').textContent = '카카오로 1초 시작 — 총평까지 무료';
+    if ($('lpStartHint')) $('lpStartHint').textContent = '로그인하면 총평·구조 진단·과거 스토리까지 무료로 바로 나옵니다.';
+    if ($('btnStart2')) $('btnStart2').textContent = '카카오로 시작하기';
+  }
 
   // ───── 외부 브리지 (consult.js에서 사용) ─────
   window.ChaeksaApp = {
@@ -2546,10 +2611,19 @@
   const saved = localStorage.getItem(KEY);
   if (saved) { try { const sp = JSON.parse(saved); if (sp.place && $('place')) { $('place').value = sp.place; updatePlaceNote(); } } catch (e) {} }
   let booted = false;
-  const act = People() ? People().active() : null;
-  if (act) { start(People().toProfile(act)); booted = true; }
-  else if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
-  if (!booted) showLanding();
+  if (손님()) {
+    // 로그인 전에는 무료도 열지 않는다 — 랜딩이 팔고, 카카오 원탭이 문이다.
+    showLanding();
+  } else {
+    const act = People() ? People().active() : null;
+    if (act) { start(People().toProfile(act)); booted = true; }
+    else if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
+    if (!booted) {
+      // 로그인은 했고 사주만 없는 사람 — 랜딩을 또 보여줄 이유가 없다. 바로 입력.
+      if (게이트켜짐() && ChaeksaCloud.signedIn()) { showLanding(); showForm(); }
+      else showLanding();
+    }
+  }
   goHash(booted);         // #탭이름 으로 들어온 경우 그 탭을 연다
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
