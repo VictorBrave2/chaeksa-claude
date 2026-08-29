@@ -375,10 +375,11 @@
     if (!T || !T.loveStory || !T.inyeonWhy) { el.classList.add('hide'); return; }
     if (chongFor === R) return;
     chongFor = R;
-    let LW = null, MW = null, LS = null;
+    let LW = null, MW = null, LS = null, MS = null;
     try { LW = T.inyeonWhy(R); } catch (e) {}
     try { MW = T.wealthWhy ? T.wealthWhy(R) : null; } catch (e) {}
     try { LS = T.loveStory(R, today); } catch (e) {}
+    try { MS = T.모습 ? T.모습(R, today) : null; } catch (e) {}
     const a = R.analysis;
     const 진단들 = []
       .concat(LW && LW.말 ? LW.말.slice(0, 3) : [])
@@ -392,13 +393,22 @@
       <p class="pb-lede"><b>${f.stem(a.dayStem)} 일간 · ${esc(a.strength)}</b>
         ${a.missing.length ? ` · 빈 오행 <b>${a.missing.join('·')}</b>` : ''} —
         성격 풀이가 아니라 <b>구조</b>를 말씀드립니다. 구조는 반복되기 때문입니다.</p>
-      ${진단들.length ? `<div class="nx-diag"><p class="nx-diag-k">이 사주의 구조 — 결함까지</p>
-        ${진단들.map(t => '<p>' + esc(t) + '</p>').join('')}</div>` : ''}
-      ${과거들.length ? `<div class="nx-diag"><p class="nx-diag-k">그래서 과거에 이런 일이 있었을 겁니다</p>
-        ${과거들.map(g => `<p><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
-          (만 ${g.시작나이 === g.끝나이 ? g.시작나이 : g.시작나이 + '~' + g.끝나이}살) — ${esc(g.말)}</p>`).join('')}
-        <p class="hint">맞는지는 ${esc(nim())}이 아십니다. 여기가 이 계산의 시험대입니다.</p></div>` : ''}
-      ${LS && LS.현재 ? `<p class="ls-say"><b>그리고 지금 —</b> ${esc(LS.현재.말)}</p>` : ''}
+      ${MS && MS.과거.length ? `<div class="nx-diag"><p class="nx-diag-k">과거의 당신 — 맞는지 보세요</p>
+        ${MS.과거.map(d => `<p><b>${d.구간}</b> <span class="gz2">${esc(d.간지)} 대운</span><br>
+          ${d.내면 ? '속으로는 — ' + esc(d.내면) + '.<br>' : ''}
+          ${d.외면 ? '밖으로는 — <b>' + esc(d.외면) + '</b>에 있었거나 그쪽으로 끌렸을 자리입니다.' : ''}</p>`).join('')}
+        ${과거들.length ? 과거들.map(g => `<p><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
+          (만 ${g.시작나이 === g.끝나이 ? g.시작나이 : g.시작나이 + '~' + g.끝나이}살) — ${esc(g.말)}</p>`).join('') : ''}
+        <p class="hint">맞는지는 ${esc(nim())}이 아십니다. 여기가 이 계산의 시험대입니다 — 과거가 맞아야 미래를 믿으실 수 있습니다.</p></div>` : ''}
+      ${진단들.length ? `<div class="nx-diag"><p class="nx-diag-k">이 사주의 구조적 결함</p>
+        ${진단들.map(t => '<p>' + esc(t) + '</p>').join('')}
+        <p class="hint">결함은 성격 탓이 아니라 구조라서 반복됩니다 — 그래서 시기가 전부입니다.</p></div>` : ''}
+      ${MS && (MS.현재 || MS.격차) ? `<div class="nx-diag"><p class="nx-diag-k">지금의 당신</p>
+        ${MS.격차 ? '<p>' + esc(MS.격차.말) + '.</p>' : ''}
+        ${MS.현재 ? `<p><b>${MS.현재.구간}</b> <span class="gz2">${esc(MS.현재.간지)} 대운</span><br>
+          ${MS.현재.내면 ? '속으로는 — ' + esc(MS.현재.내면) + '.<br>' : ''}
+          ${MS.현재.외면 ? '밖으로는 — 지금은 <b>' + esc(MS.현재.외면) + '</b>에 힘이 실리는 때입니다.' : ''}</p>` : ''}
+        ${LS && LS.현재 ? `<p><b>인연은 —</b> ${esc(LS.현재.말)}</p>` : ''}</div>` : ''}
       <div class="nx-diag pbd">
         <p class="nx-diag-k">여기까지가 무료입니다</p>
         <p>과거를 짚은 <b>그 잣대가 그대로 앞을 잽니다</b> — 앞으로 열두 달이 언제 열리고

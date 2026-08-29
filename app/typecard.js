@@ -2108,6 +2108,64 @@
              샘달들: 달들.filter(m => m.상태 === 'leak').map(m => m.월) };
   }
 
+  // ── 모습 — 총평의 심리(내면)·사회심리(외면) 층 ──
+  //
+  // 설득의 뼈대 (2026-08-29 사용자 지시: 심리학+사회심리학 접근):
+  //   내면 = 의사결정 방식.  겉으로 안 보이는 것을 맞히면 「나를 아는구나」가 된다.
+  //   외면 = 사회적 자리(직업 결).  남들도 아는 것이라 검증이 쉽다 — 신뢰의 빠른 길.
+  //   격차 = 남들이 보는 나(월간·투출) vs 속으로 움직이는 나(일지 본기).
+  //          이 간극 진술이 개인화의 핵 — 바넘 문장은 간극을 말하지 못한다.
+  //   시점 = 원국은 바탕, 대운은 시기별 모습. 과거 대운을 맞히면(본인이 검증)
+  //          현재 대운 진술이 서고, 미래 대운·세운(유료)의 값이 선다.
+  // 원칙: 반대 구조에는 반대 문장이 나온다. 못 재는 것은 말하지 않는다.
+  const 결그룹 = { 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상',
+                   편재: '재성', 정재: '재성', 편관: '관성', 정관: '관성',
+                   편인: '인성', 정인: '인성' };
+  const 내면말 = {
+    비겁: '스스로 정하고 바로 움직이는 결정 — 조언을 듣긴 해도 결론은 이미 안에 있는 편입니다. 눌리는 시기엔 이게 고집으로 읽힙니다',
+    식상: '말하고 벌이면서 정리되는 결정 — 머리로 다 정한 뒤 움직이는 게 아니라, 해보면서 답이 서는 쪽입니다. 마감이 닥쳐야 정리되는 것도 이 결입니다',
+    재성: '손익으로 검증하고 움직이는 결정 — 마음이 동해도 계산이 안 서면 안 움직입니다. 대신 계산이 서면 망설임이 없습니다',
+    관성: '「이래도 되는가」를 먼저 통과시키는 결정 — 기준·책임·명분이 서야 실행합니다. 무리수를 안 두는 대신, 승인이 없으면 좋은 기회도 보냅니다',
+    인성: '모으고 미루는 결정 — 확신이 설 때까지 유보합니다. 결정보다 결정 전 공부가 긴 쪽이고, 그래서 틀리는 일은 적은데 늦는 일이 있습니다',
+  };
+  const 외면말 = {
+    비겁: '내 이름으로 서는 자리 — 자영·프리랜스·현장에서 직접 뛰는 쪽',
+    식상: '만들고 말하는 자리 — 기획·창작·교육·영업의 앞단',
+    재성: '돈이 도는 자리 — 사업·영업·관리·유통, 숫자가 성과인 곳',
+    관성: '조직과 직함의 자리 — 회사·공공·자격, 체계 안에서 올라가는 쪽',
+    인성: '배우고 다루는 자리 — 문서·연구·자격·가르침, 판을 뒤에서 받치는 쪽',
+  };
+  function 그룹of(ds, stem) { return 결그룹[E.TEN_GODS[E.tenGod(ds, stem)]] || null; }
+  function 모습(R, now) {
+    now = now || new Date();
+    const p = R.pillars, ds = p.day.stem;
+    const 나이 = now.getFullYear() - R.input.year;   // 만 근사 — 대운 구간 고르기엔 충분
+    // 겉 — 사회궁(월주) 하늘의 글자. 속 — 일지 본기.
+    const 겉그룹 = 그룹of(ds, p.month.stem);
+    const 속그룹 = 결그룹[E.TEN_GODS[E.tenGod(ds, E.HIDDEN[p.day.branch][0])]] || null;
+    const 격차 = (겉그룹 && 속그룹 && 겉그룹 !== 속그룹)
+      ? { 겉: 겉그룹, 속: 속그룹,
+          말: '남들은 당신을 「' + 외면말[겉그룹].split(' — ')[0] + '」의 사람으로 읽기 쉽습니다. 하지만 속은 다르게 움직입니다 — ' + 내면말[속그룹].split(' — ')[0] + '이 진짜 엔진입니다. 이 간극을 본인만 압니다' }
+      : (속그룹 ? { 겉: 겉그룹, 속: 속그룹,
+          말: '겉과 속이 같은 결입니다 — 보이는 그대로가 진짜인 사람. 꾸밈이 안 통하는 대신, 오해도 적게 삽니다' } : null);
+    // 시기별 — 지나온 대운 최근 둘 + 지금 대운
+    const list = (R.daeun && R.daeun.list) || [];
+    // 성인기 대운만 — 학창 시절 대운에 「자영·프리랜스 자리」 같은 직업 문장이 붙으면
+    // 그 한 줄이 전체 신뢰를 무너뜨린다. 못 맞힐 자리는 말하지 않는다.
+    const 지난 = list.filter(du => du.endAge < 나이 && du.endAge >= 22).slice(-2);
+    const 지금 = list.find(du => 나이 >= du.startAge && 나이 <= du.endAge) || null;
+    const 짓기 = du => {
+      const 겉g = 그룹of(ds, du.stem);
+      const 속g = 결그룹[E.TEN_GODS[E.tenGod(ds, E.HIDDEN[du.branch][0])]] || null;
+      return { 구간: '만 ' + du.startAge + '~' + du.endAge + '살',
+               간지: E.fmt.pillar(du),
+               외면: 겉g ? 외면말[겉g] : null,
+               내면: 속g ? 내면말[속g] : null };
+    };
+    return { 격차, 과거: 지난.map(짓기), 현재: 지금 ? 짓기(지금) : null,
+             바탕내면: 속그룹 ? 내면말[속그룹] : null };
+  }
+
   // ── 왜 당신은 결제해야 하는가 — 엔진의 근거로 만드는 그 사람만의 이유 ──
   //
   // 해상도(달·날·시)는 상품의 겉모양이고, 지갑이 열리는 건 「내 사주가 이런 구조라서
@@ -3395,5 +3453,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
