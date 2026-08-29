@@ -2202,6 +2202,15 @@
     const parts = text.split(/(?=[①-⑳])/);
     // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
     const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
+    // 발언자 초상 — app/art/chaeksa-<키>.webp 가 들어오면 칩에 얼굴이 붙는다.
+    // 없으면 onerror 로 스스로 사라진다: 그림이 도착하는 순서대로 화면이 좋아진다.
+    const 책사키 = { 자평진전: 'japyung', 궁통보감: 'gungtong', 억부: 'eokbu', 궁위: 'gungwi',
+                     인연: 'inyeon', 재물: 'jaemul', 천직: 'cheonjik', 운로: 'unro',
+                     협기: 'hyeopgi', 좌장: 'jwajang' };
+    const 얼굴 = (who) => {
+      const k = 책사키[who]; if (!k) return '';
+      return '<img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">';
+    };
     // 〔이름〕은 발언자다 — 본문에 섞어두면 회의가 아니라 독백으로 읽힌다. 뽑아서 칩으로 세운다.
     const 발언자류 = /^([\u2460-\u2473])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
     const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
@@ -2209,7 +2218,7 @@
       if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); return ''; }
       const m = t.match(발언자류);
       if (m) return '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
-        + '<span class="gm-who">' + esc(m[2]) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
+        + '<span class="gm-who">' + 얼굴(m[2]) + esc(m[2]) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
       return '<p>' + esc(t) + '</p>';
     }).join('');
     const 머리 = parts[0] || '';
@@ -2689,7 +2698,10 @@
   /** 장면 한 컷 — 그림이 꺼져 있으면 아무것도 내놓지 않는다 */
   function 장면() {
     if (!window.CHAEKSA_ART) return '';
-    return '<img class="gm-scene" alt="" src="art/love-open-' + 계절이름() + '.webp?v=' + window.CHAEKSA_ART + '">';
+    const s0 = 계절이름(), v = window.CHAEKSA_ART;
+    // 회의 장면을 먼저 부르고, 아직 없으면 onerror 로 옛 장면으로 물러난다
+    return '<img class="gm-scene" alt="" src="art/council-' + s0 + '.webp?v=' + v + '"'
+      + ' onerror="this.onerror=null;this.src=\'art/love-open-' + s0 + '.webp?v=' + v + '\'">';
   }
   // ───── 랜딩 ─────
   function showLanding() {
@@ -2700,8 +2712,13 @@
     // 그림이 없으면 class 를 안 붙여 옛 글자 히어로로 돌아간다(안전한 되돌림).
     const hero = $('lpHero');
     if (hero && window.CHAEKSA_ART) {
-      hero.style.setProperty('--hero-art', 'url("art/love-open-' + 계절이름() + '.webp?v=' + window.CHAEKSA_ART + '")');
+      const s0 = 계절이름(), v = window.CHAEKSA_ART;
+      hero.style.setProperty('--hero-art', 'url("art/love-open-' + s0 + '.webp?v=' + v + '")');
       hero.classList.add('scene');
+      // 책사단 회의 장면이 도착해 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
+      const probe = new Image();
+      probe.onload = () => hero.style.setProperty('--hero-art', 'url("art/council-' + s0 + '.webp?v=' + v + '")');
+      probe.src = 'art/council-' + s0 + '.webp?v=' + v;
     }
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');

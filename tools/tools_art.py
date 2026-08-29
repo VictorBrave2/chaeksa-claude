@@ -26,7 +26,8 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ART = os.path.join(ROOT, 'app', 'art')
 RAW = os.path.join(ROOT, '삽화원본')
-PROMPTS = os.path.join(ROOT, 'tools', 'art_prompts.json')
+PROMPTS = [os.path.join(ROOT, 'tools', 'art_prompts.json'),
+           os.path.join(ROOT, 'tools', 'art_prompts_chaeksa.json')]
 REF = os.path.join(ART, 'love-open-winter.webp')   # 인물 기준컷
 
 CROP_HINT = (' Composition must survive a 3:1 horizontal crop: keep the subject\'s '
@@ -44,7 +45,7 @@ def key():
              '(https://platform.openai.com/api-keys)')
 
 
-def gen(prompt, quality, use_ref):
+def gen(prompt, quality, use_ref, size='1536x1024'):
     url = 'https://api.openai.com/v1/images/' + ('edits' if use_ref else 'generations')
     if use_ref:
         # multipart — 참조 이미지 + 프롬프트
@@ -56,7 +57,7 @@ def gen(prompt, quality, use_ref):
                           % (boundary, name, val)).encode())
         field('model', 'gpt-image-1')
         field('prompt', 'Exactly the same man as in the reference image (face, hair, aura). ' + prompt)
-        field('size', '1536x1024')
+        field('size', size)
         field('quality', quality)
         parts.append(('--%s\r\nContent-Disposition: form-data; name="image[]"; filename="ref.webp"\r\n'
                       'Content-Type: image/webp\r\n\r\n' % boundary).encode() + ref + b'\r\n')
@@ -67,7 +68,7 @@ def gen(prompt, quality, use_ref):
             'Content-Type': 'multipart/form-data; boundary=' + boundary})
     else:
         body = json.dumps({'model': 'gpt-image-1', 'prompt': prompt,
-                           'size': '1536x1024', 'quality': quality}).encode()
+                           'size': size, 'quality': quality}).encode()
         req = urllib.request.Request(url, data=body, headers={
             'Authorization': 'Bearer ' + key(), 'Content-Type': 'application/json'})
     with urllib.request.urlopen(req, timeout=300) as r:
@@ -79,12 +80,16 @@ def 한장(r, quality):
     from PIL import Image
     fn = r['file']
     use_ref = fn.startswith('love') and os.path.exists(REF)
-    png = gen(r['prompt'] + CROP_HINT, quality, use_ref)
+    size = r.get('size', '1536x1024')
+    # 3:1 크롭 힌트는 가로 배너에만 쓴다 — 정사각 초상에 붙이면 얼굴을 가운데 띠로 밀어 넣는다
+    png = gen(r['prompt'] + (CROP_HINT if size == '1536x1024' else ''), quality, use_ref, size)
     raw_path = os.path.join(RAW, fn.replace('.webp', '.png'))
     io.open(raw_path, 'wb').write(png)
     im = Image.open(raw_path)
-    if im.width > 1536:
-        im = im.resize((1536, int(im.height * 1536 / im.width)), Image.LANCZOS)
+    # 초상은 화면에서 44px 원형으로 쓰므로 512면 넉넉하다. 배너만 1536.
+    W = 512 if r.get('size') == '1024x1024' else 1536
+    if im.width > W:
+        im = im.resize((W, int(im.height * W / im.width)), Image.LANCZOS)
     im.save(os.path.join(ART, fn), 'WEBP', quality=82)
     return os.path.getsize(os.path.join(ART, fn)) // 1024
 
@@ -96,7 +101,10 @@ def main():
     # 알아서 실패→재시도가 되니, 기본 4로 두고 한도가 높으면 --workers 8.
     workers = int(sys.argv[sys.argv.index('--workers') + 1]) if '--workers' in sys.argv else 4
     os.makedirs(RAW, exist_ok=True)
-    rows = json.load(io.open(PROMPTS, encoding='utf-8'))
+    rows = []
+    for pf in PROMPTS:
+        if os.path.exists(pf):
+            rows += json.load(io.open(pf, encoding='utf-8'))
     todo = [r for r in rows if (only and only in r['file'])
             or (not only and not os.path.exists(os.path.join(ART, r['file'])))]
     print('%d장 생성 예정 (품질 %s · 동시 %d)' % (len(todo), quality, workers))
