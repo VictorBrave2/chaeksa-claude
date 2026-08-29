@@ -13,5 +13,5 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 
 /* 스토리 삽화 스위치 — app/art/ 에 24장이 들어오면 숫자(버전)를 넣어 켠다.
  * 꺼져 있으면(0) 파라메트릭 SVG 컷이 나온다. marketing/삽화-프롬프트.md 참고. */
-window.CHAEKSA_ART = 'love';   // 연애 12장 도착(2026-08-29) — 재물 12장 오면 'all'
-window.CHAEKSA_ART_VAR = { love: 1, wealth: 1 };   // 조합당 변주 벌 수 — 2·3벌 그림이 오면 숫자만 올린다
+window.CHAEKSA_ART = 'all';    // 48장 전량 도착(2026-08-30) — 연애 12×3벌 + 재물 12
+window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애는 3벌 로테이션 — 한 화면 안 같은 그림 반복 없음
