@@ -789,7 +789,13 @@
       best.push([hb, score(hs, hb)]);
     }
     best.sort((a, b) => b[1] - a[1]);
-    return best.slice(0, 2).filter(x => x[1] > 0).map(x => HOUR12_KO[x[0]]);
+    // 새벽 시진(子丑寅, 23~05시)이 점수로 이겨도 만남·계약을 새벽 3시에 잡으라는
+    // 말은 현실에서 이상하다. 활동 시간대(卯~亥, 05~23시) 안의 서열을 우선하고,
+    // 그 안에 좋은 시진이 모자랄 때만 새벽을 채운다 — 택일자료의 주간/야간 원칙과 같다.
+    const 낮 = best.filter(x => x[0] >= 3 && x[1] > 0);
+    const 새벽 = best.filter(x => x[0] < 3 && x[1] > 0);
+    return 낮.slice(0, 2).concat(새벽.slice(0, Math.max(0, 2 - 낮.length)))
+      .map(x => HOUR12_KO[x[0]]);
   }
 
   /** 인연 — 한 달 안의 날들. 좋은 날과 조심할 날을 같이 낸다.
