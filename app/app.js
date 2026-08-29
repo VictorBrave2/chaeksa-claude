@@ -2112,6 +2112,29 @@
       } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; return; }
     }
     const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
+    const submitKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.submitted.');
+    const foldKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.folded.');
+    const submitted = !!localStorage.getItem(submitKey);
+    // ── 제출을 마친 간명서는 접는다(2026-08-30) — 홈은 요약과 다음 문만 남긴다 ──
+    if (submitted && localStorage.getItem(foldKey) !== '0') {
+      const hits0 = Object.values(grades).filter(v => v === 'y').length;
+      const n0 = Object.keys(grades).length;
+      el.innerHTML = '<div class="nx-diag">'
+        + '<p class="nx-diag-k">간명서 — 채점 완료</p>'
+        + '<p>' + n0 + '문 중 맞다 ' + hits0 + '문으로 제출하셨습니다. 간명서는 저장돼 있습니다.</p>'
+        + '<button class="btn-ghost" id="gmUnfold">간명서 다시 보기 ▾</button></div>'
+        + '<div class="nx-diag pbd" style="margin-top:12px">'
+        + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
+        + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
+        + '<button class="btn" id="gmNextLove">나의 사랑 이야기 — 다음 장 열기</button>'
+        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">나의 재물 이야기 열기</button></div>';
+      const uf = el.querySelector('#gmUnfold');
+      if (uf) uf.onclick = () => { localStorage.setItem(foldKey, '0'); mountGanmyeong(el, whereTag); };
+      const nl0 = el.querySelector('#gmNextLove'), nm0 = el.querySelector('#gmNextMoney');
+      if (nl0) nl0.onclick = () => go('lovestory');
+      if (nm0) nm0.onclick = () => go('moneystory');
+      return;
+    }
     // AI가 마크다운을 섞어도 화면엔 순수 글만 — 이미 구워진 캐시도 여기서 같이 씻긴다
     text = text.replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *-{3,} *$/gm, '').replace(/^ *[*•] +/gm, '');
     const parts = text.split(/(?=[①-⑳])/);
@@ -2144,8 +2167,9 @@
     html.push('<p class="pb-ft">채점 ' + answered + ' / ' + 전체문 + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + misses
       + '. 이 성적은 남고, 잣대를 벼리는 데 쓰입니다.</p>');
     // ── 채점의 끝에는 문이 있어야 한다 — 제출이 그 문의 손잡이다 ──
-    const submitKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.submitted.');
-    const submitted = !!localStorage.getItem(submitKey);
+    if (submitted) {
+      html.unshift('<p style="text-align:right;margin:0"><button class="btn-ghost" id="gmFold">접기 ▴</button></p>');
+    }
     if (!submitted && answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
       html.push('<div class="nx-diag pbd" style="margin-top:14px">'
         + '<p class="nx-diag-k">채점을 제출해 주세요</p>'
@@ -2164,6 +2188,8 @@
         + '</div>');
     }
     el.innerHTML = html.join('');
+    const fd = el.querySelector('#gmFold');
+    if (fd) fd.onclick = () => { localStorage.setItem(foldKey, '1'); mountGanmyeong(el, whereTag); };
     const nl = el.querySelector('#gmNextLove'), nm = el.querySelector('#gmNextMoney');
     if (nl) nl.onclick = () => go('lovestory');
     if (nm) nm.onclick = () => go('moneystory');
@@ -2192,6 +2218,7 @@
           });
         }
         localStorage.setItem(submitKey, '1');
+        localStorage.removeItem(foldKey);   // 제출 직후엔 접힌 요약이 기본
         mountGanmyeong(el, whereTag);
       } catch (e) { sb.disabled = false; sb.textContent = '제출 실패 — 다시 눌러주세요'; }
     };
