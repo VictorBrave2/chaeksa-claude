@@ -395,8 +395,8 @@
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 그런 살 상당수는 이미 260년 전 청나라 국가 검증(흠정협기변방서 辨譌)에서 「술사의 날조」로 판정돼 삭제됐습니다.'],
       ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 말한 것은 전부 잰 것 — 그래서 채점을 받을 수 있고, 그 성적표가 이 간명의 자격입니다.'],
     ];
-    el.innerHTML = `<p class="hero-eyebrow">지금 ${esc(nim())}의 사주를 간명하고 있습니다 — 약 1분</p>
-      <p class="pb-lede">기다리시는 동안 — 이 간명이 다른 곳과 다른 다섯 가지입니다.</p>
+    el.innerHTML = `<p class="hero-eyebrow">지금 ${esc(nim())}의 사주를 간명하고 있습니다 — 약 1~2분</p>
+      <p class="pb-lede"><b>새로고침하지 마시고 잠시만요</b> — 이 화면이 스스로 열립니다.<br>기다리시는 동안, 이 간명이 다른 곳과 다른 다섯 가지입니다.</p>
       <div id="chongFeats"></div>
       <p class="hint" id="chongWait">간명 중…</p>`;
     const box = $('chongFeats');
@@ -2064,6 +2064,12 @@
       ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today), ck.replace('chaeksa.ganmyeong.', ''))
         .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })
         .catch(err => { 간명예열.busy = false;
+          if (err && err.baking) {
+            // 서버가 굽는 중 — 재굽기가 아니라 기다렸다 캐시를 다시 묻는다(공짜)
+            const w = $('chongWait'); if (w) w.textContent = '간명 중… 다른 창에서 이미 굽고 있어 이어받습니다.';
+            setTimeout(간명예열, 20000);
+            return;
+          }
           간명예열.fails = (간명예열.fails || 0) + 1;
           const 원인 = (err && err.blocked && err.blocked.body) || (err && err.message) || String(err);
           try { console.warn('간명 실패:', err); } catch (e2) {}

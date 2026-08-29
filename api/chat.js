@@ -163,11 +163,23 @@ module.exports = async (req, res) => {
   // 캐시 적중은 과금도 계량도 없다. 「굽는 중 새로고침」으로 죽은 요청의 결과도
   // 아래 put 이 저장하므로(클라이언트가 떠나도 함수는 끝까지 돈다) 토큰이 녹지 않는다.
   const cachePk = String(req.headers['x-chaeksa-cache'] || '').slice(0, 40);
+  const BAKING = '§BAKING§';   // 자물쇠 표식 + 시각
   if (cachePk && userToken) {
     const hit = await rpc('ganmyeong_get', { p_pk: cachePk }, userToken);
     if (hit && hit.ok && hit.hit && hit.body) {
-      return res.status(200).json({ content: [{ type: 'text', text: hit.body }], cached: true });
+      if (hit.body.indexOf(BAKING) === 0) {
+        // 다른 요청이 굽는 중 — 3분 안이면 새로 굽지 않는다(토큰이 녹는 유일한 길목).
+        const ts = parseInt(hit.body.slice(BAKING.length), 10) || 0;
+        if (Date.now() - ts < 180000) {
+          return res.status(409).json({ type: 'error', error: { type: 'baking', message: '간명을 굽는 중입니다 — 잠시 뒤 자동으로 열립니다.' } });
+        }
+        // 3분이 지난 자물쇠는 죽은 굽기 — 지나가서 새로 굽는다
+      } else {
+        return res.status(200).json({ content: [{ type: 'text', text: hit.body }], cached: true });
+      }
     }
+    // 자물쇠를 먼저 건다 — 이 뒤로 오는 같은 사주 요청은 409로 기다린다
+    await rpc('ganmyeong_put', { p_pk: cachePk, p_body: BAKING + Date.now() }, userToken).catch(() => {});
   }
 
   if (enforcing) {

@@ -157,6 +157,12 @@ ${prof}` : ''}`;
       let msg = `HTTP ${res.status}`, raw = '', kind = '';
       try { const j = await res.json(); raw = j.error?.message || ''; kind = j.error?.type || ''; msg = raw || msg; } catch (e) {}
       // 서버가 한도·로그인을 막은 것 — 혼잡·장애와 섞으면 안 된다.
+      if (kind === 'baking') {
+        // 다른 요청이 같은 간명을 굽는 중 — 실패가 아니라 「기다리면 온다」 신호
+        const err = new Error(raw || '간명을 굽는 중입니다.');
+        err.baking = true;
+        throw err;
+      }
       if (kind === 'quota' || kind === 'auth') {
         // 화면 카운터를 서버 판정에 맞춘다. 지운 localStorage로 다시 물어봐도 서버가 다시 막는다.
         if (kind === 'quota' && global.ChaeksaUsage) {
