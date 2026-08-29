@@ -370,129 +370,43 @@
   // 순서가 전략이다: 총평(구조) → 결함 → 과거(본인이 검증) → 현재 → 미래는 결제.
   // 과거를 맞힌 잣대가 미래를 잰다는 사실을 화면에 적는다 — 스토리 틀 그대로.
   let chongFor = null;
+  // ── 첫 화면 = 간명서 (2026-08-29 「문진 말고 특장점 창을 띄워야지」) ──
+  // 간명서가 구워지는 약 1분 동안, 이 간명이 왜 다른지 다섯 장을 순차로 보여준다.
+  // 문진은 뺐다 — 신뢰 각인은 사람을 시험하는 게 아니라 우리를 설명하는 걸로.
   function renderChong() {
-    const el = $('chong'); const T = window.ChaeksaTypecard;
-    if (!el) return;
-    if (!T || !T.loveStory || !T.inyeonWhy) { el.classList.add('hide'); return; }
-    // 첫확인 답 상태가 바뀌면 다시 그려야 하므로 chongFor 캐시는 답까지 포함한다
-    const fcKey = 'chaeksa.personcheck.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
-    const fcAns = localStorage.getItem(fcKey) || '';   // 'y'/'n' 이어붙인 문자열 (예: 'yn')
-    if (chongFor === R + '|' + fcAns) return;
-    chongFor = R + '|' + fcAns;
-    let LW = null, MW = null, LS = null, MS = null;
-    try { LW = T.inyeonWhy(R); } catch (e) {}
-    try { MW = T.wealthWhy ? T.wealthWhy(R) : null; } catch (e) {}
-    try { LS = T.loveStory(R, today); } catch (e) {}
-    try { MS = T.모습 ? T.모습(R, today) : null; } catch (e) {}
-    const a = R.analysis;
-    // 문진(사람문)으로 쓴 문장은 결함 블록에서 뺀다 — 아래에서 사람문을 고른 뒤 거른다
-    let 진단들 = []
-      .concat(LW && LW.말 ? LW.말.slice(0, 3) : [])
-      .concat(MW && MW.말 ? MW.말.slice(0, 2) : []);
-    const 과거들 = LS && LS.과거 ? LS.과거.slice(0, 2) : [];
-    const paidL = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
-    const paidM = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
+    const el = $('chong'); if (!el) return;
+    const T = window.ChaeksaTypecard;
+    if (!T || !T.간명자료 || !profile) { el.classList.add('hide'); return; }
+    const ck = 'chaeksa.ganmyeong.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
+    const state = String(R) + '|' + !!localStorage.getItem(ck);
+    if (chongFor === state) return;
+    chongFor = state;
     el.classList.remove('hide');
-    // ── 사람문진 — 「당신은 이런 사람입니다」 최대 3문 (2026-08-29: 날짜 말고 사람으로) ──
-    // 재료는 지어내지 않는다: 승인된 구조 진단(inyeonWhy·wealthWhy)과 겉속 격차(측정+사전)뿐.
-    // 날짜 연대기는 답한 뒤 공개 단계에서 스토리로 푼다.
-    let FC = null; try { FC = T.첫확인 ? T.첫확인(R, today) : null; } catch (e) {}
-    // 문진 순서(2026-08-29 「여성들이 매료될 구성으로」): 첫 문장은 사랑이다.
-    // 격차(사회적 나)보다 「당신은 이렇게 사랑하는 사람」이 먼저 와야 심장이 먼저 답한다.
-    const 사람문 = [];
-    (function () {
-      const 남 = ((R.input && R.input.gender) || profile.gender || 'M') === 'M';
-      const 양간 = R.pillars.day.stem % 2 === 0;
-      const 접착 = (남 && 양간) || (!남 && !양간);
-      사람문.push(접착
-        ? { 문장: '한번 마음이 붙으면 놓기보다 붙드는 쪽입니다 — 사랑을 직접 잡아 쥐는 손을 타고났습니다.',
-            근거: (LW && LW.말 && LW.말[0]) || '배우자성이 오면 일간이 직접 합합니다 — 일간합 접착 구조.' }
-        : { 문장: '사랑이 시작되지 않아서가 아니라, 시작된 사랑이 오래 머물지 않는 일이 반복돼 온 쪽입니다.',
-            근거: (LW && LW.말 && LW.말[0]) || '배우자성과 일간이 합하지 않는 구조 — 붙드는 접착을 타고나지 않았습니다.' });
-    })();
-    if (MS && MS.격차) 사람문.push(MS.격차.다름
-      ? { 문장: `남들에게는 「${MS.격차.겉십신}」(${MS.격차.겉뜻})의 사람으로 읽히기 쉽지만, 속은 「${MS.격차.속십신}」(${MS.격차.속뜻})으로 움직이는 사람입니다. 그 간극은 본인만 압니다.`,
-          근거: `월주 하늘(사회에 내걸린 자리)의 글자 ${MS.격차.겉글자} = ${MS.격차.겉십신} · 일지(바탕) 속 글자 ${MS.격차.속글자} = ${MS.격차.속십신} — 두 자리의 십신이 다릅니다.` }
-      : { 문장: `겉과 속이 같은 결의 사람입니다 — 보이는 그대로가 진짜라, 꾸밈이 안 통하는 대신 오해도 적게 삽니다. (「${MS.격차.속십신}」 — ${MS.격차.속뜻})`,
-          근거: `월주 하늘의 글자와 일지 속 글자가 같은 십신(${MS.격차.속십신})입니다.` });
-    // (문진감 기준: 체감 결론만 — 구조문은 근거로. 사분면 문항은 1번으로 올라갔다)
-    // 재물 문항은 뺐다(2026-08-29): 「숨은 재물은 티가 안 난다」는 승인받은 조문이
-    // 아니라 내 작문이었다. 출처 감사에서 걸림 — 조문 결재가 나면 그때 다시 넣는다.
-    진단들 = 진단들.filter(t => !사람문.some(q => q.문장 === t || q.근거 === t));
-    const 문수 = Math.min(사람문.length, 3);
-    if (문수 && fcAns.length < 문수) {
-      const i = fcAns.length, q = 사람문[i];
-      el.innerHTML = `
-        <p class="hero-eyebrow">당신은 이런 사람입니다${문수 > 1 ? ` — ${i + 1} / ${문수}` : ''}</p>
-        <p class="ls-say" style="font-size:1.08em"><b>${esc(q.문장)}</b></p>
-        <button class="btn" id="fcYes">맞습니다</button>
-        <button class="btn-ghost" id="fcNo" style="margin-top:8px;width:100%">아닙니다</button>
-        <p class="hint">${i === 0 ? '생년월일시만으로 짚은 것입니다. 다 답하시면 어떻게 알았는지부터 보여드립니다 — 기준을 공개하는 것이 책사의 방식입니다.' : '아니면 「아닙니다」를 누르셔도 됩니다 — 빗나간 것도 숨기지 않습니다.'}</p>`;
-      간명예열();   // 답하는 동안 뒤에서 간명서를 굽는다
-      const answer = v => { localStorage.setItem(fcKey, fcAns + v);
-        if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('personcheck', { i, hit: v }); } catch (e) {}
-        chongFor = null; renderChong(); window.scrollTo({ top: 0 }); };
-      if ($('fcYes')) $('fcYes').onclick = () => answer('y');
-      if ($('fcNo')) $('fcNo').onclick = () => answer('n');
+    if (localStorage.getItem(ck)) {
+      el.innerHTML = `<p class="hero-eyebrow">간명 — ${esc(nim())}의 사주를 통변합니다</p><div id="chongGm"></div>`;
+      mountGanmyeong($('chongGm'), 'home');
       return;
     }
-    const 맞은수 = (fcAns.match(/y/g) || []).length;
-    const 성적표 = !문수 ? '' : 문수 <= 1
-      ? (fcAns[0] === 'y' ? `<p class="pb-lede"><b>어떻게 알았는가</b> — ${esc(사람문[0].근거)}</p>`
-                           : `<p class="pb-lede">아니라고 하셨습니다 — 숨기지 않겠습니다. 근거를 그대로 보여드리니, 어디서 어긋나는지 보십시오.</p>`)
-      : (맞은수 === 문수 ? `<p class="pb-lede"><b>${문수}개 전부 맞았습니다.</b> 생년월일시의 여덟 글자가 말해준 것입니다 — 근거가 아래 있습니다. 같은 글자로 이제 당신의 지나온 사랑과 다가올 사랑을 읽겠습니다.</p>`
-        : 맞은수 > 0 ? `<p class="pb-lede"><b>${문수}개 중 ${맞은수}개.</b> 빗나간 것도 남겨둡니다 — 기준을 공개하는 잣대는 성적표도 공개합니다. 각 문장의 근거가 아래 있습니다.</p>`
-        : `<p class="pb-lede">${문수}개 다 아니라고 하셨습니다 — 드문 경우입니다. 이 잣대가 당신 사주 어디서 어긋나는지가 오히려 단서가 됩니다. 근거를 그대로 보여드립니다.</p>`);
-    const 첫절 = (문수 || FC) ? `
-      ${성적표}
-      ${문수 ? `<div class="nx-diag"><p class="nx-diag-k">물었던 문장들 — 글자 근거</p>
-        ${사람문.slice(0, 문수).map((q2, k) => `<p>${fcAns[k] === 'y' ? '○ 맞음' : '× 아님'} — ${esc(q2.문장)}<br><span class="pb-days-why">${esc(q2.근거)}</span></p>`).join('')}</div>` : ''}
-      ${FC ? `<div class="nx-diag"><p class="nx-diag-k">이 구조가 지나온 해들 — 글자가 기억하는 대로</p>
-        ${FC.연대기.map(e => `<p><b>${e.해}년(만 ${e.나이}살)</b> — ${esc(e.문장)}<br><span class="pb-days-why">${esc(e.근거)}</span></p>`).join('')}</div>` : ''}` : '';
-    // 간명서가 첫 화면의 몸통이 됐다 — 아래 총평 블록들은 간명서가 대체한다(무료).
-    el.innerHTML = `${첫절}
-      <p class="hero-eyebrow">간명 — ${esc(nim())}의 사주를 통변합니다</p>
-      <div id="chongGm"><p class="hint">간명 중…</p></div>`;
-    mountGanmyeong($('chongGm'), 'home');
-    window.renderChongSoon = () => { const g = $('chongGm'); if (g) mountGanmyeong(g, 'home'); };
-    return;
-    /* eslint-disable no-unreachable */
-    el.innerHTML = `${첫절}
-      <p class="hero-eyebrow">총평 — ${esc(nim())}의 사주 구조</p>
-      <p class="pb-lede"><b>${f.stem(a.dayStem)} 일간 · ${esc(a.strength)}</b>
-        ${a.missing.length ? ` · 빈 오행 <b>${a.missing.join('·')}</b>` : ''} —
-        성격 풀이가 아니라 <b>구조</b>를 말씀드립니다. 구조는 반복되기 때문입니다.</p>
-      ${MS && MS.과거.length && !FC ? `<div class="nx-diag"><p class="nx-diag-k">과거의 당신 — 맞는지 보세요</p>
-        ${MS.과거.map(d => `<p><b>${d.구간}</b> <span class="gz2">${esc(d.간지)} 대운</span><br>
-          이 10년의 하늘에 온 글자는 <b>${esc(d.하늘.글자)} — ${esc(d.하늘.십신)}</b>입니다. ${esc(d.하늘.뜻)}.<br>
-          바탕(${esc(d.바탕.글자)})은 <b>${esc(d.바탕.십신)}</b> — ${esc(d.바탕.뜻)}.</p>`).join('')}
-        ${과거들.length ? 과거들.map(g => `<p><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
-          (만 ${g.시작나이 === g.끝나이 ? g.시작나이 : g.시작나이 + '~' + g.끝나이}살) — ${esc(g.말)}</p>`).join('') : ''}
-        <p class="hint">맞는지는 ${esc(nim())}이 아십니다. 여기가 이 계산의 시험대입니다 — 과거가 맞아야 미래를 믿으실 수 있습니다.</p></div>` : ''}
-      ${진단들.length ? `<div class="nx-diag"><p class="nx-diag-k">이 사주의 구조적 결함</p>
-        ${진단들.map(t => '<p>' + esc(t) + '</p>').join('')}
-        <p class="hint">결함은 성격 탓이 아니라 구조라서 반복됩니다 — 그래서 시기가 전부입니다.</p></div>` : ''}
-      ${MS && (MS.현재 || MS.격차) ? `<div class="nx-diag"><p class="nx-diag-k">지금의 당신</p>
-        ${MS.격차 ? `<p>사회 자리(월주)의 하늘에 걸린 글자는 <b>${esc(MS.격차.겉글자)} — ${esc(MS.격차.겉십신)}</b>(${esc(MS.격차.겉뜻)})이고,
-          당신 바탕(일지) 속 글자는 <b>${esc(MS.격차.속글자)} — ${esc(MS.격차.속십신)}</b>(${esc(MS.격차.속뜻)})입니다.
-          ${MS.격차.다름 ? '밖에 걸린 결과 속의 결이 <b>다릅니다</b> — 남들이 읽는 당신과 속에서 움직이는 결이 같지 않은 구조입니다.'
-                          : '밖에 걸린 결과 속의 결이 <b>같습니다</b> — 보이는 그대로가 속이기도 한 구조입니다.'}</p>` : ''}
-        ${MS.현재 ? `<p><b>${MS.현재.구간}</b> <span class="gz2">${esc(MS.현재.간지)} 대운</span><br>
-          지금 10년의 하늘 글자는 <b>${esc(MS.현재.하늘.글자)} — ${esc(MS.현재.하늘.십신)}</b>입니다. ${esc(MS.현재.하늘.뜻)}.<br>
-          바탕(${esc(MS.현재.바탕.글자)})은 <b>${esc(MS.현재.바탕.십신)}</b> — ${esc(MS.현재.바탕.뜻)}.</p>` : ''}
-        ${LS && LS.현재 ? `<p><b>인연은 —</b> ${esc(LS.현재.말)}</p>` : ''}</div>` : ''}
-      <div class="nx-diag pbd">
-        <p class="nx-diag-k">여기까지가 무료입니다</p>
-        <p>당신의 배우자 방(${esc(E.BRANCHES[R.pillars.day.branch])})에는 글자가 하나 앉아 있고,
-        그 글자는 <b>어떤 사람이 당신을 사랑하게 되는지</b>를 가리키고 있습니다.
-        과거를 짚은 그 잣대가, 그 사람이 <b>언제 오는지</b>까지 잽니다 — 앞으로 열두 달, 달·날·시각으로.</p>
-        <button class="btn" id="chongLove">${paidL ? '나의 사랑 이야기 — 다음 장 보기' : '나의 사랑 이야기 — 다음 장 열기'}</button>
-        <button class="btn" id="chongMoney" style="margin-top:8px">${paidM ? '나의 재물 이야기 보기' : '나의 재물 이야기 열기'}</button>
-      </div>`;
-    const bl = $('chongLove'), bm = $('chongMoney');
-    if (bl) bl.onclick = () => go('lovestory');
-    if (bm) bm.onclick = () => go('moneystory');
+    간명예열();
+    const 특 = [
+      ['三百年 고전을 원문으로 새겼습니다', '격국의 뼈대 「자평진전」 · 계절의 약방문 「궁통보감」 · 청 황실이 편찬한 택일의 법전 「흠정협기변방서」 — 요약본이 아니라 원문을 판본까지 밝혀 채록해, 그 조문대로 계산합니다.'],
+      ['계산은 천문학입니다', '월주가 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 일치합니다. 출생지 경도의 진태양시 보정까지, 계산은 AI가 아니라 엔진이 합니다. 말로 때우는 AI 사주와 여기서 갈립니다.'],
+      ['실간명 채점, 문항 적중 90%', '이 엔진의 간명을 실제 인물이 문항별로 채점했습니다 — 18문 중 16문 적중. 곧 나올 당신의 간명서도 문항마다 [맞다/아니다]로 직접 채점하실 수 있습니다. 빗나간 것도 숨기지 않습니다.'],
+      ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 그런 살 상당수는 이미 260년 전 청나라 국가 검증(흠정협기변방서 辨譌)에서 「술사의 날조」로 판정돼 삭제됐습니다.'],
+      ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 말한 것은 전부 잰 것 — 그래서 채점을 받을 수 있고, 그 성적표가 이 간명의 자격입니다.'],
+    ];
+    el.innerHTML = `<p class="hero-eyebrow">지금 ${esc(nim())}의 사주를 간명하고 있습니다 — 약 1분</p>
+      <p class="pb-lede">기다리시는 동안 — 이 간명이 다른 곳과 다른 다섯 가지입니다.</p>
+      <div id="chongFeats"></div>
+      <p class="hint" id="chongWait">간명 중…</p>`;
+    const box = $('chongFeats');
+    특.forEach((f, i) => setTimeout(() => { if (!box || !box.isConnected) return;
+      box.insertAdjacentHTML('beforeend', `<div class="nx-diag" style="margin-top:10px"><p class="nx-diag-k">${i + 1} · ${f[0]}</p><p>${f[1]}</p></div>`); }, i === 0 ? 0 : i * 6000));
+    let sec = 0; const tick = setInterval(() => { const w = $('chongWait');
+      if (!w || !w.isConnected) { clearInterval(tick); return; }
+      sec += 5; w.textContent = '간명 중… ' + sec + '초'; }, 5000);
   }
+  window.renderChongSoon = () => { chongFor = null; renderChong(); };
 
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
@@ -2123,7 +2037,9 @@
     try {
       ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today))
         .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })
-        .catch(() => { 간명예열.busy = false; });
+        .catch(() => { 간명예열.busy = false;
+          const w = $('chongWait'); if (w) w.textContent = '간명가를 부르지 못했습니다 — 20초 뒤 다시 시도합니다.';
+          setTimeout(간명예열, 20000); });
     } catch (e) { 간명예열.busy = false; }
   }
   async function renderGanmyeong() {
