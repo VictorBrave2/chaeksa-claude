@@ -2030,7 +2030,41 @@
       연애과거구간: (L.과거 || []).map(g => ({ 구간: g.시작 + '~' + g.끝, 나이: g.시작나이 + '~' + g.끝나이, 말: g.말, 이유: g.이유, 달: g.달 || null })),
       연애현재: L.현재, 재물현재: M.현재, 지킬해: M.지킬해, 샌해: M.샌해,
       열리는달_인연: 요약달(L), 열리는달_재물: 요약달(M),
+      // ── 세 고전의 축 — 책사단이 각자 제 근거로 말하려면 각자의 계산이 있어야 한다 ──
+      // 셋은 서로 다른 것을 보므로 실제로 갈린다(자평-적천 상관 −0.18).
+      // 갈리는 것이 결함이 아니라 콘텐츠다 — 어디서 갈리는지가 곧 기준 공개다.
+      자평진전: 자평재료(R),
+      궁통보감: 조후재료(R),
     };
+  }
+
+  /** 자평진전의 축 — 격이 섰는가 무너졌는가, 무엇이 받치고 무엇이 걸리는가 */
+  function 자평재료(R) {
+    try {
+      const G = global.ChaeksaGyeok; if (!G) return null;
+      const j = G.judge(R); if (!j || j.판정 === '미상') return null;
+      const L = G.LABEL[j.판정] || {};
+      return {
+        격: j.격, 판정: j.판정, 판정말: L.짧게 || null, 풀이: L.풀어서 || null,
+        상신: j.상신 || null,
+        갖춤: j.근거.섰다 || [], 걸림: j.근거.띠었다 || [],
+        받침: j.근거.구제 || [], 무너짐: j.근거.깨졌다 || [],
+        힘: j.잰것 || null,
+      };
+    } catch (e) { return null; }
+  }
+
+  /** 궁통보감의 축 — 이 사람이 추운가 더운가, 무슨 글자가 있어야 사는가 */
+  function 조후재료(R) {
+    try {
+      const C = global.ChaeksaClassic; if (!C || !C.gungtong) return null;
+      const g = C.gungtong(R); if (!g) return null;
+      return {
+        필요한글자: g.need, 보조글자: g.aux || null, 하늘에뜬글자: g.cheon || null,
+        주용신있나: !!g.hasMain, 보조있나: !!g.hasAux,
+        기신: g.기신, 기신무리: !!g.기신무리, 사유: g.사유 || null,
+      };
+    } catch (e) { return null; }
   }
 
   /** kind: 'love' | 'wealth'. 사주 하나에 대한 단일 판단서. */

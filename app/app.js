@@ -359,7 +359,7 @@
     $('landing').classList.add('hide'); $('formCard').classList.add('hide');
     $('btnSettings').classList.remove('hide');
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
-    $('subtitle').textContent = `${nim()}의 책사`;
+    $('subtitle').textContent = `${nim()}의 책사단`;
     renderPeopleBtn();
     renderToday(); renderMe(); renderCal(); renderPartners(); renderChat(); renderHome();
     if (window.ChaeksaConsult) { ChaeksaConsult.renderHome(); refreshConsultBadge(); }
@@ -383,7 +383,7 @@
     chongFor = state;
     el.classList.remove('hide');
     if (캐시) {
-      el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}께 드리는 서신</p><div id="chongGm"></div>`;
+      el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}을 위한 첫 의논</p><div id="chongGm"></div>`;
       mountGanmyeong($('chongGm'), 'home');
       return;
     }
@@ -392,19 +392,19 @@
     const 특 = [
       ['먼저 붓을 씻습니다', '격국의 뼈대 「자평진전」, 계절의 약방문 「궁통보감」, 청 황실이 편찬한 택일의 법전 「흠정협기변방서」 — 요약본이 아니라 원문을 판본까지 밝혀 옮겨 두었습니다. 지금 그 조문대로 당신의 자리를 짚고 있습니다.'],
       ['시각부터 바로 세웁니다', '달이 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 맞습니다. 태어나신 곳의 경도로 진태양시까지 보정하고 나서야 첫 글자를 놓습니다.'],
-      ['틀리면 틀렸다고 남깁니다', '지난 서신은 스무 문장 가운데 열여덟이 맞았습니다. 당신께 드릴 서신도 문장마다 [맞아요/아니에요]로 답하실 수 있고, 빗나간 문장은 지우지 않고 그대로 둡니다.'],
+      ['틀리면 틀렸다고 남깁니다', '지난 의논은 스무 발언 가운데 열여덟이 맞았습니다. 당신의 의논도 발언마다 [맞아요/아니에요]로 답하실 수 있고, 빗나간 말은 지우지 않고 그대로 둡니다 — 누가 맞혔는지까지 남깁니다.'],
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 그런 살 상당수는 이미 260년 전 청나라 국가 검증(흠정협기변방서 辨譌)에서 「술사의 날조」로 판정돼 삭제됐습니다.'],
       ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 적은 것은 전부 잰 것 — 그래서 맞는지 틀리는지 답을 받을 수 있습니다.'],
     ];
-    el.innerHTML = `<p class="hero-eyebrow">${esc(nim())}께 드리는 서신</p>
-      <p class="pb-lede">당신이 어떤 사람인지, 지나온 해 가운데 어느 해가 흔들렸는지 — 한 통에 적어 올리겠습니다.</p>
-      <button class="btn" id="chongBake">서신을 받겠습니다 — 약 1~2분</button>
-      <p class="hint">값을 받지 않는 서신은 한 통뿐입니다.</p>
+    el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}을 위한 첫 의논</p>
+      <p class="pb-lede">책사 넷이 당신의 사주를 앞에 놓고 둘러앉습니다. 서로 다른 잣대를 들고 있어, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
+      <button class="btn" id="chongBake">의논을 청하겠습니다 — 약 1~2분</button>
+      <p class="hint">값을 받지 않는 의논은 한 번뿐입니다.</p>
       <div id="chongFeats"></div>
-      <p class="hint hide" id="chongWait">서신을 적는 중…</p>`;
+      <p class="hint hide" id="chongWait">둘러앉는 중…</p>`;
     $('chongBake').onclick = () => {
       $('chongBake').disabled = true;
-      $('chongBake').textContent = '적는 중입니다 — 새로고침하지 마시고 잠시만요';
+      $('chongBake').textContent = '의논 중입니다 — 새로고침하지 마시고 잠시만요';
       $('chongWait').classList.remove('hide');
       간명예열();
       const box = $('chongFeats');
@@ -2047,7 +2047,7 @@
   // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
   // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
   // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
-  const GM_VER = 'v10';  // v10: 공주님 원칙 — 화자를 책사로, 문서를 서신으로 (docs/21)
+  const GM_VER = 'v11';  // v11: 책사단 — 한 사람의 서신에서 넷의 의논으로 (docs/22)
   const 간명키 = () => {
     const i = (R && R.input) || profile || {};
     return 'chaeksa.ganmyeong.' + GM_VER + '.' + [i.year, i.month, i.day, i.hour].join('.');
@@ -2088,7 +2088,7 @@
     // 빈 응답을 캐시하면 화면이 영원히 빈 채로 「받았다」고 믿는다 — 실패로 다룬다.
     if (!t || String(t).length < 100) {
       간명예열.busy = false;
-      간명말('서신이 비어서 돌아왔습니다 — [다시 시도]를 눌러 주세요.', true);
+      간명말('의논이 비어서 돌아왔습니다 — [다시 시도]를 눌러 주세요.', true);
       return;
     }
     try { localStorage.setItem(간명키(), t); } catch (e) {}
@@ -2114,12 +2114,12 @@
     간명예열.rounds = (간명예열.rounds || 0) + 1;
     if (간명예열.rounds > 25) {           // 5분
       간명예열.busy = false;
-      간명말('서신이 예상보다 오래 걸립니다 — 잠시 뒤 [다시 시도]를 눌러 주세요.', true);
+      간명말('의논이 예상보다 길어지고 있습니다 — 잠시 뒤 [다시 시도]를 눌러 주세요.', true);
       return;
     }
     간명서버읽기().then(t => {
       if (t) { 간명도착(t); return; }
-      간명말('적는 중입니다 (' + (간명예열.rounds * 12) + '초). 이 화면을 벗어나셔도 계속됩니다.');
+      간명말('의논 중입니다 (' + (간명예열.rounds * 12) + '초). 이 화면을 벗어나셔도 계속됩니다.');
       setTimeout(간명폴링, 12000);
     });
   }
@@ -2148,9 +2148,9 @@
           const 자동 = !(err && (err.timeout || err.truncated || err.blocked)) && (간명예열.fails || 0) < 1;
           간명예열.fails = (간명예열.fails || 0) + 1;
           if (자동) {
-            간명말('서신을 적지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
+            간명말('책사단을 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
             setTimeout(간명예열, 20000);
-          } else 간명말('서신을 적지 못했습니다 — ' + 원인.slice(0, 120), true);
+          } else 간명말('책사단을 부르지 못했습니다 — ' + 원인.slice(0, 120), true);
         });
     }).catch(() => { 간명예열.busy = false; });
   }
@@ -2164,9 +2164,9 @@
     const gradeKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.grade.');
     let text = 간명캐시();
     if (!text) {
-      el.innerHTML = '<p class="hint">서신을 적고 있습니다 — 잰 것을 펴서 문장을 세우는 중입니다 (약 1분). 이 화면을 벗어나셔도 계속 적습니다.</p>';
+      el.innerHTML = '<p class="hint">책사단이 둘러앉았습니다 — 잰 것을 펴서 의논하는 중입니다 (약 1분). 이 화면을 벗어나셔도 의논은 계속됩니다.</p>';
       if (간명예열.busy) return;   // 이미 굽는 중 — 끝나면 다시 그려진다
-      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 서신을 적어 드릴 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
+      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 책사단을 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
       // 서버에 구워진 것이 있으면 공짜로 가져온다. 없으면 굽는 문(간명예열)을 두드린다 —
       // 여기서 직접 굽지 않는 이유: 굽는 입구가 둘이면 자물쇠 밖에서 겹쳐 굽는다.
       text = await 간명서버읽기();
@@ -2182,9 +2182,9 @@
       const hits0 = Object.values(grades).filter(v => v === 'y').length;
       const n0 = Object.keys(grades).length;
       el.innerHTML = '<div class="nx-diag">'
-        + '<p class="nx-diag-k">서신 — 답을 마치셨습니다</p>'
-        + '<p>' + n0 + '문장 가운데 ' + hits0 + '문장이 맞다고 답해 주셨습니다. 서신은 그대로 간직돼 있습니다.</p>'
-        + '<button class="btn-ghost" id="gmUnfold">서신 다시 읽기 ▾</button></div>'
+        + '<p class="nx-diag-k">의논 — 답을 마치셨습니다</p>'
+        + '<p>' + n0 + '개 발언 가운데 ' + hits0 + '개가 맞다고 답해 주셨습니다. 의논은 그대로 간직돼 있습니다.</p>'
+        + '<button class="btn-ghost" id="gmUnfold">의논 다시 읽기 ▾</button></div>'
         + '<div class="nx-diag pbd" style="margin-top:12px">'
         + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
         + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
@@ -2202,18 +2202,25 @@
     const parts = text.split(/(?=[①-⑳])/);
     // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
     const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
+    // 〔이름〕은 발언자다 — 본문에 섞어두면 회의가 아니라 독백으로 읽힌다. 뽑아서 칩으로 세운다.
+    const 발언자류 = /^([\u2460-\u2473])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
     const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
       t = t.trim(); if (!t) return '';
       if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); return ''; }
+      const m = t.match(발언자류);
+      if (m) return '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
+        + '<span class="gm-who">' + esc(m[2]) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
       return '<p>' + esc(t) + '</p>';
     }).join('');
     const 머리 = parts[0] || '';
+    const 발언자 = [];
     let 밀린 = [];
     const html = ['<div class="nx-diag">' + 문단화(머리, 밀린) + '</div>'];
     parts.slice(1).forEach((chunk, i) => {
       const g = grades[i];
       const 이번 = [];
       const 본문 = 문단화(chunk, 이번);
+      { const w = chunk.match(/\u3014([^\u3015]{1,12})\u3015/); 발언자[i] = w ? w[1] : null; }
       밀린.forEach(h => html.push('<p class="hero-eyebrow" style="margin:20px 4px 2px">' + esc(h) + '</p>'));
       밀린 = 이번;
       html.push('<div class="nx-diag" style="margin-top:10px">'
@@ -2228,6 +2235,16 @@
     const misses = Object.values(grades).filter(v => v === 'n').length;
     html.push('<p class="pb-ft">' + answered + ' / ' + 전체문 + '문장에 답하셨습니다 — 맞아요 ' + hits + ' · 글쎄요 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니에요 ' + misses
       + '. 답해 주신 것은 그대로 남아, 이 잣대를 벼리는 데 쓰입니다.</p>');
+    (function () {
+      const 책사별 = {};
+      발언자.forEach((who, i) => {
+        if (!who || !grades[i]) return;
+        const c = (책사별[who] = 책사별[who] || { y: 0, t: 0 });
+        c.t++; if (grades[i] === 'y') c.y++;
+      });
+      const 줄 = Object.keys(책사별).map(k => k + ' ' + 책사별[k].y + '/' + 책사별[k].t).join('  ·  ');
+      if (줄) html.push('<p class="pb-ft">누가 맞혔는지 — ' + esc(줄) + '</p>');
+    })();
     // ── 채점의 끝에는 문이 있어야 한다 — 제출이 그 문의 손잡이다 ──
     if (submitted) {
       html.unshift('<p style="text-align:right;margin:0"><button class="btn-ghost" id="gmFold">접기 ▴</button></p>');
@@ -2235,7 +2252,7 @@
     if (!submitted && answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
       html.push('<div class="nx-diag pbd" style="margin-top:14px">'
         + '<p class="nx-diag-k">답을 보내 주시겠어요</p>'
-        + '<p>' + answered + ' / ' + 전체문 + '문장에 답하셨습니다. 보내 주시면 빗나간 문장까지 그대로 공개 기록에 쌓입니다 — 그것이 이 집의 방식입니다.</p>'
+        + '<p>' + answered + ' / ' + 전체문 + '개 발언에 답하셨습니다. 보내 주시면 빗나간 말까지 그대로 공개 기록에 쌓입니다 — 그것이 이 집의 방식입니다.</p>'
         + '<button class="btn" id="gmSubmit">답을 보내겠습니다</button></div>');
     }
     if (submitted) {

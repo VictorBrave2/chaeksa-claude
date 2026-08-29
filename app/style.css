@@ -480,6 +480,13 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
   background:linear-gradient(90deg,transparent,var(--accent-line),transparent)}
 
 /* 서신을 기다리는 자리에도 장면을 둔다 */
+/* 회의록 — 누가 한 말인지 눈에 걸려야 회의로 읽힌다 */
+.gm-say{position:relative}
+.gm-num{color:var(--ink3);margin-right:6px;font-weight:700}
+.gm-who{display:inline-block;font-family:var(--sans);font-size:11px;font-weight:700;
+  letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);
+  border:1px solid var(--accent-line);border-radius:999px;padding:2px 9px;margin-right:8px;
+  vertical-align:2px;white-space:nowrap}
 .gm-scene{width:100%;aspect-ratio:3/1;object-fit:cover;object-position:50% 28%;
   display:block;border-radius:14px;margin:0 0 16px}
 
