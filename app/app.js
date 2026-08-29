@@ -2029,7 +2029,7 @@
   // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
   // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
   // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
-  const GM_VER = 'v6';   // v6: dehanja 해제 — 신(신)·자(자) 수리
+  const GM_VER = 'v7';   // v7: 만 나이 제거 — 연도로만
   const 간명키 = () => {
     const i = (R && R.input) || profile || {};
     return 'chaeksa.ganmyeong.' + GM_VER + '.' + [i.year, i.month, i.day, i.hour].join('.');
