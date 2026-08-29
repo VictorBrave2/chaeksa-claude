@@ -480,7 +480,7 @@
       if (smp) {
         const m = T.mine(R, smp);
         if (m && m.rar) {
-          set('tiGachaBig', '🎴 ' + m.rar.tier);
+          set('tiGachaBig', '牌 ' + m.rar.tier);
           set('tiGachaSub', m.rar.unique
             ? '만 명 중 단 한 명 — 같은 카드가 없습니다'
             : '만 명 중 ' + m.rar.count + '명 · 상위 ' + m.rar.pct + '%');
