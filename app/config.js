@@ -13,4 +13,4 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 
 /* 스토리 삽화 스위치 — app/art/ 에 24장이 들어오면 숫자(버전)를 넣어 켠다.
  * 꺼져 있으면(0) 파라메트릭 SVG 컷이 나온다. marketing/삽화-프롬프트.md 참고. */
-window.CHAEKSA_ART = 0;
+window.CHAEKSA_ART = 'love';   // 연애 12장 도착(2026-08-29) — 재물 12장 오면 'all'

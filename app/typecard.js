@@ -710,7 +710,8 @@
     // 일러스트가 준비되면 이미지를 쓴다 — app/art/ 에 24장(연애 3상태×4계절 + 재물 3상태×4계절).
     // 경우의 수가 유한하니 실시간 생성이 아니라 사전 생성이 맞다: 원가 0·지연 0·그림체 일관.
     // 파일이 들어오고 config.js 의 CHAEKSA_ART 가 켜져야 이미지로 바뀐다. 그전엔 SVG.
-    if (global.CHAEKSA_ART) {
+    // 'love' | 'wealth' | 'all' | 0 — 들어온 종류만 켠다 (연애 12장 먼저 도착, 2026-08-29)
+    if (global.CHAEKSA_ART && (global.CHAEKSA_ART === 'all' || global.CHAEKSA_ART === kind)) {
       const SEASON = ['spring', 'summer', 'autumn', 'winter'][계절];
       return '<img src="art/' + kind + '-' + 상태 + '-' + SEASON + '.webp?v=' + global.CHAEKSA_ART
         + '" alt="" loading="lazy" style="width:100%;height:74px;object-fit:cover;display:block;border-radius:9px">';
