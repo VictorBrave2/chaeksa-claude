@@ -456,8 +456,19 @@
       // 얼굴이 없으면 얼빡 자리를 비우고 인장만 세운다 — 빈 액자는 두지 않는다.
       sc.innerHTML =
         (window.CHAEKSA_ART
-          ? '<img class="hs-face" alt="" src="art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART
-            + '" onerror="this.closest(\'.home-scene\').classList.add(\'noface\');this.remove()">'
+          ? (() => {
+              // 얼빡도 날마다 얼굴을 바꾼다 — 변주(-2·-3)는 이미 그려져 있는데 여태
+              // 안 쓰이고 있었다. 매일 같은 그림이면 내일 다시 올 이유가 하나 준다.
+              // 변주가 없는 책사가 있으므로(궁위·인연·운로는 -3 이 없다) 못 찾으면
+              // 대표 그림으로 한 번 물러난다. 빈 액자는 그 다음이다.
+              const 밑 = 'art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART;
+              const 벌0 = ['', '-2', '-3'][날번호() % 3];
+              return '<img class="hs-face" alt="" data-base="' + 밑 + '"'
+                + ' src="art/chaeksa-' + 키0 + 벌0 + '.webp?v=' + window.CHAEKSA_ART + '"'
+                + ' onerror="var b=this.dataset.base;'
+                + 'if(b){this.removeAttribute(\'data-base\');this.src=b;return;}'
+                + 'this.closest(\'.home-scene\').classList.add(\'noface\');this.remove()">';
+            })()
           : '')
         + '<div class="hs-veil"></div><div class="hs-body">'
         + '<p class="hs-hail">공주님, 기다리고 있었습니다.</p>'
