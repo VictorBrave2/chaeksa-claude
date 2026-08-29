@@ -471,11 +471,14 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 /* ───── 홈의 얼굴 ─────
    메뉴판이 아니라 하루의 장면. 오늘의 회의 그림 위에 이름과 간지를 얹는다. */
 .home-scene{position:relative;border-radius:20px;overflow:hidden;margin:0 0 16px;
-  min-height:186px;display:flex;align-items:flex-end;background:#161433;
+  aspect-ratio:4/5;max-height:none;display:flex;align-items:flex-end;background:#161433;
   box-shadow:0 12px 34px rgba(30,20,60,.20)}
-.home-scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+/* 얼굴이 주인공이다 — 위를 넉넉히 남기고 눈높이가 위쪽 1/3 에 오게 잡는다 */
+.home-scene .hs-face{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:50% 32%}
+.home-scene.noface{aspect-ratio:auto;min-height:150px}
 .hs-veil{position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(18,16,48,.16) 0%,rgba(18,16,48,.66) 55%,rgba(18,16,48,.94) 100%)}
+  background:linear-gradient(180deg,rgba(18,16,48,.05) 0%,rgba(18,16,48,.10) 38%,rgba(18,16,48,.72) 66%,rgba(18,16,48,.96) 100%)}
 .hs-body{position:relative;padding:22px 20px 18px;width:100%}
 .hs-name{font-family:var(--letter);font-size:22px;font-weight:700;color:#f7f3ff;margin:0}
 .hs-day{font-family:var(--letter);font-size:16px;color:#e2ddf3;margin:5px 0 0}
@@ -487,8 +490,15 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
    대접의 핵심은 「나를 위해 여럿이 나와 있다」이다. 하루에 한 사람만 보여주면
    그건 알림이지 궁정이 아니다. 열 사람을 세우고 오늘 나온 이만 밝힌다.
    서랍에 숨은 화면들의 문 노릇도 한다 — 열 사람이 곧 열 개의 문. */
-.corps{border:1px solid var(--accent-line);border-radius:18px;padding:16px 14px 14px;
-  margin:0 0 16px;background:linear-gradient(135deg,var(--accent-soft),var(--card))}
+.corps{position:relative;overflow:hidden;border:1px solid var(--accent-line);
+  border-radius:18px;padding:16px 14px 14px;margin:0 0 16px;
+  background:linear-gradient(135deg,var(--accent-soft),var(--card))}
+/* 회의 그림을 배경으로 — 열 얼굴이 그 위에 선다. 글이 죽지 않게 아주 옅게. */
+.corps-bg{position:absolute;inset:0;background-size:cover;background-position:50% 30%;
+  opacity:0;transition:opacity .6s ease}
+.corps-bg.on{opacity:.16}
+:root[data-theme="night"] .corps-bg.on{opacity:.28}
+.corps > *:not(.corps-bg){position:relative;z-index:1}
 .corps-k{font-size:10.5px;letter-spacing:.22em;color:var(--accent);margin:0 0 13px;text-align:center}
 .corps-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 4px}
 .cm{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;
@@ -503,9 +513,12 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 .cm.on{color:var(--accent)}
 .cm.on .cm-face{opacity:1;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .cm.on .cm-seal{color:var(--accent)}
-.corps-say{display:flex;align-items:center;gap:9px;width:100%;margin:14px 0 0;padding:11px 12px;
-  border-radius:13px;border:1px solid var(--line);background:var(--card2);cursor:pointer;
-  font-family:inherit;text-align:left;color:var(--ink)}
+/* 오늘 나온 책사의 한마디 — 얼빡 아래, 그림 위에 얹는다 */
+.hs-say{display:flex;align-items:center;gap:9px;width:100%;margin:14px 0 0;padding:11px 12px;
+  border-radius:13px;border:1px solid rgba(230,201,138,.34);background:rgba(18,16,48,.55);
+  cursor:pointer;font-family:inherit;text-align:left;color:#eeeaf7;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hs-say .cs-txt{color:#ddd7ef}
 .cs-who{flex:0 0 auto;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--accent);
   background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:999px;padding:3px 9px}
 .cs-txt{font-size:12.5px;color:var(--ink2);line-height:1.5}

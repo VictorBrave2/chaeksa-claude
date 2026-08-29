@@ -473,43 +473,51 @@
     // 홈을 하루로 만든다: 오늘의 장면 → 첫 의논 → 오늘 나온 책사 하나.
     // 나머지 타일은 전부 서랍에 넣었다(index.html 의 details.fold).
     // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
+    const 오늘차례 = 날번호() % 오늘의책사.length;
+    const [키0, 이름0, 탭0, 말0] = 오늘의책사[오늘차례];
     const sc = $('homeScene');
     if (sc) {
       sc.classList.remove('hide');
       // 맞이하는 말이 먼저다 — 사실 통보는 그 다음이다.
       // 「기다리고 있었습니다」는 연출이지 명리 주장이 아니다(판정은 엔진, 전달은 우리 몫).
-      const 글 = '<div class="hs-veil"></div><div class="hs-body">'
+      // 얼굴이 없으면 얼빡 자리를 비우고 인장만 세운다 — 빈 액자는 두지 않는다.
+      sc.innerHTML =
+        (window.CHAEKSA_ART
+          ? '<img class="hs-face" alt="" src="art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART
+            + '" onerror="this.closest(\'.home-scene\').classList.add(\'noface\');this.remove()">'
+          : '')
+        + '<div class="hs-veil"></div><div class="hs-body">'
         + '<p class="hs-hail">공주님, 기다리고 있었습니다.</p>'
         + '<p class="hs-name">' + esc(nim()) + '</p>'
         + '<p class="hs-day">오늘은 ' + esc(f.pillar(tf.day)) + '일 — '
-        + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날입니다</p></div>';
-      // 그림이 꺼져 있으면 img 를 아예 두지 않는다 — 빈 액자를 보여줄 이유가 없다
-      sc.innerHTML = (window.CHAEKSA_ART ? '<img alt="" id="homeSceneArt">' : '') + 글;
-      회의장면(u => { const a = $('homeSceneArt'); if (a) a.src = u; });
+        + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날입니다</p>'
+        + '<button class="hs-say" type="button"><span class="cs-who">' + esc(이름0) + '</span>'
+        + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button></div>';
+      const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
     }
     // 책사단이 도열한다 — 대접의 핵심은 「나를 위해 여럿이 나와 있다」이다.
     // 겸사겸사 서랍에 숨은 화면들의 문이 되기도 한다: 열 사람이 곧 열 개의 문.
     const ev = $('todayEnvoy');
     if (ev) {
-      const 오늘 = 날번호() % 오늘의책사.length;
+      const 오늘 = 오늘차례;
       const 줄 = 오늘의책사.map(([k, 이름], i) =>
         '<button class="cm' + (i === 오늘 ? ' on' : '') + '" type="button" data-i="' + i + '">'
         + '<span class="cm-face"><img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">'
         + '<span class="cm-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
         + '<span class="cm-name">' + esc(이름) + '</span></button>').join('');
-      const [, 이름0, 탭0, 말0] = 오늘의책사[오늘];
+      // 회의 그림을 도열의 배경으로 깐다 — 「떼로 나와 있다」를 여기서 맡는다
       ev.innerHTML = '<section class="corps">'
+        + '<div class="corps-bg"></div>'
         + '<p class="corps-k">책사단 열 사람이 나와 있습니다</p>'
         + '<div class="corps-row">' + 줄 + '</div>'
-        + '<button class="corps-say" type="button">'
-        + '<span class="cs-who">' + esc(이름0) + '</span>'
-        + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button>'
         + '</section>';
+      회의장면(u => { const g = ev.querySelector('.corps-bg');
+        if (g) { g.style.backgroundImage = 'url("' + u + '")'; g.classList.add('on'); } });
       // data-open 은 시작할 때 한 번만 묶인다 — 나중에 그린 것은 손으로 묶는다
       ev.querySelectorAll('.cm').forEach(b => {
         b.onclick = () => go(오늘의책사[+b.dataset.i][2]);
       });
-      ev.querySelector('.corps-say').onclick = () => go(탭0);
+
     }
     $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
     $('tiMeStr').style.fontSize = '17px';
