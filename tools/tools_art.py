@@ -1,0 +1,110 @@
+# -*- coding: utf-8 -*-
+"""삽화 무인 생성기 — OpenAI Images API로 프롬프트 대장을 전부 뽑는다.
+
+쓰는 법:
+  1. https://platform.openai.com/api-keys 에서 키를 만들어
+     프로젝트 루트의 `.openai_key` 파일에 한 줄로 저장 (gitignore 되어 있음)
+  2. python tools/tools_art.py            → 없는 장만 순서대로 생성
+     python tools/tools_art.py --only love-open-spring-2   → 그 장만 다시
+     python tools/tools_art.py --quality high              → 고화질(비쌈)
+
+원리:
+  - tools/art_prompts.json 의 각 항목을 gpt-image-1 로 생성
+  - 연애(love-*) 컷은 app/art/love-open-winter.webp 를 **인물 참조**로 넣어
+    (edits 엔드포인트) 열두 장이 같은 남자로 나오게 한다
+  - 결과는 1536폭 webp(q82)로 압축해 app/art/ 에 규격 이름으로 저장
+  - API 원판 png 는 삽화원본/ 에 보관
+  - 이미 있는 파일은 건너뛴다 — 대장에 장을 더 붙이고 다시 돌리면 새 장만 생성
+
+비용 감: quality medium 기준 장당 약 $0.06 → 48장 ≈ $3, 240장 ≈ $15.
+API 는 3:1을 직접 못 뽑아 1536x1024(3:2)로 받고, 화면(3:1 틀)이 위쪽을
+남기며 맞춘다. 프롬프트에 「머리를 중앙 띠에」 지시를 덧붙인다.
+"""
+import io, os, sys, json, base64, time
+import urllib.request
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ART = os.path.join(ROOT, 'app', 'art')
+RAW = os.path.join(ROOT, '삽화원본')
+PROMPTS = os.path.join(ROOT, 'tools', 'art_prompts.json')
+REF = os.path.join(ART, 'love-open-winter.webp')   # 인물 기준컷
+
+CROP_HINT = (' Composition must survive a 3:1 horizontal crop: keep the subject\'s '
+             'head and key content within the vertical middle band of the frame.')
+
+
+def key():
+    for p in (os.path.join(ROOT, '.openai_key'), os.path.expanduser('~/.openai_key')):
+        if os.path.exists(p):
+            return io.open(p, encoding='utf-8').read().strip()
+    k = os.environ.get('OPENAI_API_KEY')
+    if k:
+        return k.strip()
+    sys.exit('키가 없습니다 — .openai_key 파일에 API 키를 한 줄 넣어주세요 '
+             '(https://platform.openai.com/api-keys)')
+
+
+def gen(prompt, quality, use_ref):
+    url = 'https://api.openai.com/v1/images/' + ('edits' if use_ref else 'generations')
+    if use_ref:
+        # multipart — 참조 이미지 + 프롬프트
+        boundary = '----chaeksa' + str(int(time.time()))
+        ref = io.open(REF, 'rb').read()
+        parts = []
+        def field(name, val):
+            parts.append(('--%s\r\nContent-Disposition: form-data; name="%s"\r\n\r\n%s\r\n'
+                          % (boundary, name, val)).encode())
+        field('model', 'gpt-image-1')
+        field('prompt', 'Exactly the same man as in the reference image (face, hair, aura). ' + prompt)
+        field('size', '1536x1024')
+        field('quality', quality)
+        parts.append(('--%s\r\nContent-Disposition: form-data; name="image[]"; filename="ref.webp"\r\n'
+                      'Content-Type: image/webp\r\n\r\n' % boundary).encode() + ref + b'\r\n')
+        parts.append(('--%s--\r\n' % boundary).encode())
+        body = b''.join(parts)
+        req = urllib.request.Request(url, data=body, headers={
+            'Authorization': 'Bearer ' + key(),
+            'Content-Type': 'multipart/form-data; boundary=' + boundary})
+    else:
+        body = json.dumps({'model': 'gpt-image-1', 'prompt': prompt,
+                           'size': '1536x1024', 'quality': quality}).encode()
+        req = urllib.request.Request(url, data=body, headers={
+            'Authorization': 'Bearer ' + key(), 'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=300) as r:
+        d = json.loads(r.read())
+    return base64.b64decode(d['data'][0]['b64_json'])
+
+
+def main():
+    from PIL import Image
+    quality = 'high' if '--quality' in sys.argv and 'high' in sys.argv else 'medium'
+    only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
+    os.makedirs(RAW, exist_ok=True)
+    rows = json.load(io.open(PROMPTS, encoding='utf-8'))
+    todo = [r for r in rows if (only and only in r['file'])
+            or (not only and not os.path.exists(os.path.join(ART, r['file'])))]
+    print('%d장 생성 예정 (품질 %s)' % (len(todo), quality))
+    ok = fail = 0
+    for i, r in enumerate(todo, 1):
+        fn = r['file']
+        use_ref = fn.startswith('love') and os.path.exists(REF)
+        try:
+            png = gen(r['prompt'] + CROP_HINT, quality, use_ref)
+            raw_path = os.path.join(RAW, fn.replace('.webp', '.png'))
+            io.open(raw_path, 'wb').write(png)
+            im = Image.open(raw_path)
+            if im.width > 1536:
+                im = im.resize((1536, int(im.height * 1536 / im.width)), Image.LANCZOS)
+            im.save(os.path.join(ART, fn), 'WEBP', quality=82)
+            ok += 1
+            print('[%d/%d] %s  %dKB' % (i, len(todo), fn,
+                  os.path.getsize(os.path.join(ART, fn)) // 1024))
+        except Exception as e:
+            fail += 1
+            print('[%d/%d] %s  실패: %s' % (i, len(todo), fn, str(e)[:120]))
+            time.sleep(5)
+    print('끝 — 성공 %d · 실패 %d. 실패분은 다시 돌리면 그 장만 재시도됩니다.' % (ok, fail))
+
+
+if __name__ == '__main__':
+    main()
