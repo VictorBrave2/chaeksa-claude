@@ -2058,37 +2058,93 @@
     }
     return t;
   }
+  // ── 굽기와 기다림을 갈라놓는다 (2026-08-30 「토큰만 먹고 출력이 안 된다」) ──
+  // 그날의 사고: 굽는 중이라는 응답을 받으면 20초 뒤 「같은 함수」를 다시 불렀다.
+  // 그 함수는 프록시를 두드리는 함수라, 자물쇠가 3분 만에 풀리는 순간 새로 굽기 시작했다.
+  // 죽은 굽기 → 자물쇠 → 폴링 → 자물쇠 만료 → 또 굽기. 3분마다 영원히 토큰만 탔다.
+  // 이제 기다림은 서버 캐시를 「읽기만」 하고, 굽는 문은 간명예열() 하나뿐이다.
+  const BAKING표식 = '§BAKING§';
+  async function 간명서버읽기() {
+    try {
+      const C = window.ChaeksaCloud;
+      if (!C || !C.api || !C.signedIn || !C.signedIn()) return null;
+      const j = await C.api('/rest/v1/rpc/ganmyeong_get', {
+        method: 'POST',
+        body: JSON.stringify({ p_pk: 간명키().replace('chaeksa.ganmyeong.', '') }),
+      });
+      if (j && j.ok && j.hit && j.body && j.body.indexOf(BAKING표식) !== 0) return j.body;
+    } catch (e) { try { console.warn('간명 캐시 조회 실패:', e); } catch (e2) {} }
+    return null;
+  }
+  function 간명도착(t) {
+    // 빈 응답을 캐시하면 화면이 영원히 빈 채로 「받았다」고 믿는다 — 실패로 다룬다.
+    if (!t || String(t).length < 100) {
+      간명예열.busy = false;
+      간명말('간명이 비어서 돌아왔습니다 — [다시 시도]를 눌러 주세요.', true);
+      return;
+    }
+    try { localStorage.setItem(간명키(), t); } catch (e) {}
+    간명예열.busy = false; 간명예열.rounds = 0; 간명예열.fails = 0;
+    chongFor = null;
+    if (window.renderChongSoon) renderChongSoon();
+    const g = $('gmBody'); if (g && g.isConnected) renderGanmyeong();
+  }
+  function 간명말(msg, 재시도) {
+    const w = $('chongWait'); if (w) w.textContent = msg;
+    const b = $('chongBake');
+    if (재시도 && b) { b.disabled = false; b.textContent = '다시 시도'; }
+    const g = $('gmBody');
+    if (g && g.isConnected && !간명캐시()) {
+      g.innerHTML = '<p class="hint">' + esc(msg) + '</p>'
+        + (재시도 ? '<button class="btn" id="gmRetry">다시 시도</button>' : '');
+      const r = $('gmRetry');
+      if (r) r.onclick = () => { r.disabled = true; 간명예열.fails = 0; 간명예열(); };
+    }
+  }
+  /** 굽는 중일 때의 기다림. 읽기만 하므로 공짜고, 절대 새로 굽지 않는다. */
+  function 간명폴링() {
+    간명예열.rounds = (간명예열.rounds || 0) + 1;
+    if (간명예열.rounds > 25) {           // 5분
+      간명예열.busy = false;
+      간명말('간명이 예상보다 오래 걸립니다 — 잠시 뒤 [다시 시도]를 눌러 주세요.', true);
+      return;
+    }
+    간명서버읽기().then(t => {
+      if (t) { 간명도착(t); return; }
+      간명말('간명 중… 굽고 있습니다 (' + (간명예열.rounds * 12) + '초). 이 화면을 벗어나도 계속됩니다.');
+      setTimeout(간명폴링, 12000);
+    });
+  }
   function 간명예열() {
-    // 문진에 답하는 30~60초 동안 뒤에서 미리 굽는다 — 첫 화면이 기다리지 않게.
+    // 이 앱에서 간명을 굽는 유일한 문. 다른 곳에서는 이것만 부른다.
     if (!R || !profile || !window.ChaeksaAI || !ChaeksaAI.ready || !ChaeksaAI.ready()) return;
     const ck = 간명키();
     if (localStorage.getItem(ck) || 간명예열.busy) return;
-    간명예열.busy = true;
+    간명예열.busy = true; 간명예열.rounds = 0;
     // 굽는 도중의 새로고침이 요청을 죽인다 — 「하도 새로고침하니까」(2026-08-30 실증).
-    // 굽는 동안만 이탈 확인을 걸고, 끝나면 바로 푼다.
     if (!간명예열.guard) {
       간명예열.guard = (e) => { if (간명예열.busy) { e.preventDefault(); e.returnValue = ''; } };
       window.addEventListener('beforeunload', 간명예열.guard);
     }
-    try {
-      ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today), ck.replace('chaeksa.ganmyeong.', ''))
-        .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })
-        .catch(err => { 간명예열.busy = false;
-          if (err && err.baking) {
-            // 서버가 굽는 중 — 재굽기가 아니라 기다렸다 캐시를 다시 묻는다(공짜)
-            const w = $('chongWait'); if (w) w.textContent = '간명 중… 다른 창에서 이미 굽고 있어 이어받습니다.';
-            setTimeout(간명예열, 20000);
-            return;
-          }
-          간명예열.fails = (간명예열.fails || 0) + 1;
+    // 굽기 전에 서버를 공짜로 한 번 본다 — 다른 기기나 끊긴 요청이 이미 구워 놨을 수 있다.
+    간명서버읽기().then(있음 => {
+      if (있음) { 간명도착(있음); return null; }
+      return ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today), ck.replace('chaeksa.ganmyeong.', ''))
+        .then(t => 간명도착(t))
+        .catch(err => {
+          if (err && err.baking) { 간명폴링(); return; }   // busy 유지 = 중복 굽기 차단
+          간명예열.busy = false;
           const 원인 = (err && err.blocked && err.blocked.body) || (err && err.message) || String(err);
           try { console.warn('간명 실패:', err); } catch (e2) {}
-          const w = $('chongWait');
-          if (w) w.textContent = 간명예열.fails <= 2
-            ? '간명가를 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 다시 시도합니다.'
-            : '간명가를 부르지 못했습니다 — ' + 원인.slice(0, 120) + ' (새로고침하면 다시 시도합니다)';
-          if (간명예열.fails <= 2) setTimeout(간명예열, 20000); });
-    } catch (e) { 간명예열.busy = false; }
+          // 시간초과는 토큰을 이미 쓴 실패다 — 자동 재시도를 걸지 않는다. 손으로만 다시.
+          const 자동 = !(err && err.timeout) && !(err && err.blocked) && (간명예열.fails || 0) < 1;
+          간명예열.fails = (간명예열.fails || 0) + 1;
+          if (자동) {
+            간명말('간명가를 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
+            setTimeout(간명예열, 20000);
+          } else 간명말('간명가를 부르지 못했습니다 — ' + 원인.slice(0, 120), true);
+        });
+    }).catch(() => { 간명예열.busy = false; });
   }
   async function renderGanmyeong() {
     const el = $('gmBody'); if (!el || !R || !profile) return;
@@ -2101,15 +2157,13 @@
     let text = 간명캐시();
     if (!text) {
       el.innerHTML = '<p class="hint">간명 중입니다 — 엔진이 잰 사실을 펴서 문항을 세우고 있습니다 (약 1분). 이 화면을 벗어나도 계속 굽습니다.</p>';
-      if (간명예열.busy) return;   // 예열이 이미 굽는 중 — 끝나면 다시 그려진다
+      if (간명예열.busy) return;   // 이미 굽는 중 — 끝나면 다시 그려진다
       if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 간명가를 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
-      try {
-        const facts = T.간명자료(R, today);
-        text = await AI.ganmyeong(facts, cacheKey.replace('chaeksa.ganmyeong.', ''));
-        try { localStorage.setItem(cacheKey, text);
-          if (localStorage.getItem(cacheKey) !== text) throw new Error('저장 검증 실패');
-        } catch (e2) { try { console.warn('간명 캐시 저장 실패:', e2); } catch (e3) {} }
-      } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; return; }
+      // 서버에 구워진 것이 있으면 공짜로 가져온다. 없으면 굽는 문(간명예열)을 두드린다 —
+      // 여기서 직접 굽지 않는 이유: 굽는 입구가 둘이면 자물쇠 밖에서 겹쳐 굽는다.
+      text = await 간명서버읽기();
+      if (text) { try { localStorage.setItem(cacheKey, text); } catch (e2) {} }
+      else { 간명예열(); return; }
     }
     const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
     const submitKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.submitted.');

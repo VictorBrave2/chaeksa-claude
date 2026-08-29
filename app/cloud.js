@@ -282,7 +282,7 @@
   }
 
   global.ChaeksaCloud = {
-    enabled, signedIn, email, sendMagicLink, signInWith, signOut, deleteAccount, captureRedirect, me,
+    enabled, signedIn, email, sendMagicLink, signInWith, signOut, deleteAccount, captureRedirect, me, api,
     pull, push, pushSoon, session, token,
   };
 })(window);

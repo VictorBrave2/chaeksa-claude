@@ -195,6 +195,17 @@ module.exports = async (req, res) => {
     }
   }
 
+  // 실패한 굽기가 자물쇠를 3분간 물고 있으면, 기다리는 쪽은 영영 못 받고
+  // 자물쇠가 풀리는 순간 또 굽는다 — 토큰만 타는 고리다(2026-08-30).
+  // 실패를 확인한 자리에서 자물쇠를 직접 푼다. 빈 몸통 = 캐시 없음.
+  const 자물쇠풀기 = async () => {
+    if (cachePk && userToken) await rpc('ganmyeong_put', { p_pk: cachePk, p_body: '' }, userToken);
+  };
+
+  // Vercel 함수 상한(120초)에 걸려 죽으면 뒷정리를 할 기회 자체가 없다.
+  // 그 전에 우리가 끊어야 자물쇠도 풀고 계량도 되돌린다.
+  const ac = new AbortController();
+  const killer = setTimeout(() => ac.abort(), 95000);
   try {
     const upstream = await fetch(UPSTREAM, {
       method: 'POST',
@@ -205,26 +216,40 @@ module.exports = async (req, res) => {
         'anthropic-beta': req.headers['anthropic-beta'] || 'server-side-fallback-2026-07-01',
       },
       body: JSON.stringify(body),
+      signal: ac.signal,
     });
     const text = await upstream.text();
+    clearTimeout(killer);
     if (upstream.ok && cachePk && userToken) {
       // 성공한 간명은 서버에 저장 — 반드시 await: 응답을 먼저 보내면 Vercel이
       // 함수를 얼려 저장이 증발한다(2026-08-30 「pc에도 굽고 모바일에도 굽는다」의 원인).
+      let 저장됨 = false;
       try {
         const j = JSON.parse(text);
         const body = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
-        if (body) await rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken);
+        if (body) { await rpc('ganmyeong_put', { p_pk: cachePk, p_body: body }, userToken); 저장됨 = true; }
       } catch (e) {}
+      // 200인데 본문이 비었다(사고량이 max_tokens를 다 먹은 경우). 저장할 게 없으면
+      // 자물쇠라도 풀어야 한다 — 안 그러면 3분간 아무도 못 굽고 아무도 못 받는다.
+      if (!저장됨) await 자물쇠풀기();
     }
-    if (!upstream.ok && enforcing && userToken) {
-      // 사용자는 아무것도 못 받았다. 센 것을 되돌린다.
-      rpc('ai_usage_refund', { p_task: task }, userToken).catch(() => {});
+    if (!upstream.ok) {
+      // 사용자는 아무것도 못 받았다. 자물쇠를 풀고 센 것을 되돌린다.
+      // 되돌리기도 반드시 await — 응답 뒤에는 함수가 얼어 증발한다.
+      await 자물쇠풀기();
+      if (enforcing && userToken) await rpc('ai_usage_refund', { p_task: task }, userToken);
     }
     res.status(upstream.status);
     res.setHeader('content-type', 'application/json');
     return res.send(text);
   } catch (e) {
-    if (enforcing && userToken) rpc('ai_usage_refund', { p_task: task }, userToken).catch(() => {});
+    clearTimeout(killer);
+    const 시간초과 = !!(e && (e.name === 'AbortError' || /abort/i.test(String(e.message || ''))));
+    await 자물쇠풀기();
+    if (enforcing && userToken) await rpc('ai_usage_refund', { p_task: task }, userToken);
+    if (시간초과) {
+      return res.status(504).json({ type: 'error', error: { type: 'timeout', message: '간명이 시간 안에 끝나지 않았습니다. 다시 눌러 주세요 — 사용 횟수는 되돌려 놓았습니다.' } });
+    }
     return res.status(502).json({ type: 'error', error: { type: 'network', message: '비서에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.' } });
   }
 };

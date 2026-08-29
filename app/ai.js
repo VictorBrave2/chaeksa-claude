@@ -163,6 +163,12 @@ ${prof}` : ''}`;
         err.baking = true;
         throw err;
       }
+      if (kind === 'timeout') {
+        // 굽다가 시간 벽에 걸렸다 — 토큰은 이미 쓴 실패다. 자동 재시도를 절대 걸지 않는다.
+        const err = new Error(raw || '간명이 시간 안에 끝나지 않았습니다.');
+        err.timeout = true;
+        throw err;
+      }
       if (kind === 'quota' || kind === 'auth') {
         // 화면 카운터를 서버 판정에 맞춘다. 지운 localStorage로 다시 물어봐도 서버가 다시 막는다.
         if (kind === 'quota' && global.ChaeksaUsage) {
@@ -382,11 +388,14 @@ ${prof}` : ''}`;
       + 간명본보기 + '\n\n'
       + '위 본보기의 밀도·리듬·따뜻함을 그대로 가져오되, 내용은 오직 아래 [계산된 사실]에서만 가져와라. 본보기의 글자·연도를 베끼면 안 된다.\n'
       + '[계산된 사실]\n' + JSON.stringify(facts);
-    // 8000이면 12~18문이 넉넉하다 — 길이를 줄이면 굽는 시간이 줄고, 새로고침 유혹도 준다
+    // 길이·사고량은 굽는 시간이다. 프록시(Vercel)의 상한이 120초라 그 안에 들어와야 한다 —
+    // 8000/high 로 두었더니 벽에 걸려 죽고, 죽은 굽기가 토큰만 태웠다(2026-08-30 실물 제보).
+    // 5000/medium: 12~18문에 넉넉하고, 본보기(v9)가 이미 말투를 잡아주므로 사고량은 덜 든다.
+    // 채점이 떨어지면 여기 한 줄만 high 로 되돌린다.
     // dehanja 금지 — 간명서는 글자가 주인공이라 辛(신)·子(자)를 살려야 한다.
     // dehanja를 태우면 辛(신)→신(신)이 된다 (2026-08-30 실물 제보).
     return await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 8000, effort: 'high', cachePk });
+      { task: 'story', maxTokens: 5000, effort: 'medium', cachePk });
   }
 
   async function dailyBrief(r, today) {
