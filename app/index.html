@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=365">
+<link rel="stylesheet" href="style.css?v=367">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -165,12 +165,14 @@
       <!-- 「지금 어디에 계신지」는 원국 탭으로 옮겼다 (2026-08-28).
            앱을 열자마자 「지금은 눌리는 구간입니다」가 첫 인사일 수는 없다.
            궁금해서 원국을 열어본 사람에게 할 말이지, 문을 열고 들어온 사람에게 할 말이 아니다. -->
-      <p class="home-greet hide" id="homeGreet"></p>
+      <div class="home-scene hide" id="homeScene"></div>
       <section class="card" id="chong"></section>
+      <div id="todayEnvoy"></div>
       <!-- 2026-08-29 「다시 여성들이 매료될 구성과 구조로」 —
            타일 벽을 이야기의 목차로 바꿨다. 첫 장은 사랑이고,
            재물·일·재미는 접힌 문 뒤에 있다. 팩폭(사주 법정)은 맨 아래 그대로. -->
-      <div class="sec-label">나의 사랑 이야기</div>
+      <details class="fold">
+        <summary class="sec-label">나의 사랑 이야기</summary>
       <div class="tiles">
         <button class="tile" data-open="dohwa">
           <span class="ti-k">첫 장 · 나의 연애</span>
@@ -198,8 +200,10 @@
           <span class="ti-sub">열 사람이 둘러앉아 다툽니다 — 누가 맞혔는지는 당신이 정하세요</span>
         </button>
       </div>
+      </details>
 
-      <div class="sec-label">나의 날들</div>
+      <details class="fold">
+        <summary class="sec-label">나의 날들</summary>
       <div class="tiles">
         <button class="tile" data-open="today">
           <span class="ti-k">오늘의 흐름</span>
@@ -232,6 +236,7 @@
           <span class="ti-sub" id="tiGachaSub">686가지 가운데 당신의 한 장 — 간직하고 보내세요</span>
         </button>
       </div>
+      </details>
 
       <details class="fold">
         <summary class="sec-label">재물 · 일 · 재미 — 더 보기</summary>
@@ -274,6 +279,8 @@
         </div>
       </details>
 
+      <details class="fold">
+        <summary class="sec-label">만세력 — 여덟 글자</summary>
       <section class="card home-manse">
         <div class="hm-head">
           <h2>만세력</h2>
@@ -283,6 +290,7 @@
         <div class="hm-meta" id="hmMeta"></div>
         <button class="btn ghost small" data-open="me" style="margin-top:12px">원국 풀이 전체 보기</button>
       </section>
+      </details>
 
       <div class="sec-label">비서</div>
       <button class="hero-banner alt" data-open="memo" id="memoBanner">
@@ -298,7 +306,8 @@
         <span class="hb-sub">제왕절개 날짜·시각을 근거 문서로 받아보세요 · 사람이 직접 봅니다</span>
       </button>
 
-      <div class="sec-label">더 보기</div>
+      <details class="fold">
+        <summary class="sec-label">더 보기</summary>
       <div class="tiles">
         <button class="tile" data-open="cal">
           <span class="ti-k">택일 달력</span>
@@ -323,10 +332,12 @@
           <span class="ti-sub">4기둥 · 격국 · 대운 · 열두 달</span>
         </button>
       </div>
+      </details>
 
       <!-- 웃자고 만든 것들은 맨 아래로. 뜻대로 안 풀려 들어온 사람에게
            '유죄'와 '등급'이 첫 화면일 수는 없다. 찾는 사람은 여기서 찾으면 된다. -->
-      <div class="sec-label">독하게 듣고 싶다면</div>
+      <details class="fold">
+        <summary class="sec-label">독하게 듣고 싶다면</summary>
       <div class="tiles">
         <button class="tile" data-open="court">
           <span class="ti-k">사주 법정</span>
@@ -334,6 +345,7 @@
           <span class="ti-sub" id="tiCourtSub">듣기 좋은 말은 없습니다 · 팩폭</span>
         </button>
       </div>
+      </details>
     </div>
 
     <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
@@ -932,31 +944,31 @@
   </div>
 </div>
 
-<script src="config.js?v=365"></script>
-<script src="track.js?v=365"></script>
-<script src="cloud.js?v=365"></script>
-<script src="usage.js?v=365"></script>
-<script src="places.js?v=365"></script>
-<script src="people.js?v=365"></script>
-<script src="astro.js?v=365"></script>
-<script src="lunar.js?v=365"></script>
-<script src="engine.js?v=365"></script>
-<script src="chaeyong.js?v=365"></script>
-<script src="brief.js?v=365"></script>
-<script src="typecard.js?v=365"></script>
-<script src="gyeokguk.js?v=365"></script>
-<script src="memo.js?v=365"></script>
-<script src="hyeopgi.js?v=365"></script>
-<script src="classic.js?v=365"></script>
-<script src="calendar.js?v=365"></script>
-<script src="compat.js?v=365"></script>
-<script src="tongbyeon.js?v=365"></script>
-<script src="rules-wealth-love.js?v=365"></script>
-<script src="rules-health-study-move.js?v=365"></script>
-<script src="consult.js?v=365"></script>
-<script src="share.js?v=365"></script>
-<script src="ai.js?v=365"></script>
-<script src="pay.js?v=365"></script>
-<script src="app.js?v=365"></script>
+<script src="config.js?v=367"></script>
+<script src="track.js?v=367"></script>
+<script src="cloud.js?v=367"></script>
+<script src="usage.js?v=367"></script>
+<script src="places.js?v=367"></script>
+<script src="people.js?v=367"></script>
+<script src="astro.js?v=367"></script>
+<script src="lunar.js?v=367"></script>
+<script src="engine.js?v=367"></script>
+<script src="chaeyong.js?v=367"></script>
+<script src="brief.js?v=367"></script>
+<script src="typecard.js?v=367"></script>
+<script src="gyeokguk.js?v=367"></script>
+<script src="memo.js?v=367"></script>
+<script src="hyeopgi.js?v=367"></script>
+<script src="classic.js?v=367"></script>
+<script src="calendar.js?v=367"></script>
+<script src="compat.js?v=367"></script>
+<script src="tongbyeon.js?v=367"></script>
+<script src="rules-wealth-love.js?v=367"></script>
+<script src="rules-health-study-move.js?v=367"></script>
+<script src="consult.js?v=367"></script>
+<script src="share.js?v=367"></script>
+<script src="ai.js?v=367"></script>
+<script src="pay.js?v=367"></script>
+<script src="app.js?v=367"></script>
 </body>
 </html>

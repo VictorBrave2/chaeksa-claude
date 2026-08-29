@@ -468,16 +468,32 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 .lp-hero.scene .lp-today span:last-child{color:#dbd5f0}
 .lp-hero.scene .hint{color:#c3bcdc}
 
-/* 홈 첫 줄 — 책사가 이름을 부른다. 메뉴판이 첫 인사일 수는 없다. */
-.home-greet{
-  text-align:center;font-family:var(--letter);font-size:16.5px;color:var(--ink2);
-  margin:2px 0 18px;line-height:1.9;letter-spacing:-.01em;
-}
-.home-greet b{color:var(--ink);font-weight:700}
-.home-greet i{display:block;font-style:normal;font-size:11.5px;letter-spacing:.24em;
-  color:var(--accent);margin-top:7px}
-.home-greet::after{content:"";display:block;width:48px;height:1px;margin:15px auto 0;
-  background:linear-gradient(90deg,transparent,var(--accent-line),transparent)}
+/* ───── 홈의 얼굴 ─────
+   메뉴판이 아니라 하루의 장면. 오늘의 회의 그림 위에 이름과 간지를 얹는다. */
+.home-scene{position:relative;border-radius:20px;overflow:hidden;margin:0 0 16px;
+  min-height:186px;display:flex;align-items:flex-end;background:#161433;
+  box-shadow:0 12px 34px rgba(30,20,60,.20)}
+.home-scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+.hs-veil{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(18,16,48,.16) 0%,rgba(18,16,48,.66) 55%,rgba(18,16,48,.94) 100%)}
+.hs-body{position:relative;padding:22px 20px 18px;width:100%}
+.hs-name{font-family:var(--letter);font-size:22px;font-weight:700;color:#f7f3ff;margin:0}
+.hs-day{font-family:var(--letter);font-size:16px;color:#e2ddf3;margin:5px 0 0}
+.hs-sub{font-size:11px;letter-spacing:.22em;color:#e6c98a;margin:10px 0 0}
+
+/* 오늘 나온 책사 — 하루에 하나. 스무 개를 한꺼번에 늘어놓지 않는다. */
+.envoy{display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;
+  font-family:inherit;color:var(--ink);margin:0 0 16px;padding:15px 16px;border-radius:18px;
+  border:1px solid var(--accent-line);background:linear-gradient(135deg,var(--accent-soft),var(--card));
+  transition:transform .06s ease}
+.envoy:active{transform:scale(.99)}
+.ev-face{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 22%;
+  flex:0 0 54px;border:1px solid var(--accent-line);background:var(--bg2)}
+.ev-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ev-k{font-size:10.5px;letter-spacing:.22em;color:var(--accent)}
+.ev-name{font-family:var(--letter);font-size:17px;font-weight:700}
+.ev-say{font-size:12.5px;color:var(--ink2);line-height:1.55}
+.ev-go{margin-left:auto;color:var(--accent);font-size:18px;flex:0 0 auto}
 
 /* 서신을 기다리는 자리에도 장면을 둔다 */
 /* 회의록 — 누가 한 말인지 눈에 걸려야 회의로 읽힌다 */

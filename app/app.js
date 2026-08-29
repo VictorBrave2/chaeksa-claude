@@ -468,13 +468,35 @@
     // 홈이 표본 굽기를 기다리게 되면 첫 화면이 멈춘다.
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
     $('tiTodayGz').textContent = f.pillar(tf.day);
-    // 책사가 나를 기억하는 느낌 — 메뉴판이 첫 인사일 수는 없다(docs/21).
+    // ── 홈의 얼굴 (2026-08-30 「양산형 홈페이지 같잖아」) ──
+    // 스무 개짜리 균일 타일 그리드는 앱 런처 문법이라 궁정이 되지 않는다.
+    // 홈을 하루로 만든다: 오늘의 장면 → 첫 의논 → 오늘 나온 책사 하나.
+    // 나머지 타일은 전부 서랍에 넣었다(index.html 의 details.fold).
     // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
-    const gr = $('homeGreet');
-    if (gr) {
-      gr.classList.remove('hide');
-      gr.innerHTML = '<b>' + esc(nim()) + '</b>, 오늘은 ' + esc(f.pillar(tf.day)) + '일입니다.'
-        + '<i>' + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날</i>';
+    const sc = $('homeScene');
+    if (sc) {
+      sc.classList.remove('hide');
+      const 글 = '<div class="hs-veil"></div><div class="hs-body">'
+        + '<p class="hs-name">' + esc(nim()) + '</p>'
+        + '<p class="hs-day">오늘은 ' + esc(f.pillar(tf.day)) + '일입니다</p>'
+        + '<p class="hs-sub">' + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날</p></div>';
+      // 그림이 꺼져 있으면 img 를 아예 두지 않는다 — 빈 액자를 보여줄 이유가 없다
+      sc.innerHTML = (window.CHAEKSA_ART ? '<img alt="" id="homeSceneArt">' : '') + 글;
+      회의장면(u => { const a = $('homeSceneArt'); if (a) a.src = u; });
+    }
+    // 오늘 나온 책사 — 하루에 하나. 열 사람이 돌아가며 제 화면으로 데려간다.
+    // 이것이 예전 타일 벽을 대신한다: 스무 개를 한꺼번에 늘어놓지 않는다.
+    const ev = $('todayEnvoy');
+    if (ev) {
+      const [k, 이름, 탭, 말] = 오늘의책사[날번호() % 오늘의책사.length];
+      ev.innerHTML = '<button class="envoy" type="button">'
+        + '<img class="ev-face" src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">'
+        + '<span class="ev-body"><span class="ev-k">오늘 나온 책사</span>'
+        + '<span class="ev-name">' + esc(이름) + '</span>'
+        + '<span class="ev-say">' + esc(말) + '</span></span>'
+        + '<span class="ev-go">▸</span></button>';
+      // data-open 은 시작할 때 한 번만 묶인다 — 나중에 그린 버튼은 손으로 묶어야 한다
+      ev.querySelector('.envoy').onclick = () => go(탭);
     }
     $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
     $('tiMeStr').style.fontSize = '17px';
@@ -2048,6 +2070,20 @@
   // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
   // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
   // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
+  // 오늘 나온 책사 — [초상 키, 이름, 데려갈 화면, 아뢰는 말]
+  // 말은 권유지 판단이 아니다. 명리 주장은 각 화면이 제 계산으로 한다.
+  const 오늘의책사 = [
+    ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
+    ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
+    ['gungtong', '궁통보감', 'today', '오늘의 기운이 공주님께 추운지 더운지 봐 드리겠습니다.'],
+    ['jaemul', '재물', 'nokpae', '공주님의 그릇이 몇 섬인지, 상위 몇 %인지 세어 드릴까요.'],
+    ['eokbu', '억부', 'jichim', '무엇이 공주님을 깎고 무엇이 채우는지 짚어 드리겠습니다.'],
+    ['unro', '운로', 'life', '언제가 두터워지고 언제가 담금질인지 곡선으로 펴 드릴까요.'],
+    ['japyung', '자평진전', 'me', '격이 섰는지 무너졌는지, 원국을 펴 보여 드리겠습니다.'],
+    ['cheonjik', '천직', 'jikcheop', '스물다섯 결 가운데 공주님이 어느 쪽인지 아뢰겠습니다.'],
+    ['hyeopgi', '협기', 'cal', '좋은 날을 고르는 일은 제 몫입니다. 달력을 펴 보시겠습니까.'],
+    ['gungwi', '궁위', 'dohwa', '곁자리에 앉은 글자가 누구를 가리키는지 보시겠습니까.'],
+  ];
   // ── 발언자 표시 — 무료 의논과 유료 본문이 함께 쓴다 ──
   // 초상은 app/art/chaeksa-<키>.webp. 없으면 onerror 로 스스로 사라져 글자 칩만 남는다 —
   // 그림이 도착하는 순서대로 화면이 좋아진다.
