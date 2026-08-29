@@ -2069,6 +2069,8 @@
       } catch (e) { el.innerHTML = '<p class="hint">간명에 실패했습니다 — 잠시 뒤 다시 열어 주세요. (' + esc(String(e.message || e).slice(0, 80)) + ')</p>'; return; }
     }
     const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
+    // AI가 마크다운을 섞어도 화면엔 순수 글만 — 이미 구워진 캐시도 여기서 같이 씻긴다
+    text = text.replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *-{3,} *$/gm, '').replace(/^ *[*•] +/gm, '');
     const parts = text.split(/(?=[①-⑳])/);
     const 머리 = parts[0] || '';
     const html = ['<div class="nx-diag">' + 머리.split('\n').map(t => t.trim() ? '<p>' + esc(t) + '</p>' : '').join('') + '</div>'];
@@ -2076,10 +2078,10 @@
       const g = grades[i];
       html.push('<div class="nx-diag" style="margin-top:10px">'
         + chunk.split('\n').map(t => t.trim() ? '<p>' + esc(t) + '</p>' : '').join('')
-        + '<p style="margin-top:8px">'
+        + '<div class="gm-grade">'
         + ['y:맞다', 'm:애매', 'n:아니다'].map(o => { const [v, lb] = o.split(':');
-            return '<button class="btn-ghost gmg" data-i="' + i + '" data-v="' + v + '" style="margin-right:6px' + (g === v ? ';font-weight:800;text-decoration:underline' : '') + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
-        + '</p></div>');
+            return '<button class="gmg' + (g === v ? ' on' : '') + '" data-i="' + i + '" data-v="' + v + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
+        + '</div></div>');
     });
     const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
     html.push('<p class="pb-ft">채점 ' + answered + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + Object.values(grades).filter(v => v === 'n').length

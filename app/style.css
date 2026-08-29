@@ -959,3 +959,10 @@ details.fold > summary::-webkit-details-marker { display: none; }
 details.fold > summary::after { content: " ▸"; opacity: .6; }
 details.fold[open] > summary::after { content: " ▾"; }
 details.fold > .tiles { margin-top: 10px; }
+
+/* 간명서 채점 줄 — 알약 셋 (2026-08-30) */
+.gm-grade { display: flex; gap: 8px; margin-top: 12px; }
+.gm-grade .gmg { flex: 0 0 auto; padding: 7px 18px; border-radius: 999px;
+  border: 1px solid var(--line, #8886); background: transparent; color: inherit;
+  font: inherit; font-size: .92em; cursor: pointer; }
+.gm-grade .gmg.on { border-color: var(--accent, #b8860b); color: var(--accent, #b8860b); font-weight: 700; }
