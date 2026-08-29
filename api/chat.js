@@ -31,6 +31,9 @@ const MAX_TOKENS = 2200;
 // story(유료 스토리 서술)만 길게 허용한다. 2만원짜리 결제 콘텐츠의 본문이라
 // 400자 요약이 아니라 3천 자 보고서가 맞다. 원가 ~80원 - 상품가의 0.4%.
 const MAX_TOKENS_STORY = 12000;
+// 굽기를 우리 손으로 끊는 시각. Vercel 함수 상한(vercel.json 120초)보다 짧아야
+// 자물쇠를 풀고 계량을 되돌릴 기회가 남는다 — 상한에 걸려 죽으면 그 기회가 없다.
+const BAKE_LIMIT_MS = 95000;
 
 // 간이 IP 제한(인스턴스 메모리). 재시작마다 초기화되고 인스턴스마다 따로 세므로
 // 이것만으로는 방어가 아니다. 진짜 방어는 ai_usage_bump, 최종 방어선은 Anthropic 콘솔 한도.
@@ -133,6 +136,9 @@ module.exports = async (req, res) => {
       hasKey: !!k,   // 키 길이·앞자리는 노출하지 않는다 (2026-08-30 보안 점검)
       allowedOrigin: process.env.ALLOWED_ORIGIN || null,
       usageEnforced: enforced,
+      // 굽기 상한 — Vercel 함수 상한(120초)보다 짧아야 우리가 뒷정리를 할 수 있다.
+      // 여기 보이는 값이 실제로 도는 판이다(배포가 반영됐는지 이 줄로 확인한다).
+      bakeLimitMs: BAKE_LIMIT_MS,
       supabaseProbe: probe,
     });
   }
@@ -205,7 +211,7 @@ module.exports = async (req, res) => {
   // Vercel 함수 상한(120초)에 걸려 죽으면 뒷정리를 할 기회 자체가 없다.
   // 그 전에 우리가 끊어야 자물쇠도 풀고 계량도 되돌린다.
   const ac = new AbortController();
-  const killer = setTimeout(() => ac.abort(), 95000);
+  const killer = setTimeout(() => ac.abort(), BAKE_LIMIT_MS);
   try {
     const upstream = await fetch(UPSTREAM, {
       method: 'POST',
