@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
     }
     return res.status(200).json({
       ok: true, runtime: 'vercel-node',
-      hasKey: !!k, keyLen: k.length, keyPrefix: k.slice(0, 12),
+      hasKey: !!k,   // 키 길이·앞자리는 노출하지 않는다 (2026-08-30 보안 점검)
       allowedOrigin: process.env.ALLOWED_ORIGIN || null,
       usageEnforced: enforced,
       supabaseProbe: probe,
