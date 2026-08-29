@@ -1463,7 +1463,8 @@
     try {
       if (!window.ChaeksaAI || !AI.ready()) return;
       const pb = box.querySelector('.paidbox'); if (!pb) return;
-      const key = 'chaeksa.storyai.' + kind + '.'
+      // v2 — 책사단으로 판이 바뀌었다. 옛 단일 화자 글은 한 번 다시 쓴다.
+      const key = 'chaeksa.storyai.v2.' + kind + '.'
         + f.pillar(R.pillars.year) + f.pillar(R.pillars.month) + f.pillar(R.pillars.day)
         + '.' + today.toISOString().slice(0, 7);
       let cached = null;
@@ -1472,11 +1473,11 @@
       el.className = 'pb-ai';
       pb.appendChild(el);
       const draw = (t) => {
-        el.innerHTML = '<p class="pb-ai-k">책사의 말</p>'
-          + String(t).split(/[\r\n]+/).filter(Boolean).map(x => '<p>' + esc(x) + '</p>').join('');
+        el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
+          + String(t).split(/[\r\n]+/).filter(Boolean).map(발언줄).join('');
       };
       if (cached) { draw(cached); return; }
-      el.innerHTML = '<p class="pb-ai-k">책사의 말</p><p class="pb-ai-load">위 계산을 처음부터 끝까지 읽고 긴 글을 쓰는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
+      el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">위 계산을 놓고 책사단이 의논하는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
       const out = await AI.storyTell(kind, facts);
       try { localStorage.setItem(key, out); } catch (e) {}
       draw(out);
@@ -2047,6 +2048,25 @@
   // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
   // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
   // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
+  // ── 발언자 표시 — 무료 의논과 유료 본문이 함께 쓴다 ──
+  // 초상은 app/art/chaeksa-<키>.webp. 없으면 onerror 로 스스로 사라져 글자 칩만 남는다 —
+  // 그림이 도착하는 순서대로 화면이 좋아진다.
+  const 책사키 = { 자평진전: 'japyung', 궁통보감: 'gungtong', 억부: 'eokbu', 궁위: 'gungwi',
+                   인연: 'inyeon', 재물: 'jaemul', 천직: 'cheonjik', 운로: 'unro',
+                   협기: 'hyeopgi', 좌장: 'jwajang' };
+  const 얼굴 = (who) => {
+    const k = 책사키[who]; if (!k) return '';
+    return '<img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">';
+  };
+  const 발언자류 = /^([\u2460-\u2473])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
+  /** 한 줄을 발언으로 그린다(발언자가 아니면 그냥 문단) */
+  function 발언줄(t) {
+    t = String(t).trim(); if (!t) return '';
+    const m = t.match(발언자류);
+    if (!m) return '<p>' + esc(t) + '</p>';
+    return '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
+      + '<span class="gm-who">' + 얼굴(m[2]) + esc(m[2]) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
+  }
   const GM_VER = 'v12';  // v12: 책사단 열 사람 · 호칭 공주님 (docs/22)
   const 간명키 = () => {
     const i = (R && R.input) || profile || {};
@@ -2202,17 +2222,6 @@
     const parts = text.split(/(?=[①-⑳])/);
     // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
     const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
-    // 발언자 초상 — app/art/chaeksa-<키>.webp 가 들어오면 칩에 얼굴이 붙는다.
-    // 없으면 onerror 로 스스로 사라진다: 그림이 도착하는 순서대로 화면이 좋아진다.
-    const 책사키 = { 자평진전: 'japyung', 궁통보감: 'gungtong', 억부: 'eokbu', 궁위: 'gungwi',
-                     인연: 'inyeon', 재물: 'jaemul', 천직: 'cheonjik', 운로: 'unro',
-                     협기: 'hyeopgi', 좌장: 'jwajang' };
-    const 얼굴 = (who) => {
-      const k = 책사키[who]; if (!k) return '';
-      return '<img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">';
-    };
-    // 〔이름〕은 발언자다 — 본문에 섞어두면 회의가 아니라 독백으로 읽힌다. 뽑아서 칩으로 세운다.
-    const 발언자류 = /^([\u2460-\u2473])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
     const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
       t = t.trim(); if (!t) return '';
       if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); return ''; }
@@ -2695,13 +2704,35 @@
     return ['winter', 'winter', 'spring', 'spring', 'spring', 'summer',
             'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'][today.getMonth()];
   }
-  /** 장면 한 컷 — 그림이 꺼져 있으면 아무것도 내놓지 않는다 */
+  /** 오늘이 한 해의 몇 번째 날인가 — 장면 변주를 날마다 돌리는 데 쓴다 */
+  function 날번호() {
+    const t0 = new Date(today.getFullYear(), 0, 0);
+    return Math.floor((today - t0) / 86400000);
+  }
+  /** 오늘 쓸 회의 장면. 있는 것 중 첫 번째를 골라 알려준다(없으면 부르지 않는다).
+   *  변주(-2·-3)를 날마다 돌린다 — 매일 같은 그림이면 다시 올 이유가 하나 준다. */
+  function 회의장면(고르면) {
+    if (!window.CHAEKSA_ART) return;
+    const s0 = 계절이름(), v = window.CHAEKSA_ART;
+    const 벌 = ['', '-2', '-3'][날번호() % 3];
+    const 후보 = ['art/council-' + s0 + 벌 + '.webp?v=' + v,
+                  'art/council-' + s0 + '.webp?v=' + v,
+                  'art/love-open-' + s0 + '.webp?v=' + v];
+    (function 다음(i) {
+      if (i >= 후보.length) return;
+      const im = new Image();
+      im.onload = () => 고르면(후보[i]);
+      im.onerror = () => 다음(i + 1);
+      im.src = 후보[i];
+    })(0);
+  }
+  /** 장면 한 컷 — 그림이 꺼져 있으면 아무것도 내놓지 않는다.
+   *  자리만 먼저 잡아두고(옛 장면), 오늘의 회의 장면이 있으면 갈아 끼운다. */
   function 장면() {
     if (!window.CHAEKSA_ART) return '';
     const s0 = 계절이름(), v = window.CHAEKSA_ART;
-    // 회의 장면을 먼저 부르고, 아직 없으면 onerror 로 옛 장면으로 물러난다
-    return '<img class="gm-scene" alt="" src="art/council-' + s0 + '.webp?v=' + v + '"'
-      + ' onerror="this.onerror=null;this.src=\'art/love-open-' + s0 + '.webp?v=' + v + '\'">';
+    setTimeout(() => 회의장면(u => { const g = $('gmScene'); if (g) g.src = u; }), 0);
+    return '<img class="gm-scene" id="gmScene" alt="" src="art/love-open-' + s0 + '.webp?v=' + v + '">';
   }
   // ───── 랜딩 ─────
   function showLanding() {
@@ -2715,10 +2746,8 @@
       const s0 = 계절이름(), v = window.CHAEKSA_ART;
       hero.style.setProperty('--hero-art', 'url("art/love-open-' + s0 + '.webp?v=' + v + '")');
       hero.classList.add('scene');
-      // 책사단 회의 장면이 도착해 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
-      const probe = new Image();
-      probe.onload = () => hero.style.setProperty('--hero-art', 'url("art/council-' + s0 + '.webp?v=' + v + '")');
-      probe.src = 'art/council-' + s0 + '.webp?v=' + v;
+      // 오늘의 회의 장면이 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
+      회의장면(u => hero.style.setProperty('--hero-art', 'url("' + u + '")'));
     }
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
