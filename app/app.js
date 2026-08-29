@@ -2028,16 +2028,18 @@
   let gmFor = null;
   // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
   // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
+  // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 판으로 한 번만 재굽기.
+  const GM_VER = 'v2';
   const 간명키 = () => {
     const i = (R && R.input) || profile || {};
-    return 'chaeksa.ganmyeong.' + [i.year, i.month, i.day, i.hour].join('.');
+    return 'chaeksa.ganmyeong.' + GM_VER + '.' + [i.year, i.month, i.day, i.hour].join('.');
   };
   /** 현재 키의 캐시. 없으면 떠돌이(키 표기가 달라진 옛 캐시)를 주워 현재 키로 이관한다. */
   function 간명캐시() {
     const ck = 간명키();
     let t = localStorage.getItem(ck);
     if (!t) {
-      const 떠돌이 = Object.keys(localStorage).filter(k => k.indexOf('chaeksa.ganmyeong.') === 0 && k.indexOf('.grade.') < 0 && k !== ck);
+      const 떠돌이 = Object.keys(localStorage).filter(k => k.indexOf('chaeksa.ganmyeong.' + GM_VER + '.') === 0 && k.indexOf('.grade.') < 0 && k !== ck);
       if (떠돌이.length === 1) {
         t = localStorage.getItem(떠돌이[0]);
         try { localStorage.setItem(ck, t); localStorage.removeItem(떠돌이[0]);
@@ -2097,12 +2099,24 @@
     // AI가 마크다운을 섞어도 화면엔 순수 글만 — 이미 구워진 캐시도 여기서 같이 씻긴다
     text = text.replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *-{3,} *$/gm, '').replace(/^ *[*•] +/gm, '');
     const parts = text.split(/(?=[①-⑳])/);
+    // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
+    const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
+    const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
+      t = t.trim(); if (!t) return '';
+      if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); return ''; }
+      return '<p>' + esc(t) + '</p>';
+    }).join('');
     const 머리 = parts[0] || '';
-    const html = ['<div class="nx-diag">' + 머리.split('\n').map(t => t.trim() ? '<p>' + esc(t) + '</p>' : '').join('') + '</div>'];
+    let 밀린 = [];
+    const html = ['<div class="nx-diag">' + 문단화(머리, 밀린) + '</div>'];
     parts.slice(1).forEach((chunk, i) => {
       const g = grades[i];
+      const 이번 = [];
+      const 본문 = 문단화(chunk, 이번);
+      밀린.forEach(h => html.push('<p class="hero-eyebrow" style="margin:20px 4px 2px">' + esc(h) + '</p>'));
+      밀린 = 이번;
       html.push('<div class="nx-diag" style="margin-top:10px">'
-        + chunk.split('\n').map(t => t.trim() ? '<p>' + esc(t) + '</p>' : '').join('')
+        + 본문
         + '<div class="gm-grade">'
         + ['y:맞다', 'm:애매', 'n:아니다'].map(o => { const [v, lb] = o.split(':');
             return '<button class="gmg' + (g === v ? ' on' : '') + '" data-i="' + i + '" data-v="' + v + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
