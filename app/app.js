@@ -1511,6 +1511,22 @@
       : { 연: m.연, 월: m.월, 간지: m.간지, 결: m.결 || null, 조용: true });
   }
 
+  /** 민력(협기) 대조를 한 서랍에 몰아넣는다.
+   *  달마다 여덟 줄씩 열두 달이면 백 줄이고, 그건 검산하는 사람의 줄이지
+   *  값을 치르고 읽는 사람의 줄이 아니다(2026-08-30 실물 확인). 근거는 버리지 않고 접는다. */
+  function 달력접기(달들) {
+    const 줄 = (달들 || []).map(m => {
+      const ds = (m.좋은날 || []).filter(d => d.협기);
+      if (!ds.length) return '';
+      return '<p class="pb-days"><b>' + m.월 + '월</b> <span class="pb-days-why">'
+        + ds.map(d => d.일 + '일 ' + esc(String(d.협기).replace('민력 ', ''))).join(' / ') + '</span></p>';
+    }).filter(Boolean).join('');
+    if (!줄) return '';
+    return '<details class="fold pb-fold"><summary>민력(협기) 대조 — 검산하실 분을 위해</summary>'
+      + '<p class="pb-days-why" style="margin:8px 0">흠정협기변방서의 건제12·황도흑도·신살로 같은 날을 다시 재어 본 것입니다. '
+      + '순위를 바꾸지는 않고, 어긋나는 자리가 있는지 대조만 합니다.</p>' + 줄 + '</details>';
+  }
+
   async function aiNarrate(box, kind, facts) {
     try {
       if (!window.ChaeksaAI || !AI.ready()) return;
@@ -1523,7 +1539,9 @@
       try { cached = localStorage.getItem(key); } catch (e) {}
       const el = document.createElement('div');
       el.className = 'pb-ai';
-      pb.appendChild(el);
+      // 답은 맨 위다. 자리가 마련돼 있으면 거기에, 아니면 예전처럼 뒤에 붙인다.
+      const slot = pb.querySelector('.pb-ai-slot');
+      (slot || pb).appendChild(el);
       const draw = (t) => {
         el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
           + String(t).split(/[\r\n]+/).filter(Boolean).map(발언줄).join('');
@@ -2482,16 +2500,19 @@
                  ${m.조심날.length ? `<p class="pb-avoid">비켜 갈 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판 금지)</span></p>` : ''}`
               : `<p class="pb-say">${esc(m.결)}</p>
                  ${m.좋은날.length ? `<p class="pb-days">${m.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${m.좋은날.map(d2 => `<b>${m.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">${esc(m.좋은날[0].왜 || '이 달 안의 서열')}${m.좋은날.length > 1 ? ' 등' : ''}</span></p>` : ''}
-                 ${m.좋은날.some(d2 => d2.협기) ? `<p class="pb-days"><span class="pb-days-why">${m.좋은날.filter(d2 => d2.협기).map(d2 => `${d2.일}일 ${esc(d2.협기.replace('민력 ', ''))}`).join(' / ')} — 민력(협기) 대조</span></p>` : ''}
                  ${m.시진무리.length ? `<p class="pb-days">그날 중에서도 — ${m.시진무리.map(g => `<b>${esc(g.시진)}</b>에 ${g.날들.join('·')}`).join(' / ')}</p>` : ''}
                  ${m.조심날.length ? `<p class="pb-avoid">조심할 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(배우자 자리를 치는 날 — 고백·상견례·담판은 피하세요)</span></p>` : ''}`}
           </div>`).join('');
+        // 민력 대조는 검산하는 사람의 줄이지 읽는 사람의 줄이 아니다 — 한 서랍에 몰아넣는다
+        const 민력 = 달력접기(rd.달들);
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
           <p class="pb-lede">다음 달부터 열두 달, ${rd.검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${rd.열린수
             ? `열리는 달이 <b>${rd.열린수}개</b> — 그 달들은 날짜와 시진까지 내렸습니다.`
             : '크게 열리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}</p>
+          <div class="pb-ai-slot"></div>
           ${rd.결론.length ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">책사의 판단 — 엔진이 이어 놓은 결론</p>${rd.결론.map(t => `<p class="pb-vd">◆ ${esc(t)}</p>`).join('')}</div>` : ''}
-          ${본문}
+          <details class="fold pb-fold"><summary>열두 달 전부 보기 — 달마다 날짜와 시각까지</summary>${본문}</details>
+          ${민력}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 배우자성이 하늘에 오는가(뿌리까지), 배우자 자리(일지)와 합·삼합·충인가, 도화·일간합·조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 열리는 해입니다 — 가까워지면 다시 보세요.` : ''} 시각은 태어나신 곳의 경도로 진태양시까지 보정해 잽니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'love', {
         자료집: T.dossier ? T.dossier(R, today) : null,
@@ -2569,17 +2590,19 @@
                  ${m.조심날.length ? `<p class="pb-avoid">비켜 갈 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손이 겹치는 날)</span></p>` : ''}`
               : `<p class="pb-say">${esc(m.결)}</p>
                  ${m.좋은날.length ? `<p class="pb-days">${m.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${m.좋은날.map(d2 => `<b>${m.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
-                 ${m.좋은날.some(d2 => d2.협기) ? `<p class="pb-days"><span class="pb-days-why">${m.좋은날.filter(d2 => d2.협기).map(d2 => `${d2.일}일 ${esc(d2.협기.replace('민력 ', ''))}`).join(' / ')} — 민력(협기) 대조</span></p>` : ''}
                  ${m.시진무리.length ? `<p class="pb-days">그날 중에서도 — ${m.시진무리.map(g => `<b>${esc(g.시진)}</b>에 ${g.날들.join('·')}`).join(' / ')}</p>` : ''}
                  ${m.조심날.length ? `<p class="pb-avoid">조심할 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}`}
           </div>`).join('');
+        const 민력 = 달력접기(rd.달들);
         return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
+          <div class="pb-ai-slot"></div>
           ${rd.결론.length ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">책사의 판단 — 엔진이 이어 놓은 결론</p>${rd.결론.map(t => `<p class="pb-vd">◆ ${esc(t)}</p>`).join('')}</div>` : ''}
           <p class="pb-lede">다음 달부터 열두 달, ${rd.검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${rd.열린수
             ? `돈이 도는 달이 <b>${rd.열린수}개</b> — 날짜와 시진까지 내렸습니다.`
             : '크게 벌리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}${rd.샘달들.length
             ? ` 붉은 표(${rd.샘달들.map(m => m + '월').join('·')})는 <b>새기 쉬운 달</b> — 동업·보증·큰 지출을 피하세요.` : ''}</p>
-          ${본문}
+          <details class="fold pb-fold"><summary>열두 달 전부 보기 — 달마다 날짜와 시각까지</summary>${본문}</details>
+          ${민력}
           <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가, 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 벌리는 해입니다 — 가까워지면 다시 보세요.` : ''} 되돌리기 어려운 계약 날은 후보를 여럿 두고 보세요 — 갈리는 자리는 원국 탭에 적어 두었습니다.</p></div>`;
       }, (bx) => aiNarrate(bx, 'wealth', {
         자료집: T.dossier ? T.dossier(R, today) : null,

@@ -545,6 +545,17 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 
 
 /* 서신을 기다리는 자리에도 장면을 둔다 */
+/* 유료 화면의 서랍 — 근거는 버리지 않고 접는다. 열어야 할 문처럼 보이게. */
+.pb-fold{margin:16px 0 0;border:1px solid var(--line);border-radius:13px;
+  background:var(--bg2);padding:0 13px}
+.pb-fold > summary{padding:12px 0;font-size:13px;color:var(--accent);font-weight:700;
+  letter-spacing:-.01em}
+.pb-fold[open]{padding-bottom:10px}
+.pb-fold[open] > summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+/* 답이 맨 위에 선다 — 값을 치른 자리에서 제일 먼저 보여야 할 것 */
+.pb-ai-slot:empty{display:none}
+.pb-ai-slot .pb-ai{margin:14px 0 4px}
+
 /* 회의록 — 누가 한 말인지 눈에 걸려야 회의로 읽힌다 */
 .gm-say{position:relative}
 .gm-num{color:var(--ink3);margin-right:6px;font-weight:700}
