@@ -1532,7 +1532,7 @@
       if (!window.ChaeksaAI || !AI.ready()) return;
       const pb = box.querySelector('.paidbox'); if (!pb) return;
       // v2 — 책사단으로 판이 바뀌었다. 옛 단일 화자 글은 한 번 다시 쓴다.
-      const key = 'chaeksa.storyai.v2.' + kind + '.'
+      const key = 'chaeksa.storyai.v3.' + kind + '.'
         + f.pillar(R.pillars.year) + f.pillar(R.pillars.month) + f.pillar(R.pillars.day)
         + '.' + today.toISOString().slice(0, 7);
       let cached = null;
