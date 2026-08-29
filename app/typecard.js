@@ -1501,6 +1501,64 @@
     return d;
   }
 
+  // ── 어떤 사람이 나를 사랑하는가 — 뒤집기 한 번의 명리 ──
+  //
+  // 나를 배우자감으로 보는 사람 = 내 배우자성 오행을 일간으로 타고난 사람.
+  // (여자를 재성으로 보는 남자 = 그녀의 관성 오행 일간 — 서로가 서로의 배우자성)
+  // 그 오행의 두 천간 중 음양이 다른 쪽은 정(반듯하게 오래), 같은 쪽은 편(강렬하게).
+  // 그리고 그중 한 글자는 반드시 내 일간과 합 — 서로 끌어당기는 짝이다.
+  // 전부 원국에서 나오는 결정 — 지어낸 것 없음.
+  const 다가옴_정 = '예의를 갖춰 천천히 다가옵니다. 오래 지켜보다가 확신이 서면 움직이는 쪽이라, 시작은 느려도 한번 곁에 서면 잘 안 떠납니다.';
+  const 다가옴_편 = '훅 들어옵니다. 재거나 돌려 말하지 않고, 강렬하게 끌리는 대로 움직이는 쪽이라 시작이 극적입니다 — 그만큼 온도 조절은 당신 몫입니다.';
+
+  function whoLovesMe(R) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
+    const 남 = ((R.input && R.input.gender) || 'M') === 'M';
+    const 오행 = 남 ? (de + 2) % 5 : (de + 3) % 5;   // 그 사람의 일간 오행 = 내 배우자성 오행
+    const 양간 = 오행 * 2, 음간 = 오행 * 2 + 1;
+    const 내양 = E.STEM_YANG[ds] === 1;
+    // 음양이 다르면 정(정관/정재 관계), 같으면 편
+    const 정간 = 내양 ? 음간 : 양간;
+    const 편간 = 내양 ? 양간 : 음간;
+    const 합간 = (ds + 5) % 10;                       // 내 일간을 합으로 끌어당기는 글자
+    const w = ELEM_PERSON[E.ELEM[오행]] || ['', '', []];
+
+    const 사람 = (st, 종류) => ({
+      천간: E.STEMS[st] + '(' + E.STEMS_KO[st] + ')',
+      종류,
+      다가옴: 종류 === '정' ? 다가옴_정 : 다가옴_편,
+      합: st === 합간,
+    });
+
+    // 내 매력 — 그들이 나의 무엇에 걸리는가: 내 일간의 결 + 도화
+    const 지들 = [p.year.branch, p.month.branch, db].concat(p.hour ? [p.hour.branch] : []);
+    const 도화지 = [DOHWA[p.year.branch], DOHWA[db]];
+    const 도화 = 지들.some(b => 도화지.indexOf(b) >= 0);
+    const 나의결 = ELEM_PERSON[E.ELEM[de]] || ['', ''];
+
+    // 곁에 남는 재료 — 배우자궁(일지) 지장간: 그 방에 이미 놓인 글자들
+    const 곁 = (E.HIDDEN[db] || []).map(st => ({
+      천간: E.STEMS[st] + '(' + E.STEMS_KO[st] + ')',
+      결: (ELEM_PERSON[E.ELEM[E.STEM_ELEM[st]]] || [''])[0],
+    }));
+
+    let 도착 = null;
+    try { 도착 = inyeonWhy(R); } catch (e) {}
+
+    return {
+      오행: E.ELEM[오행], 결이름: w[0], 결설명: w[1],
+      정: 사람(정간, '정'), 편: 사람(편간, '편'),
+      합간: E.STEMS[합간] + '(' + E.STEMS_KO[합간] + ')',
+      // 합이 배우자성과 겹치는 건 음간 여자·양간 남자뿐이다(합 쌍 = 양간과 그 정재).
+      // 양간 여자·음간 남자의 합 글자는 배우자성 밖 — 별도의 「끌림」으로 말해야 정직하다.
+      합별도: 합간 !== 정간 && 합간 !== 편간,
+      합이정인가: 합간 === 정간,
+      매력: { 결: 나의결[0], 설명: 나의결[1], 도화 },
+      곁, 도착상태: 도착 && 도착.상태, 도착말: 도착 ? 도착.말 : [],
+      배우자궁: E.BRANCHES[db] + '(' + E.BRANCHES_KO[db] + ')',
+    };
+  }
+
   // ── 판단서(reading) — 병목의 근원을 자르는 층 ──
   //
   // 이번에 겪은 병목 아홉 개(낱장 상태·월-일 모순·달-달 단절·화면과 AI 사실의
@@ -2849,5 +2907,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, reading, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, GOD_MEANING, reading, whoLovesMe, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);

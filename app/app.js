@@ -2169,11 +2169,48 @@
         $('dohwaSvg').innerHTML = T.drawDohwa(profile.name || '당신', v);
         const fl = $('dohwaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('dohwaWrap').classList.remove('hide');
-        { const nx = $('dohwaNext'); if (nx) nx.innerHTML = nextStep(
-          '올해, 어느 달에 움직일까요', '타고난 연애의 결까지',
-          '결은 평생 가는 것이라 해 단위로도 보입니다. 그런데 「언제 움직이는가」는 다릅니다 — 올해 열두 달 중 어느 달에 사람이 들어오고 어느 달이 조용한지는 월운까지 내려가야 나옵니다.',
-          (profile.name || '') + '님 연애 상담 — 올해 어느 달에 움직이는지 보고 싶습니다', 'inyeon',
-          T.inyeonWhy ? T.inyeonWhy(R).말 : null); }
+        { const nx = $('dohwaNext');
+          const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
+          if (nx && paid && T.whoLovesMe) {
+            // 유료 — 어떤 사람이 나를 사랑하는가. 뒤집기 한 번의 명리:
+            // 나를 배우자감으로 보는 사람 = 내 배우자성 오행의 일간.
+            const w = T.whoLovesMe(R);
+            const 사람절 = (인, 라벨) => `<div class="pb-dd${인.합 ? ' pb-open' : ''}">
+              <b>${esc(인.천간)}의 사람</b> <span class="pb-god">${esc(라벨)}</span>${인.합 ? ' <span class="pb-god">— 당신과 합</span>' : ''}
+              <p class="pb-why">◦ ${esc(인.다가옴)}</p>
+              ${인.합 ? `<p class="pb-say">이 글자는 당신의 일간을 곧장 끌어당기는 합입니다 — 서로가 서로를 알아보는 짝이라, 만나면 빠르게 가까워집니다.</p>` : ''}
+            </div>`;
+            nx.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — 어떤 사람이 당신을 사랑하는가</p>
+              <p class="pb-lede">당신을 배우자감으로 알아보는 사람의 글자는 원국이 정해 둡니다 —
+              당신의 배우자성 <b>${esc(w.오행)}</b>을 일간으로 타고난 사람입니다.
+              <b>${esc(w.결이름)}</b>: ${esc(w.결설명)}</p>
+              ${사람절(w.정, '반듯하게 오는 사람')}
+              ${사람절(w.편, '강렬하게 오는 사람')}
+              ${w.합별도 ? `<div class="pb-dd pb-open"><b>${esc(w.합간)}의 사람</b> <span class="pb-god">끌림의 글자</span>
+                <p class="pb-why">◦ 배우자성 밖의 글자인데도 당신의 일간을 곧장 끌어당기는 합입니다 — 조건으로는 설명이 안 되는데 자꾸 눈이 가는 사람이 있다면, 이 글자이기 쉽습니다.</p>
+                <p class="pb-say">머리로 고르는 인연은 위의 두 글자에서, 마음이 먼저 가는 인연은 이 글자에서 오기 쉽습니다.</p>
+              </div>` : ''}
+              <p class="pb-h"><b>그들은 당신의 무엇에 걸리는가</b></p>
+              <p class="pb-why">◦ 당신은 ${esc(w.매력.결)}의 사람 — ${esc(w.매력.설명)}</p>
+              ${w.매력.도화 ? `<p class="pb-why">◦ 게다가 원국에 도화(桃花)가 있어, 가만히 있어도 눈에 띄는 쪽입니다. 다가오는 사람이 먼저 생기는 구조입니다.</p>` : `<p class="pb-why">◦ 도화는 없는 원국이라 첫눈에 쏟아지는 쪽보다, 겪을수록 좋아지는 쪽입니다 — 오래 보는 자리에서 사랑받습니다.</p>`}
+              <p class="pb-h"><b>곁에 오래 남는 사람 — 배우자 방(${esc(w.배우자궁)})에 놓인 재료</b></p>
+              ${w.곁.map(c => `<p class="pb-why">◦ ${esc(c.천간)} — ${esc(c.결)}의 사람이 이 방에 오래 머뭅니다</p>`).join('')}
+              ${w.도착말.length ? `<p class="pb-h"><b>그 사랑이 당신에게 도착하는 방식</b></p>${w.도착말.slice(0, 2).map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')}` : ''}
+              <p class="pb-ft">잣대 공개 — 배우자성 오행의 일간(정·편은 음양으로), 일간합, 도화, 배우자궁 지장간. 전부 원국에서 나온 결정입니다. 「언제 오는가」는 인연이 오는 해·연애 스토리에 열려 있습니다.</p></div>`;
+            aiNarrate(nx, 'whom', {
+              자료집: T.dossier ? T.dossier(R, today) : null,
+              나를사랑하는사람: { 오행: w.오행, 결: w.결이름 + ' — ' + w.결설명,
+                정으로오는사람: w.정.천간 + ' · ' + w.정.다가옴,
+                편으로오는사람: w.편.천간 + ' · ' + w.편.다가옴,
+                합인글자: w.합간 + (w.합별도 ? ' — 배우자성 밖이지만 일간을 곧장 끌어당기는 끌림의 글자'
+                                   : (w.합이정인가 ? ' (반듯하게 오는 쪽이 합)' : ' (강렬하게 오는 쪽이 합)')) },
+              나의매력: w.매력, 곁에남는재료: w.곁, 도착방식: w.도착말,
+            });
+          } else if (nx) nx.innerHTML = nextStep(
+            '어떤 사람이 당신을 사랑하는지', '나는 어떤 사랑을 하는지까지',
+            '당신을 배우자감으로 알아보는 사람의 글자는 원국이 이미 정해 두었습니다 — 그리고 당신을 곧장 끌어당기는 합의 글자도요. 그 사람들이 어떤 결이고, 어떻게 다가오고, 당신의 무엇에 걸리는지까지 열립니다.',
+            (profile.name || '') + '님 연애 상담 — 어떤 사람이 저를 사랑하게 되는지 보고 싶습니다', 'inyeon',
+            T.inyeonWhy ? T.inyeonWhy(R).말 : null); }
         $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
         $('btnDohwaShare').onclick = async () => {
           const b = $('btnDohwaShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
