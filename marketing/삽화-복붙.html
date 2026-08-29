@@ -1,0 +1,104 @@
+<meta charset="utf-8">
+<title>삽화 24장 · 복붙 프롬프트</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+ :root{ --ink:#222; --sub:#888; --line:#e8e8e8; --pt:#8c4419; color-scheme:light; }
+ *{box-sizing:border-box}
+ body{margin:0;background:#f4f1ea;color:var(--ink);
+   font-family:"Noto Sans KR","Malgun Gothic",-apple-system,sans-serif}
+ .bar{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);
+   padding:14px 20px;z-index:9}
+ .bar b{font-size:15px}
+ .bar p{font-size:13px;color:var(--sub);margin:6px 0 0;line-height:1.6}
+ .wrap{max-width:860px;margin:20px auto;padding:0 14px 60px}
+ h2{font-size:17px;margin:34px 4px 6px}
+ h2 small{font-weight:400;color:var(--sub);font-size:13px}
+ .card{background:#fff;border:1px solid var(--line);border-radius:10px;
+   padding:14px 16px;margin:10px 0;display:flex;gap:12px;align-items:flex-start}
+ .card.done{opacity:.45}
+ .chk{margin-top:3px;transform:scale(1.25);flex-shrink:0}
+ .body{flex:1;min-width:0}
+ .fn{font-size:14px;font-weight:700;font-family:ui-monospace,Consolas,monospace}
+ .ko{font-size:12.5px;color:var(--sub);margin:2px 0 8px}
+ .pr{font-size:12px;line-height:1.55;color:#555;background:#faf8f4;border:1px solid #eee7da;
+   border-radius:6px;padding:9px 11px;max-height:76px;overflow:hidden;position:relative}
+ .pr.open{max-height:none}
+ .btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+ button{border:0;border-radius:6px;padding:9px 14px;font-size:13px;font-weight:700;
+   cursor:pointer;font-family:inherit}
+ .copy{background:var(--pt);color:#fff;min-width:86px}
+ .copy.ok{background:#2c6e49}
+ .more{background:#eee;color:#555;font-weight:400;font-size:12px}
+ .prog{font-weight:700;color:var(--pt)}
+</style>
+
+<div class="bar">
+  <b>삽화 24장 — 복사 → 이미지 생성기에 붙여넣기 → 그대로 저장</b> <span class="prog" id="prog"></span>
+  <p>버튼 한 번이 프롬프트 전체(인물 고정 문구 포함)입니다. 나온 그림은 <b>파일명 그대로</b>
+  <code>app/art/</code>에 저장하세요(webp 권장, png면 알려주세요). 글자·낙관이 그림에 들어가면 다시 뽑으세요.
+  연애 12장은 <b>한 채팅방에서 연속으로</b> 뽑아야 같은 남자로 나옵니다. 다 넣고 「그림 넣었어」 한마디면 제가 스위치를 켭니다.</p>
+</div>
+
+<div class="wrap" id="list"></div>
+
+<script>
+const LOCK = `An original male character (not based on any existing character or real person): a tall, strikingly handsome man in his late 20s, jet-black slightly tousled hair, sharp jawline, intense grey eyes, broad shoulders, quiet aristocratic aura. Rendered in the style of 2020s Korean romance-fantasy webtoon cover art — soft painterly shading, luminous skin, cinematic lighting, emotional atmosphere. Wide panoramic 3:1 composition, character on one side leaving negative space, no text, no letters. `;
+const STYLE = `A wide panoramic illustration (3:1 ratio) in the style of modern Korean webtoon backgrounds mixed with traditional East Asian ink-wash sensibility. Soft hanji-paper texture, muted elegant palette, generous negative space, no people, no text, no letters, dreamy and emotional atmosphere, 2020s Korean illustration aesthetic. Horizontal composition with the main subject slightly off-center. `;
+
+const ITEMS = [
+['love-open-spring.webp','연애 · 열리는 달 · 봄 — 그가 다가온다',LOCK+`Under a canopy of falling cherry blossom petals, he turns toward the viewer with a faint knowing smile, one hand slightly extended as if inviting, white shirt with rolled sleeves, warm pink spring light.`],
+['love-open-summer.webp','연애 · 열리는 달 · 여름',LOCK+`In warm summer evening light by the water, he leans against a railing looking directly at the viewer with soft amusement, linen shirt open at the collar, fireflies rising, teal and gold dusk.`],
+['love-open-autumn.webp','연애 · 열리는 달 · 가을',LOCK+`Walking through falling maple leaves in a long dark coat, he glances back over his shoulder at the viewer, autumn wind lifting his hair, amber afternoon light, cinematic and warm.`],
+['love-open-winter.webp','연애 · 열리는 달 · 겨울 — 북부 대공',LOCK+`A northern grand duke in a black fur-lined cloak with silver clasps standing in falling snow, he removes one glove and reaches toward the viewer, red camellia blooming behind him, indigo dusk, breathtaking.`],
+['love-shake-spring.webp','연애 · 흔들리는 달 · 봄 — 스치고 어긋남',LOCK+`A sudden spring gust tears petals between him and the viewer, he half-turns away, coat flaring, expression unreadable, bittersweet pale pink and grey tones, distance in the air.`],
+['love-shake-summer.webp','연애 · 흔들리는 달 · 여름',LOCK+`First raindrops of a summer storm, he stands with wet hair looking down, jaw tight, holding back words, moody teal and slate tones, tension and longing.`],
+['love-shake-autumn.webp','연애 · 흔들리는 달 · 가을',LOCK+`Leaves swirling hard around him on an empty road, his back to the viewer, one hand clenched at his side, burnt orange and ash tones, the moment before turning around — or not.`],
+['love-shake-winter.webp','연애 · 흔들리는 달 · 겨울',LOCK+`Snow flurry in the wind, the grand duke's fur cloak whipping, he looks away toward the horizon with a pained profile, cold indigo tones with one deep red camellia petal flying past.`],
+['love-quiet-spring.webp','연애 · 조용한 달 · 봄 — 기다림',LOCK+`Night by a still spring river, he sits on traditional wooden steps under a crescent moon, quietly turning a single unopened blossom in his fingers, calm lavender night, patient and tender.`],
+['love-quiet-summer.webp','연애 · 조용한 달 · 여름',LOCK+`A calm summer night, he reads by lantern light near an open window, moths of light drifting, one seat empty beside him, deep teal tones, serene waiting.`],
+['love-quiet-autumn.webp','연애 · 조용한 달 · 가을',LOCK+`Full moon over silver grass, he stands with hands in coat pockets gazing at the moon in profile, breath visible in cool air, warm grey and pale gold, contemplative.`],
+['love-quiet-winter.webp','연애 · 조용한 달 · 겨울',LOCK+`The grand duke by a frost-covered window inside a warm study, fireplace glow on his face, looking out at falling snow with quiet longing, indigo night outside, amber warmth inside.`],
+['wealth-open-spring.webp','재물 · 벌리는 달 · 봄 — 곳간이 찬다',STYLE+`A traditional Korean brass bowl holding sprouting green seedlings and a few old Korean coins catching spring light, plum petals on the table, fresh green and gold tones, abundance beginning.`],
+['wealth-open-summer.webp','재물 · 벌리는 달 · 여름',STYLE+`Lush green rice paddies in summer sun, heavy with growth, a stream of clear water flowing in, vivid jade and gold-green tones, vigorous prosperity.`],
+['wealth-open-autumn.webp','재물 · 벌리는 달 · 가을',STYLE+`Golden rice stalks bowing heavy with grain at harvest, traditional Korean earthenware jars full beside them, warm amber and gold tones, rich harvest satisfaction.`],
+['wealth-open-winter.webp','재물 · 벌리는 달 · 겨울',STYLE+`A warm-lit traditional Korean storeroom seen from snowy outside, stacked grain sacks and jars glimpsed through the door, warm lantern gold against indigo snow night, secure abundance.`],
+['wealth-leak-spring.webp','재물 · 새는 달 · 봄 — 금 간 항아리',STYLE+`A tilted clay jar with a thin crack, water trickling out onto spring soil where petals float away on the rivulet, muted pink and grey tones, gentle warning.`],
+['wealth-leak-summer.webp','재물 · 새는 달 · 여름',STYLE+`A wooden water gate slightly open, paddy water quietly draining out of a rice field, overcast summer light, muted teal and grey tones, quiet loss.`],
+['wealth-leak-autumn.webp','재물 · 새는 달 · 가을',STYLE+`A grain sack with a small tear, grains spilling in a thin golden stream carried by autumn wind, sparrows gathering, amber and ash tones, cautionary.`],
+['wealth-leak-winter.webp','재물 · 새는 달 · 겨울',STYLE+`A cracked frozen jar in snow, ice pushing through the crack, cold indigo tones, stark but beautiful warning.`],
+['wealth-quiet-spring.webp','재물 · 조용한 달 · 봄 — 밭을 준비한다',STYLE+`Freshly plowed dark field rows with tiny green sprouts just emerging, morning mist, soft green and earth-brown tones, patient beginning.`],
+['wealth-quiet-summer.webp','재물 · 조용한 달 · 여름',STYLE+`A shaded traditional Korean courtyard at summer noon, a broom leaning on a wall, earthenware jars sealed and resting in a row, deep green shade tones, quiet diligence.`],
+['wealth-quiet-autumn.webp','재물 · 조용한 달 · 가을',STYLE+`An emptied field after harvest with neat straw bundles, low golden sun, warm brown tones, restful completion.`],
+['wealth-quiet-winter.webp','재물 · 조용한 달 · 겨울',STYLE+`Seeds stored in small hemp pouches on a wooden shelf, frost on the window, muted indigo and warm wood tones, saving for spring.`],
+];
+
+const KEY='chaeksa.art.done';
+const done=new Set(JSON.parse(localStorage.getItem(KEY)||'[]'));
+const list=document.getElementById('list');
+let lastSec='';
+ITEMS.forEach(([fn,ko,pr],i)=>{
+  const sec=fn.startsWith('love')?'연애 12장 — 같은 채팅방에서 연속으로 (같은 남자여야 합니다)':'재물 12장 — 사람 없는 풍경';
+  if(sec!==lastSec){ lastSec=sec; const h=document.createElement('h2');
+    h.innerHTML=sec.replace(/ — (.+)/,' <small>— $1</small>'); list.appendChild(h); }
+  const d=document.createElement('div'); d.className='card'+(done.has(fn)?' done':'');
+  d.innerHTML=`<input type="checkbox" class="chk" ${done.has(fn)?'checked':''}>
+    <div class="body"><div class="fn">${fn}</div><div class="ko">${ko}</div>
+    <div class="pr">${pr}</div>
+    <button class="more">프롬프트 전체 보기</button></div>
+    <div class="btns"><button class="copy">복사</button></div>`;
+  d.querySelector('.chk').onchange=e=>{ e.target.checked?done.add(fn):done.delete(fn);
+    localStorage.setItem(KEY,JSON.stringify([...done])); d.classList.toggle('done',e.target.checked); prog(); };
+  d.querySelector('.more').onclick=e=>{ const el=d.querySelector('.pr');
+    el.classList.toggle('open'); e.target.textContent=el.classList.contains('open')?'접기':'프롬프트 전체 보기'; };
+  d.querySelector('.copy').onclick=async e=>{
+    try{ await navigator.clipboard.writeText(pr); }
+    catch(err){ const t=document.createElement('textarea'); t.value=pr; document.body.appendChild(t);
+      t.select(); document.execCommand('copy'); t.remove(); }
+    e.target.textContent='복사됨'; e.target.classList.add('ok');
+    setTimeout(()=>{ e.target.textContent='복사'; e.target.classList.remove('ok'); },1800);
+  };
+  list.appendChild(d);
+});
+function prog(){ document.getElementById('prog').textContent=' · '+done.size+' / 24 완료'; }
+prog();
+</script>
