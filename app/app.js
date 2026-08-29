@@ -2122,10 +2122,28 @@
             return '<button class="gmg' + (g === v ? ' on' : '') + '" data-i="' + i + '" data-v="' + v + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
         + '</div></div>');
     });
+    const 전체문 = parts.length - 1;
     const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
-    html.push('<p class="pb-ft">채점 ' + answered + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + Object.values(grades).filter(v => v === 'n').length
-      + '. 이 성적은 기기에 남고, 잣대를 벼리는 데 쓰입니다.</p>');
+    const misses = Object.values(grades).filter(v => v === 'n').length;
+    html.push('<p class="pb-ft">채점 ' + answered + ' / ' + 전체문 + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + misses
+      + '. 이 성적은 남고, 잣대를 벼리는 데 쓰입니다.</p>');
+    // ── 채점의 끝에는 문이 있어야 한다 (2026-08-30 「맞다 해놓고 끝이야 그럼?」) ──
+    // 신뢰의 정점이 전환의 순간이다: 과거를 맞힌 잣대 → 「그래서 언제인가」.
+    if (answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
+      const 머리말 = misses === 0 && answered === 전체문
+        ? 전체문 + '문 전부 맞았습니다 — 이 잣대가 당신에게 맞습니다.'
+        : hits + '문이 맞았습니다.' + (misses ? ' 빗나간 ' + misses + '문은 그대로 성적표에 남습니다 — 그것까지가 이 집의 방식입니다.' : '');
+      html.push('<div class="nx-diag pbd" style="margin-top:14px">'
+        + '<p class="nx-diag-k">채점을 마치셨습니다</p>'
+        + '<p>' + 머리말 + ' 지나온 해를 이만큼 짚은 잣대라면, 다음 물음은 하나입니다 — <b>「그래서 언제인가」</b>. 같은 잣대로 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
+        + '<button class="btn" id="gmNextLove">나의 사랑 이야기 — 다음 장 열기</button>'
+        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">나의 재물 이야기 열기</button>'
+        + '</div>');
+    }
     el.innerHTML = html.join('');
+    const nl = el.querySelector('#gmNextLove'), nm = el.querySelector('#gmNextMoney');
+    if (nl) nl.onclick = () => go('lovestory');
+    if (nm) nm.onclick = () => go('moneystory');
     el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
       grades[b.dataset.i] = b.dataset.v;
       localStorage.setItem(gradeKey, JSON.stringify(grades));
