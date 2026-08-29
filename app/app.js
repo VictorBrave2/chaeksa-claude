@@ -1502,6 +1502,15 @@
   // 숫자는 프롬프트가 막는다(사실 밖 언급 금지) — 지어내면 위의 표와 어긋나 바로 들킨다.
   // 같은 사주·같은 달엔 캐시를 쓴다: 원가는 상품당 한 번 ~10원.
   // AI 가 안 되면(비로그인·한도·장애) 조용히 뺀다 — 규칙 화면만으로 완결이다.
+  /** 열두 달을 통째로 보내면 재료가 1만 토큰을 넘어 시간 안에 못 끝난다.
+   *  열리는 달만 온전히 주고, 조용한 달은 한 줄로 줄인다 — 어차피 「줄이는 것」이 이 글의 일이다. */
+  function 달줄이기(달들) {
+    if (!Array.isArray(달들)) return 달들;
+    return 달들.map(m => (m && (m.열림 || m.상태 === 'open'))
+      ? m
+      : { 연: m.연, 월: m.월, 간지: m.간지, 결: m.결 || null, 조용: true });
+  }
+
   async function aiNarrate(box, kind, facts) {
     try {
       if (!window.ChaeksaAI || !AI.ready()) return;
@@ -1521,11 +1530,18 @@
       };
       if (cached) { draw(cached); return; }
       el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">위 계산을 놓고 책사단이 의논하는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
+      if (facts && facts.열두달) facts = Object.assign({}, facts, { 열두달: 달줄이기(facts.열두달) });
       const out = await AI.storyTell(kind, facts);
       try { localStorage.setItem(key, out); } catch (e) {}
       draw(out);
     } catch (e) {
-      const el = box.querySelector('.pb-ai'); if (el) el.remove();
+      // 조용히 지우면 왜 안 나오는지 아무도 모른다(2026-08-30 「그대로인데?」).
+      // 규칙 화면만으로도 완결이므로 크게 벌리지는 않되, 흔적은 남긴다.
+      try { console.warn('책사단 서술 실패:', e); } catch (e2) {}
+      const el = box.querySelector('.pb-ai');
+      if (el) el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
+        + '<p class="pb-ai-load">지금은 의논을 옮겨 적지 못했습니다 — 위 계산은 그대로 유효합니다. '
+        + '잠시 뒤 이 화면을 다시 열어 주세요.</p>';
     }
   }
 
