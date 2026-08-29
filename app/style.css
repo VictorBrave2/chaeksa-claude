@@ -6,20 +6,20 @@
 /* ───────── 낮: 아침 한지 (기본) ───────── */
 :root{
   --body-bg:
-    radial-gradient(120% 55% at 50% -12%, rgba(212,165,116,.20), transparent 62%),
-    radial-gradient(90% 45% at 88% 108%, rgba(179,86,46,.07), transparent 60%),
-    linear-gradient(180deg,#faf7f0 0%,#f5eee0 100%);
-  --bg:#f7f2e8; --bg2:#fbf7ee; --card:#fffdf8; --card2:#fffefb;
-  --line:#e8dcc6; --line2:#dbcbad;
-  --ink:#332c23; --ink2:#6b6154; --ink3:#a0937d;
-  --accent:#b3562e; --accent2:#c9673c; --accent-soft:rgba(179,86,46,.09); --accent-line:rgba(179,86,46,.28);
-  --seal-bg:linear-gradient(145deg,#c4603a,#9b4123); --seal-ink:#fdf6ec;
-  --wood:#4f8f5c; --fire:#c4573b; --earth:#a8802f; --metal:#7a7870; --water:#3d7fae;
-  --g3-bg:#f4e3c1; --g3-ink:#8c4419; --g2-bg:#e4eedf; --g0-bg:#f5ded6; --g0-ink:#9c5344;
+    radial-gradient(120% 55% at 50% -12%, rgba(122,104,168,.16), transparent 62%),
+    radial-gradient(90% 45% at 88% 108%, rgba(163,35,56,.05), transparent 60%),
+    linear-gradient(180deg,#fbf9fa 0%,#f4eff2 100%);
+  --bg:#f6f3f4; --bg2:#fbf9fa; --card:#fffdfe; --card2:#fffeff;
+  --line:#e7dfe4; --line2:#d6c9d1;
+  --ink:#241f33; --ink2:#544b60; --ink3:#786d84;
+  --accent:#a32338; --accent2:#bd3b50; --accent-soft:rgba(163,35,56,.075); --accent-line:rgba(163,35,56,.26);
+  --seal-bg:linear-gradient(145deg,#dcb765,#a8791f); --seal-ink:#241f33;
+  --wood:#4a8560; --fire:#b13a48; --earth:#a07c3a; --metal:#7b7686; --water:#4272a6;
+  --g3-bg:#f3e6c6; --g3-ink:#7d4a1c; --g2-bg:#e3ece2; --g0-bg:#f6dde2; --g0-ink:#973f52;
   --g3:#c98b3f; --g2:#6ba272; --g1:#c4bba8; --g0:#c07060;
-  --shadow:0 3px 16px rgba(120,90,40,.07);
-  --shadow-lift:0 8px 26px rgba(120,90,40,.11);
-  --nav-bg:rgba(255,253,248,.90); --nav-shadow:0 8px 28px rgba(120,90,40,.16);
+  --shadow:0 3px 16px rgba(60,40,80,.07);
+  --shadow-lift:0 8px 26px rgba(60,40,80,.12);
+  --nav-bg:rgba(255,253,254,.90); --nav-shadow:0 8px 28px rgba(60,40,80,.15);
   --sky:radial-gradient(circle at 35% 32%, #ffe9b8, #f0b95e);
   --sky-glow:0 0 34px rgba(240,185,94,.45);
   --serif:"Noto Serif KR","Apple Myungjo","Batang",serif;
@@ -40,19 +40,19 @@
 /* ───────── 밤: 새벽 인디고 ───────── */
 :root[data-theme="night"]{
   --body-bg:
-    radial-gradient(100% 45% at 50% -8%, rgba(233,216,166,.10), transparent 60%),
-    linear-gradient(180deg,#111527 0%,#191f38 52%,#212847 100%);
-  --bg:#141829; --bg2:#1d2440; --card:#1a2038; --card2:#202742;
-  --line:#2b3355; --line2:#3c476e;
-  --ink:#e9ebf6; --ink2:#a9b0d1; --ink3:#7a82a8;
-  --accent:#e9d8a6; --accent2:#cbb87e; --accent-soft:rgba(233,216,166,.11); --accent-line:rgba(233,216,166,.28);
-  --seal-bg:linear-gradient(145deg,#f2e2b4,#c2a869); --seal-ink:#191f38;
-  --wood:#7cc487; --fire:#f0a08e; --earth:#e9d8a6; --metal:#dfe3ef; --water:#8cc4ea;
-  --g3-bg:#3c3f6b; --g3-ink:#f4e6bd; --g2-bg:#203b3c; --g0-bg:#3d2739; --g0-ink:#e5a8a8;
+    radial-gradient(100% 45% at 50% -8%, rgba(230,201,138,.11), transparent 60%),
+    linear-gradient(180deg,#121030 0%,#1b1840 52%,#241f4d 100%);
+  --bg:#161433; --bg2:#221f45; --card:#1c1a3c; --card2:#242147;
+  --line:#302c5c; --line2:#443f76;
+  --ink:#eeeaf7; --ink2:#b6aed4; --ink3:#8f87b3;
+  --accent:#e6c98a; --accent2:#cbab63; --accent-soft:rgba(230,201,138,.11); --accent-line:rgba(230,201,138,.30);
+  --seal-bg:linear-gradient(145deg,#f0d79b,#bb9445); --seal-ink:#1c1a3c;
+  --wood:#7cc487; --fire:#ef95a4; --earth:#e6c98a; --metal:#ddd9ef; --water:#8cbcea;
+  --g3-bg:#3b3670; --g3-ink:#f4e6bd; --g2-bg:#233b3f; --g0-bg:#412540; --g0-ink:#e7a3b0;
   --g3:#e9d8a6; --g2:#7cc487; --g1:#4a5378; --g0:#c98080;
   --shadow:0 6px 22px rgba(0,0,0,.30);
   --shadow-lift:0 12px 34px rgba(0,0,0,.42);
-  --nav-bg:rgba(26,32,56,.88); --nav-shadow:0 10px 30px rgba(0,0,0,.5);
+  --nav-bg:rgba(28,26,60,.88); --nav-shadow:0 10px 30px rgba(0,0,0,.5);
   --sky:radial-gradient(circle at 35% 34%, #f6f2e0, #cfc7a6);
   --sky-glow:0 0 30px rgba(244,240,221,.42);
   --hero-bg:#0d1122; --hero-ink:#e9ebf6;
@@ -93,11 +93,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:4px
   box-shadow:var(--shadow);position:relative;z-index:1;
 }
 .card h2{
-  font-family:var(--serif);font-size:var(--t4);font-weight:700;color:var(--ink);
+  font-family:var(--letter);font-size:var(--t4);font-weight:700;color:var(--ink);
   letter-spacing:-.015em;margin-bottom:var(--s2);
   display:flex;align-items:baseline;gap:10px;
 }
-.card h3{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+.card h3{font-family:var(--letter);font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
 
 /* ───── 온보딩 ───── */
 .hero{text-align:center;padding:16px 0 20px}

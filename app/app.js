@@ -37,7 +37,7 @@
     const night = mode === 'night' || (mode === 'auto' && isNightHour(new Date()));
     document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
     const btn = $('btnTheme'); if (btn) { btn.textContent = night ? '☾' : '☀'; btn.title = night ? '밤 · 새벽 (눌러서 낮으로)' : '낮 · 한지 (눌러서 밤으로)'; }
-    const meta = $('metaTheme'); if (meta) meta.setAttribute('content', night ? '#141829' : '#f7f2e8');
+    const meta = $('metaTheme'); if (meta) meta.setAttribute('content', night ? '#161433' : '#f6f3f4');
     const seg = $('themeSeg'); if (seg) seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === mode));
   }
   function setTheme(mode) { localStorage.setItem(TKEY, mode); applyTheme(); }

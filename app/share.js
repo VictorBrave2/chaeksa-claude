@@ -1,14 +1,16 @@
-/* 책사 공유 카드 v1 — 원국을 이미지로 (canvas)
- * 브랜드 일관성을 위해 카드는 항상 '아침 한지' 색으로 그린다.
+/* 책사 공유 카드 v2 — 원국을 이미지로 (canvas)
+ * 카드는 항상 「밤의 궁」으로 그린다. 공유 카드는 남의 대화창에 놓이는 물건이라,
+ * 흰 바탕은 그 창에 묻히고 남보라+금은 눈에 걸린다. 삽화 48장과도 같은 세계다.
+ * (2026-08-30 공주님 원칙 · docs/21 — 잣대 4「캡처해서 보내고 싶은가」)
  */
 (function (global) {
   'use strict';
   const E = global.ChaeksaEngine, f = E.fmt;
   const W = 1080, H = 1350;
   const C = {
-    bg:'#f7f2e8', card:'#fffdf8', ink:'#332c23', ink2:'#6b6154', ink3:'#a0937d',
-    acc:'#b3562e', accSoft:'#f4e9de', line:'#e8dcc6', line2:'#dbcbad', sealInk:'#fdf6ec',
-    wood:'#4f8f5c', fire:'#c4573b', earth:'#a8802f', metal:'#7a7870', water:'#3d7fae',
+    bg:'#161433', card:'#1c1a3c', ink:'#eeeaf7', ink2:'#b0a8cf', ink3:'#827aa4',
+    acc:'#e6c98a', accSoft:'#2a2550', line:'#302c5c', line2:'#443f76', sealInk:'#1c1a3c',
+    wood:'#7cc487', fire:'#ef95a4', earth:'#e6c98a', metal:'#ddd9ef', water:'#8cbcea',
   };
   const SERIF = '"Gowun Batang","Noto Serif KR",serif';
   const HAN = '"Noto Serif KR",serif';
@@ -38,13 +40,13 @@
     // 배경 + 상단 광
     ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
     const g = ctx.createLinearGradient(0, 0, 0, 380);
-    g.addColorStop(0, 'rgba(212,165,116,.30)'); g.addColorStop(1, 'rgba(212,165,116,0)');
+    g.addColorStop(0, 'rgba(230,201,138,.16)'); g.addColorStop(1, 'rgba(230,201,138,0)');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, 380);
 
     // 헤더 — 인장
     const sx = 72, sy = 74, ss = 96;
     const sg = ctx.createLinearGradient(sx, sy, sx + ss, sy + ss);
-    sg.addColorStop(0, '#c4603a'); sg.addColorStop(1, '#9b4123');
+    sg.addColorStop(0, '#f0d79b'); sg.addColorStop(1, '#bb9445');
     ctx.fillStyle = sg; roundRect(ctx, sx, sy, ss, ss, 20); ctx.fill();
     center(ctx, '策', sx + ss / 2, sy + 70, `900 62px ${HAN}`, C.sealInk);
     ctx.textAlign = 'left';
