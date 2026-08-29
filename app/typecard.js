@@ -1689,7 +1689,38 @@
     let 도착 = null;
     try { 도착 = inyeonWhy(R); } catch (e) {}
 
+    // ── 진정한 사랑 — 다단 추론 ──
+    // 배우자궁에 앉은 글자(지장간 본기)가 배우자의 일간이다. 그 글자를 합으로
+    // 데려오는 방아쇠 천간이 하늘에 오는 해, 그 일간의 사람이 방으로 들어온다.
+    // 丁卯: 궁본기 乙 → 방아쇠 庚(乙庚합) → 庚은 丁의 정재이기도 — 궁과 성이
+    // 맞물린 사주라 이 사슬이 두 겹으로 조인다.
+    let 진사랑 = null;
+    try {
+      const 궁본기 = (E.HIDDEN[db] || [])[0];
+      if (궁본기 != null) {
+        const 방아쇠 = (궁본기 + 5) % 10;
+        const 방아쇠가성 = E.STEM_ELEM[방아쇠] === 오행;
+        const 궁십신 = E.TEN_GODS[E.tenGod(ds, 궁본기)];
+        const nowY = new Date().getFullYear();
+        const 해들 = [];
+        for (let y = nowY; y <= nowY + 8 && 해들.length < 3; y++) {
+          try { if (E.dateFortune(y, 6, 15).year.stem === 방아쇠) 해들.push(y); } catch (e) {}
+        }
+        진사랑 = {
+          궁: E.BRANCHES[db] + '(' + E.BRANCHES_KO[db] + ')',
+          글자: E.STEMS[궁본기] + '(' + E.STEMS_KO[궁본기] + ')',
+          일간말: E.STEMS[궁본기] + E.ELEM[E.STEM_ELEM[궁본기]] + ' 일간',
+          인물: STEM_PERSON[궁본기] || '',
+          십신: 궁십신, 십신뜻: GOD_MEANING[궁십신] || '',
+          방아쇠글자: E.STEMS[방아쇠] + '(' + E.STEMS_KO[방아쇠] + ')',
+          맞물림: 방아쇠가성,
+          해들,
+        };
+      }
+    } catch (e) {}
+
     return {
+      진사랑,
       오행: E.ELEM[오행], 결이름: w[0], 결설명: w[1],
       정: 사람(정간, '정'), 편: 사람(편간, '편'),
       합간: E.STEMS[합간] + '(' + E.STEMS_KO[합간] + ')',
@@ -1788,6 +1819,23 @@
     const 삼합해 = 해들(r => r.세부 && r.세부.삼합완성);
     if (삼합해.length) 문.push('가장 큰 응기 — ' + 삼합해.join('·') + '년에는 대운과 세운이 당신의 배우자 자리('
       + E.BRANCHES[db] + ')와 삼합 한 벌을 완성합니다. 고전이 꼽는 혼인의 해입니다.');
+    // 4.5) 진정한 사랑 결론 — 배우자궁에 앉은 글자와 그를 데려오는 방아쇠
+    try {
+      const 궁본기 = (E.HIDDEN[db] || [])[0];
+      if (궁본기 != null) {
+        const 방아쇠 = (궁본기 + 5) % 10;
+        const 방아쇠해 = [];
+        for (let y = nowY; y <= nowY + 8 && 방아쇠해.length < 2; y++) {
+          try { if (E.dateFortune(y, 6, 15).year.stem === 방아쇠) 방아쇠해.push(y); } catch (e) {}
+        }
+        const 맞물림 = E.STEM_ELEM[방아쇠] === 오행;
+        문.push('배우자 방의 결론 — 당신의 배우자 자리 ' + E.BRANCHES[db] + '에 앉은 글자는 '
+          + E.STEMS[궁본기] + '(' + E.STEMS_KO[궁본기] + '). 진정한 사랑은 ' + E.STEMS[궁본기]
+          + E.ELEM[E.STEM_ELEM[궁본기]] + ' 일간의 사람이기 쉽습니다. 그 글자를 합으로 데려오는 방아쇠는 '
+          + E.STEMS[방아쇠] + (맞물림 ? ' — 당신의 ' + 이름 + '이기도 해서 궁과 성이 맞물린 사주입니다' : '')
+          + (방아쇠해.length ? '. ' + 방아쇠해.join('·') + '년에 그 사람이 방으로 들어오기 쉽습니다.' : '.'));
+      }
+    } catch (e) {}
     // 5) 원국 궁충이 세운 합으로 잠시 묶이는 해 — 흔들리는 원국의 숨구멍
     const 치는지 = [p.year.branch, p.month.branch].concat(p.hour ? [p.hour.branch] : [])
       .find(b => ((b - db + 12) % 12) === 6);
