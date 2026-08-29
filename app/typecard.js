@@ -437,9 +437,9 @@
       if (YUKHAP[db] === yb) { s += 26; 이유.push('배우자 자리와 육합 — 곁이 채워지는 해입니다'); }
       else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(yb) >= 0 && db !== yb)) {
         s += 20; 이유.push('배우자 자리와 삼합 — 같이 굴러가는 해입니다');
-      } else if (충(db, yb) || 충(yb, db)) {
-        s -= 22; 이유.push('배우자 자리가 흔들립니다 — 정리되는 쪽일 수 있습니다');
       }
+      // 충 배제(제23조, 2026-08-29): 「흉한 글자가 충당하면 흉함이 적고 길한 글자가
+      // 충당하면 흉함이 생긴다 — 경우의 수가 많아 그냥 배제한다. 충일 수도 아닐 수도 있다」
       // 대운은 십 년을 물들인다
       if (du && E.STEM_ELEM[du.stem] === 배우자오행) { s += 16; 이유.push('지금 대운 자체가 인연 쪽으로 기울어 있습니다'); }
       if (du && (YUKHAP[db] === du.branch)) { s += 10; 이유.push('대운의 자리도 배우자 자리와 합입니다'); }
@@ -582,7 +582,7 @@
     if (YUKHAP[db] === mb) { s += 22; 이유.push('배우자 자리와 합입니다'); }
     else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(mb) >= 0 && db !== mb)) {
       s += 16; 이유.push('배우자 자리와 삼합입니다');
-    } else if (((mb - db + 12) % 12) === 6) { s -= 30; 이유.push('배우자 자리가 흔들립니다'); }
+    }   // 충 배제 — 제23조
 
     // 강약에 맞는 쪽인가 — 신약이면 인성·비겁, 신강이면 식상·재성·관성
     const g = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
@@ -687,7 +687,7 @@
       if (YUKHAP12[db] === mb) { sc += 26; 이유.push('배우자 자리와 합 — 곁이 채워지는 달입니다'); }
       else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(mb) >= 0 && db !== mb)) {
         sc += 20; 이유.push('배우자 자리와 삼합 — 같이 움직이게 되는 달입니다');
-      } else if (충12(db, mb)) { sc -= 22; 이유.push('배우자 자리가 흔들리는 달 — 새 시작보다 정리가 되는 쪽입니다'); }
+      }   // 충 배제 — 제23조
       rows.push({ 월: m, 간지: E.fmt.pillar(tf.month), 점수: Math.max(0, Math.min(100, sc)),
                   십신, 결: INYEON_GOD[십신] || '', 이유 });
     }
@@ -834,7 +834,7 @@
       const dbb = tf.day.branch;
       if (YUKHAP12[db] === dbb) { sc += 3; why.push('배우자 자리와 합'); }
       else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(dbb) >= 0 && db !== dbb)) { sc += 2; why.push('배우자 자리와 삼합'); }
-      else if (충12(db, dbb)) { sc -= 3; why.push('배우자 자리를 치는 날'); }
+      // 충 배제 — 제23조
       all.push({ 일: d, 요일: '일월화수목금토'[new Date(year, m - 1, d).getDay()],
                  간지: E.fmt.pillar(tf.day), 왜: why.join(' · '), sc, 협기: 협기줄(tf, '혼인') });
     }
@@ -853,7 +853,6 @@
         if (E.STEM_ELEM[hs] === 배우자오행) v += 3;
         if (YUKHAP12[db] === hb) v += 3;
         else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(hb) >= 0 && db !== hb)) v += 2;
-        else if (충12(db, hb)) v -= 3;
         return v;
       }, tf);
     });
@@ -978,11 +977,10 @@
     if (YUKHAP12[db] === yb) { sc += 24; 세부.관계 = '육합'; 이유.push('배우자 자리와 합'); }
     else if (SAM12.some(g => g.indexOf(db) >= 0 && g.indexOf(yb) >= 0 && db !== yb)) {
       sc += 18; 세부.관계 = '삼합'; 이유.push('배우자 자리와 삼합');
-    } else if (충12(db, yb)) { sc -= 20; 충맞음 = true; 세부.관계 = '충'; 이유.push('배우자 자리가 흔들린 해'); }
+    }   // 충 배제 — 제23조 (충맞음은 늘 false — 매듭·흔들림 서사도 같이 잠들었다)
     if (du) {
       if (E.STEM_ELEM[du.stem] === 오행) { sc += 12; 세부.대운성 = true; 이유.push('대운 자체가 ' + 이름 + '을 데려오는 10년'); }
       if (YUKHAP12[db] === du.branch) sc += 8;
-      else if (충12(db, du.branch)) sc -= 8;
     }
     // ── 정복한 층 접속 — 여기부터가 자평진전·궁통보감을 정복한 값어치다 ──
     // ① 암장: 하늘이 아니라 땅으로 오는 인연. 세운 지지의 지장간에 배우자성이 들면
@@ -1180,19 +1178,11 @@
         const pk = 절정달(im.rows.map(r => ({ 월: r.월, 점수: r.점수 })));
         if (pk) g.달 = { 해: g.최고해, 말: pk.말 };
       } catch (e) {}
-      // 매듭 — 구간이 끝나고 3년 안에 배우자 자리를 치는 해가 오면, 그 만남의
-      // 끝을 그 해에 잇는다. 낱장 채점이 아니라 이야기가 되는 지점이다.
-      const 매듭 = 과거.find(r => r.해 > g.끝 && r.해 - g.끝 <= 3 && r.충);
-      if (매듭) {
-        g.매듭 = { 해: 매듭.해, 나이: 매듭.나이 };
-        g.풀이 = (g.풀이 || '') + ' 그리고 이 무렵의 인연은 ' + 매듭.해 + '년(만 ' + 매듭.나이 + '살), '
-          + 지말(매듭.세부.세지) + 이가(E.BRANCHES_KO[매듭.세부.세지])
-          + ' 배우자 자리를 치면서 매듭지어졌기 쉽습니다.';
-      }
+      // 매듭(충 기반)은 제23조로 배제 — 충의 진짜 간법을 배우면 그때 다시 세운다
     });
     const 찍은과거 = 구간들.slice().sort((a, b) => b.최고 - a.최고).slice(0, 3)
       .sort((a, b) => a.시작 - b.시작);
-    const 흔들린해 = 과거.filter(r => r.충 && r.점수 <= 40).map(r => ({ 해: r.해, 나이: r.나이 })).slice(-3);
+    const 흔들린해 = [];   // 충 배제 — 제23조
 
     // ── 현재 — 상태는 누적이다. 해 점수는 사건이고, 사건을 이어야 상태가 나온다 ──
     // 사람의 연애는 해마다 리셋되지 않는다: 열린 해에 시작된 관계는 매듭(충) 신호가
@@ -1200,8 +1190,7 @@
     // 명리가의 화법대로 두 갈래(연애 중이시라면 / 혼자시라면)로 말한다.
     const 올해 = 연애해점수(R, nowY, 오행, 이름);
     const 마지막열림 = 과거.filter(r => r.점수 >= 64).slice(-1)[0] || null;
-    const 마지막매듭 = 마지막열림
-      ? (과거.filter(r => r.해 > 마지막열림.해 && r.충).slice(-1)[0] || null) : null;
+    const 마지막매듭 = null;   // 충 배제 — 제23조. 매듭 신호 없이 이어짐/조용으로만 잇는다
     let 현재;
     if (올해.점수 >= 70) {
       현재 = { 판: '열림', 말: '지금은 인연의 문이 열려 있는 구간입니다. 연애 중이시라면 관계가 한 걸음 깊어지는 때이고, 혼자시라면 — 이 기준으로는 혼자 계실 이유가 없는 자리입니다. 올해 안의 만남을 흘려보내지 마세요.' };
@@ -1952,17 +1941,7 @@
         break;
       }
     } catch (e) {}
-    // 5) 원국 궁충이 세운 합으로 잠시 묶이는 해 — 흔들리는 원국의 숨구멍
-    const 치는지 = [p.year.branch, p.month.branch].concat(p.hour ? [p.hour.branch] : [])
-      .find(b => ((b - db + 12) % 12) === 6);
-    if (치는지 !== undefined) {
-      const 숨해 = [];
-      for (let y = nowY; y <= nowY + 8; y++) {
-        try { const tf = E.dateFortune(y, 6, 15); if (YUKHAP12[치는지] === tf.year.branch) 숨해.push(y); } catch (e) {}
-      }
-      if (숨해.length) 문.push('흔들림이 묶이는 해 — 배우자 자리를 치던 원국의 ' + E.BRANCHES[치는지]
-        + '을 세운이 합으로 붙드는 ' + 숨해.join('·') + '년에는 궁이 모처럼 고요합니다. 큰 걸음은 이런 해에 옮기세요.');
-    }
+    // (궁충 숨구멍은 제23조 충 배제로 걷어냈다)
     return 문;
   }
 
@@ -2165,10 +2144,8 @@
     for (let y = 태어난해 + 17; y < 올해; y++) {
       let tf; try { tf = E.dateFortune(y, 6, 15); } catch (e) { continue; }
       const ys = tf.year.stem, yb = tf.year.branch, a = 나이(y);
-      // ① 배우자궁 충 — 제일 세다. 아무도 조용한 해로 기억하지 않는다.
-      if (((yb - db + 12) % 12) === 6) 사건들.push({ 해: y, 나이: a, 점수: 10, 축: '관계',
-        문장: '관계 하나가 크게 출렁이지 않았습니까 — 정리했든, 정리당했든.',
-        근거: '그해의 지지 ' + E.BRANCHES[yb] + '가 배우자 자리(' + E.BRANCHES[db] + ')를 정면으로 쳤습니다(충). 방향은 단정하지 않습니다 — 흔들린 것만 글자가 보증합니다.' });
+      // 궁충 사건은 제23조로 배제 — 「솔로인데 충당하면 뭐가 달라지지?」 관측 대상이
+      // 사주에 없어 단정 불가. 충의 간법을 배우면 그때 되살린다.
       // ② 궁 본기 투출 — 궁 속에만 있던 글자가 하늘로 나온 해
       if (ys === 궁본기) {
         const 합됨 = ['year', 'month', 'hour'].some(k => p[k] && ((p[k].stem + 5) % 10 === ys || (ys + 5) % 10 === p[k].stem));
@@ -2240,7 +2217,7 @@
     if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
     const branches = [p.year.branch, p.month.branch, db].concat(p.hour ? [p.hour.branch] : []);
     const 암 = branches.some(b => (E.HIDDEN[b] || []).some(st => E.STEM_ELEM[st] === 오행));
-    const 궁충 = branches.some(b => ((b - db + 12) % 12) === 6);
+    // 원국 궁충 언급은 제23조로 배제 (「원국이 충이면 남자가 못 들어오나?」)
     const 합거 = E.natalHap(p);
 
     let 상태, 말;
@@ -2273,7 +2250,7 @@
             '평소에는 조용하다가, 그 글자가 운에서 들어오는 해에 몰아서 옵니다. 놓치면 다음 파도까지 다시 조용합니다.',
             '그래서 이 사주는 「언제」가 사실상 전부입니다.'];
     }
-    if (궁충) 말.push('한 가지 더 — 배우자 자리(일지)를 치는 글자가 원국에 있습니다. 해를 잘못 고르면 시작하고도 흔들립니다. 이것까지 넣어 달을 골랐습니다.');
+
     // ── 제19조 접착제 이론 (승인 2026-08-30) — 사분면 구조가 진단의 머리에 선다 ──
     // 접착제 내장: 음간 여성(정관과 일간합)·양간 남성(정재와 일간합) — 붙드는 힘을
     // 타고남. 단 비견이 곁에 있으면 같은 상대와 쟁합(양간 남성들이 무리지어
@@ -2614,15 +2591,12 @@
     if (YUKHAP[dbA] === dbB) 끌림.push('배우자 자리끼리 육합입니다. 붙어 있으면 둘 다 편안해집니다');
     else if (SAM.some(g => g.indexOf(dbA) >= 0 && g.indexOf(dbB) >= 0 && dbA !== dbB))
       끌림.push('배우자 자리끼리 삼합입니다. 같은 방향을 보고 굴러갑니다');
-    else if (충(dbA, dbB) || 충(dbB, dbA))
-      부딪힘.push('배우자 자리끼리 정면으로 부딪힙니다. 지루할 틈은 없지만 자주 흔들립니다');
+    // 충 배제 — 제23조
 
     // 지지 전체가 얼마나 부딪히나
     const brA = ['year','month','day','hour'].filter(k => Rme.pillars[k]).map(k => Rme.pillars[k].branch);
     const brB = ['year','month','day','hour'].filter(k => Ryou.pillars[k]).map(k => Ryou.pillars[k].branch);
-    let cross = 0;
-    brA.forEach(a => brB.forEach(b => { if (충(a, b)) cross++; }));
-    if (cross >= 3) 부딪힘.push('둘의 기둥이 여러 곳에서 어긋납니다(' + cross + '군데). 계획이 자주 바뀝니다');
+    // 지지 충 세기도 제23조로 배제
 
     if (dsA === dsB && dbA === dbB) 부딪힘.push('일주가 같습니다. 잘 통하는 만큼 약점도 똑같습니다');
 
