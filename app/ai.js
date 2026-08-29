@@ -348,8 +348,10 @@ ${prof}` : ''}`;
       + '본보기(다른 사람의 간명 발췌 — 이 밀도와 말투로):\n' + 간명본보기 + '\n'
       + '[계산된 사실]\n' + JSON.stringify(facts);
     // 8000이면 12~18문이 넉넉하다 — 길이를 줄이면 굽는 시간이 줄고, 새로고침 유혹도 준다
-    return dehanja(await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 8000, effort: 'high', cachePk }));
+    // dehanja 금지 — 간명서는 글자가 주인공이라 辛(신)·子(자)를 살려야 한다.
+    // dehanja를 태우면 辛(신)→신(신)이 된다 (2026-08-30 실물 제보).
+    return await call(sys, [{ role: 'user', content: '간명서를 처음부터 끝까지 써줘.' }],
+      { task: 'story', maxTokens: 8000, effort: 'high', cachePk });
   }
 
   async function dailyBrief(r, today) {
