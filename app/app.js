@@ -2143,9 +2143,16 @@
     const misses = Object.values(grades).filter(v => v === 'n').length;
     html.push('<p class="pb-ft">채점 ' + answered + ' / ' + 전체문 + '문 — 맞다 ' + hits + ' · 애매 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니다 ' + misses
       + '. 이 성적은 남고, 잣대를 벼리는 데 쓰입니다.</p>');
-    // ── 채점의 끝에는 문이 있어야 한다 (2026-08-30 「맞다 해놓고 끝이야 그럼?」) ──
-    // 신뢰의 정점이 전환의 순간이다: 과거를 맞힌 잣대 → 「그래서 언제인가」.
-    if (answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
+    // ── 채점의 끝에는 문이 있어야 한다 — 제출이 그 문의 손잡이다 ──
+    const submitKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.submitted.');
+    const submitted = !!localStorage.getItem(submitKey);
+    if (!submitted && answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
+      html.push('<div class="nx-diag pbd" style="margin-top:14px">'
+        + '<p class="nx-diag-k">채점을 제출해 주세요</p>'
+        + '<p>' + answered + ' / ' + 전체문 + '문에 답하셨습니다. 제출하시면 이 성적이 잣대의 공개 성적표에 쌓입니다 — 빗나간 것도 그대로.</p>'
+        + '<button class="btn" id="gmSubmit">채점 제출하기</button></div>');
+    }
+    if (submitted) {
       const 머리말 = misses === 0 && answered === 전체문
         ? 전체문 + '문 전부 맞았습니다 — 이 잣대가 당신에게 맞습니다.'
         : hits + '문이 맞았습니다.' + (misses ? ' 빗나간 ' + misses + '문은 그대로 성적표에 남습니다 — 그것까지가 이 집의 방식입니다.' : '');
@@ -2161,22 +2168,33 @@
     if (nl) nl.onclick = () => go('lovestory');
     if (nm) nm.onclick = () => go('moneystory');
     el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
+      // 클릭은 기기에만 — 서버 제출은 [채점 제출하기]가 한다(2026-08-30
+      // 「맞다고 터치만 하면 하나씩 쌓이는 것 아니야?」). 고민 중인 답을 실어 보내지 않는다.
       grades[b.dataset.i] = b.dataset.v;
       localStorage.setItem(gradeKey, JSON.stringify(grades));
-      // 채점은 서버에도 남는다(schema-11) — 적중률 공개와 잣대 벼리기의 원천.
-      // 실패해도 조용히: 화면은 localStorage 로 이미 답했다.
-      (async () => { try {
-        const C = window.ChaeksaCloud; if (!C || !C.token) return;
-        const tok = await C.token(); if (!tok) return;
-        const cfg = window.CHAEKSA_SUPABASE || {};
-        await fetch(cfg.url + '/rest/v1/rpc/ganmyeong_grade_put', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json', apikey: cfg.anonKey, authorization: 'Bearer ' + tok },
-          body: JSON.stringify({ p_pk: cacheKey.replace('chaeksa.ganmyeong.', ''), p_item: +b.dataset.i, p_grade: b.dataset.v }),
-        });
-      } catch (e) {} })();
+      localStorage.removeItem(submitKey);   // 답을 고치면 다시 제출할 수 있게
       mountGanmyeong(el, whereTag);
     });
+    const sb = el.querySelector('#gmSubmit');
+    if (sb) sb.onclick = async () => {
+      sb.disabled = true; sb.textContent = '제출 중…';
+      try {
+        const C = window.ChaeksaCloud;
+        const tok = C && C.token ? await C.token() : null;
+        if (!tok) throw new Error('로그인이 필요합니다');
+        const cfg = window.CHAEKSA_SUPABASE || {};
+        const pk2 = cacheKey.replace('chaeksa.ganmyeong.', '');
+        for (const [i2, v2] of Object.entries(grades)) {
+          await fetch(cfg.url + '/rest/v1/rpc/ganmyeong_grade_put', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', apikey: cfg.anonKey, authorization: 'Bearer ' + tok },
+            body: JSON.stringify({ p_pk: pk2, p_item: +i2, p_grade: v2 }),
+          });
+        }
+        localStorage.setItem(submitKey, '1');
+        mountGanmyeong(el, whereTag);
+      } catch (e) { sb.disabled = false; sb.textContent = '제출 실패 — 다시 눌러주세요'; }
+    };
   }
 
   function renderLoveStory() {
