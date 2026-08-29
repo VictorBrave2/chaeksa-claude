@@ -375,7 +375,7 @@
     if (!T || !T.loveStory || !T.inyeonWhy) { el.classList.add('hide'); return; }
     // 첫확인 답 상태가 바뀌면 다시 그려야 하므로 chongFor 캐시는 답까지 포함한다
     const fcKey = 'chaeksa.firstcheck.' + [profile.year, profile.month, profile.day, profile.hour].join('.');
-    const fcAns = localStorage.getItem(fcKey);   // 'y' | 'n' | null
+    const fcAns = localStorage.getItem(fcKey) || '';   // 'y'/'n' 이어붙인 문자열 (예: 'yn')
     if (chongFor === R + '|' + fcAns) return;
     chongFor = R + '|' + fcAns;
     let LW = null, MW = null, LS = null, MS = null;
@@ -391,26 +391,36 @@
     const paidL = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
     const paidM = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
     el.classList.remove('hide');
-    // ── 첫확인 — 답하기 전에는 질문 하나가 화면의 전부다 ──
+    // ── 첫확인 문진 — 축 다른 질문 최대 3개를 하나씩. 답하기 전엔 질문이 화면의 전부다 ──
+    // 총알이 하나면 빗나갈 때 회복이 없다. 셋 중 둘이면 「용하다」, 셋 다 빗나가면 정직하게.
     let FC = null; try { FC = T.첫확인 ? T.첫확인(R, today) : null; } catch (e) {}
-    if (FC && !fcAns) {
+    const 문수 = FC && FC.질문들 ? FC.질문들.length : 0;
+    if (FC && fcAns.length < 문수) {
+      const i = fcAns.length, q = FC.질문들[i];
       el.innerHTML = `
-        <p class="hero-eyebrow">먼저 하나만 확인하겠습니다</p>
-        <p class="ls-say" style="font-size:1.1em"><b>${FC.한방.해}년(만 ${FC.한방.나이}살) 무렵, ${esc(FC.한방.문장)}</b></p>
+        <p class="hero-eyebrow">${문수 > 1 ? `확인 ${i + 1} / ${문수}` : '먼저 하나만 확인하겠습니다'}</p>
+        <p class="ls-say" style="font-size:1.1em"><b>${q.해}년(만 ${q.나이}살) 무렵, ${esc(q.문장)}</b></p>
         <button class="btn" id="fcYes">맞습니다</button>
         <button class="btn-ghost" id="fcNo" style="margin-top:8px;width:100%">아닙니다</button>
-        <p class="hint">생년월일시만으로 짚은 것입니다. 답하시면 어떻게 알았는지부터 보여드립니다 — 기준을 공개하는 것이 책사의 방식입니다.</p>`;
-      const yes = $('fcYes'), no = $('fcNo');
-      const answer = v => { localStorage.setItem(fcKey, v);
-        if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('firstcheck', { hit: v, kind: FC.한방.점수 }); } catch (e) {}
+        <p class="hint">${i === 0 ? '생년월일시만으로 짚은 것입니다. 다 답하시면 어떻게 알았는지부터 보여드립니다 — 기준을 공개하는 것이 책사의 방식입니다.' : '기억이 안 나면 「아닙니다」를 누르셔도 됩니다 — 빗나간 것도 숨기지 않습니다.'}</p>`;
+      const answer = v => { localStorage.setItem(fcKey, fcAns + v);
+        if (window.ChaeksaTrack && ChaeksaTrack.event) try { ChaeksaTrack.event('firstcheck', { i, hit: v, kind: q.점수, axis: q.축 }); } catch (e) {}
         chongFor = null; renderChong(); window.scrollTo({ top: 0 }); };
-      if (yes) yes.onclick = () => answer('y');
-      if (no) no.onclick = () => answer('n');
+      if ($('fcYes')) $('fcYes').onclick = () => answer('y');
+      if ($('fcNo')) $('fcNo').onclick = () => answer('n');
       return;
     }
+    const 맞은수 = (fcAns.match(/y/g) || []).length;
+    const 성적표 = !FC ? '' : 문수 <= 1
+      ? (fcAns === 'y' ? `<p class="pb-lede"><b>어떻게 알았는가</b> — ${esc(FC.한방.근거)}</p>`
+                        : `<p class="pb-lede">아니라고 하셨습니다 — 숨기지 않겠습니다. 아래 연대기에서 몇 해나 맞는지 세어보세요. 그게 이 잣대의 성적표입니다.</p>`)
+      : (맞은수 === 문수 ? `<p class="pb-lede"><b>${문수}개 전부 맞았습니다.</b> 지어낸 게 아닙니다 — 각 해의 글자 근거가 아래 있습니다. 이 잣대 그대로 앞을 재겠습니다.</p>`
+        : 맞은수 > 0 ? `<p class="pb-lede"><b>${문수}개 중 ${맞은수}개.</b> 빗나간 것도 남겨둡니다 — 기준을 공개하는 잣대는 성적표도 공개합니다. 각 해의 근거가 아래 있습니다.</p>`
+        : `<p class="pb-lede">${문수}개 다 아니라고 하셨습니다 — 드문 경우입니다. 이 잣대가 당신 사주 어디서 어긋나는지가 오히려 단서가 됩니다. 근거를 그대로 보여드립니다.</p>`);
     const 첫절 = FC ? `
-      ${fcAns === 'n' ? `<p class="pb-lede">아니라고 하셨습니다 — 숨기지 않겠습니다. 같은 잣대로 짚은 다른 해들이 아래 있으니, 몇 해나 맞는지 세어보세요. 그게 이 잣대의 성적표입니다.</p>`
-                       : `<p class="pb-lede"><b>어떻게 알았는가</b> — ${esc(FC.한방.근거)}</p>`}
+      ${성적표}
+      ${문수 > 1 ? `<div class="nx-diag"><p class="nx-diag-k">묻고 답한 해들 — 글자 근거</p>
+        ${FC.질문들.map((q2, k) => `<p><b>${q2.해}년(만 ${q2.나이}살)</b> ${fcAns[k] === 'y' ? '○ 맞음' : '× 아님'} — <span class="pb-days-why">${esc(q2.근거)}</span></p>`).join('')}</div>` : ''}
       <div class="nx-diag"><p class="nx-diag-k">같은 잣대로 짚은 지난 해들</p>
         ${FC.연대기.map(e => `<p><b>${e.해}년(만 ${e.나이}살)</b> — ${esc(e.문장)}<br><span class="pb-days-why">${esc(e.근거)}</span></p>`).join('')}</div>` : '';
     el.innerHTML = `${첫절}
