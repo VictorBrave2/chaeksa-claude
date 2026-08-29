@@ -2037,9 +2037,15 @@
     try {
       ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today))
         .then(t => { localStorage.setItem(ck, t); 간명예열.busy = false; chongFor = null; if (window.renderChongSoon) renderChongSoon(); })
-        .catch(() => { 간명예열.busy = false;
-          const w = $('chongWait'); if (w) w.textContent = '간명가를 부르지 못했습니다 — 20초 뒤 다시 시도합니다.';
-          setTimeout(간명예열, 20000); });
+        .catch(err => { 간명예열.busy = false;
+          간명예열.fails = (간명예열.fails || 0) + 1;
+          const 원인 = (err && err.blocked && err.blocked.body) || (err && err.message) || String(err);
+          try { console.warn('간명 실패:', err); } catch (e2) {}
+          const w = $('chongWait');
+          if (w) w.textContent = 간명예열.fails <= 2
+            ? '간명가를 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 다시 시도합니다.'
+            : '간명가를 부르지 못했습니다 — ' + 원인.slice(0, 120) + ' (새로고침하면 다시 시도합니다)';
+          if (간명예열.fails <= 2) setTimeout(간명예열, 20000); });
     } catch (e) { 간명예열.busy = false; }
   }
   async function renderGanmyeong() {
