@@ -2771,9 +2771,31 @@
       const pA = Rme.pillars, pB = Ryou.pillars;
       const 도A = [DOHWA[pA.year.branch], DOHWA[dbA]];
       const 도B = [DOHWA[pB.year.branch], DOHWA[dbB]];
-      if (도A.indexOf(dbB) >= 0) 신살.push({ 결: '도화', 말: 님(nameB) + '이 ' + 님(nameA) + '의 도화 자리에 앉아 있습니다 — 유난히 눈에 띄는 쪽입니다' });
-      if (도B.indexOf(dbA) >= 0) 신살.push({ 결: '도화', 말: 님(nameA) + '이 ' + 님(nameB) + '의 도화 자리에 앉아 있습니다 — 그쪽 눈에 유난히 띕니다' });
-      if (HONGYEOM[dsA] === dbB) 신살.push({ 결: '홍염', 말: 님(nameB) + '의 자리가 ' + 님(nameA) + '의 홍염입니다 — 끌어당기는 결입니다' });
+      // 도화는 생왕/사절로 정반대다 — 원문 그대로 가른다.
+      //   『三命通會』 論咸池: 如生旺則美容儀 / 如死絶落魄不檢 (docs/23)
+      // 판정은 원문대로 하고, 화면 말은 우리가 짓는다. 조문은 판정의 근거이지
+      // 화면의 문장이 아니다 — 원문의 「奸邪淫鄙」를 그대로 옮길 수는 없다.
+      const 왕한자리 = { 장생: 1, 관대: 1, 건록: 1, 제왕: 1 };
+      const 꺼진자리 = { 사: 1, 묘: 1, 절: 1, 쇠: 1, 병: 1 };
+      const 도화말 = (주, 손, br, ds) => {
+        let 층 = '';
+        try {
+          const u = E.unseong(ds, br);
+          if (왕한자리[u]) 층 = ' 그 자리가 왕해서, 사람이 모이고 그만큼 곁이 시끄러워지기도 합니다';
+          else if (꺼진자리[u]) 층 = ' 다만 그 자리가 꺼져 있어, 끌어당기는 힘이 본인을 흔들기도 합니다';
+        } catch (e) {}
+        return 님(손) + '이 ' + 님(주) + '의 도화 자리에 앉아 있습니다 — 유난히 눈에 띄는 쪽입니다.' + 층;
+      };
+      if (도A.indexOf(dbB) >= 0) 신살.push({ 결: '도화', 말: 도화말(nameA, nameB, dbB, dsA) });
+      if (도B.indexOf(dbA) >= 0) 신살.push({ 결: '도화', 말: 도화말(nameB, nameA, dbA, dsB) });
+      // 홍염 — 결(訣)의 첫 줄이 이 살의 뜻이다: 多情多欲少人知
+      // 「정이 많고 바라는 것이 많은데 남들은 잘 모른다」. 뒷줄(眾人妻·作路妓)은 안 쓴다.
+      // 甲乙은 결이 「午申」 둘인데 표에 午만 있었다 — 申을 함께 본다(docs/23).
+      const 홍염지 = (ds) => (ds === 0 || ds === 1) ? [HONGYEOM[ds], 8] : [HONGYEOM[ds]];
+      if (홍염지(dsA).indexOf(dbB) >= 0) 신살.push({ 결: '홍염',
+        말: 님(nameB) + '의 자리가 ' + 님(nameA) + '의 홍염입니다 — 정이 많고 바라는 것도 많은데, 겉으로는 잘 안 드러나는 결입니다' });
+      if (홍염지(dsB).indexOf(dbA) >= 0) 신살.push({ 결: '홍염',
+        말: 님(nameA) + '의 자리가 ' + 님(nameB) + '의 홍염입니다 — 그쪽이 속으로 많이 담아 두는 자리입니다' });
       if ((CHEONEUL[dsA] || []).indexOf(dbB) >= 0) 신살.push({ 결: '귀인', 말: 님(nameB) + '이 ' + 님(nameA) + '에게 천을귀인 자리입니다 — 어려울 때 도움이 되는 쪽입니다' });
       if ((CHEONEUL[dsB] || []).indexOf(dbA) >= 0) 신살.push({ 결: '귀인', 말: 님(nameA) + '이 ' + 님(nameB) + '에게 천을귀인 자리입니다 — 그쪽이 기대는 쪽입니다' });
       const 공A = gongmang(dsA, dbA);
