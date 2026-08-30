@@ -1211,3 +1211,25 @@ details.fold > .tiles { margin-top: 10px; }
   text-shadow:0 1px 6px rgba(0,0,0,.5)}
 /* 띠가 선 뒤의 말 — 붙여서 한 덩이로 읽히게 */
 .say-head + .gm-say{margin-top:9px}
+
+/* 우리 둘 사이 — 맺음이 제목이고, 비대칭이 그 아래 마주 선다.
+   공주님이 그 사람 생일을 넣는 이유는 「이 사람이 그 사람인가」다(2026-08-30). */
+.rel-verdict{font-family:"Gowun Batang","Noto Serif KR",serif;font-size:16px;line-height:1.8;
+  color:var(--ink);margin:0 0 16px;padding:14px 15px;border-radius:12px;
+  background:var(--accent-soft);border:1px solid var(--accent-line)}
+.matchbox{margin:0 0 16px;padding:14px 15px;border-radius:12px;
+  border:1px solid var(--g3);background:var(--g3-bg)}
+.matchbox .mk{margin:0 0 8px;font-size:10.5px;letter-spacing:.22em;color:var(--g3-ink);font-weight:700}
+.matchbox .mb{margin:0 0 6px;font-size:13.5px;line-height:1.75;color:var(--ink)}
+.matchbox .ms{margin:8px 0 0;font-size:11.5px;line-height:1.65;color:var(--ink3)}
+.rel-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.rel-two > div{padding:12px 13px;border-radius:12px;background:var(--card2);
+  border:1px solid var(--line)}
+.rel-two .rk{margin:0 0 6px;font-size:10.5px;color:var(--ink3);letter-spacing:.02em}
+.rel-two .rb{margin:0 0 5px;font-family:"Gowun Batang","Noto Serif KR",serif;
+  font-size:14.5px;color:var(--accent);line-height:1.5}
+.rel-two .rs{margin:0;font-size:11.5px;line-height:1.65;color:var(--ink2)}
+.signbox{margin:0 0 14px}
+.signbox .sg{margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.signbox .sg b{color:var(--accent);font-weight:700;margin-right:5px}
+@media (max-width:340px){ .rel-two{grid-template-columns:1fr} }

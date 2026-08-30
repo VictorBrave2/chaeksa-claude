@@ -1323,6 +1323,22 @@
     const meName = profile.name || '나', youName = you0.name || '상대';
     const v = T.relation(R, you, meName, youName, today);
     const box = $('compatResult'); box.classList.remove('hide');
+    // 「이 사람이 그 사람인가」 — 공주님이 생일을 넣는 이유가 정확히 이것이다.
+    // 지위는 단정하지 않는다(사주에 없다). 두 원국이 맞물리는가만 말한다.
+    const m0 = v.맞물림 || {};
+    const 맞물림절 = (!m0.배우자성 && !m0.방글자) ? '' : `
+      <div class="matchbox">
+        <p class="mk">이 사람이 그 사람인가</p>
+        ${m0.배우자성 ? `<p class="mb">${esc(youName)}님의 글자가 ${esc(meName)}님께
+          <b>인연으로 오는 글자(${esc(m0.성이름)})</b>입니다.</p>` : ''}
+        ${m0.방글자 ? `<p class="mb">${esc(meName)}님의 배우자 방에 앉은 글자
+          <b>${esc(m0.방글자표기)}</b>와 같은 결입니다 — 방에 들어올 수 있는 사람입니다.</p>` : ''}
+        <p class="ms">두 분이 어떤 사이인지는 사주에 적혀 있지 않습니다. 맞물리는가만 말씀드립니다.</p>
+      </div>`;
+    // 신살 — 이 화면에서만 맞대어 본다. 엔진의 판정은 건드리지 않는다.
+    const 신살절 = !(v.신살 && v.신살.length) ? '' : `
+      <div class="signbox">${v.신살.map(x =>
+        `<p class="sg"><b>${esc(x.결)}</b> ${esc(x.말)}</p>`).join('')}</div>`;
     // 그 사람이 지금 지나는 운 — 관계의 뼈대 위에 「지금」을 얹는다
     const n = v.지금;
     const 지금절 = !n ? '' : `
@@ -1359,8 +1375,19 @@
           <p class="bmft">결혼·상견례·여행처럼 <b>둘이 같이 정하는 날</b>에 쓰세요. 한 사람만 좋은 달은 뺐습니다.</p>
         </div>`;
     } catch (e) {}
+    // 맺음이 제목이다 — 「이 사이는 ~한 사이입니다」가 이 화면의 답이다.
     box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
-      <p class="hint" style="margin:0 0 12px">${esc(v.맺음)}</p>
+      <p class="rel-verdict">${esc(v.맺음)}</p>
+      ${맞물림절}
+      <div class="rel-two">
+        <div><p class="rk">${esc(youName)}님은 ${esc(meName)}님에게</p>
+          <p class="rb">${esc(v.나에게.말[0])}</p>
+          <p class="rs">${esc(v.나에게.말[1])}</p></div>
+        <div><p class="rk">${esc(meName)}님은 ${esc(youName)}님에게</p>
+          <p class="rb">${esc(v.그에게.말[0])}</p>
+          <p class="rs">${esc(v.그에게.말[1])}</p></div>
+      </div>
+      ${신살절}
       ${지금절}
       ${달절}
       ${(() => {
