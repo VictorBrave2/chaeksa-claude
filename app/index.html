@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=463">
+<link rel="stylesheet" href="style.css?v=464">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -196,8 +196,7 @@
         <button class="row" data-open="year">
           <b>올해의 나</b><span id="tiYearSub">남은 달 중 언제가 나에게 좋은가</span>
           <i id="tiYearBig" class="row-x"></i></button>
-        <button class="row" data-open="cal">
-          <b>택일 달력</b><span id="tiCalSub">좋은 날 찾기</span></button>
+        <!-- 택일 달력은 서고에서 내렸다(2026-08-31). #cal 로는 그대로 열린다. -->
       </section>
 
       <section class="shelf">
@@ -232,15 +231,10 @@
           <i id="tiLifeBig" class="row-x"></i></button>
       </section>
 
-      <section class="shelf last">
-        <p class="shelf-k">그 밖</p>
-        <button class="row" data-open="memo" id="memoBanner">
-          <b id="memoTitle">비망록</b>
-          <span id="memoSub">물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다</span>
-          <i id="memoBadge" class="row-x"></i></button>
-        <button class="row" data-open="taekil">
-          <b>출산택일 보고서</b><span>제왕절개 날짜·시각을 근거 문서로 · 사람이 직접 봅니다</span></button>
-      </section>
+      <!-- 「그 밖」 서고를 내렸다(2026-08-31 「아가씨를 위한 사이트다」).
+           비망록은 공주님께 숙제를 시키는 물건이고, 출산택일은 아예 다른 손님(임산부) 것이다.
+           화면과 탭은 그대로 살아 있다 — taekil.html 이 ./#taekil 로 보내고,
+           비망록도 #memo 로 열린다. 서고에서만 내렸다. -->
     </div>
     <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
     <div class="tab hide" data-tab="ban">
@@ -777,29 +771,29 @@
   </div>
 </div>
 
-<script src="config.js?v=463"></script>
-<script src="track.js?v=463"></script>
-<script src="cloud.js?v=463"></script>
-<script src="usage.js?v=463"></script>
-<script src="places.js?v=463"></script>
-<script src="people.js?v=463"></script>
-<script src="astro.js?v=463"></script>
-<script src="lunar.js?v=463"></script>
-<script src="engine.js?v=463"></script>
-<script src="chaeyong.js?v=463"></script>
-<script src="brief.js?v=463"></script>
-<script src="chaeksadan.js?v=463"></script>
-<script src="typecard.js?v=463"></script>
-<script src="gyeokguk.js?v=463"></script>
-<script src="memo.js?v=463"></script>
-<script src="classic.js?v=463"></script>
-<script src="calendar.js?v=463"></script>
-<script src="tongbyeon.js?v=463"></script>
-<script src="rules-wealth-love.js?v=463"></script>
-<script src="rules-health-study-move.js?v=463"></script>
-<script src="share.js?v=463"></script>
-<script src="ai.js?v=463"></script>
-<script src="pay.js?v=463"></script>
-<script src="app.js?v=463"></script>
+<script src="config.js?v=464"></script>
+<script src="track.js?v=464"></script>
+<script src="cloud.js?v=464"></script>
+<script src="usage.js?v=464"></script>
+<script src="places.js?v=464"></script>
+<script src="people.js?v=464"></script>
+<script src="astro.js?v=464"></script>
+<script src="lunar.js?v=464"></script>
+<script src="engine.js?v=464"></script>
+<script src="chaeyong.js?v=464"></script>
+<script src="brief.js?v=464"></script>
+<script src="chaeksadan.js?v=464"></script>
+<script src="typecard.js?v=464"></script>
+<script src="gyeokguk.js?v=464"></script>
+<script src="memo.js?v=464"></script>
+<script src="classic.js?v=464"></script>
+<script src="calendar.js?v=464"></script>
+<script src="tongbyeon.js?v=464"></script>
+<script src="rules-wealth-love.js?v=464"></script>
+<script src="rules-health-study-move.js?v=464"></script>
+<script src="share.js?v=464"></script>
+<script src="ai.js?v=464"></script>
+<script src="pay.js?v=464"></script>
+<script src="app.js?v=464"></script>
 </body>
 </html>
