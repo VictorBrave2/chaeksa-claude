@@ -469,7 +469,7 @@
     const 특 = [
       ['먼저 붓을 씻습니다', '격국의 뼈대 「자평진전」, 계절의 약방문 「궁통보감」 — 요약본이 아니라 원문을 판본까지 밝혀 옮겨 두었습니다. 지금 그 조문대로 공주님의 자리를 짚고 있습니다.'],
       ['시각부터 바로 세웁니다', '달이 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 맞습니다. 태어나신 곳의 경도로 진태양시까지 보정하고 나서야 첫 글자를 놓습니다.'],
-      ['틀리면 틀렸다고 남깁니다', '빗나간 말은 지우지 않고 그대로 둡니다. 그 답은 공주님 기기에만 남고, 저희가 가져가지 않습니다.'],
+      ['틀리면 틀렸다고 남깁니다', '빗나간 말은 지우지 않고 그대로 둡니다. 적중률을 숫자로 내걸지 않고, 채점도 집계도 하지 않습니다 — 맞았는지는 공주님이 아십니다.'],
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 겁을 팔지 않아도 짚을 것은 다 짚습니다.'],
       ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 적은 것은 전부 잰 것 — 그래서 맞는지 틀리는지 답을 받을 수 있습니다.'],
     ];
@@ -2412,7 +2412,9 @@
   // v14 (2026-08-31) — 소현의 갈림 한 줄이 거짓이었다. 이미 조립된 의논에도 그 줄이
   // 굳어 있으므로 판을 올려 전부 다시 조립시킨다(조립은 공짜다).
   // 대가: LLM 으로 구워 둔 의논이 있는 분은 조립본으로 바뀐다. 개통 전이라 시험판뿐이다.
-  const GM_VER = 'v14';
+  // v15 (2026-08-31) — 채점을 들어냈다. 좌장의 맺음말이 채점을 청하고 있어서
+  // 이미 조립된 의논에도 그 부탁이 굳어 있다. 판을 올려 다시 조립시킨다(공짜다).
+  const GM_VER = 'v15';
   // 키에 **성별과 분**이 빠져 있었다. 성별은 배우자성을 가르고(남=재성·여=관성)
   // 분은 시진 경계를 가르므로, 같은 연월일시라도 의논이 다르다.
   // 관문을 내린 뒤로 「이 생일 저 생일 넣어보기」가 기본 동작이 되므로
@@ -2450,7 +2452,7 @@
     }
     // 없으면 그 자리에서 조립한다 (chaeksadan.js). 원가 0원·지연 0초라 굽기를 기다릴 이유가 없다.
     // 이미 구워진 의논이 있는 분은 위에서 걸려 그대로 쓴다 — 아무도 제 것을 잃지 않는다.
-    // 한 번 조립하면 저장한다: 채점은 발언 번호로 붙으므로 글이 흔들리면 성적이 어긋난다.
+    // 한 번 조립하면 저장한다 — 같은 사람에게 늘 같은 글이 나와야 한다.
     if (!t && R && window.ChaeksaDan) {
       try {
         t = ChaeksaDan.의논(R, today);
@@ -2554,7 +2556,6 @@
   async function mountGanmyeong(el, whereTag) {
     const T = window.ChaeksaTypecard, AI = window.ChaeksaAI;
     const cacheKey = 간명키();
-    const gradeKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.grade.');
     let text = 간명캐시();
     if (!text) {
       el.innerHTML = '<p class="hint">책사단이 둘러앉았습니다 — 잰 것을 펴서 의논하는 중입니다 (약 1분). 이 화면을 벗어나셔도 의논은 계속됩니다.</p>';
@@ -2589,48 +2590,19 @@
         return;
       }
     }
-    const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
-    const submitKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.submitted.');
-    const foldKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.folded.');
-    const submitted = !!localStorage.getItem(submitKey);
-    // ── 제출을 마친 간명서는 접는다(2026-08-30) — 홈은 요약과 다음 문만 남긴다 ──
-    if (submitted && localStorage.getItem(foldKey) !== '0') {
-      const hits0 = Object.values(grades).filter(v => v === 'y').length;
-      const n0 = Object.keys(grades).length;
-      el.innerHTML = '<div class="nx-diag">'
-        + '<p class="nx-diag-k">의논 — 답을 마치셨습니다</p>'
-        + '<p>' + n0 + '개 발언 가운데 ' + hits0 + '개가 맞다고 답해 주셨습니다. 의논은 그대로 간직돼 있습니다.</p>'
-        + '<button class="btn-ghost" id="gmUnfold">의논 다시 읽기 ▾</button></div>'
-        + '<div class="nx-diag pbd" style="margin-top:12px">'
-        + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
-        + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
-        + '<button class="btn" id="gmNextLove">나의 사랑 이야기 — 다음 장 열기</button>'
-        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">나의 재물 이야기 열기</button></div>'
-        // ── 관문을 옮긴 진짜 이유가 이 자리다 ──
-        // 채점을 매듭지으면 바로 이 접힌 요약으로 온다. 문 앞에서 로그인을 청하면
-        // 아무것도 없는 사람에게 청하는 것이고, 여기서 청하면 **의논을 다 읽고
-        // 채점까지 한 사람**에게 청하는 것이다. 그때는 잃을 것이 생겼다.
-        // 없는 이득을 지어내지 않는다 — 실제로 되는 것만 적는다.
-        + (비로그인()
-            ? '<div class="nx-diag" style="margin-top:12px">'
-              + '<p class="nx-diag-k">이걸 남겨 둘까요</p>'
-              + '<p>지금 이 의논과 채점은 <b>이 기기에만</b> 있습니다. 브라우저를 정리하시면 사라집니다.'
-              + ' 카카오로 남겨 두시면 폰을 바꾸셔도 그대로 열립니다.</p>'
-              + '<button class="btn kakao" id="gmKeep"><span>💬</span>카카오로 남겨 두기</button></div>'
-            : '');
-      const kp0 = el.querySelector('#gmKeep');
-      if (kp0) kp0.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } };
-      const uf = el.querySelector('#gmUnfold');
-      if (uf) uf.onclick = () => { localStorage.setItem(foldKey, '0'); mountGanmyeong(el, whereTag); };
-      const nl0 = el.querySelector('#gmNextLove'), nm0 = el.querySelector('#gmNextMoney');
-      if (nl0) nl0.onclick = () => go('lovestory');
-      if (nm0) nm0.onclick = () => go('moneystory');
-      return;
-    }
+    // ── 채점을 들어냈다 (2026-08-31) ──
+    // 채점이 있던 이유는 둘이었다: ① 적중률 집계 ② 「누가 맞혔는지」.
+    // 둘 다 오늘 지웠다(판정이 인기순으로 왜곡되고, 재 보지 않은 것을 재었다고
+    // 말하게 되므로). 그러고 나니 남은 것은 —
+    //   스무 발언을 읽히고, 예순 번 누르게 하고, 아무것도 안 돌려준다.
+    // 공주님 쪽에 남는 것이 없으면 그건 일이지 재미가 아니다. 그래서 치웠다.
+    // 문(유료·로그인)은 채점 뒤가 아니라 **다 읽은 자리**에 그대로 둔다.
+    // 옛 채점 기록(chaeksa.ganmyeong.grade.*)은 지우지 않는다 — 남의 기기 것을
+    // 우리가 청소할 이유가 없고, 안 읽으면 그만이다.
     // AI가 마크다운을 섞어도 화면엔 순수 글만 — 이미 구워진 캐시도 여기서 같이 씻긴다
     text = text.replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *-{3,} *$/gm, '').replace(/^ *[*•] +/gm, '');
     const parts = text.split(/(?=[①-⑳])/);
-    // 좌장의 맺음은 채점 대상이 아니다 — 스무 발언 뒤에 오는 회의의 끝이다.
+    // 좌장의 맺음은 발언이 아니다 — 스무 발언 뒤에 오는 회의의 끝이다.
     // 떼어내지 않으면 마지막 발언 카드에 끼어 「맞아요/아니에요」가 붙는다.
     let 맺음글 = '';
     if (parts.length > 1) {
@@ -2656,26 +2628,20 @@
     const html = ['<div class="nx-diag">' + 문단화(머리, 밀린) + '</div>'];
     // 홈에서는 앞부분만 — 전문과 채점은 전용 탭이 한다.
     // 스무 발언을 홈에 다 펴면 첫 화면이 마흔여섯 화면이 된다(2026-08-30 실측 37,600px).
-    const 홈맛보기 = (whereTag === 'home' && !submitted);
+    const 홈맛보기 = (whereTag === 'home');
     const 보일수 = 홈맛보기 ? 5 : parts.length - 1;
     parts.slice(1, 1 + 보일수).forEach((chunk, i) => {
-      const g = grades[i];
       const 이번 = [];
       const 본문 = 문단화(chunk, 이번);
       밀린.forEach(h => html.push('<p class="hero-eyebrow" style="margin:20px 4px 2px">' + esc(h) + '</p>'));
       밀린 = 이번;
-      html.push('<div class="nx-diag" style="margin-top:10px">'
-        + 본문
-        + (홈맛보기 ? '' : '<div class="gm-grade">'
-        + ['y:맞아요', 'm:글쎄요', 'n:아니에요'].map(o => { const [v, lb] = o.split(':');
-            return '<button class="gmg' + (g === v ? ' on' : '') + '" data-i="' + i + '" data-v="' + v + '">' + (g === v ? '✓ ' : '') + lb + '</button>'; }).join('')
-        + '</div>') + '</div>');
+      html.push('<div class="nx-diag" style="margin-top:10px">' + 본문 + '</div>');
     });
     const 전체문 = parts.length - 1;
     if (홈맛보기) {
       const 남은 = 전체문 - 보일수;
       if (남은 > 0) html.push('<button class="btn" id="gmMore">이어서 읽기 — 남은 '
-        + 남은 + '개 발언과 채점</button>');
+        + 남은 + '개 발언</button>');
       el.innerHTML = html.join('');
       const mb = el.querySelector('#gmMore');
       if (mb) mb.onclick = () => go('ganmyeong');
@@ -2683,72 +2649,29 @@
     }
     // 회의를 맺는 말. 채점 알약을 달지 않는다 — 좌장은 판정하지 않고 앉힌다.
     if (맺음글) html.push('<div class="nx-diag gm-close" style="margin-top:16px">' + 발언줄(맺음글) + '</div>');
-    const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
-    const misses = Object.values(grades).filter(v => v === 'n').length;
-    html.push('<p class="pb-ft">' + answered + ' / ' + 전체문 + '문장에 답하셨습니다 — 맞아요 ' + hits + ' · 글쎄요 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니에요 ' + misses
-      + '. 답해 주신 것은 이 기기에만 남습니다.</p>');
-    // 「누가 맞혔는지 — 정율 3/4 · 온서 2/2」를 여기서 세고 있었다. 걷어냈다(2026-08-30 결재).
-    // 책사별 적중률을 세면 잘 맞힌 책사를 자주 부르고 싶어지고, 그 순간 판정이 인기순으로
-    // 왜곡된다. 책사는 인기로 뽑는 자리가 아니라 엔진 축이다. 세지 않는 것이 방어다.
-    // ── 채점의 끝에는 문이 있어야 한다 — 제출이 그 문의 손잡이다 ──
-    if (submitted) {
-      html.unshift('<p style="text-align:right;margin:0"><button class="btn-ghost" id="gmFold">접기 ▴</button></p>');
-    }
-    if (!submitted && answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
-      html.push('<div class="nx-diag pbd" style="margin-top:14px">'
-        + '<p class="nx-diag-k">답을 매듭지어 주시겠어요</p>'
-        + '<p>' + answered + ' / ' + 전체문 + '개 발언에 답하셨습니다. 매듭지으시면 어디가 맞고 어디가 빗나갔는지 한눈에 보여 드립니다. '
-        + '<b>답은 공주님 기기에만 남습니다</b> — 저희가 가져가지 않습니다.</p>'
-        + '<button class="btn" id="gmSubmit">답을 매듭짓겠습니다</button></div>');
-    }
-    if (submitted) {
-      const 머리말 = misses === 0 && answered === 전체문
-        ? '한 문장도 빗나가지 않았습니다 — 이 잣대가 공주님에게 꼭 맞습니다.'
-        : hits + '문장이 맞았습니다.' + (misses ? ' 빗나간 ' + misses + '문장은 지우지 않고 그대로 남깁니다.' : '');
-      html.push('<div class="nx-diag pbd" style="margin-top:14px">'
-        + '<p class="nx-diag-k">답을 받았습니다</p>'
-        + '<p>' + 머리말 + ' 지나온 해를 이만큼 짚은 잣대라면, 다음 물음은 하나입니다 — <b>「그래서 언제인가」</b>. 같은 잣대로 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
-        + '<button class="btn" id="gmNextLove">공주님의 사랑 이야기 — 다음 장 열기</button>'
-        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">공주님의 재물 이야기 열기</button>'
-        + '</div>');
-      // ── 관문을 옮긴 진짜 이유가 이 자리다 ──
-      // 문 앞에서 로그인을 청하면 아무것도 없는 사람에게 청하는 것이고,
-      // 여기서 청하면 **의논을 다 읽고 채점까지 한 사람**에게 청하는 것이다.
-      // 그때는 잃을 것이 생겼다. 없는 이득을 지어내지 않는다 —
-      // 실제로 되는 것만 적는다(기기가 바뀌어도 이어짐 · 결제를 계정에 맴).
-      if (비로그인()) {
-        html.push('<div class="nx-diag" style="margin-top:12px">'
-          + '<p class="nx-diag-k">이걸 남겨 둘까요</p>'
-          + '<p>지금 이 의논과 채점은 <b>이 기기에만</b> 있습니다. 브라우저를 정리하시면 사라집니다.'
-          + ' 카카오로 남겨 두시면 폰을 바꾸셔도 그대로 열립니다.</p>'
-          + '<button class="btn kakao" id="gmKeep"><span>💬</span>카카오로 남겨 두기</button></div>');
-      }
+    // 회의가 끝나면 문을 연다. 예전에는 **채점을 마쳐야** 이 문이 열렸는데,
+    // 채점을 치웠으니 조건도 없앤다 — 다 읽은 사람에게 그냥 연다.
+    html.push('<div class="nx-diag pbd" style="margin-top:16px">'
+      + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
+      + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
+      + '<button class="btn" id="gmNextLove">공주님의 사랑 이야기 — 다음 장 열기</button>'
+      + '<button class="btn" id="gmNextMoney" style="margin-top:8px">공주님의 재물 이야기 열기</button>'
+      + '</div>');
+    // 로그인은 여기서 청한다 — 의논을 다 읽은 사람에게는 잃을 것이 생겼다.
+    // 없는 이득을 지어내지 않는다. 실제로 되는 것만 적는다.
+    if (비로그인()) {
+      html.push('<div class="nx-diag" style="margin-top:12px">'
+        + '<p class="nx-diag-k">이걸 남겨 둘까요</p>'
+        + '<p>지금 이 의논은 <b>이 기기에만</b> 있습니다. 브라우저를 정리하시면 사라집니다.'
+        + ' 카카오로 남겨 두시면 폰을 바꾸셔도 그대로 열립니다.</p>'
+        + '<button class="btn kakao" id="gmKeep"><span>💬</span>카카오로 남겨 두기</button></div>');
     }
     el.innerHTML = html.join('');
-    const fd = el.querySelector('#gmFold');
-    if (fd) fd.onclick = () => { localStorage.setItem(foldKey, '1'); mountGanmyeong(el, whereTag); };
     const kp = el.querySelector('#gmKeep');
     if (kp) kp.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } };
     const nl = el.querySelector('#gmNextLove'), nm = el.querySelector('#gmNextMoney');
     if (nl) nl.onclick = () => go('lovestory');
     if (nm) nm.onclick = () => go('moneystory');
-    el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
-      grades[b.dataset.i] = b.dataset.v;
-      localStorage.setItem(gradeKey, JSON.stringify(grades));
-      localStorage.removeItem(submitKey);   // 답을 고치면 다시 매듭지을 수 있게
-      mountGanmyeong(el, whereTag);
-    });
-    // 채점은 기기 밖으로 나가지 않는다 (2026-08-30 결재).
-    // 예전엔 여기서 Supabase `ganmyeong_grade_put` 으로 문항별 채점을 실어 보냈다.
-    // 그 데이터를 받아 두던 유일한 이유가 「적중률 집계」였는데 그걸 안 하기로 했으니,
-    // 남은 것은 쓰지도 않을 개인 데이터를 모으는 일뿐이다. 그래서 통로째 끊었다.
-    // [매듭짓기]는 서버 제출이 아니라 「다 읽고 답했다」는 문의 손잡이로만 남는다.
-    const sb = el.querySelector('#gmSubmit');
-    if (sb) sb.onclick = () => {
-      localStorage.setItem(submitKey, '1');
-      localStorage.removeItem(foldKey);   // 매듭 직후엔 접힌 요약이 기본
-      mountGanmyeong(el, whereTag);
-    };
   }
 
   function renderLoveStory() {
