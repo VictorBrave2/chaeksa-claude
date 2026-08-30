@@ -1101,3 +1101,11 @@ details.fold > .tiles { margin-top: 10px; }
    금테로 둘러 스무 발언과 결이 다르다는 것을 눈으로 먼저 알린다. */
 .gm-close{border-left-color:var(--g3);background:var(--g3-bg)}
 .gm-close .gm-who{color:var(--g3-ink)}
+
+/* 「이 한마디 간직하기」 — 얼빡 장면 아래. 아뢰는 말 버튼보다 한 단 조용하게,
+   누르면 4:5 카드가 나온다. 캡처하고 싶어지는 자리에 캡처보다 나은 것을 둔다. */
+.hs-keep{display:block;width:100%;margin:8px 0 0;padding:9px 12px;border:1px solid rgba(230,201,138,.34);
+  border-radius:11px;background:rgba(22,20,51,.42);color:#e6c98a;font-size:12.5px;letter-spacing:.02em;
+  cursor:pointer;transition:background .16s,border-color .16s}
+.hs-keep:hover{background:rgba(22,20,51,.62);border-color:rgba(230,201,138,.6)}
+.hs-keep:disabled{opacity:.6;cursor:default}

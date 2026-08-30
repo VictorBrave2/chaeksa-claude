@@ -498,8 +498,29 @@
         + '<p class="hs-who">' + esc(이름of(이름0)) + '</p>'
         + '<p class="hs-role">' + esc(직함of(이름0)) + ' · ' + esc(이름0) + '</p>'
         + '<button class="hs-say" type="button">'
-        + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button></div>';
+        + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button>'
+        + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
       const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
+      // 보낼 만한 카드 — 원국 카드는 「내가 어떤 사람인가」의 증거고
+      // 이 카드는 「나에게 해 준 말」이다. 남의 대화창에 걸리는 쪽은 뒤쪽이다.
+      const bk = sc.querySelector('.hs-keep');
+      if (bk) bk.onclick = async () => {
+        bk.disabled = true; const 원 = bk.textContent; bk.textContent = '만드는 중…';
+        try {
+          const cv = $('shareCanvas');
+          await ChaeksaShare.drawSay(cv, {
+            초상: window.CHAEKSA_ART ? 'art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART : '',
+            이름: 이름of(이름0), 직함: 직함of(이름0), 말: 말0,
+            공주: nim(), 간지: f.pillar(tf.day) + '일',
+          });
+          const 이름칸 = nim().replace(/님$/, '');
+          const 보냄 = await ChaeksaShare.share(cv, 이름칸, '한마디',
+            이름of(이름0) + '이 아뢴 한마디 · chaeksa.kr');
+          bk.textContent = 보냄 ? '보냈습니다' : '저장했습니다';
+        } catch (e) { bk.textContent = '만들지 못했습니다'; }
+        bk.disabled = false;
+        setTimeout(() => { bk.textContent = 원; }, 2500);
+      };
     }
     // 책사단이 도열한다 — 대접의 핵심은 「나를 위해 여럿이 나와 있다」이다.
     // 겸사겸사 서랍에 숨은 화면들의 문이 되기도 한다: 열 사람이 곧 열 개의 문.

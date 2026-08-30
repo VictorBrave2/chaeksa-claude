@@ -128,27 +128,124 @@
     return canvas;
   }
 
+  // ── 두 번째 카드 — 오늘의 한마디 ────────────────────────
+  // 원국 카드는 「내가 어떤 사람인가」의 증거고, 이 카드는 「나에게 해 준 말」이다.
+  // 남의 대화창에 놓였을 때 걸리는 쪽은 언제나 뒤쪽이다.
+
+  /** 이미지 한 장. 없으면 null 로 돌려주고 카드는 얼굴 없이 그린다. */
+  function 그림(src) {
+    return new Promise((ok) => {
+      const im = new Image();
+      im.onload = () => ok(im);
+      im.onerror = () => ok(null);
+      im.src = src;
+    });
+  }
+
+  /** 글줄을 폭에 맞춰 자른다. 넘치면 마지막 줄에 말줄임. */
+  function 접기(ctx, text, maxW, maxLines) {
+    const 낱 = String(text).split(' ');
+    const 줄 = []; let cur = '';
+    for (const w of 낱) {
+      const t = cur ? cur + ' ' + w : w;
+      if (ctx.measureText(t).width <= maxW) { cur = t; continue; }
+      if (cur) 줄.push(cur);
+      cur = w;
+      if (줄.length === maxLines) break;
+    }
+    if (cur && 줄.length < maxLines) 줄.push(cur);
+    if (줄.length === maxLines) {
+      let last = 줄[maxLines - 1];
+      if (ctx.measureText(last).width > maxW || 낱.join(' ').length > 줄.join(' ').length) {
+        while (last.length > 2 && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1);
+        줄[maxLines - 1] = last + '…';
+      }
+    }
+    return 줄;
+  }
+
+  /**
+   * 오늘의 한마디 카드.
+   * @param {{초상:string, 이름:string, 직함:string, 말:string, 공주:string, 간지:string}} v
+   */
+  async function drawSay(canvas, v) {
+    if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+
+    // 얼굴 — 정사각 원본을 폭에 맞춰 덮고 위쪽(눈높이)을 남긴다.
+    const IH = 800;
+    const im = v.초상 ? await 그림(v.초상) : null;
+    if (im && im.width) {
+      const sc = W / im.width;
+      const dh = im.height * sc;
+      // 32% 지점을 화면 중앙에 두는 CSS object-position 과 같은 눈높이
+      ctx.drawImage(im, 0, Math.min(0, -(dh * 0.32 - IH / 2)), W, dh);
+    } else {
+      ctx.fillStyle = C.card; ctx.fillRect(0, 0, W, IH);
+    }
+    // 아래로 갈수록 밤으로 잠긴다 — 글자가 얼굴을 이기지 않게
+    const g = ctx.createLinearGradient(0, IH - 420, 0, IH);
+    g.addColorStop(0, 'rgba(22,20,51,0)'); g.addColorStop(1, C.bg);
+    ctx.fillStyle = g; ctx.fillRect(0, IH - 420, W, 420);
+
+    // 인장
+    const ss = 84, sx = 72, sy = 68;
+    const sg = ctx.createLinearGradient(sx, sy, sx + ss, sy + ss);
+    sg.addColorStop(0, '#f0d79b'); sg.addColorStop(1, '#bb9445');
+    ctx.fillStyle = sg; roundRect(ctx, sx, sy, ss, ss, 18); ctx.fill();
+    center(ctx, '策', sx + ss / 2, sy + 61, `900 54px ${HAN}`, C.sealInk);
+
+    // 이름과 직함
+    center(ctx, v.직함 || '', W / 2, IH - 78, `400 28px ${SANS}`, C.ink3);
+    center(ctx, v.이름 || '', W / 2, IH - 22, `700 62px ${SERIF}`, C.acc);
+
+    // 아뢴 말 — 카드의 주인공이다
+    ctx.font = `400 42px ${SERIF}`;
+    const 줄 = 접기(ctx, v.말 || '', W - 168, 5);
+    let y = IH + 96;
+    줄.forEach(t => { center(ctx, t, W / 2, y, `400 42px ${SERIF}`, C.ink); y += 62; });
+
+    // 누구에게 한 말인가
+    y = Math.max(y + 26, 1200);
+    ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 60, y - 44); ctx.lineTo(W / 2 + 60, y - 44); ctx.stroke();
+    center(ctx, (v.공주 || '') + (v.간지 ? ' · ' + v.간지 : ''), W / 2, y, `400 28px ${SANS}`, C.ink2);
+
+    // 푸터
+    ctx.textAlign = 'left';
+    ctx.font = `700 30px ${SANS}`; ctx.fillStyle = C.acc; ctx.fillText('chaeksa.kr', 72, 1306);
+    ctx.textAlign = 'right';
+    ctx.font = `400 25px ${SANS}`; ctx.fillStyle = C.ink3;
+    ctx.fillText('열 사람의 책사가 둘러앉습니다', W - 72, 1306);
+    ctx.textAlign = 'left';
+    return canvas;
+  }
+
   function toBlob(canvas) {
     return new Promise((res) => canvas.toBlob(res, 'image/png'));
   }
-  async function save(canvas, name) {
+  async function save(canvas, name, label) {
     const blob = await toBlob(canvas);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `책사_${name}_원국.png`;
+    a.href = url; a.download = `책사_${name}_${label || '원국'}.png`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  async function share(canvas, name) {
+  async function share(canvas, name, label, text) {
     const blob = await toBlob(canvas);
-    const file = new File([blob], `책사_${name}_원국.png`, { type: 'image/png' });
+    const file = new File([blob], `책사_${name}_${label || '원국'}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: '내 사주 원국', text: `${name}의 사주 원국 · chaeksa.kr` });
+      await navigator.share({ files: [file],
+        title: label ? '책사 · ' + label : '내 사주 원국',
+        text: text || `${name}의 사주 원국 · chaeksa.kr` });
       return true;
     }
-    await save(canvas, name);
+    await save(canvas, name, label);
     return false;
   }
 
-  global.ChaeksaShare = { draw, save, share, canShareFile: () => !!(navigator.canShare && navigator.share) };
+  global.ChaeksaShare = { draw, drawSay, save, share, canShareFile: () => !!(navigator.canShare && navigator.share) };
 })(window);
