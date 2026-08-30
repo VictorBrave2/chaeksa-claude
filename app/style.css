@@ -328,7 +328,8 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 /* ───── 네비 ───── */
 nav{
   position:fixed;left:0;right:0;bottom:0;z-index:9;
-  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;
+  /* 칸 수를 박아 두면 버튼을 지울 때마다 쏠린다(2026-08-30 여섯 칸에 버튼 넷) */
+  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:2px;
   padding:8px max(14px,calc((100vw - 520px)/2 + 14px));
   padding-bottom:calc(10px + env(safe-area-inset-bottom));
   background:var(--nav-bg);backdrop-filter:blur(16px);

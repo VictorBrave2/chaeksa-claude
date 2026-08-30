@@ -11,7 +11,10 @@
   const elemClass = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
   // 이름을 안 적으신 분은 「공주님」이다. 옛 프로필에 '공주님'이 저장돼 있을 수
   // 있어 둘 다 대체 이름으로 읽는다.
-  const nim = () => (profile.name === '공주님' || profile.name === '공주님')
+  // 옛 프로필에는 대체 이름이 '당신'으로 저장돼 있다. 둘 다 대체 이름으로 읽는다.
+  // ※ 일괄 치환이 이 검사를 먹어 두 갈래가 똑같아진 적이 있다(2026-08-30) —
+  //   그러면 옛 손님이 「당신님」으로 불린다. 여기 '당신'은 치환하면 안 된다.
+  const nim = () => (profile.name === '공주님' || profile.name === '당신')
     ? '공주님' : profile.name + '님';
   const nimSafe = () => esc(nim());
   const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
@@ -371,7 +374,10 @@
           결제이력받음 = true;
           if (!rows.length) return;
           inyeonFor = null; lsFor = null; msFor = null; dohwaFor = null;
-          go(tab);
+          // 조회가 늦게 돌아오는 사이 다른 화면으로 가 계실 수 있다.
+          // 그때 go(tab) 을 부르면 보고 계신 화면을 끄고 도로 끌어온다.
+          const el = document.querySelector('.tab[data-tab="' + tab + '"]');
+          if (el && !el.classList.contains('hide')) go(tab);
         }).catch(() => {});
       } catch (e) {}
     }
@@ -561,7 +567,9 @@
       if (bk) bk.onclick = async () => {
         bk.disabled = true; const 원 = bk.textContent; bk.textContent = '만드는 중…';
         try {
-          const cv = $('shareCanvas');
+          // 제 캔버스를 그 자리에서 만든다. #shareCanvas 를 같이 쓰면 원국 공유가
+          // shareReady 때문에 다시 안 그려서 한마디 카드를 원국이라며 내보낸다.
+          const cv = document.createElement('canvas');
           await ChaeksaShare.drawSay(cv, {
             초상: window.CHAEKSA_ART ? 'art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART : '',
             이름: 이름of(이름0), 직함: 직함of(이름0), 말: 말0,
@@ -2220,7 +2228,9 @@
       + '<span class="gm-who" title="' + esc(직함of(m[2]) + ' ' + m[2]) + '">'
       + 얼굴(m[2]) + esc(이름of(m[2])) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
   }
-  const GM_VER = 'v12';  // v12: 책사단 열 사람 · 호칭 공주님 (docs/22)
+  // v13: 열 목소리 · 좌장의 맺음 · 분배 상한 · 벽 자르기 · 유령 인용 제거(2026-08-30).
+  //      판을 안 올리면 이미 다녀가신 분은 옛 의논에 갇혀 오늘 한 일이 안 보인다.
+  const GM_VER = 'v13';
   const 간명키 = () => {
     const i = (R && R.input) || profile || {};
     return 'chaeksa.ganmyeong.' + GM_VER + '.' + [i.year, i.month, i.day, i.hour].join('.');
@@ -2723,7 +2733,7 @@
                 <p class="pb-vd">◆ 공주님에게는 ${esc(w.진사랑.십신)}의 자리 — ${esc(w.진사랑.십신뜻)}</p>
                 ${w.진사랑.회전문
                   ? `<p class="pb-vd">◆ 다만 방에 앉은 ${esc(w.진사랑.글자)}이 하늘에도 떠 있어 — ${esc(w.진사랑.방아쇠글자)}의 사람이 들어오려 하면 합해서 변질됩니다. <b>들어왔다 나가고, 나갔다 들어오는 회전문</b> — 인연이 자리를 못 잡던 구조적 이유입니다.</p>
-                     ${w.진사랑.지킴글자 ? `<p class="pb-vd">◆ 이 회전문을 타지 않는 유일한 글자는 <b>${esc(w.진사랑.지킴글자)}</b> — 안정형의 그 통로가 방을 끝내 지킵니다.</p>` : ''}
+                     ${w.진사랑.지킴글자 ? `<p class="pb-vd">◆ 이 회전문을 타지 않는 유일한 글자는 <b>${esc(w.진사랑.지킴글자)}</b> — 그 통로가 방을 끝내 지킵니다.</p>` : ''}
                      ${w.진사랑.해들.length && w.진사랑.대운겹 ? `<p class="pb-vd">◆ <b>${w.진사랑.해들[0]}년</b>은 대운 하늘에 이미 ${esc(w.진사랑.방아쇠글자)}이 떠 있어 세운만으로 두 번이 찹니다 — 해 전체가 방아쇠를 당기는 해입니다.</p>`
                        : w.진사랑.해들.length && w.진사랑.둘째달.length ? `<p class="pb-vd">◆ ${esc(w.진사랑.방아쇠글자)}이 굳이 들어온다면 두 번 겹쳐야 합니다 — <b>${w.진사랑.해들[0]}년 ${w.진사랑.둘째달.join('·')}월</b>: 첫 글자는 소모되고 둘째 글자가 방아쇠를 당깁니다.</p>` : ''}`
                   : `<p class="pb-vd">◆ 이 글자를 합으로 데려오는 방아쇠는 <b>${esc(w.진사랑.방아쇠글자)}</b>${w.진사랑.맞물림 ? ' — 공주님의 배우자성이기도 합니다. 궁과 성이 맞물린 사주라 이 사슬이 두 겹으로 조입니다' : ''}.${w.진사랑.해들.length ? ` <b>${w.진사랑.해들.join('·')}년</b>에 그 사람이 방으로 들어오기 쉽습니다.` : ''}</p>`}
