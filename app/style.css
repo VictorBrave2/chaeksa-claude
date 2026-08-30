@@ -1158,3 +1158,28 @@ details.fold > .tiles { margin-top: 10px; }
 .al-b .btn{flex:1;margin:0}
 @keyframes al-f{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.askline{animation:none}}
+
+/* 서고 — 홈의 아래쪽. 격자가 아니라 목록이다.
+   격자는 「고르는 화면」이고 목록은 「읽는 화면」이다. 로판의 홈은 뒤쪽이다.
+   (공주님 원칙 — 기각의 「대시보드」는 색이 아니라 구조이기도 하다) */
+.shelf{margin:26px 0 0}
+.shelf.last{margin-bottom:8px}
+.shelf-k{margin:0 4px 9px;font-size:10.5px;letter-spacing:.24em;color:var(--accent);
+  font-weight:700}
+.shelf .row{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:4px 12px;
+  width:100%;margin:0;padding:13px 2px 13px 4px;border:0;border-bottom:1px solid var(--line);
+  background:none;text-align:left;font-family:inherit;cursor:pointer;
+  transition:background .15s,padding-left .15s}
+.shelf .row:last-child{border-bottom:0}
+.shelf .row:hover{background:var(--accent-soft);padding-left:9px}
+.shelf .row b{grid-column:1;font-family:"Gowun Batang","Noto Serif KR",serif;
+  font-size:15px;font-weight:400;color:var(--ink);letter-spacing:-.01em}
+.shelf .row span{grid-column:1;font-size:12px;line-height:1.6;color:var(--ink3);
+  margin-top:3px}
+/* 오른쪽 끝 작은 글자 — 오늘 간지·등급처럼 app.js 가 채우는 값.
+   비어 있으면 자리를 안 차지한다(빈 칸이 목록을 흔들지 않게). */
+.shelf .row .row-x{grid-column:2;grid-row:1;font-style:normal;font-size:11.5px;
+  color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums;
+  /* 값이 길어질 수 있다(무재·대기만성형…). 제목을 밀어내지 않고 스스로 줄어든다 */
+  max-width:38%;overflow:hidden;text-overflow:ellipsis}
+.shelf .row .row-x:empty{display:none}

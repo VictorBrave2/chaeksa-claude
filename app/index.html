@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=424">
+<link rel="stylesheet" href="style.css?v=426">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -175,127 +175,82 @@
       <div class="home-scene hide" id="homeScene"></div>
       <section class="card" id="chong"></section>
       <div id="todayEnvoy"></div>
-      <!-- 2026-08-29 「다시 여성들이 매료될 구성과 구조로」 —
-           타일 벽을 이야기의 목차로 바꿨다. 첫 장은 사랑이고,
-           재물·일·재미는 접힌 문 뒤에 있다. 팩폭(사주 법정)은 맨 아래 그대로. -->
-      <details class="fold">
-        <summary class="sec-label">나의 사랑 이야기</summary>
-      <div class="tiles">
-        <button class="tile" data-open="dohwa">
-          <span class="ti-k">첫 장 · 나의 연애</span>
-          <span class="ti-big" id="tiDoBig">桃花</span>
-          <span class="ti-sub" id="tiDoSub">나는 어떤 사랑을 하는지 · 어떤 사람이 나를 사랑하는지</span>
-        </button>
-        <button class="tile" data-open="lovestory">
-          <span class="ti-k">둘째 장 · 공주님의 사랑 이야기</span>
-          <span class="ti-big">戀愛</span>
-          <span class="ti-sub">지나온 사랑의 그 무렵을 짚어 드립니다</span>
-        </button>
-        <button class="tile" data-open="inyeon">
-          <span class="ti-k">셋째 장 · 인연이 오는 해</span>
-          <span class="ti-big" id="tiInBig">因緣</span>
-          <span class="ti-sub" id="tiInSub">앞으로 열 해 중 언제 기우는가</span>
-        </button>
-        <button class="tile" data-open="compat">
-          <span class="ti-k">넷째 장 · 우리 둘 사이</span>
-          <span class="ti-big" id="tiAccBig">二人</span>
-          <span class="ti-sub" id="tiAccSub">그 사람에게 나는, 나에게 그 사람은</span>
-        </button>
-        <button class="tile" data-open="ganmyeong">
-          <span class="ti-k">책사단의 의논</span>
-          <span class="ti-big">議</span>
-          <span class="ti-sub">열 사람이 둘러앉아 다툽니다 — 누가 맞혔는지는 공주님이 정하십니다</span>
-        </button>
-      </div>
-      </details>
+      <!-- 서고 — 격자가 아니라 목록이다. 격자는 고르는 화면이고 목록은 읽는 화면이다.
+           기각 목록의 「대시보드」는 색이 아니라 구조라(공주님 원칙) 2열 타일을 걷었다.
+           id 는 그대로 둔다 — app.js 가 갱신하는 자리다. -->
+      <section class="shelf">
+        <p class="shelf-k">공주님의 이야기</p>
+        <button class="row" data-open="dohwa">
+          <b>첫 장 · 나의 연애</b><span id="tiDoSub">나는 어떤 사랑을 하는지</span>
+          <i id="tiDoBig" class="row-x"></i></button>
+        <button class="row" data-open="lovestory">
+          <b>둘째 장 · 공주님의 사랑 이야기</b><span>지나온 사랑의 그 무렵을 짚어 드립니다</span></button>
+        <button class="row" data-open="inyeon">
+          <b>셋째 장 · 인연이 오는 해</b><span id="tiInSub">앞으로 열 해 중 언제 기우는가</span>
+          <i id="tiInBig" class="row-x"></i></button>
+        <button class="row" data-open="compat">
+          <b>넷째 장 · 우리 둘 사이</b><span id="tiAccSub">그 사람에게 나는, 나에게 그 사람은</span>
+          <i id="tiAccBig" class="row-x"></i></button>
+        <button class="row" data-open="ganmyeong">
+          <b>책사단의 의논</b><span>열 사람이 둘러앉아 다툽니다 — 누가 맞혔는지는 공주님이 정하십니다</span></button>
+      </section>
 
-      <details class="fold">
-        <summary class="sec-label">나의 날들</summary>
-      <div class="tiles">
-        <button class="tile" data-open="today">
-          <span class="ti-k">오늘의 흐름</span>
-          <span class="ti-big" id="tiTodayGz">―</span>
-          <span class="ti-sub" id="tiTodayGod">일운·시운까지</span>
-        </button>
-        <button class="tile" data-open="ban">
-          <span class="ti-k">오늘 조심할 것</span>
-          <span class="ti-big" id="tiBanGz">夜</span>
-          <span class="ti-sub" id="tiBanSub">매일 바뀝니다</span>
-        </button>
-        <button class="tile" data-open="year">
-          <span class="ti-k">올해의 나</span>
-          <span class="ti-big" id="tiYearBig">歲運</span>
-          <span class="ti-sub" id="tiYearSub">남은 달 중 언제가 나에게 좋은가</span>
-        </button>
-        <button class="tile" data-open="jichim">
-          <span class="ti-k">지칠 때와 채울 때</span>
-          <span class="ti-big" id="tiJcBig">養</span>
-          <span class="ti-sub" id="tiJcSub">나는 무엇에 지치고 무엇으로 회복하나</span>
-        </button>
-        <button class="tile" data-open="naepyeon">
-          <span class="ti-k">내 편이 되는 사람</span>
-          <span class="ti-big" id="tiNpBig">助</span>
-          <span class="ti-sub" id="tiNpSub">어떤 결의 사람을 곁에 두면 좋은가</span>
-        </button>
-        <button class="tile" data-open="gacha">
-          <span class="ti-k">공주님의 유형 카드</span>
-          <span class="ti-big" id="tiGachaBig">牌 789</span>
-          <span class="ti-sub" id="tiGachaSub">789가지 가운데 공주님의 한 장 — 간직하고 보내세요</span>
-        </button>
-      </div>
-      </details>
+      <section class="shelf">
+        <p class="shelf-k">날마다</p>
+        <button class="row" data-open="today">
+          <b>오늘의 흐름</b><span id="tiTodayGod">일운·시운까지</span>
+          <i id="tiTodayGz" class="row-x"></i></button>
+        <button class="row" data-open="ban">
+          <b>오늘 조심할 것</b><span id="tiBanSub">매일 바뀝니다</span>
+          <i id="tiBanGz" class="row-x"></i></button>
+        <button class="row" data-open="year">
+          <b>올해의 나</b><span id="tiYearSub">남은 달 중 언제가 나에게 좋은가</span>
+          <i id="tiYearBig" class="row-x"></i></button>
+        <button class="row" data-open="cal">
+          <b>택일 달력</b><span id="tiCalSub">좋은 날 찾기</span></button>
+      </section>
 
-      <details class="fold">
-        <summary class="sec-label">재물 · 일 · 재미 — 더 보기</summary>
-        <div class="tiles">
-          <button class="tile" data-open="moneystory">
-            <span class="ti-k">공주님의 재물 이야기</span>
-            <span class="ti-big">財運</span>
-            <span class="ti-sub">돈이 들어왔던 그 무렵을 짚어 드립니다</span>
-          </button>
-          <button class="tile" data-open="nokpae">
-            <span class="ti-k">나의 재물 그릇</span>
-            <span class="ti-big" id="tiNokBig">財</span>
-            <span class="ti-sub" id="tiNokSub">얼마나 담을 그릇인지, 상위 몇 %인지</span>
-          </button>
-          <button class="tile" data-open="jikcheop">
-            <span class="ti-k">나에게 맞는 일</span>
-            <span class="ti-big" id="tiJikBig">天職</span>
-            <span class="ti-sub" id="tiJikSub">타고난 결이 어느 쪽인지</span>
-          </button>
-          <button class="tile" data-open="life">
-            <span class="ti-k">인생 곡선</span>
-            <span class="ti-big" id="tiLifeBig">大運</span>
-            <span class="ti-sub" id="tiLifeSub">내 전성기는 몇 살인가</span>
-          </button>
-          <button class="tile" data-open="me">
-            <span class="ti-k">타고난 바탕</span>
-            <span class="ti-big" id="tiMeStr">―</span>
-            <span class="ti-sub">여덟 글자를 다섯 장으로 나눠 봅니다</span>
-          </button>
-        </div>
-      </details>
+      <section class="shelf">
+        <p class="shelf-k">나를 아는 일</p>
+        <button class="row" data-open="me">
+          <b id="tiMeStr">타고난 바탕</b>
+          <span>여덟 글자를 다섯 장으로 나눠 봅니다</span></button>
+        <button class="row" data-open="jichim">
+          <b>지칠 때와 채울 때</b><span id="tiJcSub">나는 무엇에 지치고 무엇으로 회복하나</span>
+          <i id="tiJcBig" class="row-x"></i></button>
+        <button class="row" data-open="naepyeon">
+          <b>내 편이 되는 사람</b><span id="tiNpSub">어떤 결의 사람을 곁에 두면 좋은가</span>
+          <i id="tiNpBig" class="row-x"></i></button>
+        <button class="row" data-open="gacha">
+          <b>공주님의 유형 카드</b>
+          <span id="tiGachaSub">789가지 가운데 공주님의 한 장 — 간직하고 보내세요</span>
+          <i id="tiGachaBig" class="row-x"></i></button>
+      </section>
 
-      <details class="fold">
-        <summary class="sec-label">더 보기</summary>
-      <button class="hero-banner alt" data-open="memo" id="memoBanner">
-        <span class="hb-badge" id="memoBadge">비망록</span>
-        <span class="hb-title" id="memoTitle">記 · 판단 기록장</span>
-        <span class="hb-sub" id="memoSub">물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다</span>
-      </button>
-      <button class="hero-banner alt" data-open="taekil">
-        <span class="hb-badge">택일</span>
-        <span class="hb-title">擇 · 출산택일 보고서</span>
-        <span class="hb-sub">제왕절개 날짜·시각을 근거 문서로 받아보세요 · 사람이 직접 봅니다</span>
-      </button>
-      <div class="tiles">
-        <button class="tile" data-open="cal">
-          <span class="ti-k">택일 달력</span>
-          <span class="ti-big">曆</span>
-          <span class="ti-sub" id="tiCalSub">좋은 날 찾기</span>
-        </button>
-      </div>
-      </details>
+      <section class="shelf">
+        <p class="shelf-k">돈과 일</p>
+        <button class="row" data-open="moneystory">
+          <b>공주님의 재물 이야기</b><span>돈이 들어왔던 그 무렵을 짚어 드립니다</span></button>
+        <button class="row" data-open="nokpae">
+          <b>나의 재물 그릇</b><span id="tiNokSub">얼마나 담을 그릇인지</span>
+          <i id="tiNokBig" class="row-x"></i></button>
+        <button class="row" data-open="jikcheop">
+          <b>나에게 맞는 일</b><span id="tiJikSub">타고난 결이 어느 쪽인지</span>
+          <i id="tiJikBig" class="row-x"></i></button>
+        <button class="row" data-open="life">
+          <b>인생 곡선</b><span id="tiLifeSub">언제가 가장 두터운가</span>
+          <i id="tiLifeBig" class="row-x"></i></button>
+      </section>
+
+      <section class="shelf last">
+        <p class="shelf-k">그 밖</p>
+        <button class="row" data-open="memo" id="memoBanner">
+          <b id="memoTitle">비망록</b>
+          <span id="memoSub">물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다</span>
+          <i id="memoBadge" class="row-x"></i></button>
+        <button class="row" data-open="taekil">
+          <b>출산택일 보고서</b><span>제왕절개 날짜·시각을 근거 문서로 · 사람이 직접 봅니다</span></button>
+      </section>
     </div>
     <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
     <div class="tab hide" data-tab="ban">
@@ -829,29 +784,29 @@
   </div>
 </div>
 
-<script src="config.js?v=424"></script>
-<script src="track.js?v=424"></script>
-<script src="cloud.js?v=424"></script>
-<script src="usage.js?v=424"></script>
-<script src="places.js?v=424"></script>
-<script src="people.js?v=424"></script>
-<script src="astro.js?v=424"></script>
-<script src="lunar.js?v=424"></script>
-<script src="engine.js?v=424"></script>
-<script src="chaeyong.js?v=424"></script>
-<script src="brief.js?v=424"></script>
-<script src="chaeksadan.js?v=424"></script>
-<script src="typecard.js?v=424"></script>
-<script src="gyeokguk.js?v=424"></script>
-<script src="memo.js?v=424"></script>
-<script src="classic.js?v=424"></script>
-<script src="calendar.js?v=424"></script>
-<script src="tongbyeon.js?v=424"></script>
-<script src="rules-wealth-love.js?v=424"></script>
-<script src="rules-health-study-move.js?v=424"></script>
-<script src="share.js?v=424"></script>
-<script src="ai.js?v=424"></script>
-<script src="pay.js?v=424"></script>
-<script src="app.js?v=424"></script>
+<script src="config.js?v=426"></script>
+<script src="track.js?v=426"></script>
+<script src="cloud.js?v=426"></script>
+<script src="usage.js?v=426"></script>
+<script src="places.js?v=426"></script>
+<script src="people.js?v=426"></script>
+<script src="astro.js?v=426"></script>
+<script src="lunar.js?v=426"></script>
+<script src="engine.js?v=426"></script>
+<script src="chaeyong.js?v=426"></script>
+<script src="brief.js?v=426"></script>
+<script src="chaeksadan.js?v=426"></script>
+<script src="typecard.js?v=426"></script>
+<script src="gyeokguk.js?v=426"></script>
+<script src="memo.js?v=426"></script>
+<script src="classic.js?v=426"></script>
+<script src="calendar.js?v=426"></script>
+<script src="tongbyeon.js?v=426"></script>
+<script src="rules-wealth-love.js?v=426"></script>
+<script src="rules-health-study-move.js?v=426"></script>
+<script src="share.js?v=426"></script>
+<script src="ai.js?v=426"></script>
+<script src="pay.js?v=426"></script>
+<script src="app.js?v=426"></script>
 </body>
 </html>
