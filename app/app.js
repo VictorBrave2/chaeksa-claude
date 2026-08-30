@@ -841,8 +841,22 @@
     const box = $('aiBrief'), cta = $('aiBriefCta');
     const stale = $('hdGate'); if (stale) stale.remove();
     if (!AI.ready()) { heroFallback(); cta.classList.remove('hide'); return; }
+    // 앱을 여는 것만으로 원가가 나가면 안 된다. 오늘치가 이미 구워져 있으면 그대로 펴고,
+    // 없으면 규칙 엔진의 문장을 세운 뒤 「청하기」를 내민다.
+    // (dailyBrief 는 안에서 buildProfile 까지 부르므로 자동으로 두 번이 나갔다.)
+    const 구운것 = AI.briefCached ? AI.briefCached(R, today) : null;
+    if (!구운것 && !loadAiBrief.청함) {
+      heroFallback();
+      cta.classList.remove('hide');
+      const bb = $('btnAiBrief');
+      if (bb) {
+        bb.textContent = '좌장에게 오늘을 묻기';
+        bb.onclick = () => { loadAiBrief.청함 = true; loadAiBrief(); };
+      }
+      return;
+    }
     cta.classList.add('hide');
-    box.className = 'hd-lede loading'; box.textContent = '비서가 오늘을 읽는 중…';
+    box.className = 'hd-lede loading'; box.textContent = '좌장이 오늘을 읽는 중…';
     try { const t = await AI.dailyBrief(R, today); box.className = 'hd-lede'; box.textContent = t; const c = $('hdFresh'); if (c) c.textContent = 'AI 비서'; collapseRuleCard(true); }
     catch (e) {
       box.className = 'hd-lede';
@@ -1187,14 +1201,38 @@
   };
   async function renderProfileCard() {
     let card = $('aiProfile');
-    if (!card) { card = document.createElement('section'); card.className = 'card'; card.id = 'aiProfile'; $('daeun').closest('.card').before(card); }
+    if (!card) { card = document.createElement('section'); card.className = 'card'; card.id = 'aiProfile'; $('daeun').closest('.card').after(card); }
+    const 머리 = '<h2>좌장이 읽는 원국</h2>';
     const cached = AI.getProfile(R);
-    if (cached) { card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
-    if (!AI.ready()) { card.innerHTML = `<h2>비서의 원국 해석</h2><p class="hint">AI 비서를 연결하면 원국을 한 번 정밀 분석해 고정 기준으로 씁니다.</p>`; return; }
-    card.innerHTML = `<h2>비서의 원국 해석</h2><div class="brief loading">원국을 정밀 분석하는 중… (처음 한 번만, 30초쯤)</div>`;
-    try { const t = await AI.buildProfile(R, today); card.innerHTML = `<h2>비서의 원국 해석 (고정)</h2><div class="brief" style="font-size:15px">${mdLite(t)}</div>`; }
-    catch (e) { card.innerHTML = `<h2>비서의 원국 해석</h2><p class="hint">분석 실패: ${e.message}</p>`; }
-    if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+    if (cached) { card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
+    if (!AI.ready()) { card.innerHTML = 머리 + '<p class="hint">지금은 좌장을 부를 수 없습니다. 위 계산은 그대로 유효합니다.</p>'; return; }
+    // 누르셔야 굽는다 — 화면을 여는 것만으로 원가가 나가면 안 된다.
+    // 토큰만 먹고 출력이 안 되던 사고 뒤에 세운 잠금이 여기만 비어 있었다.
+    card.innerHTML = 머리
+      + '<p class="hint">여덟 글자와 대운을 좌장 태윤이 한 번에 읽어 드립니다. 한 번 읽으면 그대로 남습니다.</p>'
+      + '<button class="btn" id="btnProfileAsk">좌장에게 청하기</button>';
+    const b = card.querySelector('#btnProfileAsk');
+    if (!b) return;
+    b.onclick = async () => {
+      b.disabled = true;
+      card.innerHTML = 머리 + '<div class="brief loading">좌장이 원국을 읽는 중… (한 번만 읽고 그대로 둡니다)</div>';
+      try {
+        const t = await AI.buildProfile(R, today);
+        card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(t)}</div>`;
+        if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+      } catch (e) {
+        // 원문 오류를 공주님께 보여 드리지 않는다. 무슨 말인지 알 수 없고 고칠 수도 없다.
+        try { console.warn('원국 해석 실패:', e); } catch (e2) {}
+        const 한도 = e && (e.blocked || /한도|limit/i.test(String(e && e.message)));
+        card.innerHTML = 머리
+          + '<p class="hint">' + (한도
+              ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다.'
+              : '지금은 좌장을 부르지 못했습니다 — 위 계산은 그대로 유효합니다.') + '</p>'
+          + (한도 ? '' : '<button class="btn" id="btnProfileRetry">다시 청하기</button>');
+        const rb = card.querySelector('#btnProfileRetry');
+        if (rb) rb.onclick = () => renderProfileCard();
+      }
+    };
   }
 
   // ───── 달력 ─────

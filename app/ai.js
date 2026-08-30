@@ -469,8 +469,17 @@ ${prof}` : ''}`;
       { task: 'story', maxTokens: 7000, effort: 'high', strict: true, cachePk });
   }
 
+  /** 오늘치가 이미 구워져 있는가. 키 모양을 부르는 쪽이 베끼면 반드시 어긋나므로
+   *  여기서만 만든다. 화면은 이것이 있을 때만 공짜로 펼 수 있다. */
+  function briefKey(r, today) {
+    return `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
+  }
+  function briefCached(r, today) {
+    try { return localStorage.getItem(briefKey(r, today)); } catch (e) { return null; }
+  }
+
   async function dailyBrief(r, today) {
-    const ck = `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
+    const ck = briefKey(r, today);
     const cached = localStorage.getItem(ck);
     if (cached) return cached;
     await buildProfile(r, today);
@@ -603,5 +612,5 @@ ${list}
     return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { task: 'compat', maxTokens: 700 });
   }
 
-  global.ChaeksaAI = { dehanja, deepNarrate, storyTell, ganmyeong, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { briefCached, dehanja, deepNarrate, storyTell, ganmyeong, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
 })(window);
