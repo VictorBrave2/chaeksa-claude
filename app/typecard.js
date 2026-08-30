@@ -2778,7 +2778,41 @@
       if ((CHEONEUL[dsB] || []).indexOf(dbA) >= 0) 신살.push({ 결: '귀인', 말: 님(nameA) + '이 ' + 님(nameB) + '에게 천을귀인 자리입니다 — 그쪽이 기대는 쪽입니다' });
       const 공A = gongmang(dsA, dbA);
       if (공A.indexOf(dbB) >= 0) 신살.push({ 결: '공망', 말: 님(nameB) + '의 자리가 ' + 님(nameA) + '의 공망에 듭니다 — 곁에 있어도 손에 안 잡히는 느낌이 들기 쉽습니다' });
+
+      // 암합(명암합) — 겉으로는 안 보이는데 속으로 물린다.
+      // 한쪽의 일간이 다른 쪽 일지의 지장간과 합하는 자리다.
+      const 속A = (E.HIDDEN && E.HIDDEN[dbA]) || [], 속B = (E.HIDDEN && E.HIDDEN[dbB]) || [];
+      if (속B.some(h => E.isHap(dsA, h))) {
+        신살.push({ 결: '암합', 말: 님(nameA) + '의 글자가 ' + 님(nameB) + '의 자리 속 글자와 몰래 물립니다 — 겉으로 드러나지 않는데 마음이 가는 쪽입니다' });
+      }
+      if (속A.some(h => E.isHap(dsB, h))) {
+        신살.push({ 결: '암합', 말: 님(nameB) + '의 글자가 ' + 님(nameA) + '의 자리 속 글자와 몰래 물립니다 — 그쪽이 티 안 내고 끌리는 자리입니다' });
+      }
     }
+
+    // ── 조후 — 그 사람이 내 더위·추위를 풀어 주는가 ──────────
+    // 채움(강약)과는 다른 축이다. 강약은 힘의 문제고 조후는 온도의 문제다.
+    // 온서가 「뼈대보다 먼저 온도를 본다」고 하는 그 자리를 두 사람에게 맞대어 본다.
+    let 온도 = null;
+    try {
+      const C = global.ChaeksaClassic;
+      const gA = C && C.gungtong ? C.gungtong(Rme) : null;
+      if (gA && gA.need) {
+        const 필요 = gA.need;
+        const 가짐 = [dsB, ...(E.HIDDEN[dbB] || [])].some(st => E.STEMS[st] === 필요)
+          || E.STEM_ELEM[dsB] === E.STEM_ELEM[E.STEMS.indexOf(필요)];
+        if (가짐) {
+          온도 = { 종류: '풀어줌', 글자: 필요,
+            말:님(nameB) + '이 ' + 님(nameA) + '께 필요한 글자 ' + 필요 + '의 결을 지니고 있습니다 — '
+              + '곁에 있으면 계절이 풀리는 쪽입니다' };
+        } else if (gA.기신 && gA.기신 !== '없음'
+                   && String(gA.기신).indexOf(E.ELEM[E.STEM_ELEM[dsB]]) >= 0) {
+          온도 = { 종류: '거스름', 글자: gA.기신,
+            말:님(nameB) + '의 결은 ' + 님(nameA) + '께 거슬리는 쪽(' + gA.기신 + ')입니다 — '
+              + '나쁜 사람이라는 뜻이 아니라, 오래 붙어 있으면 공주님이 더워지거나 추워집니다' };
+        }
+      }
+    } catch (e) {}
 
     const 끌림 = [], 부딪힘 = [];
 
@@ -2842,16 +2876,54 @@
     if (채움 && 채움.종류 === '서로') 맺음줄.push('그리고 서로 숨을 트여 줍니다');
     else if (채움 && 채움.종류 === '받음') 맺음줄.push('숨이 트이는 쪽은 ' + 님(nameA) + '입니다');
     else if (채움 && 채움.종류 === '줌') 맺음줄.push('내주는 쪽은 ' + 님(nameA) + '입니다');
+    // 온도는 힘과 다른 축이다 — 곁에 있으면 계절이 풀리는가, 더 더워지는가
+    if (온도 && 온도.종류 === '풀어줌') 맺음줄.push('곁에 있으면 계절이 풀립니다');
+    else if (온도 && 온도.종류 === '거스름') 맺음줄.push('다만 오래 붙어 있으면 온도가 한쪽으로 기웁니다');
     if (끌림.length && 부딪힘.length) 맺음줄.push('끌리는 만큼 부딪히는데, 그 둘이 같은 이유에서 나옵니다');
     else if (끌림.length) 맺음줄.push('붙어 있을수록 편해집니다');
     else if (부딪힘.length) 맺음줄.push('가만두면 어긋납니다 — 서로 다르다는 것을 먼저 인정해야 갑니다');
     if (!맺음줄.length) 맺음줄.push('크게 끌리지도 부딪히지도 않습니다. 편안한 대신 잔잔합니다');
     const 맺음 = 맺음줄.join('. ') + '.';
 
+    // ── 그 사람은 어떤 사람인가 (2026-08-30) ───────────────
+    // 「이 사람 쓸만한가」가 이 화면의 물음이다. 그런데 여태 관계만 보고
+    // 그 사람 자체는 한 번도 안 봤다 — 재는 코드는 이미 다 있는데
+    // 공주님한테만 돌리고 그 사람한테는 안 돌렸다.
+    // 판정은 공주님 것과 똑같은 함수로 낸다. 잣대가 다르면 견줄 수가 없다.
+    const 그사람 = [];
+    try {
+      const w = wealth(Ryou, when, cachedSample && cachedSample());
+      if (w && w.grade) 그사람.push({ 결: '돈', 이름: w.grade.name,
+        말: (w.lines && w.lines[0]) || '', 상위: w.top });
+    } catch (e) {}
+    try {
+      const c = career(Ryou, null);
+      if (c && c.name) 그사람.push({ 결: '일', 이름: c.name,
+        말: (c.note || '') + (c.jobs ? ' — ' + c.jobs : '') });
+    } catch (e) {}
+    try {
+      const j = jichim(Ryou);
+      if (j) 그사람.push({ 결: '몸', 이름: j.강약,
+        말: (j.빈 && j.빈.length ? '평생 얇은 고리는 ' + j.빈.map(x => x.오행).join('·') + '. ' : '')
+          + (j.채 && j.채.length ? '채우는 것은 ' + j.채.map(x => x.오행).join('·') + '입니다.' : '') });
+    } catch (e) {}
+    try {
+      // name 은 문자열이고 note 가 설명이다. 배열로 착각해 첫 글자만 자른 적이 있다.
+      const l = love(Ryou, when, null);
+      if (l && l.name) 그사람.push({ 결: '사랑결', 이름: l.name, 말: l.note || '' });
+    } catch (e) {}
+    try {
+      const g = gyeok(Ryou);
+      if (g && g.name) 그사람.push({ 결: '뼈대', 이름: g.name + '격',
+        말: g.판정 === '섰다' ? '뼈대가 선 사주입니다'
+          : g.판정 === '깨졌다' ? '뼈대가 흔들린 자리가 있습니다 — 반듯한 길보다 제 길로 가는 쪽입니다'
+          : '' });
+    } catch (e) {}
+
     // 그 사람이 지금 어디에 서 있는가 — 같은 사람도 지나는 운에 따라 다르게 군다
     let 지금 = null;
     try { 지금 = nowOf(Ryou, when); } catch (e) {}
-    return { 나에게, 그에게, 끌림, 부딪힘, 채움, 맺음, 지금, 맞물림, 신살, nameA, nameB };
+    return { 나에게, 그에게, 끌림, 부딪힘, 채움, 온도, 맺음, 지금, 맞물림, 신살, 그사람, nameA, nameB };
   }
 
   /** 우리 둘 사이 카드. 판결문이 아니라 한 장의 편지처럼 짠다. */

@@ -1323,6 +1323,14 @@
     const meName = profile.name || '나', youName = you0.name || '상대';
     const v = T.relation(R, you, meName, youName, today);
     const box = $('compatResult'); box.classList.remove('hide');
+    // 「돈을 잘 버는지」의 답은 「상위 몇 %」다. 그건 표본이 있어야 나온다.
+    // 없으면 조용히 지어두고 한 번만 다시 그린다 — 화면을 붙잡지 않는다.
+    try {
+      if (T.cachedSample && !T.cachedSample() && !showCompat.표본짓는중) {
+        showCompat.표본짓는중 = true;
+        T.buildSample(null, () => { try { showCompat(you0); } catch (e) {} });
+      }
+    } catch (e) {}
     // 「이 사람이 그 사람인가」 — 공주님이 생일을 넣는 이유가 정확히 이것이다.
     // 지위는 단정하지 않는다(사주에 없다). 두 원국이 맞물리는가만 말한다.
     const m0 = v.맞물림 || {};
@@ -1335,10 +1343,25 @@
           <b>${esc(m0.방글자표기)}</b>와 같은 결입니다 — 방에 들어올 수 있는 사람입니다.</p>` : ''}
         <p class="ms">두 분이 어떤 사이인지는 사주에 적혀 있지 않습니다. 맞물리는가만 말씀드립니다.</p>
       </div>`;
-    // 신살 — 이 화면에서만 맞대어 본다. 엔진의 판정은 건드리지 않는다.
-    const 신살절 = !(v.신살 && v.신살.length) ? '' : `
-      <div class="signbox">${v.신살.map(x =>
+    // 신살·조후 — 이 화면에서만 맞대어 본다. 엔진의 판정은 건드리지 않는다.
+    const 결들 = (v.신살 || []).slice();
+    if (v.온도) 결들.unshift({ 결: '조후', 말: v.온도.말 });
+    if (v.채움) 결들.push({ 결: '채움', 말: v.채움.말 });
+    const 신살절 = !결들.length ? '' : `
+      <div class="signbox">${결들.map(x =>
         `<p class="sg"><b>${esc(x.결)}</b> ${esc(x.말)}</p>`).join('')}</div>`;
+    // 「이 사람 쓸만한가」 — 관계보다 먼저 오는 물음이다.
+    // 판정은 공주님 화면과 똑같은 함수로 냈다. 잣대가 다르면 견줄 수가 없다.
+    const 사람절 = !(v.그사람 && v.그사람.length) ? '' : `
+      <div class="manbox">
+        <p class="mnk">${esc(youName)}님은 어떤 사람인가</p>
+        ${v.그사람.map(x => `<div class="mn">
+          <span class="mn-k">${esc(x.결)}</span>
+          <span class="mn-v">${esc(x.이름)}${x.상위 ? ` · 상위 ${esc(x.상위)}%` : ''}</span>
+          ${x.말 ? `<span class="mn-s">${esc(x.말)}</span>` : ''}
+        </div>`).join('')}
+        <p class="mns">공주님 화면과 같은 잣대로 잰 것입니다 — 그래야 견줄 수 있습니다.</p>
+      </div>`;
     // 그 사람이 지금 지나는 운 — 관계의 뼈대 위에 「지금」을 얹는다
     const n = v.지금;
     const 지금절 = !n ? '' : `
@@ -1387,6 +1410,7 @@
           <p class="rb">${esc(v.그에게.말[0])}</p>
           <p class="rs">${esc(v.그에게.말[1])}</p></div>
       </div>
+      ${사람절}
       ${신살절}
       ${지금절}
       ${달절}

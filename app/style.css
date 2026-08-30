@@ -1233,3 +1233,17 @@ details.fold > .tiles { margin-top: 10px; }
 .signbox .sg{margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)}
 .signbox .sg b{color:var(--accent);font-weight:700;margin-right:5px}
 @media (max-width:340px){ .rel-two{grid-template-columns:1fr} }
+
+/* 「그 사람은 어떤 사람인가」 — 「이 사람 쓸만한가」가 이 화면의 물음이다.
+   판정은 공주님 화면과 똑같은 함수로 낸다. 잣대가 다르면 견줄 수가 없다. */
+.manbox{margin:0 0 16px;padding:15px 16px;border-radius:13px;
+  border:1px solid var(--line);background:var(--card2)}
+.manbox .mnk{margin:0 0 12px;font-size:10.5px;letter-spacing:.22em;color:var(--accent);font-weight:700}
+.manbox .mn{display:grid;grid-template-columns:44px 1fr;gap:2px 10px;
+  padding:9px 0;border-bottom:1px solid var(--line)}
+.manbox .mn:last-of-type{border-bottom:0}
+.manbox .mn-k{grid-row:span 2;font-size:11px;color:var(--ink3);padding-top:3px;
+  letter-spacing:.04em}
+.manbox .mn-v{font-family:"Gowun Batang","Noto Serif KR",serif;font-size:15px;color:var(--ink)}
+.manbox .mn-s{font-size:11.5px;line-height:1.65;color:var(--ink3)}
+.manbox .mns{margin:11px 0 0;font-size:11px;color:var(--ink3);opacity:.8}
