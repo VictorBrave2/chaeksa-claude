@@ -4,5 +4,6 @@ Allow: /
 
 # 시험용 페이지는 색인하지 않는다 — 검색 결과에 뜨면 신뢰만 깎인다
 Disallow: /cards.html
+Disallow: /tools/
 
 Sitemap: https://chaeksa.kr/sitemap.xml

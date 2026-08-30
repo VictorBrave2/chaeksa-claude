@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>블로그 통계 하네스 — 책사</title>
+<!--
+  여성향 블로그 글의 숫자를 뽑는 상설 도구.
+
+  왜 만들었나 — 매 편 통계를 손으로 새로 짜다가 **축 묶임 함정**을 밟았다.
+  3일·3시간 간격으로 훑었더니 시지가 여덟 종류만 나왔고, 도화 자리인
+  子卯午酉 가 그 여덟에 다 들어 있어 숫자가 부풀 뻔했다(2026-08-31).
+  그래서 이 도구는 **표본이 고른지 먼저 보여준다.** 그게 첫 화면이다.
+
+  여기의 신살 규칙은 **블로그 통계 전용이다. 엔진에 넣지 않는다.**
+  「우리 둘 사이에서만 쓰자」와 같은 선이다 — 판정을 흔들지 않는다.
+  각 규칙에 출전을 적어 두었고, 확인 못 한 것은 확인 못 했다고 적는다.
+-->
+<script src="../config.js"></script>
+<script src="../places.js"></script>
+<script src="../astro.js"></script>
+<script src="../lunar.js"></script>
+<script src="../engine.js"></script>
+<script src="../classic.js"></script>
+<script src="../gyeokguk.js"></script>
+<style>
+  :root{--bg:#161433;--card:#1c1a3c;--ink:#eeeaf7;--ink2:#b6aed4;--ink3:#8f87b3;
+        --acc:#e6c98a;--line:#302c5c;--ok:#7cc487;--warn:#e2896b}
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px 18px 70px;background:var(--bg);color:var(--ink);
+       font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.6;font-size:14px}
+  .wrap{max-width:900px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 4px}
+  h2{font-size:16px;color:var(--acc);margin:28px 0 8px;border-top:1px solid var(--line);padding-top:18px}
+  .lead{color:var(--ink2);font-size:13.5px;margin:0 0 18px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  label{font-size:13px;color:var(--ink3)}
+  select,input{background:#12102b;color:var(--ink);border:1px solid var(--line);
+               border-radius:8px;padding:7px 10px;font-family:inherit;font-size:13.5px}
+  button{background:linear-gradient(145deg,#f0d79b,#bb9445);color:#1c1a3c;border:0;
+         border-radius:999px;padding:8px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  button.ghost{background:transparent;color:var(--acc);border:1px solid var(--line)}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left;color:var(--ink2)}
+  th{color:var(--ink);font-weight:700}
+  td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .bar{display:inline-block;height:9px;background:var(--acc);border-radius:2px;vertical-align:middle}
+  .good{color:var(--ok)} .bad{color:var(--warn)}
+  pre{white-space:pre-wrap;word-break:break-word;font-size:12.5px;color:var(--ink2);
+      background:#12102b;border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0 0}
+  .note{color:var(--ink3);font-size:12.5px;margin-top:8px}
+  .cite{color:var(--acc);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>블로그 통계 하네스</h1>
+<p class="lead">여성향 글의 숫자를 뽑습니다. <b>표본이 고른지부터 봅니다</b> —
+  간격으로 훑으면 시지가 여덟 종류만 나와 숫자가 부풉니다.
+  여기 신살 규칙은 <b>글 전용이고 엔진에 넣지 않습니다.</b></p>
+
+<div class="row">
+  <label>표본 <input id="n" type="number" value="40000" min="1000" max="200000" step="1000" style="width:100px"></label>
+  <label>씨앗 <input id="seed" type="number" value="20260831" style="width:110px"></label>
+  <label>출생년 <input id="y0" type="number" value="1970" style="width:74px"> ~ <input id="y1" type="number" value="2005" style="width:74px"></label>
+  <button id="run">표본 뽑기</button>
+  <button class="ghost" id="copy">결과 복사</button>
+</div>
+<div id="status" class="note">엔진 확인 중…</div>
+
+<h2>하나 · 표본이 고른가 <span class="note">— 여기가 초록이 아니면 아래 숫자를 믿지 마세요</span></h2>
+<div class="box" id="even">아직 안 뽑았습니다.</div>
+
+<h2>둘 · 신살 보유율</h2>
+<div class="box" id="sal">—</div>
+
+<h2>셋 · 자세히 보기</h2>
+<div class="row">
+  <label>항목 <select id="pick"></select></label>
+  <button class="ghost" id="drill">자리별·일간별로 가르기</button>
+</div>
+<div class="box" id="detail">—</div>
+
+<h2>넷 · 엔진이 재는 것</h2>
+<div class="box" id="engine">—</div>
+
+<pre id="out">결과를 뽑으면 여기에 붙여넣기 좋은 글이 나옵니다.</pre>
+</div>
+
+<script>
+(function () {
+'use strict';
+var E = window.ChaeksaEngine;
+var $ = function (i) { return document.getElementById(i); };
+var BR = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+var BRKO = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+var 자리이름 = ['연지', '월지', '일지', '시지'];
+
+/* ── 신살 규칙 — 블로그 통계 전용. 엔진에 넣지 않는다 ────────────────
+   판정(R) 은 걸린 지지 인덱스 배열을 돌려준다(없으면 빈 배열).
+   출전을 못 댄 것은 못 댄다고 적는다 — 그게 이 집의 방식이다.        */
+var 삼합도화 = { 2:3, 6:3, 10:3, 5:6, 9:6, 1:6, 8:9, 0:9, 4:9, 11:0, 3:0, 7:0 };
+var 홍염표   = [6, 6, 2, 7, 4, 4, 10, 9, 0, 8];   // 甲午 乙午 丙寅 丁未 戊辰 己辰 庚戌 辛酉 壬子 癸申
+var 역마표   = { 8:2, 0:2, 4:2, 11:5, 3:5, 7:5, 2:8, 6:8, 10:8, 5:11, 9:11, 1:11 };
+var 괴강일주 = ['庚辰', '庚戌', '壬辰', '壬戌', '戊戌'];
+var 백호일주 = ['甲辰', '乙未', '丙戌', '丁丑', '戊辰', '壬戌', '癸丑'];
+
+function 지지들(R) {
+  var p = R.pillars;
+  return [p.year.branch, p.month.branch, p.day.branch, p.hour.branch];
+}
+function 일주글자(R) {
+  return E.STEMS[R.pillars.day.stem] + BR[R.pillars.day.branch];
+}
+
+var 규칙 = [
+  { 키:'dohwa', 이름:'도화(함지)',
+    출전:'三命通會 卷二 論咸池 — 원문 확인됨',
+    주석:'납음 조건(須天干納音於地同類方是)은 안 본다. 그래서 원문보다 넓다.',
+    판정: function (R) {
+      var b = 지지들(R), t = [삼합도화[b[0]], 삼합도화[b[2]]];
+      return b.map(function (x, i) { return t.indexOf(x) >= 0 ? i : -1; }).filter(function (i) { return i >= 0; });
+    } },
+  { 키:'hongyeom', 이름:'홍염',
+    출전:'통용 구결 — **출전 미확인.** 三命通會 에서 찾지 못했다',
+    주석:'구결의 甲乙「午申」 중 申 은 안 넣었다.',
+    판정: function (R) {
+      var t = 홍염표[R.pillars.day.stem], b = 지지들(R);
+      return b.map(function (x, i) { return x === t ? i : -1; }).filter(function (i) { return i >= 0; });
+    } },
+  { 키:'yeokma', 이름:'역마',
+    출전:'삼합의 첫 글자를 충하는 자리(申子辰→寅). 널리 통용',
+    주석:'연지·일지 두 곳을 기준으로 본다 — 도화와 같은 방식.',
+    판정: function (R) {
+      var b = 지지들(R), t = [역마표[b[0]], 역마표[b[2]]];
+      return b.map(function (x, i) { return t.indexOf(x) >= 0 ? i : -1; }).filter(function (i) { return i >= 0; });
+    } },
+  { 키:'gwaegang', 이름:'괴강(일주)',
+    출전:'통용. 판본마다 戊戌 포함 여부가 갈린다 — 여기서는 포함',
+    주석:'일주 하나로만 본다. 다른 자리는 안 본다.',
+    판정: function (R) { return 괴강일주.indexOf(일주글자(R)) >= 0 ? [2] : []; } },
+  { 키:'baekho', 이름:'백호(일주)',
+    출전:'**출전 미확인.** 상위 글들이 기문 구성반 중궁수라 밝히기도 한다',
+    주석:'일주 일곱만 본다.',
+    판정: function (R) { return 백호일주.indexOf(일주글자(R)) >= 0 ? [2] : []; } },
+];
+
+/* ── 표본 — 날짜와 시각을 각각 독립 난수로 ──────────────────────────
+   간격으로 훑으면 축이 묶인다. 이 함수가 그 함정을 막는 유일한 장치다.  */
+function 뽑기(N, seed, y0, y1) {
+  var s = (seed | 0) || 1;
+  function rnd() { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 1000000) / 1000000; }
+  for (var w = 0; w < 60; w++) rnd();
+  var out = [], span = (y1 - y0 + 1);
+  for (var i = 0; i < N; i++) {
+    var y = y0 + Math.floor(rnd() * span), m = 1 + Math.floor(rnd() * 12);
+    var last = new Date(y, m, 0).getDate();
+    var d = 1 + Math.floor(rnd() * last), mins = Math.floor(rnd() * 1440);
+    try {
+      out.push(E.calc({ year:y, month:m, day:d, hour:Math.floor(mins / 60), minute:mins % 60,
+        gender:'F', place:'KR:서울', longitude:126.98, tzOffset:null, solarCorrection:true }));
+    } catch (e) {}
+  }
+  return out;
+}
+
+/* 고른가 — 네 자리의 지지가 열둘에 고르게 퍼졌는지. 치우치면 빨갛게 */
+function 고름(rows) {
+  var 칸 = [0,1,2,3].map(function () { return new Array(12).fill(0); });
+  rows.forEach(function (R) { 지지들(R).forEach(function (b, i) { 칸[i][b]++; }); });
+  var 기대 = rows.length / 12, html = '<table><tr><th>자리</th><th>가짓수</th><th>가장 많은 지지</th><th>치우침</th></tr>';
+  var 전부좋음 = true;
+  칸.forEach(function (c, i) {
+    var 종류 = c.filter(function (x) { return x > 0; }).length;
+    var mx = Math.max.apply(null, c), 배 = mx / 기대;
+    // 일지는 육십갑자 짝 때문에 구조적으로 여섯만 나온다 — 그건 정상이다
+    var 정상 = (i === 2) ? (종류 >= 6) : (종류 === 12 && 배 < 1.35);
+    if (!정상) 전부좋음 = false;
+    html += '<tr><td>' + 자리이름[i] + '</td><td class="n">' + 종류 + ' / 12</td>'
+      + '<td>' + BRKO[c.indexOf(mx)] + ' ' + mx + '</td>'
+      + '<td class="' + (정상 ? 'good' : 'bad') + '">' + (정상 ? '고름' : '치우침 ×' + 배.toFixed(2)) + '</td></tr>';
+  });
+  html += '</table><p class="note">일지가 6가지인 것은 정상입니다 — 육십갑자에서 일간과 일지의 짝이 정해져 있어 열둘이 아니라 여섯입니다.</p>';
+  return { html: (전부좋음 ? '<p class="good">표본이 고릅니다. 아래 숫자를 써도 됩니다.</p>'
+                           : '<p class="bad">치우쳤습니다. 씨앗을 바꿔 다시 뽑으세요.</p>') + html,
+           ok: 전부좋음 };
+}
+
+var 표본 = [], 글 = [];
+
+function 재기() {
+  var rows = 표본, n = rows.length;
+  var html = '<table><tr><th>신살</th><th class="n">가진 사람</th><th class="n">비율</th><th>근거</th></tr>';
+  글 = ['표본 ' + n.toLocaleString() + '개 (' + $('y0').value + '~' + $('y1').value + '년생 · 서울 · 진태양시 · 날짜와 시각 독립 난수)', ''];
+  규칙.forEach(function (r) {
+    var c = 0;
+    rows.forEach(function (R) { if (r.판정(R).length) c++; });
+    var p = (c / n * 100);
+    html += '<tr><td>' + r.이름 + '</td><td class="n">' + c.toLocaleString() + '</td>'
+      + '<td class="n">' + p.toFixed(1) + '%<span class="bar" style="width:' + (p * 1.4).toFixed(0) + 'px;margin-left:8px"></span></td>'
+      + '<td class="cite">' + r.출전 + '</td></tr>';
+    글.push(r.이름 + ' — ' + c.toLocaleString() + '개 · ' + p.toFixed(1) + '%   [' + r.출전 + ']');
+    if (r.주석) 글.push('    ' + r.주석);
+  });
+  $('sal').innerHTML = html + '</table>';
+  $('out').textContent = 글.join('\n');
+}
+
+function 가르기() {
+  var r = 규칙[+$('pick').value], rows = 표본;
+  var 자리 = [0,0,0,0], 일간 = {}, 총일간 = {}, 가진 = 0;
+  rows.forEach(function (R) {
+    var st = E.STEMS[R.pillars.day.stem];
+    총일간[st] = (총일간[st] || 0) + 1;
+    var hit = r.판정(R);
+    if (!hit.length) return;
+    가진++;
+    hit.forEach(function (i) { 자리[i]++; });
+    일간[st] = (일간[st] || 0) + 1;
+  });
+  var h = '<p><b>' + r.이름 + '</b> — ' + 가진.toLocaleString() + '개 · '
+        + (가진 / rows.length * 100).toFixed(1) + '%</p>';
+  h += '<table><tr><th>자리</th><th class="n">걸린 수</th></tr>';
+  자리.forEach(function (c, i) { h += '<tr><td>' + 자리이름[i] + '</td><td class="n">' + c.toLocaleString() + '</td></tr>'; });
+  h += '</table><table style="margin-top:12px"><tr><th>일간</th><th class="n">보유율</th></tr>';
+  var 줄 = Object.keys(총일간).map(function (k) {
+    return { k:k, p: (일간[k] || 0) / 총일간[k] * 100 };
+  }).sort(function (a, b) { return b.p - a.p; });
+  줄.forEach(function (x) { h += '<tr><td>' + x.k + '</td><td class="n">' + x.p.toFixed(1) + '%</td></tr>'; });
+  $('detail').innerHTML = h + '</table>';
+  글.push('', '[' + r.이름 + ' 자세히]');
+  자리.forEach(function (c, i) { 글.push('  ' + 자리이름[i] + ' ' + c.toLocaleString()); });
+  줄.forEach(function (x) { 글.push('  ' + x.k + ' ' + x.p.toFixed(1) + '%'); });
+  $('out').textContent = 글.join('\n');
+}
+
+/* 엔진이 재는 것 — 신살이 아니라 우리가 진짜 파는 축 */
+function 엔진재기() {
+  var rows = 표본, 강 = {}, 격 = {}, 빈 = {}, 통근 = [0,0,0,0,0];
+  rows.forEach(function (R) {
+    var a = R.analysis;
+    강[a.strength] = (강[a.strength] || 0) + 1;
+    (a.missing.length ? a.missing : ['없음']).forEach(function (e) { 빈[e] = (빈[e] || 0) + 1; });
+    try {
+      var g = window.ChaeksaGyeok && ChaeksaGyeok.judge ? ChaeksaGyeok.judge(R) : null;
+      if (g && g.말) 격[g.말] = (격[g.말] || 0) + 1;
+    } catch (e) {}
+  });
+  var t = function (o, 제목) {
+    var s = '<table><tr><th>' + 제목 + '</th><th class="n">비율</th></tr>';
+    Object.keys(o).sort(function (a, b) { return o[b] - o[a]; }).forEach(function (k) {
+      s += '<tr><td>' + k + '</td><td class="n">' + (o[k] / rows.length * 100).toFixed(1) + '%</td></tr>';
+    });
+    return s + '</table>';
+  };
+  $('engine').innerHTML = '<div class="row" style="align-items:flex-start;gap:22px">'
+    + '<div style="flex:1;min-width:180px">' + t(강, '강약') + '</div>'
+    + '<div style="flex:1;min-width:180px">' + t(빈, '빈 오행') + '</div>'
+    + (Object.keys(격).length ? '<div style="flex:1;min-width:180px">' + t(격, '격 판정') + '</div>' : '')
+    + '</div>';
+}
+
+// ── 배선 ──
+규칙.forEach(function (r, i) {
+  var o = document.createElement('option'); o.value = i; o.textContent = r.이름; $('pick').appendChild(o);
+});
+$('status').textContent = E ? '엔진 준비됨 · ' + E.STEMS.length + '천간 ' + BR.length + '지지' : '엔진을 못 불러왔습니다 — ../app/ 경로를 확인하세요';
+$('run').onclick = function () {
+  $('status').textContent = '뽑는 중…';
+  setTimeout(function () {
+    var t0 = Date.now();
+    표본 = 뽑기(+$('n').value, +$('seed').value, +$('y0').value, +$('y1').value);
+    var g = 고름(표본);
+    $('even').innerHTML = g.html;
+    재기(); 엔진재기(); 가르기();
+    $('status').textContent = 표본.length.toLocaleString() + '개 · ' + ((Date.now() - t0) / 1000).toFixed(1) + '초';
+  }, 30);
+};
+$('drill').onclick = 가르기;
+$('copy').onclick = function () {
+  navigator.clipboard.writeText($('out').textContent).then(function () {
+    $('copy').textContent = '복사됨'; setTimeout(function () { $('copy').textContent = '결과 복사'; }, 1400);
+  });
+};
+})();
+</script>
+</body>
+</html>
