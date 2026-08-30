@@ -33,10 +33,10 @@
     const reasons = [god];
     const rel = branchRel(result.pillars.day.branch, tf.day.branch);
     // 충 감점 없음 — 제23조. 택일은 통변이라 배제 범위 안이다.
-    if (rel === '합') { s += P.hap ?? 2; reasons.push('일지 합'); }
-    else if (rel === '삼합') { s += 1; reasons.push('삼합'); }
-    else if (rel === '복음') { s -= 1; reasons.push('복음'); }
-    if (STEM_HAP[ds] === tf.day.stem) { s += 1; reasons.push('천간합'); }
+    if (rel === '합') { s += P.hap ?? 2; reasons.push('내 자리와 맞물림(일지 합)'); }
+    else if (rel === '삼합') { s += 1; reasons.push('내 자리와 한편(삼합)'); }
+    else if (rel === '복음') { s -= 1; reasons.push('내 글자가 겹침(복음)'); }
+    if (STEM_HAP[ds] === tf.day.stem) { s += 1; reasons.push('하늘 글자가 나와 맞물림(천간합)'); }
     const elem = E.ELEM[E.STEM_ELEM[tf.day.stem]];
     if (a.yongCandidates.includes(elem)) { s += 1.5; reasons.push(elem + ' 기운 도움'); }
     // 월 단위 흐름도 약간 반영

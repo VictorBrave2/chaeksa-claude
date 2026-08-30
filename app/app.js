@@ -739,11 +739,15 @@
     const r = hoursData.rows[i];
     $('hours').querySelectorAll('.hr').forEach(b => b.classList.toggle('sel', +b.dataset.i === i));
     const sgn = r.value > 0 ? '+' : '';
+    // 「順 +1.2」는 읽어도 아무것도 남지 않는다. 사람 말을 앞에 세우고
+    // 원래 표기는 잣대 줄로 내린다 — 지우지 않는다, 기준 공개가 이 서비스의 자산이다.
+    const 결말 = r.value > 0.3 ? '나를 돕는 쪽' : (r.value < -0.3 ? '나를 누르는 쪽' : '한쪽으로 기울지 않음');
     $('hoursPick').innerHTML =
       `<span class="t">${esc(r.jin)}시 · 시계 ${esc(r.clockRange)}</span>`
       + `<span class="g">${esc(r.ganji)} ${esc(r.god)}</span>`
-      + `<span class="g">${esc(r.sign)} ${sgn}${r.value}</span>`
-      + `<span class="d">${esc(r.label)}</span>`;
+      + `<span class="g">${esc(결말)}</span>`
+      + `<span class="d">${esc(r.label)}</span>`
+      + `<span class="d" style="opacity:.62;font-size:11px">잣대 — 체용 ${esc(r.sign)} ${sgn}${r.value}</span>`;
   }
 
   // 진태양시 보정을 켠 것과 끈 것을 나란히 보여준다.
