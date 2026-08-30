@@ -541,10 +541,13 @@
               // 안 쓰이고 있었다. 매일 같은 그림이면 내일 다시 올 이유가 하나 준다.
               // 변주가 없는 책사가 있으므로(궁위·인연·운로는 -3 이 없다) 못 찾으면
               // 대표 그림으로 한 번 물러난다. 빈 액자는 그 다음이다.
-              // 그려진 벌 수를 아는 초상() 이 고른다 — 없는 -3 을 부르고 404 를 맞던 자리다.
-              const 밑 = 'art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART;
+              // 그려진 벌만 아는 초상() 이 고른다 — 없는 -3 을 부르고 404 를 맞던 자리다.
+              // 그림이 아예 없는 책사(소현)는 빈 문자열이 와서 얼빡을 안 세운다.
+              const 파일0 = 초상(키0, 0);
+              if (!파일0) return '';
+              const 밑 = 얼굴파일(키0, (벌목록(키0)[0] || 1)) + '?v=' + window.CHAEKSA_ART;
               return '<img class="hs-face" alt="" data-base="' + 밑 + '"'
-                + ' src="' + 초상(키0, 0) + '?v=' + window.CHAEKSA_ART + '"'
+                + ' src="' + 파일0 + '?v=' + window.CHAEKSA_ART + '"'
                 + ' onerror="var b=this.dataset.base;'
                 + 'if(b){this.removeAttribute(\'data-base\');this.src=b;return;}'
                 + 'this.closest(\'.home-scene\').classList.add(\'noface\');this.remove()">';
@@ -560,6 +563,9 @@
         + '<button class="hs-say" type="button">'
         + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button>'
         + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
+      // 그림 없는 책사가 오늘 차례면 얼빡 자리를 접는다 — 빈 액자를 두지 않는다.
+      // (onerror 로 접는 길은 img 를 아예 안 세울 때는 안 지나간다)
+      sc.classList.toggle('noface', !sc.querySelector('.hs-face'));
       const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
       // 보낼 만한 카드 — 원국 카드는 「내가 어떤 사람인가」의 증거고
       // 이 카드는 「나에게 해 준 말」이다. 남의 대화창에 걸리는 쪽은 뒤쪽이다.
@@ -571,7 +577,7 @@
           // shareReady 때문에 다시 안 그려서 한마디 카드를 원국이라며 내보낸다.
           const cv = document.createElement('canvas');
           await ChaeksaShare.drawSay(cv, {
-            초상: window.CHAEKSA_ART ? 'art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART : '',
+            초상: (window.CHAEKSA_ART && 초상(키0, 0)) ? 초상(키0, 0) + '?v=' + window.CHAEKSA_ART : '',
             이름: 이름of(이름0), 직함: 직함of(이름0), 말: 말0,
             공주: nim(), 간지: f.pillar(tf.day) + '일',
           });
@@ -2287,23 +2293,33 @@
                    택일: 'hyeopgi', 좌장: 'jwajang' };
   // 몇 벌 그려져 있는지는 config.js 가 안다 — 그림이 도착하면 거기 숫자만 올린다.
   // 스물일곱 장을 그려 놓고 열 장만 쓰고 있었다(2026-08-30). 열일곱 장이 놀았다.
-  const 벌수 = (k) => (window.CHAEKSA_FACE_VAR && window.CHAEKSA_FACE_VAR[k]) || 1;
-  const 얼굴파일 = (k, i) => 'art/chaeksa-' + k + (i ? '-' + (i + 1) : '') + '.webp';
+  // 있는 벌의 목록. 숫자가 곧 파일 꼬리다(1 이면 꼬리 없음).
+  // 중간이 빈 사람이 있어서(성아는 1·2·4) 개수가 아니라 목록으로 받는다.
+  const 벌목록 = (k) => {
+    const v = window.CHAEKSA_FACE_VAR && window.CHAEKSA_FACE_VAR[k];
+    if (Array.isArray(v)) return v;
+    const n = v || 0;                       // 옛 방식(숫자)도 받아 준다
+    const a = []; for (let i = 1; i <= n; i++) a.push(i); return a;
+  };
+  const 얼굴파일 = (k, i) => 'art/chaeksa-' + k + (i > 1 ? '-' + i : '') + '.webp';
   /** 이 책사의 지금 얼굴.
    *  · 받아치는 발언이면 3벌(몸을 기울여 반박하는 얼굴)을 세운다 — 그림이 말을 거든다.
    *  · 아니면 나머지 벌을 (날 + 자리)로 돌린다. 한 편 안에서 정율이 세 번 말하면
    *    세 번 다른 얼굴이고, 내일 다시 열면 같은 글이라도 얼굴이 바뀌어 있다.
    *  난수가 아니라 결정이라 같은 날 같은 자리는 늘 같은 얼굴이다. */
   function 초상(k, 자리, 받아침) {
-    const n = 벌수(k);
-    if (n <= 1) return 얼굴파일(k, 0);
-    if (받아침 && n >= 3) return 얼굴파일(k, 2);
-    const 평 = [];                       // 받아치는 얼굴은 평상시에 안 쓴다 — 아껴야 세진다
-    for (let i = 0; i < n; i++) if (!(n >= 3 && i === 2)) 평.push(i);
-    // 같은 책사의 발언은 자리가 두 칸씩 벌어져 있어(①③⑤⑦) 자리를 그대로 쓰면
-    // 홀짝이 늘 같아 같은 얼굴만 나왔다 — 온서가 다섯 번 말하는데 다섯 번 같았다.
-    // 절반으로 접은 값을 더해 이웃하게 만든다.
-    const 씨 = 날번호() + (자리 || 0) + Math.floor((자리 || 0) / 2);
+    const 벌 = 벌목록(k);
+    if (!벌.length) return '';           // 그림이 없는 책사 — 인장만 세운다(소현)
+    if (벌.length === 1) return 얼굴파일(k, 벌[0]);
+    if (받아침 && 벌.indexOf(3) >= 0) return 얼굴파일(k, 3);
+    const 평 = 벌.filter(i => i !== 3);   // 받아치는 얼굴은 평상시에 안 쓴다 — 아껴야 세진다
+    if (!평.length) return 얼굴파일(k, 벌[0]);
+    // 같은 책사의 발언은 자리가 고르게 벌어져 있다(①③⑤⑦). 그래서 자리에
+    // 산술식을 씌우면 그 간격이 벌 수와 맞아떨어지는 순간 통째로 겹친다 —
+    // 「자리 + 자리/2」는 3씩 뛰어서 벌이 셋일 때 네 발언이 다 같은 얼굴이었다.
+    // 곱셈 해시로 흩는다(황금비 상수). 여전히 결정적이라 같은 날 같은 자리는 같은 얼굴.
+    const 섞 = (n) => (Math.imul((n | 0) + 1, 2654435761) >>> 0);
+    const 씨 = (섞(자리 || 0) + 날번호() * 2654435761) >>> 0;
     return 얼굴파일(k, 평[씨 % 평.length]);
   }
   /** 이 발언이 다른 책사를 걸고 넘어지는가 — 남의 이름이 본문에 나오면 받아침이다.
@@ -2338,9 +2354,11 @@
     const 인 = esc(책사인장[축] || String(who).slice(0, 1));
     // 변주가 못 오면 대표 그림으로 한 번 물러난다. 그것도 없으면 인장만 남는다 —
     // 인장을 늘 뒤에 깔아 두므로 빈 액자가 되지 않는다.
-    const 그림 = (k && window.CHAEKSA_ART)
-      ? '<img class="say-face" alt="" data-base="art/chaeksa-' + k + '.webp?v=' + window.CHAEKSA_ART + '"'
-        + ' src="' + 초상(k, 자리, 받아침) + '?v=' + window.CHAEKSA_ART + '"'
+    // 그림이 아예 없는 책사(소현)는 초상()이 빈 문자열을 돌려준다 — img 를 안 세운다.
+    const 파일 = k ? 초상(k, 자리, 받아침) : '';
+    const 그림 = (파일 && window.CHAEKSA_ART)
+      ? '<img class="say-face" alt="" data-base="' + 얼굴파일(k, (벌목록(k)[0] || 1)) + '?v=' + window.CHAEKSA_ART + '"'
+        + ' src="' + 파일 + '?v=' + window.CHAEKSA_ART + '"'
         + ' onerror="var b=this.dataset.base;'
         + 'if(b){this.removeAttribute(\'data-base\');this.src=b;return;}this.remove()">'
       : '';
