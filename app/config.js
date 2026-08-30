@@ -13,5 +13,12 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 
 /* 스토리 삽화 스위치 — app/art/ 에 24장이 들어오면 숫자(버전)를 넣어 켠다.
  * 꺼져 있으면(0) 파라메트릭 SVG 컷이 나온다. marketing/삽화-프롬프트.md 참고. */
-window.CHAEKSA_ART = 'all';    // 48장 전량 도착(2026-08-30) — 연애 12×3벌 + 재물 12
-window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애는 3벌 로테이션 — 한 화면 안 같은 그림 반복 없음
+// 2026-08-30 — 연애 삽화 36장을 껐다.
+//   책사단으로 판이 바뀌기 전에 뽑은 그림이라 세계가 다르다:
+//   서양 고딕 저택에 낯선 남자 얼굴. 공주님의 지난 사랑 이야기 옆에
+//   모르는 남자 얼굴이 서 있는 것도 어색하다.
+//   재물 12장은 한지 수채(벼·항아리)라 우리 세계와 맞아 그대로 둔다.
+//   책사단 세계의 연애 삽화가 도착하면 'all' 로 되돌린다(프롬프트: marketing/삽화-연희-복붙.html).
+//   끄면 파라메트릭 SVG 컷으로 돌아간다 — 빈 자리가 되지 않는다.
+window.CHAEKSA_ART = 'wealth';
+window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 돌아오면 그대로 쓴다
