@@ -97,7 +97,7 @@
     if ($('pfPlace') && window.ChaeksaPlaces) $('pfPlace').innerHTML = ChaeksaPlaces.options();
     const b = p ? p.birth : {};
     $('pfName').value = p ? p.name : '';
-    $('pfRel').value = p ? p.relation : (P.list().length ? '친구' : '나');
+    $('pfRel').value = p ? p.relation : (P.list().length ? '그 사람' : '나');
     pfCal = b.calendar === 'lunar' ? 'lunar' : 'solar';
     setPfCal(pfCal);
     if (pfCal === 'lunar' && b.lunarInput) {

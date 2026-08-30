@@ -13,7 +13,10 @@
   const KEY = 'chaeksa.people', ACT = 'chaeksa.activePerson';
   const OLD_PROFILE = 'chaeksa.profile', OLD_PARTNERS = 'chaeksa.partners';
 
-  const RELATIONS = ['나', '가족', '부모', '자녀', '배우자', '연인', '친구', '동료', '상사', '기타'];
+  // 순서가 곧 기본값이다. 「우리 둘 사이」에 오시는 분이 마음에 둔 사람은
+  // 대개 친구가 아니다 — 앞쪽을 그쪽으로 돌린다.
+  // 관계 라벨은 판정을 하나도 안 바꾼다(대운 방향과 배우자성은 성별이 정한다).
+  const RELATIONS = ['나', '그 사람', '연인', '배우자', '친구', '가족', '부모', '자녀', '동료', '상사', '기타'];
 
   const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
   const jset = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -51,7 +54,7 @@
     const p = {
       id: newId(),
       name: (person.name || '').trim() || '이름 없음',
-      relation: person.relation || (arr.length ? '친구' : '나'),
+      relation: person.relation || (arr.length ? '그 사람' : '나'),
       isSelf: !arr.length ? true : !!person.isSelf,
       birth: birthOf(person.birth || person),
       createdAt: new Date().toISOString().slice(0, 10),
@@ -106,7 +109,7 @@
     const partners = jget(OLD_PARTNERS, []);
     partners.forEach(pt => {
       if (!pt || !pt.year) return;
-      add({ name: pt.name || '이름 없음', relation: '친구', isSelf: false, birth: pt });
+      add({ name: pt.name || '이름 없음', relation: '그 사람', isSelf: false, birth: pt });
       moved = true;
     });
     if (moved) localStorage.removeItem(OLD_PARTNERS);

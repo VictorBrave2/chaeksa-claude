@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=437">
+<link rel="stylesheet" href="style.css?v=439">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -147,7 +147,7 @@
     </div>
     <div class="check hide" id="leapWrap"><input type="checkbox" id="isLeap"><label for="isLeap" style="margin:0">윤달이에요</label></div>
     <p class="conv hide" id="convNote"></p>
-    <label>태어난 시간</label>
+    <label>태어난 시각 — 모르시면 아래를 눌러 주세요</label>
     <div class="row">
       <input id="hh" aria-label="태어난 시" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
       <input id="mi" aria-label="태어난 분" type="number" placeholder="분" min="0" max="59" inputmode="numeric">
@@ -646,12 +646,14 @@
     <div class="tab hide" data-tab="compat">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card">
-        <h2>伴 · 우리 둘 사이</h2>
-        <p class="hint" style="margin:0 0 12px">두 사람의 일간을 마주 놓고 <b>서로에게 무엇인지</b> 봅니다. 그 사람이 지금 어떤 때를 지나고 있는지도 함께 봅니다. 기준은 지금 보고 있는 <b id="compatMe"></b>님입니다.</p>
-        <label>누구와의 사이를 볼까요</label>
+        <h2>우리 둘 사이</h2>
+        <p class="hint" style="margin:0 0 14px">그 사람의 생년월일만 있으면 됩니다.
+          <b>그 사람이 공주님께 무엇이고, 공주님이 그 사람께 무엇인지</b> 마주 놓고 봅니다.
+          어떤 사이인지는 저희가 맞혀 보겠습니다 — 맞는지는 <b id="compatMe"></b>님이 아십니다.</p>
+        <label>누구를 마음에 두고 계신가요</label>
         <select id="cPick" aria-label="상대 선택"></select>
         <button class="btn" id="btnCompat">우리 사이 보기</button>
-        <button class="btn ghost" id="btnCompatAdd">사람 추가하기</button>
+        <button class="btn ghost" id="btnCompatAdd">그 사람 생년월일 넣기</button>
       </section>
       <section class="card hide" id="compatResult"></section>
     </div>
@@ -685,10 +687,11 @@
 <!-- 사람 추가/수정 -->
 <div class="modal hide" id="personForm">
   <div class="sheet">
-    <h3 id="pfTitle">사람 추가</h3>
-    <p class="hint" style="margin:0 0 4px">가까운 사람의 사주를 등록하면 그 사람의 오늘과 흐름도 볼 수 있습니다.</p>
-    <label>이름 (부를 때 쓸 이름)</label>
-    <input id="pfName" aria-label="이름" placeholder="예: 어머니">
+    <h3 id="pfTitle">그 사람을 적어 주세요</h3>
+    <p class="hint" style="margin:0 0 4px">생년월일만 있으면 됩니다. 시각을 모르셔도 봐 드립니다.
+      한 번 적어 두시면 그 사람의 오늘과 흐름도 같이 보실 수 있습니다.</p>
+    <label>뭐라고 부를까요</label>
+    <input id="pfName" aria-label="이름" placeholder="이름도 좋고 「그 사람」도 좋습니다">
     <label>나와의 관계</label>
     <select id="pfRel" aria-label="나와의 관계"></select>
     <label>생년월일</label>
@@ -697,7 +700,7 @@
       <button type="button" data-cal="lunar">음력</button>
     </div>
     <div class="row">
-      <input id="pfY" type="number" aria-label="출생 연도" placeholder="1990" inputmode="numeric">
+      <input id="pfY" type="number" aria-label="출생 연도" placeholder="태어난 해" inputmode="numeric">
       <input id="pfM" type="number" aria-label="출생 월" placeholder="월" inputmode="numeric">
       <input id="pfD" type="number" aria-label="출생 일" placeholder="일" inputmode="numeric">
     </div>
@@ -705,7 +708,7 @@
     <p class="conv hide" id="pfConv"></p>
     <label>태어난 시간</label>
     <div class="row">
-      <input id="pfH" type="number" aria-label="태어난 시" placeholder="시 (0~23)" inputmode="numeric">
+      <input id="pfH" type="number" aria-label="태어난 시" placeholder="시" inputmode="numeric">
       <input id="pfMi" type="number" aria-label="태어난 분" placeholder="분" inputmode="numeric">
     </div>
     <div class="check"><input type="checkbox" id="pfNoTime"><label for="pfNoTime" style="margin:0">시간을 몰라요</label></div>
@@ -784,29 +787,29 @@
   </div>
 </div>
 
-<script src="config.js?v=437"></script>
-<script src="track.js?v=437"></script>
-<script src="cloud.js?v=437"></script>
-<script src="usage.js?v=437"></script>
-<script src="places.js?v=437"></script>
-<script src="people.js?v=437"></script>
-<script src="astro.js?v=437"></script>
-<script src="lunar.js?v=437"></script>
-<script src="engine.js?v=437"></script>
-<script src="chaeyong.js?v=437"></script>
-<script src="brief.js?v=437"></script>
-<script src="chaeksadan.js?v=437"></script>
-<script src="typecard.js?v=437"></script>
-<script src="gyeokguk.js?v=437"></script>
-<script src="memo.js?v=437"></script>
-<script src="classic.js?v=437"></script>
-<script src="calendar.js?v=437"></script>
-<script src="tongbyeon.js?v=437"></script>
-<script src="rules-wealth-love.js?v=437"></script>
-<script src="rules-health-study-move.js?v=437"></script>
-<script src="share.js?v=437"></script>
-<script src="ai.js?v=437"></script>
-<script src="pay.js?v=437"></script>
-<script src="app.js?v=437"></script>
+<script src="config.js?v=439"></script>
+<script src="track.js?v=439"></script>
+<script src="cloud.js?v=439"></script>
+<script src="usage.js?v=439"></script>
+<script src="places.js?v=439"></script>
+<script src="people.js?v=439"></script>
+<script src="astro.js?v=439"></script>
+<script src="lunar.js?v=439"></script>
+<script src="engine.js?v=439"></script>
+<script src="chaeyong.js?v=439"></script>
+<script src="brief.js?v=439"></script>
+<script src="chaeksadan.js?v=439"></script>
+<script src="typecard.js?v=439"></script>
+<script src="gyeokguk.js?v=439"></script>
+<script src="memo.js?v=439"></script>
+<script src="classic.js?v=439"></script>
+<script src="calendar.js?v=439"></script>
+<script src="tongbyeon.js?v=439"></script>
+<script src="rules-wealth-love.js?v=439"></script>
+<script src="rules-health-study-move.js?v=439"></script>
+<script src="share.js?v=439"></script>
+<script src="ai.js?v=439"></script>
+<script src="pay.js?v=439"></script>
+<script src="app.js?v=439"></script>
 </body>
 </html>
