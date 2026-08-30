@@ -651,7 +651,9 @@
           ? '앞으로 남은 구간 중 ' + lc.앞최고Txt + ' — 곡선으로 보기'
           : '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
       try { const c = T.career(R, null); set('tiJikBig', c.group + '축'); set('tiJikSub', '25유형 중 어느 쪽인지 열어보기'); } catch (e) {}
-      try { const l = T.love(R, new Date(), null); set('tiDoBig', l.key.slice(0, 2)); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
+      try { const l = T.love(R, new Date(), null); // l.key 는 686 유형 코드다 — 앞 두 글자를 그냥 찍으면 공주님께는 「一心」 같은
+        // 뜻 없는 내부 코드가 박힌다. 오른쪽 칸은 비워 두고 설명으로 말한다.
+        set('tiDoBig', ''); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
       try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
     }
     // 비망록 배너 — 꺼낼 것이 있으면 그걸 먼저 말한다
@@ -662,19 +664,19 @@
       const 미기록 = M.tracks(pid).filter(t => !M.loggedThisMonth(t, today));
       if (미기록.length) {
         $('memoBadge').textContent = '이번 달';
-        $('memoTitle').textContent = '記 · ' + 미기록[0].q;
+        $('memoTitle').textContent = 미기록[0].q;
         $('memoSub').textContent = '이번 달은 어떤지 눌러만 주세요' + (미기록.length > 1 ? ' (외 ' + (미기록.length - 1) + '건)' : '');
       } else if (due.length) {
         $('memoBadge').textContent = '꺼낼 것';
-        $('memoTitle').textContent = '記 · ' + due[0].q;
+        $('memoTitle').textContent = due[0].q;
         $('memoSub').textContent = M.label(due[0].ym) + ' — 말씀하신 그때입니다' + (due.length > 1 ? ' (외 ' + (due.length - 1) + '건)' : '');
       } else if (next.length) {
         $('memoBadge').textContent = '비망록';
-        $('memoTitle').textContent = '記 · ' + next[0].q;
+        $('memoTitle').textContent = next[0].q;
         $('memoSub').textContent = M.label(next[0].ym) + '에 다시 꺼내 드리겠습니다';
       } else {
         $('memoBadge').textContent = '비망록';
-        $('memoTitle').textContent = '記 · 판단 기록장';
+        $('memoTitle').textContent = '판단 기록장';
         $('memoSub').textContent = '물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다';
       }
     })();
@@ -1002,7 +1004,8 @@
       const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
       const ban = T.banToday(R);
       $('banSvg').innerHTML = T.drawBan(profile.name || '공주님', ban);
-      $('tiBanGz').textContent = '🚫 ' + ban.god;
+      // 이모지 금지(기각 목록). v355 에서 다 걷었는데 이 한 자리가 남아 있었다.
+      $('tiBanGz').textContent = ban.god;
       $('tiBanSub').textContent = ban.관계 ? `오늘은 ${ban.관계}까지 — 금지 ${ban.금지.length}개` : `오늘 금지 ${ban.금지.length}개`;
       $('btnBanShare').onclick = async () => {
         const b = $('btnBanShare'); b.disabled = true; b.textContent = '만드는 중…';
@@ -1531,7 +1534,7 @@
     // 눌러도 아무 데도 안 가는 버튼과, 궁정에 어울리지 않는 상담 창구를 둘 다 걷었다.
     const payBtn = (payReady && 상품)
       ? `<a class="btn nx-cta" href="pay.html?p=${상품}" style="background:var(--accent);color:#fff;border-color:var(--accent)">
-          <span>💳</span>결제하고 바로 보기</a>` : '';
+          결제하고 바로 보기</a>` : '';
     return `<div class="nextbox">
       <p class="nx-k">${esc(제목)}</p>
       <p class="nx-free">여기까지가 무료입니다 — <b>${esc(무료로본것)}</b></p>
