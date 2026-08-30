@@ -469,7 +469,7 @@
     const 특 = [
       ['먼저 붓을 씻습니다', '격국의 뼈대 「자평진전」, 계절의 약방문 「궁통보감」 — 요약본이 아니라 원문을 판본까지 밝혀 옮겨 두었습니다. 지금 그 조문대로 공주님의 자리를 짚고 있습니다.'],
       ['시각부터 바로 세웁니다', '달이 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 맞습니다. 태어나신 곳의 경도로 진태양시까지 보정하고 나서야 첫 글자를 놓습니다.'],
-      ['틀리면 틀렸다고 남깁니다', '빗나간 말은 지우지 않고 그대로 둡니다. 누가 맞혔는지까지 남깁니다.'],
+      ['틀리면 틀렸다고 남깁니다', '빗나간 말은 지우지 않고 그대로 둡니다. 그 답은 공주님 기기에만 남고, 저희가 가져가지 않습니다.'],
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 겁을 팔지 않아도 짚을 것은 다 짚습니다.'],
       ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 적은 것은 전부 잰 것 — 그래서 맞는지 틀리는지 답을 받을 수 있습니다.'],
     ];
@@ -541,10 +541,10 @@
               // 안 쓰이고 있었다. 매일 같은 그림이면 내일 다시 올 이유가 하나 준다.
               // 변주가 없는 책사가 있으므로(궁위·인연·운로는 -3 이 없다) 못 찾으면
               // 대표 그림으로 한 번 물러난다. 빈 액자는 그 다음이다.
+              // 그려진 벌 수를 아는 초상() 이 고른다 — 없는 -3 을 부르고 404 를 맞던 자리다.
               const 밑 = 'art/chaeksa-' + 키0 + '.webp?v=' + window.CHAEKSA_ART;
-              const 벌0 = ['', '-2', '-3'][날번호() % 3];
               return '<img class="hs-face" alt="" data-base="' + 밑 + '"'
-                + ' src="art/chaeksa-' + 키0 + 벌0 + '.webp?v=' + window.CHAEKSA_ART + '"'
+                + ' src="' + 초상(키0, 0) + '?v=' + window.CHAEKSA_ART + '"'
                 + ' onerror="var b=this.dataset.base;'
                 + 'if(b){this.removeAttribute(\'data-base\');this.src=b;return;}'
                 + 'this.closest(\'.home-scene\').classList.add(\'noface\');this.remove()">';
@@ -2285,6 +2285,43 @@
   const 책사키 = { 자평진전: 'japyung', 궁통보감: 'gungtong', 억부: 'eokbu', 궁위: 'gungwi',
                    인연: 'inyeon', 재물: 'jaemul', 천직: 'cheonjik', 운로: 'unro',
                    택일: 'hyeopgi', 좌장: 'jwajang' };
+  // 몇 벌 그려져 있는지는 config.js 가 안다 — 그림이 도착하면 거기 숫자만 올린다.
+  // 스물일곱 장을 그려 놓고 열 장만 쓰고 있었다(2026-08-30). 열일곱 장이 놀았다.
+  const 벌수 = (k) => (window.CHAEKSA_FACE_VAR && window.CHAEKSA_FACE_VAR[k]) || 1;
+  const 얼굴파일 = (k, i) => 'art/chaeksa-' + k + (i ? '-' + (i + 1) : '') + '.webp';
+  /** 이 책사의 지금 얼굴.
+   *  · 받아치는 발언이면 3벌(몸을 기울여 반박하는 얼굴)을 세운다 — 그림이 말을 거든다.
+   *  · 아니면 나머지 벌을 (날 + 자리)로 돌린다. 한 편 안에서 정율이 세 번 말하면
+   *    세 번 다른 얼굴이고, 내일 다시 열면 같은 글이라도 얼굴이 바뀌어 있다.
+   *  난수가 아니라 결정이라 같은 날 같은 자리는 늘 같은 얼굴이다. */
+  function 초상(k, 자리, 받아침) {
+    const n = 벌수(k);
+    if (n <= 1) return 얼굴파일(k, 0);
+    if (받아침 && n >= 3) return 얼굴파일(k, 2);
+    const 평 = [];                       // 받아치는 얼굴은 평상시에 안 쓴다 — 아껴야 세진다
+    for (let i = 0; i < n; i++) if (!(n >= 3 && i === 2)) 평.push(i);
+    // 같은 책사의 발언은 자리가 두 칸씩 벌어져 있어(①③⑤⑦) 자리를 그대로 쓰면
+    // 홀짝이 늘 같아 같은 얼굴만 나왔다 — 온서가 다섯 번 말하는데 다섯 번 같았다.
+    // 절반으로 접은 값을 더해 이웃하게 만든다.
+    const 씨 = 날번호() + (자리 || 0) + Math.floor((자리 || 0) / 2);
+    return 얼굴파일(k, 평[씨 % 평.length]);
+  }
+  /** 이 발언이 다른 책사를 걸고 넘어지는가 — 남의 이름이 본문에 나오면 받아침이다.
+   *  조립기는 「온서께서 살길이라 하신 그 글자가…」처럼 사람 이름으로 인용한다.
+   *  **축 이름으로는 안 찾는다** — 「인연」·「재물」·「천직」은 축 이름이자 일상 낱말이라
+   *  온서가 인연을 입에 담기만 해도 받아친 것이 되어 버린다(오탐).
+   *  다만 책 이름 둘은 인용 말고 나올 자리가 없어 같이 본다. */
+  const 인용어 = (() => {
+    const m = {};
+    Object.keys(책사이름).forEach(축 => { m[축] = [책사이름[축][0]]; });
+    m.자평진전.push('자평진전'); m.궁통보감.push('궁통보감');
+    return m;
+  })();
+  function 받아치는가(본문, 화자) {
+    const 나 = 축으로(화자);
+    return Object.keys(인용어).some(축 =>
+      축 !== 나 && 인용어[축].some(w => 본문.indexOf(w) >= 0));
+  }
   const 얼굴 = (who) => {
     const k = 책사키[축으로(who)]; if (!k) return '';
     return '<img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">';
@@ -2295,12 +2332,17 @@
    *  22px 동그라미는 단추지 얼빡이 아니다(2026-08-30 「잘생긴애들이 얼빡으로 나와야지」).
    *  인장을 늘 뒤에 깔아 두므로 그림이 없거나 못 받아와도 빈 액자가 되지 않는다 —
    *  onerror 로 지우는 방식은 안 쓴다. */
-  function 얼굴띠(who) {
+  function 얼굴띠(who, 자리, 받아침) {
     const 축 = 축으로(who);
     const k = 책사키[축];
     const 인 = esc(책사인장[축] || String(who).slice(0, 1));
+    // 변주가 못 오면 대표 그림으로 한 번 물러난다. 그것도 없으면 인장만 남는다 —
+    // 인장을 늘 뒤에 깔아 두므로 빈 액자가 되지 않는다.
     const 그림 = (k && window.CHAEKSA_ART)
-      ? '<img class="say-face" alt="" src="art/chaeksa-' + k + '.webp?v=' + window.CHAEKSA_ART + '">'
+      ? '<img class="say-face" alt="" data-base="art/chaeksa-' + k + '.webp?v=' + window.CHAEKSA_ART + '"'
+        + ' src="' + 초상(k, 자리, 받아침) + '?v=' + window.CHAEKSA_ART + '"'
+        + ' onerror="var b=this.dataset.base;'
+        + 'if(b){this.removeAttribute(\'data-base\');this.src=b;return;}this.remove()">'
       : '';
     return '<div class="say-head"><span class="say-seal">' + 인 + '</span>' + 그림
       + '<span class="say-id"><b>' + esc(이름of(who)) + '</b>'
@@ -2311,9 +2353,12 @@
     t = String(t).trim(); if (!t) return '';
     const m = t.match(발언자류);
     if (!m) return '<p>' + esc(t) + '</p>';
-    return (새화자 === false ? '' : 얼굴띠(m[2]))
+    // 발언 번호(①②③…)가 곧 자리다. 번호가 없는 줄(맺음말)은 0.
+    const 자리 = m[1] ? m[1].charCodeAt(0) - 0x2460 : 0;
+    const 본문 = t.slice(m[0].length);
+    return (새화자 === false ? '' : 얼굴띠(m[2], 자리, 받아치는가(본문, m[2])))
       + '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
-      + esc(t.slice(m[0].length)) + '</p>';
+      + esc(본문) + '</p>';
   }
   /** 여러 줄. 같은 책사가 이어 말하면 얼굴을 다시 세우지 않는다 —
    *  안 그러면 무료 의논 스무 발언에 얼굴이 스무 번 나온다. */
@@ -2513,7 +2558,6 @@
       return 발언줄(t, 새);
     }).join('');
     const 머리 = parts[0] || '';
-    const 발언자 = [];
     let 밀린 = [];
     const html = ['<div class="nx-diag">' + 문단화(머리, 밀린) + '</div>'];
     // 홈에서는 앞부분만 — 전문과 채점은 전용 탭이 한다.
@@ -2524,7 +2568,6 @@
       const g = grades[i];
       const 이번 = [];
       const 본문 = 문단화(chunk, 이번);
-      { const w = chunk.match(/\u3014([^\u3015]{1,12})\u3015/); 발언자[i] = w ? w[1] : null; }
       밀린.forEach(h => html.push('<p class="hero-eyebrow" style="margin:20px 4px 2px">' + esc(h) + '</p>'));
       밀린 = 이번;
       html.push('<div class="nx-diag" style="margin-top:10px">'
@@ -2549,26 +2592,20 @@
     const answered = Object.keys(grades).length, hits = Object.values(grades).filter(v => v === 'y').length;
     const misses = Object.values(grades).filter(v => v === 'n').length;
     html.push('<p class="pb-ft">' + answered + ' / ' + 전체문 + '문장에 답하셨습니다 — 맞아요 ' + hits + ' · 글쎄요 ' + Object.values(grades).filter(v => v === 'm').length + ' · 아니에요 ' + misses
-      + '. 답해 주신 것은 그대로 남아, 이 잣대를 벼리는 데 쓰입니다.</p>');
-    (function () {
-      const 책사별 = {};
-      발언자.forEach((who, i) => {
-        if (!who || !grades[i]) return;
-        const c = (책사별[who] = 책사별[who] || { y: 0, t: 0 });
-        c.t++; if (grades[i] === 'y') c.y++;
-      });
-      const 줄 = Object.keys(책사별).map(k => k + ' ' + 책사별[k].y + '/' + 책사별[k].t).join('  ·  ');
-      if (줄) html.push('<p class="pb-ft">누가 맞혔는지 — ' + esc(줄) + '</p>');
-    })();
+      + '. 답해 주신 것은 이 기기에만 남습니다.</p>');
+    // 「누가 맞혔는지 — 정율 3/4 · 온서 2/2」를 여기서 세고 있었다. 걷어냈다(2026-08-30 결재).
+    // 책사별 적중률을 세면 잘 맞힌 책사를 자주 부르고 싶어지고, 그 순간 판정이 인기순으로
+    // 왜곡된다. 책사는 인기로 뽑는 자리가 아니라 엔진 축이다. 세지 않는 것이 방어다.
     // ── 채점의 끝에는 문이 있어야 한다 — 제출이 그 문의 손잡이다 ──
     if (submitted) {
       html.unshift('<p style="text-align:right;margin:0"><button class="btn-ghost" id="gmFold">접기 ▴</button></p>');
     }
     if (!submitted && answered >= Math.max(3, Math.floor(전체문 * 0.6))) {
       html.push('<div class="nx-diag pbd" style="margin-top:14px">'
-        + '<p class="nx-diag-k">답을 보내 주시겠어요</p>'
-        + '<p>' + answered + ' / ' + 전체문 + '개 발언에 답하셨습니다. 보내 주시면 빗나간 말까지 그대로 공개 기록에 쌓입니다 — 그것이 이 집의 방식입니다.</p>'
-        + '<button class="btn" id="gmSubmit">답을 보내겠습니다</button></div>');
+        + '<p class="nx-diag-k">답을 매듭지어 주시겠어요</p>'
+        + '<p>' + answered + ' / ' + 전체문 + '개 발언에 답하셨습니다. 매듭지으시면 어디가 맞고 어디가 빗나갔는지 한눈에 보여 드립니다. '
+        + '<b>답은 공주님 기기에만 남습니다</b> — 저희가 가져가지 않습니다.</p>'
+        + '<button class="btn" id="gmSubmit">답을 매듭짓겠습니다</button></div>');
     }
     if (submitted) {
       const 머리말 = misses === 0 && answered === 전체문
@@ -2588,33 +2625,21 @@
     if (nl) nl.onclick = () => go('lovestory');
     if (nm) nm.onclick = () => go('moneystory');
     el.querySelectorAll('.gmg').forEach(b => b.onclick = () => {
-      // 클릭은 기기에만 — 서버 제출은 [채점 제출하기]가 한다(2026-08-30
-      // 「맞다고 터치만 하면 하나씩 쌓이는 것 아니야?」). 고민 중인 답을 실어 보내지 않는다.
       grades[b.dataset.i] = b.dataset.v;
       localStorage.setItem(gradeKey, JSON.stringify(grades));
-      localStorage.removeItem(submitKey);   // 답을 고치면 다시 제출할 수 있게
+      localStorage.removeItem(submitKey);   // 답을 고치면 다시 매듭지을 수 있게
       mountGanmyeong(el, whereTag);
     });
+    // 채점은 기기 밖으로 나가지 않는다 (2026-08-30 결재).
+    // 예전엔 여기서 Supabase `ganmyeong_grade_put` 으로 문항별 채점을 실어 보냈다.
+    // 그 데이터를 받아 두던 유일한 이유가 「적중률 집계」였는데 그걸 안 하기로 했으니,
+    // 남은 것은 쓰지도 않을 개인 데이터를 모으는 일뿐이다. 그래서 통로째 끊었다.
+    // [매듭짓기]는 서버 제출이 아니라 「다 읽고 답했다」는 문의 손잡이로만 남는다.
     const sb = el.querySelector('#gmSubmit');
-    if (sb) sb.onclick = async () => {
-      sb.disabled = true; sb.textContent = '제출 중…';
-      try {
-        const C = window.ChaeksaCloud;
-        const tok = C && C.token ? await C.token() : null;
-        if (!tok) throw new Error('로그인이 필요합니다');
-        const cfg = window.CHAEKSA_SUPABASE || {};
-        const pk2 = cacheKey.replace('chaeksa.ganmyeong.', '');
-        for (const [i2, v2] of Object.entries(grades)) {
-          await fetch(cfg.url + '/rest/v1/rpc/ganmyeong_grade_put', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json', apikey: cfg.anonKey, authorization: 'Bearer ' + tok },
-            body: JSON.stringify({ p_pk: pk2, p_item: +i2, p_grade: v2 }),
-          });
-        }
-        localStorage.setItem(submitKey, '1');
-        localStorage.removeItem(foldKey);   // 제출 직후엔 접힌 요약이 기본
-        mountGanmyeong(el, whereTag);
-      } catch (e) { sb.disabled = false; sb.textContent = '제출 실패 — 다시 눌러주세요'; }
+    if (sb) sb.onclick = () => {
+      localStorage.setItem(submitKey, '1');
+      localStorage.removeItem(foldKey);   // 매듭 직후엔 접힌 요약이 기본
+      mountGanmyeong(el, whereTag);
     };
   }
 
@@ -2980,10 +3005,15 @@
   function 회의장면(고르면) {
     if (!window.CHAEKSA_ART) return;
     const s0 = 계절이름(), v = window.CHAEKSA_ART;
-    const 벌 = ['', '-2', '-3'][날번호() % 3];
+    // 계절마다 몇 벌인지는 config.js 가 안다. 없는 벌을 부르면 헛걸음이라 그만큼만 돈다.
+    const n = (window.CHAEKSA_COUNCIL_VAR && window.CHAEKSA_COUNCIL_VAR[s0]) || 1;
+    const i = 날번호() % n;
+    const 벌 = i ? '-' + (i + 1) : '';
+    // 예전엔 마지막 후보가 love-open 이었다. 그건 **판이 바뀌기 전** 그림이라
+    // (서양 고딕 저택·낯선 남자 얼굴) 첫 화면에 스치기만 해도 세계가 어긋난다.
+    // 회의 장면이 없으면 아무것도 안 건다 — 없는 것보다 어긋난 것이 나쁘다.
     const 후보 = ['art/council-' + s0 + 벌 + '.webp?v=' + v,
-                  'art/council-' + s0 + '.webp?v=' + v,
-                  'art/love-open-' + s0 + '.webp?v=' + v];
+                  'art/council-' + s0 + '.webp?v=' + v];
     (function 다음(i) {
       if (i >= 후보.length) return;
       const im = new Image();
@@ -2998,7 +3028,7 @@
     if (!window.CHAEKSA_ART) return '';
     const s0 = 계절이름(), v = window.CHAEKSA_ART;
     setTimeout(() => 회의장면(u => { const g = $('gmScene'); if (g) g.src = u; }), 0);
-    return '<img class="gm-scene" id="gmScene" alt="" src="art/love-open-' + s0 + '.webp?v=' + v + '">';
+    return '<img class="gm-scene" id="gmScene" alt="" src="art/council-' + s0 + '.webp?v=' + v + '">';
   }
   // ───── 랜딩 ─────
   function showLanding() {
@@ -3010,7 +3040,9 @@
     const hero = $('lpHero');
     if (hero && window.CHAEKSA_ART) {
       const s0 = 계절이름(), v = window.CHAEKSA_ART;
-      hero.style.setProperty('--hero-art', 'url("art/love-open-' + s0 + '.webp?v=' + v + '")');
+      // 첫 화면은 회의 장면이다. 예전엔 love-open 을 깔았다가 회의 장면으로 바꿔 끼웠는데,
+      // 그 한 순간 판이 바뀌기 전 그림(서양 고딕 저택)이 스쳤다.
+      hero.style.setProperty('--hero-art', 'url("art/council-' + s0 + '.webp?v=' + v + '")');
       hero.classList.add('scene');
       // 오늘의 회의 장면이 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
       회의장면(u => hero.style.setProperty('--hero-art', 'url("' + u + '")'));

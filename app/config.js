@@ -22,3 +22,23 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 //   끄면 파라메트릭 SVG 컷으로 돌아간다 — 빈 자리가 되지 않는다.
 window.CHAEKSA_ART = 'wealth';
 window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 돌아오면 그대로 쓴다
+
+/* 책사 초상이 몇 벌씩 그려져 있는가 — **그려진 만큼만 부른다.**
+ * 없는 파일을 부르면 깨진 액자가 뜨고, 있는 걸 안 부르면 스물일곱 장 그려 놓고
+ * 열 장만 쓰게 된다(2026-08-30 실제로 그러고 있었다).
+ *
+ * 벌마다 하는 일이 다르다 — 주문서(marketing/삽화-주문서-복붙.html)가 이 순서로 시킨다.
+ *   1벌(대표)  정면. 이름을 세울 때·홈 얼빡
+ *   2벌 -2     차분히 말하는 얼굴
+ *   3벌 -3     몸을 기울여 **받아치는** 얼굴 — 다른 책사를 인용해 반박하는 발언에만 쓴다
+ *   4벌 -4     듣는 얼굴 (아직 없음. 도착하면 숫자를 4로)
+ *
+ * 그림이 도착하면 **여기 숫자만 올리면** 화면이 알아서 쓴다. app.js 는 안 건드려도 된다. */
+window.CHAEKSA_FACE_VAR = {
+  japyung: 3, gungtong: 3, eokbu: 3, gungwi: 2, inyeon: 3,
+  jaemul: 3, cheonjik: 3, unro: 1, hyeopgi: 3, jwajang: 3,
+};
+
+/* 회의 장면(council-<계절>[-벌].webp)이 계절마다 몇 벌인가.
+ * 봄 1 · 여름 1 · 가을 2 · 겨울 2 가 지금 전부다. */
+window.CHAEKSA_COUNCIL_VAR = { spring: 1, summer: 1, autumn: 2, winter: 2 };
