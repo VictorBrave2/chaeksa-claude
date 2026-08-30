@@ -169,7 +169,7 @@
     };
     if (pl) { birth.place = $('pfPlace').value; birth.placeName = pl.name; birth.longitude = pl.lon; birth.tzOffset = pl.tzOffset; }
     const rel = $('pfRel').value;
-    const name = $('pfName').value.trim() || (rel === '나' ? '나' : '이름 없음');
+    const name = $('pfName').value.trim() || (rel === '나' ? '공주님' : '이름 없음');
     if (editingId) {
       P.update(editingId, { name, relation: rel, birth, isSelf: rel === '나' });
     } else {
@@ -275,6 +275,43 @@
   }
 
   // ───── 온보딩 ─────
+  /** 첫 만남의 예. 열 사람이 자리에 앉는 것을 보여 드리고 물러난다.
+   *  처음 사주를 넣으신 그 한 번만 뜬다. 아무 데나 누르면 바로 건너뛴다. */
+  function 착석(끝나면) {
+    let 닫힘 = false;
+    const 닫기 = () => {
+      if (닫힘) return; 닫힘 = true;
+      try { document.removeEventListener('keydown', 키); } catch (e) {}
+      if (막) { 막.classList.add('out'); setTimeout(() => { try { 막.remove(); } catch (e) {} }, 420); }
+      try { 끝나면(); } catch (e) {}
+    };
+    let 막 = null;
+    try {
+      const 덜 = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      막 = document.createElement('div');
+      막.className = 'seatin' + (덜 ? ' still' : '');
+      막.innerHTML = '<div class="si-in">'
+        + '<p class="si-k">책사단이 자리에 앉습니다</p>'
+        + '<div class="si-row">'
+        + 오늘의책사.map(([k, 이름], i) =>
+            '<span class="si-m" style="animation-delay:' + (0.12 + i * 0.11).toFixed(2) + 's">'
+            + '<span class="si-face"><img src="art/chaeksa-' + k + '.webp" alt="" '
+            + 'onerror="this.remove()">'
+            + '<span class="si-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
+            + '<span class="si-name">' + esc(이름of(이름)) + '</span></span>').join('')
+        + '</div>'
+        + '<p class="si-hail">' + esc(nim()) + ', 기다리고 있었습니다.</p>'
+        + '<p class="si-skip">아무 데나 누르시면 넘어갑니다</p>'
+        + '</div>';
+      막.onclick = 닫기;
+      document.body.appendChild(막);
+    } catch (e) { 닫기(); return; }
+    const 키 = () => 닫기();
+    document.addEventListener('keydown', 키);
+    // 붙잡지 않는다. 열 사람이 앉고 인사 한 줄이면 끝이다.
+    setTimeout(닫기, matchMedia('(prefers-reduced-motion: reduce)').matches ? 1400 : 3400);
+  }
+
   function readForm() {
     const noTime = $('noTime').checked;
     const sol = toSolar();
@@ -300,6 +337,13 @@
       start(People().toProfile(People().active()));
     } else start(p);
     if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+    // 첫 만남의 예 — 처음 사주를 넣으신 이 한 번만. 홈은 이미 뒤에 다 그려져 있다.
+    try {
+      if (!localStorage.getItem('chaeksa.seatin')) {
+        localStorage.setItem('chaeksa.seatin', '1');
+        착석(() => {});
+      }
+    } catch (e) {}
   };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
