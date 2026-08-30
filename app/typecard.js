@@ -3313,7 +3313,9 @@
     const cur = E.currentDaeun(R, todayD || new Date());
     const curIdx = cur ? list.findIndex(x => x.d.startAge === cur.startAge) : -1;
     let hi = 0, lo = 0;
-    list.forEach((x, i) => { if (x.v > list[hi].v) hi = i; if (x.v < list[lo].v) lo = i; });
+    // 동점이면 나중 것을 잡는다(>=). 앞엣것이 이기면 지금과 똑같이 높은데도
+    // 「그건 지나갔습니다」가 된다(2026-08-30 실측: 18~27세 85 · 지금 85).
+    list.forEach((x, i) => { if (x.v >= list[hi].v) hi = i; if (x.v < list[lo].v) lo = i; });
     const vs = list.map(x => x.v), n = vs.length;
     const avg = (arr) => arr.reduce((p, c) => p + c, 0) / (arr.length || 1);
     const early = avg(vs.slice(0, Math.ceil(n / 3)));
