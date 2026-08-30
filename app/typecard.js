@@ -2112,8 +2112,14 @@
   function 운로재료(R, now) {
     try {
       const l = lifeCurve(R, now); if (!l) return null;
+      // 지금칸·최고칸을 함께 낸다. 「지남」만으로는 앞뒤를 못 가린다 —
+      // curIdx 가 -1 이면(첫 대운 전이거나 마지막 대운도 지난 분) 지남도 false 라
+      // 아홉 칸을 다 지난 분에게 「봉우리는 아직 앞입니다」가 나갔다(2026-08-31).
+      // 봉우리가 정말 앞에 있는지는 최고칸 > 지금칸 으로만 말할 수 있다.
       return { 결: l.kind, 풀이: l.kindNote || null, 최고구간: l.peakTxt || null,
                지남: !!l.지남, 앞최고구간: l.앞최고Txt || null,
+               지금칸: typeof l.curIdx === 'number' ? l.curIdx : -1,
+               최고칸: typeof l.hi === 'number' ? l.hi : -1,
                근거: (l.lines || []).slice(0, 3) };
     } catch (e) { return null; }
   }
