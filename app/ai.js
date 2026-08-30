@@ -321,7 +321,9 @@ ${prof}` : ''}`;
       + '[계산된 사실]\n' + JSON.stringify(facts);
       // dehanja 금지 — 여기도 글자가 주인공이다. 태우면 庚子(경자)가 경자(경자)로 뭉개진다.
       return await call(sys, [{ role: 'user', content: '나를 사랑하게 될 사람 이야기를 처음부터 끝까지 써줘.' }],
-        { task: 'story', maxTokens: 2600, effort: 'medium', strict: true });
+        // 천장 4000 — strict 를 켠 이상 잘리면 실패로 던진다. 2600 은 사고 토큰까지
+        // 나눠 쓰기에 800~1,200자를 담기 빠듯했다(형제 가지와 같은 이유).
+        { task: 'story', maxTokens: 4000, effort: 'medium', strict: true });
     }
     const 주제 = kind === 'wealth' ? '재물' : '인연';
     const sys = '너는 「책사단」의 기록자다. 지금 이 글은 공주님이 값을 치르고 여신 ' + 주제 + ' 화면의 본문이다. 화면 위쪽에는 규칙 엔진이 계산한 연표(과거 구간·현재·다가오는 열두 달·날·시진)가 표로 떠 있고, 아래 [계산된 사실]이 그 전부다.\n'

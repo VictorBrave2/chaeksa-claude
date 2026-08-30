@@ -168,9 +168,18 @@
   // 이건 화면 편의지 방어가 아니다 — 열리는 건 브라우저 계산 결과일 뿐이고,
   // 서버 비용이 걸린 것(AI)은 서버가 따로 강제한다. devtools 로 열어봐야
   // 자기 사주 계산을 자기가 보는 것이다.
-  let _paidRows = null;
+  let _paidRows = null, _paidWait = null;
   async function paidLoad() {
     if (_paidRows) return _paidRows;
+    // 부팅 때 두 곳에서 거의 동시에 부른다(모듈 평가 · go('home')).
+    // 합쳐 두지 않으면 켤 때마다 토큰 갱신 + my_orders 가 두 벌씩 나간다.
+    if (_paidWait) return _paidWait;
+    _paidWait = (async () => {
+      try { return await 실제조회(); } finally { _paidWait = null; }
+    })();
+    return _paidWait;
+  }
+  async function 실제조회() {
     const rows = await mine();
     // 못 물어본 것(null)은 캐시하지 않는다 — 캐시하면 그 세션 내내 「산 게 없음」이다.
     // 비로그인은 빈 배열이라 정상적으로 캐시된다.

@@ -1032,7 +1032,7 @@
           const fl = $('gachaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
           $('gachaWrap').classList.remove('hide');
           $('gachaNote').textContent = c.rar && c.rar.unique
-            ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 공주님뿐입니다 · ${c.tier}`
+            ? `지어낸 사주 ${c.rar.n.toLocaleString()}개 가운데 이 유형은 공주님뿐입니다 · ${c.tier}`
             : `등급 ${c.tier} · 같은 사주는 언제나 이 카드입니다`;
           $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
           // 두 번째 카드 — 지금 대운이 이 사주에 필요한 걸 갖고 왔는가
@@ -1094,7 +1094,9 @@
     const ys = [];
     for (let i = 0; i < 2; i++) {
       const y = today.getFullYear() + i, tf = E.dateFortune(y, 6, 15);
-      const g = god(tf.year.stem), rel = C.branchRel(R.pillars.day.branch, tf.year.branch);
+      // 충은 안 적는다 — 제23조. branchRel 은 아직 '충'을 돌려주므로 여기서 거른다.
+      const g = god(tf.year.stem), rel0 = C.branchRel(R.pillars.day.branch, tf.year.branch);
+      const rel = rel0 === '충' ? null : rel0;
       ys.push(`<div class="flow"><div class="gz ${elemClass(tf.year.stem, true)}">${f.pillar(tf.year)}<small>${y}년</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(일지와 ${rel})</span>` : ''}</p></div>`);
     }
     $('yearly').innerHTML = ys.join('');
@@ -1103,7 +1105,8 @@
     for (let i = 0; i < 12; i++) {
       const d = new Date(today.getFullYear(), today.getMonth() + i, 15);
       const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, 15);
-      const g = god(tf.month.stem), rel = C.branchRel(R.pillars.day.branch, tf.month.branch);
+      const g = god(tf.month.stem), rel1 = C.branchRel(R.pillars.day.branch, tf.month.branch);
+      const rel = rel1 === '충' ? null : rel1;   // 충 표기 없음 — 제23조
       ms.push(`<div class="flow"><div class="gz ${elemClass(tf.month.stem, true)}">${f.pillar(tf.month)}<small>${d.getFullYear()}.${d.getMonth() + 1}</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(${rel})</span>` : ''}</p></div>`);
     }
     $('monthly').innerHTML = ms.join('');
@@ -2041,7 +2044,7 @@
         $('jikSvg').innerHTML = T.drawJikcheop(profile.name || '공주님', v);
         const fl = $('jikFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('jikWrap').classList.remove('hide');
-        $('jikNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
+        $('jikNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 지어낸 사주 ' + v.n.toLocaleString() + '개 중 같은 유형 ' + v.share + '%';
         $('btnJikShare').onclick = async () => {
           const b = $('btnJikShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
           try {
@@ -2772,7 +2775,7 @@
             '공주님을 배우자감으로 알아보는 사람의 글자는 원국이 이미 정해 두었습니다 — 그리고 공주님을 곧장 끌어당기는 합의 글자도요. 그 사람들이 어떤 결이고, 어떻게 다가오고, 공주님의 무엇에 걸리는지까지 열립니다.',
             (profile.name || '') + '님 연애 상담 — 어떤 사람이 저를 사랑하게 되는지 보고 싶습니다', 'inyeon',
             T.inyeonWhy ? T.inyeonWhy(R).말 : null); }
-        $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
+        $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 지어낸 사주 ' + v.n.toLocaleString() + '개 중 같은 유형 ' + v.share + '%';
         $('btnDohwaShare').onclick = async () => {
           const b = $('btnDohwaShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
           try {

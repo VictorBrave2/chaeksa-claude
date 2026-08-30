@@ -139,8 +139,8 @@
    *  '좋다'고 한 것(만개·순풍)과 '아니다'라고 한 것(월동·담금질)을 나눠 결과를 본다. */
   function stats(personId) {
     const done = list(personId).filter(x => x.outcome && x.verdict);
-    const good = done.filter(x => x.verdict.score >= 75);
-    const bad = done.filter(x => x.verdict.score < 50);
+    const good = done.filter(x => x.verdict.score >= 65);
+    const bad = done.filter(x => x.verdict.score < 40);
     const hit = (arr, want) => arr.filter(x => x.outcome.result === want).length;
     return {
       total: done.length,
@@ -165,8 +165,8 @@
     if (!E || logs.length < 4) return { n: logs.length, need: 4 - logs.length, engine: null, god: null };
 
     // ① 엔진 축
-    const 좋다 = logs.filter(l => l.verdict && l.verdict.score >= 75);
-    const 아니다 = logs.filter(l => l.verdict && l.verdict.score < 50);
+    const 좋다 = logs.filter(l => l.verdict && l.verdict.score >= 65);
+    const 아니다 = logs.filter(l => l.verdict && l.verdict.score < 40);
     const cnt = (arr, r) => arr.filter(l => l.result === r).length;
     const engine = [];
     if (좋다.length >= 2) engine.push({ side: '좋다', n: 좋다.length, hit: cnt(좋다, 'good') });
@@ -274,8 +274,11 @@
       const j = judge(R, yy, mm);
       if (j && j.score >= cur.score + 15) { turn = { y: yy, m: mm, j, away: i }; break; }
     }
-    const 눌림 = cur.score < 50;
-    const 좋음 = cur.score >= 75;
+    // 등급 문턱(typecard 등급100: 85/65/40/20)과 같은 축을 쓴다.
+    // 예전 75/50 은 옛 v/50 눈금의 잔재라, 같은 달을 두고 등급은 「순풍」인데
+    // 여기서는 「좋지 않음」으로 세는 모순이 났다(2026-08-30).
+    const 눌림 = cur.score < 40;
+    const 좋음 = cur.score >= 65;
     let head, body;
     if (좋음) {
       head = '지금은 밀어야 할 때입니다';

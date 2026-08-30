@@ -202,7 +202,7 @@
   <text x="180" y="360" text-anchor="middle" font-size="15" fill="#5c5546" letter-spacing="2">${stemKo} 일간 · ${E.fmt.branchKo(p.month.branch)}월생</text>
   <rect x="46" y="410" width="268" height="52" rx="10" fill="#ffffff" opacity=".55"/>
   <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${판정말(J)} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
-  <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `지어낸 사주 ${rar.n.toLocaleString()}개 중 ${rar.count}명` : ''}</text>
+  <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `지어낸 사주 ${rar.n.toLocaleString()}개 중 ${rar.count}개` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
   ${csLine}
@@ -1878,8 +1878,11 @@
   function 올해면(해목록, now) {
     const y = now.getFullYear();
     if ((해목록 || []).indexOf(y) < 0) return '';
-    const 남 = 12 - now.getMonth();
-    return 남 <= 0 ? '' : (' 그 해가 바로 올해입니다 — ' + 남 + '달 남았습니다.');
+    // getMonth() 는 0~11 이라 12 - getMonth() 는 늘 1 이상이었다 — 방어가 한 번도
+    // 안 돌았다. 12월이면 남은 달이 없다고 말해야 한다(2026-08-30).
+    const 남 = 11 - now.getMonth();
+    if (남 <= 0) return ' 그 해가 바로 올해인데, 이제 한 달이 채 남지 않았습니다.';
+    return ' 그 해가 바로 올해입니다 — ' + 남 + '달 남았습니다.';
   }
 
   function 인연결론(R, now) {
@@ -3362,9 +3365,15 @@
       lines.push('첫 대운 ' + list[0].d.startAge + '세부터 열 해마다 판이 바뀝니다');
     }
     // 최고 구간이 과거면 '공주님 전성기는 지났다'로 읽힌다. 앞에 남은 것을 함께 짚는다.
+    // 「앞으로 남은 구간 중 최고」는 여기서 한 번만 센다. 두 군데서 각각 세다가
+    // 범위가 갈려(하나는 지금 대운 포함, 하나는 제외) 홈 타일과 본문이 다른 십 년을
+    // 가리킨 적이 있다(2026-08-30). 「앞으로 남은」이므로 지나가는 중인 지금은 뺀다.
+    let 앞hi = -1;
     if (curIdx >= 0 && hi < curIdx) {
-      let ah = -1;
-      for (let i = curIdx + 1; i < n; i++) if (ah < 0 || list[i].v > list[ah].v) ah = i;
+      for (let i = curIdx + 1; i < n; i++) if (앞hi < 0 || list[i].v > list[앞hi].v) 앞hi = i;
+    }
+    if (curIdx >= 0 && hi < curIdx) {
+      const ah = 앞hi;
       if (ah >= 0) lines.push('앞으로 남은 구간 중에는 ' + list[ah].d.startAge + '~' + list[ah].d.endAge + '세가 가장 높습니다');
       else lines.push('가장 낮은 구간은 ' + list[lo].d.startAge + '~' + list[lo].d.endAge + '세였습니다');
     } else {
@@ -3373,9 +3382,7 @@
     lines.push('곡선은 대운이 내 사주에 필요한 것을 갖고 오는가로 잽니다');
     // 최고 구간이 이미 지났는가. 지났다면 앞으로 남은 구간 중 가장 높은 곳도 함께 낸다 —
     // 화면이 앞세울 것은 지나간 봉우리가 아니라 남은 봉우리다(값은 그대로 둔다).
-    const 지남 = curIdx >= 0 && hi < curIdx;
-    let 앞hi = -1;
-    if (지남) for (let i = curIdx; i < n; i++) if (앞hi < 0 || list[i].v > list[앞hi].v) 앞hi = i;
+    const 지남 = curIdx >= 0 && hi < curIdx;   // 앞hi 는 위에서 한 번만 셌다
     const 칸 = (d) => d.startAge + '~' + d.endAge + '세';
     return { list, hi, lo, curIdx, headIdx: hi, kind, kindNote: CURVE_KIND[kind],
              peak: list[hi].d, low: list[lo].d, lines, 지남,
