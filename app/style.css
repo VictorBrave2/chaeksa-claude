@@ -1183,3 +1183,28 @@ details.fold > .tiles { margin-top: 10px; }
   /* 값이 길어질 수 있다(무재·대기만성형…). 제목을 밀어내지 않고 스스로 줄어든다 */
   max-width:38%;overflow:hidden;text-overflow:ellipsis}
 .shelf .row .row-x:empty{display:none}
+
+/* 얼빡 — 책사가 말을 시작할 때 얼굴이 크게 선다.
+   22px 동그라미는 단추지 얼빡이 아니다(2026-08-30 「잘생긴애들이 얼빡으로 나와야지」).
+   화자가 바뀔 때만 세운다 — 스무 발언에 스무 번 나오면 홈이 다시 마흔 화면이 된다. */
+.say-head{position:relative;margin:16px 0 0;height:112px;border-radius:13px;overflow:hidden;
+  background:linear-gradient(160deg,#241f4d,#161433);display:flex;align-items:flex-end}
+.say-head:first-child{margin-top:2px}
+/* 인용 상자(.nx-diag) 안에서는 그 좌우 여백(15px)을 되물려 가장자리까지 채운다 —
+   「얼빡」은 크게 나와야 얼빡이다. 상자 밖(유료 .pb-ai)에서는 그대로 둔다. */
+.nx-diag > .say-head{margin-left:-15px;margin-right:-15px;border-radius:9px}
+.say-face{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:50% 26%}
+.say-head::after{content:'';position:absolute;left:0;right:0;bottom:0;height:72px;
+  background:linear-gradient(180deg,rgba(18,16,44,0),rgba(18,16,44,.92))}
+/* 인장은 늘 뒤에 깔아 둔다. 그림이 없거나 못 받아와도 빈 액자가 되지 않는다 —
+   onerror 로 지우는 방식은 안 쓴다(그 방식이 깨지면 조용히 빈 칸이 남는다). */
+.say-seal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-family:"Noto Serif KR",serif;font-size:34px;color:rgba(230,201,138,.5)}
+.say-id{position:relative;z-index:1;padding:0 14px 11px;display:flex;align-items:baseline;gap:8px}
+.say-id b{font-family:"Gowun Batang","Noto Serif KR",serif;font-size:17px;color:#f4efff;
+  font-weight:700;letter-spacing:.01em;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.say-id span{font-size:11px;color:#c9c0e6;letter-spacing:.02em;
+  text-shadow:0 1px 6px rgba(0,0,0,.5)}
+/* 띠가 선 뒤의 말 — 붙여서 한 덩이로 읽히게 */
+.say-head + .gm-say{margin-top:9px}

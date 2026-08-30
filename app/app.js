@@ -1590,7 +1590,7 @@
       (slot || pb).appendChild(el);
       const draw = (t) => {
         el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
-          + String(t).split(/[\r\n]+/).filter(Boolean).map(발언줄).join('');
+          + 발언들(String(t).split(/[\r\n]+/).filter(Boolean));
       };
       if (cached) { draw(cached); return; }
       el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">위 계산을 놓고 책사단이 의논하는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
@@ -2236,13 +2236,41 @@
   };
   const 발언자류 = /^([\u2460-\u2473])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
   /** 한 줄을 발언으로 그린다(발언자가 아니면 그냥 문단) */
-  function 발언줄(t) {
+  /** 얼빡 — 화자가 말을 시작할 때 얼굴이 크게 선다.
+   *  22px 동그라미는 단추지 얼빡이 아니다(2026-08-30 「잘생긴애들이 얼빡으로 나와야지」).
+   *  인장을 늘 뒤에 깔아 두므로 그림이 없거나 못 받아와도 빈 액자가 되지 않는다 —
+   *  onerror 로 지우는 방식은 안 쓴다. */
+  function 얼굴띠(who) {
+    const 축 = 축으로(who);
+    const k = 책사키[축];
+    const 인 = esc(책사인장[축] || String(who).slice(0, 1));
+    const 그림 = (k && window.CHAEKSA_ART)
+      ? '<img class="say-face" alt="" src="art/chaeksa-' + k + '.webp?v=' + window.CHAEKSA_ART + '">'
+      : '';
+    return '<div class="say-head"><span class="say-seal">' + 인 + '</span>' + 그림
+      + '<span class="say-id"><b>' + esc(이름of(who)) + '</b>'
+      + '<span>' + esc(직함of(who)) + '</span></span></div>';
+  }
+  /** 한 줄. 새화자가 아니면(false) 얼굴 띠를 세우지 않는다. */
+  function 발언줄(t, 새화자) {
     t = String(t).trim(); if (!t) return '';
     const m = t.match(발언자류);
     if (!m) return '<p>' + esc(t) + '</p>';
-    return '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
-      + '<span class="gm-who" title="' + esc(직함of(m[2]) + ' ' + m[2]) + '">'
-      + 얼굴(m[2]) + esc(이름of(m[2])) + '</span>' + esc(t.slice(m[0].length)) + '</p>';
+    return (새화자 === false ? '' : 얼굴띠(m[2]))
+      + '<p class="gm-say">' + (m[1] ? '<span class="gm-num">' + m[1] + '</span>' : '')
+      + esc(t.slice(m[0].length)) + '</p>';
+  }
+  /** 여러 줄. 같은 책사가 이어 말하면 얼굴을 다시 세우지 않는다 —
+   *  안 그러면 무료 의논 스무 발언에 얼굴이 스무 번 나온다. */
+  function 발언들(줄들) {
+    let 앞 = null;
+    return 줄들.map(function (t) {
+      const m = String(t).trim().match(발언자류);
+      const who = m ? m[2] : null;
+      const 새 = !!who && who !== 앞;
+      if (who) 앞 = who;
+      return 발언줄(t, 새);
+    }).join('');
   }
   // v13: 열 목소리 · 좌장의 맺음 · 분배 상한 · 벽 자르기 · 유령 인용 제거(2026-08-30).
   //      판을 안 올리면 이미 다녀가신 분은 옛 의논에 갇혀 오늘 한 일이 안 보인다.
@@ -2419,10 +2447,15 @@
     const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
     // 발언 한 줄을 그리는 일은 전역 발언줄() 하나가 한다 — 여기서 따로 그리다가
     // 이름 바꾸기(축→책사 이름)가 무료 의논에만 안 먹은 적이 있다(2026-08-30).
+    // 화자를 덩이 너머로 기억한다 — 같은 책사가 이어 말하면 얼굴을 다시 안 세운다.
+    let 앞화자 = null;
     const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
       t = t.trim(); if (!t) return '';
-      if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); return ''; }
-      return 발언줄(t);
+      if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); 앞화자 = null; return ''; }
+      const mm = t.match(발언자류), who = mm ? mm[2] : null;
+      const 새 = !!who && who !== 앞화자;
+      if (who) 앞화자 = who;
+      return 발언줄(t, 새);
     }).join('');
     const 머리 = parts[0] || '';
     const 발언자 = [];
