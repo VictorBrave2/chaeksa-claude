@@ -3496,10 +3496,21 @@
       : q2 - Math.max(q1, q3) >= 8 ? '한여름 같은 해' : '기복이 큰 해';
     const gradeOf = 등급100;
     const 올해 = now.getFullYear() === year;
-    const curM = 올해 ? now.getMonth() + 1 : 0;
+    // 지금 달은 달력이 아니라 절기로 고른다 — 이 화면이 스스로 「입절일이 경계」라고
+    // 적어 두고도 now.getMonth() 로 잘랐다. 9월 3일이면 명리로는 아직 신월인데
+    // 달력으로는 9월이라, 시작도 안 한 유월 칸이 「지난 달」로 빠졌다.
+    let curIdx = -1;
+    if (올해) {
+      try {
+        const tm = E.dateFortune(now.getFullYear(), now.getMonth() + 1, now.getDate()).month;
+        curIdx = months.findIndex(x => x.pl.stem === tm.stem && x.pl.branch === tm.branch);
+      } catch (e) {}
+      if (curIdx < 0) curIdx = now.getMonth();          // 못 찾으면 달력으로 물러난다
+    }
+    const curM = 올해 && months[curIdx] ? months[curIdx].m : 0;
     // 남은 달 중 최고 — 지난 달을 최고라고 알려주면 쓸 데가 없다
     let nextHi = -1;
-    months.forEach((x, i) => { if (x.m > curM && (nextHi < 0 || x.v > months[nextHi].v)) nextHi = i; });
+    months.forEach((x, i) => { if (올해 && i > curIdx && (nextHi < 0 || x.v > months[nextHi].v)) nextHi = i; });
     const lines = [];
     lines.push(year + '년은 ' + E.fmt.pillar(yp) + '년 — ' + gradeOf(yv).name + '. ' + gradeOf(yv).line);
     if (올해 && nextHi >= 0) lines.push('남은 달 중 가장 좋은 때는 ' + months[nextHi].m + '월 — ' + gradeOf(months[nextHi].v).name);
