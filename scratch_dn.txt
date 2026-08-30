@@ -1,0 +1,40 @@
+app.js | => profile.name === '당신' ? '당신' : profile.name
+app.js | me').value.trim() || '당신', year: sol.y, month: s
+app.js | f (!p.name) p.name = '당신';
+app.js | 혀 옮겨 두었습니다. 지금 그 조문대로 당신의 자리를 짚고 있습니다.'],
+app.js | s="pb-lede">열 사람의 책사가 당신의 사주를 앞에 놓고 둘러앉습니다. 서로 다
+app.js | wBan(profile.name || '당신', ban);
+app.js | aleString()}명 중 이 유형은 당신뿐입니다 · ${c.tier}`
+app.js | ason(profile.name || '당신', R, sn);
+app.js | kpae(profile.name || '당신', w);
+app.js | — 엔진이 이 사람 원국에서 읽은 「왜 당신께는 시기가 중요한가」.
+app.js | ><p class="nx-diag-k">당신의 원국에서 읽은 것</p>${진단.map(
+app.js | p class="nx-diag-k">왜 당신께는 날의 서열인가</p>${mw.말.map
+app.js | Flow(profile.name || '당신', yf);
+app.js | urve(profile.name || '당신', lc);
+app.js | heop(profile.name || '당신', v);
+app.js | chim(profile.name || '당신', v);
+app.js | yeon(profile.name || '당신', v);
+app.js | yeon(profile.name || '당신', v);
+app.js | p class="nx-diag-k">왜 당신께는 이 답인가</p>${why.말.map(
+app.js | {esc(profile.name || '당신')}님께는
+app.js | 장도 빗나가지 않았습니다 — 이 잣대가 당신에게 꼭 맞습니다.'
+app.js | "btn" id="gmNextLove">당신의 사랑 이야기 — 다음 장 열기</butt
+app.js | tyle="margin-top:8px">당신의 재물 이야기 열기</button>'
+app.js | nm = profile.name || '당신';
+app.js | nm = profile.name || '당신';
+app.js | ohwa(profile.name || '당신', v);
+app.js | span class="pb-god">— 당신과 합</span>' : ''}
+app.js | ss="pb-say">그리고 이 글자는 당신의 일간을 곧장 끌어당기는 합입니다 — 서로
+app.js | "pb-k">결제 열람 — 어떤 사람이 당신을 사랑하는가</p>
+app.js | <p class="pb-vd">◆ 당신의 배우자 방 ${esc(w.진사랑.궁)}에
+app.js | <p class="pb-vd">◆ 당신에게는 ${esc(w.진사랑.십신)}의 자리
+app.js | </b>${w.진사랑.맞물림 ? ' — 당신의 배우자성이기도 합니다. 궁과 성이 맞물린
+app.js | <p class="pb-lede">당신을 배우자감으로 알아보는 사람의 글자는 원국
+app.js | 당신의 배우자성 <b>${esc(w.오행)}</
+app.js | -why">◦ 배우자성 밖의 글자인데도 당신의 일간을 곧장 끌어당기는 합입니다 — 조건
+app.js | p class="pb-h"><b>그들은 당신의 무엇에 걸리는가</b></p>
+app.js | <p class="pb-why">◦ 당신은 ${esc(w.매력.결)}의 사람 — $
+app.js | class="pb-h"><b>그 사랑이 당신에게 도착하는 방식</b></p>${w.도착
+app.js | 쇠글자 + (w.진사랑.맞물림 ? ' (당신의 배우자성이기도 — 궁과 성이 맞물림)'
+app.js | '어떤 사람이 당신을 사랑하는지', '나는 어떤 사랑을 하는지

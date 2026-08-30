@@ -8,7 +8,10 @@
   const today = new Date();
   let profile = null, R = null;
   const elemClass = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
-  const nim = () => profile.name === '당신' ? '당신' : profile.name + '님';
+  // 이름을 안 적으신 분은 「공주님」이다. 옛 프로필에 '공주님'이 저장돼 있을 수
+  // 있어 둘 다 대체 이름으로 읽는다.
+  const nim = () => (profile.name === '공주님' || profile.name === '공주님')
+    ? '공주님' : profile.name + '님';
   const nimSafe = () => esc(nim());
   const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
 
@@ -277,7 +280,7 @@
     const sol = toSolar();
     if (!sol) { alert('생년월일을 입력해 주세요.'); return null; }
     if (sol.error) { alert(sol.error); return null; }
-    const p = { name: $('name').value.trim() || '당신', year: sol.y, month: sol.m, day: sol.d,
+    const p = { name: $('name').value.trim() || '공주님', year: sol.y, month: sol.m, day: sol.d,
       calendar: calMode, lunarInput: calMode === 'lunar' ? { y: +$('y').value, m: +$('m').value, d: +$('d').value, leap: $('isLeap').checked } : null,
       hour: noTime ? null : ($('hh').value === '' ? null : +$('hh').value), minute: noTime ? 0 : +($('mi').value || 0),
       gender: $('g').value, solarCorrection: $('solar').checked };
@@ -369,7 +372,7 @@
 
   // ───── 시작 ─────
   function start(p) {
-    if (!p.name) p.name = '당신';
+    if (!p.name) p.name = '공주님';
     profile = p; R = E.calc(p);
     $('landing').classList.add('hide'); $('formCard').classList.add('hide');
     $('btnSettings').classList.remove('hide');
@@ -404,14 +407,14 @@
     // 자동 굽기 금지(2026-08-30 「켤 때마다 굽는데… 클릭으로 바꾸던가」) —
     // 앱을 여는 것만으로 돈이 나가면 안 된다. 버튼이 방아쇠다.
     const 특 = [
-      ['먼저 붓을 씻습니다', '격국의 뼈대 「자평진전」, 계절의 약방문 「궁통보감」 — 요약본이 아니라 원문을 판본까지 밝혀 옮겨 두었습니다. 지금 그 조문대로 당신의 자리를 짚고 있습니다.'],
+      ['먼저 붓을 씻습니다', '격국의 뼈대 「자평진전」, 계절의 약방문 「궁통보감」 — 요약본이 아니라 원문을 판본까지 밝혀 옮겨 두었습니다. 지금 그 조문대로 공주님의 자리를 짚고 있습니다.'],
       ['시각부터 바로 세웁니다', '달이 바뀌는 절기 시각을 태양 황경으로 직접 계산합니다 — 한국천문연구원 발표와 분 단위까지 맞습니다. 태어나신 곳의 경도로 진태양시까지 보정하고 나서야 첫 글자를 놓습니다.'],
-      ['틀리면 틀렸다고 남깁니다', '지난 의논은 스무 발언 가운데 열여덟이 맞았습니다. 당신의 의논도 발언마다 [맞아요/아니에요]로 답하실 수 있고, 빗나간 말은 지우지 않고 그대로 둡니다 — 누가 맞혔는지까지 남깁니다.'],
+      ['틀리면 틀렸다고 남깁니다', '빗나간 말은 지우지 않고 그대로 둡니다. 누가 맞혔는지까지 남깁니다.'],
       ['겁주지 않습니다', '삼재·대흉 같은 겁주는 살로 불안을 팔지 않습니다. 겁을 팔지 않아도 짚을 것은 다 짚습니다.'],
       ['애매한 것은 말하지 않습니다', '단정할 수 없는 자리는 계산 자체를 하지 않습니다. 적은 것은 전부 잰 것 — 그래서 맞는지 틀리는지 답을 받을 수 있습니다.'],
     ];
     el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}을 위한 첫 의논</p>
-      <p class="pb-lede">열 사람의 책사가 당신의 사주를 앞에 놓고 둘러앉습니다. 서로 다른 잣대를 들고 있어, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
+      <p class="pb-lede">열 사람의 책사가 공주님의 사주를 앞에 놓고 둘러앉습니다. 서로 다른 잣대를 들고 있어, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
       <button class="btn" id="chongBake">의논을 청하겠습니다 — 약 1~2분</button>
       <p class="hint">값을 받지 않는 의논은 한 번뿐입니다.</p>
       <div id="chongFeats"></div>
@@ -895,7 +898,7 @@
     (function renderBan() {
       const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
       const ban = T.banToday(R);
-      $('banSvg').innerHTML = T.drawBan(profile.name || '당신', ban);
+      $('banSvg').innerHTML = T.drawBan(profile.name || '공주님', ban);
       $('tiBanGz').textContent = '🚫 ' + ban.god;
       $('tiBanSub').textContent = ban.관계 ? `오늘은 ${ban.관계}까지 — 금지 ${ban.금지.length}개` : `오늘 금지 ${ban.금지.length}개`;
       $('btnBanShare').onclick = async () => {
@@ -926,14 +929,14 @@
           const fl = $('gachaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
           $('gachaWrap').classList.remove('hide');
           $('gachaNote').textContent = c.rar && c.rar.unique
-            ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 당신뿐입니다 · ${c.tier}`
+            ? `표본 ${c.rar.n.toLocaleString()}명 중 이 유형은 공주님뿐입니다 · ${c.tier}`
             : `등급 ${c.tier} · 같은 사주는 언제나 이 카드입니다`;
           $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
           // 두 번째 카드 — 지금 대운이 이 사주에 필요한 걸 갖고 왔는가
           $('seasonWrap').classList.add('hide'); $('btnSeason').classList.remove('hide');
           $('btnSeason').onclick = () => {
             const sn = window.ChaeksaTypecard.seasonNow(R);
-            $('seasonSvg').innerHTML = window.ChaeksaTypecard.drawSeason(profile.name || '당신', R, sn);
+            $('seasonSvg').innerHTML = window.ChaeksaTypecard.drawSeason(profile.name || '공주님', R, sn);
             const fl2 = $('seasonFlip'); fl2.style.animation = 'none'; void fl2.offsetWidth; fl2.style.animation = '';
             $('seasonWrap').classList.remove('hide');
             $('btnSeason').classList.add('hide');
@@ -1292,7 +1295,7 @@
         const w = T.wealth(R, today, sample);
         nokpaeFor = R;
         $('nokpaeProg').classList.add('hide');
-        $('nokpaeSvg').innerHTML = T.drawNokpae(profile.name || '당신', w);
+        $('nokpaeSvg').innerHTML = T.drawNokpae(profile.name || '공주님', w);
         const fl = $('nokpaeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('nokpaeWrap').classList.remove('hide');
         $('nokpaeNote').textContent = '표본 ' + w.n.toLocaleString() + '명 중 상위 ' + w.top + '% · ' + w.grade.name + ' — 같은 사주는 언제나 같은 녹패입니다';
@@ -1390,10 +1393,10 @@
 
   function nextStep(제목, 무료로본것, 물음, 문의말, 상품, 진단) {
     const q = encodeURIComponent(문의말 || '');
-    // 진단 — 엔진이 이 사람 원국에서 읽은 「왜 당신께는 시기가 중요한가」.
+    // 진단 — 엔진이 이 사람 원국에서 읽은 「왜 공주님께는 시기가 중요한가」.
     // 일반 문구는 아무도 안 산다. 자기 얘기라야 지갑이 열린다.
     const diag = (진단 && 진단.length)
-      ? `<div class="nx-diag"><p class="nx-diag-k">당신의 원국에서 읽은 것</p>${진단.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
+      ? `<div class="nx-diag"><p class="nx-diag-k">공주님의 원국에서 읽은 것</p>${진단.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
     // 다음 걸음은 결제 하나다. 결제가 아직이면 버튼을 안 세우고 「곧 열립니다」로 둔다 —
     // 눌러도 아무 데도 안 가는 버튼과, 궁정에 어울리지 않는 상담 창구를 둘 다 걷었다.
     const payBtn = (payReady && 상품)
@@ -1529,7 +1532,7 @@
     } catch (e) {}
     const mw = T.monthWhy ? T.monthWhy(R) : null;
     box.innerHTML = `<h2>${m}월 일운 달력<span class="h2sub">결제 열람 · ${y}년</span></h2>
-      ${mw ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 당신께는 날의 서열인가</p>${mw.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${mw ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 공주님께는 날의 서열인가</p>${mw.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       <div class="pb-grid">` + v.rows.map(r => {
         const cls = r.점수 >= 72 ? ' good' : (r.점수 <= 30 ? ' bad' : '');
         return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
@@ -1828,7 +1831,7 @@
       `<button data-y="${y}" class="${y === yearPick ? 'on' : ''}">${y}년</button>`).join('');
     $('yearSeg').querySelectorAll('button').forEach(b => b.onclick = () => { yearPick = +b.dataset.y; renderYear(); });
     const yf = T.yearFlow(R, yearPick, today);
-    $('yearSvg').innerHTML = T.drawYearFlow(profile.name || '당신', yf);
+    $('yearSvg').innerHTML = T.drawYearFlow(profile.name || '공주님', yf);
     const fl = $('yearFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     $('yearWrap').classList.remove('hide');
     $('yearNote').textContent = yf.year + '년 ' + E.fmt.pillar(yf.yearPillar) + '년 · '
@@ -1850,7 +1853,7 @@
     const T = window.ChaeksaTypecard; if (!T || !$('lifeSvg')) return;
     if ($('gu-life')) $('gu-life').classList.toggle('hide', !profile.genderUnknown);
     const lc = T.lifeCurve(R, today);
-    $('lifeSvg').innerHTML = T.drawLifeCurve(profile.name || '당신', lc);
+    $('lifeSvg').innerHTML = T.drawLifeCurve(profile.name || '공주님', lc);
     const fl = $('lifeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     $('lifeWrap').classList.remove('hide');
     $('lifeNote').textContent = lc.kind + '형 · 최고 구간 ' + lc.peakTxt + ' · 대운은 열 해마다 바뀌고, 같은 사주는 언제나 같은 곡선입니다';
@@ -1879,7 +1882,7 @@
         const v = T.career(R, sample);
         jikFor = R;
         $('jikProg').classList.add('hide');
-        $('jikSvg').innerHTML = T.drawJikcheop(profile.name || '당신', v);
+        $('jikSvg').innerHTML = T.drawJikcheop(profile.name || '공주님', v);
         const fl = $('jikFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('jikWrap').classList.remove('hide');
         $('jikNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
@@ -1902,7 +1905,7 @@
     const T = window.ChaeksaTypecard; if (!T || !T.jichim || !$('jcSvg')) return;
     if (jcFor === R) return;
     const v = T.jichim(R); jcFor = R;
-    $('jcSvg').innerHTML = T.drawJichim(profile.name || '당신', v);
+    $('jcSvg').innerHTML = T.drawJichim(profile.name || '공주님', v);
     const fl = $('jcFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     { const nx = $('jcNext'); if (nx) nx.innerHTML = nextStep(
       '이번 달은 어느 쪽으로 새고 있을까요', '타고난 결까지',
@@ -1926,7 +1929,7 @@
     if (npFor === R) return;
     const v = T.naepyeon(R, today);
     npFor = R;
-    $('npSvg').innerHTML = T.drawNaepyeon(profile.name || '당신', v);
+    $('npSvg').innerHTML = T.drawNaepyeon(profile.name || '공주님', v);
     const fl = $('npFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     { const nx = $('npNext'); if (nx) nx.innerHTML = nextStep(
       '지금 곁에 있는 사람은 어떤가요', '어떤 결이 힘이 되는지까지',
@@ -1954,7 +1957,7 @@
     if (inyeonFor === R) return;
     const v = T.inyeon(R, today.getFullYear(), 10);
     inyeonFor = R;
-    $('inSvg').innerHTML = T.drawInyeon(profile.name || '당신', v);
+    $('inSvg').innerHTML = T.drawInyeon(profile.name || '공주님', v);
     const fl = $('inFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
     const inNext = $('inNext');
     const paidIn = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('inyeon');
@@ -1964,8 +1967,8 @@
       const y = v.첫해.해, im = T.inyeonMonths(R, y);
       const h = im.머리;
       const why = T.inyeonWhy ? T.inyeonWhy(R) : null;
-      const 진단절 = why ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 당신께는 이 답인가</p>${why.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
-      const 머리말 = 진단절 + `<p class="pb-lede">${y}년은 <b>${esc(h.세운간지)}</b>의 해 — ${esc(profile.name || '당신')}님께는
+      const 진단절 = why ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 공주님께는 이 답인가</p>${why.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
+      const 머리말 = 진단절 + `<p class="pb-lede">${y}년은 <b>${esc(h.세운간지)}</b>의 해 — ${esc(profile.name || '공주님')}님께는
         <b>${esc(h.세운십신)}</b>의 해입니다${h.대운간지 ? `, ${esc(h.대운간지)} 대운(${esc(h.대운십신)}) 위에 얹혀 옵니다` : ''}.
         아래는 이 해 열두 달을 <b>${esc(h.배우자이름)}(인연의 글자)</b>과 <b>배우자 자리(일지)의 합·충</b>으로 잰 것입니다.</p>`;
       const 달들 = im.rows.map(r => {
@@ -2305,13 +2308,13 @@
     }
     if (submitted) {
       const 머리말 = misses === 0 && answered === 전체문
-        ? '한 문장도 빗나가지 않았습니다 — 이 잣대가 당신에게 꼭 맞습니다.'
+        ? '한 문장도 빗나가지 않았습니다 — 이 잣대가 공주님에게 꼭 맞습니다.'
         : hits + '문장이 맞았습니다.' + (misses ? ' 빗나간 ' + misses + '문장은 지우지 않고 그대로 남깁니다.' : '');
       html.push('<div class="nx-diag pbd" style="margin-top:14px">'
         + '<p class="nx-diag-k">답을 받았습니다</p>'
         + '<p>' + 머리말 + ' 지나온 해를 이만큼 짚은 잣대라면, 다음 물음은 하나입니다 — <b>「그래서 언제인가」</b>. 같은 잣대로 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
-        + '<button class="btn" id="gmNextLove">당신의 사랑 이야기 — 다음 장 열기</button>'
-        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">당신의 재물 이야기 열기</button>'
+        + '<button class="btn" id="gmNextLove">공주님의 사랑 이야기 — 다음 장 열기</button>'
+        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">공주님의 재물 이야기 열기</button>'
         + '</div>');
     }
     el.innerHTML = html.join('');
@@ -2358,7 +2361,7 @@
     const v = T.loveStory(R, today);
     if (!v) { $('lsBody').innerHTML = '<p class="hint">생년을 알아야 연표를 그립니다.</p>'; return; }
     lsFor = R;
-    const nm = profile.name || '당신';
+    const nm = profile.name || '공주님';
 
     // 과거 — 연표. 맞는지는 본인이 안다. 그래서 단정 대신 「가능성」으로 말한다.
     const 과거절 = v.과거.length
@@ -2449,7 +2452,7 @@
     const v = T.moneyStory(R, today);
     if (!v) { $('msBody').innerHTML = '<p class="hint">생년을 알아야 연표를 그립니다.</p>'; return; }
     msFor = R;
-    const nm = profile.name || '당신';
+    const nm = profile.name || '공주님';
 
     const 과거절 = v.과거.length
       ? v.과거.map(g => `<div class="ls-item">
@@ -2545,7 +2548,7 @@
         const v = T.love(R, today, sample);
         dohwaFor = R;
         $('dohwaProg').classList.add('hide');
-        $('dohwaSvg').innerHTML = T.drawDohwa(profile.name || '당신', v);
+        $('dohwaSvg').innerHTML = T.drawDohwa(profile.name || '공주님', v);
         const fl = $('dohwaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('dohwaWrap').classList.remove('hide');
         { const nx = $('dohwaNext');
@@ -2555,41 +2558,41 @@
             // 나를 배우자감으로 보는 사람 = 내 배우자성 오행의 일간.
             const w = T.whoLovesMe(R);
             const 사람절 = (인, 라벨) => `<div class="pb-dd${인.합 ? ' pb-open' : ''}">
-              <b>${esc(인.천간)}의 사람</b> <span class="pb-god">${esc(라벨)}</span>${인.합 ? ' <span class="pb-god">— 당신과 합</span>' : ''}
+              <b>${esc(인.천간)}의 사람</b> <span class="pb-god">${esc(라벨)}</span>${인.합 ? ' <span class="pb-god">— 공주님과 합</span>' : ''}
               <p class="pb-say">${esc(인.인물)}</p>
               <p class="pb-why">◦ ${esc(인.다가옴)}</p>
               <p class="pb-why">◦ ${esc(인.위치)}</p>
               ${인.가로채임 ? `<p class="pb-avoid">${esc(인.가로채임)}</p>` : ''}
-              ${인.합 ? `<p class="pb-say">그리고 이 글자는 당신의 일간을 곧장 끌어당기는 합입니다 — 서로가 서로를 알아보는 짝이라, 만나면 빠르게 가까워집니다.</p>` : ''}
+              ${인.합 ? `<p class="pb-say">그리고 이 글자는 공주님의 일간을 곧장 끌어당기는 합입니다 — 서로가 서로를 알아보는 짝이라, 만나면 빠르게 가까워집니다.</p>` : ''}
             </div>`;
-            nx.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — 어떤 사람이 당신을 사랑하는가</p>
+            nx.innerHTML = `<div class="paidbox"><p class="pb-k">결제 열람 — 어떤 사람이 공주님을 사랑하는가</p>
               ${w.진사랑 ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">진정한 사랑 — 배우자 방에 앉은 글자</p>
-                <p class="pb-vd">◆ 당신의 배우자 방 ${esc(w.진사랑.궁)}에 앉아 있는 글자는 <b>${esc(w.진사랑.글자)}</b> — 진정한 사랑은 <b>${esc(w.진사랑.기운말)}을 짙게 지닌 사람</b>이기 쉽습니다.</p>
+                <p class="pb-vd">◆ 공주님의 배우자 방 ${esc(w.진사랑.궁)}에 앉아 있는 글자는 <b>${esc(w.진사랑.글자)}</b> — 진정한 사랑은 <b>${esc(w.진사랑.기운말)}을 짙게 지닌 사람</b>이기 쉽습니다.</p>
                 <p class="pb-vd">◆ ${esc(w.진사랑.기운풀이)}</p>
                 <p class="pb-vd">◆ ${esc(w.진사랑.인물)}</p>
-                <p class="pb-vd">◆ 당신에게는 ${esc(w.진사랑.십신)}의 자리 — ${esc(w.진사랑.십신뜻)}</p>
+                <p class="pb-vd">◆ 공주님에게는 ${esc(w.진사랑.십신)}의 자리 — ${esc(w.진사랑.십신뜻)}</p>
                 ${w.진사랑.회전문
                   ? `<p class="pb-vd">◆ 다만 방에 앉은 ${esc(w.진사랑.글자)}이 하늘에도 떠 있어 — ${esc(w.진사랑.방아쇠글자)}의 사람이 들어오려 하면 합해서 변질됩니다. <b>들어왔다 나가고, 나갔다 들어오는 회전문</b> — 인연이 자리를 못 잡던 구조적 이유입니다.</p>
                      ${w.진사랑.지킴글자 ? `<p class="pb-vd">◆ 이 회전문을 타지 않는 유일한 글자는 <b>${esc(w.진사랑.지킴글자)}</b> — 안정형의 그 통로가 방을 끝내 지킵니다.</p>` : ''}
                      ${w.진사랑.해들.length && w.진사랑.대운겹 ? `<p class="pb-vd">◆ <b>${w.진사랑.해들[0]}년</b>은 대운 하늘에 이미 ${esc(w.진사랑.방아쇠글자)}이 떠 있어 세운만으로 두 번이 찹니다 — 해 전체가 방아쇠를 당기는 해입니다.</p>`
                        : w.진사랑.해들.length && w.진사랑.둘째달.length ? `<p class="pb-vd">◆ ${esc(w.진사랑.방아쇠글자)}이 굳이 들어온다면 두 번 겹쳐야 합니다 — <b>${w.진사랑.해들[0]}년 ${w.진사랑.둘째달.join('·')}월</b>: 첫 글자는 소모되고 둘째 글자가 방아쇠를 당깁니다.</p>` : ''}`
-                  : `<p class="pb-vd">◆ 이 글자를 합으로 데려오는 방아쇠는 <b>${esc(w.진사랑.방아쇠글자)}</b>${w.진사랑.맞물림 ? ' — 당신의 배우자성이기도 합니다. 궁과 성이 맞물린 사주라 이 사슬이 두 겹으로 조입니다' : ''}.${w.진사랑.해들.length ? ` <b>${w.진사랑.해들.join('·')}년</b>에 그 사람이 방으로 들어오기 쉽습니다.` : ''}</p>`}
+                  : `<p class="pb-vd">◆ 이 글자를 합으로 데려오는 방아쇠는 <b>${esc(w.진사랑.방아쇠글자)}</b>${w.진사랑.맞물림 ? ' — 공주님의 배우자성이기도 합니다. 궁과 성이 맞물린 사주라 이 사슬이 두 겹으로 조입니다' : ''}.${w.진사랑.해들.length ? ` <b>${w.진사랑.해들.join('·')}년</b>에 그 사람이 방으로 들어오기 쉽습니다.` : ''}</p>`}
               </div>` : ''}
-              <p class="pb-lede">당신을 배우자감으로 알아보는 사람의 글자는 원국이 정해 둡니다 —
-              당신의 배우자성 <b>${esc(w.오행)}</b>을 일간으로 타고난 사람입니다.
+              <p class="pb-lede">공주님을 배우자감으로 알아보는 사람의 글자는 원국이 정해 둡니다 —
+              공주님의 배우자성 <b>${esc(w.오행)}</b>을 일간으로 타고난 사람입니다.
               <b>${esc(w.결이름)}</b>: ${esc(w.결설명)}</p>
               ${사람절(w.정, '반듯하게 오는 사람')}
               ${사람절(w.편, '강렬하게 오는 사람')}
               ${w.합별도 ? `<div class="pb-dd pb-open"><b>${esc(w.합간)}의 사람</b> <span class="pb-god">끌림의 글자</span>
-                <p class="pb-why">◦ 배우자성 밖의 글자인데도 당신의 일간을 곧장 끌어당기는 합입니다 — 조건으로는 설명이 안 되는데 자꾸 눈이 가는 사람이 있다면, 이 글자이기 쉽습니다.</p>
+                <p class="pb-why">◦ 배우자성 밖의 글자인데도 공주님의 일간을 곧장 끌어당기는 합입니다 — 조건으로는 설명이 안 되는데 자꾸 눈이 가는 사람이 있다면, 이 글자이기 쉽습니다.</p>
                 <p class="pb-say">머리로 고르는 인연은 위의 두 글자에서, 마음이 먼저 가는 인연은 이 글자에서 오기 쉽습니다.</p>
               </div>` : ''}
-              <p class="pb-h"><b>그들은 당신의 무엇에 걸리는가</b></p>
-              <p class="pb-why">◦ 당신은 ${esc(w.매력.결)}의 사람 — ${esc(w.매력.설명)}</p>
+              <p class="pb-h"><b>그들은 공주님의 무엇에 걸리는가</b></p>
+              <p class="pb-why">◦ 공주님은 ${esc(w.매력.결)}의 사람 — ${esc(w.매력.설명)}</p>
               ${w.매력.도화 ? `<p class="pb-why">◦ 게다가 원국의 ${esc(w.매력.도화글자)}가 도화(桃花) — 가만히 있어도 눈에 띄는 쪽입니다. 다가오는 사람이 먼저 생기는 구조입니다.</p>` : `<p class="pb-why">◦ 도화는 없는 원국이라 첫눈에 쏟아지는 쪽보다, 겪을수록 좋아지는 쪽입니다 — 오래 보는 자리에서 사랑받습니다.</p>`}
               <p class="pb-h"><b>곁에 오래 남는 사람 — 배우자 방(${esc(w.배우자궁)})에 놓인 재료</b></p>
               ${w.곁.map(c => `<p class="pb-why">◦ ${esc(c.천간)} — ${esc(c.결)}의 사람이 이 방에 오래 머뭅니다</p>`).join('')}
-              ${w.도착말.length ? `<p class="pb-h"><b>그 사랑이 당신에게 도착하는 방식</b></p>${w.도착말.slice(0, 2).map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')}` : ''}
+              ${w.도착말.length ? `<p class="pb-h"><b>그 사랑이 공주님에게 도착하는 방식</b></p>${w.도착말.slice(0, 2).map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')}` : ''}
               <p class="pb-ft">잣대 공개 — 배우자성 오행의 일간(정·편은 음양으로), 일간합, 도화, 배우자궁 지장간. 전부 원국에서 나온 결정입니다. 「언제 오는가」는 인연이 오는 해·연애 스토리에 열려 있습니다.</p></div>`;
             aiNarrate(nx, 'whom', {
               자료집: T.dossier ? T.dossier(R, today) : null,
@@ -2600,13 +2603,13 @@
                                    : (w.합이정인가 ? ' (반듯하게 오는 쪽이 합)' : ' (강렬하게 오는 쪽이 합)')) },
               진정한사랑: w.진사랑 ? { 배우자방: w.진사랑.궁, 앉은글자: w.진사랑.글자,
                 기운: w.진사랑.기운말 + ' — ' + w.진사랑.기운풀이, 인물: w.진사랑.인물, 나에게는: w.진사랑.십신 + ' — ' + w.진사랑.십신뜻,
-                방아쇠: w.진사랑.방아쇠글자 + (w.진사랑.맞물림 ? ' (당신의 배우자성이기도 — 궁과 성이 맞물림)' : ''),
+                방아쇠: w.진사랑.방아쇠글자 + (w.진사랑.맞물림 ? ' (공주님의 배우자성이기도 — 궁과 성이 맞물림)' : ''),
                 들어오는해: w.진사랑.해들 } : null,
               나의매력: w.매력, 곁에남는재료: w.곁, 도착방식: w.도착말,
             });
           } else if (nx) nx.innerHTML = nextStep(
-            '어떤 사람이 당신을 사랑하는지', '나는 어떤 사랑을 하는지까지',
-            '당신을 배우자감으로 알아보는 사람의 글자는 원국이 이미 정해 두었습니다 — 그리고 당신을 곧장 끌어당기는 합의 글자도요. 그 사람들이 어떤 결이고, 어떻게 다가오고, 당신의 무엇에 걸리는지까지 열립니다.',
+            '어떤 사람이 공주님을 사랑하는지', '나는 어떤 사랑을 하는지까지',
+            '공주님을 배우자감으로 알아보는 사람의 글자는 원국이 이미 정해 두었습니다 — 그리고 공주님을 곧장 끌어당기는 합의 글자도요. 그 사람들이 어떤 결이고, 어떻게 다가오고, 공주님의 무엇에 걸리는지까지 열립니다.',
             (profile.name || '') + '님 연애 상담 — 어떤 사람이 저를 사랑하게 되는지 보고 싶습니다', 'inyeon',
             T.inyeonWhy ? T.inyeonWhy(R).말 : null); }
         $('dohwaNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 표본 ' + v.n.toLocaleString() + '명 중 같은 유형 ' + v.share + '%';
@@ -2746,6 +2749,19 @@
       hero.classList.add('scene');
       // 오늘의 회의 장면이 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
       회의장면(u => hero.style.setProperty('--hero-art', 'url("' + u + '")'));
+    }
+    // 랜딩에도 열 사람을 세운다. 홈과 같은 표에서 가져오므로 이름이 어긋나지 않는다.
+    // 첫 화면에서 대접이 시작되어야 한다 — 들어와야 받는 대접은 늦다.
+    const lc = $('lpCorps');
+    if (lc) {
+      lc.innerHTML = '<section class="corps"><div class="corps-row">'
+        + 오늘의책사.map(([k, 이름]) =>
+            '<span class="cm" style="cursor:default">'
+            + '<span class="cm-face"><img src="art/chaeksa-' + k + '.webp" alt="" '
+            + 'onerror="this.remove()">'
+            + '<span class="cm-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
+            + '<span class="cm-name">' + esc(이름of(이름)) + '</span></span>').join('')
+        + '</div></section>';
     }
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
