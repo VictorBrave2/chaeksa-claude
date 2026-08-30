@@ -595,7 +595,7 @@
     const T = window.ChaeksaTypecard;
     const set = (id, txt) => { const el = $(id); if (el && txt) el.textContent = txt; };
     // 유형 카드 — 표본을 이미 만들어 뒀으면 **내 등급을 타일에 미리 보여준다.**
-    // 「686개 중 하나」는 남 얘기고, 「SSR · 만 명 중 한 명」은 내 얘기다.
+    // 「789개 중 하나」는 남 얘기고, 「SSR · 만 개 중 한 개」는 내 얘기다.
     // 표본이 없으면(첫 방문) 기본 문구 그대로 두고, 뽑기 탭에서 만든다.
     if (T && T.cachedSample) try {
       const smp = T.cachedSample();
@@ -604,8 +604,8 @@
         if (m && m.rar) {
           set('tiGachaBig', '牌 ' + m.rar.tier);
           set('tiGachaSub', m.rar.unique
-            ? '만 명 중 단 한 명 — 같은 카드가 없습니다'
-            : '만 명 중 ' + m.rar.count + '명 · 상위 ' + m.rar.pct + '%');
+            ? '사주 만 개를 지어 견주니 같은 카드가 하나도 없습니다'
+            : '사주 만 개 가운데 ' + m.rar.count + '개 · ' + m.rar.pct + '%');
         }
       }
     } catch (e) {}
@@ -983,9 +983,9 @@
       const T = window.ChaeksaTypecard; if (!T) return;
       $('btnGacha').disabled = true;
       $('gachaProg').classList.remove('hide');
-      $('gachaProg').textContent = '전국 표본과 대조하는 중…';
+      $('gachaProg').textContent = '사주 만 개를 지어 견주는 중…';
       T.buildSample(
-        (r) => { $('gachaProg').textContent = `전국 표본과 대조하는 중… ${Math.round(r * 100)}%`; },
+        (r) => { $('gachaProg').textContent = `사주 만 개를 지어 견주는 중… ${Math.round(r * 100)}%`; },
         (sample) => {
           const c = T.mine(R, sample);
           $('gachaProg').classList.add('hide');
@@ -1363,7 +1363,7 @@
         $('nokpaeSvg').innerHTML = T.drawNokpae(profile.name || '공주님', w);
         const fl = $('nokpaeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('nokpaeWrap').classList.remove('hide');
-        $('nokpaeNote').textContent = '표본 ' + w.n.toLocaleString() + '명 중 상위 ' + w.top + '% · ' + w.grade.name + ' — 같은 사주는 언제나 같은 녹패입니다';
+        $('nokpaeNote').textContent = '지어낸 사주 ' + w.n.toLocaleString() + '개 가운데 상위 ' + w.top + '% · ' + w.grade.name + ' — 같은 사주는 언제나 같은 녹패입니다';
         $('btnNokpaeShare').onclick = async () => {
           const b = $('btnNokpaeShare'); b.disabled = true; b.textContent = '만드는 중…';
           try {

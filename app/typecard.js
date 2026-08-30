@@ -5,7 +5,9 @@
  *   성/파 2(테두리) × 강약 3(바탕 톤) — 부품 ~37개가 686+장을 만든다.
  * 이미지 파일 0장, 생성 비용 0원, 같은 사주는 언제나 같은 카드.
  *
- * 희귀도: 결정적 표본 1,500명을 기기에서 한 번 돌려 분포를 만들고 캐시한다.
+ * 희귀도: 계산으로 지은 사주 10,000개를 기기에서 한 번 돌려 분포를 만들고 캐시한다.
+ *         사람 표본이 아니다 — 29~31일생이 없고 전원 서울 30분생이라, 화면에서
+ *         「전국 표본」이라 부르면 재 본 적 없는 것을 재었다고 말하는 것이 된다.
  * 표가 엔진 버전과 어긋날 일이 없고, 계산하는 몇 초가 그대로 뽑기 연출이 된다.
  * 등급은 가챠 문법: SSR(≤0.2%) SR(≤0.7%) R(≤2%) N(나머지).
  */
@@ -94,10 +96,13 @@
 
   const keyOf = (R, J) => `${J.name}|${J.ok}|${R.analysis.strength}|${R.pillars.day.stem}|${R.pillars.month.branch}`;
 
-  // ── 희귀도 표본 — 결정적 10,000명. 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
+  // ── 희귀도 표본 — 계산으로 지은 사주 10,000개(사람 표본이 아니다).
+  //    d = 1 + (i*1299709) % 28 이라 29~31일생이 없고 전원 서울 30분생이다.
+  //    그러므로 화면에서 「전국 표본」이라 부르면 안 된다(2026-08-30). 결정적 생성.
+  // ── 원래 주석: 절기표가 캐시되어 데스크톱 0.2초, 폰도 몇 초다 ──
   // 등급선은 표본에서 '사람 백분위'로 긋는다. 유형 크기(pct) 기준으로 그었더니
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
-  const CACHE_KEY = 'chaeksa.typeSample.v8';   // v8: 천직 유형 분포 동승 (v7: 연애 暗緣 축)
+  const CACHE_KEY = 'chaeksa.typeSample.v9';   // v9: SSR 문턱 되살림 (v8: 천직 유형 분포 동승)
   const N_SAMPLE = 10000;
   /** 이미 만들어 둔 표본이 있으면 돌려준다. 없으면 null.
    *  홈에서 새로 만들지 않는다 — 만 명을 돌리는 것이라 느리다. */
@@ -140,8 +145,12 @@
           if (cum / n <= 0.15) th[1] = c;
           if (cum / n <= 0.50) th[2] = c;
         });
+        // 3% 안에 드는 층이 하나도 없으면 th[0] 이 0 으로 남아 SSR 이 영영 안 나온다
+        // (2026-08-30 실측: SSR 유형 0개). SSR 은 「제일 드문 층」이라는 뜻이므로
+        // 그럴 때는 가장 작은 층을 SSR 로 삼는다.
+        if (!th[0] && cs.length) th[0] = cs[0];
         const out = { seen, n, th, types: Object.keys(seen).length, wh, lt, jt };
-        try { ['v4','v5','v6','v7'].forEach(k => localStorage.removeItem('chaeksa.typeSample.' + k)); } catch (e) {}
+        try { ['v4','v5','v6','v7','v8'].forEach(k => localStorage.removeItem('chaeksa.typeSample.' + k)); } catch (e) {}
         try { localStorage.setItem(CACHE_KEY, JSON.stringify(out)); } catch (e) {}
         done(out);
       }
@@ -193,7 +202,7 @@
   <text x="180" y="360" text-anchor="middle" font-size="15" fill="#5c5546" letter-spacing="2">${stemKo} 일간 · ${E.fmt.branchKo(p.month.branch)}월생</text>
   <rect x="46" y="410" width="268" height="52" rx="10" fill="#ffffff" opacity=".55"/>
   <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${판정말(J)} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
-  <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `표본 ${rar.n.toLocaleString()}명 중 ${rar.count}명` : ''}</text>
+  <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `지어낸 사주 ${rar.n.toLocaleString()}개 중 ${rar.count}명` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>
   ${csLine}
@@ -2791,7 +2800,7 @@
 
   // ── 재물 그릇 — 녹패(祿牌) ──
   // 점수(0~100) = 재성 세력(40) + 식상 통로(14) + 담는 힘(25) + 재고(6) − 군겁쟁재(15) − 재다신약(15).
-  // 등급은 점수가 아니라 표본 1만 명 속 '사람 백분위'로 긋는다 — 유형 카드와 같은 원칙.
+  // 등급은 점수가 아니라 지어낸 사주 1만 개 속 자리로 긋는다 — 유형 카드와 같은 원칙.
   function wealthScore(R) {
     const a = R.analysis, ds = a.dayStem, p = R.pillars;
     const god = (st) => E.TEN_GODS[E.tenGod(ds, st)];
