@@ -2200,8 +2200,17 @@
     천직:     ['장현', '일을 보는'],   운로:     ['소현', '멀리 보는'],
     택일:     ['검명', '때를 고르는'],   좌장:     ['태윤', '책사단을 이끄는'],
   };
-  const 이름of = (축) => (책사이름[축] || [축])[0];
-  const 직함of = (축) => (책사이름[축] || ['', ''])[1] || '';
+  // 사람 이름으로 온 것도 축으로 되돌린다.
+  // AI 는 〔택일〕로 적으라 해도 〔검명〕으로 적을 때가 있다(2026-08-30 실물 확인) —
+  // 그러면 이름 칩은 떠도 얼굴이 안 붙어 유료 화면이 무료 의논보다 헐벗는다.
+  const 사람에서축 = (() => {
+    const m = {};
+    Object.keys(책사이름).forEach(k => { m[책사이름[k][0]] = k; });
+    return m;
+  })();
+  const 축으로 = (who) => (책사이름[who] ? who : (사람에서축[who] || who));
+  const 이름of = (who) => { const 축 = 축으로(who); return (책사이름[축] || [축])[0]; };
+  const 직함of = (who) => { const 축 = 축으로(who); return (책사이름[축] || ['', ''])[1] || ''; };
   const 오늘의책사 = [
     ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
     ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
@@ -2221,7 +2230,7 @@
                    인연: 'inyeon', 재물: 'jaemul', 천직: 'cheonjik', 운로: 'unro',
                    택일: 'hyeopgi', 좌장: 'jwajang' };
   const 얼굴 = (who) => {
-    const k = 책사키[who]; if (!k) return '';
+    const k = 책사키[축으로(who)]; if (!k) return '';
     return '<img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">';
   };
   const 발언자류 = /^([\u2460-\u2473])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
