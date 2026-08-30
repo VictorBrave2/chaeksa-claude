@@ -5,7 +5,8 @@
   const $ = (id) => document.getElementById(id);
   const KEY = 'chaeksa.profile', PKEY = 'chaeksa.partners';
   const HK = () => 'chaeksa.chat.' + (profile && profile.id ? profile.id : 'solo');
-  const today = new Date();
+  // let 이다 — 앱을 열어둔 채 날이 바뀔 수 있다. 오늘·달력 탭에 들어올 때 다시 읽는다.
+  let today = new Date();
   let profile = null, R = null;
   const elemClass = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
   // 이름을 안 적으신 분은 「공주님」이다. 옛 프로필에 '공주님'이 저장돼 있을 수
@@ -373,6 +374,15 @@
           go(tab);
         }).catch(() => {});
       } catch (e) {}
+    }
+    // 시각을 다시 읽는다. 「지금」 표시와 오늘 간지가 로드 시각에 얼어 있었다.
+    if (tab === 'today' || tab === 'cal') {
+      const 전날 = today.toDateString();
+      today = new Date();
+      if (tab === 'today') { try { renderToday(); } catch (e) {} }
+      if (tab === 'cal') { try { renderCal(); } catch (e) {} }
+      // 날이 바뀌었으면 홈도 다시 — 오늘의 책사와 얼빡이 날마다 도는 자리다.
+      if (전날 !== today.toDateString()) { try { renderHome(); } catch (e) {} }
     }
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
