@@ -27,7 +27,10 @@
     // 비로그인: AI 없음. 계산 기능은 전부 열려 있다.
     guest: { label: '둘러보기', period: 'life', limits: { brief: 0, chat: 0, consult: 0, profile: 0, compat: 0, story: 0 } },
     // 무료: 평생 체험분. 소진되면 규칙 기반으로 계속 사용.
-    free: { label: '무료', period: 'life', limits: { brief: 5, chat: 5, consult: 1, profile: 1, compat: 1, story: 24 } },
+    // story 40 — 결제해도 등급은 free 로 남는다(등급을 올리려면 service_role 이 필요한데
+    // 그 키는 쓰지 않기로 했다). 1년 열람 상품이 분기마다 다시 굽는 것을 감당하려면
+    // 24 로는 열람 기간이 끝나기 전에 바닥난다. 서버(schema-9)와 같은 값이어야 한다.
+    free: { label: '무료', period: 'life', limits: { brief: 5, chat: 5, consult: 1, profile: 1, compat: 1, story: 40 } },
     // 구독: 매달 초기화.
     member: { label: '구독', period: 'month', limits: { brief: 62, chat: 100, consult: 15, profile: 4, compat: 20, story: 60 } },
     // 슈퍼: 운영자 확인용. 서버(schema-9)의 ai_usage_limit 과 같은 값이어야 한다.

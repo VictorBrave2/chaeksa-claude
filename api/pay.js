@@ -178,11 +178,15 @@ module.exports = async (req, res) => {
 
       // 승인은 됐는데 우리 기록이 실패할 수 있다. 그때도 사용자에게는 성공이다 —
       // 돈은 이미 빠졌기 때문이다. 기록 실패는 응답에 남겨 나중에 맞춘다.
+      // p_server 는 브라우저가 모르는 값이다. 이게 없으면 order_paid 가 거절한다 —
+      // 로그인만으로 자기 주문을 「결제완료」로 만들 수 있던 구멍을 여기서 막는다.
+      // (server/migrate-12-order-paid-lock.sql · Vercel 환경변수 PAY_HOOK_SECRET)
       const saved = await rpc('order_paid', {
         p_order: orderId,
         p_payment_key: paymentKey,
         p_method: tj.method || null,
         p_receipt: (tj.receipt && tj.receipt.url) || null,
+        p_server: env('PAY_HOOK_SECRET') || null,
       }, token).catch(() => ({ ok: false, reason: 'save_failed' }));
 
       return res.status(200).json({

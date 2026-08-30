@@ -3,7 +3,7 @@
  * HTML이 캐시되면 사용자가 계속 옛 버전을 쓰게 된다.
  * 나머지 자원은 URL에 버전이 붙어 있어 네트워크 우선 + 캐시 폴백으로 충분하다.
  */
-const CACHE = 'chaeksa-v396';
+const CACHE = 'chaeksa-v397';
 const FILES = ['./', './index.html', './privacy.html', './terms.html', './taekil.html', './manifest.json', './og.jpg', './favicon.ico', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -22,7 +22,16 @@ self.addEventListener('fetch', (e) => {
   if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
     e.respondWith(
       fetch(req.url, { cache: 'no-store' })
-        .then((r) => { const c = r.clone(); caches.open(CACHE).then((x) => x.put('./index.html', c)); return r; })
+        .then((r) => {
+          // 홈만 홈 자리에 넣는다. 예전엔 어떤 주소를 받아오든 './index.html' 칸에
+          // 덮어썼다 — 결제 착지(pay-done.html)를 지나고 나면 홈 캐시가 그 페이지로
+          // 바뀌어, 오프라인에서 앱을 열면 방금 결제한 손님이
+          // 「결제를 마치지 못했습니다」를 본다. 404 도 같은 식으로 홈을 오염시켰다.
+          const p = new URL(r.url || req.url, self.location.origin).pathname;
+          const 홈 = p === '/' || /\/index\.html$/.test(p);
+          if (r.ok && 홈) { const c = r.clone(); caches.open(CACHE).then((x) => x.put('./index.html', c)); }
+          return r;
+        })
         .catch(() => caches.match('./index.html'))
     );
     return;

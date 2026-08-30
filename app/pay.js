@@ -148,8 +148,13 @@
         body: '{}',
       });
       const j = await r.json();
-      return Array.isArray(j) ? j : [];
-    } catch (_) { return []; }
+      if (!Array.isArray(j)) throw new Error('bad_rows');
+      return j;
+    } catch (_) {
+      // 실패를 빈 배열로 뭉개면 「못 물어봤다」와 「산 게 없다」가 구분이 안 된다.
+      // 그러면 어제 2만원 낸 손님이 무료 화면을 보고 한 번 더 결제한다.
+      return null;
+    }
   }
 
   const won = (n) => Number(n || 0).toLocaleString('ko-KR') + '원';
@@ -167,6 +172,9 @@
   async function paidLoad() {
     if (_paidRows) return _paidRows;
     const rows = await mine();
+    // 못 물어본 것(null)은 캐시하지 않는다 — 캐시하면 그 세션 내내 「산 게 없음」이다.
+    // 비로그인은 빈 배열이라 정상적으로 캐시된다.
+    if (rows === null) return null;
     _paidRows = rows.filter((r) => r.status === 'paid');
     return _paidRows;
   }

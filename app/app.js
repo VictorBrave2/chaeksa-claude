@@ -304,12 +304,29 @@
   // 원국을 넣은 적이 있는가. 없으면 탭들이 담긴 #app 자체가 hide 라 탭만 켜도 안 보인다.
   const hasProfile = () => !!((People() && People().active()) || localStorage.getItem(KEY));
 
+  // 결제 이력을 한 번이라도 제대로 받았는가. 못 받았으면 탭을 옮길 때마다 다시 묻는다.
+  let 결제이력받음 = false;
+
   function go(tab) {
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
     window.scrollTo({ top: 0 });
+    // 결제 이력 조회가 부팅 때 한 번 실패하면(네트워크·토큰 갱신) 그 세션 내내
+    // 「산 게 없음」이었다 — 어제 2만원 낸 손님이 무료 화면을 보고 또 결제한다.
+    // 탭을 옮길 때 조용히 다시 물어보고, 그제서야 산 게 나오면 이 탭을 다시 그린다.
+    if (window.ChaeksaPay && !결제이력받음) {
+      try {
+        ChaeksaPay.paidLoad().then(rows => {
+          if (!rows) return;                       // 또 실패했다. 다음 탭에서 다시.
+          결제이력받음 = true;
+          if (!rows.length) return;
+          inyeonFor = null; lsFor = null; msFor = null; dohwaFor = null;
+          go(tab);
+        }).catch(() => {});
+      } catch (e) {}
+    }
     if (tab === 'nokpae') renderNokpae();
     if (tab === 'dohwa') renderDohwa();
     if (tab === 'ganmyeong') renderGanmyeong();
@@ -1303,12 +1320,22 @@
   // 스크립트 평가 때 한 번 물어 캐시한다. 응답이 오기 전 렌더는 카카오만 보인다(무해).
   let payReady = false;
   if (window.ChaeksaPay) {
-    ChaeksaPay.state().then(s => { payReady = !!(s && s.ready); }).catch(() => {});
+    // 이 왕복은 동기 렌더보다 늦게 온다 — 항상. 그래서 도착하면 「오늘」을 다시 그린다.
+    // 안 그러면 아직 아무것도 안 산 손님에게 「이번 달 일운」 결제 버튼이 영영 안 뜬다
+    // (오늘 탭은 go() 에 렌더 호출이 없어 탭을 눌러도 다시 안 그려진다).
+    ChaeksaPay.state().then(s => {
+      const 전 = payReady; payReady = !!(s && s.ready);
+      if (payReady !== 전) { try { renderMyMonth(); } catch (e) {} }
+    }).catch(() => {});
     // 결제 이력도 미리 받아 둔다 — 무료 카드가 그려질 때 동기로 물을 수 있게.
     // 뒤늦게 도착하면 캐시를 풀어 다음 탭 방문 때 유료 화면으로 다시 그려진다.
     ChaeksaPay.paidLoad().then(rows => {
+      if (rows) 결제이력받음 = true;
       if (!rows || !rows.length) return;
-      inyeonFor = null; lsFor = null; msFor = null;
+      // dohwaFor 가 빠져 있었다 — 「인연 시기」를 산 손님이 앱을 켜고 바로 연애 탭을
+      // 열면 그 탭만 결제 안내가 떠 있었다. 재방문자는 표본이 로컬에 있어 탭이
+      // 주문 조회 왕복보다 먼저 그려진다.
+      inyeonFor = null; lsFor = null; msFor = null; dohwaFor = null;
       try { renderMyMonth(); } catch (e) {}
     }).catch(() => {});
   }
@@ -1403,9 +1430,21 @@
       if (!window.ChaeksaAI || !AI.ready()) return;
       const pb = box.querySelector('.paidbox'); if (!pb) return;
       // v2 — 책사단으로 판이 바뀌었다. 옛 단일 화자 글은 한 번 다시 쓴다.
-      const key = 'chaeksa.storyai.v3.' + kind + '.'
+      // v4 — 키를 두 군데 고쳤다(2026-08-30).
+      //  ① 시주·성별이 빠져 있었다. 성별은 대운 순행/역행을 통째로 뒤집고 시주는
+      //     여덟 글자를 바꾼다. 고치고 나면 위 표는 새 계산인데 아래 글은 옛 달을
+      //     말했다. 같은 브라우저에 생일이 같은 사람이 둘 있으면 서로의 글을 봤다.
+      //  ② 달마다 다시 구웠다. 1년 열람 상품인데 매달 두 편씩 = 24회. 무료 등급의
+      //     평생 story 한도가 정확히 24라 열람 기간이 끝나기 전에 글이 영영 사라진다.
+      //     원가도 회당 950원이라 2만원 상품에 22,800원이 들어간다. 분기로 늦춘다 —
+      //     석 달에 한 번이면 원가 7,600원이고 글이 크게 낡지도 않는다.
+      const i0 = (R && R.input) || {};
+      const 분기 = today.getFullYear() + 'Q' + (Math.floor(today.getMonth() / 3) + 1);
+      const key = 'chaeksa.storyai.v4.' + kind + '.'
         + f.pillar(R.pillars.year) + f.pillar(R.pillars.month) + f.pillar(R.pillars.day)
-        + '.' + today.toISOString().slice(0, 7);
+        + (R.pillars.hour ? f.pillar(R.pillars.hour) : '시모름')
+        + '.' + (i0.gender || '?') + (profile && profile.genderUnknown ? 'u' : '')
+        + '.' + 분기;
       let cached = null;
       try { cached = localStorage.getItem(key); } catch (e) {}
       const el = document.createElement('div');
@@ -1432,9 +1471,19 @@
       // 규칙 화면만으로도 완결이므로 크게 벌리지는 않되, 흔적은 남긴다.
       try { console.warn('책사단 서술 실패:', e); } catch (e2) {}
       const el = box.querySelector('.pb-ai');
-      if (el) el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
-        + '<p class="pb-ai-load">지금은 의논을 옮겨 적지 못했습니다 — 위 계산은 그대로 유효합니다. '
-        + '잠시 뒤 이 화면을 다시 열어 주세요.</p>';
+      if (!el) return;
+      // 「이 화면을 다시 열어 주세요」는 아무 일도 하지 않았다 — 유료 화면들은
+      // lsFor/msFor/dohwaFor 캐시로 스스로를 막아, 탭을 나갔다 와도 다시 안 그린다.
+      // 시키는 대로 해도 안 되면 손님에게는 그냥 고장이다. 버튼을 준다.
+      const 한도 = e && (e.blocked || /한도|limit/i.test(String(e && e.message)));
+      el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
+        + '<p class="pb-ai-load">' + (한도
+            ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다. 메일로 알려주시면 열어 드리겠습니다.'
+            : '지금은 의논을 옮겨 적지 못했습니다 — 위 계산은 그대로 유효합니다.')
+        + '</p>'
+        + (한도 ? '' : '<button class="btn" id="aiRetry">다시 시도</button>');
+      const rb = el.querySelector('#aiRetry');
+      if (rb) rb.onclick = () => { rb.disabled = true; try { el.remove(); } catch (e3) {} aiNarrate(box, kind, facts); };
     }
   }
 

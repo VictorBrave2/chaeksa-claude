@@ -67,6 +67,11 @@
 
     <button class="cta" id="cta" disabled>결제하기</button>
     <p class="msg" id="msg"></p>
+    <p class="msg" id="gologin" style="display:none">
+      결제하시려면 먼저 로그인이 필요합니다 — 결제한 내용을 그 계정에 매어 두어야
+      다른 기기에서도 열리기 때문입니다.
+      <a href="./" style="display:block;margin-top:8px"><b>로그인하러 가기 →</b></a>
+    </p>
   </div>
 
   <div class="fine">
@@ -110,6 +115,10 @@
     else if (!signed) cta.textContent = '로그인이 필요합니다';
     else if (!picked) cta.textContent = '무엇을 볼지 골라주세요';
     else cta.textContent = ChaeksaPay.won(picked.amount) + ' 결제하기';
+    // 「로그인이 필요합니다」라고만 적고 로그인할 데를 안 주면 막다른 길이다.
+    // 푸터·북마크·세션 만료로 이 페이지에 바로 닿는 길이 실제로 있다.
+    var 문 = document.getElementById('gologin');
+    if (문) 문.style.display = signed ? 'none' : 'block';
   }
 
   ChaeksaPay.state().then(function (st) {

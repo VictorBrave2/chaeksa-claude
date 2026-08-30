@@ -321,7 +321,7 @@ ${prof}` : ''}`;
       + '[계산된 사실]\n' + JSON.stringify(facts);
       // dehanja 금지 — 여기도 글자가 주인공이다. 태우면 庚子(경자)가 경자(경자)로 뭉개진다.
       return await call(sys, [{ role: 'user', content: '나를 사랑하게 될 사람 이야기를 처음부터 끝까지 써줘.' }],
-        { task: 'story', maxTokens: 2600, effort: 'medium' });
+        { task: 'story', maxTokens: 2600, effort: 'medium', strict: true });
     }
     const 주제 = kind === 'wealth' ? '재물' : '인연';
     const sys = '너는 「책사단」의 기록자다. 지금 이 글은 공주님이 값을 치르고 여신 ' + 주제 + ' 화면의 본문이다. 화면 위쪽에는 규칙 엔진이 계산한 연표(과거 구간·현재·다가오는 열두 달·날·시진)가 표로 떠 있고, 아래 [계산된 사실]이 그 전부다.\n'
@@ -362,8 +362,12 @@ ${prof}` : ''}`;
       + 간명법전 + '\n\n'
       + '[계산된 사실]\n' + JSON.stringify(facts);
     // dehanja 금지 — 「庚子 달」이 「경자(경자) 달」로 뭉개진다(2026-08-30 실물 제보)
+    // 천장 7000 · strict — effort 는 내리지 않는다(medium 은 「얇다」 판정을 받았다).
+    // 천장을 내리면 시간이 주는 게 아니라 글이 잘린다: 사고 토큰이 같은 천장을 쓴다.
+    // 4500 + effort high 가 바로 그 덫이었다. strict 가 없으면 잘린 2만원짜리 본문이
+    // 그대로 캐시에 굳는다 — 새로고침해도 그 달 내내 같은 자리에서 끊긴다.
     return await call(sys, [{ role: 'user', content: 주제 + ' 이야기를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 4500, effort: 'high' });
+      { task: 'story', maxTokens: 7000, effort: 'high', strict: true });
   }
 
   // ── 간명서 — 채팅에서 90% 채점을 받은 간명 방식을 그대로 이식한다 ──
