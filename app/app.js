@@ -966,21 +966,21 @@
         <div class="ms">${du.startAge}~${du.endAge}세 · ${f.pillar(du)}<br><b>${god}</b> — ${MZ.SEASON[god] || ''}</div></div>`;
     }
     $('mzDeck').innerHTML = `
-      <div class="mzcard"><div class="mk">나의 본캐</div>
+      <div class="mzcard"><div class="mk">타고난 바탕</div>
         <div class="mb">${stem.nick}</div>
         <div class="ms">${f.stem(a.dayStem)} ${f.stemKo(a.dayStem)} 일간 · ${stem.one}</div>
         <div class="mtags">${stem.tags.map(t => `<span>${t}</span>`).join('')}</div></div>
-      <div class="mzcard"><div class="mk">스탯창</div>
+      <div class="mzcard"><div class="mk">다섯 기운</div>
         ${EL5.map((el, i) => `<div class="stat"><b class="e-${el}">${el}</b>
           <div class="bar"><i class="f-${el}" style="width:${Math.round(ec[i] / mx * 100)}%"></i></div>
           <span class="n">${ec[i]}</span></div>`).join('')}
-        <div class="ms" style="margin-top:2px">주력 스탯 <b>${top}</b>${a.missing.length ? ` · 히든퀘스트 <b>${a.missing.join('·')} 채우기</b>` : ' · 다 갖춘 밸런스'}</div></div>
-      <div class="mzcard"><div class="mk">에너지 타입</div>
+        <div class="ms" style="margin-top:2px">가장 두터운 것 <b>${top}</b>${a.missing.length ? ` · 비어 있는 것 <b>${a.missing.join('·')} 채우기</b>` : ' · 다 갖춘 밸런스'}</div></div>
+      <div class="mzcard"><div class="mk">기운의 결</div>
         <div class="mb">${st.nick} ${st.emoji}</div>
         <div class="ms">${st.desc}</div></div>
-      <div class="mzcard"><div class="mk">부스터</div>
+      <div class="mzcard"><div class="mk">나를 채우는 기운</div>
         <div class="mb">${a.yongCandidates.join(' · ')}</div>
-        <div class="ms">나를 채워주는 기운이에요.<br>${a.yongCandidates.map(el => MZ.BOOST[el]).filter(Boolean).join('<br>')}</div></div>
+        <div class="ms">이 기운이 오면 힘이 붙습니다.<br>${a.yongCandidates.map(el => MZ.BOOST[el]).filter(Boolean).join('<br>')}</div></div>
       ${season}`;
   }
 
