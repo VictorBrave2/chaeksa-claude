@@ -18,7 +18,7 @@
  *   · 세력 가중치: 월지를 가장 무겁게(월령), 시간 단위가 짧아질수록 가볍게 둔다
  *   · 지지는 정기(본기)로만 계산한다 (지장간 전체를 쓰는 방식과 다름)
  *   · 신강일 때 관성은 順(貴), 신약일 때 관성은 逆(殺)로 본다
- *   · 충은 감점, 육합·삼합은 가점. 형·해·파는 이 판정에서는 쓰지 않는다
+ *   · 육합·삼합은 가점. 충·형·해·파는 이 판정에서 쓰지 않는다(제23조 — 충 배제)
  *   이 전제를 바꾸려면 아래 WEIGHT / judge() 만 고치면 된다.
  */
 (function (global) {
@@ -96,7 +96,7 @@
     }
     if (extras.yong) v += 1;            // 이 사주가 필요로 하는 오행
     if (extras.missing) v += .5;        // 원국에 없던 오행이 채워짐
-    if (extras.chung) v -= 1;           // 지지 충
+    // 지지 충 감점 없음 — 제23조
     if (extras.hap) v += .5;            // 육합·삼합
     if (extras.bokeum) v -= .5;         // 복음
     return Math.max(-3, Math.min(3, Math.round(v * 10) / 10));
@@ -336,7 +336,7 @@
     if (movedTo) parts.push(`이 기운이 얹히면서 일간은 ${bodyLab}에서 ${movedTo}으로 옮겨갑니다.`);
     if (ex.yong) parts.push('이 사주가 필요로 하는 기운이라 힘이 붙습니다.');
     if (ex.missing) parts.push('원국에 없던 기운이 채워집니다.');
-    if (ex.chung) parts.push('누적된 지지와 부딪혀(충) 변동이 커집니다.');
+    // 충 서술 없음 — 제23조. 점수만 걷고 말을 남기면 반쪽이다.
     if (ex.hap) parts.push('누적된 지지와 합을 이뤄 일이 붙습니다.');
     if (ex.bokeum) parts.push('같은 글자가 겹쳐(복음) 감정이 크게 느껴질 수 있습니다.');
     void rels;

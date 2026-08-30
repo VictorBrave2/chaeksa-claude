@@ -41,8 +41,9 @@
     const yf = T.yearFlow(R, y, new Date(y, m - 1, 15));
     const mon = yf.months[m - 1];
     if (!mon) return null;
+    // 등급 문턱은 typecard 한 곳에서만 정한다 — 여기서 따로 나누다 「만개」가 죽었다.
     const G = T.SEASON_GRADE || [];
-    const g = G.find(x => mon.v / 50 >= x.min) || G[G.length - 1] || { name: '보합', line: '' };
+    const g = (T.등급100 ? T.등급100(mon.v) : null) || G[G.length - 1] || { name: '보합', line: '' };
     return {
       score: mon.v,
       grade: g.name,

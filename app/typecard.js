@@ -305,6 +305,16 @@
     { min: 0.5, name: '담금질', col: '#7a4fa3', line: '결이 다른 기운이 들어온 시즌. 단련되는 중이라 낭비는 아닙니다.' },
     { min: 0.0, name: '월동', col: '#3a6ea5', line: '비축의 시즌. 씨앗을 고르는 때이지 심는 때가 아닙니다.' },
   ];
+
+  /** 0~100 눈금(대운·달 점수)을 등급으로. SEASON_GRADE 의 min 은 0~2 눈금이라
+   *  그대로 나눠 쓰면 최고 등급이 영영 안 걸린다(2026-08-30 실측: 상한 93).
+   *  400개 사주 실측 분포로 잡은 문턱이다 — 85+ 약 3% · 65+ 약 12% · 40+ 약 33%. */
+  const GRADE100 = [85, 65, 40, 20];
+  function 등급100(v) {
+    for (let i = 0; i < GRADE100.length; i++) if (v >= GRADE100[i]) return SEASON_GRADE[i];
+    return SEASON_GRADE[4];
+  }
+
   function seasonNow(R, when) {
     when = when || new Date();
     const du = E.currentDaeun(R, when);
@@ -355,8 +365,8 @@
     const 금지 = base.금지.slice();
     const myBr = R.pillars.day.branch, todayBr = tf.day.branch;
     let 관계 = null;
+    // 충 판정을 뺀다 — 제23조. 금지령에 충 문구가 없으므로 붙일 것도 없다.
     if (myBr === todayBr) 관계 = '복음';
-    else if (((todayBr - myBr + 12) % 12) === 6) 관계 = '충';
     if (관계) 금지.push(B.BAN_EXTRA[관계]);
     return { god, 관계, 금지, 허가: base.허가, 일진: E.fmt.pillar(tf.day) };
   }
@@ -3250,8 +3260,8 @@
     }
     // 일지(배우자·나의 자리)와의 관계
     const db = R.pillars.day.branch, b = du.branch;
-    if ((db - b + 12) % 12 === 6) v -= 12;             // 충
-    else if (db + b === 13 || db + b === 1) v += 8;    // 육합
+    // 대운지지 충 감점을 걷었다 — 제23조가 「걷어낸 곳」에 이름으로 적어 둔 자리다.
+    if (db + b === 13 || db + b === 1) v += 8;         // 육합
     else if (SAMHAP_L.some(gp => gp.indexOf(db) >= 0 && gp.indexOf(b) >= 0 && db !== b)) v += 6;
     return Math.max(0, Math.min(100, Math.round(v)));
   }
@@ -3284,7 +3294,7 @@
       : early - late >= 10 ? '초년집중'
       : mid - Math.max(early, late) >= 8 ? '중년절정'
       : '파도';
-    const gradeOf = (v) => (SEASON_GRADE.find(g => v / 50 >= g.min) || SEASON_GRADE[4]);
+    const gradeOf = 등급100;
     const nxt = curIdx >= 0 && curIdx + 1 < n ? list[curIdx + 1] : null;
     const lines = [];
     if (curIdx >= 0) {
@@ -3393,8 +3403,8 @@
       } catch (e) {}
     }
     const db = R.pillars.day.branch, b = pl.branch;
-    if ((db - b + 12) % 12 === 6) v -= 12;
-    else if (db + b === 13 || db + b === 1) v += 8;
+    // 충 감점 없음 — 제23조. 열두 달 순서가 배제한 잣대로 뒤집히면 안 된다.
+    if (db + b === 13 || db + b === 1) v += 8;
     else if (SAMHAP_L.some(gp => gp.indexOf(db) >= 0 && gp.indexOf(b) >= 0 && db !== b)) v += 6;
     return Math.max(0, Math.min(100, Math.round(v)));
   }
@@ -3426,7 +3436,7 @@
       : q3 - q1 >= 10 ? '상승하는 해'
       : q1 - q3 >= 10 ? '전반이 밝은 해'
       : q2 - Math.max(q1, q3) >= 8 ? '한여름 같은 해' : '기복이 큰 해';
-    const gradeOf = (v) => (SEASON_GRADE.find(g => v / 50 >= g.min) || SEASON_GRADE[4]);
+    const gradeOf = 등급100;
     const 올해 = now.getFullYear() === year;
     const curM = 올해 ? now.getMonth() + 1 : 0;
     // 남은 달 중 최고 — 지난 달을 최고라고 알려주면 쓸 데가 없다
@@ -3577,5 +3587,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
 })(window);
