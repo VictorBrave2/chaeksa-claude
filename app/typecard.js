@@ -2094,6 +2094,7 @@
     try {
       const l = lifeCurve(R, now); if (!l) return null;
       return { 결: l.kind, 풀이: l.kindNote || null, 최고구간: l.peakTxt || null,
+               지남: !!l.지남, 앞최고구간: l.앞최고Txt || null,
                근거: (l.lines || []).slice(0, 3) };
     } catch (e) { return null; }
   }
@@ -3352,9 +3353,17 @@
       lines.push('가장 높은 구간은 ' + list[hi].d.startAge + '~' + list[hi].d.endAge + '세, 가장 낮은 구간은 ' + list[lo].d.startAge + '~' + list[lo].d.endAge + '세');
     }
     lines.push('곡선은 대운이 내 사주에 필요한 것을 갖고 오는가로 잽니다');
+    // 최고 구간이 이미 지났는가. 지났다면 앞으로 남은 구간 중 가장 높은 곳도 함께 낸다 —
+    // 화면이 앞세울 것은 지나간 봉우리가 아니라 남은 봉우리다(값은 그대로 둔다).
+    const 지남 = curIdx >= 0 && hi < curIdx;
+    let 앞hi = -1;
+    if (지남) for (let i = curIdx; i < n; i++) if (앞hi < 0 || list[i].v > list[앞hi].v) 앞hi = i;
+    const 칸 = (d) => d.startAge + '~' + d.endAge + '세';
     return { list, hi, lo, curIdx, headIdx: hi, kind, kindNote: CURVE_KIND[kind],
-             peak: list[hi].d, low: list[lo].d, lines,
-             peakTxt: list[hi].d.startAge + '~' + list[hi].d.endAge + '세' };
+             peak: list[hi].d, low: list[lo].d, lines, 지남,
+             앞최고: 앞hi >= 0 ? list[앞hi].d : null,
+             앞최고Txt: 앞hi >= 0 ? 칸(list[앞hi].d) : null,
+             peakTxt: 칸(list[hi].d) };
   }
 
   function drawLifeCurve(name, lc) {

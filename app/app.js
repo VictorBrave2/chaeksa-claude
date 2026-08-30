@@ -629,7 +629,9 @@
         set('tiYearBig', yf.bestTxt);
         set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
       try { const lc = T.lifeCurve(R, today);
-        set('tiLifeBig', lc.kind + '형'); set('tiLifeSub', '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
+        set('tiLifeBig', lc.kind + '형'); set('tiLifeSub', (lc.지남 && lc.앞최고Txt)
+          ? '앞으로 남은 구간 중 ' + lc.앞최고Txt + ' — 곡선으로 보기'
+          : '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
       try { const c = T.career(R, null); set('tiJikBig', c.group + '축'); set('tiJikSub', '25유형 중 어느 쪽인지 열어보기'); } catch (e) {}
       try { const l = T.love(R, new Date(), null); set('tiDoBig', l.key.slice(0, 2)); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
       try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
