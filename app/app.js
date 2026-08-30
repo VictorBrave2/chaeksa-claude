@@ -1806,6 +1806,31 @@
     </div>`;
   }
 
+  /** 한 줄 받기. 브라우저 prompt 대신 우리 옷을 입은 칸으로 묻는다.
+   *  취소하면 null 을 돌려준다 — 예전에는 취소를 '' 로 삼켜 그대로 기록했다. */
+  function 한줄받기(질문, 도움) {
+    return new Promise((resolve) => {
+      const 막 = document.createElement('div');
+      막.className = 'askline';
+      막.innerHTML = '<div class="al-in">'
+        + '<p class="al-q">' + esc(질문) + '</p>'
+        + (도움 ? '<p class="al-h">' + esc(도움) + '</p>' : '')
+        + '<input class="al-i" type="text" maxlength="120" placeholder="한 줄로 적어 주세요">'
+        + '<div class="al-b"><button class="btn ghost small" data-x="0">그냥 두기</button>'
+        + '<button class="btn small" data-x="1">남기기</button></div></div>';
+      const 끝 = (v) => { try { 막.remove(); } catch (e) {} resolve(v); };
+      막.onclick = (e) => { if (e.target === 막) 끝(null); };
+      막.querySelector('[data-x="0"]').onclick = () => 끝(null);
+      막.querySelector('[data-x="1"]').onclick = () => 끝(막.querySelector('.al-i').value.trim());
+      막.querySelector('.al-i').onkeydown = (e) => {
+        if (e.key === 'Enter') 끝(막.querySelector('.al-i').value.trim());
+        if (e.key === 'Escape') 끝(null);
+      };
+      document.body.appendChild(막);
+      setTimeout(() => { try { 막.querySelector('.al-i').focus(); } catch (e) {} }, 30);
+    });
+  }
+
   function renderMemo() {
     const M = window.ChaeksaMemo; if (!M || !$('memoQ')) return;
     const pid = memoPersonId();
@@ -1828,8 +1853,10 @@
     const tks = M.tracks(pid);
     $('memoTrackCard').classList.toggle('hide', !tks.length);
     $('memoTracks').innerHTML = tks.map(memoTrackRow).join('');
-    $('memoTracks').querySelectorAll('button[data-tid]').forEach(b => b.onclick = () => {
-      const note = prompt('한 줄로 남기시겠습니까? (건너뛰려면 비워두세요)') || '';
+    $('memoTracks').querySelectorAll('button[data-tid]').forEach(b => b.onclick = async () => {
+      const note = await 한줄받기('그때 어떠셨는지 한 줄로 남기시겠습니까?',
+                                 '나중에 이 달이 다시 왔을 때 그대로 꺼내 드립니다.');
+      if (note === null) return;          // 그냥 두기 — 기록하지 않는다
       M.log(b.dataset.tid, today.getFullYear(), today.getMonth() + 1, b.dataset.r, note, R);
       renderMemo(); renderHome(); renderToday();
     });
@@ -1866,8 +1893,10 @@
     }
 
     // 결과 버튼·삭제 배선
-    $('memoDue').querySelectorAll('button[data-r]').forEach(b => b.onclick = () => {
-      const note = prompt('한 줄로 남기시겠습니까? (건너뛰려면 비워두세요)') || '';
+    $('memoDue').querySelectorAll('button[data-r]').forEach(b => b.onclick = async () => {
+      const note = await 한줄받기('그때 어떠셨는지 한 줄로 남기시겠습니까?',
+                                 '남겨 두시면 이 잣대가 맞았는지 함께 볼 수 있습니다.');
+      if (note === null) return;          // 그냥 두기 — 기록하지 않는다
       M.setOutcome(b.dataset.id, b.dataset.r, note);
       renderMemo(); renderHome(); renderToday();
     });

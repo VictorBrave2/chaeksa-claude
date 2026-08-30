@@ -1141,3 +1141,19 @@ details.fold > .tiles { margin-top: 10px; }
   .si-m,.si-k,.si-hail,.si-skip{animation:none!important;opacity:1;transform:none}
   .seatin{animation:none}
 }
+
+/* 한 줄 받기 — 브라우저 prompt 대신 우리 옷을 입은 칸.
+   이 화면에서 유일하게 남의 집 물건처럼 생긴 회색 창이 여기 있었다. */
+.askline{position:fixed;inset:0;z-index:82;display:flex;align-items:center;justify-content:center;
+  padding:22px;background:rgba(18,16,44,.62);backdrop-filter:blur(2px);animation:al-f .18s ease both}
+.al-in{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:20px 18px 16px;box-shadow:var(--shadow-lift)}
+.al-q{margin:0 0 6px;font-family:"Gowun Batang","Noto Serif KR",serif;font-size:16px;color:var(--ink)}
+.al-h{margin:0 0 14px;font-size:12px;line-height:1.6;color:var(--ink3)}
+.al-i{width:100%;padding:11px 12px;border:1px solid var(--line2);border-radius:10px;
+  background:var(--bg2);color:var(--ink);font-size:14px;font-family:inherit}
+.al-i:focus{outline:none;border-color:var(--accent)}
+.al-b{display:flex;gap:8px;margin-top:12px}
+.al-b .btn{flex:1;margin:0}
+@keyframes al-f{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.askline{animation:none}}
