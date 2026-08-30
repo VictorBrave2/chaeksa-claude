@@ -21,7 +21,7 @@
 --
 -- ■ 반드시 이 순서로 (토스 키를 넣기 전에 이 파일을 먼저 돌릴 것)
 --   1) 아래 SQL 을 Supabase SQL Editor 에 붙여넣기
---   2) 34줄의 '여기에-긴-임의문자열' 을 실제 값으로 바꿔서 Run
+--   2) 34줄의 '여기에-열쇠' 을 실제 값으로 바꿔서 Run
 --   3) Vercel 환경변수에 PAY_HOOK_SECRET = (같은 값) 추가
 --   4) 그다음에 TOSS_CLIENT_KEY / TOSS_SECRET_KEY 를 넣는다
 --   지금은 토스 키가 없어 실제 결제가 일어날 수 없으므로, 이 사이에 손님이
@@ -38,7 +38,7 @@ create table if not exists public.app_secret (
 alter table public.app_secret enable row level security;
 revoke all on table public.app_secret from anon, authenticated;
 
-insert into public.app_secret (k, v) values ('pay_hook', '여기에-긴-임의문자열')
+insert into public.app_secret (k, v) values ('pay_hook', '여기에-열쇠')
 on conflict (k) do update set v = excluded.v, updated_at = now();
 
 -- ── 승인 기록 — 서버 열쇠를 가진 쪽만 ───────────────────
