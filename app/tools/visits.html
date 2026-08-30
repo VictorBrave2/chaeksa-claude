@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>유입 — 책사</title>
+<!--
+  visits_stats() 를 부르는 화면. 이게 없어서 계수기가 넉 달을 허공에 썼다.
+  숫자를 못 보면 「접는 조건」을 판정할 수 없다 — 그래서 도구가 먼저다.
+  집계만 내주는 함수라 anon 키로 부른다(server/schema-7.sql).
+  robots.txt 가 /tools/ 를 막아 색인은 안 된다.
+-->
+<script src="../config.js"></script>
+<style>
+  :root{--bg:#161433;--card:#1c1a3c;--ink:#eeeaf7;--ink2:#b6aed4;--ink3:#8f87b3;
+        --acc:#e6c98a;--line:#302c5c;--ok:#7cc487;--warn:#e2896b}
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px 18px 70px;background:var(--bg);color:var(--ink);
+       font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.6;font-size:14px}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 4px}
+  h2{font-size:16px;color:var(--acc);margin:26px 0 8px;border-top:1px solid var(--line);padding-top:16px}
+  .lead{color:var(--ink2);font-size:13.5px;margin:0 0 16px}
+  .big{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;
+       padding:12px 16px;min-width:150px;flex:1}
+  .kpi b{display:block;font-size:26px;font-variant-numeric:tabular-nums;line-height:1.2}
+  .kpi span{font-size:12.5px;color:var(--ink3)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left;color:var(--ink2)}
+  th{color:var(--ink);font-weight:700}
+  td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .bar{display:inline-block;height:10px;background:var(--acc);border-radius:2px;
+       vertical-align:middle;margin-left:8px}
+  .bar.b2{background:#6b7fd7}
+  button{background:linear-gradient(145deg,#f0d79b,#bb9445);color:#1c1a3c;border:0;
+         border-radius:999px;padding:8px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  .note{color:var(--ink3);font-size:12.5px;margin-top:10px}
+  .warn{border-left:3px solid var(--warn);background:rgba(226,137,107,.08);
+        padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:13px;color:var(--ink2)}
+  .warn b{color:var(--warn)}
+  .good{color:var(--ok)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>유입</h1>
+<p class="lead">계수기는 <b>localhost 를 안 세고</b>, 한 브라우저를 <b>6시간에 한 번만</b> 셉니다.
+  브라우저가 추적을 원치 않는다고 밝히면 세지 않습니다. <b>진짜 숫자입니다.</b></p>
+<button id="load">불러오기</button>
+<div id="body" class="note" style="margin-top:14px">아직 안 불렀습니다.</div>
+</div>
+
+<script>
+(function () {
+'use strict';
+var CFG = window.CHAEKSA_SUPABASE || {};
+var $ = function (i) { return document.getElementById(i); };
+// direct 는 여러 가지가 섞인다 — 카톡 링크·즐겨찾기·홈화면 앱 실행·본인 방문.
+// 그래서 「모르는 사람이 스스로 찾아온 것」을 따로 센다. 이게 진짜 유입이다.
+var 발견 = ['naver', 'google', 'daum/kakao', 'instagram', 'youtube', 'x', 'bing.com'];
+
+function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return ({'<':'&lt;','>':'&gt;','&':'&amp;'})[c]; }); }
+
+$('load').onclick = function () {
+  if (!CFG.url || !CFG.anonKey) { $('body').textContent = 'config.js 를 못 읽었습니다.'; return; }
+  $('body').textContent = '부르는 중…';
+  fetch(CFG.url + '/rest/v1/rpc/visits_stats', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', apikey: CFG.anonKey,
+               authorization: 'Bearer ' + CFG.anonKey },
+    body: '{}',
+  }).then(function (r) { return r.json(); }).then(function (d) {
+    if (!d || d.code) {
+      $('body').innerHTML = '<div class="warn"><b>함수가 없습니다.</b> '
+        + 'Supabase 에서 <code>server/schema-7.sql</code> 을 실행하세요.<br>'
+        + esc(d && (d.message || d.code) || '') + '</div>';
+      return;
+    }
+    var days = d.days || [], src = d.sources || [];
+    var 총 = src.reduce(function (p, c) { return p + c.n; }, 0) || 1;
+    var 발 = src.filter(function (s) { return 발견.indexOf(s.s) >= 0; })
+                .reduce(function (p, c) { return p + c.n; }, 0);
+    var 일수 = days.length || 1;
+    var mx = Math.max.apply(null, days.map(function (x) { return x.n; }).concat([1]));
+    var smx = Math.max.apply(null, src.map(function (x) { return x.n; }).concat([1]));
+
+    var h = '<div class="big">'
+      + '<div class="kpi"><b>' + (d.total || 0).toLocaleString() + '</b><span>전체 누계</span></div>'
+      + '<div class="kpi"><b>' + (d.today || 0).toLocaleString() + '</b><span>오늘</span></div>'
+      + '<div class="kpi"><b>' + 발.toLocaleString() + '</b><span>발견 유입 (14일)</span></div>'
+      + '<div class="kpi"><b>' + (발 / 일수).toFixed(1) + '</b><span>발견 유입 · 하루평균</span></div>'
+      + '</div>';
+
+    h += '<div class="' + (발 / 일수 >= 30 ? 'warn good' : 'warn') + '">'
+      + '<b>발견 유입</b>이 모르는 사람이 스스로 찾아온 수입니다 — 검색·소셜에서 온 것만.<br>'
+      + 'direct 는 카톡 링크·즐겨찾기·홈화면 실행·본인 방문이 섞여 있어 따로 셉니다.</div>';
+
+    h += '<h2>날짜별 (최근 14일)</h2><table><tr><th>날</th><th class="n">방문</th><th class="n">첫 방문</th><th></th></tr>';
+    days.forEach(function (x) {
+      h += '<tr><td>' + esc(x.d) + '</td><td class="n">' + x.n + '</td><td class="n">' + (x.first || 0) + '</td>'
+        + '<td><span class="bar" style="width:' + (x.n / mx * 200).toFixed(0) + 'px"></span></td></tr>';
+    });
+
+    h += '</table><h2>어디서 왔나 (최근 14일)</h2><table><tr><th>유입원</th><th class="n">수</th><th class="n">비율</th><th></th></tr>';
+    src.forEach(function (x) {
+      var 발견인가 = 발견.indexOf(x.s) >= 0;
+      h += '<tr><td>' + esc(x.s) + (발견인가 ? ' <span class="good">·발견</span>' : '') + '</td>'
+        + '<td class="n">' + x.n + '</td><td class="n">' + (x.n / 총 * 100).toFixed(1) + '%</td>'
+        + '<td><span class="bar' + (발견인가 ? '' : ' b2') + '" style="width:' + (x.n / smx * 180).toFixed(0) + 'px"></span></td></tr>';
+    });
+    h += '</table><p class="note">글마다 갈라 보시려면 링크에 <code>?from=도화살</code> 처럼 꼬리표를 다세요 — '
+      + '계수기가 이미 읽습니다. 코드는 안 고쳐도 됩니다.</p>';
+    $('body').innerHTML = h;
+  }).catch(function (e) {
+    $('body').innerHTML = '<div class="warn"><b>못 불렀습니다.</b> ' + esc(e.message) + '</div>';
+  });
+};
+})();
+</script>
+</body>
+</html>

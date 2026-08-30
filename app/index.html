@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=454">
+<link rel="stylesheet" href="style.css?v=455">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -154,7 +154,12 @@
     </div>
     <div class="check"><input type="checkbox" id="noTime"><label for="noTime" style="margin:0">시간을 몰라요</label></div>
     <label>성별</label>
-    <select id="g" aria-label="성별"><option value="M">남성</option><option value="F">여성</option></select>
+    <!-- 여성이 먼저다. 이건 취향이 아니라 판정 문제다 —
+         성별이 배우자성을 가른다(남=재성 · 여=관성, typecard.js:425).
+         기본값이 남성이면 드롭다운을 안 건드린 공주님이 **자기 연애사를
+         남자 기준으로** 읽는다. 「모른다」에 체크한 게 아니라서 경고도 안 뜬다.
+         여성향 서비스에서 기본값이 남성이었다(2026-08-31 고침). -->
+    <select id="g" aria-label="성별"><option value="F">여성</option><option value="M">남성</option></select>
     <label>태어난 곳</label>
     <select id="place" aria-label="태어난 곳"></select>
     <p class="hint hide" id="placeNote"></p>
@@ -788,29 +793,29 @@
   </div>
 </div>
 
-<script src="config.js?v=454"></script>
-<script src="track.js?v=454"></script>
-<script src="cloud.js?v=454"></script>
-<script src="usage.js?v=454"></script>
-<script src="places.js?v=454"></script>
-<script src="people.js?v=454"></script>
-<script src="astro.js?v=454"></script>
-<script src="lunar.js?v=454"></script>
-<script src="engine.js?v=454"></script>
-<script src="chaeyong.js?v=454"></script>
-<script src="brief.js?v=454"></script>
-<script src="chaeksadan.js?v=454"></script>
-<script src="typecard.js?v=454"></script>
-<script src="gyeokguk.js?v=454"></script>
-<script src="memo.js?v=454"></script>
-<script src="classic.js?v=454"></script>
-<script src="calendar.js?v=454"></script>
-<script src="tongbyeon.js?v=454"></script>
-<script src="rules-wealth-love.js?v=454"></script>
-<script src="rules-health-study-move.js?v=454"></script>
-<script src="share.js?v=454"></script>
-<script src="ai.js?v=454"></script>
-<script src="pay.js?v=454"></script>
-<script src="app.js?v=454"></script>
+<script src="config.js?v=455"></script>
+<script src="track.js?v=455"></script>
+<script src="cloud.js?v=455"></script>
+<script src="usage.js?v=455"></script>
+<script src="places.js?v=455"></script>
+<script src="people.js?v=455"></script>
+<script src="astro.js?v=455"></script>
+<script src="lunar.js?v=455"></script>
+<script src="engine.js?v=455"></script>
+<script src="chaeyong.js?v=455"></script>
+<script src="brief.js?v=455"></script>
+<script src="chaeksadan.js?v=455"></script>
+<script src="typecard.js?v=455"></script>
+<script src="gyeokguk.js?v=455"></script>
+<script src="memo.js?v=455"></script>
+<script src="classic.js?v=455"></script>
+<script src="calendar.js?v=455"></script>
+<script src="tongbyeon.js?v=455"></script>
+<script src="rules-wealth-love.js?v=455"></script>
+<script src="rules-health-study-move.js?v=455"></script>
+<script src="share.js?v=455"></script>
+<script src="ai.js?v=455"></script>
+<script src="pay.js?v=455"></script>
+<script src="app.js?v=455"></script>
 </body>
 </html>
