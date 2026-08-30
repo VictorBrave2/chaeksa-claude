@@ -2751,7 +2751,8 @@
   function renderUsage() {
     const box = $('usageBox'); if (!box || !window.ChaeksaUsage) return;
     const U = ChaeksaUsage, p = U.plan();
-    const rows = [['brief', '오늘 브리핑'], ['chat', '비서와 대화'], ['consult', '심층 상담'], ['profile', '원국 해석']];
+    // chat·consult 는 v390 에서 지운 기능이다. 영원히 0 인 막대를 세워 두지 않는다.
+    const rows = [['brief', '오늘 브리핑'], ['story', '책사단의 글'], ['profile', '좌장의 원국 해석']];
     box.innerHTML = `<p class="hint" style="margin:0 0 8px">이번 달 사용량 · 등급 <b>${U.PLANS[p].label}</b></p>`
       + rows.map(([k, name]) => {
           const lim = U.limit(k), use = U.used(k);
