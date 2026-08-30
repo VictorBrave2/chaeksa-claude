@@ -1259,12 +1259,22 @@
       } catch (e) {
         // 원문 오류를 공주님께 보여 드리지 않는다. 무슨 말인지 알 수 없고 고칠 수도 없다.
         try { console.warn('원국 해석 실패:', e); } catch (e2) {}
-        const 한도 = e && (e.blocked || /한도|limit/i.test(String(e && e.message)));
+        // e.blocked 는 불리언이 아니라 {title, body, cta} 객체다(usage.js blockedMessage).
+        // 그걸 참/거짓으로만 읽고 「한도를 다 쓰셨습니다」를 찍고 있었다 —
+        // 한 번도 안 쓴 손님에게 나가던 거짓말이다. 손님 몫 문구는 따로 들어 있다:
+        // 「책사단의 글은 로그인하면 열립니다」 + 카카오 버튼.
+        const b = e && e.blocked;
+        const 한도 = !b && /한도|limit/i.test(String(e && e.message));
         card.innerHTML = 머리
-          + '<p class="hint">' + (한도
-              ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다.'
-              : '지금은 좌장을 부르지 못했습니다 — 위 계산은 그대로 유효합니다.') + '</p>'
-          + (한도 ? '' : '<button class="btn" id="btnProfileRetry">다시 청하기</button>');
+          + (b
+              ? '<p class="hint"><b>' + esc(b.title) + '</b><br>' + esc(b.body) + '</p>'
+                + (b.cta ? '<button class="btn kakao" id="btnProfileLogin"><span>💬</span>' + esc(b.cta) + '</button>' : '')
+              : '<p class="hint">' + (한도
+                  ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다.'
+                  : '지금은 좌장을 부르지 못했습니다 — 위 계산은 그대로 유효합니다.') + '</p>'
+                + (한도 ? '' : '<button class="btn" id="btnProfileRetry">다시 청하기</button>'));
+        const gb = card.querySelector('#btnProfileLogin');
+        if (gb) gb.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (err) { openSettings(); } };
         const rb = card.querySelector('#btnProfileRetry');
         if (rb) rb.onclick = () => renderProfileCard();
       }
@@ -1672,13 +1682,20 @@
       // 「이 화면을 다시 열어 주세요」는 아무 일도 하지 않았다 — 유료 화면들은
       // lsFor/msFor/dohwaFor 캐시로 스스로를 막아, 탭을 나갔다 와도 다시 안 그린다.
       // 시키는 대로 해도 안 되면 손님에게는 그냥 고장이다. 버튼을 준다.
-      const 한도 = e && (e.blocked || /한도|limit/i.test(String(e && e.message)));
+      // 위와 같은 병 — e.blocked 는 객체다. 손님에게 「한도를 다 쓰셨습니다」가 나가고
+      // 있었고, 그 안에 들어 있던 카카오 버튼(cta)은 버려지고 있었다.
+      const b = e && e.blocked;
+      const 한도 = !b && /한도|limit/i.test(String(e && e.message));
       el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
-        + '<p class="pb-ai-load">' + (한도
-            ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다. 메일로 알려주시면 열어 드리겠습니다.'
-            : '지금은 의논을 옮겨 적지 못했습니다 — 위 계산은 그대로 유효합니다.')
-        + '</p>'
-        + (한도 ? '' : '<button class="btn" id="aiRetry">다시 시도</button>');
+        + (b
+            ? '<p class="pb-ai-load"><b>' + esc(b.title) + '</b><br>' + esc(b.body) + '</p>'
+              + (b.cta ? '<button class="btn kakao" id="aiLogin"><span>💬</span>' + esc(b.cta) + '</button>' : '')
+            : '<p class="pb-ai-load">' + (한도
+                ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다. 메일로 알려주시면 열어 드리겠습니다.'
+                : '지금은 의논을 옮겨 적지 못했습니다 — 위 계산은 그대로 유효합니다.') + '</p>'
+              + (한도 ? '' : '<button class="btn" id="aiRetry">다시 시도</button>'));
+      const lg = el.querySelector('#aiLogin');
+      if (lg) lg.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e4) { openSettings(); } };
       const rb = el.querySelector('#aiRetry');
       if (rb) rb.onclick = () => { rb.disabled = true; try { el.remove(); } catch (e3) {} aiNarrate(box, kind, facts); };
     }
@@ -2396,21 +2413,40 @@
   // 굳어 있으므로 판을 올려 전부 다시 조립시킨다(조립은 공짜다).
   // 대가: LLM 으로 구워 둔 의논이 있는 분은 조립본으로 바뀐다. 개통 전이라 시험판뿐이다.
   const GM_VER = 'v14';
+  // 키에 **성별과 분**이 빠져 있었다. 성별은 배우자성을 가르고(남=재성·여=관성)
+  // 분은 시진 경계를 가르므로, 같은 연월일시라도 의논이 다르다.
+  // 관문을 내린 뒤로 「이 생일 저 생일 넣어보기」가 기본 동작이 되므로
+  // 이 구멍은 **남의 의논을 보여주는 구멍**이 된다. 옆의 story 키는 이미
+  // 같은 이유로 성별을 넣고 있었다(app.js 의 chaeksa.storyai 키).
   const 간명키 = () => {
     const i = (R && R.input) || profile || {};
-    return 'chaeksa.ganmyeong.' + GM_VER + '.' + [i.year, i.month, i.day, i.hour].join('.');
+    return 'chaeksa.ganmyeong.' + GM_VER + '.'
+      + [i.year, i.month, i.day, i.hour].join('.')
+      + '.' + (i.minute || 0) + '.' + (i.gender || '?');
   };
   /** 현재 키의 캐시. 없으면 떠돌이(키 표기가 달라진 옛 캐시)를 주워 현재 키로 이관한다. */
   function 간명캐시() {
     const ck = 간명키();
     let t = localStorage.getItem(ck);
     if (!t) {
+      // 이관은 **여덟 글자가 같을 때만** 한다.
+      // 예전엔 「떠돌이가 하나면 가져온다」였는데, 그러면 남의 의논을 주워 온다 —
+      // 관문을 내린 뒤로 한 기기에서 여러 생일을 넣어 보는 것이 기본이라
+      // 떠돌이가 늘 생긴다. 의논 첫 줄에 사주 여덟 글자가 적혀 있으니 그걸 대조한다.
       const 떠돌이 = Object.keys(localStorage).filter(k => k.indexOf('chaeksa.ganmyeong.' + GM_VER + '.') === 0 && k.indexOf('.grade.') < 0 && k !== ck);
-      if (떠돌이.length === 1) {
-        t = localStorage.getItem(떠돌이[0]);
-        try { localStorage.setItem(ck, t); localStorage.removeItem(떠돌이[0]);
-          console.warn('간명 캐시 키 이관:', 떠돌이[0], '→', ck); } catch (e) {}
-      } else if (떠돌이.length) { try { console.warn('간명 캐시 여러 개:', 떠돌이, '현재 키:', ck); } catch (e) {} }
+      let 내것 = null;
+      try { 내것 = (window.ChaeksaTypecard && R) ? (ChaeksaTypecard.간명자료(R, today) || {}).사주 : null; } catch (e) {}
+      if (내것) {
+        떠돌이.some(k => {
+          const v = localStorage.getItem(k) || '';
+          if (v.indexOf(내것) !== 0) return false;      // 첫 줄이 내 사주로 시작해야 한다
+          t = v;
+          try { localStorage.setItem(ck, t); localStorage.removeItem(k);
+            console.warn('간명 캐시 키 이관(사주 일치):', k, '→', ck); } catch (e) {}
+          return true;
+        });
+      }
+      if (!t && 떠돌이.length) { try { console.warn('떠돌이 캐시', 떠돌이.length, '개 — 사주가 달라 안 가져왔다. 현재 키:', ck); } catch (e) {} }
     }
     // 없으면 그 자리에서 조립한다 (chaeksadan.js). 원가 0원·지연 0초라 굽기를 기다릴 이유가 없다.
     // 이미 구워진 의논이 있는 분은 위에서 걸려 그대로 쓴다 — 아무도 제 것을 잃지 않는다.
@@ -2523,12 +2559,35 @@
     if (!text) {
       el.innerHTML = '<p class="hint">책사단이 둘러앉았습니다 — 잰 것을 펴서 의논하는 중입니다 (약 1분). 이 화면을 벗어나셔도 의논은 계속됩니다.</p>';
       if (간명예열.busy) return;   // 이미 굽는 중 — 끝나면 다시 그려진다
-      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 책사단을 부를 수 없습니다 — 로그인 상태를 확인해 주세요.</p>'; return; }
-      // 서버에 구워진 것이 있으면 공짜로 가져온다. 없으면 굽는 문(간명예열)을 두드린다 —
-      // 여기서 직접 굽지 않는 이유: 굽는 입구가 둘이면 자물쇠 밖에서 겹쳐 굽는다.
+      // 「로그인 상태를 확인해 주세요」라고 적혀 있었는데 AI.ready() 는 로그인과 무관하다
+      // (기본 프록시가 있어 늘 참이다). 뜨더라도 엉뚱한 말이라 고쳤다.
+      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 책사단을 부를 수 없습니다 — 설정에서 비서 연결을 확인해 주세요.</p>'; return; }
+      // 여기까지 오는 일은 드물다 — 조립기가 원가 0으로 바로 써 주기 때문이다.
+      // 조립기가 죽었을 때만 이 갈래가 산다.
+      //
+      // **손님은 굽지 못한다.** 서버가 401 로 막고 클라 한도도 0이라 돈은 안 새지만,
+      // 여기서 간명예열() 을 부르면 실패만 하고 이상한 화면이 남는다. 사실대로 적는다.
+      if (비로그인()) {
+        el.innerHTML = '<p class="hint">책사단의 글은 <b>카카오로 남겨 두신 뒤에</b> 열립니다.'
+          + ' 지금은 조립이 안 돼서 그렇습니다 — 잠시 뒤에 다시 열어 보셔도 됩니다.</p>';
+        return;
+      }
+      // 서버에 구워진 것이 있으면 공짜로 가져온다.
       text = await 간명서버읽기();
       if (text) { try { localStorage.setItem(cacheKey, text); } catch (e2) {} }
-      else { 간명예열(); return; }
+      else {
+        // **클릭 없이 굽지 않는다.** 앱을 여는 것만으로 돈이 나가면 안 된다 —
+        // 바로 옆 renderChong 이 같은 이유로 버튼을 세워 두었는데 여기만 자동이었다.
+        // #ganmyeong 해시로 들어오면 클릭 0회로 구워졌다.
+        el.innerHTML = '<div class="nx-diag"><p>의논이 아직 없습니다.</p></div>'
+          + '<button class="btn" id="gmBake" style="margin-top:12px">의논을 청하겠습니다 — 약 1~2분</button>';
+        const bb = el.querySelector('#gmBake');
+        if (bb) bb.onclick = () => {
+          bb.disabled = true; bb.textContent = '의논 중입니다 — 새로고침하지 마시고 잠시만요';
+          간명예열();
+        };
+        return;
+      }
     }
     const grades = (() => { try { return JSON.parse(localStorage.getItem(gradeKey) || '{}'); } catch (e) { return {}; } })();
     const submitKey = cacheKey.replace('chaeksa.ganmyeong.', 'chaeksa.ganmyeong.submitted.');
@@ -2546,7 +2605,21 @@
         + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
         + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
         + '<button class="btn" id="gmNextLove">나의 사랑 이야기 — 다음 장 열기</button>'
-        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">나의 재물 이야기 열기</button></div>';
+        + '<button class="btn" id="gmNextMoney" style="margin-top:8px">나의 재물 이야기 열기</button></div>'
+        // ── 관문을 옮긴 진짜 이유가 이 자리다 ──
+        // 채점을 매듭지으면 바로 이 접힌 요약으로 온다. 문 앞에서 로그인을 청하면
+        // 아무것도 없는 사람에게 청하는 것이고, 여기서 청하면 **의논을 다 읽고
+        // 채점까지 한 사람**에게 청하는 것이다. 그때는 잃을 것이 생겼다.
+        // 없는 이득을 지어내지 않는다 — 실제로 되는 것만 적는다.
+        + (비로그인()
+            ? '<div class="nx-diag" style="margin-top:12px">'
+              + '<p class="nx-diag-k">이걸 남겨 둘까요</p>'
+              + '<p>지금 이 의논과 채점은 <b>이 기기에만</b> 있습니다. 브라우저를 정리하시면 사라집니다.'
+              + ' 카카오로 남겨 두시면 폰을 바꾸셔도 그대로 열립니다.</p>'
+              + '<button class="btn kakao" id="gmKeep"><span>💬</span>카카오로 남겨 두기</button></div>'
+            : '');
+      const kp0 = el.querySelector('#gmKeep');
+      if (kp0) kp0.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } };
       const uf = el.querySelector('#gmUnfold');
       if (uf) uf.onclick = () => { localStorage.setItem(foldKey, '0'); mountGanmyeong(el, whereTag); };
       const nl0 = el.querySelector('#gmNextLove'), nm0 = el.querySelector('#gmNextMoney');
@@ -2638,10 +2711,24 @@
         + '<button class="btn" id="gmNextLove">공주님의 사랑 이야기 — 다음 장 열기</button>'
         + '<button class="btn" id="gmNextMoney" style="margin-top:8px">공주님의 재물 이야기 열기</button>'
         + '</div>');
+      // ── 관문을 옮긴 진짜 이유가 이 자리다 ──
+      // 문 앞에서 로그인을 청하면 아무것도 없는 사람에게 청하는 것이고,
+      // 여기서 청하면 **의논을 다 읽고 채점까지 한 사람**에게 청하는 것이다.
+      // 그때는 잃을 것이 생겼다. 없는 이득을 지어내지 않는다 —
+      // 실제로 되는 것만 적는다(기기가 바뀌어도 이어짐 · 결제를 계정에 맴).
+      if (비로그인()) {
+        html.push('<div class="nx-diag" style="margin-top:12px">'
+          + '<p class="nx-diag-k">이걸 남겨 둘까요</p>'
+          + '<p>지금 이 의논과 채점은 <b>이 기기에만</b> 있습니다. 브라우저를 정리하시면 사라집니다.'
+          + ' 카카오로 남겨 두시면 폰을 바꾸셔도 그대로 열립니다.</p>'
+          + '<button class="btn kakao" id="gmKeep"><span>💬</span>카카오로 남겨 두기</button></div>');
+      }
     }
     el.innerHTML = html.join('');
     const fd = el.querySelector('#gmFold');
     if (fd) fd.onclick = () => { localStorage.setItem(foldKey, '1'); mountGanmyeong(el, whereTag); };
+    const kp = el.querySelector('#gmKeep');
+    if (kp) kp.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } };
     const nl = el.querySelector('#gmNextLove'), nm = el.querySelector('#gmNextMoney');
     if (nl) nl.onclick = () => go('lovestory');
     if (nm) nm.onclick = () => go('moneystory');
@@ -3091,12 +3178,29 @@
     $('btnSettings').classList.remove('hide');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  // ── 로그인 게이트 ──
-  // 로그인 없이는 무료도 없다 (2026-08-29 결정). 이유: 비로그인 사용자는 결제로
-  // 이어지지 않고, 로그인해야 재방문 고리(누가 왔었는지)와 카카오 채널이 이어진다.
-  // 클라우드가 안 붙은 빌드(로컬 dev)는 게이트를 끈다 — 개발이 막히면 안 된다.
+  // ── 로그인 게이트 ── (2026-08-31 내림)
+  //
+  // 예전: 로그인 없이는 무료도 없다 (2026-08-29). 이유는 「비로그인은 결제로 안 이어진다」였다.
+  // 그 판단은 검색 유입(1회성) 기준으로는 맞았다. 그런데 실측하고 보니 —
+  //
+  //   무료 의논은 원가가 0원이다(chaeksadan.js 조립기. LLM 을 안 부른다).
+  //   **아낄 이유가 하나도 없는 것을 로그인 뒤에 숨겨 두고 있었다.**
+  //   그리고 발견 유입이 하루 세 명인데 그 셋을 문 앞에서 돌려보내고 있었다.
+  //
+  // 이제 순서를 뒤집는다: 랜딩 → 생년월일 → 의논 전문 → 그 다음에 로그인을 청한다.
+  // 의논을 다 읽고 채점까지 한 사람은 그때 **잃을 것이 생긴 사람**이다.
+  //
+  // 로그인이 정말 필요한 자리는 그대로 남는다 — 결제(pay.html 이 이미 잠근다),
+  // 서버 저장·기기 이어받기, LLM 굽기(api/chat.js 가 401 로 막는다).
+  //
+  // **되돌리려면 아래 한 줄을 true 로.** 옛 흐름이 그대로 살아난다.
+  const 관문먼저 = false;
   const 게이트켜짐 = () => !!(window.ChaeksaCloud && ChaeksaCloud.enabled());
-  const 손님 = () => 게이트켜짐() && !ChaeksaCloud.signedIn();
+  // 둘을 가른다. 섞으면 관문을 내리는 순간 「로그인 안 한 사람」을 못 찾는다.
+  //   비로그인()  = 이 사람이 로그인을 안 했다        ← 로그인을 청하는 자리에 쓴다
+  //   손님()      = 그래서 문 앞에서 막을 것인가      ← 부팅 분기에만 쓴다
+  const 비로그인 = () => 게이트켜짐() && !ChaeksaCloud.signedIn();
+  const 손님 = () => 관문먼저 && 비로그인();
   function enterOrLogin() {
     if (손님()) {
       try { ChaeksaCloud.signInWith('kakao'); } catch (e) { showForm(); }
@@ -3106,10 +3210,11 @@
   }
   $('btnStart').onclick = enterOrLogin;
   $('btnStart2').onclick = enterOrLogin;
-  if (게이트켜짐() && !ChaeksaCloud.signedIn()) {
-    $('btnStart').textContent = '제 이야기로 의논해 주세요';
-    if ($('lpStartHint')) $('lpStartHint').textContent = '로그인하고 생년월일시만 넣으면 1분 안에 간명서가 나옵니다.';
-    if ($('btnStart2')) $('btnStart2').textContent = '제 이야기로 의논해 주세요';
+  // 관문이 서 있을 때만 「로그인하고…」로 덮어쓴다. 내려 놓고 이 문구가 남으면
+  // 일어나지도 않을 로그인을 랜딩이 계속 약속한다.
+  // (버튼 문구 대입은 index.html 과 바이트까지 같아 죽은 코드라 지웠다.)
+  if (손님() && $('lpStartHint')) {
+    $('lpStartHint').textContent = '로그인하고 생년월일시만 넣으면 1분 안에 간명서가 나옵니다.';
   }
 
   // ───── 외부 브리지 (consult.js에서 사용) ─────
@@ -3286,9 +3391,10 @@
     if (act) { start(People().toProfile(act)); booted = true; }
     else if (saved) { try { start(JSON.parse(saved)); booted = true; } catch (e) { localStorage.removeItem(KEY); } }
     if (!booted) {
-      // 로그인은 했고 사주만 없는 사람 — 랜딩을 또 보여줄 이유가 없다. 바로 입력.
-      if (게이트켜짐() && ChaeksaCloud.signedIn()) { showLanding(); showForm(); }
-      else showLanding();
+      // 갈림은 로그인 여부가 아니라 **원국 유무**다. 관문을 내린 뒤로
+      // 「로그인은 했고 사주만 없는 사람」이라는 갈래가 의미를 잃었다 —
+      // 이제 로그인 안 한 사람도 여기로 온다. 원국이 없으면 랜딩부터 보여준다.
+      showLanding();
     }
   }
   goHash(booted);         // #탭이름 으로 들어온 경우 그 탭을 연다
