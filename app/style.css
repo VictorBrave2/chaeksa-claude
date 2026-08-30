@@ -1193,6 +1193,9 @@ details.fold > .tiles { margin-top: 10px; }
 /* 인용 상자(.nx-diag) 안에서는 그 좌우 여백(15px)을 되물려 가장자리까지 채운다 —
    「얼빡」은 크게 나와야 얼빡이다. 상자 밖(유료 .pb-ai)에서는 그대로 둔다. */
 .nx-diag > .say-head{margin-left:-15px;margin-right:-15px;border-radius:9px}
+/* 유료 서술(.pb-ai)도 같은 이유로 제 여백(17px)을 되물린다.
+   실측 2026-08-30: 되물리기 전 223px / 뒤 259px (뷰포트 375). */
+.pb-ai > .say-head{margin-left:-17px;margin-right:-17px;border-radius:9px}
 .say-face{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   object-position:50% 26%}
 .say-head::after{content:'';position:absolute;left:0;right:0;bottom:0;height:72px;
