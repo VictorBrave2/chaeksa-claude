@@ -11,3 +11,8 @@ app/_u.js
 
 # 원본 PNG 는 장당 2MB 다 — 저장소에 넣지 않는다 (변환본만 app/art 로 간다)
 책사들 삽화/
+
+# 작업 부스러기 — git add -A 에 딸려 들어가 라이브에 올라간 적이 있다(2026-08-30 _probe.html)
+scratch_*.txt
+app/_probe.html
+app/_*.html
