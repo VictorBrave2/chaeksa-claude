@@ -165,19 +165,25 @@
     const needEl = E.STEM_ELEM[STEM_IDX[need]];
     const allowed = new Set([need].concat(aux).map(ch => E.STEM_ELEM[STEM_IDX[ch]]));
     const rules = DETAIL[ST_CH[p.day.stem] + BR_CH[p.month.branch]];
-    let deduct = 0, why = '';
+    // 감점을 낸 **그 글자**를 같이 들고 나온다(2026-08-31).
+    // 예전에는 감점과 무관한 관계식으로 기신을 따로 구해 화면에 찍었다.
+    // 실측: 丙壬乙壬(一派壬水로 -30)인데 화면은 「거슬리는 것은 금입니다,
+    // 그것이 무리를 이루고 있어」라고 말했다 — 천간에 금이 한 글자도 없다.
+    // 재지 않은 것을 잰 것처럼 말하는 자리라 이 집에서 제일 큰 잘못이다.
+    let deduct = 0, why = '', 원인글자 = '', 원인오행 = '';
     if (rules) {
       for (const [bad, save, pt, src] of rules) {
-        const n = cheon.filter(ch => bad.includes(ch)).length;
-        if (n < 2) continue;
+        const 걸린 = cheon.filter(ch => bad.includes(ch));
+        if (걸린.length < 2) continue;
         if (save && save.split('').some(ch => cheon.includes(ch))) continue;
-        if (pt > deduct) { deduct = pt; why = src; }
+        if (pt > deduct) { deduct = pt; why = src; 원인글자 = 걸린.join(''); }
       }
     } else {
       const cnt = (el) => cheon.filter(ch => E.STEM_ELEM[STEM_IDX[ch]] === el).length;
+      const 글자of = (el) => cheon.filter(ch => E.STEM_ELEM[STEM_IDX[ch]] === el).join('');
       const gwan = (de + 3) % 5, geuk = (needEl + 3) % 5;
-      if (!allowed.has(gwan) && cnt(gwan) >= 2) { deduct = 30; why = '관살 무리(관계식)'; }
-      else if (!allowed.has(geuk) && geuk !== gwan && cnt(geuk) >= 2) { deduct = 20; why = '주용신 극 무리(관계식)'; }
+      if (!allowed.has(gwan) && cnt(gwan) >= 2) { deduct = 30; why = '관살 무리(관계식)'; 원인글자 = 글자of(gwan); }
+      else if (!allowed.has(geuk) && geuk !== gwan && cnt(geuk) >= 2) { deduct = 20; why = '주용신 극 무리(관계식)'; 원인글자 = 글자of(geuk); }
     }
     // 지지 국(局) — 삼합 3지가 전부 모여 국을 이루고 그 오행이 일간을 극하는데
     // 제방 천간(국을 극하는 오행)이 없으면 -30. 원문의 "支成水局 死無棺槨 /
@@ -192,13 +198,25 @@
       if ((de - el + 5) % 5 !== 2) continue;                       // 국이 일간을 극할 때만
       const guard = (el + 3) % 5;                                  // 국을 극하는 오행이 제방
       if (cheon.some(ch => E.STEM_ELEM[STEM_IDX[ch]] === guard)) continue;
-      if (30 > deduct) { deduct = 30; why = '지지 ' + '목화토금수'[el] + '국 완비, 일간 피극(국 근사)'; }
+      if (30 > deduct) {
+        deduct = 30; why = '지지 ' + '목화토금수'[el] + '국 완비, 일간 피극(국 근사)';
+        원인글자 = '';                       // 지지 국이라 천간 글자가 없다 — 오행으로만 말한다
+        원인오행 = '목화토금수'[el];
+      }
     }
     if (deduct) score = Math.max(0, score - deduct);
+    // 감점이 있으면 **감점을 낸 그 오행**이 기신이다. 없으면 관계식이 「무엇이
+    // 거슬릴 자리인가」를 말할 뿐이니 무리는 짓지 않았다고 적는다.
+    // 「기신 없음 + 기신무리 참」이라는 자기모순 조합이 나가던 것도 이걸로 없어진다.
     const badEls = [(de + 3) % 5, (needEl + 3) % 5].filter(e => !allowed.has(e));
+    const 관계식기신 = [...new Set(badEls)].map(e => '목화토금수'[e]).join('');
+    const 원인 = 원인오행
+      || (원인글자 ? [...new Set([...원인글자].map(ch => '목화토금수'[E.STEM_ELEM[STEM_IDX[ch]]]))].join('') : '');
     return { need, aux: aux.join(''), cheon: cheon.join(''), hasMain, hasAux,
-             기신: [...new Set(badEls)].map(e => '목화토금수'[e]).join('') || '없음',
-             기신무리: !!deduct, 감점: deduct, 사유: why, score };
+             기신: (deduct ? 원인 : 관계식기신) || '없음',
+             기신글자: 원인글자,             // 하늘에 실제로 있는 글자. 없으면 빈 문자열
+             기신무리: !!deduct && !!원인,
+             감점: deduct, 사유: why, score };
   }
 
   /** 자평진전 50점 — 격 판정은 typecard.gyeok(→ gyeokguk.js 원문 조항)을 그대로 쓴다.

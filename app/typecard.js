@@ -2148,7 +2148,7 @@
       return {
         필요한글자: g.need, 보조글자: g.aux || null, 하늘에뜬글자: g.cheon || null,
         주용신있나: !!g.hasMain, 보조있나: !!g.hasAux,
-        기신: g.기신, 기신무리: !!g.기신무리, 사유: g.사유 || null,
+        기신: g.기신, 기신무리: !!g.기신무리, 기신글자: g.기신글자 || '', 사유: g.사유 || null,
       };
     } catch (e) { return null; }
   }
