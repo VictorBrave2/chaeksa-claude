@@ -164,32 +164,8 @@
       }
     } catch (e) { /* people 표가 아직 없으면 조용히 넘어간다 */ }
 
-    // 상담: id 기준 병합, updated_at이 최신인 쪽을 남긴다
-    const cs = await api('/rest/v1/consults?select=*&order=updated_at.desc');
-    if (Array.isArray(cs)) {
-      const local = jget(CKEY, []);
-      const byId = {};
-      local.forEach(c => { byId[c.id] = c; });
-      let merged = false;
-      cs.forEach(r => {
-        const cur = byId[r.id];
-        const remoteRec = {
-          id: r.id, question: r.question, createdAt: r.created_at,
-          domainKey: r.domain_key, domainLabel: r.domain_label, targetLabel: r.target_label,
-          topId: r.top_id, topTitle: r.top_title, topP: r.top_p,
-          action: r.action, metric: r.metric,
-          first: r.first_answer || {}, checkins: r.checkins || [], logs: r.logs || [],
-          _at: r.updated_at,
-        };
-        // 로컬에 아직 안 올린 수정이 있으면 그쪽이 이긴다
-        if (!cur || ts(r.updated_at) > ts(cur._at)) { byId[r.id] = remoteRec; merged = true; }
-      });
-      if (merged) {
-        const list = Object.values(byId).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-        jset(CKEY, list);
-        changed = true;
-      }
-    }
+    // 상담내역 내려받기도 함께 지웠다. consults 표는
+    // server/migrate-14-consults-drop.sql 이 지운다.
     localStorage.setItem(SKEY, new Date().toISOString());
     return { changed };
   }
@@ -234,24 +210,10 @@
       } catch (e) { /* people 표가 아직 없으면 넘어간다 */ }
     }
 
-    const list = jget(CKEY, []);
-    if (list.length) {
-      await api('/rest/v1/consults?on_conflict=id', {
-        method: 'POST',
-        headers: { Prefer: 'resolution=merge-duplicates' },
-        body: JSON.stringify(list.map(c => ({
-          id: c.id, user_id: uid, person_id: c.personId || null, question: c.question,
-          domain_key: c.domainKey || null, domain_label: c.domainLabel || null, target_label: c.targetLabel || null,
-          top_id: c.topId || null, top_title: c.topTitle || null, top_p: c.topP || null,
-          action: c.action || null, metric: c.metric || null,
-          first_answer: c.first || {}, checkins: c.checkins || [], logs: c.logs || [],
-          created_at: c.createdAt || new Date().toISOString().slice(0, 10),
-          updated_at: new Date().toISOString(),
-        }))),
-      });
-    }
+    // 상담내역 밀어올리기를 지웠다(2026-08-31). 심층 상담은 v390 에 없앤 기능인데
+    // 동기화만 남아 매 세션 개인 데이터를 실어 나르고 있었다.
+    // 채점 때와 같다 — 읽는 코드가 없으면 모을 이유도 없다.
     const now = new Date().toISOString();
-    if (list.length) { list.forEach(c => { c._at = now; }); jset(CKEY, list); }
     if (people.length) { people.forEach(x => { x._at = now; }); jset(PEOPLE, people); }
     if (p) localStorage.setItem(PAT, now);
     localStorage.setItem(SKEY, now);
