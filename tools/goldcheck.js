@@ -49,39 +49,70 @@
   }
   const 겹치나 = (a, b) => a && b && a[0] <= b[1] && b[0] <= a[1];
 
-  for (const c of cases) {
-    if (!c || !c.입력) continue;
-    셈.케이스++;
-    let R, F;
-    try {
-      R = E.calc(Object.assign({ place: 'KR:서울', longitude: 126.98, tzOffset: null,
-                                 solarCorrection: true }, c.입력));
-      F = T.간명자료(R, new Date());
-    } catch (e) { 적기(c.id, '계산 실패', e.message, ''); 셈.사주틀림++; continue; }
+  /** 「甲戌 庚午 戊辰 己未」 → pillars. 고전 명조는 날짜가 없고 간지만 있다. */
+  function 기둥of(s) {
+    const p = String(s).trim().split(/\s+/), k = ['year', 'month', 'day', 'hour'], o = {};
+    if (p.length < 3) return null;
+    for (let i = 0; i < p.length && i < 4; i++) {
+      const st = E.STEMS.indexOf(p[i][0]), br = E.BRANCHES.indexOf(p[i][1]);
+      if (st < 0 || br < 0) return null;
+      o[k[i]] = { stem: st, branch: br };
+    }
+    return o;
+  }
 
-    // ── 0. 사주가 문헌과 같은가. 여기서 어긋나면 나머지는 의미가 없다
-    const 우리간지 = 간지of(R);
-    if (c.간지 && c.간지.replace(/\s+/g, ' ').trim() !== 우리간지) {
-      셈.사주틀림++;
-      적기(c.id, '사주', c.간지, 우리간지 + '  ← 절기·진태양시부터 본다');
-      continue;
+  for (const c of cases) {
+    const 간지만 = !c.입력 && c.간지;          // 고전 명조 — 날짜가 없다
+    if (!c || (!c.입력 && !간지만)) continue;
+    셈.케이스++;
+
+    let R = null, F = null, 재 = null;
+
+    if (간지만) {
+      // ── 날짜 없이 기둥만으로 판정한다. 사건 골드는 대운이 없어 채점 못 한다.
+      const P = 기둥of(c.간지);
+      if (!P) { 셈.사주틀림++; 적기(c.id, '간지', c.간지, '읽지 못했다 — 「甲戌 庚午 戊辰 己未」 꼴로'); continue; }
+      let a, gy, jo;
+      try {
+        a = E.strengthOf(P);
+        gy = T.gyeok({ pillars: P, analysis: a });
+        jo = window.ChaeksaClassic ? window.ChaeksaClassic.gungtong({ pillars: P, analysis: a }) : null;
+      } catch (e) { 셈.사주틀림++; 적기(c.id, '판정 실패', e.message, ''); continue; }
+      재 = { 격: gy && gy.name, 판정: gy && gy.판정, 상신: gy && gy.상신,
+             강약: a && a.strength, 조후용신: jo && jo.need };
+      if (c.연표) 적기(c.id, '연표', '있음', '간지만 있는 케이스는 사건을 못 잰다 — 생년월일시가 필요하다');
+    } else {
+      try {
+        R = E.calc(Object.assign({ place: 'KR:서울', longitude: 126.98, tzOffset: null,
+                                   solarCorrection: true }, c.입력));
+        F = T.간명자료(R, new Date());
+      } catch (e) { 적기(c.id, '계산 실패', e.message, ''); 셈.사주틀림++; continue; }
+
+      // 사주가 문헌과 같은가. 여기서 어긋나면 나머지는 의미가 없다
+      const 우리간지 = 간지of(R);
+      if (c.간지 && c.간지.replace(/\s+/g, ' ').trim() !== 우리간지) {
+        셈.사주틀림++;
+        적기(c.id, '사주', c.간지, 우리간지 + '  ← 절기·진태양시부터 본다');
+        continue;
+      }
+      재 = {
+        격:       F.자평진전 && F.자평진전.격,
+        판정:     F.자평진전 && F.자평진전.판정,
+        상신:     F.자평진전 && F.자평진전.상신,
+        강약:     F.억부 && F.억부.강약,
+        조후용신: F.궁통보감 && F.궁통보감.필요한글자,
+      };
     }
 
     // ── 1. 판정 골드 — 정확 일치만 맞음
-    const 재 = {
-      격:       F.자평진전 && F.자평진전.격,
-      판정:     F.자평진전 && F.자평진전.판정,
-      상신:     F.자평진전 && F.자평진전.상신,
-      강약:     F.억부 && F.억부.강약,
-      조후용신: F.궁통보감 && F.궁통보감.필요한글자,
-    };
     Object.keys(c.확정 || {}).forEach(k => {
       if (재[k] === undefined) { 적기(c.id, k, c.확정[k], '우리가 안 재는 항목'); return; }
       if (String(c.확정[k]) === String(재[k])) 셈.판정.맞++;
       else { 셈.판정.틀++; 적기(c.id, k, c.확정[k], 재[k]); }
     });
 
-    // ── 2. 사건 골드
+    // ── 2. 사건 골드. 간지만 있는 케이스는 대운·세운이 없어 못 잰다
+    if (간지만) continue;
     const 연 = c.연표 || {};
     const 배열 = (v) => (Array.isArray(v) ? v : v == null ? [] : [v]);
 
