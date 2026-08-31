@@ -997,7 +997,7 @@
           <span class="n">${ec[i]}</span></div>`).join('')}
         <div class="ms" style="margin-top:2px">가장 두터운 것 <b>${top}</b>${a.missing.length ? ` · 비어 있는 것 <b>${a.missing.join('·')} 채우기</b>` : ' · 다 갖춘 밸런스'}</div></div>
       <div class="mzcard"><div class="mk">기운의 결</div>
-        <div class="mb">${st.nick} ${st.emoji}</div>
+        <div class="mb">${st.nick}</div>
         <div class="ms">${st.desc}</div></div>
       <div class="mzcard"><div class="mk">나를 채우는 기운</div>
         <div class="mb">${a.yongCandidates.join(' · ')}</div>
