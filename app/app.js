@@ -1144,15 +1144,22 @@
     if (!J || !J.판정) { if (card) card.classList.add('hide'); return; }
     if (card) card.classList.remove('hide');
 
-    const cls = J.판정 === '섰다' ? 'ok' : (J.판정 === '깨졌다' ? 'no' : 'mid');
+    // 색은 **성패**를 따른다 — 섰다·구제됐다가 성격, 띠었다·깨졌다가 패격이다.
+    // 예전엔 판정 이름으로 갈라 띠었다(패격)를 중간색으로, 구제됐다(성격)도 중간색으로 칠했다.
+    // 성패는 둘뿐이니 색도 둘이다. 그 안의 결(온전/가까스로/흠 하나/무너짐)은
+    // LABEL 의 짧게·풀어서가 말한다 — 색으로 네 칸을 흉내 내면 패격이 성격처럼 보인다.
+    const 성패 = (Gk.성패of ? Gk.성패of(J.판정) : '');
+    const cls = 성패 === '성격' ? 'ok' : 성패 === '패격' ? 'no' : 'mid';
     // 화면에 쓰는 말은 gyeokguk.js 의 LABEL 한 곳에서만 정한다.
     const L = (Gk.LABEL || {})[J.판정] || { 짧게: J.판정, 풀어서: '' };
     const 근거말 = Gk.근거말 || {};
     const 한줄 = L.풀어서;
 
     const 근거줄 = [];
+    // 조항은 판정키다 — 카드에도 공주님말을 낸다(gyeokguk.js 공주님말표).
+    const 읽 = (t) => (Gk.공주님말of ? Gk.공주님말of(t) : t);
     const 붙 = (lb, arr) => { (arr || []).forEach(t => 근거줄.push(
-      `<div><span class="lb">${esc(근거말[lb] || lb)}</span><span>${esc(t)}</span></div>`)); };
+      `<div><span class="lb">${esc(근거말[lb] || lb)}</span><span>${esc(읽(t))}</span></div>`)); };
     const g = J.근거 || {};
     if (J.판정 === '구제됐다') { 붙('깨졌다', g.깨졌다); 붙('구제', g.구제); }
     else { 붙('섰다', g.섰다); 붙('띠었다', g.띠었다); if (!(g.섰다 || []).length) 붙('깨졌다', g.깨졌다); }
