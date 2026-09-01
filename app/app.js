@@ -647,7 +647,8 @@
       } catch (e) {}
       try { const np = T.naepyeon(R, today);
         set('tiNpBig', np.결.map(k => k.오행).join('·'));
-        set('tiNpSub', np.결.map(k => k.이름).join(' · ') + '의 사람');
+        // 「자라는 결의 사람」은 은유가 두 겹이라 문 앞에서 뜻이 안 선다. 표의 [3]을 쓴다.
+        set('tiNpSub', np.결.map(k => k.사람).join(' · '));
       } catch (e) {}
       try {
         const iy = T.inyeon(R, today.getFullYear(), 10);
@@ -661,7 +662,9 @@
         set('tiLifeBig', lc.kind + '형'); set('tiLifeSub', (lc.지남 && lc.앞최고Txt)
           ? '앞으로 남은 구간 중 ' + lc.앞최고Txt + ' — 곡선으로 보기'
           : '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
-      try { const c = T.career(R, null); set('tiJikBig', c.group + '축'); set('tiJikSub', '25유형 중 어느 쪽인지 열어보기'); } catch (e) {}
+      // 배지에 「비겁축」 같은 십신 이름을 찍지 않는다 — 문 앞 간판은 읽히는 말이어야 한다.
+      // 부제도 처방이 아니라 위치로(docs/27 아홉). 「맞는 일」은 우리가 정해 주지 않는다.
+      try { const c = T.career(R, null); set('tiJikBig', c.name); set('tiJikSub', '사회 속 어디에 서 계신지'); } catch (e) {}
       try { const l = T.love(R, new Date(), null); // l.key 는 686 유형 코드다 — 앞 두 글자를 그냥 찍으면 공주님께는 「一心」 같은
         // 뜻 없는 내부 코드가 박힌다. 오른쪽 칸은 비워 두고 설명으로 말한다.
         set('tiDoBig', ''); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
