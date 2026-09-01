@@ -2146,18 +2146,25 @@
     const T = window.ChaeksaTypecard, wrap = $('yeongList'), card = $('yeongCard');
     if (!T || !T.영역축 || !wrap || !card) return;
     let F = null; try { F = T.간명자료(R, new Date()); } catch (e) { return; }
-    const 축 = T.영역축((F.자평진전 || {}).힘, (F.천직 || {}).축 || '');
+    const 축 = T.영역축((F.자평진전 || {}).힘, (F.천직 || {}).축 || '', R);
     if (!축.length) { card.classList.add('hide'); return; }
+    // 「관없음」의 제목은 갈래를 따라간다. 셋을 한 제목으로 부르면
+    // 밀어내는 사람에게 「아직 안 나왔습니다」라고 말하게 된다(2026-09-01 조문).
+    const 없음표 = { 밀어냄: '자리를 밀어내고 계십니다', 못받음: '받칠 것을 먼저 세우는 자리',
+                     아직: '아직 자리가 안 나왔습니다' };
     const 이름표 = { 비겁: '자리와 나의 크기', 식상: '내놓는 것과 자리',
-                     재성: '벌이와 자리', 인성: '자리가 돌려주는 것',
-                     관없음: '아직 자리가 안 나왔습니다' };
+                     재성: '벌이와 자리', 인성: '자리가 돌려주는 것' };
     const 관계 = { 비겁: '官剋我', 식상: '食傷剋官', 재성: '財生官', 인성: '官生印', 관없음: '' };
     wrap.innerHTML = 축.map((a, i) => {
-      const 셈 = a.살아있나 ? '' : '<span class="hint" style="font-size:11px"> · 겉으로는 안 나와 있어요</span>';
+      // 관없음 줄에는 이 배지를 안 붙인다 — 본문이 이미 「자리가 겉에 없습니다」로 시작하고,
+      // 「자리를 밀어내고 계십니다 · 겉으로는 안 나와 있어요」는 서로 어긋나 읽힌다.
+      const 셈 = (a.살아있나 || a.이름 === '관없음') ? ''
+        : '<span class="hint" style="font-size:11px"> · 겉으로는 안 나와 있어요</span>';
       const 표 = (i === 0 && a.이름 !== '관없음')
         ? '<span class="hint" style="font-size:11px;font-weight:700"> · 가장 뚜렷한 축</span>' : '';
       return '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
-        + '<div style="font-weight:700;font-size:13.5px">' + esc(이름표[a.이름] || a.이름)
+        + '<div style="font-weight:700;font-size:13.5px">'
+        + esc(a.이름 === '관없음' ? (없음표[a.갈] || 없음표.아직) : (이름표[a.이름] || a.이름))
         + (관계[a.이름] ? '<span class="hint" style="font-weight:400;font-size:11px"> ' + 관계[a.이름] + '</span>' : '')
         + 표 + 셈 + '</div>'
         + '<div style="margin-top:4px;line-height:1.62">' + esc(a.말) + '</div></div>';
@@ -2196,6 +2203,8 @@
         + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(g.간지) + '</span></div>'
         + '<div style="margin-top:4px;line-height:1.62">' + esc(g.이유[0] || '') + '</div>'
         + (g.이유[1] ? '<div style="margin-top:2px;line-height:1.62">' + esc(g.이유[1]) + '</div>' : '')
+        // 자리가 오는데 겉에 선 상관이 그것을 치는 해 — 열림을 지우지 않고 한 줄로 덧댄다
+        + (g.견관 ? '<div class="hint" style="margin-top:4px;line-height:1.62">' + esc(g.견관) + '</div>' : '')
         + '</div>');
     });
     (v.흔들해 || []).forEach(r => {
