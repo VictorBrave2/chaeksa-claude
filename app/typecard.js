@@ -3350,6 +3350,111 @@
     return 축;
   }
 
+  // ── 자리가 열리는 해 (docs/28 넷 1순위 · docs/27 여섯) ──
+  //
+  // 財는 「열리는 해·달」을 잡는데 官으로 해를 잡는 계산이 하나도 없었다(실측 0건).
+  // 인연 해가 女命에서만 官을 잡고 있었고, 그것도 **배우자성 한 얼굴로만** 읽었다.
+  // 官은 두 얼굴이다 — 곁에 서는 사람이기도 하고, 공주님이 설 자리이기도 하다.
+  // 그래서 男女 가리지 않고 官으로만 다시 잰다.
+  //
+  // 새 상수를 만들지 않는다(docs/28 다섯). 인연 해와 **같은 저울**을 官 쪽으로 돌려 쓴다 —
+  // 하늘 28+뿌리 · 대운 16. 땅 20과 財生官 12는 인연의 육합 26·삼합 20 자리를 대신한다
+  // (배우자궁 합은 자리의 이야기가 아니므로 가져오지 않는다).
+  //
+  // 열림과 닫힘을 한 점수에 섞지 않는다(제24조). 막대는 **열림만** 재고,
+  // 傷官見官은 따로 「흔들리는 해」로 적는다. 인수가 투출해 있으면 구제된다(docs/16 정관격 구제).
+  function 영역해(R, fromYear, n) {
+    const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds];
+    const W = E.NATAL_WEIGHT;
+    const 관오행 = (de + 3) % 5, 재오행 = (de + 2) % 5;
+    const 여명 = ((R.input && R.input.gender) || 'M') !== 'M';
+
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
+                  [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+
+    // 원국이 이미 겉에 가진 것 — 흔들림 판정에만 쓴다(일간은 뺀다)
+    const 십 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const 겉 = [p.year.stem, p.month.stem].concat(p.hour ? [p.hour.stem] : []);
+    const 정관있다 = 겉.some(st => 십(st) === '정관');
+    const 인수있다 = 겉.some(st => 십(st) === '정인' || 십(st) === '편인');
+
+    const rows = [];
+    for (let i = 0; i < (n || 10); i++) {
+      const y = fromYear + i;
+      let tf; try { tf = E.dateFortune(y, 6, 15); } catch (e) { continue; }
+      const du = E.currentDaeun(R, new Date(y, 5, 15));
+      let s = 0; const 이유 = [];
+
+      // 자리의 글자가 하늘에 오는가.
+      // 통근은 **점수에만** 넣고 문장으로는 안 가른다. 처음엔 「뿌리까지 내리고 옵니다 /
+      // 하늘에만 뜹니다」로 갈랐는데, 3000명 6000건에서 무근이 **0건**이었다.
+      // 지지 넷에 지장간까지 있으면 한 오행이 어디에도 안 걸리는 일이 거의 없다.
+      // 안 갈리는 가지를 문장으로 두면 재지 않은 것을 잰 것처럼 말하게 된다.
+      // (금을 0.4 쯤에 새로 그으면 갈리기는 하나, 그건 새 상수다 — docs/28 다섯에서 막았다.)
+      let 官옴 = false;
+      if (E.STEM_ELEM[tf.year.stem] === 관오행) {
+        官옴 = true;
+        s += 28 + Math.min(22, Math.round(E.stemPower(tf.year.stem, 자리) * 22));
+        이유.push('자리의 글자가 하늘로 옵니다 — 겉으로 드러나는 자리입니다');
+      }
+      // 땅으로 오는 것은 겉에 티가 덜 난다 — 그래도 실질이다
+      const 본기 = (E.HIDDEN[tf.year.branch] || [])[0];
+      if (본기 != null && E.STEM_ELEM[본기] === 관오행) {
+        官옴 = true;
+        s += 20; 이유.push('자리의 글자가 땅으로 옵니다 — 티는 덜 나도 실질이 옵니다');
+      }
+      // 財生官 — 밑천이 자리를 밀어 올린다(영역축의 재성 축과 같은 관계식이다)
+      if (E.STEM_ELEM[tf.year.stem] === 재오행) {
+        s += 12; 이유.push('벌이 쪽 글자가 옵니다 — 밑천이 자리를 밀어 올리는 해입니다');
+      }
+      // 대운은 십 년을 물들인다
+      if (du && E.STEM_ELEM[du.stem] === 관오행) {
+        s += 16; 이유.push('지금 대운 자체가 자리 쪽으로 기울어 있습니다');
+      }
+
+      // 傷官見官 — 점수에 안 섞는다. 겁주지 않는다: 「무너진다」가 아니라 「건드린다」다.
+      let 흔들 = null;
+      if (십(tf.year.stem) === '상관' && 정관있다) {
+        흔들 = 인수있다
+          ? '내놓는 것이 자리를 건드리는 해입니다 — 다만 받쳐 주는 것이 있어 크게는 안 갑니다'
+          : '내놓는 것이 자리를 건드리는 해입니다 — 말과 재주가 앞설수록 자리가 흔들립니다';
+      }
+      rows.push({ 해: y, 간지: E.fmt.pillar(tf.year), 점수: s, 이유, 흔들, 官옴, gz: tf.year });
+    }
+    if (!rows.length) return { rows: [], 좋은해: [], 첫해: null, 흔들해: [], 겹침: [], 여명,
+                               말: '해를 재지 못했습니다' };
+
+    // 0~100 으로 편다 — 이 십 년 안에서의 서열이지 절대값이 아니다
+    const raw = rows.map(r => r.점수), hi = Math.max.apply(null, raw), lo = Math.min.apply(null, raw);
+    rows.forEach(r => { r.점수 = hi === lo ? 50 : Math.round((r.점수 - lo) / (hi - lo) * 100); });
+
+    // **官이 세운으로 와야 「자리가 열리는 해」다.** 財生官(+12)이나 대운(+16)만으로도
+    // 이유가 붙는 바람에 처음엔 3000명 전원이 늘 세 해를 받았고, 「벌이 쪽 글자가 옵니다」
+    // 하나로 첫해가 잡히기까지 했다. 財는 밀어 주는 것이지 자리 자체가 아니고,
+    // 대운은 십 년을 고르게 물들이므로 해를 가르지 못한다. 둘 다 순위 재료로만 남긴다.
+    const 좋은해 = rows.filter(r => r.官옴).sort((a, b) => b.점수 - a.점수).slice(0, 3);
+    const 첫해 = 좋은해.length ? 좋은해.slice().sort((a, b) => a.해 - b.해)[0] : null;
+    const 흔들해 = rows.filter(r => r.흔들);
+
+    // 女命의 官은 두 얼굴이다(docs/27 여섯). 같은 해가 양쪽에 걸리면 그것을 적되
+    // **두 얼굴을 한 문장에 섞지 않는다**(docs/28 다섯) — 겹친 해만 넘기고 말은 화면에서 나눈다.
+    let 겹침 = [];
+    if (여명 && 좋은해.length) {
+      try {
+        const iy = inyeon(R, fromYear, n || 10);
+        const 인 = (iy.좋은해 || []).map(g => g.해);
+        겹침 = 좋은해.map(g => g.해).filter(y => 인.indexOf(y) >= 0);
+      } catch (e) {}
+    }
+
+    const 말 = !첫해 ? '앞으로 십 년 안에는 관(官)의 글자가 세운으로 오지 않습니다. 자리가 새로 열리기보다 있는 자리를 다지는 구간이에요'
+      : 첫해.해 === fromYear ? '올해가 그 해입니다'
+      : 첫해.해 + '년이 가장 가깝습니다';
+
+    return { rows, 좋은해, 첫해, 흔들해, 겹침, 여명, 말 };
+  }
+
   // ── 감정첩 3종 공통 판 ──
   // 녹패·도화첩·천직첩이 각자 좌표를 쓰다가 줄이 하단 문구 아래로 밀려나거나
   // 왼쪽 선이 어긋났다. 세로 위치를 한 곳에서 정하고 셋이 같은 판을 쓴다.
@@ -3907,5 +4012,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해 };
 })(window);

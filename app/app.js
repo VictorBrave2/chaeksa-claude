@@ -2163,6 +2163,57 @@
         + '<div style="margin-top:4px;line-height:1.62">' + esc(a.말) + '</div></div>';
     }).join('');
     card.classList.remove('hide');
+    그림영역해(R);
+  }
+
+  // 자리가 열리는 해 — 官으로 잡은 열 해. 새 계산은 typecard.영역해 하나에 있다.
+  // 화면에서 지키는 것 둘: 열림과 흔들림을 한 줄에 안 섞고(제24조),
+  // 女命의 두 얼굴도 문장을 나눠 적는다(docs/28 다섯).
+  function 그림영역해(R) {
+    const T = window.ChaeksaTypecard, card = $('yeongYearCard'),
+          bars = $('yeongYearBars'), list = $('yeongYearList');
+    if (!T || !T.영역해 || !card || !bars || !list) return;
+    let v = null; try { v = T.영역해(R, new Date().getFullYear(), 10); } catch (e) { return; }
+    if (!v || !v.rows.length) { card.classList.add('hide'); return; }
+
+    const 좋 = (v.좋은해 || []).map(g => g.해);
+    bars.innerHTML = v.rows.map(r => {
+      const h = Math.max(3, Math.round(r.점수 / 100 * 58));
+      const on = 좋.indexOf(r.해) >= 0;
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">'
+        + '<div style="width:100%;height:' + h + 'px;border-radius:3px;background:'
+        + (on ? 'var(--accent,#b0567a)' : 'var(--line2,#e2cfc4)') + '"></div>'
+        + '<div class="hint" style="font-size:10px' + (on ? ';font-weight:700' : '') + '">'
+        + String(r.해).slice(2) + '</div></div>';
+    }).join('');
+
+    const 줄 = [];
+    줄.push('<div style="padding:11px 0;border-top:1px solid var(--line2);font-weight:700">'
+      + esc(v.말) + '</div>');
+    (v.좋은해 || []).slice().sort((a, b) => a.해 - b.해).forEach(g => {
+      줄.push('<div style="padding:9px 0;border-top:1px solid var(--line2)">'
+        + '<div style="font-weight:700;font-size:13.5px">' + g.해 + '년'
+        + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(g.간지) + '</span></div>'
+        + '<div style="margin-top:4px;line-height:1.62">' + esc(g.이유[0] || '') + '</div>'
+        + (g.이유[1] ? '<div style="margin-top:2px;line-height:1.62">' + esc(g.이유[1]) + '</div>' : '')
+        + '</div>');
+    });
+    (v.흔들해 || []).forEach(r => {
+      줄.push('<div style="padding:9px 0;border-top:1px solid var(--line2)">'
+        + '<div style="font-weight:700;font-size:13.5px">' + r.해 + '년'
+        + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(r.간지)
+        + ' · 자리가 흔들리는 해</span></div>'
+        + '<div style="margin-top:4px;line-height:1.62">' + esc(r.흔들) + '</div></div>');
+    });
+    if ((v.겹침 || []).length) {
+      // 「좋은 사람도 오고 자리도 열립니다」는 한 문장 두 주장이라 안 쓴다. 문장을 나눈다.
+      줄.push('<div style="padding:11px 0;border-top:1px solid var(--line2)">'
+        + '<div class="hint" style="line-height:1.62">'
+        + esc(v.겹침.slice().sort((a, b) => a - b).join('년 · ') + '년은 인연 쪽에서도 같은 해로 잡힙니다. ')
+        + '<b>다른 이야기입니다</b> — 관(官) 한 글자가 곁에 서는 사람이기도 하고 공주님이 설 자리이기도 해서, 같은 해가 두 번 잡히는 것뿐입니다.</div></div>');
+    }
+    list.innerHTML = 줄.join('');
+    card.classList.remove('hide');
   }
 
     const T = window.ChaeksaTypecard; if (!T || !$('jikSvg')) return;
