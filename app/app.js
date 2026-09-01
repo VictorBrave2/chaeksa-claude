@@ -1254,8 +1254,21 @@
     const cached = AI.getProfile(R);
     if (cached) { card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
     if (!AI.ready()) { card.innerHTML = 머리 + '<p class="hint">지금은 좌장을 부를 수 없습니다. 위 계산은 그대로 유효합니다.</p>'; return; }
-    // 누르셔야 굽는다 — 화면을 여는 것만으로 원가가 나가면 안 된다.
-    // 토큰만 먹고 출력이 안 되던 사고 뒤에 세운 잠금이 여기만 비어 있었다.
+    // **유료 상품이다**(products.wongook · migrate-15 · 2026-08-31 결재).
+    //   판정을 가두는 것이 아니다 — 강약·용신·격국·대운은 위 카드에 **무료로 다 있다.**
+    //   파는 것은 그것을 **알아듣게 엮는 일**이다(CLAUDE.md 넷 「판정 유료화 폐기」에 안 걸린다).
+    //   무료로 두면 Opus + effort high 가 무료 화면에 붙는다 —
+    //   memory 「원가 자물쇠」가 「돈이 타는 유일한 곳은 굽기」라 못박은 것을 어긴다.
+    const 산분 = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wongook');
+    if (!산분) {
+      card.innerHTML = 머리
+        + '<p class="hint">위 계산과 카드는 그대로 보십니다. 여기서는 좌장 태윤이 그 여덟 글자를 <b>한 편으로 엮어</b> 읽어 드립니다 — 무엇을 타고나셨고, 무엇이 채우고 무엇이 거슬리며, 사회 속 어디에 서 계신지. <b>한 번 읽으면 그대로 남습니다.</b></p>'
+        + '<button class="btn" id="btnProfileBuy">원국 정독 열기</button>';
+      const pb = card.querySelector('#btnProfileBuy');
+      if (pb) pb.onclick = () => { try { ChaeksaPay.buy('wongook'); } catch (e) { go('me'); } };
+      return;
+    }
+    // 산 뒤에도 **누르셔야 굽는다** — 화면을 여는 것만으로 원가가 나가면 안 된다.
     card.innerHTML = 머리
       + '<p class="hint">여덟 글자와 대운을 좌장 태윤이 한 번에 읽어 드립니다. 한 번 읽으면 그대로 남습니다.</p>'
       + '<button class="btn" id="btnProfileAsk">좌장에게 청하기</button>';
