@@ -2123,6 +2123,32 @@
   // ───── 천직 — 천직첩 ─────
   let jikFor = null;
   function renderJikcheop() {
+  /** 官을 따라간 네 축을 펼친다(docs/27 영역관제).
+   *  의논에서는 칸이 없어 뚜렷한 하나둘만 말한다 — **여기서는 넷을 다 편다.**
+   *  계산은 typecard.영역축() 한 곳에 있다. 여기서는 그리기만 한다. */
+  function 그림영역(R) {
+    const T = window.ChaeksaTypecard, wrap = $('yeongList'), card = $('yeongCard');
+    if (!T || !T.영역축 || !wrap || !card) return;
+    let F = null; try { F = T.간명자료(R, new Date()); } catch (e) { return; }
+    const 축 = T.영역축((F.자평진전 || {}).힘, (F.천직 || {}).축 || '');
+    if (!축.length) { card.classList.add('hide'); return; }
+    const 이름표 = { 비겁: '자리와 나의 크기', 식상: '내놓는 것과 자리',
+                     재성: '벌이와 자리', 인성: '자리가 돌려주는 것',
+                     관없음: '아직 자리가 안 나왔습니다' };
+    const 관계 = { 비겁: '官剋我', 식상: '食傷剋官', 재성: '財生官', 인성: '官生印', 관없음: '' };
+    wrap.innerHTML = 축.map((a, i) => {
+      const 셈 = a.살아있나 ? '' : '<span class="hint" style="font-size:11px"> · 겉으로는 안 나와 있어요</span>';
+      const 표 = (i === 0 && a.이름 !== '관없음')
+        ? '<span class="hint" style="font-size:11px;font-weight:700"> · 가장 뚜렷한 축</span>' : '';
+      return '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
+        + '<div style="font-weight:700;font-size:13.5px">' + esc(이름표[a.이름] || a.이름)
+        + (관계[a.이름] ? '<span class="hint" style="font-weight:400;font-size:11px"> ' + 관계[a.이름] + '</span>' : '')
+        + 표 + 셈 + '</div>'
+        + '<div style="margin-top:4px;line-height:1.62">' + esc(a.말) + '</div></div>';
+    }).join('');
+    card.classList.remove('hide');
+  }
+
     const T = window.ChaeksaTypecard; if (!T || !$('jikSvg')) return;
     if (jikFor === R) return;
     $('jikWrap').classList.add('hide'); $('jikNote').textContent = '';
@@ -2138,6 +2164,7 @@
         const fl = $('jikFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
         $('jikWrap').classList.remove('hide');
         $('jikNote').textContent = v.key + ' \u00b7 ' + v.name + ' \u2014 지어낸 사주 ' + v.n.toLocaleString() + '개 중 같은 유형 ' + v.share + '%';
+        그림영역(R);
         $('btnJikShare').onclick = async () => {
           const b = $('btnJikShare'); b.disabled = true; b.textContent = '만드는 중\u2026';
           try {
@@ -2430,7 +2457,7 @@
   // 대던 것을 실제 원인 글자로 고쳤고, 보좌 빈 칸에서 문장이 사라지던 것도 풀었다.
   // v17 (2026-08-31) — 변주 고르는 법이 바뀌었다(자리별로 독립, 씨앗은 여덟 글자).
   // 이미 조립된 의논은 옛 방식으로 뽑힌 말이라 다시 짠다. 조립기라 공짜다.
-  const GM_VER = 'v17';
+  const GM_VER = 'v18';   // v18 — 영역관제(docs/27): 존재→위치 · 처방→서술 · 官 네 축
   // 키에 **성별과 분**이 빠져 있었다. 성별은 배우자성을 가르고(남=재성·여=관성)
   // 분은 시진 경계를 가르므로, 같은 연월일시라도 의논이 다르다.
   // 관문을 내린 뒤로 「이 생일 저 생일 넣어보기」가 기본 동작이 되므로

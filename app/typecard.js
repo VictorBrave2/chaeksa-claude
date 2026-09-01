@@ -3288,11 +3288,64 @@
       비겁: '뚝심은 사람으로 메운다', 식상: '표현·산출은 훈련해야 는다',
       재성: '받아낼 돈은 남에게 안 맡긴다', 관성: '규칙과 마감은 장치로 걸어둔다',
       인성: '기초 공부는 미루면 발목 잡는다' }[low]);
-    const l4 = '어울리는 일 — ' + row[2];
+    // **처방이 아니라 서술이다**(docs/27 아홉). 직업은 이용자가 정한다.
+    const l4 = '이런 자리가 보이는 곳 — ' + row[2];
     return { key: ax.key, name: row[0], note: row[1], jobs: row[2], group: ax.group, elem: ax.elem,
              share, n: sample && sample.n ? sample.n : 0, lines: [l1, l2, l3, l4] };
   }
 
+
+  /** 영역 네 축 — 官과 나머지 넷의 관계(docs/27 영역관제).
+   *
+   *  **여기가 한 곳이다.** 조립기(chaeksadan)와 職 탭이 각자 갖고 있으면 반드시 어긋난다
+   *  (enginecheck 머리글: 「공식을 두 벌 두면 반드시 어긋난다」).
+   *
+   *  십신은 다섯이고 그중 하나가 官이니 **넷이면 빠짐도 겹침도 없다.**
+   *  새 상수는 없다 — 기울기는 두 힘의 비다(docs/13 「輕重은 비교로만」).
+   *
+   *  힘은 **천간 투출** 기준이다. 영역은 드러난 자리를 말하므로 투출로 읽는 것이 맞다.
+   *  다만 천직의 주력 축은 지장간까지 세므로 기준이 다르다 — 주력이라 한 축은
+   *  「겉에 없음」으로 말하지 않는다(3,000명 중 25명이 모순을 받았다).
+   */
+  function 영역축(힘, 주력) {
+    if (!힘) return [];
+    const 관 = 힘.관성 || 0, 재 = 힘.재성 || 0, 식 = 힘.식상 || 0,
+          인 = 힘.인성 || 0, 겁 = 힘.비겁 || 0;
+    if (관 <= 0) {
+      return [{ 이름: '관없음', 기울기: 1, 살아있나: false,
+        말: 식 > 0 && 재 > 0
+          ? '맡겨진 자리는 아직 없는데 만들어 내는 힘이 있습니다 — 내놓은 것이 돈이 되고, 그 돈이 자리가 되는 쪽이에요.'
+        : 재 > 0
+          ? '자리보다 벌이가 먼저 붙는 쪽입니다. 밑천이 자리를 데려옵니다.'
+          : '자리도 밑천도 아직 겉으로 안 나와 있습니다. 없다는 뜻이 아니라 때가 데려다주는 쪽이라, 그 해를 아는 것이 남보다 중요합니다.' }];
+    }
+    const 축 = [];
+    const 재기 = (이름, 상대, 왼, 오른, 없을때) => {
+      if (상대 > 0) {
+        축.push({ 이름, 상대, 기울기: Math.abs(관 - 상대) / Math.max(관, 상대),
+                  살아있나: true, 말: 상대 >= 관 ? 왼 : 오른 });
+      } else if (없을때 && 이름 !== 주력) {
+        축.push({ 이름, 상대: 0, 기울기: 0.28, 살아있나: false, 말: 없을때 });
+      }
+    };
+    재기('비겁', 겁,   // 官剋我 — 자리와 나의 크기
+      '맡은 것보다 공주님이 더 큽니다. 자리가 공주님을 다 못 담는 쪽이에요.',
+      '맡은 것이 공주님보다 무겁습니다. 감당하는 데 힘이 실리는 자리예요.');
+    재기('식상', 식,   // 食傷剋官 — 내놓는 것과 자리의 마찰
+      '내놓는 힘이 자리보다 셉니다. 말과 재주가 앞설수록 자리가 흔들리는 쪽이에요.',
+      '내놓는 것이 자리를 흔들지는 않습니다. 자리 안에서 가는 쪽이에요.',
+      '내놓는 힘이 겉으로는 안 나와 있습니다. 자리를 흔들 것이 밖에 없는 쪽이에요.');
+    재기('재성', 재,   // 財生官 — 돈과 자리의 연동
+      '버는 것이 그대로 자리를 키웁니다. 돈과 자리가 같이 가는 쪽이에요.',
+      '자리는 섰는데 그것을 키울 밑천이 얇습니다. 자리가 먼저고 벌이가 뒤에 오는 쪽이에요.',
+      '자리는 있는데 그것을 키울 밑천이 겉에 안 나와 있습니다. 자리와 벌이가 따로 노는 쪽이에요.');
+    재기('인성', 인,   // 官生印 — 자리가 나에게 돌려주는가
+      '맡은 것이 공주님 안에 쌓입니다. 경력이 되고 명분이 되는 쪽이에요.',
+      '맡은 것이 쌓이기는 하는데 자리가 더 무겁습니다. 받는 것보다 내는 것이 많은 쪽이에요.',
+      '받쳐 줄 것이 겉으로는 안 나와 있습니다. 맡은 것이 밖으로 나가고 안에는 덜 쌓이는 쪽이에요.');
+    축.sort((a, b) => b.기울기 - a.기울기);
+    return 축;
+  }
 
   // ── 감정첩 3종 공통 판 ──
   // 녹패·도화첩·천직첩이 각자 좌표를 쓰다가 줄이 하단 문구 아래로 밀려나거나
@@ -3851,5 +3904,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축 };
 })(window);
