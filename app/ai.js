@@ -63,7 +63,10 @@
   }
 
   // 원국 해석 프로필 — 처음 한 번만 깊게(effort high) 분석해서 고정. 이후 모든 답변은 이 위에서.
-  function profileKey(r) { return `chaeksa.profile.ai.${r.input.year}${r.input.month}${r.input.day}.${r.input.hour}.${r.input.gender}`; }
+  // 열쇠에 판(v2)을 붙인다 — **잘린 채 굳은 프로필을 버리기 위해서다.**
+  // maxTokens 1200 에 effort:high 라 생각 토큰이 천장을 먹고 본문이 「주의점: 남」에서
+  // 끊겼는데, strict 가 없어 그대로 캐시에 굳었다(2026-08-31).
+  function profileKey(r) { return `chaeksa.profile.ai.v2.${r.input.year}${r.input.month}${r.input.day}.${r.input.hour}.${r.input.gender}`; }
   function getProfile(r) { return localStorage.getItem(profileKey(r)); }
   async function buildProfile(r, today) {
     const cached = getProfile(r); if (cached) return cached;
@@ -79,7 +82,11 @@ ${chartText(r, today)}`;
 강점: 
 주의점: 
 현재대운: (지금 대운이 이 사람에게 어떤 시기인지)`;
-    const text = await call(sys, [{ role: 'user', content: q }], { task: 'profile', maxTokens: 1200, effort: 'high' });
+    // **effort:high 는 생각 토큰이 max_tokens 를 같이 먹는다.** 1200 은 생각만으로 차서
+    // 본문이 잘렸다. 천장은 목표가 아니라 천장이므로 올려도 안 쓰면 안 쓴다(465줄 각주).
+    // strict 를 켜 **잘리면 캐시에 안 굳고 던진다** — 프로필은 한 번 굳으면 평생 간다.
+    const text = await call(sys, [{ role: 'user', content: q }],
+      { task: 'profile', maxTokens: 4000, effort: 'high', strict: true });
     localStorage.setItem(profileKey(r), text);
     return text;
   }

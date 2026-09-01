@@ -3,7 +3,7 @@
  * HTML이 캐시되면 사용자가 계속 옛 버전을 쓰게 된다.
  * 나머지 자원은 URL에 버전이 붙어 있어 네트워크 우선 + 캐시 폴백으로 충분하다.
  */
-const CACHE = 'chaeksa-v504';
+const CACHE = 'chaeksa-v505';
 const FILES = ['./', './index.html', './privacy.html', './terms.html', './taekil.html', './manifest.json', './og.jpg', './favicon.ico', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
