@@ -1926,8 +1926,8 @@
             + E.STEMS[손] + '(' + E.STEMS_KO[손] + ')' + 이가(E.STEMS_KO[손]) + ' 합으로 먼저 채갑니다. 그 글자가 오는 '
             + 그글자해.join('·') + '년은 스치기 쉬운 해입니다'
             + (둘째.겹 ? ' — 다만 ' + 그글자해[0] + '년은 대운 하늘에 이미 ' + E.STEMS[st]
-              + '이 떠 있어, 세운의 ' + E.STEMS[st] + '만으로 두 번이 찹니다: 첫 글자는 소모되고 둘째 글자가 들어오는, 해 전체가 뚫리는 해입니다.'
-            : 둘째.달들.length ? ' — 다만 두 번 겹치면 뚫립니다: ' + 그글자해[0] + '년의 ' + 둘째.달들.join('·')
+              + 조(E.STEMS[st], '이', '가') + ' 떠 있어, 세운의 ' + E.STEMS[st] + '만으로 두 번이 찹니다. 첫 글자는 소모되고 둘째 글자가 들어오는, 해 전체가 뚫리는 해입니다.'
+            : 둘째.달들.length ? ' — 다만 두 번 겹치면 뚫립니다. ' + 그글자해[0] + '년의 ' + 둘째.달들.join('·')
               + '월은 월간에 ' + E.STEMS[st] + 조(E.STEMS[st],'이','가') + ' 한 번 더 떠서, 첫 글자는 소모되고 둘째 글자가 들어옵니다.' : '.'));
         }
       } else if (그글자해.length) {
@@ -1947,7 +1947,7 @@
     // 4) 삼합 완성 결론 — 가장 큰 응기
     const 삼합해 = 해들(r => r.세부 && r.세부.삼합완성);
     if (삼합해.length) 문.push('가장 큰 응기 — ' + 삼합해.join('·') + '년에는 대운과 세운이 공주님의 배우자 자리('
-      + E.BRANCHES[db] + ')와 삼합 한 벌을 완성합니다. 고전이 꼽는 혼인의 해입니다.');
+      + E.BRANCHES[db] + ')' + 조(E.BRANCHES[db], '과', '와') + ' 삼합 한 벌을 완성합니다. 고전이 꼽는 혼인의 해입니다.');
     // 4.5) 진정한 사랑 결론 — 배우자궁에 앉은 글자와 그를 데려오는 방아쇠
     try {
       const 궁본기 = (E.HIDDEN[db] || [])[0];
@@ -1976,14 +1976,14 @@
           문.push('배우자 방의 결론 — 방에 앉은 ' + E.STEMS[궁본기] + '(' + E.STEMS_KO[궁본기]
             + ')' + 조(E.STEMS_KO[궁본기], '이', '가') + ' 하늘에도 떠 있는 사주입니다. 그래서 ' + E.STEMS[방아쇠] + '(' + E.STEMS_KO[방아쇠]
             + ')의 사람이 방에 들어오려 하면 하늘의 ' + E.STEMS[궁본기]
-            + '과 합해 변질됩니다 — 들어왔다 나가고, 나갔다 들어오는 회전문. 인연이 자리를 못 잡던 구조적 이유입니다.'
+            + 조(E.STEMS[궁본기], '과', '와') + ' 합해 변질됩니다 — 들어왔다 나가고, 나갔다 들어오는 회전문. 인연이 자리를 못 잡던 구조적 이유입니다.'
             + (지킴 != null ? ' 이 회전문을 타지 않는 유일한 글자는 ' + E.STEMS[지킴] + '(' + E.STEMS_KO[지킴]
               + '·' + 형말(R, 지킴) + ') — 그 통로가 방을 끝내 지킵니다.' : '')
             + (방아쇠해.length && 둘째.겹 ? ' 그리고 ' + 방아쇠해[0] + '년은 대운 하늘에 이미 ' + E.STEMS[방아쇠]
-              + '이 떠 있어 세운만으로 두 번이 찹니다 — 해 전체가 방아쇠를 당기는 해입니다.'
-            : 방아쇠해.length && 둘째.달들.length ? ' 그리고 ' + E.STEMS[방아쇠] + 조(E.STEMS[방아쇠],'이','가') + ' 굳이 들어온다면 두 번 겹쳐야 합니다 — '
-              + 방아쇠해[0] + '년 중에서도 월간에 ' + E.STEMS[방아쇠] + 조(E.STEMS[방아쇠],'이','가') + ' 한 번 더 뜨는 ' + 둘째.달들.join('·')
-              + '월: 첫 글자는 원국이 합으로 소모하고, 둘째 글자가 방아쇠를 당깁니다.' : ''));
+              + 조(E.STEMS[방아쇠], '이', '가') + ' 떠 있어 세운만으로 두 번이 찹니다 — 해 전체가 방아쇠를 당기는 해입니다.'
+            : 방아쇠해.length && 둘째.달들.length ? ' 그리고 ' + E.STEMS[방아쇠] + 조(E.STEMS[방아쇠],'이','가') + ' 굳이 들어온다면 두 번 겹쳐야 합니다. '
+              + 방아쇠해[0] + '년 중에서도 월간에 ' + E.STEMS[방아쇠] + 조(E.STEMS[방아쇠],'이','가') + ' 한 번 더 뜨는 달이 ' + 둘째.달들.join('·')
+              + '월입니다. 첫 글자는 원국이 합으로 소모하고, 둘째 글자가 방아쇠를 당깁니다.' : ''));
         }
       }
     } catch (e) {}
@@ -3370,21 +3370,26 @@
         축.push({ 이름, 상대: 0, 기울기: 0.28, 살아있나: false, 말: 없을때 });
       }
     };
+    // 네 축이 연달아 나오는 화면이라 **끝맺음을 겹치지 않게 돌린다.**
+    // 열한 줄이 전부 「~쪽이에요/자리예요」로 끝나 판당 4.08회였다(3000판 실측).
+    // 「쪽」을 뗀다고 판정이 세지는 것은 아니다 — 이 문장들은 존재가 아니라 관계를
+    // 말하므로 그대로 반증 가능하다(docs/27 아홉). 「쪽」은 확신의 완충이지
+    // 반증 가능성의 장치가 아니다. 그래서 몇 줄만 남기고 나머지는 곧게 편다.
     재기('비겁', 겁,   // 官剋我 — 자리와 나의 크기
       '맡은 것보다 공주님이 더 큽니다. 자리가 공주님을 다 못 담는 쪽이에요.',
-      '맡은 것이 공주님보다 무겁습니다. 감당하는 데 힘이 실리는 자리예요.');
+      '맡은 것이 공주님보다 무겁습니다. 감당하는 데 힘이 실립니다.');
     재기('식상', 식,   // 食傷剋官 — 내놓는 것과 자리의 마찰
-      '내놓는 힘이 자리보다 셉니다. 말과 재주가 앞설수록 자리가 흔들리는 쪽이에요.',
-      '내놓는 것이 자리를 흔들지는 않습니다. 자리 안에서 가는 쪽이에요.',
-      '내놓는 힘이 겉으로는 안 나와 있습니다. 자리를 흔들 것이 밖에 없는 쪽이에요.');
+      '내놓는 힘이 자리보다 셉니다. 말과 재주가 앞설수록 자리가 흔들립니다.',
+      '내놓는 것이 자리를 흔들지는 않습니다. 자리 안에서 가는 편이에요.',
+      '내놓는 힘이 겉으로는 안 나와 있습니다. 자리를 흔들 것이 밖에 없습니다.');
     재기('재성', 재,   // 財生官 — 돈과 자리의 연동
-      '버는 것이 그대로 자리를 키웁니다. 돈과 자리가 같이 가는 쪽이에요.',
-      '자리는 섰는데 그것을 키울 밑천이 얇습니다. 자리가 먼저고 벌이가 뒤에 오는 쪽이에요.',
+      '버는 것이 그대로 자리를 키웁니다. 돈과 자리가 같이 갑니다.',
+      '자리는 섰는데 그것을 키울 밑천이 얇습니다. 자리가 먼저고 벌이가 뒤에 옵니다.',
       '자리는 있는데 그것을 키울 밑천이 겉에 안 나와 있습니다. 자리와 벌이가 따로 노는 쪽이에요.');
     재기('인성', 인,   // 官生印 — 자리가 나에게 돌려주는가
-      '맡은 것이 공주님 안에 쌓입니다. 경력이 되고 명분이 되는 쪽이에요.',
-      '맡은 것이 쌓이기는 하는데 자리가 더 무겁습니다. 받는 것보다 내는 것이 많은 쪽이에요.',
-      '받쳐 줄 것이 겉으로는 안 나와 있습니다. 맡은 것이 밖으로 나가고 안에는 덜 쌓이는 쪽이에요.');
+      '맡은 것이 공주님 안에 쌓입니다. 경력이 되고 명분이 됩니다.',
+      '맡은 것이 쌓이기는 하는데 자리가 더 무겁습니다. 받는 것보다 내는 것이 많은 편이에요.',
+      '받쳐 줄 것이 겉으로는 안 나와 있습니다. 맡은 것이 밖으로 나가고 안에는 덜 쌓입니다.');
     축.sort((a, b) => b.기울기 - a.기울기);
     return 축;
   }
@@ -4064,5 +4069,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 조 };
 })(window);
