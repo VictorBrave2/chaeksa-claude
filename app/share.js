@@ -177,7 +177,11 @@
     // 얼굴 — 정사각 원본을 폭에 맞춰 덮고 위쪽(눈높이)을 남긴다.
     const IH = 800;
     const im = v.초상 ? await 그림(v.초상) : null;
-    if (im && im.width) {
+    if (im && im.width > im.height) {
+      // 가로 컷(say-*.webp, 3:2) — 책사가 세로 가운데 띠에 있으니 높이에 맞춰 덮고 가운데를 남긴다
+      const sc = IH / im.height, dw = im.width * sc;
+      ctx.drawImage(im, -(dw - W) / 2, 0, dw, IH);
+    } else if (im && im.width) {
       const sc = W / im.width;
       const dh = im.height * sc;
       // 32% 지점을 화면 중앙에 두는 CSS object-position 과 같은 눈높이

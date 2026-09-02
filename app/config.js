@@ -43,10 +43,15 @@ window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 �
  * 흰 수염 노인으로 그려져 있던 것을 내렸다. 새 인물이 도착하기 전까지
  * 소현은 인장(運)만으로 선다. 빈 액자는 안 뜬다. */
 window.CHAEKSA_FACE_VAR = {
-  japyung: [1, 2, 3, 4], gungtong: [1, 2, 3, 4], eokbu: [1, 2, 3],
+  japyung: [1, 2, 3, 4], gungtong: [1, 2, 3, 4], eokbu: [1, 2, 3, 4],
   gungwi: [1, 2, 3, 4], inyeon: [1, 2, 3, 4], jaemul: [1, 2, 3, 4],
-  cheonjik: [1, 2, 3, 4], unro: [1, 2, 3], hyeopgi: [1, 2, 3, 4, 5], jwajang: [1, 2, 3],
+  cheonjik: [1, 2, 3, 4], unro: [1, 2, 3, 4], hyeopgi: [1, 2, 3, 4, 5], jwajang: [1, 2, 3, 4],
 };   // 2026-09-03 소현 셋·궁위 셋째 도착(ChatGPT 로 뽑음) — 소현이 처음으로 얼굴을 얻었다
+     // 2026-09-03 밤 — 형준·태윤·소현 넷째(듣는 얼굴) 도착. 열 명 전부 네 벌 이상.
+
+/* 「이 한마디 간직하기」 카드에 쓰는 말 건네는 컷(art/say-<키>.webp, 3:2).
+ * 있는 키만 적는다. 없는 책사는 초상으로 물러난다. 2026-09-03 아홉 장 도착 — 검명(hyeopgi)만 아직 없다. */
+window.CHAEKSA_SAY_ART = ['jwajang', 'inyeon', 'gungtong', 'jaemul', 'unro', 'cheonjik', 'eokbu', 'japyung', 'gungwi'];
 
 /* 회의 장면(council-<계절>[-벌].webp)이 계절마다 몇 벌인가.
  * 봄 1 · 여름 1 · 가을 2 · 겨울 2 가 지금 전부다. */

@@ -601,7 +601,9 @@
           // shareReady 때문에 다시 안 그려서 한마디 카드를 원국이라며 내보낸다.
           const cv = document.createElement('canvas');
           await ChaeksaShare.drawSay(cv, {
-            초상: (window.CHAEKSA_ART && 초상(키0, 0)) ? 초상(키0, 0) + '?v=' + window.CHAEKSA_ART : '',
+            // 말을 건네는 컷(say-<키>.webp)이 있으면 그것을, 없으면 초상을 쓴다 — config.js CHAEKSA_SAY_ART
+            초상: (window.CHAEKSA_SAY_ART || []).includes(키0) ? 'art/say-' + 키0 + '.webp?v=' + (window.CHAEKSA_ART || 1)
+              : (window.CHAEKSA_ART && 초상(키0, 0)) ? 초상(키0, 0) + '?v=' + window.CHAEKSA_ART : '',
             이름: 이름of(이름0), 직함: 직함of(이름0), 말: 말0,
             공주: nim(), 간지: f.pillar(tf.day) + '일',
           });
