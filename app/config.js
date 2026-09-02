@@ -21,6 +21,9 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 //   책사단 세계의 연애 삽화가 도착하면 'all' 로 되돌린다(프롬프트: marketing/삽화-연희-복붙.html).
 //   끄면 파라메트릭 SVG 컷으로 돌아간다 — 빈 자리가 되지 않는다.
 window.CHAEKSA_ART = 'wealth';
+// 돌아온 사람 세기 (docs/29 여덟). server/migrate-16 을 Supabase 에서 돌린 **뒤에** 1 로.
+// 먼저 켜면 모르는 열이라며 방문 기록 전체가 거절된다.
+window.CHAEKSA_TRACK_VID = 0;
 window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 돌아오면 그대로 쓴다
 
 /* 책사 초상 — **있는 것만 적는다.** 목록의 숫자가 곧 파일 꼬리다.

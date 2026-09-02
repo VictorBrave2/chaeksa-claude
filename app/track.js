@@ -3,7 +3,8 @@
  * 블로그를 올려도 그중 몇 명이 실제로 사이트에 왔는지 알 방법이 없었다.
  * 그 하나만 세기 위한 코드다.
  *
- * 저장하는 것 — 언제 / 어디서 왔나 / 어느 화면 / 이 브라우저의 첫 방문인가.
+ * 저장하는 것 — 언제 / 어디서 왔나 / 어느 화면 / 이 브라우저의 첫 방문인가 /
+ *              (스위치를 켜면) 브라우저가 스스로 만든 무작위 id — 돌아온 사람을 세기 위해서다.
  * 저장하지 않는 것 — IP, 사용자 에이전트, 계정, 화면 크기, 그 밖의 모든 것.
  *
  * 실패해도 앱은 아무 영향을 받지 않는다. 통계 때문에 서비스가 멈추면 안 된다.
@@ -62,11 +63,26 @@
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
     if (tooSoon()) return;
 
-    var body = JSON.stringify({
+    var row = {
       source: sourceOf(),
       path: String(location.pathname || '/').slice(0, 120),
       first_time: firstTime(),
-    });
+    };
+    // 돌아온 사람 (docs/29 여덟) — 브라우저가 스스로 만든 무작위 id.
+    // IP·UA·계정과 무관하고 지우면 새 사람이다. 열이 없는 표에 보내면 PostgREST 가
+    // 기록 전체를 거절하므로 migrate-16 을 돌린 뒤 config.js 스위치로 켠다.
+    if (global.CHAEKSA_TRACK_VID) {
+      try {
+        var vid = localStorage.getItem('chaeksa.vid');
+        if (!vid) {
+          var a = new Uint8Array(12); (global.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach(function (_, i) { a[i] = Math.random() * 256; });
+          vid = Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+          localStorage.setItem('chaeksa.vid', vid);
+        }
+        row.vid = vid;
+      } catch (e) {}
+    }
+    var body = JSON.stringify(row);
     try {
       fetch(CFG.url + '/rest/v1/visits', {
         method: 'POST',
