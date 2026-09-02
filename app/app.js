@@ -729,9 +729,8 @@
           try {
             if (window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month') && T.myDays) {
               const v = T.myDays(R, today.getFullYear(), today.getMonth() + 1);
-              // 「풀리는 날」이 열아홉 날이면 소음이다(실측 19/30). 홈에는 점수 위 셋만, 날짜순으로.
-              const 셋 = v.좋은.slice().sort((a, b) => (b.점수 || 0) - (a.점수 || 0)).slice(0, 3).sort((a, b) => a.일 - b.일);
-              줄 = (셋.length ? '가장 풀리는 날 ' + 셋.map(r => r.일).join('·') + '일' : '크게 열리는 날이 없는 달') + ' · ' + st.head;
+              // myDays 의 「좋은」이 달 안의 최고 띠(평균 3일)라 그대로 건다. 위 셋만 걸던 임시 처방은 걷었다.
+              줄 = (v.좋은.length ? '풀리는 날 ' + v.좋은.map(r => r.일).join('·') + '일' : '크게 열리는 날이 없는 달') + ' · ' + st.head;
             }
           } catch (e) {}
           set('tiMonthSub', 줄); } } catch (e) {}
