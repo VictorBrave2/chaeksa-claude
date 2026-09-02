@@ -14,8 +14,26 @@
   // 옛 프로필에는 대체 이름이 '당신'으로 저장돼 있다. 둘 다 대체 이름으로 읽는다.
   // ※ 일괄 치환이 이 검사를 먹어 두 갈래가 똑같아진 적이 있다(2026-08-30) —
   //   그러면 옛 손님이 「당신님」으로 불린다. 여기 '당신'은 치환하면 안 된다.
-  const nim = () => (profile.name === '공주님' || profile.name === '당신')
-    ? '공주님' : profile.name + '님';
+  // 호칭 — 여성·성별 모름은 「공주님」, 남자 명식은 「도련님」(2026-09-03 사장님 「남자 명식은 공주님 뗄 수 있지 않나」).
+  // 글은 한 벌만 둔다(공주님 원칙 — 남성용으로 표현을 약화하지 않는다). 화면에 찍힌 「공주님」 글자만 바꾼다.
+  // 두 호칭 다 ㅁ 받침이라 조사(이·을·께·의)가 그대로다.
+  const 호칭 = () => (profile && profile.gender === 'M' && !profile.genderUnknown) ? '도련님' : '공주님';
+  const nim = () => (profile.name === '공주님' || profile.name === '당신' || profile.name === '도련님')
+    ? 호칭() : profile.name + '님';
+  (function () {
+    const fix = (n) => {
+      const want = 호칭(), other = want === '공주님' ? '도련님' : '공주님';
+      if (n.nodeType === 3 && n.nodeValue.includes(other)) n.nodeValue = n.nodeValue.split(other).join(want);
+    };
+    const walk = (root) => { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) fix(n); };
+    new MutationObserver((ms) => {
+      for (const m of ms) {
+        if (m.type === 'characterData') fix(m.target);
+        m.addedNodes.forEach(a => { if (a.nodeType === 3) fix(a); else if (a.nodeType === 1) walk(a); });
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    window.호칭갱신 = () => walk(document.body);   // 프로필이 바뀌면 이미 찍힌 글자도 되돌린다
+  })();
   const nimSafe = () => esc(nim());
   const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
 
@@ -441,6 +459,7 @@
   function start(p) {
     if (!p.name) p.name = '공주님';
     profile = p; R = E.calc(p);
+    if (window.호칭갱신) window.호칭갱신();   // 남자 명식이면 「공주님」→「도련님」, 되돌아오면 반대로
     $('landing').classList.add('hide'); $('formCard').classList.add('hide');
     $('btnSettings').classList.remove('hide');
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
