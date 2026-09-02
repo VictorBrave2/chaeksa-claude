@@ -405,6 +405,7 @@
     if (tab === 'naepyeon') renderNaepyeon();
     if (tab === 'jichim') renderJichim();
     if (tab === 'jikcheop') renderJikcheop();
+    if (tab === 'gwangye') renderGwangye();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
     if (tab === 'memo') renderMemo();
@@ -747,6 +748,12 @@
       try { const c = T.career(R, null), y = T.영역해 ? T.영역해(R, today.getFullYear(), 10) : null;
         set('tiJikBig', (y && y.첫해) ? y.첫해.해 + '년' : c.name);
         set('tiJikSub', (y && y.첫해) ? y.말 + ' · ' + c.name + ' 쪽' : '사회 속 어디에 서 계신지'); } catch (e) {}
+      // 곁의 사람들 — 겉에 선 사람 수를 배지로, 겉에 선 이름을 부제로(docs/30)
+      try { const gw = T.관계지도 ? T.관계지도(R, today.getFullYear()) : null;
+        if (gw) { const 겉 = gw.사람들.filter(s => s.위치 === '겉');
+          set('tiGwBig', '겉에 ' + 겉.length);
+          set('tiGwSub', 겉.length ? 겉.map(s => s.이름.split('·')[0]).join('·') + '이 드러나 서 있습니다'
+                                    : '겉에 드러난 사람이 없습니다 — 속에 있거나 운이 데려옵니다'); } } catch (e) {}
       try { const l = T.love(R, new Date(), null); // l.key 는 686 유형 코드다 — 앞 두 글자를 그냥 찍으면 공주님께는 「一心」 같은
         // 뜻 없는 내부 코드가 박힌다. 오른쪽 칸은 비워 두고 설명으로 말한다.
         set('tiDoBig', ''); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
@@ -2371,6 +2378,59 @@
   }
 
   // ───── 연애·인연 — 도화첩 ─────
+  // ───── 關 · 관계지도 (docs/30) ─────
+  // 지도는 궁위 배치다 — 가운데가 공주님, 위가 연주(초년) · 왼쪽 월주(자람) · 오른쪽 시주(말년) · 아래 일지(배우자).
+  // 사람은 제 글자가 선 궁 쪽에 앉는다. 겉은 진하게, 속은 점선, 없음은 흐리게, 묶임은 사슬 표시.
+  let gwFor = null;
+  function renderGwangye() {
+    const T = window.ChaeksaTypecard; if (!T || !T.관계지도 || !$('gwMap') || !R) return;
+    if (gwFor === R) return;
+    let v; try { v = T.관계지도(R, today.getFullYear()); } catch (e) { return; }
+    gwFor = R;
+    // 위·아래 궁은 이름표 자리(±52)까지 viewBox 안에 들어오게 안쪽으로 — 52/248 이면 「초년」「배우자」가 잘렸다
+    const 궁좌 = { year: [180, 66], month: [58, 150], hour: [302, 150], day: [180, 234], none: [180, 150] };
+    const 색 = { 겉: 'var(--accent)', 묶임: 'var(--ink3)', 속: 'var(--ink3)', 없음: 'var(--line2)' };
+    // 같은 궁에 여럿이면 그 궁 둘레로 흩는다
+    const 무리 = {}; v.사람들.forEach(s => { const k = s.궁 || 'none'; (무리[k] = 무리[k] || []).push(s); });
+    let 점 = '';
+    Object.keys(무리).forEach(k => {
+      const [cx, cy] = 궁좌[k] || 궁좌.none, n = 무리[k].length;
+      무리[k].forEach((s, i) => {
+        const a = (Math.PI * 2 * i) / Math.max(n, 1) - Math.PI / 2, r = n > 1 ? 34 : 0;
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        const 겉 = s.위치 === '겉', 없 = s.위치 === '없음';
+        점 += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})">`
+          + `<circle r="${겉 ? 15 : 12}" fill="${겉 ? 색.겉 : 'none'}" stroke="${색[s.위치]}" stroke-width="${겉 ? 0 : 1.6}"`
+          + (s.위치 === '속' ? ' stroke-dasharray="3 2.5"' : '') + (없 ? ' opacity=".55"' : '') + '/>'
+          + (s.위치 === '묶임' ? '<text y="4" text-anchor="middle" font-size="11" fill="var(--ink3)">鎖</text>' : '')
+          + `<text y="${겉 ? 30 : 27}" text-anchor="middle" font-size="10.5" fill="${없 ? 'var(--ink3)' : 'var(--ink)'}"${없 ? ' opacity=".7"' : ''}>${esc(s.이름.split('·')[0])}</text>`
+          + '</g>';
+      });
+    });
+    const 궁표 = Object.keys(궁좌).filter(k => k !== 'none').map(k => {
+      const [x, y] = 궁좌[k]; const 이름 = { year: '초년', month: '자람', hour: '말년', day: '배우자' }[k];
+      // 한 궁에 여럿이면 34px 로 흩어지므로 이름표는 그 바깥(60px)에 둔다 — 안쪽에 두니 「자람」이 점 위에 앉았다
+      const dy = k === 'year' ? -52 : k === 'day' ? 54 : -62;
+      return `<text x="${x}" y="${y + dy}" text-anchor="middle" font-size="9.5" fill="var(--ink3)" letter-spacing=".1em">${이름}</text>`;
+    }).join('');
+    $('gwMap').innerHTML = `<svg viewBox="0 0 360 300" style="width:100%;max-width:420px;display:block;margin:0 auto">
+      <circle cx="180" cy="150" r="120" fill="none" stroke="var(--line2)" stroke-dasharray="2 4"/>
+      ${궁표}
+      <circle cx="180" cy="150" r="20" fill="var(--bg2)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="180" y="154" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink)">나</text>
+      ${점}
+    </svg>
+    <p class="hint" style="margin:6px 0 0;text-align:center">진한 점 드러남 · 점선 속에 · 흐린 점 안 나옴 · 鎖 묶임</p>`;
+    const 순 = { 겉: 0, 묶임: 1, 속: 2, 없음: 3 };
+    $('gwList').innerHTML = v.사람들.slice().sort((a, b) => 순[a.위치] - 순[b.위치]).map(s =>
+      '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
+      + '<div style="font-weight:700;font-size:13.5px">' + esc(s.이름)
+      + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(s.신들.join('·')) + ' · ' + esc(s.위치)
+      + (s.무게 ? ' · ' + esc(s.무게) : '') + '</span></div>'
+      + '<div style="margin-top:4px;line-height:1.62">' + esc(s.말) + '</div></div>').join('');
+    $('gwFoot').textContent = '잣대 공개 — ' + v.잣대;
+  }
+
   // ───── 지칠 때와 채울 때 ─────
   let jcFor = null;
   function renderJichim() {

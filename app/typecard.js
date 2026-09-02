@@ -3435,6 +3435,78 @@
     return { 갈: '맡겨짐', 말: '맡겨지는 자리 쪽입니다 — 받치는 것도 미는 것도 겉에 없이 자리만 홀로 섰어요. 오면 그대로 맡게 되는 쪽입니다.' };
   }
 
+  // ── 관계지도 — 곁의 사람들이 공주님 안에서 어디에 서 있나 (docs/30) ──
+  //
+  // 사람을 좋고 나쁨으로 가르지 않는다. **위치**만 말한다(docs/27 아홉):
+  //   겉    그 글자가 연·월·시 천간에 드러나 서 있다            — 어느 궁에
+  //   속    지장간에만 있다                                    — 조용하다가 그 글자가 오는 해에 드러난다
+  //   없음  겉으로도 속으로도 안 나왔다                        — 「그 사람이 없다」가 아니다. 자리를 안 잡은 것
+  //   묶임  겉에 있으나 합으로 묶였다                          — 있는데 힘을 못 쓴다
+  // 무게는 비교다 — 그 글자의 힘(통근) 대 일간의 힘. 상수 없음(docs/13).
+  // 육친표는 통설이다. **정재=시어머니 · 편관=남편 외 남자**는 유파가 갈린다 — 화면 잣대 줄에 밝힌다.
+  // 표는 여기 한 벌뿐이다. 조립기·화면이 같이 쓴다(docs/30 다섯).
+  const 육친표 = {
+    F: [ ['어머니', ['정인'], '근거의 글자'], ['아버지', ['편재'], '움직이는 돈의 글자이기도 합니다'],
+         ['남편', ['정관'], '자리의 글자이기도 합니다'], ['남편 외 남자·압박하는 윗사람', ['편관'], '통설'],
+         ['시어머니', ['정재'], '통설'], ['자녀', ['식신', '상관'], '내놓는 것의 글자'],
+         ['형제·친구', ['비견'], '나와 같은 기운'], ['경쟁자·동업자', ['겁재'], '나눠 갖는 손'],
+         ['스승·비스듬한 어른', ['편인'], '옆문의 근거'] ],
+    M: [ ['어머니', ['정인'], '근거의 글자'], ['아버지', ['편재'], '움직이는 돈의 글자이기도 합니다'],
+         ['아내', ['정재'], '지키는 돈의 글자이기도 합니다'], ['애인·밖의 인연', ['편재'], '통설'],
+         ['자녀', ['정관', '편관'], '통설'], ['윗사람·자리', ['정관'], '제도의 자리'],
+         ['형제·친구', ['비견'], '나와 같은 기운'], ['경쟁자·동업자', ['겁재'], '나눠 갖는 손'],
+         ['스승·비스듬한 어른', ['편인'], '옆문의 근거'] ],
+  };
+  const 궁말 = { year: '연주(초년의 자리)', month: '월주(자라는 동안의 자리)', day: '일지(배우자 자리)', hour: '시주(말년·자녀의 자리)' };
+
+  function 관계지도(R, fromYear) {
+    const p = R.pillars, ds = p.day.stem, W = E.NATAL_WEIGHT;
+    const 여명 = ((R.input && R.input.gender) || 'M') !== 'M';
+    const 십 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const 자리 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch], [p.day.branch, W.dayBranch]];
+    if (p.hour) 자리.push([p.hour.branch, W.hourBranch]);
+    let 합 = {}; try { 합 = E.natalHap(p) || {}; } catch (e) {}
+    const 일간힘 = 자리.reduce((s, [b, w]) => s + w * E.power(ds, b), 0);
+    const 겉 = ['year', 'month', 'hour'].filter(k => p[k]).map(k => ({ k, st: p[k].stem, g: 십(p[k].stem), 묶: !!합[k] }));
+    const 속 = ['year', 'month', 'day', 'hour'].filter(k => p[k]).map(k => ({ k, gs: (E.HIDDEN[p[k].branch] || []).map(십) }));
+    const y0 = fromYear || new Date().getFullYear();
+    const 사람들 = 육친표[여명 ? 'F' : 'M'].map(([이름, 신들, 뜻]) => {
+      const 밖 = 겉.filter(x => 신들.indexOf(x.g) >= 0);
+      const 산 = 밖.filter(x => !x.묶);
+      const 안 = 속.filter(x => x.gs.some(g => 신들.indexOf(g) >= 0));
+      let 위치, 궁 = null, 힘 = 0;
+      if (산.length) { 위치 = '겉'; 궁 = 산[0].k; 힘 = 산.reduce((s, x) => s + E.stemPower(x.st, 자리), 0); }
+      else if (밖.length) { 위치 = '묶임'; 궁 = 밖[0].k; }
+      else if (안.length) { 위치 = '속'; 궁 = 안[0].k; }
+      else 위치 = '없음';
+      // 그 글자가 하늘로 오는 해 — 열 해 안 첫 해
+      let 해 = null;
+      for (let i = 0; i < 10 && 해 == null; i++) {
+        try { const tf = E.dateFortune(y0 + i, 6, 15); if (신들.indexOf(십(tf.year.stem)) >= 0) 해 = y0 + i; } catch (e) {}
+      }
+      // 괄호 뒤 조사는 이 집 관례대로 괄호 안 낱말(십신)에 맞춘다 — 「글자(정인)이」. 바깥에 맞췄더니 27,000건 중 17,000이 어긋났다.
+      const 끝 = 신들[신들.length - 1];
+      const 글 = 이름 + '의 글자(' + 신들.join('·') + ')';
+      const 글이가 = 글 + 조(끝, '이', '가'), 글은는 = 글 + 조(끝, '은', '는');
+      let 말;
+      if (위치 === '겉') 말 = 글이가 + ' ' + 궁말[궁] + '에 드러나 서 있습니다.';
+      else if (위치 === '묶임') 말 = 글이가 + ' ' + 궁말[궁] + '에 있는데 합으로 묶여 있습니다. 있는데 힘을 못 쓰는 쪽이에요 — 묶임을 푸는 운에 살아납니다.';
+      else if (위치 === '속') 말 = 글은는 + ' 겉으로 안 나오고 ' + 궁말[궁] + ' 속에 있습니다. 평소엔 조용하다가 그 글자가 하늘에 오는 해에 드러나는 쪽이에요.';
+      else 말 = 글이가 + ' 겉으로도 속으로도 안 나와 있습니다. 없다는 뜻이 아니라 공주님 안에 자리를 안 잡은 것이에요 — 운이 데려올 때만 만납니다.';
+      if (해 != null) 말 += ' ' + (해 === y0 ? '올해' : 해 + '년') + ' 그 글자가 하늘로 옵니다.';
+      return { 이름, 신들, 뜻, 위치, 궁, 힘, 무게: null, 해, 말 };
+    });
+    // 무게는 서열이다 — 「공주님보다 가볍다」는 85%에게 나갔다(일간은 합, 남의 천간은 최대로 재니 늘 일간이 무겁다).
+    // 안 갈리는 말은 안 한다. 겉에 선 사람이 둘 이상이면 그중 **가장 무거운 글자** 하나만 짚는다.
+    const 겉들 = 사람들.filter(s => s.위치 === '겉');
+    if (겉들.length >= 2) {
+      const 톱 = 겉들.slice().sort((a, b) => b.힘 - a.힘)[0];
+      if (톱.힘 > 0) { 톱.무게 = '가장 무겁다'; 톱.말 = 톱.말.replace('드러나 서 있습니다.', '드러나 서 있습니다. 곁에 선 사람 중 가장 무거운 글자예요 — 그 기운이 공주님 위에 제일 많이 얹혀 있는 쪽입니다.'); }
+    }
+    return { 여명, 사람들,
+      잣대: '육친은 통설을 씁니다 — ' + (여명 ? '정재=시어머니 · 편관=남편 외 남자는' : '편재=애인 · 관성=자녀는') + ' 유파에 따라 갈립니다. 무게는 그 글자의 뿌리 힘과 일간의 힘을 견준 것이고, 좋고 나쁨이 아닙니다.' };
+  }
+
   // ── 자리의 모양 — 정관인가 편관인가, 묶였나, 치는 것이 있나 (docs/28 넷 4·5순위) ──
   //
   // 4순위  정관   제도가 인정하는 자리 — 직함·자격·공식
@@ -4146,5 +4218,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 자리내력, 자리모양, 조 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 자리내력, 자리모양, 관계지도, 조 };
 })(window);

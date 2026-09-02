@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=539">
+<link rel="stylesheet" href="style.css?v=543">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -243,6 +243,9 @@
         <button class="row" data-open="compat">
           <b>우리 둘 사이</b><span id="tiAccSub">그 사람에게 나는, 나에게 그 사람은</span>
           <i id="tiAccBig" class="row-x"></i></button>
+        <button class="row" data-open="gwangye">
+          <b>곁의 사람들</b><span id="tiGwSub">어머니·친구·윗사람이 내 안에서 어디에 서 있는지</span>
+          <i id="tiGwBig" class="row-x"></i></button>
       </section>
 
       <!-- 「그 밖」 서고를 내렸다(2026-08-31 「아가씨를 위한 사이트다」).
@@ -395,6 +398,18 @@
         <p class="hint" style="margin:0 0 14px">앞으로 열 해 동안 <b>관(官)의 글자가 언제 오는지</b>만 봅니다. 무엇을 하라는 말이 아니라 <b>언제 문이 가까운지</b>입니다. 이 순위는 이 십 년 안에서의 서열이지 절대값이 아닙니다.</p>
         <div id="yeongYearBars" style="display:flex;align-items:flex-end;gap:4px;height:76px;margin-bottom:6px"></div>
         <div id="yeongYearList"></div>
+      </section>
+    </div>
+
+    <!-- 關 · 관계지도 — 곁의 사람들이 내 안에서 어디에 서 있나 (docs/30) -->
+    <div class="tab hide" data-tab="gwangye">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>關 · 관계지도</h2>
+        <p class="hint" style="margin:0 0 12px">곁의 사람을 좋고 나쁨으로 가르지 않습니다. <b>공주님 안에서 어디에 서 있는지</b>만 봅니다 — 드러나 있는지, 속에 있는지, 안 나왔는지, 묶였는지. 없는 것은 「그 사람이 없다」가 아니라 「겉으로 안 나왔다」입니다.</p>
+        <div id="gwMap" style="margin:0 0 10px"></div>
+        <div id="gwList"></div>
+        <p class="hint" id="gwFoot" style="margin-top:12px"></p>
       </section>
     </div>
 
@@ -796,29 +811,29 @@
   </div>
 </div>
 
-<script src="config.js?v=539"></script>
-<script src="track.js?v=539"></script>
-<script src="cloud.js?v=539"></script>
-<script src="usage.js?v=539"></script>
-<script src="places.js?v=539"></script>
-<script src="people.js?v=539"></script>
-<script src="astro.js?v=539"></script>
-<script src="lunar.js?v=539"></script>
-<script src="engine.js?v=539"></script>
-<script src="chaeyong.js?v=539"></script>
-<script src="brief.js?v=539"></script>
-<script src="chaeksadan.js?v=539"></script>
-<script src="typecard.js?v=539"></script>
-<script src="gyeokguk.js?v=539"></script>
-<script src="memo.js?v=539"></script>
-<script src="classic.js?v=539"></script>
-<script src="calendar.js?v=539"></script>
-<script src="tongbyeon.js?v=539"></script>
-<script src="rules-wealth-love.js?v=539"></script>
-<script src="rules-health-study-move.js?v=539"></script>
-<script src="share.js?v=539"></script>
-<script src="ai.js?v=539"></script>
-<script src="pay.js?v=539"></script>
-<script src="app.js?v=539"></script>
+<script src="config.js?v=543"></script>
+<script src="track.js?v=543"></script>
+<script src="cloud.js?v=543"></script>
+<script src="usage.js?v=543"></script>
+<script src="places.js?v=543"></script>
+<script src="people.js?v=543"></script>
+<script src="astro.js?v=543"></script>
+<script src="lunar.js?v=543"></script>
+<script src="engine.js?v=543"></script>
+<script src="chaeyong.js?v=543"></script>
+<script src="brief.js?v=543"></script>
+<script src="chaeksadan.js?v=543"></script>
+<script src="typecard.js?v=543"></script>
+<script src="gyeokguk.js?v=543"></script>
+<script src="memo.js?v=543"></script>
+<script src="classic.js?v=543"></script>
+<script src="calendar.js?v=543"></script>
+<script src="tongbyeon.js?v=543"></script>
+<script src="rules-wealth-love.js?v=543"></script>
+<script src="rules-health-study-move.js?v=543"></script>
+<script src="share.js?v=543"></script>
+<script src="ai.js?v=543"></script>
+<script src="pay.js?v=543"></script>
+<script src="app.js?v=543"></script>
 </body>
 </html>
