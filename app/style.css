@@ -1214,17 +1214,23 @@ details.fold > .tiles { margin-top: 10px; }
 
 /* 코러스 — 콘텐츠마다 책사들이 한 번씩 나와 한 문장씩(2026-09-03 「일반인은 누가 누군지 몰라」).
    제목 바로 아래, 본문 위. 얼굴이 곧 삽화다. */
-.chorus{display:flex;flex-direction:column;gap:7px;margin:10px 0 16px}
-.ch-row{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:12px;
-  background:var(--card2);border:1px solid var(--line)}
-.ch-face,.ch-seal{width:50px;height:50px;border-radius:50%;flex:none;
+.chorus{display:flex;flex-direction:column;gap:8px;margin:10px 0 16px}
+/* 얼굴이 크게 — 50px 동그라미는 단추였다(2026-09-03 「얼굴이 너무 작지 않아?」).
+   왼쪽 5분의 2를 얼굴이 채우고 글 쪽으로 밤에 잠긴다. 홈 얼빡과 같은 결. */
+.ch-row{position:relative;display:flex;align-items:center;min-height:104px;
+  padding:12px 13px 12px 43%;border-radius:14px;overflow:hidden;
+  background:linear-gradient(160deg,#241f4d,#161433);border:1px solid var(--line)}
+.ch-face,.ch-seal{position:absolute;left:0;top:0;bottom:0;width:46%;
   background:linear-gradient(160deg,#241f4d,#161433)}
-.ch-face{object-fit:cover;object-position:50% 22%}
+.ch-face{object-fit:cover;object-position:50% 20%;
+  -webkit-mask-image:linear-gradient(90deg,#000 62%,transparent);
+  mask-image:linear-gradient(90deg,#000 62%,transparent)}
 .ch-seal{display:flex;align-items:center;justify-content:center;
-  font-family:"Noto Serif KR",serif;font-size:19px;color:rgba(230,201,138,.75)}
-.ch-row b{display:block;font-family:"Gowun Batang","Noto Serif KR",serif;font-size:12.5px;
-  color:var(--accent);margin:1px 0 3px}
-.ch-row p{margin:0;font-size:13.5px;line-height:1.7;color:var(--ink)}
+  font-family:"Noto Serif KR",serif;font-size:30px;color:rgba(230,201,138,.5)}
+.ch-row > div{position:relative;z-index:1}
+.ch-row b{display:block;font-family:"Gowun Batang","Noto Serif KR",serif;font-size:14px;
+  color:#e6c98a;margin:0 0 4px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.ch-row p{margin:0;font-size:13.5px;line-height:1.65;color:#eeeaf7;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 
 /* 우리 둘 사이 — 맺음이 제목이고, 비대칭이 그 아래 마주 선다.
    공주님이 그 사람 생일을 넣는 이유는 「이 사람이 그 사람인가」다(2026-08-30). */
