@@ -1231,6 +1231,11 @@ details.fold > .tiles { margin-top: 10px; }
 .ch-row b{display:block;font-family:"Gowun Batang","Noto Serif KR",serif;font-size:14px;
   color:#e6c98a;margin:0 0 4px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .ch-row p{margin:0;font-size:13.5px;line-height:1.65;color:#eeeaf7;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+/* 한 사람이 여러 마디 — 「그 사람을 두고」(칸 없음). 마디 사이는 얇은 줄로 */
+.ch-row p + p{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08)}
+.tenbox{margin:0 0 16px}
+.tenbox .mnk{margin:0 0 8px;font-size:10.5px;letter-spacing:.22em;color:var(--ink3);font-weight:700}
+.tenbox .mns{margin:8px 0 0;font-size:11.5px;line-height:1.65;color:var(--ink3)}
 
 /* 우리 둘 사이 — 맺음이 제목이고, 비대칭이 그 아래 마주 선다.
    공주님이 그 사람 생일을 넣는 이유는 「이 사람이 그 사람인가」다(2026-08-30). */

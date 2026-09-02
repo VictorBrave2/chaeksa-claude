@@ -1529,6 +1529,25 @@
         </div>`).join('')}
         <p class="mns">공주님 화면과 같은 잣대로 잰 것입니다 — 그래야 견줄 수 있습니다.</p>
       </div>`;
+    // 열 사람이 그 사람을 두고 — 칸 제한 없음(2026-09-03). 값이 있는 책사는 전부, 있는 만큼.
+    let 열절 = '';
+    try {
+      const 열 = (window.ChaeksaDan && ChaeksaDan.그사람) ? ChaeksaDan.그사람(R, you, { 나: meName, 그: youName }, today) : [];
+      if (열.length) {
+        const 총 = 열.reduce((s, g) => s + g.본문들.length, 0);
+        열절 = '<div class="tenbox"><p class="mnk">열 사람이 ' + esc(youName) + '님을 두고 — ' + 총 + '마디</p><div class="chorus">'
+          + 열.map((g, i) => {
+              const k = 책사키[g.축];
+              const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 60, false) : '';
+              const 얼 = 파일
+                ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[g.축] || '') + '</span>\'">'
+                : '<span class="ch-seal">' + esc(책사인장[g.축] || '') + '</span>';
+              return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
+                + g.본문들.map(t => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
+            }).join('')
+          + '</div><p class="mns">칸을 두지 않았습니다 — 값이 있는 책사가 전부, 있는 만큼 말합니다. 사람마다 마디 수가 다른 것이 곧 판정입니다.</p></div>';
+      }
+    } catch (e) {}
     // 그 사람이 지금 지나는 운 — 관계의 뼈대 위에 「지금」을 얹는다
     const n = v.지금;
     const 지금절 = !n ? '' : `
@@ -1581,6 +1600,7 @@
           <p class="rs">${esc(v.그에게.말[1])}</p></div>
       </div>
       ${사람절}
+      ${열절}
       ${신살절}
       ${지금절}
       ${달절}
