@@ -2249,7 +2249,7 @@
     // 「관없음」의 제목은 갈래를 따라간다. 셋을 한 제목으로 부르면
     // 밀어내는 사람에게 「아직 안 나왔습니다」라고 말하게 된다(2026-09-01 조문).
     const 없음표 = { 밀어냄: '자리를 밀어내고 계십니다', 못받음: '받칠 것을 먼저 세우는 자리',
-                     아직: '아직 자리가 안 나왔습니다' };
+                     아직: '아직 자리가 안 나왔습니다', 묶임: '이름만 있고 실권이 없는 자리' };
     const 이름표 = { 비겁: '자리와 나의 크기', 식상: '내놓는 것과 자리',
                      재성: '벌이와 자리', 인성: '자리가 돌려주는 것' };
     const 관계 = { 비겁: '官剋我', 식상: '食傷剋官', 재성: '財生官', 인성: '官生印', 관없음: '' };
@@ -2275,6 +2275,16 @@
         + '<div style="font-weight:700;font-size:13.5px">이 자리는 어디서 왔나'
         + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(내.갈) + '</span></div>'
         + '<div style="margin-top:4px;line-height:1.62">' + esc(내.말) + '</div></div>');
+    } catch (e) {}
+    // 자리의 모양 (docs/28 4·5순위) — 정관/편관/혼잡 · 합으로 묶였나 · 상관이 치나. 겉에 官이 있을 때만.
+    try {
+      const 모 = T.자리모양 ? T.자리모양(R) : null;
+      if (모) wrap.insertAdjacentHTML('beforeend',
+        '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
+        + '<div style="font-weight:700;font-size:13.5px">이 자리의 모양'
+        + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(모.종류)
+        + (모.묶임 ? ' · 묶임' : '') + (모.상관 && 모.종류 !== '편관' ? ' · 상관' : '') + '</span></div>'
+        + '<div style="margin-top:4px;line-height:1.62">' + esc(모.말) + '</div></div>');
     } catch (e) {}
     card.classList.remove('hide');
     그림영역해(R);

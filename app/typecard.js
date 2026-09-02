@@ -3358,6 +3358,11 @@
       //   여기 오기 전에는 셋을 하나로 뭉개고 전부 수동태로 말했다
       //   (「때가 데려다주는 쪽」). 무관 1524명 중 195명(12.8%)이 정반대로 읽혔다.
       const 무 = 무관재료(R) || {};
+      // 합으로 묶인 官은 힘이 0 이라 여기로 온다 — 3000명 중 108명이 「자리가 없다」로 읽혔다(v537 실측).
+      // 없는 것이 아니라 **이름만 있고 실권이 없는** 자리다(docs/28 5순위). 먼저 가른다.
+      let 묶 = null; try { const 모 = R && 자리모양(R); if (모 && 모.묶임 && 모.살아있는관 === 0) 묶 = 모; } catch (e) {}
+      if (묶) return [{ 이름: '관없음', 기울기: 1, 살아있나: false, 갈: '묶임',
+        말: '자리가 없는 것이 아니라 묶여 있습니다 — ' + 묶.종류 + '이 합으로 묶여 이름만 있고 실권이 없는 쪽이에요. 묶임을 푸는 운이 오는 해에 살아납니다.' }];
       const 갈 = 무.상관투출 && 무.강약 !== '신약' ? '밀어냄'
                : 무.강약 === '신약' ? '못받음' : '아직';
       const 말 =
@@ -3426,6 +3431,42 @@
     if (재 > 0) return { 갈: '뽑힘', 말: '뽑혀 드는 자리 쪽입니다 — 제도가 인정하고 밑천이 받치는 사주예요. 판이 먼저 있고 거기 불려 들어가는 쪽입니다.' };
     if (겁 >= 관) return { 갈: '겨룸', 말: '겨뤄서 따는 자리 쪽입니다 — 같은 것을 놓고 여럿이 서는 판에서 얻는 사주예요. 받쳐 주는 것보다 나란히 선 사람이 많습니다.' };
     return { 갈: '맡겨짐', 말: '맡겨지는 자리 쪽입니다 — 받치는 것도 미는 것도 겉에 없이 자리만 홀로 섰어요. 오면 그대로 맡게 되는 쪽입니다.' };
+  }
+
+  // ── 자리의 모양 — 정관인가 편관인가, 묶였나, 치는 것이 있나 (docs/28 넷 4·5순위) ──
+  //
+  // 4순위  정관   제도가 인정하는 자리 — 직함·자격·공식
+  //        편관   실질로 쥐는 자리 — 권한·압박·뺏고 지키는 판
+  //        혼잡   지켜야 할 자리가 둘이라 어지럽다
+  // 5순위  합거   官이 연·월에서 서로 묶였다 — 이름만 있고 실권이 없다(천간은 명령, 묶이면 명령을 못 낸다)
+  //        상관   내가 내놓는 것이 내 자리를 친다(傷官見官) — 정관이 있을 때만 「친다」고 말한다
+  //        통근   안 가른다 — 3000명에서 무근 0/6000 (결재 09-01)
+  //
+  // 겉(연·월·시 천간)만 본다 — 자리는 드러난 것이다. 지장간의 官은 영역축 세 갈래가 「아직」으로 맡는다.
+  // 합거된 官은 gyeokguk 의 힘 계산에서 0 이 되어 지금까지 「관없음」으로 읽혔다 — 여기서 처음 이름을 얻는다.
+  function 자리모양(R) {
+    const p = R.pillars, ds = p.day.stem;
+    const 십 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const 겉 = ['year', 'month', 'hour'].filter(k => p[k]).map(k => ({ k, g: 십(p[k].stem) }));
+    let 합거 = {}; try { 합거 = E.natalHap(p) || {}; } catch (e) {}
+    const 관들 = 겉.filter(x => x.g === '정관' || x.g === '편관');
+    if (!관들.length) return null;
+    const 정 = 관들.some(x => x.g === '정관'), 편 = 관들.some(x => x.g === '편관');
+    const 묶임 = 관들.some(x => 합거[x.k]);
+    const 산관 = 관들.filter(x => !합거[x.k]);
+    const 상관 = 겉.some(x => x.g === '상관');
+    const 종류 = 정 && 편 ? '혼잡' : 정 ? '정관' : '편관';
+    const 말 = [];
+    말.push(종류 === '혼잡'
+      ? '정관과 편관이 같이 서 있습니다. 제도가 준 자리와 실질로 쥔 자리가 둘이라, 지켜야 할 것이 둘인 쪽이에요.'
+      : 종류 === '정관'
+        ? '정관의 자리입니다. 제도가 인정하는 쪽 — 직함·자격·공식이 자리를 세웁니다.'
+        : '편관의 자리입니다. 실질로 쥐는 쪽 — 권한과 압박, 뺏고 지키는 판에서 섭니다.');
+    if (묶임) 말.push(산관.length
+      ? '그중 하나는 합으로 묶여 있습니다. 묶인 자리는 이름만 있고 실권이 없어요.'
+      : '다만 그 자리가 합으로 묶여 있습니다. 이름은 있는데 실권은 없는 쪽이에요 — 묶임을 푸는 운이 오는 해에 살아납니다.');
+    if (상관 && 정) 말.push('겉에 선 상관이 정관을 칩니다. 내놓는 것이 앞설수록 자리가 흔들리는 쪽입니다.');
+    return { 종류, 묶임, 살아있는관: 산관.length, 상관, 말: 말.join(' ') };
   }
 
   // ── 자리가 열리는 해 (docs/28 넷 1순위 · docs/27 여섯) ──
@@ -4103,5 +4144,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 자리내력, 조 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 자리내력, 자리모양, 조 };
 })(window);
