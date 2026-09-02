@@ -353,6 +353,50 @@
 
   const label = (n) => Math.floor(n / 100) + '년 ' + (n % 100) + '월';
 
+  // ── 기억 — 비서가 한 말과 그에 대한 공주님의 답 (docs/29 넷) ──
+  //
+  // 「공주님을 기억합니다」는 랜딩의 약속인데 화면 어디에도 기억하는 장면이 없었다.
+  // 비서는 어제 한 말을 들고 있다가 오늘 묻는다 — 「맞으셨나요」.
+  //
+  // **적중률로 세지 않는다**(CLAUDE.md 넷 · 폐기). 집계하지 않고 숫자를 만들지 않는다.
+  // 기억하는 장면으로만 쓴다: 답이 다음 첫 문장의 재료가 된다.
+  // 기기(localStorage)에만 둔다. 서버로 안 보낸다. 사람마다 일곱 개까지.
+  const SAID = 'chaeksa.said';
+  const loadSaid = () => { try { return JSON.parse(localStorage.getItem(SAID)) || []; } catch (e) { return []; } };
+  const saveSaid = (arr) => { try { localStorage.setItem(SAID, JSON.stringify(arr)); } catch (e) {} };
+  const dayKey = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+  /** 오늘 한 말을 남긴다. 같은 날은 덮어쓰지 않는다(같은 사람 같은 날은 같은 말이라 그럴 일도 없다). */
+  function said(personId, day, v) {
+    if (!personId || !v || !v.말) return;
+    const k = dayKey(day);
+    const all = loadSaid();
+    if (all.some(x => x.personId === personId && x.day === k)) return;
+    all.push({ personId, day: k, 축: v.축, 말: v.말, 행동: v.행동 || '', 일진: v.일진 || '', 답: null });
+    // 사람마다 일곱 개까지 — 오래된 것부터 버린다
+    const mine = all.filter(x => x.personId === personId).sort((a, b) => a.day < b.day ? -1 : 1);
+    const cut = mine.length > 7 ? mine.slice(0, mine.length - 7).map(x => x.day) : [];
+    saveSaid(all.filter(x => !(x.personId === personId && cut.indexOf(x.day) >= 0)));
+  }
+  /** 물어볼 것 — 오늘이 아닌 가장 최근의, 아직 답이 없는 말. 없으면 null. */
+  function toAsk(personId, day) {
+    const k = dayKey(day);
+    return loadSaid().filter(x => x.personId === personId && x.day !== k && x.답 == null)
+      .sort((a, b) => a.day < b.day ? 1 : -1)[0] || null;
+  }
+  /** 답을 적는다 — 'yes' | 'no' | 'dunno'. 세지 않는다. */
+  function answer(personId, day, 답) {
+    const all = loadSaid();
+    const hit = all.find(x => x.personId === personId && x.day === day);
+    if (hit) { hit.답 = 답; hit.답한날 = dayKey(new Date()); saveSaid(all); }
+  }
+  /** 가장 최근에 답이 붙은 말 — 다음 첫 문장의 재료. */
+  function lastAnswered(personId) {
+    return loadSaid().filter(x => x.personId === personId && x.답 != null)
+      .sort((a, b) => a.day < b.day ? 1 : -1)[0] || null;
+  }
+
   global.ChaeksaMemo = { list, add, setOutcome, remove, due, upcoming, stats, judge, label, OUTCOMES, ym,
-                         track, tracks, log, loggedThisMonth, pattern, respond, standing, ahead };
+                         track, tracks, log, loggedThisMonth, pattern, respond, standing, ahead,
+                         said, toAsk, answer, lastAnswered };
 })(window);

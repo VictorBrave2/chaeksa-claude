@@ -539,11 +539,11 @@
     // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
     let 오늘차례 = 날번호() % 오늘의책사.length;
     let [키0, 이름0, 탭0, 말0] = 오늘의책사[오늘차례];
-    let 행동0 = '';
+    let 행동0 = '', 비 = null;
     // 비서(docs/29 둘) — 오늘 이 사람에게 잰 값으로 한 사람이 말한다.
     // 위의 문 안내 문장은 값이 하나도 없을 때만 남는다(엔진이 못 재면 물러난다).
     try {
-      const 비 = (window.ChaeksaDan && ChaeksaDan.오늘) ? ChaeksaDan.오늘(R, today) : null;
+      비 = (window.ChaeksaDan && ChaeksaDan.오늘) ? ChaeksaDan.오늘(R, today) : null;
       if (비 && 비.말) {
         이름0 = 비.축; 키0 = 책사키[비.축] || 키0; 탭0 = 비.탭 || 탭0; 말0 = 비.말; 행동0 = 비.행동 || '';
         const i = 오늘의책사.findIndex(x => x[0] === 키0); if (i >= 0) 오늘차례 = i;
@@ -613,6 +613,52 @@
         setTimeout(() => { bk.textContent = 원; }, 2500);
       };
     }
+    // ── 기억 (docs/29 넷) — 지난번 한 말을 들고 있다가 묻는다. 세지 않는다. ──
+    // 사람 열쇠는 사람 목록의 id, 없으면 생년월일시·성별. 사람을 바꾸면 기억도 따로다.
+    try {
+      const M = window.ChaeksaMemo;
+      const rm = $('remember');
+      if (M && M.said && rm) {
+        const P3 = People();
+        const pid = (P3 && P3.active()) ? 'p:' + P3.active().id
+          : 'b:' + [profile.year, profile.month, profile.day, profile.hour, profile.gender].join('-');
+        if (비 && 비.말) M.said(pid, today, 비);
+        const ask = M.toAsk(pid, today);
+        if (ask) {
+          const [yy, mm, dd] = ask.day.split('-').map(Number);
+          rm.innerHTML =
+            '<p class="hint" style="margin:0 0 6px">지난 ' + mm + '월 ' + dd + '일, '
+            + esc(이름of(ask.축)) + '이 이렇게 말씀드렸습니다</p>'
+            + '<p style="margin:0 0 10px;line-height:1.62">' + esc(ask.말) + '</p>'
+            + '<p style="margin:0 0 8px;font-weight:700">맞으셨나요?</p>'
+            + '<div style="display:flex;gap:8px">'
+            + '<button class="btn small ghost" type="button" data-ans="yes" style="flex:1;margin:0">맞았어요</button>'
+            + '<button class="btn small ghost" type="button" data-ans="no" style="flex:1;margin:0">아니었어요</button>'
+            + '<button class="btn small ghost" type="button" data-ans="dunno" style="flex:1;margin:0">모르겠어요</button>'
+            + '</div>'
+            + '<p class="hint" style="margin:8px 0 0">점수로 세지 않습니다. 저희가 들고 있다가 다음 말에 씁니다.</p>';
+          rm.classList.remove('hide');
+          rm.querySelectorAll('[data-ans]').forEach(b => b.onclick = () => {
+            M.answer(pid, ask.day, b.dataset.ans);
+            rm.innerHTML = '<p style="margin:0;line-height:1.62">'
+              + (b.dataset.ans === 'yes' ? '기억해 두겠습니다. 맞은 자리는 다음에 한 칸 더 내려가 보겠습니다.'
+               : b.dataset.ans === 'no' ? '빗나간 것도 저희 몫입니다. 지우지 않고 그대로 두겠습니다.'
+               : '그것도 답입니다. 티가 안 나는 날도 있습니다.') + '</p>';
+            setTimeout(() => rm.classList.add('hide'), 2600);
+          });
+        } else {
+          rm.classList.add('hide');
+          // 답이 붙은 말이 있으면 맞이하는 말이 그것을 잇는다 — 기억하는 장면은 여기서 난다.
+          const la = M.lastAnswered(pid);
+          const hail = sc && sc.querySelector('.hs-hail');
+          if (la && hail && la.답 !== 'dunno') {
+            hail.textContent = la.답 === 'yes'
+              ? '지난번 말씀이 맞았다 하셨지요. 오늘도 들고 있었습니다.'
+              : '지난번은 빗나갔지요. 그것도 두고 왔습니다.';
+          }
+        }
+      }
+    } catch (e) {}
     // 책사단이 도열한다 — 대접의 핵심은 「나를 위해 여럿이 나와 있다」이다.
     // 겸사겸사 서랍에 숨은 화면들의 문이 되기도 한다: 열 사람이 곧 열 개의 문.
     const ev = $('todayEnvoy');
