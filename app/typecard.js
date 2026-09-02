@@ -1085,10 +1085,12 @@
     }
     // 관살혼잡의 정화(인연법 64) — 정·편이 둘 다 떠서 혼잡한 원국이,
     //    세운의 합거로 하나가 걷히는 해(거관유살·거살유관). 여명 혼인 응기.
-    if (투출성.length >= 2) {
+    // 같은 글자가 두 번 뜬 것(甲·甲)은 혼잡이 아니다 — 정·편이 갈려야 혼잡이다.
+    // 같은 글자 둘일 때 「남는것」이 undefined 로 나가 화면에 「undefined만 남는」이 찍혔다(2026-09-03 실측).
+    if (new Set(투출성).size >= 2) {
       const 걷힘 = 투출성.find(st => E.isHap(st, tf.year.stem) && E.STEM_ELEM[tf.year.stem] !== 오행);
-      if (걷힘 !== undefined) {
-        const 남는것 = 투출성.find(st => st !== 걷힘);
+      const 남는것 = 걷힘 === undefined ? undefined : 투출성.find(st => st !== 걷힘);
+      if (걷힘 !== undefined && 남는것 !== undefined) {
         sc += 14; 세부.혼잡정화 = { 걷힘, 남음: 남는것 };
         이유.push('겹쳐 있던 ' + 이름 + ' 중 ' + E.STEMS[걷힘] + 조(E.STEMS[걷힘],'이','가') + ' 걷히고 ' + E.STEMS[남는것] + 조(E.STEMS[남는것],'이','가') + ' 남는 해 — 어지럽던 인연이 맑아지는 자리');
       }

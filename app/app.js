@@ -2724,23 +2724,26 @@
   function renderChorus(tab) {
     const el = document.querySelector('.tab[data-tab="' + tab + '"]'); if (!el) return;
     let box = el.querySelector('.chorus');
-    let 줄 = [];
-    if (R && window.ChaeksaDan && ChaeksaDan.코러스) { try { 줄 = ChaeksaDan.코러스(R, today, tab) || []; } catch (e) { 줄 = []; } }
-    if (!줄.length) { if (box) box.remove(); return; }
+    // 2026-09-03 「일단 모든 콘텐츠에 적용시켜줘」 — 한 사람 한 문장(코러스)에서 칸 없는 열눈으로.
+    let 묶 = [];
+    if (R && window.ChaeksaDan && ChaeksaDan.열눈) { try { 묶 = ChaeksaDan.열눈(R, today, tab) || []; } catch (e) { 묶 = []; } }
+    if (!묶.length) { if (box) box.remove(); return; }
     if (!box) {
-      box = document.createElement('div'); box.className = 'chorus';
+      box = document.createElement('div'); box.className = 'chorus tenbox';
       // 첫 카드의 제목 아래. 제목이 없는 탭(나)은 맨 위.
       const h = el.querySelector(':scope > section.card:not(.hide) > h2');
       if (h) h.after(box);
       else { const back = el.querySelector(':scope > .backhome'); if (back) back.after(box); else el.prepend(box); }
     }
-    box.innerHTML = 줄.map((m, i) => {
-      const k = 책사키[m.축];
-      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, m.갈림) : '';
+    const 총 = 묶.reduce((s, g) => s + g.본문들.length, 0);
+    box.innerHTML = '<p class="mnk">' + 묶.length + '명이 이 화면을 두고 — ' + 총 + '마디</p>' + 묶.map((g, i) => {
+      const k = 책사키[g.축];
+      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, false) : '';
       const 얼 = 파일
-        ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[m.축] || '') + '</span>\'">'
-        : '<span class="ch-seal">' + esc(책사인장[m.축] || '') + '</span>';
-      return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(m.축)) + '</b><p>' + esc(m.문장) + '</p></div></div>';
+        ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[g.축] || '') + '</span>\'">'
+        : '<span class="ch-seal">' + esc(책사인장[g.축] || '') + '</span>';
+      return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
+        + g.본문들.map(t => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
     }).join('');
   }
   /** 한 줄. 새화자가 아니면(false) 얼굴 띠를 세우지 않는다. */
