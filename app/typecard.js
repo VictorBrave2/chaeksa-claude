@@ -3405,6 +3405,29 @@
     return 축;
   }
 
+  // ── 어떻게 얻은 자리인가 (docs/28 넷 3순위) ──
+  //
+  // 官이 겉에 선 사주에게 묻는다 — 그 자리가 어디서 왔나. 넷 다 지금 있는 값(투출 힘 다섯)으로 갈린다.
+  //   물려받은 자리   印이 官을 받친다          官生印 — 어른·문서·자격이 자리를 준다
+  //   뽑혀 든 자리    官이 서고 財가 생한다      財生官 — 제도가 인정하고 밑천이 받친다
+  //   겨뤄 딴 자리    比劫이 官보다 무겁다       같은 것을 놓고 겨뤄서 얻는다
+  //   맡겨진 자리     官만 홀로 섰다             받치는 것도 미는 것도 겉에 없다
+  // 官이 없는 사주는 여기 안 온다 — 영역축의 관없음 세 갈래(밀어냄·못받음·아직)가 맡는다.
+  // 「만든 자리」(官 없고 食傷生財)는 그 「아직」 안에 이미 있다.
+  //
+  // 겹치면 순서가 곧 우선이다: 印 > 財 > 比劫. 印이 있으면 財도 있는 사주가 많은데(실측), 자리를
+  // **누가 주었나**로 읽으면 印(문서·어른)이 財(밑천)보다 먼저 온 것이다. 겨룸은 다른 둘이 없을 때만 —
+  // 받쳐 주는 것이 있으면 겨룸이 아니라 뽑힘이다. 「무겁다」는 비교다(docs/13 輕重은 비교로만).
+  function 자리내력(힘) {
+    if (!힘) return null;
+    const 관 = 힘.관성 || 0, 인 = 힘.인성 || 0, 재 = 힘.재성 || 0, 겁 = 힘.비겁 || 0;
+    if (관 <= 0) return null;
+    if (인 > 0) return { 갈: '물려받음', 말: '물려받는 자리 쪽입니다 — 어른이나 문서, 자격이 자리를 데려다주는 사주예요. 남이 인정해 준 것이 먼저 오고, 그 위에 서십니다.' };
+    if (재 > 0) return { 갈: '뽑힘', 말: '뽑혀 드는 자리 쪽입니다 — 제도가 인정하고 밑천이 받치는 사주예요. 판이 먼저 있고 거기 불려 들어가는 쪽입니다.' };
+    if (겁 >= 관) return { 갈: '겨룸', 말: '겨뤄서 따는 자리 쪽입니다 — 같은 것을 놓고 여럿이 서는 판에서 얻는 사주예요. 받쳐 주는 것보다 나란히 선 사람이 많습니다.' };
+    return { 갈: '맡겨짐', 말: '맡겨지는 자리 쪽입니다 — 받치는 것도 미는 것도 겉에 없이 자리만 홀로 섰어요. 오면 그대로 맡게 되는 쪽입니다.' };
+  }
+
   // ── 자리가 열리는 해 (docs/28 넷 1순위 · docs/27 여섯) ──
   //
   // 財는 「열리는 해·달」을 잡는데 官으로 해를 잡는 계산이 하나도 없었다(실측 0건).
@@ -4080,5 +4103,5 @@
     });
   }
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 조 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, pastjob, drawGyoji, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothMonths, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, whoLovesMe, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, drawInyeon, wealth, drawNokpae, love, drawDohwa, career, drawJikcheop, lifeCurve, drawLifeCurve, yearFlow, drawYearFlow, childCard, drawChild, 영역축, 영역해, 자리내력, 조 };
 })(window);

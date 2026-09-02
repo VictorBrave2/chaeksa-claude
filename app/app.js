@@ -2267,6 +2267,15 @@
         + 표 + 셈 + '</div>'
         + '<div style="margin-top:4px;line-height:1.62">' + esc(a.말) + '</div></div>';
     }).join('');
+    // 어떻게 얻은 자리인가 (docs/28 3순위) — 官이 선 사주에게만. 관없음은 위의 세 갈래가 이미 말했다.
+    try {
+      const 내 = T.자리내력 ? T.자리내력((F.자평진전 || {}).힘) : null;
+      if (내) wrap.insertAdjacentHTML('beforeend',
+        '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
+        + '<div style="font-weight:700;font-size:13.5px">이 자리는 어디서 왔나'
+        + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(내.갈) + '</span></div>'
+        + '<div style="margin-top:4px;line-height:1.62">' + esc(내.말) + '</div></div>');
+    } catch (e) {}
     card.classList.remove('hide');
     그림영역해(R);
   }
