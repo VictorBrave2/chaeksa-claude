@@ -624,19 +624,22 @@
    *  날짜는 안 돌려준다 — 개수만 낸다. 날짜와 시각은 사람이 붙어서 보는 자리다.
    *  「2월에 두 분 다 좋은 날이 4일 있습니다」까지가 무료고, 그 다음이 상담이다. */
   function bothDays(Rme, Ryou, year, month) {
-    let 좋 = 0, 전체 = 0, 최고 = 0;
-    const last = new Date(year, month, 0).getDate();
-    for (let d = 1; d <= last; d++) {
-      let tf; try { tf = E.dateFortune(year, month, d); } catch (e) { continue; }
-      전체++;
-      // 달을 재던 것과 같은 자로 날을 잰다 — 월주 자리에 일주를 넣는다
-      const day = { month: tf.day };
-      const A = monthScoreFor(Rme, day), B = monthScoreFor(Ryou, day);
-      const m = Math.min(A.s, B.s);
-      if (m > 최고) 최고 = m;
-      if (m >= 70) 좋++;
-    }
-    return { 좋은날: 좋, 전체, 최고 };
+    // 예전엔 min(A,B) ≥ 70 을 셌다 — 500쌍×12달 실측에서 달당 6.6일, 12~13일인 달이 17%.
+    // myDays 와 같은 병(덧셈 점수 위의 절대 문턱)이다. 같은 약을 쓴다 — **각자의 최고 띠**(myDays.좋은).
+    //   두분다  두 사람이 각자 최고 띠인 날이 겹친다        평균 0.24일 · 84% 달은 0 — 있으면 보석
+    //   한쪽    한 사람이 최고 띠이고 상대는 빼인 것이 없다  평균 5.1일 · 0인 달 없음
+    // 「≥50」은 monthScoreFor 의 기본선이라 상수가 아니다 — 빼인 항(눌림)이 없다는 뜻이다.
+    // min 의 최고 띠로 잡는 안은 평균 3.9일인데 12일 달이 8% — 둘의 흔한 값(90)에서 뭉쳐 버렸다.
+    const va = myDays(Rme, year, month), vb = myDays(Ryou, year, month);
+    const ga = new Set(va.좋은.map(r => r.일)), gb = new Set(vb.좋은.map(r => r.일));
+    const 안눌림 = (v, d) => { const r = v.rows[d - 1]; return !!r && r.점수 >= 50; };
+    const 두분다 = [...ga].filter(d => gb.has(d)).sort((a, b) => a - b);
+    const 한쪽 = [...ga].filter(d => !gb.has(d) && 안눌림(vb, d))
+      .concat([...gb].filter(d => !ga.has(d) && 안눌림(va, d))).sort((a, b) => a - b);
+    let 최고 = 0;
+    va.rows.forEach((r, k) => { const m = Math.min(r.점수, (vb.rows[k] || {}).점수 || 0); if (m > 최고) 최고 = m; });
+    // 좋은날 은 옛 이름을 지킨다 — 부르는 곳이 있다. 뜻은 「두 분 다」로 좁아졌다.
+    return { 좋은날: 두분다.length, 두분다, 한쪽: 한쪽.length, 한쪽날: 한쪽, 전체: va.rows.length, 최고 };
   }
 
   /** 앞으로 n개월 중 두 사람 다 좋은 달. 최저 점수로 고른다. */
