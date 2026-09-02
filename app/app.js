@@ -537,8 +537,18 @@
     // 홈을 하루로 만든다: 오늘의 장면 → 첫 의논 → 오늘 나온 책사 하나.
     // 나머지 타일은 전부 서랍에 넣었다(index.html 의 details.fold).
     // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
-    const 오늘차례 = 날번호() % 오늘의책사.length;
-    const [키0, 이름0, 탭0, 말0] = 오늘의책사[오늘차례];
+    let 오늘차례 = 날번호() % 오늘의책사.length;
+    let [키0, 이름0, 탭0, 말0] = 오늘의책사[오늘차례];
+    let 행동0 = '';
+    // 비서(docs/29 둘) — 오늘 이 사람에게 잰 값으로 한 사람이 말한다.
+    // 위의 문 안내 문장은 값이 하나도 없을 때만 남는다(엔진이 못 재면 물러난다).
+    try {
+      const 비 = (window.ChaeksaDan && ChaeksaDan.오늘) ? ChaeksaDan.오늘(R, today) : null;
+      if (비 && 비.말) {
+        이름0 = 비.축; 키0 = 책사키[비.축] || 키0; 탭0 = 비.탭 || 탭0; 말0 = 비.말; 행동0 = 비.행동 || '';
+        const i = 오늘의책사.findIndex(x => x[0] === 키0); if (i >= 0) 오늘차례 = i;
+      }
+    } catch (e) {}
     const sc = $('homeScene');
     if (sc) {
       sc.classList.remove('hide');
@@ -572,7 +582,9 @@
         + '<p class="hs-who">' + esc(이름of(이름0)) + '</p>'
         + '<p class="hs-role">' + esc(직함of(이름0)) + ' · ' + esc(이름0) + '</p>'
         + '<button class="hs-say" type="button">'
-        + '<span class="cs-txt">' + esc(말0) + '</span><span class="cs-go">▸</span></button>'
+        + '<span class="cs-txt">' + esc(말0)
+        + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + esc(행동0) + '</span>' : '')
+        + '</span><span class="cs-go">▸</span></button>'
         + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
       // 그림 없는 책사가 오늘 차례면 얼빡 자리를 접는다 — 빈 액자를 두지 않는다.
       // (onerror 로 접는 길은 img 를 아예 안 세울 때는 안 지나간다)
