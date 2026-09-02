@@ -44,10 +44,10 @@ window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 �
  * 소현은 인장(運)만으로 선다. 빈 액자는 안 뜬다. */
 window.CHAEKSA_FACE_VAR = {
   japyung: [1, 2, 3, 4], gungtong: [1, 2, 3, 4], eokbu: [1, 2, 3],
-  gungwi: [1, 2, 4], inyeon: [1, 2, 3, 4], jaemul: [1, 2, 3, 4],
-  cheonjik: [1, 2, 3, 4], unro: [], hyeopgi: [1, 2, 3, 4, 5], jwajang: [1, 2, 3],
-};
+  gungwi: [1, 2, 3, 4], inyeon: [1, 2, 3, 4], jaemul: [1, 2, 3, 4],
+  cheonjik: [1, 2, 3, 4], unro: [1, 2, 3], hyeopgi: [1, 2, 3, 4, 5], jwajang: [1, 2, 3],
+};   // 2026-09-03 소현 셋·궁위 셋째 도착(ChatGPT 로 뽑음) — 소현이 처음으로 얼굴을 얻었다
 
 /* 회의 장면(council-<계절>[-벌].webp)이 계절마다 몇 벌인가.
  * 봄 1 · 여름 1 · 가을 2 · 겨울 2 가 지금 전부다. */
-window.CHAEKSA_COUNCIL_VAR = { spring: 1, summer: 1, autumn: 2, winter: 2 };
+window.CHAEKSA_COUNCIL_VAR = { spring: 3, summer: 3, autumn: 3, winter: 3 };   // 2026-09-03 여섯 장 도착 — 계절마다 세 벌
