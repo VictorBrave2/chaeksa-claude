@@ -673,6 +673,12 @@
         if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
         else set('tiInSub', '앞으로 열 해는 조용한 구간입니다');
       } catch (e) {}
+      // 이달 — 시간순 홈의 둘째 줄(docs/29 셋). standing 은 원국 탭의 첫 마디와 같은 값이다.
+      try { const M = window.ChaeksaMemo, st = M && M.standing ? M.standing(R, today) : null;
+        if (st) { set('tiMonthBig', st.grade);
+          // 「5월부터」가 내년 5월이면 해를 붙인다 — 안 붙이면 지난 5월로 읽힌다.
+          const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 결이 바뀝니다') : '';
+          set('tiMonthSub', st.head + (언제 ? ' · ' + 언제 : '')); } } catch (e) {}
       try { const yf = T.yearFlow(R, today.getFullYear(), today);
         set('tiYearBig', yf.bestTxt);
         set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
@@ -682,7 +688,10 @@
           : '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
       // 배지에 「비겁축」 같은 십신 이름을 찍지 않는다 — 문 앞 간판은 읽히는 말이어야 한다.
       // 부제도 처방이 아니라 위치로(docs/27 아홉). 「맞는 일」은 우리가 정해 주지 않는다.
-      try { const c = T.career(R, null); set('tiJikBig', c.name); set('tiJikSub', '사회 속 어디에 서 계신지'); } catch (e) {}
+      // 홈 줄 이름이 「자리가 열리는 해」로 바뀌었다(docs/29 셋 — 시간순). 배지는 그 해, 부제는 위치.
+      try { const c = T.career(R, null), y = T.영역해 ? T.영역해(R, today.getFullYear(), 10) : null;
+        set('tiJikBig', (y && y.첫해) ? y.첫해.해 + '년' : c.name);
+        set('tiJikSub', (y && y.첫해) ? y.말 + ' · ' + c.name + ' 쪽' : '사회 속 어디에 서 계신지'); } catch (e) {}
       try { const l = T.love(R, new Date(), null); // l.key 는 686 유형 코드다 — 앞 두 글자를 그냥 찍으면 공주님께는 「一心」 같은
         // 뜻 없는 내부 코드가 박힌다. 오른쪽 칸은 비워 두고 설명으로 말한다.
         set('tiDoBig', ''); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}

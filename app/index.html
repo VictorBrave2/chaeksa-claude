@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=525">
+<link rel="stylesheet" href="style.css?v=527">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -168,71 +168,79 @@
       <!-- 서고 — 격자가 아니라 목록이다. 격자는 고르는 화면이고 목록은 읽는 화면이다.
            기각 목록의 「대시보드」는 색이 아니라 구조라(공주님 원칙) 2열 타일을 걷었다.
            id 는 그대로 둔다 — app.js 가 갱신하는 자리다. -->
+      <!-- 시간순이다(docs/29 셋) — 오늘 → 이달 → 올해와 앞으로 → 나 → 우리.
+           파는 것이 해상도(해→달→날→시진)라 홈의 축도 시간이어야 한다. 주제(사랑·돈·나)로
+           짜면 축이 어긋난다. 열여섯 방은 그대로 있고 「나」 안으로 접혔다. id 는 그대로다. -->
       <section class="shelf">
-        <p class="shelf-k">첫 만남에 드리는 것</p>
-        <button class="row" data-open="ganmyeong">
-          <b>책사단의 의논</b><span>열 사람이 둘러앉아 다툽니다 — 갈린 자리는 갈린 채로 올립니다</span></button>
-      </section>
-
-      <section class="shelf">
-        <p class="shelf-k">공주님의 이야기</p>
-        <button class="row" data-open="dohwa">
-          <b>첫 장 · 나의 연애</b><span id="tiDoSub">나는 어떤 사랑을 하는지</span>
-          <i id="tiDoBig" class="row-x"></i></button>
-        <button class="row" data-open="lovestory">
-          <b>둘째 장 · 공주님의 사랑 이야기</b><span>지나온 사랑의 그 무렵을 짚어 드립니다</span></button>
-        <button class="row" data-open="inyeon">
-          <b>셋째 장 · 인연이 오는 해</b><span id="tiInSub">앞으로 열 해 중 언제 기우는가</span>
-          <i id="tiInBig" class="row-x"></i></button>
-        <button class="row" data-open="compat">
-          <b>넷째 장 · 우리 둘 사이</b><span id="tiAccSub">그 사람에게 나는, 나에게 그 사람은</span>
-          <i id="tiAccBig" class="row-x"></i></button>
-      </section>
-
-      <section class="shelf">
-        <p class="shelf-k">날마다</p>
+        <p class="shelf-k">오늘</p>
         <button class="row" data-open="today">
           <b>오늘의 흐름</b><span id="tiTodayGod">일운·시운까지</span>
           <i id="tiTodayGz" class="row-x"></i></button>
         <button class="row" data-open="ban">
           <b>오늘 조심할 것</b><span id="tiBanSub">매일 바뀝니다</span>
           <i id="tiBanGz" class="row-x"></i></button>
-        <button class="row" data-open="year">
-          <b>올해의 나</b><span id="tiYearSub">남은 달 중 언제가 나에게 좋은가</span>
-          <i id="tiYearBig" class="row-x"></i></button>
-        <!-- 택일 달력은 서고에서 내렸다(2026-08-31). #cal 로는 그대로 열린다. -->
       </section>
 
       <section class="shelf">
-        <p class="shelf-k">나를 아는 일</p>
+        <p class="shelf-k">이달</p>
+        <!-- 지금은 이달의 자리(standing)를 한 줄로 보이고 「올해의 나」로 연다.
+             달력(서른 칸 한 줄씩)은 docs/29 ② — 결제가 열린 뒤 여기에 붙는다. -->
+        <button class="row" data-open="year">
+          <b>이달의 나</b><span id="tiMonthSub">지금 어디쯤인지</span>
+          <i id="tiMonthBig" class="row-x"></i></button>
+      </section>
+
+      <section class="shelf">
+        <p class="shelf-k">올해와 앞으로</p>
+        <button class="row" data-open="year">
+          <b>올해의 나</b><span id="tiYearSub">남은 달 중 언제가 나에게 좋은가</span>
+          <i id="tiYearBig" class="row-x"></i></button>
+        <button class="row" data-open="inyeon">
+          <b>인연이 오는 해</b><span id="tiInSub">앞으로 열 해 중 언제 기우는가</span>
+          <i id="tiInBig" class="row-x"></i></button>
+        <button class="row" data-open="jikcheop">
+          <b>자리가 열리는 해</b><span id="tiJikSub">사회 속 어디에 서 계신지</span>
+          <i id="tiJikBig" class="row-x"></i></button>
+        <button class="row" data-open="life">
+          <b>인생 곡선</b><span id="tiLifeSub">언제가 가장 두터운가</span>
+          <i id="tiLifeBig" class="row-x"></i></button>
+        <!-- 택일 달력은 서고에서 내렸다(2026-08-31). #cal 로는 그대로 열린다. -->
+      </section>
+
+      <details class="fold shelf" id="foldMe">
+        <summary class="shelf-k">나</summary>
+        <button class="row" data-open="ganmyeong">
+          <b>책사단의 의논</b><span>열 사람이 둘러앉아 다툽니다 — 갈린 자리는 갈린 채로 올립니다</span></button>
         <button class="row" data-open="me">
           <b id="tiMeStr">타고난 바탕</b>
           <span>여덟 글자를 다섯 장으로 나눠 봅니다</span></button>
+        <button class="row" data-open="dohwa">
+          <b>나의 연애</b><span id="tiDoSub">나는 어떤 사랑을 하는지</span>
+          <i id="tiDoBig" class="row-x"></i></button>
+        <button class="row" data-open="lovestory">
+          <b>공주님의 사랑 이야기</b><span>지나온 사랑의 그 무렵을 짚어 드립니다</span></button>
         <button class="row" data-open="jichim">
           <b>지칠 때와 채울 때</b><span id="tiJcSub">나는 무엇에 지치고 무엇으로 회복하나</span>
           <i id="tiJcBig" class="row-x"></i></button>
         <button class="row" data-open="naepyeon">
           <b>내 편이 되는 사람</b><span id="tiNpSub">어떤 사람을 곁에 두면 힘이 나는가</span>
           <i id="tiNpBig" class="row-x"></i></button>
-        <button class="row" data-open="gacha">
-          <b>공주님의 유형 카드</b>
-          <span id="tiGachaSub">789가지 가운데 공주님의 한 장 — 간직하고 보내세요</span>
-          <i id="tiGachaBig" class="row-x"></i></button>
-      </section>
-
-      <section class="shelf">
-        <p class="shelf-k">자리와 돈</p>
-        <button class="row" data-open="jikcheop">
-          <b>나의 영역</b><span id="tiJikSub">사회 속 어디에 서 계신지</span>
-          <i id="tiJikBig" class="row-x"></i></button>
         <button class="row" data-open="moneystory">
           <b>공주님의 재물 이야기</b><span>돈이 들어왔던 그 무렵을 짚어 드립니다</span></button>
         <button class="row" data-open="nokpae">
           <b>나의 재물 그릇</b><span id="tiNokSub">얼마나 담을 그릇인지</span>
           <i id="tiNokBig" class="row-x"></i></button>
-        <button class="row" data-open="life">
-          <b>인생 곡선</b><span id="tiLifeSub">언제가 가장 두터운가</span>
-          <i id="tiLifeBig" class="row-x"></i></button>
+        <button class="row" data-open="gacha">
+          <b>공주님의 유형 카드</b>
+          <span id="tiGachaSub">789가지 가운데 공주님의 한 장 — 간직하고 보내세요</span>
+          <i id="tiGachaBig" class="row-x"></i></button>
+      </details>
+
+      <section class="shelf">
+        <p class="shelf-k">우리</p>
+        <button class="row" data-open="compat">
+          <b>우리 둘 사이</b><span id="tiAccSub">그 사람에게 나는, 나에게 그 사람은</span>
+          <i id="tiAccBig" class="row-x"></i></button>
       </section>
 
       <!-- 「그 밖」 서고를 내렸다(2026-08-31 「아가씨를 위한 사이트다」).
@@ -786,29 +794,29 @@
   </div>
 </div>
 
-<script src="config.js?v=525"></script>
-<script src="track.js?v=525"></script>
-<script src="cloud.js?v=525"></script>
-<script src="usage.js?v=525"></script>
-<script src="places.js?v=525"></script>
-<script src="people.js?v=525"></script>
-<script src="astro.js?v=525"></script>
-<script src="lunar.js?v=525"></script>
-<script src="engine.js?v=525"></script>
-<script src="chaeyong.js?v=525"></script>
-<script src="brief.js?v=525"></script>
-<script src="chaeksadan.js?v=525"></script>
-<script src="typecard.js?v=525"></script>
-<script src="gyeokguk.js?v=525"></script>
-<script src="memo.js?v=525"></script>
-<script src="classic.js?v=525"></script>
-<script src="calendar.js?v=525"></script>
-<script src="tongbyeon.js?v=525"></script>
-<script src="rules-wealth-love.js?v=525"></script>
-<script src="rules-health-study-move.js?v=525"></script>
-<script src="share.js?v=525"></script>
-<script src="ai.js?v=525"></script>
-<script src="pay.js?v=525"></script>
-<script src="app.js?v=525"></script>
+<script src="config.js?v=527"></script>
+<script src="track.js?v=527"></script>
+<script src="cloud.js?v=527"></script>
+<script src="usage.js?v=527"></script>
+<script src="places.js?v=527"></script>
+<script src="people.js?v=527"></script>
+<script src="astro.js?v=527"></script>
+<script src="lunar.js?v=527"></script>
+<script src="engine.js?v=527"></script>
+<script src="chaeyong.js?v=527"></script>
+<script src="brief.js?v=527"></script>
+<script src="chaeksadan.js?v=527"></script>
+<script src="typecard.js?v=527"></script>
+<script src="gyeokguk.js?v=527"></script>
+<script src="memo.js?v=527"></script>
+<script src="classic.js?v=527"></script>
+<script src="calendar.js?v=527"></script>
+<script src="tongbyeon.js?v=527"></script>
+<script src="rules-wealth-love.js?v=527"></script>
+<script src="rules-health-study-move.js?v=527"></script>
+<script src="share.js?v=527"></script>
+<script src="ai.js?v=527"></script>
+<script src="pay.js?v=527"></script>
+<script src="app.js?v=527"></script>
 </body>
 </html>
