@@ -1217,20 +1217,21 @@ details.fold > .tiles { margin-top: 10px; }
 .chorus{display:flex;flex-direction:column;gap:8px;margin:10px 0 16px}
 /* 얼굴이 크게 — 50px 동그라미는 단추였다(2026-09-03 「얼굴이 너무 작지 않아?」).
    왼쪽 5분의 2를 얼굴이 채우고 글 쪽으로 밤에 잠긴다. 홈 얼빡과 같은 결. */
-.ch-row{position:relative;display:flex;align-items:center;min-height:104px;
-  padding:12px 13px 12px 43%;border-radius:14px;overflow:hidden;
+/* 2026-09-03 「삽화 아래로 글이 나와야 읽기 편하겠지」 — 얼굴이 위에 띠로 서고 글은 그 아래 폭 전체.
+   옆에 두면 마디가 여럿일 때 글이 좁은 기둥이 됐다. */
+.ch-row{position:relative;display:block;padding:0;border-radius:14px;overflow:hidden;
   background:linear-gradient(160deg,#241f4d,#161433);border:1px solid var(--line)}
-.ch-face,.ch-seal{position:absolute;left:0;top:0;bottom:0;width:46%;
+.ch-face,.ch-seal{display:block;width:100%;height:118px;
   background:linear-gradient(160deg,#241f4d,#161433)}
-.ch-face{object-fit:cover;object-position:50% 20%;
-  -webkit-mask-image:linear-gradient(90deg,#000 62%,transparent);
-  mask-image:linear-gradient(90deg,#000 62%,transparent)}
+.ch-face{object-fit:cover;object-position:50% 22%;
+  -webkit-mask-image:linear-gradient(180deg,#000 58%,rgba(0,0,0,.35));
+  mask-image:linear-gradient(180deg,#000 58%,rgba(0,0,0,.35))}
 .ch-seal{display:flex;align-items:center;justify-content:center;
   font-family:"Noto Serif KR",serif;font-size:30px;color:rgba(230,201,138,.5)}
-.ch-row > div{position:relative;z-index:1}
-.ch-row b{display:block;font-family:"Gowun Batang","Noto Serif KR",serif;font-size:14px;
-  color:#e6c98a;margin:0 0 4px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
-.ch-row p{margin:0;font-size:13.5px;line-height:1.65;color:#eeeaf7;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.ch-row > div{position:relative;z-index:1;padding:0 14px 13px}
+.ch-row b{display:block;font-family:"Gowun Batang","Noto Serif KR",serif;font-size:15px;
+  color:#e6c98a;margin:-14px 0 7px;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.ch-row p{margin:0;font-size:13.5px;line-height:1.7;color:#eeeaf7}
 /* 한 사람이 여러 마디 — 「그 사람을 두고」(칸 없음). 마디 사이는 얇은 줄로 */
 .ch-row p + p{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08)}
 .tenbox{margin:0 0 16px}
