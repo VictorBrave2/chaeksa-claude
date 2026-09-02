@@ -750,10 +750,11 @@
         set('tiJikSub', (y && y.첫해) ? y.말 + ' · ' + c.name + ' 쪽' : '사회 속 어디에 서 계신지'); } catch (e) {}
       // 곁의 사람들 — 겉에 선 사람 수를 배지로, 겉에 선 이름을 부제로(docs/30)
       try { const gw = T.관계지도 ? T.관계지도(R, today.getFullYear()) : null;
-        if (gw) { const 겉 = gw.사람들.filter(s => s.위치 === '겉');
-          set('tiGwBig', '겉에 ' + 겉.length);
-          set('tiGwSub', 겉.length ? 겉.map(s => s.이름.split('·')[0]).join('·') + '이 드러나 서 있습니다'
-                                    : '겉에 드러난 사람이 없습니다 — 속에 있거나 운이 데려옵니다'); } } catch (e) {}
+        // 궁이 사람이다 — 홈 줄은 아버지·어머니의 모양 한 줄
+        if (gw) { const 찾 = (n) => gw.궁사람들.filter(s => s.이름 === n && s.십신)[0];
+          const 아 = 찾('아버지'), 엄 = 찾('어머니');
+          set('tiGwBig', (아 ? 아.십신 : '') + (아 && 엄 ? '·' : '') + (엄 ? 엄.십신 : ''));
+          set('tiGwSub', [아 ? 아.십신 + ' 같은 아버지' : '', 엄 ? 엄.십신 + ' 같은 어머니' : ''].filter(Boolean).join(' · ') || '자리에 앉은 글자가 그 사람의 모양입니다'); } } catch (e) {}
       try { const l = T.love(R, new Date(), null); // l.key 는 686 유형 코드다 — 앞 두 글자를 그냥 찍으면 공주님께는 「一心」 같은
         // 뜻 없는 내부 코드가 박힌다. 오른쪽 칸은 비워 두고 설명으로 말한다.
         set('tiDoBig', ''); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
@@ -2388,46 +2389,43 @@
     let v; try { v = T.관계지도(R, today.getFullYear()); } catch (e) { return; }
     gwFor = R;
     // 위·아래 궁은 이름표 자리(±52)까지 viewBox 안에 들어오게 안쪽으로 — 52/248 이면 「초년」「배우자」가 잘렸다
-    const 궁좌 = { year: [180, 66], month: [58, 150], hour: [302, 150], day: [180, 234], none: [180, 150] };
-    const 색 = { 겉: 'var(--accent)', 묶임: 'var(--ink3)', 속: 'var(--ink3)', 없음: 'var(--line2)' };
-    // 같은 궁에 여럿이면 그 궁 둘레로 흩는다
-    const 무리 = {}; v.사람들.forEach(s => { const k = s.궁 || 'none'; (무리[k] = 무리[k] || []).push(s); });
+    // 궁이 사람이다(사장님 조문 09-02) — 사람은 제 궁에 고정으로 앉는다. 왼쪽이 월주(위 월간=아버지 · 아래 월지=어머니),
+    // 오른쪽이 시주(위 시간=정신세계 · 아래 시지=자식), 아래가 일지(배우자). 년주는 조문을 안 받아 비워 둔다.
+    const 좌 = { '아버지': [70, 96], '어머니': [70, 204], '정신세계': [290, 96], '자식': [290, 204], '배우자': [180, 250] };
     let 점 = '';
-    Object.keys(무리).forEach(k => {
-      const [cx, cy] = 궁좌[k] || 궁좌.none, n = 무리[k].length;
-      무리[k].forEach((s, i) => {
-        const a = (Math.PI * 2 * i) / Math.max(n, 1) - Math.PI / 2, r = n > 1 ? 34 : 0;
-        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
-        const 겉 = s.위치 === '겉', 없 = s.위치 === '없음';
-        점 += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})">`
-          + `<circle r="${겉 ? 15 : 12}" fill="${겉 ? 색.겉 : 'none'}" stroke="${색[s.위치]}" stroke-width="${겉 ? 0 : 1.6}"`
-          + (s.위치 === '속' ? ' stroke-dasharray="3 2.5"' : '') + (없 ? ' opacity=".55"' : '') + '/>'
-          + (s.위치 === '묶임' ? '<text y="4" text-anchor="middle" font-size="11" fill="var(--ink3)">鎖</text>' : '')
-          + `<text y="${겉 ? 30 : 27}" text-anchor="middle" font-size="10.5" fill="${없 ? 'var(--ink3)' : 'var(--ink)'}"${없 ? ' opacity=".7"' : ''}>${esc(s.이름.split('·')[0])}</text>`
-          + '</g>';
-      });
+    v.궁사람들.forEach(s => {
+      const [x, y] = 좌[s.이름] || [180, 150];
+      const 비 = !s.십신, 묶 = (s.상태 || []).indexOf('합거') >= 0;
+      점 += `<g transform="translate(${x},${y})">`
+        + `<circle r="17" fill="${비 ? 'none' : 'var(--accent)'}" stroke="${비 ? 'var(--line2)' : 'var(--accent)'}" stroke-width="1.4"${비 ? ' stroke-dasharray="3 2.5"' : ''}/>`
+        + (s.십신 ? `<text y="4" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bg2)">${esc(s.글자)}</text>` : '')
+        + (묶 ? '<text x="16" y="-12" text-anchor="middle" font-size="10" fill="var(--ink3)">鎖</text>' : '')
+        + `<text y="33" text-anchor="middle" font-size="10.5" fill="var(--ink)">${esc(s.이름)}</text>`
+        + (s.십신 ? `<text y="46" text-anchor="middle" font-size="9.5" fill="var(--ink3)">${esc(s.십신)} 같은</text>` : '')
+        + '</g>';
     });
-    const 궁표 = Object.keys(궁좌).filter(k => k !== 'none').map(k => {
-      const [x, y] = 궁좌[k]; const 이름 = { year: '초년', month: '자람', hour: '말년', day: '배우자' }[k];
-      // 한 궁에 여럿이면 34px 로 흩어지므로 이름표는 그 바깥(60px)에 둔다 — 안쪽에 두니 「자람」이 점 위에 앉았다
-      const dy = k === 'year' ? -52 : k === 'day' ? 54 : -62;
-      return `<text x="${x}" y="${y + dy}" text-anchor="middle" font-size="9.5" fill="var(--ink3)" letter-spacing=".1em">${이름}</text>`;
-    }).join('');
-    $('gwMap').innerHTML = `<svg viewBox="0 0 360 300" style="width:100%;max-width:420px;display:block;margin:0 auto">
-      <circle cx="180" cy="150" r="120" fill="none" stroke="var(--line2)" stroke-dasharray="2 4"/>
+    // 「배우자 자리」 표는 뺐다 — 점 이름(배우자)과 그 아래 「〇〇 같은」이 이미 그 자리를 말한다. 겹쳤다.
+    const 궁표 = [['월주', 70, 40], ['시주', 290, 40]].map(([n, x, y]) =>
+      `<text x="${x}" y="${y}" text-anchor="middle" font-size="9.5" fill="var(--ink3)" letter-spacing=".1em">${n}</text>`).join('');
+    $('gwMap').innerHTML = `<svg viewBox="0 0 360 310" style="width:100%;max-width:420px;display:block;margin:0 auto">
+      <line x1="70" y1="96" x2="180" y2="150" stroke="var(--line2)"/><line x1="70" y1="204" x2="180" y2="150" stroke="var(--line2)"/>
+      <line x1="290" y1="96" x2="180" y2="150" stroke="var(--line2)"/><line x1="290" y1="204" x2="180" y2="150" stroke="var(--line2)"/>
+      <line x1="180" y1="250" x2="180" y2="150" stroke="var(--line2)"/>
       ${궁표}
       <circle cx="180" cy="150" r="20" fill="var(--bg2)" stroke="var(--accent)" stroke-width="1.5"/>
       <text x="180" y="154" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink)">나</text>
       ${점}
     </svg>
-    <p class="hint" style="margin:6px 0 0;text-align:center">진한 점 드러남 · 점선 속에 · 흐린 점 안 나옴 · 鎖 묶임</p>`;
-    const 순 = { 겉: 0, 묶임: 1, 속: 2, 없음: 3 };
-    $('gwList').innerHTML = v.사람들.slice().sort((a, b) => 순[a.위치] - 순[b.위치]).map(s =>
-      '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
-      + '<div style="font-weight:700;font-size:13.5px">' + esc(s.이름)
-      + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(s.신들.join('·')) + ' · ' + esc(s.위치)
-      + (s.무게 ? ' · ' + esc(s.무게) : '') + '</span></div>'
-      + '<div style="margin-top:4px;line-height:1.62">' + esc(s.말) + '</div></div>').join('');
+    <p class="hint" style="margin:6px 0 0;text-align:center">자리가 사람이고, 자리에 앉은 글자가 그 사람의 모양입니다 · 鎖 묶임</p>`;
+    const 줄 = (제목, 부제, 본문) => '<div style="padding:11px 0;border-top:1px solid var(--line2)">'
+      + '<div style="font-weight:700;font-size:13.5px">' + esc(제목) + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(부제) + '</span></div>'
+      + '<div style="margin-top:4px;line-height:1.62">' + esc(본문) + '</div></div>';
+    $('gwList').innerHTML =
+      v.궁사람들.map(s => 줄(s.이름, s.궁이름 + (s.십신 ? ' · ' + s.십신 : ''), s.말)).join('')
+      + (v.글자사람들.length
+        ? '<p class="hint" style="margin:16px 0 4px;font-weight:700">자리가 없는 사람들 — 글자로 봅니다</p>'
+          + v.글자사람들.map(s => 줄(s.이름, s.신들.join('·') + ' · ' + s.위치, s.말)).join('')
+        : '');
     $('gwFoot').textContent = '잣대 공개 — ' + v.잣대;
   }
 
