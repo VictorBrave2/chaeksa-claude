@@ -388,6 +388,7 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
     window.scrollTo({ top: 0 });
+    try { renderChorus(tab); } catch (e) {}
     // 결제 이력 조회가 부팅 때 한 번 실패하면(네트워크·토큰 갱신) 그 세션 내내
     // 「산 게 없음」이었다 — 어제 2만원 낸 손님이 무료 화면을 보고 또 결제한다.
     // 탭을 옮길 때 조용히 다시 물어보고, 그제서야 산 게 나오면 이 탭을 다시 그린다.
@@ -2694,6 +2695,31 @@
     return '<div class="say-head"><span class="say-seal">' + 인 + '</span>' + 그림
       + '<span class="say-id"><b>' + esc(이름of(who)) + '</b>'
       + '<span>' + esc(직함of(who)) + '</span></span></div>';
+  }
+  // ── 코러스 — 콘텐츠마다 책사들이 한 번씩 나와 한 문장씩 (2026-09-03 「일반인은 누가 누군지 몰라」) ──
+  // 담당 책사를 두지 않는다. 그 화면의 물음에 대해 이 사람 값으로 쓴 발언의 첫 문장을
+  // 얼굴과 함께 세운다(chaeksadan.코러스). 할 말이 없는 탭은 비운다. 얼굴이 곧 삽화다.
+  function renderChorus(tab) {
+    const el = document.querySelector('.tab[data-tab="' + tab + '"]'); if (!el) return;
+    let box = el.querySelector('.chorus');
+    let 줄 = [];
+    if (R && window.ChaeksaDan && ChaeksaDan.코러스) { try { 줄 = ChaeksaDan.코러스(R, today, tab) || []; } catch (e) { 줄 = []; } }
+    if (!줄.length) { if (box) box.remove(); return; }
+    if (!box) {
+      box = document.createElement('div'); box.className = 'chorus';
+      // 첫 카드의 제목 아래. 제목이 없는 탭(나)은 맨 위.
+      const h = el.querySelector(':scope > section.card:not(.hide) > h2');
+      if (h) h.after(box);
+      else { const back = el.querySelector(':scope > .backhome'); if (back) back.after(box); else el.prepend(box); }
+    }
+    box.innerHTML = 줄.map((m, i) => {
+      const k = 책사키[m.축];
+      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, m.갈림) : '';
+      const 얼 = 파일
+        ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[m.축] || '') + '</span>\'">'
+        : '<span class="ch-seal">' + esc(책사인장[m.축] || '') + '</span>';
+      return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(m.축)) + '</b><p>' + esc(m.문장) + '</p></div></div>';
+    }).join('');
   }
   /** 한 줄. 새화자가 아니면(false) 얼굴 띠를 세우지 않는다. */
   function 발언줄(t, 새화자) {
