@@ -724,7 +724,17 @@
         if (st) { set('tiMonthBig', st.grade);
           // 「5월부터」가 내년 5월이면 해를 붙인다 — 안 붙이면 지난 5월로 읽힌다.
           const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 결이 바뀝니다') : '';
-          set('tiMonthSub', st.head + (언제 ? ' · ' + 언제 : '')); } } catch (e) {}
+          // 달력을 산 달이면 서른 칸에서 풀리는 날을 그대로 건다 — 산 것이 홈에서 보여야 다시 연다.
+          let 줄 = st.head + (언제 ? ' · ' + 언제 : '');
+          try {
+            if (window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month') && T.myDays) {
+              const v = T.myDays(R, today.getFullYear(), today.getMonth() + 1);
+              // 「풀리는 날」이 열아홉 날이면 소음이다(실측 19/30). 홈에는 점수 위 셋만, 날짜순으로.
+              const 셋 = v.좋은.slice().sort((a, b) => (b.점수 || 0) - (a.점수 || 0)).slice(0, 3).sort((a, b) => a.일 - b.일);
+              줄 = (셋.length ? '가장 풀리는 날 ' + 셋.map(r => r.일).join('·') + '일' : '크게 열리는 날이 없는 달') + ' · ' + st.head;
+            }
+          } catch (e) {}
+          set('tiMonthSub', 줄); } } catch (e) {}
       try { const yf = T.yearFlow(R, today.getFullYear(), today);
         set('tiYearBig', yf.bestTxt);
         set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
@@ -771,7 +781,14 @@
       : others.length === 1 ? others[0].name + '님과 대조해 보기'
       : others[0].name + ' 외 ' + (others.length - 1) + '명과 대조 가능');
   }
-  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => go(b.dataset.open));
+  // data-scroll 이 있으면 탭을 연 뒤 그 자리로 내린다 — 홈 「이달의 나」가 오늘 탭의 달력(#myMonth)으로 간다.
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {
+    go(b.dataset.open);
+    const id = b.dataset.scroll;
+    // go() 가 맨 위로 올린 뒤 탭이 그려지는 데 한 박자 걸린다 — 60ms 에 smooth 로 보냈더니
+    // 1초 뒤에도 10,000px 위에 있었다. 그려진 다음에 곧장 간다.
+    if (id) setTimeout(() => { const el = $(id); if (el) el.scrollIntoView({ block: 'start', behavior: 'auto' }); }, 260);
+  });
 
   // ───── 오늘 ─────
   function renderToday() {
@@ -1847,9 +1864,15 @@
       ${mw ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 공주님께는 날의 서열인가</p>${mw.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       <div class="pb-grid">` + v.rows.map(r => {
         const cls = r.점수 >= 72 ? ' good' : (r.점수 <= 30 ? ' bad' : '');
+        // 같은 달력의 다른 줄(docs/29 셋) — 그날 하늘에 온 글자가 돈·자리·인연 중 무엇인가.
+        // 오늘의 비서(chaeksadan.오늘)와 같은 잣대다: 재성=돈 · 관성=자리 · 배우자성=연.
+        const 무리 = { 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성' }[r.십신] || '';
+        const 여 = ((profile && profile.gender) || 'M') !== 'M';
+        const 표 = 무리 === '재성' ? (여 ? '돈' : '돈·연') : 무리 === '관성' ? (여 ? '자리·연' : '자리') : '';
         return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
-          <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span></div>`;
+          <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span>${표 ? `<span style="display:block;font-size:9px;color:var(--accent)">${표}</span>` : ''}</div>`;
       }).join('') + `</div>
+      <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 하늘에 온 글자가 <b>돈</b>(재성)인지 <b>자리</b>(관성)인지 <b>연</b>(배우자성)인지. 홈의 오늘 한마디와 같은 잣대입니다.</p>
       <p class="pb-h"><b>주 단위로 읽으면</b></p>${주절}
       <p class="pb-h"><b>풀리는 날${v.좋은.length ? ' — ' + v.좋은.map(r => r.일).join('·') + '일' : ''}</b></p>${좋은절}
       ${조심절 ? `<p class="pb-h"><b>조심할 날 — ${v.조심.map(r => r.일).join('·')}일</b></p>${조심절}` : ''}
