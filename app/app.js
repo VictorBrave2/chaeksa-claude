@@ -2839,6 +2839,40 @@
       out.신살 = 신살 || '오늘 걸리는 신살이 없습니다.';
       const 행 = (하늘 && 하늘.행동) || (땅 && 땅.행동) || (비 && 비.행동) || '';
       out.행동 = 행;
+      // ── 엮임 — 변질의 화면 표현 (제27조·제28조, 2026-09-04 「변질로 가자」) ──
+      // 원국만 풀었을 때와 오늘 지지를 더해 풀었을 때의 차이만. 합화·열림/부서짐·득실은 적지 않는다.
+      try {
+        const 줄 = [];
+        const 원 = E.branchRels(R.pillars), 운 = E.branchRels(R.pillars, [[tf.day.branch, '오늘']]);
+        const 키 = (x) => x.종류 + ':' + x.글자;
+        const 원성 = new Set(원.성립.map(키)), 운성 = new Set(운.성립.map(키));
+        const 자리말 = (x) => (x.자리 || []).filter(a => a !== '오늘').join('·');
+        const 받 = (w) => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 !== 0; };
+        const 토 = (독음, a, b) => 받(독음) ? a : b;
+        const 지독 = E.BRANCHES_KO[tf.day.branch], 지 = E.BRANCHES[tf.day.branch] + '(' + 지독 + ')';
+        // 오늘 글자가 새로 엮은 것
+        운.성립.filter(x => (x.자리 || []).includes('오늘')).forEach(x => {
+          줄.push('오늘 ' + 지 + 토(지독, '이', '가') + ' ' + 자리말(x) + '와 ' + x.글자 + ' ' + x.종류 + (x.종류 === '충' ? '입니다.' : '을 이룹니다.'));
+        });
+        // 원국에 있던 것이 뺏겨 풀린 것
+        원.성립.filter(x => !운성.has(키(x))).forEach(x => {
+          줄.push('원국의 ' + x.글자 + ' ' + x.종류 + '(' + 자리말(x) + ')' + (x.종류 === '충' ? '이 오늘은 묶입니다.' : '이 오늘 풀립니다.'));
+        });
+        // 원국에서 묶여 있다가 살아난 것(오늘 글자가 낀 것은 위에서 이미 말했다)
+        운.성립.filter(x => !원성.has(키(x)) && !(x.자리 || []).includes('오늘')).forEach(x => {
+          줄.push('묶여 있던 원국의 ' + x.글자 + ' ' + x.종류 + '(' + 자리말(x) + ')' + (x.종류 === '충' ? '이 살아납니다.' : '이 섭니다.'));
+        });
+        // 천간합 — 제28조: 첫 번은 묶이고, 대운·월간에 같은 글자가 이미 떠 있으면 둘째라 뚫린다
+        const du = E.currentDaeun(R, d);
+        [['year', '연간'], ['month', '월간'], ['hour', '시간']].forEach(([k, 이름]) => {
+          const pl = R.pillars[k]; if (!pl || !E.isHap(tf.day.stem, pl.stem)) return;
+          const 둘째 = (du && du.stem === tf.day.stem) || tf.month.stem === tf.day.stem;
+          const 글독 = E.STEMS_KO[tf.day.stem], 원독 = E.STEMS_KO[pl.stem];
+          const 글 = E.STEMS[tf.day.stem] + '(' + 글독 + ')', 원글 = E.STEMS[pl.stem] + '(' + 원독 + ')';
+          줄.push('오늘 ' + 글 + 토(글독, '이', '가') + ' 원국 ' + 이름 + ' ' + 원글 + 토(원독, '과', '와') + ' 합합니다 — ' + (둘째 ? '대운이나 이달에 같은 글자가 이미 떠 있어 둘째 글자입니다. 묶이지 않고 뚫립니다.' : '첫 번이라 오늘은 묶입니다.'));
+        });
+        out.엮임 = 줄.length ? 줄.join(' ') : '오늘 글자는 원국의 엮임을 바꾸지 않습니다.';
+      } catch (e) { out.엮임 = ''; }
     } catch (e) {}
     return out;
   }
@@ -2846,7 +2880,7 @@
     if (!r || !r.간지) return '';
     const 줄 = (k, v) => '<div class="dr-row"><b>' + k + '</b><span>' + esc(v) + '</span></div>';
     return '<p class="dr-head">' + esc(제목) + ' <i>' + esc(r.간지) + '일</i></p>'
-      + 줄('천간', r.천간) + 줄('지지', r.지지) + 줄('신살', r.신살)
+      + 줄('천간', r.천간) + 줄('지지', r.지지) + 줄('신살', r.신살) + (r.엮임 ? 줄('엮임', r.엮임) : '')
       + (r.행동 ? 줄('하나', r.행동) : '');
   }
   function renderDailyReport() {
@@ -2950,7 +2984,7 @@
       let 눈 = ''; try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate()); const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
       // 그날의 일일 리포트 — 홈의 오늘 리포트와 같은 꼴(천간·지지·신살·하나)
       const r = 일일리포트(t.d);
-      if (t.i > 0) ['천간', '지지', '신살', '행동'].forEach(k => { r[k] = String(r[k] || '').replace(/오늘/g, '그날'); });
+      if (t.i > 0) ['천간', '지지', '신살', '행동', '엮임'].forEach(k => { r[k] = String(r[k] || '').replace(/오늘/g, '그날'); });
       db.innerHTML = 리포트HTML(r, t.날말 + ' · ' + (t.d.getMonth() + 1) + '월 ' + t.d.getDate() + '일')
         + (눈 ? '<p class="eye">' + esc(눈) + '</p>' : '')
         + (t.i === 0 && t.비.탭 ? '<button class="wt-more" type="button">이 이야기로 가기 ▸</button>' : '');
