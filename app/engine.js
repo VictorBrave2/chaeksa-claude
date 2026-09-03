@@ -493,7 +493,8 @@
    *  @param 자리 [[지지, 자리이름], ...]  원국 넷 + (운이 있으면 그 지지)
    *  @return { 성립:[...], 보류:[...] }   보류는 「왜 성립 못 했는가」까지 남긴다
    */
-  function resolveBranches(자리) {
+  function resolveBranches(자리, opt) {
+    opt = opt || {};
     const 쓴 = {}, 성립 = [], 보류 = [];
     const 첫자리 = (b) => { for (let i = 0; i < 자리.length; i++) if (자리[i][0] === b) return i; return -1; };
     const 후보 = [];
@@ -502,8 +503,8 @@
       const 자 = g.map(첫자리);
       if (자.every(i => i >= 0)) 후보.push({ 급: 3, 이름: '삼합', 자리들: 자, 글자: g.map(b => BRANCHES[b]).join('') });
     });
-    // 반합 — 왕지 + 하나
-    SAMHAP.forEach(g => {
+    // 반합 — 왕지 + 하나. opt.반합 === false 면 안 본다(2026-09-04 엮임 — 사장님 「엮임에서 반합을 빼보자」)
+    if (opt.반합 !== false) SAMHAP.forEach(g => {
       const 왕 = 첫자리(g[1]);
       if (왕 < 0) return;
       [g[0], g[2]].forEach(b => {
@@ -542,12 +543,12 @@
   }
 
   /** 원국 지지의 형충회합. 순서대로 해소한 결과를 낸다. */
-  function branchRels(pillars, 추가) {
+  function branchRels(pillars, 추가, opt) {
     const 자리 = [[pillars.year.branch, '연지'], [pillars.month.branch, '월지'],
                   [pillars.day.branch, '일지']];
     if (pillars.hour) 자리.push([pillars.hour.branch, '시지']);
     (추가 || []).forEach(v => 자리.push(v));
-    return resolveBranches(자리);
+    return resolveBranches(자리, opt);
   }
 
   // ───────── 판정이 갈리는 자리 ─────────

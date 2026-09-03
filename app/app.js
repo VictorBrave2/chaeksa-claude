@@ -2843,7 +2843,8 @@
       // 원국만 풀었을 때와 오늘 지지를 더해 풀었을 때의 차이만. 합화·열림/부서짐·득실은 적지 않는다.
       try {
         const 줄 = [];
-        const 원 = E.branchRels(R.pillars), 운 = E.branchRels(R.pillars, [[tf.day.branch, '오늘']]);
+        // 반합은 안 본다(사장님 「엮임에서 반합을 빼보자」 2026-09-04) — 삼합 > 육합 > 충만
+        const 원 = E.branchRels(R.pillars, null, { 반합: false }), 운 = E.branchRels(R.pillars, [[tf.day.branch, '오늘']], { 반합: false });
         const 키 = (x) => x.종류 + ':' + x.글자;
         const 원성 = new Set(원.성립.map(키)), 운성 = new Set(운.성립.map(키));
         const 자리말 = (x) => (x.자리 || []).filter(a => a !== '오늘').join('·');
