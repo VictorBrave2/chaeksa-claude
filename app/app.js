@@ -389,6 +389,7 @@
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
     window.scrollTo({ top: 0 });
     try { renderChorus(tab); } catch (e) {}
+    if (tab !== 'home') 본표시(tab); else { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
     // 결제 이력 조회가 부팅 때 한 번 실패하면(네트워크·토큰 갱신) 그 세션 내내
     // 「산 게 없음」이었다 — 어제 2만원 낸 손님이 무료 화면을 보고 또 결제한다.
     // 탭을 옮길 때 조용히 다시 물어보고, 그제서야 산 게 나오면 이 탭을 다시 그린다.
@@ -467,6 +468,7 @@
     $('subtitle').textContent = `${nim()}의 책사단`;
     renderPeopleBtn();
     renderToday(); renderMe(); renderCal(); renderPartners(); renderHome();
+    try { renderWtHome(); } catch (e) { try { console.warn('홈 목록 실패:', e); } catch (e2) {} }
     go('home');
   }
 
@@ -2745,6 +2747,87 @@
       return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
         + g.본문들.map(t => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
     }).join('');
+  }
+  // ── 홈 — 웹툰 목록처럼 (2026-09-04 사장님 「네이버 웹툰 메인처럼」) ──
+  // 표지마다 얼굴, 제목은 그 사람 값으로 쓴 한 줄(약속), 시간순 탭, 오늘·최근 본 배지.
+  // 제목은 지어내지 않는다 — 열눈의 첫 마디 첫 문장. 값이 없는 콘텐츠는 분류 제목 그대로.
+  // 인기순·적중순은 없다(안 하기로 한 것). 순서는 시간순이다.
+  const 홈목록 = [
+    { tab: 'today',     묶음: '오늘', 이름: '오늘의 흐름',       기본: 'gungtong', 오늘: true },
+    { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',    기본: 'hyeopgi',  오늘: true },
+    { tab: 'today',     묶음: '이달', 이름: '이달의 나',         기본: 'unro',     오늘: true, scroll: 'myMonth', key: 'myMonth', 말탭: 'cal' },
+    { tab: 'year',      묶음: '올해', 이름: '올해의 나',         기본: 'unro' },
+    { tab: 'inyeon',    묶음: '올해', 이름: '인연이 오는 해',    기본: 'inyeon' },
+    { tab: 'jikcheop',  묶음: '올해', 이름: '자리가 열리는 해',  기본: 'cheonjik' },
+    { tab: 'life',      묶음: '올해', 이름: '인생 곡선',         기본: 'unro' },
+    { tab: 'ganmyeong', 묶음: '나',   이름: '책사단의 의논',     기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 갈린 자리는 갈린 채로' },
+    { tab: 'me',        묶음: '나',   이름: '타고난 바탕',       기본: 'japyung' },
+    { tab: 'dohwa',     묶음: '나',   이름: '나의 연애',         기본: 'inyeon' },
+    { tab: 'lovestory', 묶음: '나',   이름: '사랑 이야기',       기본: 'inyeon' },
+    { tab: 'jichim',    묶음: '나',   이름: '지칠 때와 채울 때', 기본: 'eokbu' },
+    { tab: 'naepyeon',  묶음: '나',   이름: '내 편이 되는 사람', 기본: 'japyung' },
+    { tab: 'moneystory',묶음: '나',   이름: '재물 이야기',       기본: 'jaemul' },
+    { tab: 'nokpae',    묶음: '나',   이름: '나의 재물 그릇',    기본: 'jaemul' },
+    { tab: 'gacha',     묶음: '나',   이름: '유형 카드',         기본: 'hyeopgi', 말: '789가지 가운데 한 장 — 간직하고 보내세요' },
+    { tab: 'compat',    묶음: '우리', 이름: '우리 둘 사이',      기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
+    { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들',       기본: 'gungwi' },
+  ];
+  function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
+  function renderWtHome() {
+    const box = $('wtHome'); if (!box || !R) return;
+    let 전체 = {};
+    // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
+    try { 전체 = (window.ChaeksaDan && ChaeksaDan.열눈전체) ? (ChaeksaDan.열눈전체(R, today, false) || {}) : {}; } catch (e) { 전체 = {}; }
+    let seen = {}; try { seen = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); } catch (e) {}
+    const 문장 = (t) => { const s = (String(t || '').split(/(?<=[.!?])\s+/)[0] || '').trim(); return s.length > 64 ? s.slice(0, 62) + '…' : s; };
+    const 쓴 = {};
+    const 타일 = 홈목록.map((h, i) => {
+      const 묶 = 전체[h.말탭 || h.tab] || [];
+      let 첫 = null, 말 = '';
+      outer: for (const g of 묶) for (const b of g.본문들) { const s = 문장(b); if (s && !쓴[s]) { 첫 = g; 말 = s; 쓴[s] = 1; break outer; } }
+      if (!첫 && 묶[0]) { 첫 = 묶[0]; 말 = 문장(묶[0].본문들[0]); }
+      let k = 첫 ? (책사키[첫.축] || h.기본) : h.기본;
+      // 오늘 자리는 오늘 값으로 — 뼈대 문장(「정관격입니다」)은 오늘의 제목이 아니다
+      if (h.tab === 'today' && !h.scroll) {
+        try { const 비 = ChaeksaDan.오늘 ? ChaeksaDan.오늘(R, today) : null; if (비 && 비.말) { 말 = 문장(비.말); k = 책사키[비.축] || k; } } catch (e) {}
+      } else if (h.tab === 'ban') {
+        try { const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); 말 = '오늘 ' + f.pillar(tf.day) + '일 — 조심할 것 하나'; } catch (e) {}
+      } else if (h.key === 'myMonth') {
+        const big = $('tiMonthBig') ? $('tiMonthBig').textContent.trim() : '', sub = $('tiMonthSub') ? $('tiMonthSub').textContent.trim() : '';
+        if (big) 말 = (big + ' — ' + sub).replace(/ — $/, '');
+      }
+      if (!말) 말 = h.말 || '';
+      const n = 묶.reduce((s, g) => s + g.본문들.length, 0);
+      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 80, false) : '';
+      const 인 = 첫 ? (책사인장[첫.축] || '策') : '策';
+      return Object.assign({}, h, { k, 말, n, 파일, 인, seen: !!seen[h.key || h.tab], id: h.key || h.tab });
+    });
+    const 그림 = (t, cls) => t.파일
+      ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">'
+      : '<span class="' + cls + '">' + esc(t.인) + '</span>';
+    // 1) 지금! 오늘 먼저 볼 것 — 시간순 여섯 장(번호는 순서지 인기가 아니다)
+    const 앞 = 타일.slice(0, 6);
+    let h = '<div class="wt-head"><b>지금! 먼저 볼 것</b><span>시간순 · 오늘 → 이달 → 올해</span></div><div class="wt-strip">'
+      + 앞.map((t, i) => '<button class="wt-post" data-i="' + 타일.indexOf(t) + '">' + 그림(t, 'wt-seal') + '<span class="num">' + (i + 1) + '</span><b>' + esc(t.말 || t.이름) + '</b></button>').join('')
+      + '</div>';
+    // 2) 탭 — 전체·오늘·이달·올해·나·우리
+    const 묶들 = ['전체', '오늘', '이달', '올해', '나', '우리'];
+    h += '<div class="wt-tabs">' + 묶들.map((m, i) => '<button data-f="' + m + '"' + (i === 0 ? ' class="on"' : '') + '>' + m + '</button>').join('') + '</div>';
+    // 3) 격자 — 표지(얼굴) · 배지 · 제목(약속) · 분류
+    h += '<div class="wt-grid">' + 타일.map((t, i) =>
+      '<button class="wt-tile" data-i="' + i + '" data-f="' + t.묶음 + '"><div class="wt-cover">' + 그림(t, 'wt-seal')
+      + '<span class="wt-day">' + t.묶음 + '</span>' + (t.오늘 ? '<i class="wt-up">오늘</i>' : '') + '</div>'
+      + '<b>' + esc(t.말 || t.이름) + '</b>'
+      + '<span>' + esc(t.말 ? t.이름 : '') + (t.n ? (t.말 ? ' · ' : '') + '마디 ' + t.n : '') + '</span>'
+      + (t.seen ? '<em>최근 본</em>' : '') + '</button>').join('') + '</div>';
+    box.innerHTML = h; box.classList.remove('hide');
+    const 열기 = (t) => { 본표시(t.id); go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
+    box.querySelectorAll('.wt-post, .wt-tile').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.wt-tabs button').forEach(b => { b.onclick = () => {
+      box.querySelectorAll('.wt-tabs button').forEach(x => x.classList.toggle('on', x === b));
+      const f = b.dataset.f;
+      box.querySelectorAll('.wt-tile').forEach(t => { t.hidden = !(f === '전체' || t.dataset.f === f); });
+    }; });
   }
   /** 한 줄. 새화자가 아니면(false) 얼굴 띠를 세우지 않는다. */
   function 발언줄(t, 새화자) {

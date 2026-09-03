@@ -920,6 +920,24 @@
     return 묶;
   }
 
+  /** 모든 탭의 열눈을 한 번에 — 홈 표지가 열여덟 탭을 다 부르는데 모으기를 한 번만 돌린다. */
+  function 열눈전체(R, now, 돌림) {
+    const 모 = 모으기(R, now); if (!모) return {};
+    if (돌림 === false) now = null;   // 홈 표지는 안 돌린다 — 첫 절이 그 탭의 물음이라 제목이 흔들리면 안 된다
+    const out = {};
+    Object.keys(코러스절).forEach(tab => {
+      const 묶 = []; const 본 = {};
+      코러스절[tab].forEach(k => (모.절[k] || []).forEach(m => {
+        const t = 다듬기(m.본문); if (!t || 본[t]) return; 본[t] = 1;
+        let g = 묶.find(x => x.축 === m.축); if (!g) { g = { 축: m.축, 본문들: [] }; 묶.push(g); }
+        g.본문들.push(t);
+      }));
+      if (now && 묶.length > 1) { const d = Math.floor(now.getTime() / 86400000) % 묶.length; out[tab] = 묶.slice(d).concat(묶.slice(0, d)); }
+      else out[tab] = 묶;
+    });
+    return out;
+  }
+
   function 코러스(R, now, tab) {
     const 절들 = 코러스절[tab]; if (!절들) return [];
     const 모 = 모으기(R, now); if (!모) return [];
@@ -1129,5 +1147,5 @@
     return Object.assign({ 일진, 십신: 십, 사건: !!사건.length, 후보: 목록.map(x => x.축) }, 고);
   }
 
-  global.ChaeksaDan = { 의논, 오늘, 코러스, 열눈, 그사람 };
+  global.ChaeksaDan = { 의논, 오늘, 코러스, 열눈, 열눈전체, 그사람 };
 })(window);
