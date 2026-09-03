@@ -2816,7 +2816,49 @@
     { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들은',        기본: 'gungwi' },
   ];
   function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
+  // ── 일일 리포트 — 오늘의 운세 꼴 (2026-09-04 사장님 「오늘 / 천간 / 지지 / 신살 / 오늘의 운세 식으로」) ──
+  // 세 줄이다: 천간(하늘 글자) · 지지(땅 글자) · 신살. 값이 없는 줄은 없다고 적는다. 지어내지 않는다.
+  function 일일리포트(d) {
+    const out = { 날: d, 천간: '', 지지: '', 신살: '', 행동: '', 간지: '', 눈: [] };
+    try {
+      const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, d.getDate());
+      out.간지 = f.pillar(tf.day) + '(' + f.pillarKo(tf.day) + ')';
+      let 비 = null; try { 비 = ChaeksaDan.오늘(R, d); } catch (e) {}
+      const 모두 = (비 && 비.모두) || [];
+      const 머리 = /^오늘 [^ ]+일 — /;
+      const 하늘 = 모두.find(x => /하늘에/.test(x.말));
+      const 땅 = 모두.find(x => /땅의 글자|지지/.test(x.말));
+      let k = []; try { k = ChaeksaDan.육안글자(R, d, tf.day.stem, tf.day.branch, { 궁합: true }) || []; } catch (e) {}
+      out.눈 = k;
+      const 눈of = (축) => { const c = k.find(x => x.축 === 축 && x.판 !== '—' && x.근거); return c ? c.근거 : ''; };
+      const 적천 = 눈of('적천수'), 궁통 = 눈of('궁통보감'), 신살 = 눈of('통설·신살');
+      // 천간 — 하늘 글자 사건이 있으면 그것, 없으면 그 글자의 기운이 몸에 어떤지(적천)·계절에 어떤지(궁통)
+      out.천간 = 하늘 ? 하늘.말.replace(머리, '') : [적천, 궁통].filter(Boolean).join(' ') || '이 글자를 두고 특별히 짚을 것이 없습니다.';
+      // 지지 — 땅 글자 사건이 있으면 그것, 없으면 일지 충(적천 근거에 「충」), 그것도 없으면 없다고
+      out.지지 = 땅 ? 땅.말.replace(머리, '') : (/충/.test(적천) ? 적천 : '배우자 자리와 합도 충도 없고, 돈·자리·인연의 글자도 아닙니다.');
+      out.신살 = 신살 || '오늘 걸리는 신살이 없습니다.';
+      const 행 = (하늘 && 하늘.행동) || (땅 && 땅.행동) || (비 && 비.행동) || '';
+      out.행동 = 행;
+    } catch (e) {}
+    return out;
+  }
+  function 리포트HTML(r, 제목) {
+    if (!r || !r.간지) return '';
+    const 줄 = (k, v) => '<div class="dr-row"><b>' + k + '</b><span>' + esc(v) + '</span></div>';
+    return '<p class="dr-head">' + esc(제목) + ' <i>' + esc(r.간지) + '일</i></p>'
+      + 줄('천간', r.천간) + 줄('지지', r.지지) + 줄('신살', r.신살)
+      + (r.행동 ? 줄('하나', r.행동) : '');
+  }
+  function renderDailyReport() {
+    const sc = $('homeScene'); if (!sc || !R) return;
+    let box = document.getElementById('dailyReport');
+    if (!box) { box = document.createElement('section'); box.className = 'card daily'; box.id = 'dailyReport'; sc.after(box); }
+    const r = 일일리포트(today);
+    const h = 리포트HTML(r, '오늘 · ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일');
+    box.innerHTML = h; box.classList.toggle('hide', !h);
+  }
   function renderWtHome() {
+    renderDailyReport();
     const box = $('wtHome'); if (!box || !R) return;
     let 전체 = {};
     // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
@@ -2906,10 +2948,10 @@
       const t = 이레.find(x => x.i === +b.dataset.w); const db = $('wtDay'); if (!t || !db) return;
       box.querySelectorAll('.wt-post').forEach(x => x.classList.toggle('on', x === b));
       let 눈 = ''; try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate()); const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
-      db.innerHTML = '<p class="k">' + esc(t.날말) + ' · ' + (t.d.getMonth() + 1) + '월 ' + t.d.getDate() + '일 · ' + esc(이름of(t.비.축)) + '</p>'
-        + '<p>' + esc(t.비.말) + '</p>' + (t.비.행동 ? '<p class="act">' + esc(t.비.행동) + '</p>' : '')
-        // 그날 사건 전부 — 하늘 글자와 땅 글자를 본 사람이 다르면 다 세운다(고른 말은 위에 있으니 뺀다)
-        + (t.모두 || []).filter(x => x.말 !== t.비.말).map(x => '<p class="more"><b>' + esc(이름of(x.축)) + '</b> ' + esc(x.말) + (x.행동 ? ' <span class="act">' + esc(x.행동) + '</span>' : '') + '</p>').join('')
+      // 그날의 일일 리포트 — 홈의 오늘 리포트와 같은 꼴(천간·지지·신살·하나)
+      const r = 일일리포트(t.d);
+      if (t.i > 0) ['천간', '지지', '신살', '행동'].forEach(k => { r[k] = String(r[k] || '').replace(/오늘/g, '그날'); });
+      db.innerHTML = 리포트HTML(r, t.날말 + ' · ' + (t.d.getMonth() + 1) + '월 ' + t.d.getDate() + '일')
         + (눈 ? '<p class="eye">' + esc(눈) + '</p>' : '')
         + (t.i === 0 && t.비.탭 ? '<button class="wt-more" type="button">이 이야기로 가기 ▸</button>' : '');
       db.classList.remove('hide');
