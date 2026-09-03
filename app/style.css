@@ -1224,6 +1224,16 @@ details.fold > .tiles { margin-top: 10px; }
 .tier-legend{margin:0 0 10px;font-size:11px;color:var(--ink3);line-height:2}
 .tier-legend .tier{margin:0 2px 0 0}
 
+/* 육안(六眼) — 여섯 축을 나란히(2026-09-04). 좋다·나쁘다·열림·표시·— */
+.six{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 10px}
+.six .sx{padding:8px 9px 9px;border-radius:10px;background:var(--card2);border:1px solid var(--line);min-height:72px}
+.six .sx b{display:block;font-size:10.5px;color:var(--ink3);letter-spacing:.04em;font-weight:700}
+.six .sx i{display:block;font-style:normal;font-family:var(--letter);font-size:18px;font-weight:700;margin:2px 0 3px;color:var(--ink3)}
+.six .sx.good i{color:#2a9d5c}.six .sx.bad i{color:var(--accent)}.six .sx.open i{color:#b8862b}.six .sx.mark i{color:var(--ink2)}
+.six .sx span{display:block;font-size:10.5px;line-height:1.45;color:var(--ink2)}
+.six .sx .tier{margin:5px 0 0}
+.chorus .six .sx{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12)}
+
 /* 홈 — 웹툰 목록처럼(2026-09-04 「네이버 웹툰 메인처럼」). 표지에 얼굴, 제목은 약속 한 줄, 시간순 탭 */
 .wt{margin:0 0 18px}
 .wt-head{display:flex;align-items:baseline;gap:8px;margin:6px 2px 10px}

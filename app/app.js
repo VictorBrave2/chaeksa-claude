@@ -2712,7 +2712,9 @@
       if (h) h.after(box);
       else { const back = el.querySelector(':scope > .backhome'); if (back) back.after(box); else el.prepend(box); }
     }
-    box.innerHTML = 열눈HTML(묶, '이 화면을 두고');
+    // 육안 — 오늘·이달·올해는 여섯 축(자평·적천·궁통·잣대·통설 둘)이 먼저 선다(2026-09-04)
+    const 단위 = tab === 'today' ? '오늘' : tab === 'year' ? '올해' : '';
+    box.innerHTML = (단위 ? 육안HTML(단위) : '') + 열눈HTML(묶, '이 화면을 두고');
     // 오늘 탭에는 「이달의 나」 달력이 같이 산다 — 그 앞에 이달의 눈을 따로 세운다.
     // 달력(#myMonth)은 renderToday 가 나중에 만드니 한 박자 뒤에 붙인다.
     if (tab === 'today') setTimeout(() => {
@@ -2721,8 +2723,20 @@
       let 묶2 = []; try { 묶2 = ChaeksaDan.열눈(R, today, 'cal') || []; } catch (e) {}
       if (!묶2.length) { if (b2) b2.remove(); return; }
       if (!b2) { b2 = document.createElement('div'); b2.id = 'chorusMonth'; b2.className = 'chorus tenbox'; mm.parentNode.insertBefore(b2, mm); }
-      b2.innerHTML = 열눈HTML(묶2, '이달을 두고');
+      b2.innerHTML = 육안HTML('이달') + 열눈HTML(묶2, '이달을 두고');
     }, 0);
+  }
+  /** 여섯 칸 — 갈리는 채로 나란히. 평균 내지 않는다. */
+  function 육안HTML(단위) {
+    let 칸 = []; try { 칸 = (window.ChaeksaDan && ChaeksaDan.육안) ? ChaeksaDan.육안(R, today, 단위) : []; } catch (e) { 칸 = []; }
+    if (!칸.length) return '';
+    const cls = { 좋다: 'good', 나쁘다: 'bad', 열림: 'open', 표시: 'mark' };
+    const E2 = window.ChaeksaEngine;
+    let 대상 = '';
+    try { const tf = E2.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); const pl = 단위 === '오늘' ? tf.day : 단위 === '이달' ? tf.month : tf.year; 대상 = E2.fmt.pillar(pl) + (단위 === '오늘' ? '일' : 단위 === '이달' ? '월' : '년'); } catch (e) {}
+    return '<p class="mnk">' + esc(단위) + ' ' + esc(대상) + ' — 여섯 눈</p><div class="six">' + 칸.map(c =>
+      '<div class="sx ' + (cls[c.판] || 'none') + '"><b>' + esc(c.축) + '</b><i>' + esc(c.판) + '</i><span>' + esc(c.근거 || '') + '</span>' + 층칩(c.층) + '</div>').join('')
+      + '</div><p class="tier-legend">여섯 눈은 평균을 내지 않습니다 — 갈리는 자리가 곧 읽을 것입니다. 잣대 칸은 좋고 나쁨을 매기지 않습니다.</p>';
   }
   // 층 칩 — 누가 그렇게 말하는가. 원전(책) · 잣대(책사의 판, 실측) · 통설(유파 갈림)
   const 층칩 = (층) => 층 ? '<i class="tier tier-' + 층 + '" title="' + ({ 원전: '자평진전·궁통보감·삼명통회가 말한 것', 잣대: '책사의 판 — 3,000판 실측으로 갈리는지 본 것', 통설: '유파에 따라 갈리는 통설' }[층] || '') + '">' + 층 + '</i>' : '';
