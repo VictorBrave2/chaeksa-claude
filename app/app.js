@@ -2860,15 +2860,22 @@
       const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 20, false) : '';
       const 날말 = i === 0 ? '오늘' : i === 1 ? '내일' : (['일','월','화','수','목','금','토'][d.getDay()] + '요일');
       // 고르기는 「오늘」이라고 말한다 — 그날 이름으로 바꿔 부른다(「내일 오는 화 기운은」).
-      if (i > 0) 비 = Object.assign({}, 비, { 말: String(비.말).replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(비.행동 || '').replace(/오늘/g, '그날') });
-      이레.push({ i, d, 비, k, 파일, 인: 책사인장[비.축] || '策', 날말 });
+      const 날로 = (x) => i > 0 ? Object.assign({}, x, { 말: String(x.말).replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(x.행동 || '').replace(/오늘/g, '그날') }) : x;
+      const 모두 = (비.모두 || []).map(날로);
+      비 = 날로(비);
+      // 땅 줄 — 지지를 말하는 사건(땅의 글자·지지·합·충) 가운데 고른 말이 아닌 것 하나
+      const 땅 = 모두.find(x => x.말 !== 비.말 && /땅의 글자|지지/.test(x.말)) || null;
+      이레.push({ i, d, 비, 모두, 땅, k, 파일, 인: 책사인장[비.축] || '策', 날말 });
     }
     // 이번 주 조심할 날 하나 (사장님 「조심할 날 하나 ㄱㄱ」) — 배점 없이, 그날 글자를 나쁘게 보는 눈의 수로만.
     // 둘 이상이어야 「조심」이다. 같으면 가까운 날. 하나도 없으면 없다고 말한다.
     이레.forEach(t => {
       try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate());
         const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true });
-        t.나쁨 = k.filter(c => c.판 === '나쁘다'); t.간지 = f.pillar(tf2.day); } catch (e) { t.나쁨 = []; }
+        t.나쁨 = k.filter(c => c.판 === '나쁘다'); t.간지 = f.pillar(tf2.day);
+        // 지지 사건이 없는 날은 신살 눈(공망·도화·역마·귀인)으로 땅 줄을 채운다 — 값이 있을 때만
+        if (!t.땅) { const s = k.find(c => c.축 === '통설·신살' && c.판 !== '—' && c.근거); if (s) t.땅 = { 축: '택일', 말: s.근거, 신살: true }; }
+      } catch (e) { t.나쁨 = []; }
     });
     const 조심 = 이레.reduce((b, t) => (t.나쁨.length >= 2 && (!b || t.나쁨.length > b.나쁨.length)) ? t : b, null);
     if (조심) 조심.조심 = true;
@@ -2879,7 +2886,7 @@
         : '<p class="wt-care none">이번 주에는 유난히 조심할 날이 없습니다 — 나쁘게 보는 눈이 둘 넘게 겹치는 날이 없습니다.</p>')
       + '<div class="wt-strip" id="wtWeek">'
       + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
-        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^\S+ [^ ]+일 — /, '')) + '</b></button>').join('')
+        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^\S+ [^ ]+일 — /, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^\S+ [^ ]+일 — /, '')) + '</small>' : '') + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>';
     // 2) 탭 — 전체·오늘·이달·올해·나·우리
     const 묶들 = ['전체', '오늘', '이달', '올해', '나', '우리'];
@@ -2901,6 +2908,8 @@
       let 눈 = ''; try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate()); const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
       db.innerHTML = '<p class="k">' + esc(t.날말) + ' · ' + (t.d.getMonth() + 1) + '월 ' + t.d.getDate() + '일 · ' + esc(이름of(t.비.축)) + '</p>'
         + '<p>' + esc(t.비.말) + '</p>' + (t.비.행동 ? '<p class="act">' + esc(t.비.행동) + '</p>' : '')
+        // 그날 사건 전부 — 하늘 글자와 땅 글자를 본 사람이 다르면 다 세운다(고른 말은 위에 있으니 뺀다)
+        + (t.모두 || []).filter(x => x.말 !== t.비.말).map(x => '<p class="more"><b>' + esc(이름of(x.축)) + '</b> ' + esc(x.말) + (x.행동 ? ' <span class="act">' + esc(x.행동) + '</span>' : '') + '</p>').join('')
         + (눈 ? '<p class="eye">' + esc(눈) + '</p>' : '')
         + (t.i === 0 && t.비.탭 ? '<button class="wt-more" type="button">이 이야기로 가기 ▸</button>' : '');
       db.classList.remove('hide');

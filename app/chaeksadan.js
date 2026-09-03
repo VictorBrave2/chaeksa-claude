@@ -1408,7 +1408,8 @@
     const 날번 = Math.floor((now - t0) / 86400000) + now.getFullYear() * 400;
     const 씨 = ((씨앗(R) | 0) ^ 날번) >>> 0;
     const 고 = 목록[씨 % 목록.length];
-    return Object.assign({ 일진, 십신: 십, 사건: !!사건.length, 후보: 목록.map(x => x.축) }, 고);
+    // 모두: 그날 사건 전부(하늘·땅). 홈의 이레가 하늘 한 줄 아래 땅 한 줄을 같이 세운다(2026-09-04 사장님 「오늘부터에도 지지 의견」).
+    return Object.assign({ 일진, 십신: 십, 사건: !!사건.length, 후보: 목록.map(x => x.축), 모두: 목록.slice() }, 고);
   }
 
   global.ChaeksaDan = { 의논, 오늘, 코러스, 열눈, 열눈전체, 그사람, 육안, 육안글자, 육안줄, 육안요약, 공주님말 };

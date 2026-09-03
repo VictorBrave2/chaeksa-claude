@@ -1365,3 +1365,9 @@ details.fold > .tiles { margin-top: 10px; }
 .wt-care p{margin:0 0 3px}
 .wt-care.none{color:var(--ink3);font-size:13px;background:none;border-color:var(--line)}
 .wt-post.care .wt-up{background:var(--accent)}
+
+/* 이레 타일 — 하늘 한 줄 아래 땅 한 줄 · 펼침 상자의 나머지 사건 */
+.wt-post b small{display:block;margin-top:3px;font-size:10.5px;line-height:1.35;color:#cfc7e6;font-weight:400}
+.wt-daybox .more{color:var(--ink2);font-size:13.5px}
+.wt-daybox .more b{color:var(--ink);margin-right:4px}
+.wt-daybox .more .act{color:var(--ink3)}
