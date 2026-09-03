@@ -2849,10 +2849,24 @@
       ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">'
       : '<span class="' + cls + '">' + esc(t.인) + '</span>';
     // 1) 지금! 오늘 먼저 볼 것 — 시간순 여섯 장(번호는 순서지 인기가 아니다)
-    const 앞 = 타일.slice(0, 6);
-    let h = '<div class="wt-head"><b>지금! 먼저 볼 것</b><span>시간순 · 오늘 → 이달 → 올해</span></div><div class="wt-strip">'
-      + 앞.map((t, i) => '<button class="wt-post" data-i="' + 타일.indexOf(t) + '">' + 그림(t, 'wt-seal') + '<span class="num">' + (i + 1) + '</span><b>' + esc(t.말 || t.이름) + '</b></button>').join('')
-      + '</div>';
+    // 1) 오늘부터 이레 (2026-09-04 사장님 「다음달이 궁금하진 않아, 오늘~다음주까지 집중」)
+    //    날마다 그날의 책사 얼굴과 한 줄. 오늘의 한마디와 같은 고르기(chaeksadan.오늘)를 날짜만 바꿔 돌린다.
+    const 이레 = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      let 비 = null; try { 비 = ChaeksaDan.오늘 ? ChaeksaDan.오늘(R, d) : null; } catch (e) {}
+      if (!비 || !비.말) continue;
+      const k = 책사키[비.축] || 'jwajang';
+      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 20, false) : '';
+      const 날말 = i === 0 ? '오늘' : i === 1 ? '내일' : (['일','월','화','수','목','금','토'][d.getDay()] + '요일');
+      // 고르기는 「오늘」이라고 말한다 — 그날 이름으로 바꿔 부른다(「내일 오는 화 기운은」).
+      if (i > 0) 비 = Object.assign({}, 비, { 말: String(비.말).replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(비.행동 || '').replace(/오늘/g, '그날') });
+      이레.push({ i, d, 비, k, 파일, 인: 책사인장[비.축] || '策', 날말 });
+    }
+    let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div><div class="wt-strip" id="wtWeek">'
+      + 이레.map(t => '<button class="wt-post" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
+        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + '</i><b>' + esc(문장(t.비.말).replace(/^\S+ [^ ]+일 — /, '')) + '</b></button>').join('')
+      + '</div><div class="wt-daybox hide" id="wtDay"></div>';
     // 2) 탭 — 전체·오늘·이달·올해·나·우리
     const 묶들 = ['전체', '오늘', '이달', '올해', '나', '우리'];
     h += '<div class="wt-tabs">' + 묶들.map((m, i) => '<button data-f="' + m + '"' + (i === 0 ? ' class="on"' : '') + '>' + m + '</button>').join('') + '</div>';
@@ -2865,7 +2879,19 @@
       + (t.seen ? '<em>최근 본</em>' : '') + '</button>').join('') + '</div>';
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
-    box.querySelectorAll('.wt-post, .wt-tile').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.wt-tile').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    // 이레 — 누르면 그날을 그 자리에서 편다(말 전부 · 행동 · 그날 글자가 어떻게 오는지). 오늘은 그 탭으로도 간다.
+    box.querySelectorAll('.wt-post').forEach(b => { b.onclick = () => {
+      const t = 이레.find(x => x.i === +b.dataset.w); const db = $('wtDay'); if (!t || !db) return;
+      box.querySelectorAll('.wt-post').forEach(x => x.classList.toggle('on', x === b));
+      let 눈 = ''; try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate()); const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
+      db.innerHTML = '<p class="k">' + esc(t.날말) + ' · ' + (t.d.getMonth() + 1) + '월 ' + t.d.getDate() + '일 · ' + esc(이름of(t.비.축)) + '</p>'
+        + '<p>' + esc(t.비.말) + '</p>' + (t.비.행동 ? '<p class="act">' + esc(t.비.행동) + '</p>' : '')
+        + (눈 ? '<p class="eye">' + esc(눈) + '</p>' : '')
+        + (t.i === 0 && t.비.탭 ? '<button class="wt-more" type="button">이 이야기로 가기 ▸</button>' : '');
+      db.classList.remove('hide');
+      const m = db.querySelector('.wt-more'); if (m) m.onclick = () => go(t.비.탭);
+    }; });
     box.querySelectorAll('.wt-tabs button').forEach(b => { b.onclick = () => {
       box.querySelectorAll('.wt-tabs button').forEach(x => x.classList.toggle('on', x === b));
       const f = b.dataset.f;
