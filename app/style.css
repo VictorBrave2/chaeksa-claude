@@ -1212,6 +1212,18 @@ details.fold > .tiles { margin-top: 10px; }
 /* 띠가 선 뒤의 말 — 붙여서 한 덩이로 읽히게 */
 .say-head + .gm-say{margin-top:9px}
 
+/* 층 칩 — 누가 그렇게 말하는가(2026-09-04 「세 층으로 나누자」). 원전 · 잣대 · 통설 */
+.tier{display:inline-block;font-size:10px;line-height:1;padding:3px 6px;border-radius:4px;margin-left:6px;
+  vertical-align:middle;font-style:normal;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.tier-원전{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line)}
+.tier-잣대{background:var(--bg2);color:var(--ink2);border:1px solid var(--line2)}
+.tier-통설{background:transparent;color:var(--ink3);border:1px dashed var(--line2)}
+.gm-say .tier{margin-left:8px}
+.ch-row .tier{background:rgba(255,255,255,.1);color:#e6c98a;border-color:rgba(230,201,138,.4)}
+.ch-row .tier-통설{color:#c9c0e6;border-color:rgba(201,192,230,.4)}
+.tier-legend{margin:0 0 10px;font-size:11px;color:var(--ink3);line-height:2}
+.tier-legend .tier{margin:0 2px 0 0}
+
 /* 홈 — 웹툰 목록처럼(2026-09-04 「네이버 웹툰 메인처럼」). 표지에 얼굴, 제목은 약속 한 줄, 시간순 탭 */
 .wt{margin:0 0 18px}
 .wt-head{display:flex;align-items:baseline;gap:8px;margin:6px 2px 10px}

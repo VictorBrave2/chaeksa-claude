@@ -2749,16 +2749,19 @@
       b2.innerHTML = 열눈HTML(묶2, '이달을 두고');
     }, 0);
   }
+  // 층 칩 — 누가 그렇게 말하는가. 원전(책) · 잣대(책사의 판, 실측) · 통설(유파 갈림)
+  const 층칩 = (층) => 층 ? '<i class="tier tier-' + 층 + '" title="' + ({ 원전: '자평진전·궁통보감·삼명통회가 말한 것', 잣대: '책사의 판 — 3,000판 실측으로 갈리는지 본 것', 통설: '유파에 따라 갈리는 통설' }[층] || '') + '">' + 층 + '</i>' : '';
+  const 층범례 = '<p class="tier-legend"><i class="tier tier-원전">원전</i> 책이 말한 것 · <i class="tier tier-잣대">잣대</i> 책사의 판, 실측으로 갈린 것 · <i class="tier tier-통설">통설</i> 유파가 갈리는 것</p>';
   function 열눈HTML(묶, 제목) {
     const 총 = 묶.reduce((s, g) => s + g.본문들.length, 0);
-    return '<p class="mnk">' + 묶.length + '명이 ' + esc(제목) + ' — ' + 총 + '마디</p>' + 묶.map((g, i) => {
+    return '<p class="mnk">' + 묶.length + '명이 ' + esc(제목) + ' — ' + 총 + '마디</p>' + 층범례 + 묶.map((g, i) => {
       const k = 책사키[g.축];
       const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, false) : '';
       const 얼 = 파일
         ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[g.축] || '') + '</span>\'">'
         : '<span class="ch-seal">' + esc(책사인장[g.축] || '') + '</span>';
       return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
-        + g.본문들.map(t => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
+        + g.본문들.map((t, j) => '<p>' + esc(t) + 층칩(g.층들 && g.층들[j]) + '</p>').join('') + '</div></div>';
     }).join('');
   }
   // ── 홈 — 웹툰 목록처럼 (2026-09-04 사장님 「네이버 웹툰 메인처럼」) ──
@@ -2849,10 +2852,12 @@
     if (!m) return '<p>' + esc(t) + '</p>';
     // 발언 번호(①②③…)가 곧 자리다. 번호가 없는 줄(맺음말)은 0.
     const 자리 = m[1] ? 번호자리(m[1]) : 0;
-    const 본문 = t.slice(m[0].length);
+    // 층 꼬리 ⟪원전|잣대|통설⟫ 를 떼어 칩으로 찍는다(2026-09-04 세 층). 옛 캐시(꼬리 없음)는 칩 없이 그대로.
+    let 본문 = t.slice(m[0].length), 층 = '';
+    const tm = 본문.match(/\s*⟪(원전|잣대|통설)⟫\s*$/); if (tm) { 층 = tm[1]; 본문 = 본문.slice(0, tm.index); }
     return (새화자 === false ? '' : 얼굴띠(m[2], 자리, 받아치는가(본문, m[2])))
       // 번호는 자리(얼굴 변주·맺음 분리)에만 쓰고 화면에는 안 찍는다(2026-09-03 「멘트 칠 때 앞에 번호가 필요한가」).
-      + '<p class="gm-say">' + esc(본문) + '</p>';
+      + '<p class="gm-say">' + esc(본문) + 층칩(층) + '</p>';
   }
   /** 여러 줄. 같은 책사가 이어 말하면 얼굴을 다시 세우지 않는다 —
    *  안 그러면 무료 의논 스무 발언에 얼굴이 스무 번 나온다. */
