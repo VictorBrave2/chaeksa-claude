@@ -2803,17 +2803,15 @@
     { tab: 'year',      묶음: '올해', 이름: '올해 나는',            기본: 'unro' },
     { tab: 'inyeon',    묶음: '올해', 이름: '인연은 언제 오나',     기본: 'inyeon' },
     { tab: 'jikcheop',  묶음: '올해', 이름: '일은 언제 풀리나',     기본: 'cheonjik' },
-    { tab: 'life',      묶음: '올해', 이름: '내 인생은 언제 오르나', 기본: 'unro' },
+    // 인생 곡선(life)·곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
     { tab: 'ganmyeong', 묶음: '나',   이름: '나를 두고 열 사람이',  기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 말이 갈리면 갈린 채로' },
     { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
-    { tab: 'dohwa',     묶음: '나',   이름: '나는 어떻게 사랑하나', 기본: 'inyeon' },
     { tab: 'lovestory', 묶음: '나',   이름: '어떤 사람이 오나',     기본: 'inyeon' },
     { tab: 'jichim',    묶음: '나',   이름: '나는 언제 지치나',     기본: 'eokbu' },
     { tab: 'naepyeon',  묶음: '나',   이름: '내 편은 누구인가',       기본: 'japyung' },
     { tab: 'moneystory',묶음: '나',   이름: '돈은 어디서 오나',     기본: 'jaemul' },
     { tab: 'nokpae',    묶음: '나',   이름: '돈을 어떻게 쓰나',     기본: 'jaemul' },
     { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
-    { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들은',        기본: 'gungwi' },
   ];
   function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
   // ── 일일 리포트 — 오늘의 운세 꼴 (2026-09-04 사장님 「오늘 / 천간 / 지지 / 신살 / 오늘의 운세 식으로」) ──
