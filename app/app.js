@@ -383,6 +383,8 @@
   let 결제이력받음 = false;
 
   function go(tab) {
+    // 유형 카드(789 유형·SSR 등급·시즌 카드)는 2026-09-04 삭제 — 「무슨 말인지도 모르더라」. 옛 링크는 홈으로.
+    if (tab === 'gacha') tab = 'home';
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
@@ -2774,7 +2776,6 @@
     { tab: 'naepyeon',  묶음: '나',   이름: '내 편이 되는 사람', 기본: 'japyung' },
     { tab: 'moneystory',묶음: '나',   이름: '재물 이야기',       기본: 'jaemul' },
     { tab: 'nokpae',    묶음: '나',   이름: '돈의 모양',         기본: 'jaemul' },
-    { tab: 'gacha',     묶음: '나',   이름: '유형 카드',         기본: 'hyeopgi', 말: '789가지 가운데 한 장 — 간직하고 보내세요' },
     { tab: 'compat',    묶음: '우리', 이름: '우리 둘 사이',      기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
     { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들',       기본: 'gungwi' },
   ];

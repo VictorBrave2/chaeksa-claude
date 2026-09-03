@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>책사 — 나의 명리비서</title>
-<meta name="description" content="나의 연애, 우리 둘 사이, 올해의 나, 789개 유형 중 내 카드 한 장까지 전부 무료. 절기 시각까지 천문 계산한 만세력 위에서 봅니다. 출산택일 보고서.">
+<meta name="description" content="오늘·이달·올해 무엇이 오는지 열 사람의 책사가 각자 잰 값으로 말합니다. 인연이 오는 해, 자리가 열리는 해, 우리 둘 사이까지 무료. 절기 시각까지 천문 계산한 만세력 위에서 봅니다.">
 <link rel="canonical" href="https://chaeksa.kr/">
 <!-- 네이버 웹마스터도구 소유확인. 지우면 확인이 풀린다 — 등록 뒤에도 두어야 한다. -->
 <meta name="naver-site-verification" content="47ce3558f6a916bf636e928f9f2a8780e11a9cbb">
@@ -12,8 +12,8 @@
 <meta name="google-site-verification" content="Ghn7lZUA45bSc5tEbUrtJpKzTrHdSWYi5rYZC-NE_gs">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
-<meta property="og:title" content="책사 — 내 유형 카드 한 장">
-<meta property="og:description" content="나의 연애·우리 둘 사이·올해의 나. 789개 유형 중 내 카드 한 장까지 전부 무료.">
+<meta property="og:title" content="책사 — 나의 명리비서">
+<meta property="og:description" content="오늘·이달·올해 무엇이 오는지, 열 사람의 책사가 각자 잰 값으로. 인연이 오는 해·자리가 열리는 해·우리 둘 사이 무료.">
 <meta property="og:url" content="https://chaeksa.kr/">
 <meta property="og:image" content="https://chaeksa.kr/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -29,12 +29,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=572">
+<link rel="stylesheet" href="style.css?v=573">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
   "name":"책사","alternateName":"책사 — 나의 명리비서","inLanguage":"ko-KR",
-  "description":"절기 시각까지 천문 계산한 만세력으로 사주를 봅니다. 연애·궁합·올해의 흐름·유형 카드 무료, 출산택일 보고서."},
+  "description":"절기 시각까지 천문 계산한 만세력으로 사주를 봅니다. 오늘·이달·올해의 흐름, 인연이 오는 해, 우리 둘 사이 무료. 출산택일 보고서."},
  {"@type":"Organization","@id":"https://chaeksa.kr/#org","name":"책사","url":"https://chaeksa.kr/",
   "logo":"https://chaeksa.kr/icon-512.png","image":"https://chaeksa.kr/og.jpg",
   "sameAs":["https://pf.kakao.com/_jdqxaX"]},
@@ -99,7 +99,6 @@
       <div class="lp-feat"><i>緣</i><div><b>인연이 오는 해</b><p>앞으로 열 해 가운데 언제 인연 쪽으로 기우는지. 가장 가까운 해를 짚어 드립니다.</p></div></div>
       <div class="lp-feat"><i>伴</i><div><b>우리 둘 사이</b><p>서로에게 무엇인지. 같은 사이인데 나에게 그 사람과, 그 사람에게 나는 다릅니다. 그 사람이 지금 어떤 때인지도 봅니다.</p></div></div>
       <div class="lp-feat"><i>日</i><div><b>오늘 한마디</b><p>오늘의 기운이 공주님과 어떻게 만나는지. 좋은 시간대와, 오늘 하시면 좋을 일 하나.</p></div></div>
-      <div class="lp-feat"><i>牌</i><div><b>공주님의 유형 카드</b><p>789가지 가운데 공주님은 어디쯤. 등급까지 나옵니다. 카드로 간직하고 보내실 수 있어요.</p></div></div>
     </section>
 
     <section class="card">
@@ -538,7 +537,8 @@
     </div>
 
     <!-- 독립 콘텐츠: 유형 카드 뽑기 -->
-    <div class="tab hide" data-tab="gacha">
+    <!-- 유형 카드는 2026-09-04 삭제(사장님 「무슨 말인지도 모르더라」). 요소는 app.js 가 id 를 잡으므로 남기고 hidden 으로 묻는다. go('gacha') 는 홈으로 돌린다. -->
+    <div class="tab hide" data-tab="gacha" hidden>
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card" id="gachaCard">
         <h2>牌 · 공주님의 유형 카드</h2>
@@ -818,29 +818,29 @@
   </div>
 </div>
 
-<script src="config.js?v=572"></script>
-<script src="track.js?v=572"></script>
-<script src="cloud.js?v=572"></script>
-<script src="usage.js?v=572"></script>
-<script src="places.js?v=572"></script>
-<script src="people.js?v=572"></script>
-<script src="astro.js?v=572"></script>
-<script src="lunar.js?v=572"></script>
-<script src="engine.js?v=572"></script>
-<script src="chaeyong.js?v=572"></script>
-<script src="brief.js?v=572"></script>
-<script src="chaeksadan.js?v=572"></script>
-<script src="typecard.js?v=572"></script>
-<script src="gyeokguk.js?v=572"></script>
-<script src="memo.js?v=572"></script>
-<script src="classic.js?v=572"></script>
-<script src="calendar.js?v=572"></script>
-<script src="tongbyeon.js?v=572"></script>
-<script src="rules-wealth-love.js?v=572"></script>
-<script src="rules-health-study-move.js?v=572"></script>
-<script src="share.js?v=572"></script>
-<script src="ai.js?v=572"></script>
-<script src="pay.js?v=572"></script>
-<script src="app.js?v=572"></script>
+<script src="config.js?v=573"></script>
+<script src="track.js?v=573"></script>
+<script src="cloud.js?v=573"></script>
+<script src="usage.js?v=573"></script>
+<script src="places.js?v=573"></script>
+<script src="people.js?v=573"></script>
+<script src="astro.js?v=573"></script>
+<script src="lunar.js?v=573"></script>
+<script src="engine.js?v=573"></script>
+<script src="chaeyong.js?v=573"></script>
+<script src="brief.js?v=573"></script>
+<script src="chaeksadan.js?v=573"></script>
+<script src="typecard.js?v=573"></script>
+<script src="gyeokguk.js?v=573"></script>
+<script src="memo.js?v=573"></script>
+<script src="classic.js?v=573"></script>
+<script src="calendar.js?v=573"></script>
+<script src="tongbyeon.js?v=573"></script>
+<script src="rules-wealth-love.js?v=573"></script>
+<script src="rules-health-study-move.js?v=573"></script>
+<script src="share.js?v=573"></script>
+<script src="ai.js?v=573"></script>
+<script src="pay.js?v=573"></script>
+<script src="app.js?v=573"></script>
 </body>
 </html>
