@@ -627,6 +627,27 @@
       // (onerror 로 접는 길은 img 를 아예 안 세울 때는 안 지나간다)
       sc.classList.toggle('noface', !sc.querySelector('.hs-face'));
       const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
+      // ── 어제와 오늘이 이어진다 (2026-09-04 1단계 「내일 다시 열 이유」) ──
+      // 오늘의 한마디를 날짜별로 남겨 두고, 어제 것이 있으면 그 아래 세운다. 온 날도 센다(기기 안에서만).
+      try {
+        const ymd = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        const 오늘키 = ymd(today), 어제 = new Date(today); 어제.setDate(today.getDate() - 1); const 어제키 = ymd(어제);
+        const 일기 = JSON.parse(localStorage.getItem('chaeksa.daily') || '{}');
+        const 날들 = JSON.parse(localStorage.getItem('chaeksa.days') || '[]');
+        const 다시 = 날들.length > 0 && !날들.includes(오늘키);
+        if (!날들.includes(오늘키)) { 날들.push(오늘키); localStorage.setItem('chaeksa.days', JSON.stringify(날들.slice(-60))); }
+        일기[오늘키] = { 이름: 이름0, 말: 말0 };
+        Object.keys(일기).sort().slice(0, -14).forEach(k => delete 일기[k]);
+        localStorage.setItem('chaeksa.daily', JSON.stringify(일기));
+        const hail = sc.querySelector('.hs-hail');
+        if (hail && (다시 || 날들.length > 1)) hail.textContent = '공주님, 오늘도 오셨습니다.';
+        const y = 일기[어제키];
+        if (y && y.말 && y.말 !== 말0) {
+          const box = document.createElement('div'); box.className = 'hs-yday';
+          box.innerHTML = '<span class="k">어제 · ' + esc(이름of(y.이름)) + '</span><p>' + esc(y.말) + '</p>';
+          sc.querySelector('.hs-body').insertBefore(box, sc.querySelector('.hs-keep'));
+        }
+      } catch (e) {}
       // 보낼 만한 카드 — 원국 카드는 「내가 어떤 사람인가」의 증거고
       // 이 카드는 「나에게 해 준 말」이다. 남의 대화창에 걸리는 쪽은 뒤쪽이다.
       const bk = sc.querySelector('.hs-keep');

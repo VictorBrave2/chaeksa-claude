@@ -1341,3 +1341,8 @@ details.fold > .tiles { margin-top: 10px; }
   line-height:1.7;color:var(--g3-ink);quotes:none;letter-spacing:.02em}
 .wonmun cite{display:block;margin-top:3px;font-size:10.5px;font-style:normal;
   color:var(--ink3);opacity:.85}
+
+/* 어제 한 말 — 얼빡 아래, 오늘 한마디와 간직하기 사이. 오늘보다 한 단 조용하게 */
+.hs-yday{margin:10px 0 0;padding:8px 12px;border-left:2px solid rgba(230,201,138,.4);color:#c9c2dd;font-size:13px}
+.hs-yday .k{display:block;font-size:11px;letter-spacing:.04em;opacity:.7;margin-bottom:2px}
+.hs-yday p{margin:0;line-height:1.45}
