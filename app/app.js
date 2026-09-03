@@ -1446,10 +1446,11 @@
     if (!selDay) $('dayDetail').innerHTML = `<h2>${C.PURPOSES[purpose].label} · 이달의 추천일</h2><div class="best">${best.map(s => `<div class="b"><b>${s.d}일</b> ${f.pillar(s.tf.day)} · ${s.god}<span>${C.GRADE_LABEL[s.grade]}</span></div>`).join('') || '<p class="hint">남은 날 중 추천일이 없어요. 다음 달을 보세요.</p>'}</div>`;
   }
   function showDay(s) {
-    const g = ChaeksaBrief.GOD_TODAY[s.god];
+    // 감성 표(GOD_TODAY tone·care·act)는 2026-09-04 걷었다 — 그날 글자를 여섯 눈으로
+    let 눈 = ''; try { const k = ChaeksaDan.육안글자(R, today, s.tf.day.stem, s.tf.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
     $('dayDetail').innerHTML = `<h2>${calM}월 ${s.d}일 · ${f.pillar(s.tf.day)}(${f.pillarKo(s.tf.day)})</h2>
       <div class="score"><b style="font-size:28px">${C.GRADE_LABEL[s.grade]}</b><span>${C.PURPOSES[purpose].label} 기준 · ${s.reasons.join(', ')}</span></div>
-      <div class="brief"><p>${s.god}의 날. ${g.tone}</p><p style="color:var(--ink2)">${g.care}</p><div class="act">👉 ${g.act}</div></div>`;
+      <div class="brief"><p>${esc(s.god)}의 글자.</p>${눈 ? `<p style="color:var(--ink2)">${esc(눈)}</p>` : ''}</div>`;
   }
   $('calPrev').onclick = () => { calM--; if (calM < 1) { calM = 12; calY--; } selDay = null; renderCal(); };
   $('calNext').onclick = () => { calM++; if (calM > 12) { calM = 1; calY++; } selDay = null; renderCal(); };
@@ -1663,8 +1664,8 @@
     $('nokpaeProg').classList.add('hide');
     const 이름표 = ['돈이 오는 방식', '버는 통로', '새는 곳', '지금'];
     $('nokpaeNote').innerHTML = '<div class="manbox">' + (w.lines || []).map((t, i) => {
-      const [k, v] = String(t).split(' — ');
-      return '<div class="mn"><span class="mn-k">' + esc(이름표[i] || '') + '</span><span class="mn-v">' + esc(k) + '</span>' + (v ? '<span class="mn-s">' + esc(v) + '</span>' : '') + '</div>';
+      const k = String(t).split(' — ')[0];   // 꼬리(「크게 들고 크게 도는 돈」)는 감성이라 안 찍는다
+      return '<div class="mn"><span class="mn-k">' + esc(이름표[i] || '') + '</span><span class="mn-v">' + esc(k) + '</span></div>';
     }).join('') + '<p class="mns">재성·식상·비겁이 어디에 서 있는지로만 읽습니다. 그릇의 크기나 등수는 매기지 않습니다.</p></div>';
   }
 

@@ -58,11 +58,15 @@
     const helpful = a.yongCandidates.includes(dayElem);
 
     const paragraphs = [];
-    paragraphs.push(`오늘은 <b>${E.fmt.pillar(tf.day)}(${E.fmt.pillarKo(tf.day)})</b>일. 내게는 <b>${godDay}</b>의 날입니다. ${g.tone}`);
+    // 십신 성격 서술(g.tone 「생각이 깊어지고 혼자 있고 싶은 날」)은 2026-09-04 걷었다 — 값에서 멈춘다. 좋고 나쁨은 여섯 눈이 말한다.
+    paragraphs.push(`오늘은 <b>${E.fmt.pillar(tf.day)}(${E.fmt.pillarKo(tf.day)})</b>일. 내게는 <b>${godDay}</b>의 글자입니다.`);
     if (rel) paragraphs.push(rel.text);
-    paragraphs.push((helpful ? `오늘 들어오는 ${dayElem} 기운은 내 사주에 도움이 되는 쪽이라 전체적으로 순풍입니다. ` : `오늘 ${dayElem} 기운은 내게 꼭 필요한 기운은 아니라 무리하지 않는 게 좋습니다. `) + g.care);
+    paragraphs.push((helpful ? `오늘 들어오는 ${dayElem} 기운은 내 사주에 도움이 되는 쪽이라 전체적으로 순풍입니다. ` : `오늘 ${dayElem} 기운은 내게 꼭 필요한 기운은 아니라 무리하지 않는 게 좋습니다. `));
     paragraphs.push(`<span style="color:var(--ink3);font-size:14px">이달은 ${godMonth}, 올해는 ${godYear}의 흐름. 집중이 잘 되는 시간대는 ${ELEM_HOURS[a.yongCandidates[0]]}.</span>`);
-    return { paragraphs, action: '👉 ' + g.act, godDay, godMonth, godYear, relation: rel ? rel.type : null };
+    // 「오늘 할 하나」(g.act)도 감성 표였다 — 여섯 눈의 요약으로 바꾼다(chaeksadan.육안). 없으면 비운다.
+    let action = '';
+    try { const D = global.ChaeksaDan; if (D && D.육안) { const 눈 = D.육안(result, date || new Date(), '오늘'); if (눈.length) action = D.육안요약(눈); } } catch (e) {}
+    return { paragraphs, action, godDay, godMonth, godYear, relation: rel ? rel.type : null };
   }
 
   // ── MZ 카드 문장 자산 — 원국 풀이의 '한입 요약' 층 ──

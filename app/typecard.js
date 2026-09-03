@@ -577,10 +577,15 @@
                              (when || new Date()).getDate());
     const 대 = du ? GRP5[신(du.stem)] : null;
     const 세 = GRP5[신(tf.year.stem)];
+    // 대운·세운 말은 감성 표(NOW_WORD 「하고 싶은 걸 하고 싶은 때」)가 아니라 여섯 눈으로(2026-09-04)
+    const 운말 = (st, br, 기본) => {
+      try { const D = global.ChaeksaDan; if (D && D.육안글자) { const k = D.육안글자(Ryou, when || new Date(), st, br); if (k.length) return [D.육안줄(k), '']; } } catch (e) {}
+      return 기본;
+    };
     return {
       대운: du ? { 간지: E.fmt.pillar(du), 십신: 신(du.stem), 결: 대,
-                   나이: du.startAge + '~' + du.endAge + '세', 말: NOW_WORD[대] } : null,
-      세운: { 간지: E.fmt.pillar(tf.year), 십신: 신(tf.year.stem), 결: 세, 말: NOW_WORD[세] },
+                   나이: du.startAge + '~' + du.endAge + '세', 말: 운말(du.stem, du.branch, NOW_WORD[대]) } : null,
+      세운: { 간지: E.fmt.pillar(tf.year), 십신: 신(tf.year.stem), 결: 세, 말: 운말(tf.year.stem, tf.year.branch, NOW_WORD[세]) },
     };
   }
 
@@ -1722,8 +1727,9 @@
     } catch (e) { return ''; }
   }
 
-  const 다가옴_정 = '정(正)의 글자로 오는 끌림입니다 — 예의를 갖춰 천천히 다가옵니다. 오래 지켜보다가 확신이 서면 움직이는 쪽이라, 시작은 느려도 한번 곁에 서면 잘 안 떠납니다.';
-  const 다가옴_편 = '편(偏)의 글자로 오는 끌림입니다 — 훅 들어옵니다. 재거나 돌려 말하지 않고, 강렬하게 끌리는 대로 움직이는 쪽이라 시작이 극적입니다. 설레는 만큼 온도 조절은 공주님 몫입니다.';
+  // 「예의를 갖춰 천천히」「훅 들어옵니다」 같은 성격 서술은 2026-09-04 걷었다 — 글자에서 멈춘다.
+  const 다가옴_정 = '정(正)의 글자로 오는 끌림입니다.';
+  const 다가옴_편 = '편(偏)의 글자로 오는 끌림입니다.';
 
   function whoLovesMe(R) {
     const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], db = p.day.branch;
@@ -2295,7 +2301,7 @@
     const p = R.pillars, ds = p.day.stem;
     const 나이 = now.getFullYear() - R.input.year;   // 만 근사 — 대운 구간 고르기엔 충분
     const 신 = st => E.TEN_GODS[E.tenGod(ds, st)];
-    const 뜻 = (g, n) => (GOD_MEANING[g] || '').split('. ').slice(0, n).join('. ');
+    const 뜻 = () => '';   // GOD_MEANING 뜻풀이는 감성 서술이라 2026-09-04 걷었다 — 화면은 글자·십신에서 멈춘다
     // 겉 — 사회 자리(월주)의 하늘 글자. 속 — 일지 본기. 잰 사실 그대로.
     const 겉십 = 신(p.month.stem);
     const 속본 = E.HIDDEN[p.day.branch][0], 속십 = 신(속본);
@@ -2779,8 +2785,13 @@
 
     // 서로에게 무엇인가 — 이 화면의 머리다
     const g1 = 신(dsA, dsB), g2 = 신(dsB, dsA);
-    const 나에게 = { 십신: g1, 말: REL_WORD[g1] || ['―', ''] };
-    const 그에게 = { 십신: g2, 말: REL_WORD[g2] || ['―', ''] };
+    // 「서로에게」도 감성 표(REL_WORD 「마음이 놓이는 사람」)를 걷고 여섯 눈으로(2026-09-04) — 그 사람 일간을 내 글자로 읽는다
+    const 눈말 = (Rbase, st, 기본) => {
+      try { const D = global.ChaeksaDan; if (D && D.육안글자) { const k = D.육안글자(Rbase, when || new Date(), st, null); if (k.length) return [E.TEN_GODS[E.tenGod(Rbase.pillars.day.stem, st)] + '의 글자', D.육안줄(k)]; } } catch (e) {}
+      return 기본;
+    };
+    const 나에게 = { 십신: g1, 말: 눈말(Rme, dsB, REL_WORD[g1] || ['―', '']) };
+    const 그에게 = { 십신: g2, 말: 눈말(Ryou, dsA, REL_WORD[g2] || ['―', '']) };
 
     const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
     const SAM = [[8,0,4], [11,3,7], [2,6,10], [5,9,1]];
@@ -2966,7 +2977,7 @@
       // 그릇 산식(점수·등급·백분위)은 2026-09-04 폐지 — 돈의 모양(정재형·편재형·암장·무재)만 말한다
       const w = wealth(Ryou, when, null);
       const l0 = (w && w.lines && w.lines[0]) || '';
-      if (l0) 그사람.push({ 결: '돈', 이름: l0.split(' — ')[0], 말: l0.split(' — ')[1] || '' });
+      if (l0) 그사람.push({ 결: '돈', 이름: l0.split(' — ')[0], 말: '' });   // 꼬리(「또박또박 쌓이는 돈이 힘」)는 감성이라 걷음
     } catch (e) {}
     try {
       const c = career(Ryou, null);
@@ -3597,10 +3608,11 @@
       const 상태 = q.천간 ? (합[q.궁] ? ['합거'] : []) : 지지상태(궁이름);
       let 말;
       // 조사는 낱말에 맞춘다 — 「아버지이에요」「자식는」「육합(午未)을」이 2000판에서 나왔다.
-      if (q.첫인상) 말 = '사람들은 공주님을 먼저 년간의 ' + 글자 + '(' + g + ')' + 조(g, '으로', '로') + ' 봅니다 — ' + (모양표[g] || '') + ' 사람으로 보이는 쪽이에요. 속과 다를 수 있습니다.';
-      else if (q.집) 말 = '자란 집은 년지의 ' + 글자 + '(' + g + ')입니다 — ' + (모양표[g] || '') + ' 집이었어요. 스무 살 전의 바탕이고, 부모는 월주가 따로 말합니다.';
-      else if (q.사람아님) 말 = '정신세계는 시간에 앉은 ' + 글자 + '(' + g + ')의 결입니다 — ' + (정신표[g] || '') + ' 속이에요.';
-      else 말 = q.이름 + 조(q.이름, '은', '는') + ' ' + 궁이름 + '의 ' + 글자 + '(' + g + ')입니다 — ' + (모양표[g] || '') + ' ' + q.이름 + 조(q.이름, '이에요', '예요') + '.';
+      // 모양표(「차곡차곡 지키고 실속을 챙기는」)·정신표는 감성 서술이라 2026-09-04 걷었다 — 글자와 십신에서 멈추고, 좋고 나쁨은 여섯 눈이 말한다.
+      if (q.첫인상) 말 = '사람들은 공주님을 먼저 년간의 ' + 글자 + '(' + g + ')' + 조(g, '으로', '로') + ' 봅니다. 속과 다를 수 있습니다.';
+      else if (q.집) 말 = '자란 집은 년지의 ' + 글자 + '(' + g + ')입니다. 스무 살 전의 바탕이고, 부모는 월주가 따로 말합니다.';
+      else if (q.사람아님) 말 = '정신세계는 시간에 앉은 ' + 글자 + '(' + g + ')의 결입니다.';
+      else 말 = q.이름 + 조(q.이름, '은', '는') + ' ' + 궁이름 + '의 ' + 글자 + '(' + g + ')입니다.';
       if (상태.length) {
         const 묶은 = 상태.join('·');
         말 += q.천간
@@ -3609,7 +3621,7 @@
       }
       const 해 = g ? 오는해(g) : null;
       if (해 != null && !q.사람아님) 말 += ' ' + (해 === y0 ? '올해' : 해 + '년') + ' 그 글자가 하늘로 옵니다.';
-      return { 이름: q.이름, 궁: q.궁, 궁이름, 천간: q.천간, 글자, 십신: g, 모양: g ? (q.사람아님 ? 정신표[g] : 모양표[g]) : null, 상태, 해, 말 };
+      return { 이름: q.이름, 궁: q.궁, 궁이름, 천간: q.천간, 글자, 십신: g, 모양: g ? g + '의 글자' : null, 상태, 해, 말 };
     });
     // 어머니 — 제25조. 월지의 글자가 인성이면 근거의 어머니다. 강약을 얹어 한 문장 더.
     try {
