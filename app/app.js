@@ -2863,9 +2863,23 @@
       if (i > 0) 비 = Object.assign({}, 비, { 말: String(비.말).replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(비.행동 || '').replace(/오늘/g, '그날') });
       이레.push({ i, d, 비, k, 파일, 인: 책사인장[비.축] || '策', 날말 });
     }
-    let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div><div class="wt-strip" id="wtWeek">'
-      + 이레.map(t => '<button class="wt-post" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
-        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + '</i><b>' + esc(문장(t.비.말).replace(/^\S+ [^ ]+일 — /, '')) + '</b></button>').join('')
+    // 이번 주 조심할 날 하나 (사장님 「조심할 날 하나 ㄱㄱ」) — 배점 없이, 그날 글자를 나쁘게 보는 눈의 수로만.
+    // 둘 이상이어야 「조심」이다. 같으면 가까운 날. 하나도 없으면 없다고 말한다.
+    이레.forEach(t => {
+      try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate());
+        const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true });
+        t.나쁨 = k.filter(c => c.판 === '나쁘다'); t.간지 = f.pillar(tf2.day); } catch (e) { t.나쁨 = []; }
+    });
+    const 조심 = 이레.reduce((b, t) => (t.나쁨.length >= 2 && (!b || t.나쁨.length > b.나쁨.length)) ? t : b, null);
+    if (조심) 조심.조심 = true;
+    let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
+      + (조심
+        ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
+          + 조심.나쁨.map(c => '<p>' + esc(c.근거) + '</p>').join('') + '</div>'
+        : '<p class="wt-care none">이번 주에는 유난히 조심할 날이 없습니다 — 나쁘게 보는 눈이 둘 넘게 겹치는 날이 없습니다.</p>')
+      + '<div class="wt-strip" id="wtWeek">'
+      + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
+        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^\S+ [^ ]+일 — /, '')) + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>';
     // 2) 탭 — 전체·오늘·이달·올해·나·우리
     const 묶들 = ['전체', '오늘', '이달', '올해', '나', '우리'];
