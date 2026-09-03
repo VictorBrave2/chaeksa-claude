@@ -751,13 +751,7 @@
           const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 결이 바뀝니다') : '';
           // 달력을 산 달이면 서른 칸에서 풀리는 날을 그대로 건다 — 산 것이 홈에서 보여야 다시 연다.
           let 줄 = st.head + (언제 ? ' · ' + 언제 : '');
-          try {
-            if (window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month') && T.myDays) {
-              const v = T.myDays(R, today.getFullYear(), today.getMonth() + 1);
-              // myDays 의 「좋은」이 달 안의 최고 띠(평균 3일)라 그대로 건다. 위 셋만 걸던 임시 처방은 걷었다.
-              줄 = (v.좋은.length ? '풀리는 날 ' + v.좋은.map(r => r.일).join('·') + '일' : '크게 열리는 날이 없는 달') + ' · ' + st.head;
-            }
-          } catch (e) {}
+          // 「풀리는 날」 미리보기는 좋은 날 배점 폐지(2026-09-04)로 걷었다.
           set('tiMonthSub', 줄); } } catch (e) {}
       try { const yf = T.yearFlow(R, today.getFullYear(), today);
         set('tiYearBig', yf.bestTxt);
@@ -1560,10 +1554,11 @@
           <p class="nm">${esc(n.대운.나이)} · ${esc(n.대운.간지)} 대운 — ${esc(n.대운.십신)}</p>` : ''}
         ${n.세운 ? `<p class="nm2">올해는 ${esc(n.세운.간지)} · ${esc(n.세운.십신)} — ${esc(n.세운.말[0])}</p>` : ''}
       </div>`;
-    // 두 분 다 좋은 달 — 우리는 택일 엔진을 갖고 있다. 한쪽만 좋은 달은 좋은 달이 아니다.
+    // 「두 분 다 좋은 달·날」과 결제 열람(coupleDates)은 좋은 날 배점(monthScoreFor)이 2026-09-04 폐지되어 화면에서 걷었다.
+    // 코드는 남겨 두되 부르지 않는다 — 배점을 새로 정하면 여기서 다시 켠다.
     let 달절 = '', bmKeep = null;
     try {
-      const bm = T.bothMonths(R, you, today, 12); bmKeep = bm;
+      const bm = null; bmKeep = bm;
       if (bm && bm.좋은달.length) 달절 = `
         <div class="bmbox">
           <p class="nk">두 분 다 좋은 달 — 앞으로 열두 달 중</p>
@@ -1634,11 +1629,7 @@
             + '<p class="pb-ft">잣대 공개 — 각자에게 필요한 오행이 오는가, 배우자 자리(일지)와 합·충이 되는가, 강약에 맞는 기운인가. 두 분의 점수 중 <b>낮은 쪽</b>이 그날의 점수입니다.</p>'
             + '<p class="pb-ft">결혼식처럼 되돌릴 수 없는 큰 날은 후보를 여럿 두고 보시는 편이 낫습니다 — 판정이 갈리는 자리가 있으면 원국 탭에 표시해 둡니다.</p></div>';
         }
-        return nextStep('그 달의 며칠, 그리고 몇 시',
-          '좋은 달과 그 안의 날 수까지',
-          '결혼도 상견례도 결국 「며칠 몇 시」로 잡습니다. 그 날들이 언제인지, 어느 시각이 두 분께 열리는지를 진태양시 보정까지 넣어 보여드립니다.',
-          (meName || '') + ' · ' + (youName || '') + ' 관계 상담 — 이번 달 흐름과 좋은 날짜를 보고 싶습니다', 'relation',
-          T.coupleWhy ? T.coupleWhy(R, you, meName, youName).말 : null);
+        return '';   // 관계 결제(그 달의 며칠·몇 시)는 좋은 날 배점 폐지로 닫아 둔다 — 배점을 새로 정하면 nextStep 을 되살린다
       })()}
       <div id="accWrap" class="cardwrap">
         <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
@@ -1665,26 +1656,16 @@
     $('nokpaeWrap').classList.add('hide'); $('nokpaeNote').textContent = '';
     $('nokpaeProg').classList.remove('hide');
     $('nokpaeProg').textContent = '호조 장부와 대조하는 중…';
-    T.buildSample(
-      (r) => { $('nokpaeProg').textContent = '호조 장부와 대조하는 중… ' + Math.round(r * 100) + '%'; },
-      (sample) => {
-        const w = T.wealth(R, today, sample);
-        nokpaeFor = R;
-        $('nokpaeProg').classList.add('hide');
-        $('nokpaeSvg').innerHTML = T.drawNokpae(profile.name || '공주님', w);
-        const fl = $('nokpaeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
-        $('nokpaeWrap').classList.remove('hide');
-        $('nokpaeNote').textContent = '지어낸 사주 ' + w.n.toLocaleString() + '개 가운데 상위 ' + w.top + '% · ' + w.grade.name + ' — 같은 사주는 언제나 같은 녹패입니다';
-        $('btnNokpaeShare').onclick = async () => {
-          const b = $('btnNokpaeShare'); b.disabled = true; b.textContent = '만드는 중…';
-          try {
-            const r = await T.share($('nokpaeSvg').innerHTML, '녹패_' + w.grade.name);
-            b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-          } catch (e) { b.textContent = '다시 시도'; }
-          b.disabled = false;
-          setTimeout(() => { b.textContent = '녹패 자랑하기'; }, 2500);
-        };
-      });
+    // 그릇 산식(점수·등급·백분위·녹패 카드)은 2026-09-04 폐지. 남는 것은 돈의 모양 네 줄 —
+    // 방식(정재·편재·암장·무재) · 통로(식상) · 새는 곳(군겁쟁재·재다신약·재고) · 지금 대운. 전부 십신 배치에서 읽은 것이다.
+    const w = T.wealth(R, today, null);
+    nokpaeFor = R;
+    $('nokpaeProg').classList.add('hide');
+    const 이름표 = ['돈이 오는 방식', '버는 통로', '새는 곳', '지금'];
+    $('nokpaeNote').innerHTML = '<div class="manbox">' + (w.lines || []).map((t, i) => {
+      const [k, v] = String(t).split(' — ');
+      return '<div class="mn"><span class="mn-k">' + esc(이름표[i] || '') + '</span><span class="mn-v">' + esc(k) + '</span>' + (v ? '<span class="mn-s">' + esc(v) + '</span>' : '') + '</div>';
+    }).join('') + '<p class="mns">재성·식상·비겁이 어디에 서 있는지로만 읽습니다. 그릇의 크기나 등수는 매기지 않습니다.</p></div>';
   }
 
   // ───── 택일 1:1 상담 문의 ─────
@@ -1885,39 +1866,35 @@
     const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month');
     if (!paid) {
       box.innerHTML = nextStep('이번 달 서른 날', '오늘과 이번 주까지',
-        m + '월 한 달 전체 — 어느 날이 풀리고 어느 날을 조심할지는 일운까지 내려가야 보입니다. 달이 바뀌면 새 달을 새로 봅니다.',
-        (profile.name || '') + '님 ' + m + '월 일운 — 좋은 날과 조심할 날을 보고 싶습니다', 'month',
+        m + '월 한 달 전체 — 날마다 하늘에 무슨 글자가 오는지(돈·자리·연)를 서른 칸으로 봅니다. 달이 바뀌면 새 달을 새로 봅니다.',
+        (profile.name || '') + '님 ' + m + '월 일운 — 서른 날의 글자를 보고 싶습니다', 'month',
         T.monthWhy ? T.monthWhy(R).말 : null);
       return;
     }
     const v = T.myDays(R, y, m);
-    // 달력 한 장으로 끝내지 않는다 — 주 단위로 흐름을 말하고, 좋은 날과 조심할 날은
-    // 왜 그런지까지 말한다. 1만원이면 읽을거리가 있어야 한다.
-    const 주절 = v.주들.map(w => {
+    // 좋은 날 배점(monthScoreFor)은 2026-09-04 폐지 — 점수·좋은 날·조심할 날·주 단위 평균을 걷고,
+    // 서른 칸에는 그날 하늘에 온 글자(십신 · 돈/자리/연)만 남긴다. 아래 주절·좋은절·조심절·예고는 비운다.
+    const 폐지 = true;
+    const 주절 = 폐지 ? '' : v.주들.map(w => {
       const g = w.top.십신;
       return `<div class="pb-dd"><b>${w.시작}~${w.끝}일</b> <span class="pb-god">${w.평균 >= 60 ? '순한 주' : w.평균 <= 42 ? '무거운 주' : '보통 주'}</span>
         <p class="pb-why">◦ 가장 좋은 날은 <b>${w.top.일}일(${w.top.요일})</b> ${esc(w.top.간지)} · ${esc(g)} — ${esc(GOD_FLOW[g] || '')}</p>
         ${w.low.점수 <= 35 ? `<p class="pb-why">◦ ${w.low.일}일(${w.low.요일})은 눌립니다 — 큰 결정은 미루세요</p>` : ''}
       </div>`;
     }).join('');
-    const 좋은절 = v.좋은.length
+    const 좋은절 = 폐지 ? '' : v.좋은.length
       ? v.좋은.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)} · ${esc(r.십신)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ''}</p>`).join('')
       : '<p class="pb-why">◦ 크게 열리는 날이 없는 달입니다 — 무리해서 일을 벌이기보다 다음 달을 준비하는 달로 쓰세요</p>';
-    const 조심절 = v.조심.length
+    const 조심절 = 폐지 ? '' : v.조심.length
       ? v.조심.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ' — 기운이 눌리는 날입니다'}</p>`).join('')
       : '';
     // 다음 달 예고 — 달마다 다시 사는 상품의 고리
-    let 예고 = '';
-    try {
-      const ny = m === 12 ? y + 1 : y, nm = m === 12 ? 1 : m + 1;
-      const nv = T.myDays(R, ny, nm);
-      예고 = `<p class="pb-ft">${nm}월에는 풀리는 날이 ${nv.좋은.length}일 있습니다 — 달이 바뀌면 새로 열어보세요.</p>`;
-    } catch (e) {}
+    let 예고 = '';   // 「다음 달 풀리는 날 N일」 예고도 배점 폐지로 걷었다
     const mw = T.monthWhy ? T.monthWhy(R) : null;
     box.innerHTML = `<h2>${m}월 일운 달력<span class="h2sub">결제 열람 · ${y}년</span></h2>
       ${mw ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 공주님께는 날의 서열인가</p>${mw.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       <div class="pb-grid">` + v.rows.map(r => {
-        const cls = r.점수 >= 72 ? ' good' : (r.점수 <= 30 ? ' bad' : '');
+        const cls = '';   // 점수 색칠(good/bad)은 배점 폐지로 안 한다
         // 같은 달력의 다른 줄(docs/29 셋) — 그날 하늘에 온 글자가 돈·자리·인연 중 무엇인가.
         // 오늘의 비서(chaeksadan.오늘)와 같은 잣대다: 재성=돈 · 관성=자리 · 배우자성=연.
         const 무리 = { 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성' }[r.십신] || '';
@@ -1927,10 +1904,8 @@
           <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span>${표 ? `<span style="display:block;font-size:9px;color:var(--accent)">${표}</span>` : ''}</div>`;
       }).join('') + `</div>
       <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 하늘에 온 글자가 <b>돈</b>(재성)인지 <b>자리</b>(관성)인지 <b>연</b>(배우자성)인지. 홈의 오늘 한마디와 같은 잣대입니다.</p>
-      <p class="pb-h"><b>주 단위로 읽으면</b></p>${주절}
-      <p class="pb-h"><b>풀리는 날${v.좋은.length ? ' — ' + v.좋은.map(r => r.일).join('·') + '일' : ''}</b></p>${좋은절}
-      ${조심절 ? `<p class="pb-h"><b>조심할 날 — ${v.조심.map(r => r.일).join('·')}일</b></p>${조심절}` : ''}
-      <p class="pb-ft">잣대 공개 — 필요한 오행이 오는 날인가, 일지와 합·충이 되는 날인가, 강약에 맞는 기운인가. 같은 달 안에서의 서열입니다. 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 12시진 곡선으로 그려드립니다.</p>
+      ${주절}${좋은절}${조심절}
+      <p class="pb-ft">잣대 공개 — 그날 하늘에 온 글자가 나에게 무슨 십신인가, 그것뿐입니다. 좋은 날·조심할 날의 점수는 매기지 않습니다(2026-09-04). 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 12시진 곡선으로 그려드립니다.</p>
       ${예고}`;
   }
 
@@ -2629,7 +2604,7 @@
     ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
     ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
     ['gungtong', '궁통보감', 'today', '오늘의 기운이 공주님께 추운지 더운지 봐 드리겠습니다.'],
-    ['jaemul', '재물', 'nokpae', '공주님의 그릇이 몇 섬인지, 상위 몇 %인지 세어 드릴까요.'],
+    ['jaemul', '재물', 'nokpae', '돈이 어떤 모양으로 들어오는지, 어디로 새는지 짚어 드릴까요.'],
     ['eokbu', '억부', 'jichim', '무엇이 공주님을 깎고 무엇이 채우는지 짚어 드리겠습니다.'],
     ['unro', '운로', 'life', '언제가 두터워지고 언제가 담금질인지 곡선으로 펴 드릴까요.'],
     ['japyung', '자평진전', 'me', '격이 섰는지 무너졌는지, 원국을 펴 보여 드리겠습니다.'],
@@ -2783,7 +2758,7 @@
     { tab: 'jichim',    묶음: '나',   이름: '지칠 때와 채울 때', 기본: 'eokbu' },
     { tab: 'naepyeon',  묶음: '나',   이름: '내 편이 되는 사람', 기본: 'japyung' },
     { tab: 'moneystory',묶음: '나',   이름: '재물 이야기',       기본: 'jaemul' },
-    { tab: 'nokpae',    묶음: '나',   이름: '나의 재물 그릇',    기본: 'jaemul' },
+    { tab: 'nokpae',    묶음: '나',   이름: '돈의 모양',         기본: 'jaemul' },
     { tab: 'gacha',     묶음: '나',   이름: '유형 카드',         기본: 'hyeopgi', 말: '789가지 가운데 한 장 — 간직하고 보내세요' },
     { tab: 'compat',    묶음: '우리', 이름: '우리 둘 사이',      기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
     { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들',       기본: 'gungwi' },

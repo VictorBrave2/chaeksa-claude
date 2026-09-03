@@ -2963,9 +2963,10 @@
     // 판정은 공주님 것과 똑같은 함수로 낸다. 잣대가 다르면 견줄 수가 없다.
     const 그사람 = [];
     try {
-      const w = wealth(Ryou, when, cachedSample && cachedSample());
-      if (w && w.grade) 그사람.push({ 결: '돈', 이름: w.grade.name,
-        말: (w.lines && w.lines[0]) || '', 상위: w.top });
+      // 그릇 산식(점수·등급·백분위)은 2026-09-04 폐지 — 돈의 모양(정재형·편재형·암장·무재)만 말한다
+      const w = wealth(Ryou, when, null);
+      const l0 = (w && w.lines && w.lines[0]) || '';
+      if (l0) 그사람.push({ 결: '돈', 이름: l0.split(' — ')[0], 말: l0.split(' — ')[1] || '' });
     } catch (e) {}
     try {
       const c = career(Ryou, null);
