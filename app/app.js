@@ -2737,8 +2737,21 @@
       if (h) h.after(box);
       else { const back = el.querySelector(':scope > .backhome'); if (back) back.after(box); else el.prepend(box); }
     }
+    box.innerHTML = 열눈HTML(묶, '이 화면을 두고');
+    // 오늘 탭에는 「이달의 나」 달력이 같이 산다 — 그 앞에 이달의 눈을 따로 세운다.
+    // 달력(#myMonth)은 renderToday 가 나중에 만드니 한 박자 뒤에 붙인다.
+    if (tab === 'today') setTimeout(() => {
+      const mm = $('myMonth'); if (!mm) return;
+      let b2 = document.getElementById('chorusMonth');
+      let 묶2 = []; try { 묶2 = ChaeksaDan.열눈(R, today, 'cal') || []; } catch (e) {}
+      if (!묶2.length) { if (b2) b2.remove(); return; }
+      if (!b2) { b2 = document.createElement('div'); b2.id = 'chorusMonth'; b2.className = 'chorus tenbox'; mm.parentNode.insertBefore(b2, mm); }
+      b2.innerHTML = 열눈HTML(묶2, '이달을 두고');
+    }, 0);
+  }
+  function 열눈HTML(묶, 제목) {
     const 총 = 묶.reduce((s, g) => s + g.본문들.length, 0);
-    box.innerHTML = '<p class="mnk">' + 묶.length + '명이 이 화면을 두고 — ' + 총 + '마디</p>' + 묶.map((g, i) => {
+    return '<p class="mnk">' + 묶.length + '명이 ' + esc(제목) + ' — ' + 총 + '마디</p>' + 묶.map((g, i) => {
       const k = 책사키[g.축];
       const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, false) : '';
       const 얼 = 파일
