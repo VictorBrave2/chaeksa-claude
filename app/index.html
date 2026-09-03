@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=573">
+<link rel="stylesheet" href="style.css?v=582">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -68,28 +68,28 @@
     <div class="lp-hero" id="lpHero">
       <div class="lp-seal">策</div>
       <h1>공주님의 이야기를 두고<br>책사들이 다툽니다</h1>
-      <p class="lp-lead">한 사람이 봐 드리지 않습니다. 서로 다른 잣대를 든<br><b>열 사람의 책사</b>가 둘러앉아 공주님의 사주를 두고 의논합니다 —<br><b>생년월일시 하나면 그 자리를 열겠습니다.</b></p>
+      <p class="lp-lead">한 사람이 봐 드리지 않습니다.<br><b>열 사람의 책사</b>가 둘러앉아 공주님의 사주를 두고 의논합니다 —<br><b>생년월일시 하나면 그 자리를 열겠습니다.</b></p>
       <div class="lp-today">
         <span class="lp-today-label">오늘</span>
         <b id="lpGanji">―</b>
         <span id="lpGanjiKo"></span>
       </div>
       <button class="btn lp-cta" id="btnStart">제 이야기로 의논해 주세요</button>
-      <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 주시면 됩니다 · 지금은 값을 받지 않습니다</p>
+      <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 주시면 됩니다</p>
     </div>
 
     <section class="card">
       <h2>열 사람이 나와 있습니다</h2>
       <div id="lpCorps"></div>
       <p class="hint" style="text-align:center;margin-top:12px">
-        같은 사주를 열 사람이 서로 다른 잣대로 봅니다.
-        그래서 말이 갈립니다 — 갈린 자리는 갈린 채로 적어 올립니다.</p>
+        같은 사주를 열 사람이 각자의 눈으로 봅니다.
+        말이 갈리면 갈린 채로 올립니다.</p>
     </section>
 
     <section class="card">
       <h2>첫 만남에 드리는 것</h2>
-      <div class="lp-feat"><i>議</i><div><b>책사단의 첫 의논</b><p>법도를 보는 <b>정율</b>, 계절을 보는 <b>온서</b>, 저울을 든 <b>형준</b>, 자리를 읽는 <b>성아</b>, 인연을 맡은 <b>연희</b>, 셈에 밝은 <b>계상</b>, 일을 보는 <b>장현</b>, 멀리 보는 <b>소현</b>, 때를 고르는 <b>검명</b>. 아홉이 다투고 좌장 <b>태윤</b>이 정리해 올립니다. 값을 받지 않습니다.</p></div></div>
-      <div class="lp-feat"><i>月</i><div><b>그래서 언제인가</b><p>지나온 해를 짚어 낸 그 잣대로 앞의 열두 달을 잽니다. 해가 아니라 <b>달과 날과 시각</b>으로 — 여기부터 값을 받습니다.</p></div></div>
+      <div class="lp-feat"><i>議</i><div><b>책사단의 첫 의논</b><p>법도를 보는 <b>정율</b>, 계절을 보는 <b>온서</b>, 저울을 든 <b>형준</b>, 자리를 읽는 <b>성아</b>, 인연을 맡은 <b>연희</b>, 셈에 밝은 <b>계상</b>, 일을 보는 <b>장현</b>, 멀리 보는 <b>소현</b>, 때를 고르는 <b>검명</b>. 아홉이 다투고 좌장 <b>태윤</b>이 정리해 올립니다.</p></div></div>
+      <div class="lp-feat"><i>日</i><div><b>오늘, 이달, 올해</b><p>오늘 어떤 날인지, 이달 어떤 때인지, 올해 어디로 기우는지. 열 때마다 오늘의 말이 새로 섭니다.</p></div></div>
     </section>
 
 
@@ -148,9 +148,6 @@
     <select id="place" aria-label="태어난 곳"></select>
     <p class="hint hide" id="placeNote"></p>
     <div class="check"><input type="checkbox" id="solar" checked><label for="solar" style="margin:0">진태양시 보정 (출생지 경도로 실제 태양시 계산)</label></div>
-    <p style="text-align:center;margin:16px 0 2px;font-size:1.02em">이 의논의 값 —
-      <s style="opacity:.5">100,000원</s> <b style="font-size:1.3em">&nbsp;오픈 기간 무료</b></p>
-    <p class="hint" style="text-align:center;margin:2px 0 10px">앉아서 듣는 상담이 보통 이 값입니다.<br>맞는지 틀리는지 공주님께 답을 받는 의논이라 — 자신이 있어서, 지금은 값을 받지 않습니다.</p>
     <button class="btn" id="btnGo">의논을 청하겠습니다</button>
     <p class="hint">입력한 정보는 이 기기에만 저장됩니다.</p>
   </section>
@@ -361,7 +358,7 @@
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card">
         <h2>歲 · 올해의 나</h2>
-        <p class="hint" style="margin:0 0 12px">한 해를 절기로 열두 칸으로 나눠 같은 잣대로 채점합니다. 달력 1일이 아니라 입절일이 경계입니다.</p>
+        <p class="hint" style="margin:0 0 12px">한 해를 절기로 열두 칸으로 나눠 봅니다. 달력 1일이 아니라 입절일이 경계입니다.</p>
         <div id="yearSeg" class="seg" style="margin-bottom:12px"></div>
         <div id="yearWrap" class="cardwrap hide"><div id="yearFlip" class="cardflip"><div id="yearSvg" class="cardsvg"></div></div>
           <button class="btn small" id="btnYearShare">세운도 자랑하기</button></div>
@@ -375,7 +372,7 @@
       <section class="card warn hide" id="gu-life"><b>성별을 아직 모른다고 하셨습니다.</b> 대운은 성별에 따라 순행·역행이 갈립니다. 지금은 남성 기준으로 계산해 보여드리고 있으니, 알게 되시면 프로필에서 고쳐주세요.</section>
       <section class="card">
         <h2>運 · 인생 곡선</h2>
-        <p class="hint" style="margin:0 0 12px">대운 아홉 칸을 같은 잣대로 채점해 곡선으로 그립니다. 대운이 내 사주에 필요한 것을 갖고 오는지로 잽니다.</p>
+        <p class="hint" style="margin:0 0 12px">대운 아홉 칸을 곡선으로 그립니다. 대운이 내 사주에 필요한 것을 갖고 오는지로 잽니다.</p>
         <div id="lifeWrap" class="cardwrap hide"><div id="lifeFlip" class="cardflip"><div id="lifeSvg" class="cardsvg"></div></div>
           <button class="btn small" id="btnLifeShare">대운도 자랑하기</button></div>
         <p class="hint" id="lifeNote" style="margin-top:10px"></p>
@@ -476,7 +473,7 @@
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card">
         <div class="hero"><p class="hero-eyebrow">책사단의 의논</p><h3>열 사람이 공주님을<br>두고 다툽니다</h3>
-        <p class="hero-sub">열 사람이 서로 다른 잣대를 들고 둘러앉았습니다 —<br>빗나간 말은 지우지 않고 그대로 둡니다.</p></div>
+        <p class="hero-sub">열 사람이 둘러앉았습니다 —<br>빗나간 말은 지우지 않고 그대로 둡니다.</p></div>
         <div id="gmBody"><p class="hint">읽는 중…</p></div>
       </section>
     </div>
@@ -486,7 +483,7 @@
       <section class="card">
         <h2>財 · 공주님의 재물 이야기</h2>
         <p class="hint" style="margin:0 0 12px">생년월일시만으로 돈이 들어왔던 구간과 샜던 해를 짚어 봅니다.
-          맞는지는 공주님 통장이 압니다 — 같은 잣대로 앞도 잽니다. 재성은 남녀 구분이 없습니다.</p>
+          맞는지는 공주님 통장이 압니다 — 같은 눈으로 앞도 봅니다.</p>
         <div id="msBody"></div>
       </section>
       <section class="card" style="padding-top:6px">
@@ -499,7 +496,7 @@
       <section class="card">
         <h2>戀 · 공주님의 사랑 이야기</h2>
         <p class="hint" style="margin:0 0 12px">생년월일시만으로 과거의 연애 구간을 짚어 봅니다.
-          맞는지는 공주님이 압니다 — 같은 잣대로 미래도 잽니다.</p>
+          맞는지는 공주님이 압니다 — 같은 눈으로 앞도 봅니다.</p>
         <div id="lsBody"></div>
       </section>
       <section class="card" style="padding-top:6px">
@@ -578,7 +575,7 @@
       <div class="act-one" id="actOne">
         <div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div>
         <div>
-          <div class="k">오늘 여섯 눈</div>
+          <div class="k">오늘은 이렇게 옵니다</div>
           <p id="actText"></p>
         </div>
       </div>
@@ -818,29 +815,29 @@
   </div>
 </div>
 
-<script src="config.js?v=573"></script>
-<script src="track.js?v=573"></script>
-<script src="cloud.js?v=573"></script>
-<script src="usage.js?v=573"></script>
-<script src="places.js?v=573"></script>
-<script src="people.js?v=573"></script>
-<script src="astro.js?v=573"></script>
-<script src="lunar.js?v=573"></script>
-<script src="engine.js?v=573"></script>
-<script src="chaeyong.js?v=573"></script>
-<script src="brief.js?v=573"></script>
-<script src="chaeksadan.js?v=573"></script>
-<script src="typecard.js?v=573"></script>
-<script src="gyeokguk.js?v=573"></script>
-<script src="memo.js?v=573"></script>
-<script src="classic.js?v=573"></script>
-<script src="calendar.js?v=573"></script>
-<script src="tongbyeon.js?v=573"></script>
-<script src="rules-wealth-love.js?v=573"></script>
-<script src="rules-health-study-move.js?v=573"></script>
-<script src="share.js?v=573"></script>
-<script src="ai.js?v=573"></script>
-<script src="pay.js?v=573"></script>
-<script src="app.js?v=573"></script>
+<script src="config.js?v=582"></script>
+<script src="track.js?v=582"></script>
+<script src="cloud.js?v=582"></script>
+<script src="usage.js?v=582"></script>
+<script src="places.js?v=582"></script>
+<script src="people.js?v=582"></script>
+<script src="astro.js?v=582"></script>
+<script src="lunar.js?v=582"></script>
+<script src="engine.js?v=582"></script>
+<script src="chaeyong.js?v=582"></script>
+<script src="brief.js?v=582"></script>
+<script src="chaeksadan.js?v=582"></script>
+<script src="typecard.js?v=582"></script>
+<script src="gyeokguk.js?v=582"></script>
+<script src="memo.js?v=582"></script>
+<script src="classic.js?v=582"></script>
+<script src="calendar.js?v=582"></script>
+<script src="tongbyeon.js?v=582"></script>
+<script src="rules-wealth-love.js?v=582"></script>
+<script src="rules-health-study-move.js?v=582"></script>
+<script src="share.js?v=582"></script>
+<script src="ai.js?v=582"></script>
+<script src="pay.js?v=582"></script>
+<script src="app.js?v=582"></script>
 </body>
 </html>

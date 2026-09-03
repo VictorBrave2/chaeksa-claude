@@ -21,9 +21,19 @@
   const nim = () => (profile.name === '공주님' || profile.name === '당신' || profile.name === '도련님')
     ? 호칭() : profile.name + '님';
   (function () {
+    // 같은 문에서 십신·격 이름도 걷는다(2026-09-04 「보이지 않는 심장」) — textContent 로 찍히는 자리까지 전부.
+    // 글 노드만 본다. 입력칸·스크립트는 글 노드가 아니라 안 건드린다.
+    const 십신자 = /정관|편관|칠살|관살|관성|정재|편재|재성|정인|편인|인수|인성|식신|상관|식상|비견|겁재|비겁|양인|건록|[가-힣]격[이은을의에]/;
     const fix = (n) => {
+      if (n.nodeType !== 3) return;
       const want = 호칭(), other = want === '공주님' ? '도련님' : '공주님';
-      if (n.nodeType === 3 && n.nodeValue.includes(other)) n.nodeValue = n.nodeValue.split(other).join(want);
+      if (n.nodeValue.includes(other)) n.nodeValue = n.nodeValue.split(other).join(want);
+      if (십신자.test(n.nodeValue) && window.ChaeksaDan && ChaeksaDan.공주님말) {
+        const p = n.parentNode; if (p && /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)) return;
+        const v = ChaeksaDan.공주님말(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v;
+      }
+      // 「잣대 공개 —」 꼬리말은 기준 공개 시절의 것 — 심장은 보이지 않는다(2026-09-04). 그 문단을 숨긴다.
+      if (/^\s*잣대 공개 —/.test(n.nodeValue) && n.parentElement) n.parentElement.hidden = true;
     };
     const walk = (root) => { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) fix(n); };
     new MutationObserver((ms) => {
@@ -38,7 +48,9 @@
   const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
 
   // 아주 가벼운 마크다운: **굵게**, 줄바꿈만 (LLM 서술 표시용)
-  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  // 화면으로 나가는 마지막 문 — 십신·격 이름을 공주님말로 바꾼 뒤 이스케이프한다(2026-09-04 「보이지 않는 심장」).
+  const 공말 = (s) => (window.ChaeksaDan && ChaeksaDan.공주님말) ? ChaeksaDan.공주님말(s) : s;
+  const esc = (s) => 공말(String(s == null ? '' : s)).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   // 받침 조사 — 표(讀)는 typecard 한 벌뿐이다. 여기서 또 만들면 반드시 어긋난다.
   // 한자 뒤에 「戊이」 「癸과」를 박아 두었던 자리가 실제로 있었다(3000판 18건).
   const 조 = (s, 있, 없) => {
@@ -506,13 +518,13 @@
       ['자리에 앉는 중입니다', '법도를 보는 정율, 계절을 보는 온서, 인연을 맡은 연희 — 아홉이 둘러앉고 좌장 태윤이 끝을 맺습니다.'],
       ['먼저 공주님이 어떤 분인지', '타고난 것과 곁에서 보는 모습. 남들이 보는 공주님과 안에서 사시는 공주님이 다를 수도 있습니다.'],
       ['그리고 사랑을 두고', '어떤 사람에게 마음이 기우는지, 곁자리에 어떤 글자가 앉아 있는지. 지나온 해도 함께 짚습니다.'],
-      ['갈리면 갈린 채로 올립니다', '열 사람이 같은 사주를 다른 잣대로 봅니다. 맞춰 놓으면 읽은 것이 아니라 달래 드린 것이 됩니다.'],
+      ['갈리면 갈린 채로 올립니다', '열 사람이 같은 사주를 각자의 눈으로 봅니다. 맞춰 놓으면 읽은 것이 아니라 달래 드린 것이 됩니다.'],
       ['겁주지 않습니다', '삼재니 대흉이니 하며 불안을 팔지 않습니다. 좋지 않은 자리도 어떻게 지나가면 되는지와 함께 아룁니다.'],
     ];
     el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}을 위한 첫 의논</p>
-      <p class="pb-lede">열 사람의 책사가 공주님의 사주를 앞에 놓고 둘러앉습니다. 서로 다른 잣대를 들고 있어, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
+      <p class="pb-lede">열 사람의 책사가 공주님의 사주를 앞에 놓고 둘러앉습니다. 보는 눈이 서로 달라, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
       <button class="btn" id="chongBake">의논을 청하겠습니다 — 약 1~2분</button>
-      <p class="hint">값을 받지 않는 의논은 한 번뿐입니다.</p>
+
       <div id="chongFeats"></div>
       <p class="hint hide" id="chongWait">둘러앉는 중…</p>`;
     $('chongBake').onclick = () => {
@@ -887,8 +899,7 @@
       `<span class="t">${esc(r.jin)}시 · 시계 ${esc(r.clockRange)}</span>`
       + `<span class="g">${esc(r.ganji)} ${esc(r.god)}</span>`
       + `<span class="g">${esc(결말)}</span>`
-      + `<span class="d">${esc(r.label)}</span>`
-      + `<span class="d" style="opacity:.62;font-size:11px">잣대 — 체용 ${esc(r.sign)} ${sgn}${r.value}</span>`;
+      + `<span class="d">${esc(r.label)}</span>`;
   }
 
   // 진태양시 보정을 켠 것과 끈 것을 나란히 보여준다.
@@ -1043,7 +1054,7 @@
     const b = ChaeksaBrief.today(R, tf, E.currentDaeun(R, today), today);
     box.className = 'hd-lede';
     box.textContent = (b.paragraphs && b.paragraphs[0]) ? String(b.paragraphs[0]).replace(/<[^>]+>/g, '') : '';
-    const chip = $('hdFresh'); if (chip) chip.textContent = '규칙 엔진';
+    const chip = $('hdFresh'); if (chip) chip.textContent = '오늘의 말';
   }
   $('btnAiBrief').onclick = () => openSettings();
   function collapseRuleCard(on) {
@@ -1526,7 +1537,7 @@
           <span class="mn-v">${esc(x.이름)}${x.상위 ? ` · 상위 ${esc(x.상위)}%` : ''}</span>
           ${x.말 ? `<span class="mn-s">${esc(x.말)}</span>` : ''}
         </div>`).join('')}
-        <p class="mns">공주님 화면과 같은 잣대로 잰 것입니다 — 그래야 견줄 수 있습니다.</p>
+        <p class="mns">공주님 화면과 같은 눈으로 본 것입니다 — 그래야 견줄 수 있습니다.</p>
       </div>`;
     // 열 사람이 그 사람을 두고 — 칸 제한 없음(2026-09-03). 값이 있는 책사는 전부, 있는 만큼.
     let 열절 = '';
@@ -1534,7 +1545,7 @@
       const 열 = (window.ChaeksaDan && ChaeksaDan.그사람) ? ChaeksaDan.그사람(R, you, { 나: meName, 그: youName }, today) : [];
       if (열.length) {
         const 총 = 열.reduce((s, g) => s + g.본문들.length, 0);
-        열절 = '<div class="tenbox"><p class="mnk">열 사람이 ' + esc(youName) + '님을 두고 — ' + 총 + '마디</p><div class="chorus">'
+        열절 = '<div class="tenbox"><p class="mnk">열 사람이 ' + esc(youName) + '님을 두고</p><div class="chorus">'
           + 열.map((g, i) => {
               const k = 책사키[g.축];
               const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 60, false) : '';
@@ -1544,7 +1555,7 @@
               return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
                 + g.본문들.map(t => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
             }).join('')
-          + '</div><p class="mns">칸을 두지 않았습니다 — 값이 있는 책사가 전부, 있는 만큼 말합니다. 사람마다 마디 수가 다른 것이 곧 판정입니다.</p></div>';
+          + '</div></div>';
       }
     } catch (e) {}
     // 그 사람이 지금 지나는 운 — 관계의 뼈대 위에 「지금」을 얹는다
@@ -1752,6 +1763,8 @@
   }
 
   function nextStep(제목, 무료로본것, 물음, 문의말, 상품, 진단) {
+    // 팔 물건이 열리기 전에는 「곧 열립니다」를 세우지 않는다(2026-09-04 홈 점검 — 지키지 못한 약속은 값이 아니다).
+    if (!(payReady && 상품)) return '';
     const q = encodeURIComponent(문의말 || '');
     // 진단 — 엔진이 이 사람 원국에서 읽은 「왜 공주님께는 시기가 중요한가」.
     // 일반 문구는 아무도 안 산다. 자기 얘기라야 지갑이 열린다.
@@ -2449,7 +2462,7 @@
         ? '<p class="hint" style="margin:16px 0 4px;font-weight:700">자리가 없는 사람들 — 글자로 봅니다</p>'
           + v.글자사람들.map(s => 줄(s.이름, s.신들.join('·') + ' · ' + s.위치, s.말)).join('')
         : '');
-    $('gwFoot').textContent = '잣대 공개 — ' + v.잣대;
+    $('gwFoot').textContent = '';
   }
 
   // ───── 지칠 때와 채울 때 ─────
@@ -2737,16 +2750,17 @@
     const E2 = window.ChaeksaEngine;
     let 대상 = '';
     try { const tf = E2.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); const pl = 단위 === '오늘' ? tf.day : 단위 === '이달' ? tf.month : tf.year; 대상 = E2.fmt.pillar(pl) + (단위 === '오늘' ? '일' : 단위 === '이달' ? '월' : '년'); } catch (e) {}
-    return '<p class="mnk">' + esc(단위) + ' ' + esc(대상) + ' — 여섯 눈</p><div class="six">' + 칸.map(c =>
-      '<div class="sx ' + (cls[c.판] || 'none') + '"><b>' + esc(c.축) + '</b><i>' + esc(c.판) + '</i><span>' + esc(c.근거 || '') + '</span>' + 층칩(c.층) + '</div>').join('')
-      + '</div><p class="tier-legend">여섯 눈은 평균을 내지 않습니다 — 갈리는 자리가 곧 읽을 것입니다. 잣대 칸은 좋고 나쁨을 매기지 않습니다.</p>';
+    // 축 이름·표는 화면에 안 낸다 — 좋다·나쁘다로 본 근거만 문장으로, 갈리면 갈린 채로(2026-09-04)
+    const 줄 = 칸.filter(c => (c.판 === '좋다' || c.판 === '나쁘다') && c.근거);
+    if (!줄.length) return '';
+    return '<p class="mnk">' + esc(단위) + ' ' + esc(대상) + ' — 이렇게 옵니다</p><div class="six">' + 줄.map(c =>
+      '<div class="sx ' + (cls[c.판] || 'none') + '"><i>' + esc(c.판) + '</i><span>' + esc(c.근거) + '</span></div>').join('') + '</div>';
   }
   // 층 칩 — 누가 그렇게 말하는가. 원전(책) · 잣대(책사의 판, 실측) · 통설(유파 갈림)
-  const 층칩 = (층) => 층 ? '<i class="tier tier-' + 층 + '" title="' + ({ 원전: '자평진전·궁통보감·삼명통회가 말한 것', 잣대: '책사의 판 — 3,000판 실측으로 갈리는지 본 것', 통설: '유파에 따라 갈리는 통설' }[층] || '') + '">' + 층 + '</i>' : '';
-  const 층범례 = '<p class="tier-legend"><i class="tier tier-원전">원전</i> 책이 말한 것 · <i class="tier tier-잣대">잣대</i> 책사의 판, 실측으로 갈린 것 · <i class="tier tier-통설">통설</i> 유파가 갈리는 것</p>';
+  // 층은 판정키다 — 화면에 칩으로 내지 않는다(2026-09-04 사장님 「기준 공개」 부연 삭제). 꼬리는 여전히 떼어 낸다.
+  const 층칩 = () => '';
   function 열눈HTML(묶, 제목) {
-    const 총 = 묶.reduce((s, g) => s + g.본문들.length, 0);
-    return '<p class="mnk">' + 묶.length + '명이 ' + esc(제목) + ' — ' + 총 + '마디</p>' + 층범례 + 묶.map((g, i) => {
+    return '<p class="mnk">' + esc(제목) + '</p>' + 묶.map((g, i) => {
       const k = 책사키[g.축];
       const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, false) : '';
       const 얼 = 파일
@@ -2761,23 +2775,24 @@
   // 제목은 지어내지 않는다 — 열눈의 첫 마디 첫 문장. 값이 없는 콘텐츠는 분류 제목 그대로.
   // 인기순·적중순은 없다(안 하기로 한 것). 순서는 시간순이다.
   const 홈목록 = [
-    { tab: 'today',     묶음: '오늘', 이름: '오늘의 흐름',       기본: 'gungtong', 오늘: true },
-    { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',    기본: 'hyeopgi',  오늘: true },
-    { tab: 'today',     묶음: '이달', 이름: '이달의 나',         기본: 'unro',     오늘: true, scroll: 'myMonth', key: 'myMonth', 말탭: 'cal' },
-    { tab: 'year',      묶음: '올해', 이름: '올해의 나',         기본: 'unro' },
-    { tab: 'inyeon',    묶음: '올해', 이름: '인연이 오는 해',    기본: 'inyeon' },
-    { tab: 'jikcheop',  묶음: '올해', 이름: '자리가 열리는 해',  기본: 'cheonjik' },
-    { tab: 'life',      묶음: '올해', 이름: '인생 곡선',         기본: 'unro' },
-    { tab: 'ganmyeong', 묶음: '나',   이름: '책사단의 의논',     기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 갈린 자리는 갈린 채로' },
-    { tab: 'me',        묶음: '나',   이름: '타고난 바탕',       기본: 'japyung' },
-    { tab: 'dohwa',     묶음: '나',   이름: '나의 연애',         기본: 'inyeon' },
-    { tab: 'lovestory', 묶음: '나',   이름: '사랑 이야기',       기본: 'inyeon' },
-    { tab: 'jichim',    묶음: '나',   이름: '지칠 때와 채울 때', 기본: 'eokbu' },
-    { tab: 'naepyeon',  묶음: '나',   이름: '내 편이 되는 사람', 기본: 'japyung' },
-    { tab: 'moneystory',묶음: '나',   이름: '재물 이야기',       기본: 'jaemul' },
-    { tab: 'nokpae',    묶음: '나',   이름: '돈의 모양',         기본: 'jaemul' },
-    { tab: 'compat',    묶음: '우리', 이름: '우리 둘 사이',      기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
-    { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들',       기본: 'gungwi' },
+    // 칸 이름은 명리 과목이 아니라 공주님의 물음이다(2026-09-04 홈 점검).
+    { tab: 'today',     묶음: '오늘', 이름: '오늘 나는',            기본: 'gungtong', 오늘: true },
+    { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',       기본: 'hyeopgi',  오늘: true },
+    { tab: 'today',     묶음: '이달', 이름: '이달 나는',            기본: 'unro',     오늘: true, scroll: 'myMonth', key: 'myMonth', 말탭: 'cal' },
+    { tab: 'year',      묶음: '올해', 이름: '올해 나는',            기본: 'unro' },
+    { tab: 'inyeon',    묶음: '올해', 이름: '인연은 언제 오나',     기본: 'inyeon' },
+    { tab: 'jikcheop',  묶음: '올해', 이름: '일은 언제 풀리나',     기본: 'cheonjik' },
+    { tab: 'life',      묶음: '올해', 이름: '내 인생은 언제 오르나', 기본: 'unro' },
+    { tab: 'ganmyeong', 묶음: '나',   이름: '나를 두고 열 사람이',  기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 말이 갈리면 갈린 채로' },
+    { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
+    { tab: 'dohwa',     묶음: '나',   이름: '나는 어떻게 사랑하나', 기본: 'inyeon' },
+    { tab: 'lovestory', 묶음: '나',   이름: '어떤 사람이 오나',     기본: 'inyeon' },
+    { tab: 'jichim',    묶음: '나',   이름: '나는 언제 지치나',     기본: 'eokbu' },
+    { tab: 'naepyeon',  묶음: '나',   이름: '내 편은 누구인가',       기본: 'japyung' },
+    { tab: 'moneystory',묶음: '나',   이름: '돈은 어디서 오나',     기본: 'jaemul' },
+    { tab: 'nokpae',    묶음: '나',   이름: '돈을 어떻게 쓰나',     기본: 'jaemul' },
+    { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
+    { tab: 'gwangye',   묶음: '우리', 이름: '곁의 사람들은',        기본: 'gungwi' },
   ];
   function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
   function renderWtHome() {
@@ -2825,7 +2840,7 @@
       '<button class="wt-tile" data-i="' + i + '" data-f="' + t.묶음 + '"><div class="wt-cover">' + 그림(t, 'wt-seal')
       + '<span class="wt-day">' + t.묶음 + '</span>' + (t.오늘 ? '<i class="wt-up">오늘</i>' : '') + '</div>'
       + '<b>' + esc(t.말 || t.이름) + '</b>'
-      + '<span>' + esc(t.말 ? t.이름 : '') + (t.n ? (t.말 ? ' · ' : '') + '마디 ' + t.n : '') + '</span>'
+      + '<span>' + esc(t.말 ? t.이름 : '') + '</span>'
       + (t.seen ? '<em>최근 본</em>' : '') + '</button>').join('') + '</div>';
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
