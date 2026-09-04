@@ -1511,7 +1511,9 @@
     const G = window.ChaeksaGeunamja; const box = $('gnResult'); if (!box) return;
     let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
     let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    const paid = (window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('geunamja')) || null;
+    // 한 남자에 한 번 — 열쇠는 그 남자의 생년월일시. 다른 남자는 새로 산다(사장님 「개별로 받아야지」).
+    const 열쇠 = 'geunamja:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
+    const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('geunamja', 열쇠)) || null;
     const 미리 = new Set([0, 1, 5]);
     const 절 = f.Q.map((q, i) => {
       const 열림 = paid || 미리.has(i);
@@ -1526,8 +1528,8 @@
     }).join('');
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">여기까지가 미리보기 — 1·2·6번</p>
         <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 물음과 열 책사의 한마디에서 봅니다.</p>
-        <a class="btn nx-cta" href="pay.html?p=geunamja" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · 이 남자 한 장 열기</a>
-        <p class="nx-ft">한 사람에 한 번. 결제하면 이 자리에서 바로 열립니다.</p></div>`;
+        <button class="btn nx-cta" id="btnGnBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
+        <p class="nx-ft">이 사람에 한 번입니다. 다른 사람은 따로 삽니다. 결제하면 이 자리에서 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${절}
@@ -1535,6 +1537,8 @@
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
+    const bb = box.querySelector('#btnGnBuy');
+    if (bb) bb.onclick = () => { try { ChaeksaPay.buy('geunamja', 열쇠); } catch (e) { location.href = 'pay.html?p=geunamja'; } };
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

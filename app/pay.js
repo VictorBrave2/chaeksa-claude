@@ -212,5 +212,16 @@
     return null;
   }
 
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor };
+  /** 사람마다 따로 파는 상품(이 남자 한 장) — 주문 note 가 열쇠와 같은 paid 주문만 인정한다(2026-09-04 「개별로 받아야지」).
+   *  my_orders 가 note 를 아직 안 내려주면(migrate-17 전) 그 상품의 paid 주문 하나로 연다 — 낸 사람이 못 보는 것보다 낫다. */
+  function paidForKey(code, key) {
+    try { const U = global.ChaeksaUsage; if (U && U.plan && U.plan() === 'super') return { id: 'super', product: code, super: true }; } catch (e) {}
+    if (!_paidRows) return null;
+    const rows = _paidRows.filter((r) => (r.product || (String(r.id || '').match(/^ck_([a-z]+)_/) || [])[1]) === code);
+    if (!rows.length) return null;
+    const hasNote = rows.some((r) => r.note !== undefined);
+    if (!hasNote) return rows[0];
+    return rows.find((r) => r.note === key) || null;
+  }
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey };
 })(window);
