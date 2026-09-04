@@ -1617,10 +1617,12 @@
     let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
     const 열쇠 = 'gunghap:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('gunghap', 열쇠)) || null;
-    const 미리 = new Set([0, 3, 7]);
+    const 미리 = new Set([0, 4, 8]);
+    let 앞구간 = '';
     const 절 = f.Q.map((q, i) => {
       const 열림 = paid || 미리.has(i);
-      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
+      const 머리 = q.구간 && q.구간 !== 앞구간 ? `<p class="gn-sec">${esc(q.구간)}</p>` : ''; 앞구간 = q.구간 || 앞구간;
+      return 머리 + `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
     }).join('');
@@ -1630,7 +1632,7 @@
       return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
     }).join('');
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
-        <p>그래서 이 사람이랑 가도 되는지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
+        <p>네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
         <button class="btn nx-cta" id="btnGhBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
         <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>우리 둘, 잘 맞아요?</h2>
