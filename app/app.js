@@ -1529,7 +1529,7 @@
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">여기까지가 미리보기 — 1·2·6번</p>
         <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 물음과 열 책사의 한마디에서 봅니다.</p>
         <button class="btn nx-cta" id="btnGnBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">이 사람에 한 번입니다. 다른 사람은 따로 삽니다. 결제하면 이 자리에서 바로 열립니다.</p></div>`;
+        <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${절}
