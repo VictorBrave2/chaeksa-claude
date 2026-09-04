@@ -3136,13 +3136,17 @@
     // 없으면 그 자리에서 조립한다 (chaeksadan.js). 원가 0원·지연 0초라 굽기를 기다릴 이유가 없다.
     // 이미 구워진 의논이 있는 분은 위에서 걸려 그대로 쓴다 — 아무도 제 것을 잃지 않는다.
     // 한 번 조립하면 저장한다 — 같은 사람에게 늘 같은 글이 나와야 한다.
+    // 조립기 문장은 판이 바뀌면 다시 짓는다(원가 0). 구운 간명(LLM)은 ⟪층⟫ 꼬리가 없어 여기 안 걸린다 — 아무도 제 것을 잃지 않는다.
+    // 2026-09-04 저녁 D2: 정율·온서·형준을 GPT 결로 다시 씀. 옛 조립 문장을 쥔 기기가 그대로 보여 주던 자리.
+    const 조립표식 = '⟦조립 D2⟧';
+    if (t && t.indexOf('⟪') >= 0 && t.indexOf(조립표식) < 0) t = null;
     if (!t && R && window.ChaeksaDan) {
       try {
         t = ChaeksaDan.의논(R, today);
-        if (t) localStorage.setItem(ck, t);
+        if (t) { localStorage.setItem(ck, t + '\n' + 조립표식); t = t; }
       } catch (e) { try { console.warn('의논 조립 실패:', e); } catch (e2) {} t = null; }
     }
-    return t;
+    return t ? t.replace('\n' + 조립표식, '') : t;
   }
   // ── 굽기와 기다림을 갈라놓는다 (2026-08-30 「토큰만 먹고 출력이 안 된다」) ──
   // 그날의 사고: 굽는 중이라는 응답을 받으면 20초 뒤 「같은 함수」를 다시 불렀다.
