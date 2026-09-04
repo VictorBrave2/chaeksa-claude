@@ -1380,3 +1380,15 @@ details.fold > .tiles { margin-top: 10px; }
 .dr-row:first-of-type{border-top:0}
 .dr-row b{color:var(--accent);font-size:13px;letter-spacing:.04em;padding-top:1px}
 .wt-daybox .dr-row{padding:5px 0}
+
+/* 이 남자, 나한테 돈을 쓸까요? — 물음 열 개 */
+.gn-q{padding:12px 0;border-top:1px solid var(--line)}
+.gn-q:first-of-type{border-top:0}
+.gn-k{margin:0 0 6px;font-family:var(--letter);font-size:15.5px;font-weight:700}
+.gn-a{margin:0 0 6px;font-weight:700;color:var(--accent)}
+.gn-a.dim{color:var(--ink3);font-weight:400}
+.gn-w{margin:0;font-size:14px;line-height:1.6;color:var(--ink2)}
+.gn-q.locked .gn-k{color:var(--ink3)}
+.gn-card{margin-top:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--accent-line);background:var(--accent-soft);line-height:1.6}
+.gn-card .k{margin:0 0 6px;font-size:11.5px;color:var(--accent);letter-spacing:2px}
+.gn-card p{margin:0 0 4px}

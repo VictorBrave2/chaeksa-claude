@@ -440,6 +440,7 @@
     if (tab === 'jichim') renderJichim();
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'gwangye') renderGwangye();
+    if (tab === 'geunamja') renderGeunamja();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
     if (tab === 'memo') renderMemo();
@@ -1488,6 +1489,54 @@
   }
   $('calPrev').onclick = () => { calM--; if (calM < 1) { calM = 12; calY--; } selDay = null; renderCal(); };
   $('calNext').onclick = () => { calM++; if (calM > 12) { calM = 1; calY++; } selDay = null; renderCal(); };
+
+  // ───── 이 남자, 나한테 돈을 쓸까요? (docs/31 · 9,900원 첫 장) ─────
+  // 물음 열 개. 1·2·6은 미리보기, 나머지는 결제(geunamja) 뒤에. 값은 geunamja.js, 말도 거기.
+  function renderGeunamja() {
+    const P = People(); const G = window.ChaeksaGeunamja; if (!P || !G || !$('gnPick')) return;
+    const me = P.active();
+    const list = P.list().filter(p => !me || p.id !== me.id);
+    $('gnPick').innerHTML = list.length
+      ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('')
+      : '<option value="">등록된 사람이 없습니다</option>';
+    $('btnGn').disabled = !list.length;
+    $('btnGnAdd').onclick = () => openPersonForm(null);
+    $('btnGn').onclick = () => {
+      const p = P.get($('gnPick').value); if (!p) return;
+      const met = parseInt($('gnMet').value, 10) || null;
+      showGeunamja(P.toProfile(p), p.name, met);
+    };
+  }
+  function showGeunamja(you0, youName, met) {
+    const G = window.ChaeksaGeunamja; const box = $('gnResult'); if (!box) return;
+    let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    const paid = (window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('geunamja')) || null;
+    const 미리 = new Set([0, 1, 5]);
+    const 절 = f.Q.map((q, i) => {
+      const 열림 = paid || 미리.has(i);
+      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k">${i + 1}. ${esc(q.물음)}</p>`
+        + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열립니다.</p>`)
+        + '</div>';
+    }).join('');
+    const 열 = G.열사람(v).map((x, i) => {
+      const k = 책사키[x.축]; const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 70, false) : '';
+      const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
+      return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
+    }).join('');
+    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">여기까지가 미리보기 — 1·2·6번</p>
+        <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 물음과 열 책사의 한마디에서 봅니다.</p>
+        <a class="btn nx-cta" href="pay.html?p=geunamja" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · 이 남자 한 장 열기</a>
+        <p class="nx-ft">한 사람에 한 번. 결제하면 이 자리에서 바로 열립니다.</p></div>`;
+    box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
+      <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      ${절}
+      ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
+      <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${결제}`;
+    box.classList.remove('hide');
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   // ───── 궁합 ─────
   function renderPartners() {
@@ -2810,6 +2859,7 @@
     { tab: 'moneystory',묶음: '나',   이름: '돈은 어디서 오나',     기본: 'jaemul' },
     { tab: 'nokpae',    묶음: '나',   이름: '돈을 어떻게 쓰나',     기본: 'jaemul' },
     { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '나에게 그 사람은' },
+    { tab: 'geunamja',  묶음: '우리', 이름: '이 남자, 나한테 돈을 쓸까요?', 기본: 'jaemul', 말: '그래서 나한테 도움이 되나요?' },
   ];
   function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
   // ── 일일 리포트 — 오늘의 운세 꼴 (2026-09-04 사장님 「오늘 / 천간 / 지지 / 신살 / 오늘의 운세 식으로」) ──
