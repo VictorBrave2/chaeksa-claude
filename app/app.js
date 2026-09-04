@@ -3518,14 +3518,7 @@
     }
     // 회의를 맺는 말. 채점 알약을 달지 않는다 — 좌장은 판정하지 않고 앉힌다.
     if (맺음글) html.push('<div class="nx-diag gm-close" style="margin-top:16px">' + 발언줄(맺음글) + '</div>');
-    // 회의가 끝나면 문을 연다. 예전에는 **채점을 마쳐야** 이 문이 열렸는데,
-    // 채점을 치웠으니 조건도 없앤다 — 다 읽은 사람에게 그냥 연다.
-    html.push('<div class="nx-diag pbd" style="margin-top:16px">'
-      + '<p class="nx-diag-k">다음 물음은 하나 — 「그래서 언제인가」</p>'
-      + '<p>지나온 해를 짚은 그 잣대로, 앞으로 열두 달을 달·날·시각까지 재어 놓았습니다.</p>'
-      + '<button class="btn" id="gmNextLove">공주님의 사랑 이야기 — 다음 장 열기</button>'
-      + '<button class="btn" id="gmNextMoney" style="margin-top:8px">공주님의 재물 이야기 열기</button>'
-      + '</div>');
+    // 「다음 물음은 하나 — 그래서 언제인가」 상자는 뺐다(2026-09-04 밤 사장님 「책사단 의논에서 이거 삭제」). 다음 해·언제는 안 판다.
     // 로그인은 여기서 청한다 — 의논을 다 읽은 사람에게는 잃을 것이 생겼다.
     // 없는 이득을 지어내지 않는다. 실제로 되는 것만 적는다.
     if (비로그인()) {
@@ -3538,9 +3531,6 @@
     el.innerHTML = html.join('');
     const kp = el.querySelector('#gmKeep');
     if (kp) kp.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } };
-    const nl = el.querySelector('#gmNextLove'), nm = el.querySelector('#gmNextMoney');
-    if (nl) nl.onclick = () => go('lovestory');
-    if (nm) nm.onclick = () => go('moneystory');
   }
 
   function renderLoveStory() {
