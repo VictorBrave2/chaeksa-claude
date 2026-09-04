@@ -1401,3 +1401,11 @@ details.fold > .tiles { margin-top: 10px; }
 .wt-feature b{font-family:var(--letter);font-size:19px;line-height:1.3;color:var(--ink)}
 .wt-feature .wf-s{font-size:12.5px;line-height:1.5;color:var(--ink2)}
 .wt-feature .wf-go{margin-top:4px;font-size:13px;font-weight:700;color:var(--accent)}
+
+/* 무료 칸 — 글자 목록 */
+.wt-free{list-style:none;margin:0 0 16px;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+.wt-free li+li{border-top:1px solid var(--line)}
+.wt-free button{display:flex;flex-direction:column;gap:2px;width:100%;padding:12px 14px;border:0;background:none;text-align:left;cursor:pointer;font-family:var(--sans)}
+.wt-free b{font-size:14.5px;color:var(--ink)}
+.wt-free span{font-size:12.5px;color:var(--ink3);line-height:1.4}
+.wt-feature+.wt-feature{margin-top:10px}

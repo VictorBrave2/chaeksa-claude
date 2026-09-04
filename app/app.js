@@ -3007,13 +3007,20 @@
     });
     const 조심 = 이레.reduce((b, t) => (t.나쁨.length >= 2 && (!b || t.나쁨.length > b.나쁨.length)) ? t : b, null);
     if (조심) 조심.조심 = true;
-    // 메인 콘텐츠 — 「이 남자, 나한테 돈을 쓸까요?」를 맨 위에 크게(2026-09-04 사장님 「담당자가 보기 쉽게 메인 콘텐츠로 땡겨」)
-    const 대표파일 = window.CHAEKSA_ART ? 초상('jaemul', 3, false) : '';
-    let h = '<button class="wt-feature" id="wtFeature" type="button">'
-      + (대표파일 ? '<img alt="" src="' + 대표파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
-      + '<div class="wf-body"><span class="wf-k">우리 · 물음 열 개</span><b>이 남자, 나한테 돈을 쓸까요?</b>'
-      + '<span class="wf-s">그래서 나한테 도움이 되나요? — 세 물음은 무료, 나머지는 9,900원</span>'
-      + '<span class="wf-go">물어보기 ▸</span></div></button>'
+    // 메인 콘텐츠 — 유료 콘텐츠를 표지 카드 꼴로 세로 나열(2026-09-04 사장님 「네이버 웹툰식 말고, 메인콘텐츠 식으로 유료 콘텐츠를 나열하자」)
+    const 유료 = [
+      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 물음 열 개', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요? — 세 물음은 무료, 나머지는 9,900원', 가기: '물어보기' },
+      { id: 'myMonth', tab: 'today', scroll: 'myMonth', k: 'unro', 자리: 2, 위: '이달 · 서른 날', 제목: '다음 달까지, 나는', 부제: '오늘과 이번 주는 무료예요. 서른 날 전체는 이달 결제로 열려요', 가기: '열어보기' },
+      { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 가기: '읽어보기' },
+    ];
+    let h = '<div class="wt-head"><b>책사단이 파는 것</b><span>물음 하나가 한 장이에요</span></div>'
+      + 유료.map((f, i) => {
+          const 파일 = window.CHAEKSA_ART ? 초상(f.k, f.자리, false) : '';
+          return '<button class="wt-feature" data-fi="' + i + '" type="button">'
+            + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
+            + '<div class="wf-body"><span class="wf-k">' + esc(f.위) + '</span><b>' + esc(f.제목) + '</b>'
+            + '<span class="wf-s">' + esc(f.부제) + '</span><span class="wf-go">' + esc(f.가기) + ' ▸</span></div></button>';
+        }).join('')
       + '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
       + (조심
         ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
@@ -3023,20 +3030,15 @@
       + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
         + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>';
-    // 2) 탭 — 전체·오늘·이달·올해·나·우리
-    const 묶들 = ['전체', '오늘', '이달', '올해', '나', '우리'];
-    h += '<div class="wt-tabs">' + 묶들.map((m, i) => '<button data-f="' + m + '"' + (i === 0 ? ' class="on"' : '') + '>' + m + '</button>').join('') + '</div>';
-    // 3) 격자 — 표지(얼굴) · 배지 · 제목(약속) · 분류
-    h += '<div class="wt-grid">' + 타일.map((t, i) =>
-      '<button class="wt-tile" data-i="' + i + '" data-f="' + t.묶음 + '"><div class="wt-cover">' + 그림(t, 'wt-seal')
-      + '<span class="wt-day">' + t.묶음 + '</span>' + (t.오늘 ? '<i class="wt-up">오늘</i>' : '') + '</div>'
-      + '<b>' + esc(t.말 || t.이름) + '</b>'
-      + '<span>' + esc(t.말 ? t.이름 : '') + '</span>'
-      + (t.seen ? '<em>최근 본</em>' : '') + '</button>').join('') + '</div>';
+    // 무료 칸 — 격자 대신 글자 목록(2026-09-04). 표지는 유료에만 준다.
+    const 무료 = 타일.filter(t => t.tab !== 'geunamja' && !(t.tab === 'today' && t.scroll === 'myMonth'));
+    h += '<div class="wt-head"><b>무료로 보는 것</b><span>오늘과 이번 주까지</span></div><ul class="wt-free">'
+      + 무료.map((t, i) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
+      + '</ul>';
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
-    box.querySelectorAll('.wt-tile').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
-    const wf = box.querySelector('#wtFeature'); if (wf) wf.onclick = () => { 본표시('geunamja'); go('geunamja'); };
+    box.querySelectorAll('.wt-free button').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.wt-feature').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
     // 이레 — 누르면 그날을 그 자리에서 편다(말 전부 · 행동 · 그날 글자가 어떻게 오는지). 오늘은 그 탭으로도 간다.
     box.querySelectorAll('.wt-post').forEach(b => { b.onclick = () => {
       const t = 이레.find(x => x.i === +b.dataset.w); const db = $('wtDay'); if (!t || !db) return;
