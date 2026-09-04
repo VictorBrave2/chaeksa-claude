@@ -1699,9 +1699,11 @@
     const 열쇠 = 장.code + ':' + (장.둘 ? [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-') : 'me');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey(장.code, 열쇠)) || null;
     const 미리 = new Set(장.무료);
+    let 앞구간 = '';
     const 절 = f.Q.map((q, i) => {
       const 열림 = paid || 미리.has(i);
-      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
+      const 머리 = q.구간 && q.구간 !== 앞구간 ? `<p class="gn-sec">${esc(q.구간)}</p>` : ''; 앞구간 = q.구간 || 앞구간;
+      return 머리 + `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`) + '</div>';
     }).join('');
     const 열 = (장.둘 ? S.열사람(v) : []).map((x, i) => {
@@ -3195,6 +3197,7 @@
     const 유료 = [
       { id: 'maeum', tab: 'maeum', k: 'inyeon', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 나한테 좋은 사람인가요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
+      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 자리: 4, 위: '우리 · 비밀 열 가지', 제목: '우리 둘, 속궁합은요?', 부제: '그래서 누가 더 뜨겁고, 정이 어디로 가는지 — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 결혼 생각 있을까요?', 부제: '그래서 이 사람과 결혼해도 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '헤어질까요, 계속 갈까요?', 부제: '그래서 어떻게 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람 지금 무슨 생각해요?', 부제: '그래서 지금 나는 어떻게 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
