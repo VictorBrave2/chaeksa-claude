@@ -1392,3 +1392,12 @@ details.fold > .tiles { margin-top: 10px; }
 .gn-card{margin-top:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--accent-line);background:var(--accent-soft);line-height:1.6}
 .gn-card .k{margin:0 0 6px;font-size:11.5px;color:var(--accent);letter-spacing:2px}
 .gn-card p{margin:0 0 4px}
+
+/* 메인 콘텐츠 — 홈 맨 위 큰 표지 하나 */
+.wt-feature{display:flex;align-items:stretch;gap:0;width:100%;margin:0 0 16px;padding:0;border:1px solid var(--accent-line);border-radius:16px;overflow:hidden;background:var(--card);text-align:left;cursor:pointer;font-family:var(--sans)}
+.wt-feature img{width:38%;max-width:170px;height:168px;object-fit:cover;object-position:50% 15%;flex:none}
+.wt-feature .wf-body{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:16px 16px 16px 14px;min-width:0}
+.wt-feature .wf-k{font-size:11px;letter-spacing:.12em;color:var(--accent)}
+.wt-feature b{font-family:var(--letter);font-size:19px;line-height:1.3;color:var(--ink)}
+.wt-feature .wf-s{font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.wt-feature .wf-go{margin-top:4px;font-size:13px;font-weight:700;color:var(--accent)}

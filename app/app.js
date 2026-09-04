@@ -3009,7 +3009,14 @@
     });
     const 조심 = 이레.reduce((b, t) => (t.나쁨.length >= 2 && (!b || t.나쁨.length > b.나쁨.length)) ? t : b, null);
     if (조심) 조심.조심 = true;
-    let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
+    // 메인 콘텐츠 — 「이 남자, 나한테 돈을 쓸까요?」를 맨 위에 크게(2026-09-04 사장님 「담당자가 보기 쉽게 메인 콘텐츠로 땡겨」)
+    const 대표파일 = window.CHAEKSA_ART ? 초상('jaemul', 3, false) : '';
+    let h = '<button class="wt-feature" id="wtFeature" type="button">'
+      + (대표파일 ? '<img alt="" src="' + 대표파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
+      + '<div class="wf-body"><span class="wf-k">우리 · 물음 열 개</span><b>이 남자, 나한테 돈을 쓸까요?</b>'
+      + '<span class="wf-s">그래서 나한테 도움이 되나요? — 세 물음은 무료, 나머지는 9,900원</span>'
+      + '<span class="wf-go">물어보기 ▸</span></div></button>'
+      + '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
       + (조심
         ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
           + 조심.나쁨.map(c => '<p>' + esc(c.근거) + '</p>').join('') + '</div>'
@@ -3031,6 +3038,7 @@
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     box.querySelectorAll('.wt-tile').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    const wf = box.querySelector('#wtFeature'); if (wf) wf.onclick = () => { 본표시('geunamja'); go('geunamja'); };
     // 이레 — 누르면 그날을 그 자리에서 편다(말 전부 · 행동 · 그날 글자가 어떻게 오는지). 오늘은 그 탭으로도 간다.
     box.querySelectorAll('.wt-post').forEach(b => { b.onclick = () => {
       const t = 이레.find(x => x.i === +b.dataset.w); const db = $('wtDay'); if (!t || !db) return;
