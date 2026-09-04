@@ -1517,8 +1517,8 @@
     const 미리 = new Set([0, 1, 5]);
     const 절 = f.Q.map((q, i) => {
       const 열림 = paid || 미리.has(i);
-      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k">${i + 1}. ${esc(q.물음)}</p>`
-        + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열립니다.</p>`)
+      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
+        + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
     }).join('');
     const 열 = G.열사람(v).map((x, i) => {
@@ -1526,8 +1526,8 @@
       const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
       return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
     }).join('');
-    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">여기까지가 미리보기 — 1·2·6번</p>
-        <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 물음과 열 책사의 한마디에서 봅니다.</p>
+    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
+        <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
         <button class="btn nx-cta" id="btnGnBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
         <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
@@ -3009,11 +3009,11 @@
     if (조심) 조심.조심 = true;
     // 메인 콘텐츠 — 유료 콘텐츠를 표지 카드 꼴로 세로 나열(2026-09-04 사장님 「네이버 웹툰식 말고, 메인콘텐츠 식으로 유료 콘텐츠를 나열하자」)
     const 유료 = [
-      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 물음 열 개', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요? — 세 물음은 무료, 나머지는 9,900원', 가기: '물어보기' },
+      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'myMonth', tab: 'today', scroll: 'myMonth', k: 'unro', 자리: 2, 위: '이달 · 서른 날', 제목: '다음 달까지, 나는', 부제: '오늘과 이번 주는 무료예요. 서른 날 전체는 이달 결제로 열려요', 가기: '열어보기' },
       { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 가기: '읽어보기' },
     ];
-    let h = '<div class="wt-head"><b>책사단이 파는 것</b><span>물음 하나가 한 장이에요</span></div>'
+    let h = '<div class="wt-head"><b>책사단이 파는 것</b><span>비밀 하나가 한 장이에요</span></div>'
       + 유료.map((f, i) => {
           const 파일 = window.CHAEKSA_ART ? 초상(f.k, f.자리, false) : '';
           return '<button class="wt-feature" data-fi="' + i + '" type="button">'
