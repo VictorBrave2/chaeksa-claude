@@ -2851,9 +2851,7 @@
     { tab: 'today',     묶음: '오늘', 이름: '오늘 나는',            기본: 'gungtong', 오늘: true },
     { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',       기본: 'hyeopgi',  오늘: true },
     { tab: 'today',     묶음: '이달', 이름: '이달 나는',            기본: 'unro',     오늘: true, scroll: 'myMonth', key: 'myMonth', 말탭: 'cal' },
-    { tab: 'year',      묶음: '올해', 이름: '올해 나는',            기본: 'unro' },
-    { tab: 'inyeon',    묶음: '올해', 이름: '인연은 언제 오나',     기본: 'inyeon' },
-    { tab: 'jikcheop',  묶음: '올해', 이름: '일은 언제 풀리나',     기본: 'cheonjik' },
+    // 올해 나는·인연은 언제 오나·일은 언제 풀리나 — 다음 해를 말하는 칸이라 홈에서 뺌(docs/31 「무료는 다음 주, 유료는 다음 달, 다음 해는 안 판다」). 탭 코드는 남긴다.
     // 인생 곡선(life)·곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
     { tab: 'ganmyeong', 묶음: '나',   이름: '나를 두고 열 사람이',  기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 말이 갈리면 갈린 채로' },
     { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
@@ -2875,7 +2873,7 @@
       out.간지 = f.pillar(tf.day) + '(' + f.pillarKo(tf.day) + ')';
       let 비 = null; try { 비 = ChaeksaDan.오늘(R, d); } catch (e) {}
       const 모두 = (비 && 비.모두) || [];
-      const 머리 = /^오늘 [^ ]+일 — /;
+      const 머리 = /^(오늘 [^ ]+일 — |오늘은 )/;
       const 하늘 = 모두.find(x => /하늘에/.test(x.말));
       const 땅 = 모두.find(x => /땅의 글자|지지/.test(x.말));
       let k = []; try { k = ChaeksaDan.육안글자(R, d, tf.day.stem, tf.day.branch, { 궁합: true }) || []; } catch (e) {}
@@ -2964,10 +2962,10 @@
       if (h.tab === 'today' && !h.scroll) {
         try { const 비 = ChaeksaDan.오늘 ? ChaeksaDan.오늘(R, today) : null; if (비 && 비.말) { 말 = 문장(비.말); k = 책사키[비.축] || k; } } catch (e) {}
       } else if (h.tab === 'ban') {
-        try { const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); 말 = '오늘 ' + f.pillar(tf.day) + '일 — 조심할 것 하나'; } catch (e) {}
+        try { const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); 말 = '오늘 조심할 것 하나'; } catch (e) {}
       } else if (h.key === 'myMonth') {
         const big = $('tiMonthBig') ? $('tiMonthBig').textContent.trim() : '', sub = $('tiMonthSub') ? $('tiMonthSub').textContent.trim() : '';
-        if (big) 말 = (big + ' — ' + sub).replace(/ — $/, '');
+        if (sub || big) 말 = sub || big;   // 등급 이름(담금질…)은 안 낸다
       }
       if (!말) 말 = h.말 || '';
       const n = 묶.reduce((s, g) => s + g.본문들.length, 0);
@@ -2990,7 +2988,7 @@
       const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 20, false) : '';
       const 날말 = i === 0 ? '오늘' : i === 1 ? '내일' : (['일','월','화','수','목','금','토'][d.getDay()] + '요일');
       // 고르기는 「오늘」이라고 말한다 — 그날 이름으로 바꿔 부른다(「내일 오는 화 기운은」).
-      const 날로 = (x) => i > 0 ? Object.assign({}, x, { 말: String(x.말).replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(x.행동 || '').replace(/오늘/g, '그날') }) : x;
+      const 날로 = (x) => i > 0 ? Object.assign({}, x, { 말: String(x.말).replace(/^오늘은 /, 날말 + '은 ').replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(x.행동 || '').replace(/오늘/g, '그날') }) : x;
       const 모두 = (비.모두 || []).map(날로);
       비 = 날로(비);
       // 땅 줄 — 지지를 말하는 사건(땅의 글자·지지·합·충) 가운데 고른 말이 아닌 것 하나
@@ -3023,7 +3021,7 @@
         : '<p class="wt-care none">이번 주에는 유난히 조심할 날이 없습니다 — 나쁘게 보는 눈이 둘 넘게 겹치는 날이 없습니다.</p>')
       + '<div class="wt-strip" id="wtWeek">'
       + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
-        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^\S+ [^ ]+일 — /, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^\S+ [^ ]+일 — /, '')) + '</small>' : '') + '</b></button>').join('')
+        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>';
     // 2) 탭 — 전체·오늘·이달·올해·나·우리
     const 묶들 = ['전체', '오늘', '이달', '올해', '나', '우리'];

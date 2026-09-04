@@ -281,17 +281,17 @@
     const 좋음 = cur.score >= 65;
     let head, body;
     if (좋음) {
-      head = '지금은 밀어야 할 때입니다';
-      body = '이번 달은 ' + cur.grade + '입니다. 미뤄둔 일이 있으면 지금 꺼내세요. 이런 달은 자주 오지 않습니다.';
+      head = '이달은 밀어붙여도 되는 때예요';
+      body = '미뤄 둔 일이 있으면 지금 꺼내 보세요. 이렇게 열리는 달은 자주 오지 않아요.';
     } else if (눌림) {
-      head = '지금은 눌리는 구간입니다';
-      body = '이번 달은 ' + cur.grade + '입니다. 애써도 더디게 가는 때가 있고, 지금이 그렇습니다. '
-           + (turn ? turn.m + '월부터 결이 바뀝니다 — ' + turn.away + '달 남았습니다.'
-                   : '이 구간이 영영 가지는 않습니다.');
+      head = '이달은 애써도 더디게 가는 때예요';
+      body = '이런 달은 내 탓이 아니에요. 버티는 게 일이에요. '
+           + (turn ? turn.m + '월부터 결이 바뀌어요. ' + turn.away + '달만 더 가면 돼요.'
+                   : '이 구간이 영영 가지는 않아요.');
     } else {
-      head = '지금은 고르게 갑니다';
-      body = '이번 달은 ' + cur.grade + '입니다. 크게 밀어주지도 막지도 않으니 내 페이스가 답입니다.'
-           + (turn ? ' ' + turn.m + '월부터는 좀 더 열립니다.' : '');
+      head = '이달은 고르게 가는 때예요';
+      body = '크게 밀어주지도 막지도 않는 달이라 내 페이스대로 가면 돼요.'
+           + (turn ? ' ' + turn.m + '월부터는 좀 더 열려요.' : '');
     }
     return { head, body, grade: cur.grade, score: cur.score, 눌림, 좋음,
              pillar: cur.pillar, daeun: du ? E.fmt.pillar(du) : null, turn };
