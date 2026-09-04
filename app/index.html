@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=622">
+<link rel="stylesheet" href="style.css?v=624">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -672,6 +672,22 @@
     </div>
 
     <!-- 궁합 -->
+    <div class="tab hide" data-tab="maeum">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card">
+        <h2>그 사람, 나한테 마음이 있을까요?</h2>
+        <p class="hint" style="margin:0 0 14px">그 사람의 생년월일시와 두 분이 만난 해만 있으면 됩니다.
+          그 사람의 비밀 열 가지를 엽니다 — <b>그래서 나한테 좋은 사람인지</b>까지.</p>
+        <label>누구인가요</label>
+        <select id="mmPick" aria-label="그 사람 선택"></select>
+        <label>만난 해 (모르면 비워 두세요)</label>
+        <input id="mmMet" type="number" placeholder="예: 2024" min="1950" max="2030">
+        <button class="btn" id="btnMm">비밀 열기</button>
+        <button class="btn ghost" id="btnMmAdd">그 사람 생년월일 넣기</button>
+      </section>
+      <section class="card hide" id="mmResult"></section>
+    </div>
+
     <div class="tab hide" data-tab="geunamja">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
       <section class="card">
@@ -832,30 +848,31 @@
   </div>
 </div>
 
-<script src="config.js?v=622"></script>
-<script src="track.js?v=622"></script>
-<script src="cloud.js?v=622"></script>
-<script src="usage.js?v=622"></script>
-<script src="places.js?v=622"></script>
-<script src="people.js?v=622"></script>
-<script src="astro.js?v=622"></script>
-<script src="lunar.js?v=622"></script>
-<script src="engine.js?v=622"></script>
-<script src="chaeyong.js?v=622"></script>
-<script src="brief.js?v=622"></script>
-<script src="chaeksadan.js?v=622"></script>
-<script src="geunamja.js?v=622"></script>
-<script src="typecard.js?v=622"></script>
-<script src="gyeokguk.js?v=622"></script>
-<script src="memo.js?v=622"></script>
-<script src="classic.js?v=622"></script>
-<script src="calendar.js?v=622"></script>
-<script src="tongbyeon.js?v=622"></script>
-<script src="rules-wealth-love.js?v=622"></script>
-<script src="rules-health-study-move.js?v=622"></script>
-<script src="share.js?v=622"></script>
-<script src="ai.js?v=622"></script>
-<script src="pay.js?v=622"></script>
-<script src="app.js?v=622"></script>
+<script src="config.js?v=624"></script>
+<script src="track.js?v=624"></script>
+<script src="cloud.js?v=624"></script>
+<script src="usage.js?v=624"></script>
+<script src="places.js?v=624"></script>
+<script src="people.js?v=624"></script>
+<script src="astro.js?v=624"></script>
+<script src="lunar.js?v=624"></script>
+<script src="engine.js?v=624"></script>
+<script src="chaeyong.js?v=624"></script>
+<script src="brief.js?v=624"></script>
+<script src="chaeksadan.js?v=624"></script>
+<script src="geunamja.js?v=624"></script>
+<script src="maeum.js?v=624"></script>
+<script src="typecard.js?v=624"></script>
+<script src="gyeokguk.js?v=624"></script>
+<script src="memo.js?v=624"></script>
+<script src="classic.js?v=624"></script>
+<script src="calendar.js?v=624"></script>
+<script src="tongbyeon.js?v=624"></script>
+<script src="rules-wealth-love.js?v=624"></script>
+<script src="rules-health-study-move.js?v=624"></script>
+<script src="share.js?v=624"></script>
+<script src="ai.js?v=624"></script>
+<script src="pay.js?v=624"></script>
+<script src="app.js?v=624"></script>
 </body>
 </html>

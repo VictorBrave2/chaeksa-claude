@@ -441,6 +441,7 @@
     if (tab === 'jikcheop') renderJikcheop();
     if (tab === 'gwangye') renderGwangye();
     if (tab === 'geunamja') renderGeunamja();
+    if (tab === 'maeum') renderMaeum();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
     if (tab === 'memo') renderMemo();
@@ -1539,6 +1540,56 @@
     box.classList.remove('hide');
     const bb = box.querySelector('#btnGnBuy');
     if (bb) bb.onclick = () => { try { ChaeksaPay.buy('geunamja', 열쇠); } catch (e) { location.href = 'pay.html?p=geunamja'; } };
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ───── 그 사람, 나한테 마음이 있을까요? (둘째 장 · maeum.js) ─────
+  function renderMaeum() {
+    const P = People(); const G = window.ChaeksaMaeum; if (!P || !G || !$('mmPick')) return;
+    const me = P.active();
+    const list = P.list().filter(p => !me || p.id !== me.id);
+    $('mmPick').innerHTML = list.length
+      ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('')
+      : '<option value="">등록된 사람이 없습니다</option>';
+    $('btnMm').disabled = !list.length;
+    $('btnMmAdd').onclick = () => openPersonForm(null);
+    $('btnMm').onclick = () => {
+      const p = P.get($('mmPick').value); if (!p) return;
+      const met = parseInt($('mmMet').value, 10) || null;
+      showMaeum(P.toProfile(p), p.name, met);
+    };
+  }
+  function showMaeum(you0, youName, met) {
+    const G = window.ChaeksaMaeum; const box = $('mmResult'); if (!box) return;
+    let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    const 열쇠 = 'maeum:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
+    const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('maeum', 열쇠)) || null;
+    const 미리 = new Set([0, 1, 3]);
+    const 절 = f.Q.map((q, i) => {
+      const 열림 = paid || 미리.has(i);
+      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
+        + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
+        + '</div>';
+    }).join('');
+    const 열 = G.열사람(v).map((x, i) => {
+      const k = 책사키[x.축]; const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 70, false) : '';
+      const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
+      return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
+    }).join('');
+    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
+        <p>그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
+        <button class="btn nx-cta" id="btnMmBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
+        <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
+    box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
+      <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      ${절}
+      ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
+      <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${결제}`;
+    box.classList.remove('hide');
+    const bb = box.querySelector('#btnMmBuy');
+    if (bb) bb.onclick = () => { try { ChaeksaPay.buy('maeum', 열쇠); } catch (e) { location.href = 'pay.html?p=maeum'; } };
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -3009,6 +3060,7 @@
     if (조심) 조심.조심 = true;
     // 메인 콘텐츠 — 유료 콘텐츠를 표지 카드 꼴로 세로 나열(2026-09-04 사장님 「네이버 웹툰식 말고, 메인콘텐츠 식으로 유료 콘텐츠를 나열하자」)
     const 유료 = [
+      { id: 'maeum', tab: 'maeum', k: 'inyeon', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 나한테 좋은 사람인가요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'myMonth', tab: 'today', scroll: 'myMonth', k: 'unro', 자리: 2, 위: '이달 · 서른 날', 제목: '다음 달까지, 나는', 부제: '오늘과 이번 주는 무료예요. 서른 날 전체는 이달 결제로 열려요', 가기: '열어보기' },
       { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 가기: '읽어보기' },
