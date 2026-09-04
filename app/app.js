@@ -1627,10 +1627,8 @@
         <div><p class="rk">${esc(youName)}님은 ${esc(meName)}님에게</p>
           <p class="rb">${esc(v.나에게.말[0])}</p>
           <p class="rs">${esc(v.나에게.말[1])}</p></div>
-        <div><p class="rk">${esc(meName)}님은 ${esc(youName)}님에게</p>
-          <p class="rb">${esc(v.그에게.말[0])}</p>
-          <p class="rs">${esc(v.그에게.말[1])}</p></div>
       </div>
+      <!-- 「그에게 나는」(내 일간을 그의 십신으로 읽기)은 2026-09-04 사장님 「그의 재성 글자가 나의 일간이면 통째로 삭제해」로 걷음 -->
       ${사람절}
       ${열절}
       ${신살절}
@@ -2806,12 +2804,12 @@
     // 인생 곡선(life)·곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
     { tab: 'ganmyeong', 묶음: '나',   이름: '나를 두고 열 사람이',  기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 말이 갈리면 갈린 채로' },
     { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
-    { tab: 'lovestory', 묶음: '나',   이름: '어떤 사람이 오나',     기본: 'inyeon' },
+    // 어떤 사람이 오나(lovestory) — 「내 배우자성을 일간으로 타고난 사람」 읽기 전체가 09-04 삭제 대상. 홈에서 뺌.
     { tab: 'jichim',    묶음: '나',   이름: '나는 언제 지치나',     기본: 'eokbu' },
     { tab: 'naepyeon',  묶음: '나',   이름: '내 편은 누구인가',       기본: 'japyung' },
     { tab: 'moneystory',묶음: '나',   이름: '돈은 어디서 오나',     기본: 'jaemul' },
     { tab: 'nokpae',    묶음: '나',   이름: '돈을 어떻게 쓰나',     기본: 'jaemul' },
-    { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '그 사람에게 나는, 나에게 그 사람은' },
+    { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '나에게 그 사람은' },
   ];
   function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
   // ── 일일 리포트 — 오늘의 운세 꼴 (2026-09-04 사장님 「오늘 / 천간 / 지지 / 신살 / 오늘의 운세 식으로」) ──
