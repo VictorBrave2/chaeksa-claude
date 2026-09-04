@@ -507,8 +507,11 @@
     chongFor = state;
     el.classList.remove('hide');
     if (캐시) {
-      el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}을 위한 첫 의논</p><div id="chongGm"></div>`;
+      // 나에 대한 긴 글은 접어 둔다(2026-09-04 사장님 「여자들은 나에 대해 궁금하지 않다」) — 카드 한 장, 누르면 펼친다.
+      el.classList.add('fold');
+      el.innerHTML = `${장면()}<p class="hero-eyebrow">${esc(nim())}을 위한 첫 의논</p><div id="chongGm"></div><button class="btn ghost small" id="chongMore" type="button">펼쳐 읽기</button>`;
       mountGanmyeong($('chongGm'), 'home');
+      $('chongMore').onclick = () => { el.classList.toggle('fold'); $('chongMore').textContent = el.classList.contains('fold') ? '펼쳐 읽기' : '접기'; };
       return;
     }
     // 자동 굽기 금지(2026-08-30 「켤 때마다 굽는데… 클릭으로 바꾸던가」) —
@@ -1510,6 +1513,19 @@
       showGeunamja(P.toProfile(p), p.name, met);
     };
   }
+  // ───── 카드 줄 (2026-09-04 밤 사장님 「나에 대한 건 카드식, 그에 대한 건 섬세하게 문장+카드로」) ─────
+  // 그 사람 장: 위에 카드 한 줄(한눈에) + 아래 문장. 나 장: 카드만, 문장은 접어 둔다.
+  function 카드줄(Q, 미리, paid, 접기) {
+    return '<div class="gn-cards">' + Q.map((q, i) => {
+      const 열림 = paid || 미리.has(i);
+      const 머리 = q.구간 ? esc(q.구간) + ' · ' : '';
+      return '<div class="gn-cd' + (열림 ? '' : ' locked') + '"><span class="k">' + 머리 + '비밀 ' + (i + 1) + '</span>'
+        + '<b>' + (열림 ? esc(q.답) : '결제하면 열려요') + '</b>'
+        + (접기 && 열림 && q.왜 ? '<details><summary>왜 그런지</summary><p>' + esc(q.왜) + '</p></details>' : '')
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
   function showGeunamja(you0, youName, met) {
     const G = window.ChaeksaGeunamja; const box = $('gnResult'); if (!box) return;
     let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
@@ -1535,6 +1551,7 @@
         <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      ${카드줄(f.Q, 미리, paid, false)}
       ${절}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
@@ -1585,6 +1602,7 @@
         <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      ${카드줄(f.Q, 미리, paid, false)}
       ${절}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
@@ -1637,6 +1655,7 @@
         <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>우리 둘, 잘 맞아요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      ${카드줄(f.Q, 미리, paid, false)}
       ${절}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
@@ -1689,7 +1708,8 @@
         <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
     box.innerHTML = `<h2>${esc(장.제목)}</h2>
       <p class="hint">${장.둘 ? esc(youName) + ' · ' : ''}${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${절}
+      ${카드줄(f.Q, 미리, paid, !장.둘)}
+      ${장.둘 ? 절 : ''}
       ${paid ? (열 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>` : '') + `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
@@ -3170,12 +3190,12 @@
       { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 결혼 생각 있을까요?', 부제: '그래서 이 사람과 결혼해도 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '헤어질까요, 계속 갈까요?', 부제: '그래서 어떻게 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람 지금 무슨 생각해요?', 부제: '그래서 지금 나는 어떻게 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 자리: 4, 위: '나 · 비밀 열 가지', 제목: '내 짝은 언제 와요?', 부제: '그래서 지금 뭘 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
+      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 자리: 4, 위: '나 · 비밀 열 가지', 제목: '내 짝은 언제 와요?', 부제: '그래서 지금 뭘 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
       { id: 'myMonth', tab: 'today', scroll: 'myMonth', k: 'unro', 자리: 2, 위: '이달 · 서른 날', 제목: '다음 달까지, 나는', 부제: '오늘과 이번 주는 무료예요. 서른 날 전체는 이달 결제로 열려요', 가기: '열어보기' },
       { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 가기: '읽어보기' },
     ];
-    let h = '<div class="wt-head"><b>책사단이 파는 것</b><span>비밀 하나가 한 장이에요</span></div>'
+    let h = '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
       + 유료.map((f, i) => {
           const 파일 = window.CHAEKSA_ART ? 초상(f.k, f.자리, false) : '';
           return '<button class="wt-feature" data-fi="' + i + '" type="button">'
