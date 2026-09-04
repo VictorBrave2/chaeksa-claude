@@ -219,8 +219,13 @@
     $('personForm').classList.add('hide');
     $('peopleSheet').classList.add('hide');
     if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+    const 새 = pendingPick;   // renderPartners 가 비우기 전에 붙잡는다
     if (!R || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
     else { renderPeopleBtn(); renderPartners(); renderHome(); }
+    // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
+    try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
+      ['gnPick', 'mmPick', 'ghPick', 'shPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
+    } catch (e) {}
   }
 
   function wirePeople() {
@@ -1516,7 +1521,10 @@
   // ───── 카드 줄 (2026-09-04 밤 사장님 「나에 대한 건 카드식, 그에 대한 건 섬세하게 문장+카드로」) ─────
   // 그 사람 장: 위에 카드 한 줄(한눈에) + 아래 문장. 나 장: 카드만, 문장은 접어 둔다.
   function 카드줄(Q, 미리, paid, 접기) {
-    return '<div class="gn-cards">' + Q.map((q, i) => {
+    // 그 사람 장(접기 아님): 열린 비밀만 요약 카드로, 잠긴 것은 본문에서 한 번만(2026-09-04 밤 점검 「카드가 읽기를 지연」).
+    const 골 = 접기 ? Q.map((q, i) => i) : Q.map((q, i) => i).filter(i => paid || 미리.has(i)).slice(0, 3);
+    if (!골.length) return '';
+    return '<p class="gn-cards-k">한눈에</p><div class="gn-cards">' + 골.map((i) => { const q = Q[i];
       const 열림 = paid || 미리.has(i);
       const 머리 = q.구간 ? esc(q.구간) + ' · ' : '';
       return '<div class="gn-cd' + (열림 ? '' : ' locked') + '"><span class="k">' + 머리 + '비밀 ' + (i + 1) + '</span>'
@@ -1547,8 +1555,8 @@
     }).join('');
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
         <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnGnBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
+        <button class="btn nx-cta" id="btnGnBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
+        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
@@ -1598,8 +1606,8 @@
     }).join('');
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
         <p>그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnMmBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
+        <button class="btn nx-cta" id="btnMmBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
+        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
     box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
@@ -1651,8 +1659,8 @@
     }).join('');
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
         <p>네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnGhBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
+        <button class="btn nx-cta" id="btnGhBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
+        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
     box.innerHTML = `<h2>우리 둘, 잘 맞아요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
@@ -1704,8 +1712,8 @@
     const 이름표 = 장.둘 ? youName : '공주님';
     const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
         <p>${esc(장.부제)}는 나머지 일곱 가지 비밀${장.둘 ? '과 열 책사의 한마디' : ''}에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnShBuy" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(이름표)} 한 장 열기</button>
-        <p class="nx-ft">결제하면 바로 열립니다.</p></div>`;
+        <button class="btn nx-cta" id="btnShBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(이름표)} 한 장 열기</button>
+        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
     box.innerHTML = `<h2>${esc(장.제목)}</h2>
       <p class="hint">${장.둘 ? esc(youName) + ' · ' : ''}${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, !장.둘)}
@@ -3108,19 +3116,19 @@
     const 줄 = (k, v) => '<div class="dr-row"><b>' + k + '</b><span>' + esc(v) + '</span></div>';
     return '<p class="dr-head">' + esc(제목) + ' <i>' + esc(r.간지) + '일</i></p>'
       // 줄 이름은 26조로 — 천간은 마음, 지지는 행동. 「엮임」은 제가 만든 말이라 「얽힘」으로(2026-09-04 사장님 「한국인이 쓰는 말투로」)
-      + 줄('마음', r.천간) + 줄('행동', r.지지) + 줄('신살', r.신살) + (r.엮임 ? 줄('얽힘', r.엮임) : '')
+      + 줄('마음', r.천간) + 줄('행동', r.지지)
+      + '<p class="dr-note">마음 줄은 하늘 글자, 행동 줄은 땅 글자예요. 둘이 다르게 읽히면 그날은 마음과 행동이 따로 오는 날이에요. 어느 쪽이 맞느냐가 아니라 둘 다 와요.</p>'
+      + 줄('신살', r.신살) + (r.엮임 ? 줄('얽힘', r.엮임) : '')
       + (r.행동 ? 줄('하나', r.행동) : '');
   }
   function renderDailyReport() {
     const sc = $('homeScene'); if (!sc || !R) return;
-    let box = document.getElementById('dailyReport');
-    if (!box) { box = document.createElement('section'); box.className = 'card daily'; box.id = 'dailyReport'; sc.after(box); }
+    const old = document.getElementById('dailyReport'); if (old && !old.closest('#wtHome')) old.remove();
     const r = 일일리포트(today);
-    const h = 리포트HTML(r, '오늘 · ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일');
-    box.innerHTML = h; box.classList.toggle('hide', !h);
+    return 리포트HTML(r, '오늘 · ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일');
   }
   function renderWtHome() {
-    renderDailyReport();
+    let 리포트 = ''; try { 리포트 = renderDailyReport() || ''; } catch (e) {}
     const box = $('wtHome'); if (!box || !R) return;
     let 전체 = {};
     // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
@@ -3203,6 +3211,7 @@
             + '<div class="wf-body"><span class="wf-k">' + esc(f.위) + '</span><b>' + esc(f.제목) + '</b>'
             + '<span class="wf-s">' + esc(f.부제) + '</span><span class="wf-go">' + esc(f.가기) + ' ▸</span></div></button>';
         }).join('')
+      + (리포트 ? '<section class="card daily" id="dailyReport">' + 리포트 + '</section>' : '')
       + '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
       + (조심
         ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
