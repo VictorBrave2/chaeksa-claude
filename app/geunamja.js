@@ -156,6 +156,7 @@
       v.재순위 === 1 ? '이 사람에게는 돈이 곧 마음의 신호예요.' : '이 사람에게는 돈보다 ' + 첫(첫순) + '이 먼저예요. ' + (첫순.g === '관성' ? '역할을 세워주면 돈은 따라와요.' : 첫순.g === '인성' ? '이유를 먼저 주면 돈은 따라와요.' : '그 자리에 같이 있으면 돈은 따라와요.'),
       '마음의 크기를 쓴 돈의 액수 하나로 판단하지는 마세요.',
     ];
+    try { if (global.ChaeksaHwakin) global.ChaeksaHwakin.붙이기('geunamja', Q, v, null); } catch (e) {}
     return { Q, 카드 };
   }
 
@@ -167,7 +168,8 @@
     return (v.열 || []).map(g => {
       const 문 = (g.본문들 || []).flatMap(t => String(t).split(/(?<=[.!?])\s+/)).map(x => x.trim()).filter(Boolean);
       const s = 문.find(x => !사주말.test(x) && x.length >= 12) || '';
-      return { 축: g.축, 말: d && d.말끝 ? d.말끝(s, '잣대') : s };
+      const 부 = (global.ChaeksaMaeum && global.ChaeksaMaeum.부드럽게) ? global.ChaeksaMaeum.부드럽게 : (x) => x;   // 열 책사 말투는 maeum 의 것 하나로(~어요)
+      return { 축: g.축, 말: 부(s) };
     }).filter(x => x.말);
   }
 
