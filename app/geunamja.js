@@ -159,6 +159,9 @@
     // 문장표(docs/34) — 표가 있는 문항은 칸으로 덮는다. 3번: A 순위 · B 내놓는 힘 · C 갈래 · D 운(대운·이달·다음 달 중 돈 기운)
     try { const Mn = global.ChaeksaMun; if (Mn) {
       Mn.덮기('geunamja', 3, Q, 'A' + Mn.순위(v.재순위) + '-B' + Mn.상태(v.식상태) + '-C' + (v.재갈래 >= 2 ? '두' : '한') + '-D' + (Mn.운옴('재성', v.du, v.이달, v.다음달) ? '옴' : '안'));
+      // 1번: A 내놓는 힘 · B 돈 순위 · C 운(대운/이달/안)
+      const c1 = Mn.운옴('재성', v.du) ? '대운' : Mn.운옴('재성', v.이달, v.다음달) ? '이달' : '안';
+      Mn.덮기('geunamja', 1, Q, 'A' + Mn.상태(v.식상태) + '-B' + Mn.순위(v.재순위) + '-C' + c1);
     } } catch (e) {}
     try { if (global.ChaeksaHwakin) global.ChaeksaHwakin.붙이기('geunamja', Q, v, null); } catch (e) {}
     return { Q, 카드 };
