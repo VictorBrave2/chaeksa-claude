@@ -788,7 +788,7 @@
       } catch (e) {}
       try {
         const iy = T.inyeon(R, today.getFullYear(), 10);
-        if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 대운(10년) 중 가장 가까운 자리'); }
+        if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
         else set('tiInSub', '앞으로 대운(10년)은 조용한 구간입니다');
       } catch (e) {}
       // 이달 — 시간순 홈의 둘째 줄(docs/29 셋). standing 은 원국 탭의 첫 마디와 같은 값이다.
@@ -2823,7 +2823,7 @@
       (profile.name || '') + '님 인연 시기 상담 — ' + v.첫해.해 + '년 중 어느 달인지 보고 싶습니다', 'inyeon',
       T.inyeonWhy ? T.inyeonWhy(R).말 : null);
     $('inNote').textContent = v.말 + ' · 배우자성은 ' + v.배우자이름
-      + '(' + (v.남 ? '남성 기준' : '여성 기준') + ')입니다. 이 순위는 대운(10년) 안에서의 서열입니다.';
+      + '(' + (v.남 ? '남성 기준' : '여성 기준') + ')입니다. 이 순위는 열 해 안에서의 서열입니다.';
     $('btnInShare').onclick = async () => {
       const b = $('btnInShare'); b.disabled = true; b.textContent = '만드는 중…';
       try {
@@ -2876,7 +2876,7 @@
   const 직함of = (who) => { const 축 = 축으로(who); return (책사이름[축] || ['', ''])[1] || ''; };
   const 오늘의책사 = [
     ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
-    ['inyeon', '인연', 'inyeon', '앞으로 대운(10년) 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
+    ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
     ['gungtong', '궁통보감', 'today', '오늘의 기운이 공주님께 추운지 더운지 봐 드리겠습니다.'],
     ['jaemul', '재물', 'nokpae', '돈이 어떤 모양으로 들어오는지, 어디로 새는지 짚어 드릴까요.'],
     ['eokbu', '억부', 'jichim', '무엇이 공주님을 깎고 무엇이 채우는지 짚어 드리겠습니다.'],
