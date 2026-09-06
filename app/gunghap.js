@@ -112,6 +112,8 @@
     try { const Mn = global.ChaeksaMun; if (Mn) { const z = v.마음.짝;
       const A = z.합 ? '합' : z.삼합 ? '삼합' : z.충 ? '충' : z.같음 ? '같음' : '무';
       Mn.덮기('gunghap', 5, Q, 'A' + A + '-B' + (z.일간합 ? '합' : '무'));
+      // 10번: 좋은 자리 수 · 힘든 자리 수 (본문 좋/나쁨 그대로)
+      Mn.덮기('gunghap', 10, Q, 'A' + (좋 >= 6 ? '6' : 좋 >= 4 ? '4' : 좋 >= 2 ? '2' : '0') + '-B' + (나쁨 >= 3 ? '3' : 나쁨 >= 1 ? '1' : '0'));
     } } catch (e) {}
     try { if (global.ChaeksaHwakin) global.ChaeksaHwakin.붙이기('gunghap', Q, v, 그); } catch (e) {}
     return { Q, 카드: [Q[0].답, Q[4].답, Q[9].답] };
