@@ -177,6 +177,12 @@
       Q[3].답,
       Q[9].답,
     ];
+    // 문장표 1번: A 상태5 · B 운(대운/이달/안) · C 눌림
+    try { const Mn = global.ChaeksaMun; if (Mn) {
+      const A = v.상태 === '속·먹힘' ? '먹힘' : Mn.상태(v.상태);
+      const B = (v.du && (v.du.하늘 || v.du.땅)) ? '대운' : ((v.올해 && (v.올해.하늘 || v.올해.땅)) || (v.이달 && (v.이달.하늘 || v.이달.땅))) ? '이달' : '안';
+      Mn.덮기('maeum', 1, Q, 'A' + A + '-B' + B + '-C' + (v.눌림 ? '눌림' : '안눌림'));
+    } } catch (e) {}
     try { if (global.ChaeksaHwakin) global.ChaeksaHwakin.붙이기('maeum', Q, v, 그); } catch (e) {}
     return { Q, 카드 };
   }
