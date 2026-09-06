@@ -994,6 +994,9 @@
       if (k === '상관' && /없/.test(all.slice(off + 2, off + 3))) return m;
       if (k === '편인' && to === '가') return m;
       if (all.charAt(off + k.length) === '격') return m;   // 「정관격」은 그대로(지인 피드백)
+      // 낱말 경계 — 「걱정인」「편인데」「사정인」처럼 딴 말 속의 글자는 건드리지 않는다(2026-09-05 문장표 점검)
+      if (off > 0 && /[가-힣]/.test(all.charAt(off - 1))) return m;
+      if (!to && /[가-힣]/.test(all.charAt(off + k.length))) return m;
       const w = 찾(k); return w + 토바꿈(w, to);
     });
     // 「튀는 말과 재주인 튀는 재주가」 — 꾸밈말이 이미 설명이니 뒤의 낱말을 뗀다
