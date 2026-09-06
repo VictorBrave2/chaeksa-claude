@@ -162,6 +162,7 @@
       // 1번: A 내놓는 힘 · B 돈 순위 · C 운(대운/이달/안)
       const c1 = Mn.운옴('재성', v.du) ? '대운' : Mn.운옴('재성', v.이달, v.다음달) ? '이달' : '안';
       Mn.덮기('geunamja', 1, Q, 'A' + Mn.상태(v.식상태) + '-B' + Mn.순위(v.재순위) + '-C' + c1);
+      Mn.덮기('geunamja', 2, Q, 'A' + Mn.상태(v.재상태) + '-B' + Mn.상태(v.식상태) + '-C' + c1);
     } } catch (e) {}
     try { if (global.ChaeksaHwakin) global.ChaeksaHwakin.붙이기('geunamja', Q, v, null); } catch (e) {}
     return { Q, 카드 };

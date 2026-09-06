@@ -43,3 +43,8 @@ if __name__ == '__main__':
     files = glob.glob(os.path.join(ROOT, 'docs', '33_문장표_*.md'))
     if arg: files = [f for f in files if arg in f]
     for f in sorted(files): conv(f)
+    # 표 전부를 한 파일로 — index.html 은 mun/all.js 하나만 싣는다
+    parts=[io.open(x,encoding='utf-8').read() for x in sorted(glob.glob(os.path.join(ROOT,'app','mun','*.js'))) if not x.endswith('all.js')]
+    io.open(os.path.join(ROOT, 'app', 'mun', 'all.js'), 'w', encoding='utf-8', newline=chr(10)).write(
+        '/* 문장표 전부 — tools_mun.py 가 app/mun/*.js 를 이어 붙인다. 직접 고치지 말 것. */' + chr(10) + chr(10).join(parts))
+    print('all.js', len(parts), '표')
