@@ -789,7 +789,7 @@
       try {
         const iy = T.inyeon(R, today.getFullYear(), 10);
         if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
-        else set('tiInSub', '앞으로 열 해는 조용한 구간입니다');
+        else set('tiInSub', '앞으로 대운(10년)은 조용한 구간입니다');
       } catch (e) {}
       // 이달 — 시간순 홈의 둘째 줄(docs/29 셋). standing 은 원국 탭의 첫 마디와 같은 값이다.
       try { const M = window.ChaeksaMemo, st = M && M.standing ? M.standing(R, today) : null;
