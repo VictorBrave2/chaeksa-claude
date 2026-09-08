@@ -63,6 +63,9 @@
     .replace(/^#{1,3}\s*(.+)$/gm, '<b>$1</b>')
     .replace(new RegExp(String.fromCharCode(10), 'g'), '<br>');
 
+  // 엮임 종류 이름은 화면에 안 낸다 — 무엇이 일어났는지만 남긴다(공주님 원칙)
+  const 강약말 = (s) => ({ 신강: '힘이 센 쪽', 중화: '고른 쪽', 신약: '힘이 약한 쪽' })[String(s || '').split(' ')[0]] || s;
+  const 엮임말 = (k) => k ? ({ 육합: '붙음', 삼합: '한 덩어리', 반합: '반쯤 묶임', 복음: '같은 글자 겹침', 충: '부딪힘' }[k] || k) : k;
   const GOD_FLOW = {
     비견:'내 중심이 서는 때. 독립·자립·내 것 챙기기.', 겁재:'경쟁과 지출이 늘어나는 때. 동업·보증·큰 지출은 신중하게.',
     식신:'여유와 표현의 때. 즐기고 만들고 나누면 돌아옵니다.', 상관:'말과 재능이 튀는 때. 창작·홍보는 좋고, 윗사람과는 부드럽게.',
@@ -1261,7 +1264,7 @@
     $('me').innerHTML = `<div class="big ${elemClass(a.dayStem, true)}">${f.stem(a.dayStem)}</div><p><b>${dm.name}</b> — ${dm.one}<br><span style="font-size:13px">${dm.desc}</span></p>`;
     const max = Math.max(...a.elemCount, 1), colors = ['var(--wood)','var(--fire)','var(--earth)','var(--metal)','var(--water)'];
     $('bars').innerHTML = E.ELEM.map((e, i) => `<div class="bar"><span>${e}</span><i><b style="width:${a.elemCount[i] / max * 100}%;background:${colors[i]}"></b></i><span>${a.elemCount[i]}</span></div>`).join('');
-    $('tags').innerHTML = [`<span class="tag on">${a.strength}</span>`, `<span class="tag">${a.dominant} 기운이 강함</span>`, a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`, `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`].join('');
+    $('tags').innerHTML = [`<span class="tag on">${강약말(a.strength)}</span>`, `<span class="tag">${a.dominant} 기운이 강함</span>`, a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`, `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`].join('');
     $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
     const plName = profile.placeName || '서울';
     const bornNote = $('bornNote');
@@ -1274,8 +1277,8 @@
       const y = today.getFullYear() + i, tf = E.dateFortune(y, 6, 15);
       // 충은 안 적는다 — 제23조. branchRel 은 아직 '충'을 돌려주므로 여기서 거른다.
       const g = god(tf.year.stem), rel0 = C.branchRel(R.pillars.day.branch, tf.year.branch);
-      const rel = rel0 === '충' ? null : rel0;
-      ys.push(`<div class="flow"><div class="gz ${elemClass(tf.year.stem, true)}">${f.pillar(tf.year)}<small>${y}년</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(일지와 ${rel})</span>` : ''}</p></div>`);
+      const rel = 엮임말(rel0 === '충' ? null : rel0);
+      ys.push(`<div class="flow"><div class="gz ${elemClass(tf.year.stem, true)}">${f.pillar(tf.year)}<small>${y}년</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(짝 자리와 ${rel})</span>` : ''}</p></div>`);
     }
     $('yearly').innerHTML = ys.join('');
     // 월운
@@ -1284,7 +1287,7 @@
       const d = new Date(today.getFullYear(), today.getMonth() + i, 15);
       const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, 15);
       const g = god(tf.month.stem), rel1 = C.branchRel(R.pillars.day.branch, tf.month.branch);
-      const rel = rel1 === '충' ? null : rel1;   // 충 표기 없음 — 제23조
+      const rel = 엮임말(rel1 === '충' ? null : rel1);   // 충 표기 없음 — 제23조
       ms.push(`<div class="flow"><div class="gz ${elemClass(tf.month.stem, true)}">${f.pillar(tf.month)}<small>${d.getFullYear()}.${d.getMonth() + 1}</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(${rel})</span>` : ''}</p></div>`);
     }
     $('monthly').innerHTML = ms.join('');
@@ -2756,7 +2759,8 @@
       + '<div style="font-weight:700;font-size:13.5px">' + esc(제목) + '<span class="hint" style="font-weight:400;font-size:11px"> ' + esc(부제) + '</span></div>'
       + '<div style="margin-top:4px;line-height:1.62">' + esc(본문) + '</div></div>';
     $('gwList').innerHTML =
-      v.궁사람들.map(s => 줄(s.이름, s.궁이름 + (s.십신 ? ' · ' + s.십신 : ''), s.말)).join('')
+      // 부제에서 궁 이름(월지·시지…)은 뺀다 — 제목이 이미 그 사람을 부르고, 자리 이름은 계산 낱말이다
+      v.궁사람들.map(s => 줄(s.이름, s.십신 || '', s.말)).join('')
       + (v.글자사람들.length
         ? '<p class="hint" style="margin:16px 0 4px;font-weight:700">자리가 없는 사람들 — 글자로 봅니다</p>'
           + v.글자사람들.map(s => 줄(s.이름, s.신들.join('·') + ' · ' + s.위치, s.말)).join('')
@@ -2803,8 +2807,8 @@
       (profile.name || '') + '님 상담 — 지금 곁에 있는 사람이 저에게 어떤 사람인지 보고 싶습니다',
       'relation'); }     // 상품이 빠져 있어 벽만 서고 문이 없었다
     $('npNote').textContent = '채워야 할 기운은 ' + v.결.map(k => k.오행).join('·')
-      + '입니다. 생일을 아시는 분이라면 일간이 '
-      + v.결.map(k => k.일간.join('·')).join(' 또는 ') + '인지 보시면 됩니다.';
+      + '입니다. 생일을 아시는 분이라면 태어난 날의 글자가 '
+      + v.결.map(k => k.일간독음.map((ko, i) => ko + '(' + (k.일간[i] || '') + ')').join('·')).join(' 또는 ') + '인지 보시면 됩니다.';
     $('btnNpShare').onclick = async () => {
       const b = $('btnNpShare'); b.disabled = true; b.textContent = '만드는 중…';
       try {

@@ -15,6 +15,8 @@
   'use strict';
   const E = global.ChaeksaEngine;
   const GRP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
+  // 카드 그림(SVG)은 공주님말 문을 안 지난다 — 강약 이름은 여기서 바꾼다
+  const 강약말 = (s) => ({ 신강: '힘이 센 쪽', 중화: '고른 쪽', 신약: '힘이 약한 쪽' })[String(s || '').split(' ')[0]] || s;
   const G = (ds, s) => E.TEN_GODS[E.tenGod(ds, s)];
 
   // ── 격 판정 (자평진전 간이 규칙 — 상담 스킬과 같은 판) ──
@@ -459,7 +461,7 @@
       }
       // 배우자 자리가 어떻게 되는가
       const yb = tf.year.branch;
-      if (YUKHAP[db] === yb) { s += 26; 이유.push('배우자 자리와 육합 — 곁이 채워지는 해입니다'); }
+      if (YUKHAP[db] === yb) { s += 26; 이유.push('배우자 자리와 붙는 해 — 곁이 채워지는 해입니다'); }
       else if (SAM.some(g => g.indexOf(db) >= 0 && g.indexOf(yb) >= 0 && db !== yb)) {
         s += 20; 이유.push('배우자 자리와 삼합 — 같이 굴러가는 해입니다');
       }
@@ -2549,7 +2551,7 @@
       // 그 오행을 일간으로 쓰는 사람은 나에게 무슨 십신인가
       const st = ['목','화','토','금','수'].indexOf(el) * 2;   // 양간
       const g = E.TEN_GODS[E.tenGod(ds, st)];
-      return { 오행: el, 이름: w[0], 설명: w[1], 일간: w[2], 사람: w[3] || w[0],
+      return { 오행: el, 이름: w[0], 설명: w[1], 일간: w[2], 일간독음: [E.STEMS_KO[st], E.STEMS_KO[st + 1]], 사람: w[3] || w[0],
                십신: g, 기울기: GOD_LEAN[GRP[g]] || '' };
     });
 
@@ -2588,7 +2590,7 @@
     v.결.forEach((k) => {
       body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="17" font-weight="700" fill="#3f5a44">'
         + es(k.이름) + ' <tspan font-size="12" font-weight="400" fill="#7d9484">' + es(k.오행)
-        + ' · ' + es(k.일간.join('·')) + ' 일간</tspan></text>';
+        + ' · ' + es(k.일간독음.map((ko, i) => ko + '(' + (k.일간[i] || '') + ')').join('·')) + '</tspan></text>';
       y += 22;
       wrap(k.설명, 27).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>'; y += 18; });
       body += '<text x="44" y="' + y + '" font-size="12" fill="#7d9484">나에게는 ' + es(k.십신) + ' — ' + es(wrap(k.기울기, 30)[0] || '') + '</text>';
@@ -2605,11 +2607,11 @@
       + es(name) + '님에게 힘이 되는 사람</text>'
       + '<line x1="44" y1="112" x2="316" y2="112" stroke="#cfdccf"/>'
       + '<text x="44" y="140" font-size="12" fill="#7d9484">지금 채워야 할 것 — '
-      + es(v.결.map(k => k.오행).join(' · ')) + ' · ' + es(v.강약) + '</text>'
+      + es(v.결.map(k => k.오행).join(' · ')) + ' · ' + es(강약말(v.강약)) + '</text>'
       + body
       + (지.length
         ? '<line x1="44" y1="' + Math.max(y, 420) + '" x2="316" y2="' + Math.max(y, 420) + '" stroke="#cfdccf"/>'
-          + '<text x="44" y="' + (Math.max(y, 420) + 26) + '" font-size="11.5" fill="#7d9484">지금 대운 ' + es(v.지금.간지) + ' · ' + es(v.지금.십신) + '</text>'
+          + '<text x="44" y="' + (Math.max(y, 420) + 26) + '" font-size="11.5" fill="#7d9484">지금 대운(10년) · ' + es(v.지금.십신) + '</text>'
           + 지.map((l, i) => '<text x="44" y="' + (Math.max(y, 420) + 48 + i * 18) + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>').join('')
         : '')
       + '<text x="180" y="516" text-anchor="middle" font-size="11" fill="#7d9484">사람은 오행 하나로 정해지지 않습니다</text>'
@@ -2686,7 +2688,7 @@
       + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#9a8090" letter-spacing="4">지칠 때와 채울 때</text>'
       + '<text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#4a3240">'
       + es(name) + '님</text>'
-      + '<text x="180" y="112" text-anchor="middle" font-size="12" fill="#9a8090">' + es(v.강약) + ' · 기운이 도는 때와 새는 때</text>'
+      + '<text x="180" y="112" text-anchor="middle" font-size="12" fill="#9a8090">' + es(강약말(v.강약)) + ' · 기운이 도는 때와 새는 때</text>'
       + body
       + (v.빈.length
         ? '<text x="44" y="500" font-size="11.5" fill="#9a8090">평생 얇은 고리 — ' + es(v.빈.map(b => b.오행).join('·'))
@@ -3194,7 +3196,7 @@
       const i0 = list.findIndex(d => d.startAge === du.startAge);
       const nx = list.slice(i0 + 1).find(duLove);
       l4 = nx && nx.startAge < 70 ? nx.startAge + '세 대운에 ' + 상대 + ' — 그때 크게 트인다'
-        : '대운은 조용함 — 인연은 해마다 세운으로 온다';
+        : '대운(10년)은 조용함 — 인연은 해마다 그 해 흐름으로 온다';
     }
     return { key: t.key, name: nm[0], note: nm[1], badges: t.badges, share,
              n: sample && sample.n ? sample.n : 0, lines: [l1, l2, l3, l4] };
@@ -3240,7 +3242,7 @@
     if (sample && sample.jt && sample.n) share = Math.max(1, Math.round((sample.jt[ax.key] || 0) / sample.n * 100));
     const strong = R.analysis.strength;
     const l1 = strong === '신강' ? '신강 — 내 판을 직접 굴릴 때 힘이 난다'
-      : strong === '신약' ? '신약 — 좋은 조직·좋은 사람 옆에서 몇 배가 된다'
+      : strong === '신약' ? '힘이 약한 쪽 — 좋은 조직·좋은 사람 옆에서 몇 배가 된다'
       : '중화 — 조직도 독립도 되는 쪽, 선택지가 넓다';
     const l2 = '주력은 ' + ax.group + ' — ' + ({
       비겁: '내 손으로 밀어붙이는 힘', 식상: '만들어 내보이는 힘',
@@ -3516,8 +3518,10 @@
     const 십 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
     let 합 = {}; try { 합 = E.natalHap(p) || {}; } catch (e) {}
     const 관계 = ((R.analysis && R.analysis.지지관계) || {}).성립 || [];
+    // 종류 이름과 한자 글자는 화면에 안 낸다 — 무엇이 일어났는지만 남긴다(공주님 원칙)
+    const 관계말 = { 충: '부딪힘', 육합: '붙음', 삼합: '한 덩어리로 묶임', 반합: '반쯤 묶임', 복음: '같은 글자로 겹침' };
     const 지지상태 = (이름) => 관계.filter(x => (x.자리 || []).indexOf(이름) >= 0)
-      .map(x => x.종류 + '(' + x.글자 + ')');
+      .map(x => 관계말[x.종류] || x.종류);
     const y0 = fromYear || new Date().getFullYear();
     const 오는해 = (g) => { for (let i = 0; i < 10; i++) { try { const tf = E.dateFortune(y0 + i, 6, 15); if (십(tf.year.stem) === g) return y0 + i; } catch (e) {} } return null; };
     // 년주(2026-09-02 결재 「이대로 가보자」): 년간 = 남이 처음 보는 나, 년지 = 내가 자란 집의 바탕.
@@ -3538,20 +3542,21 @@
       const st = q.천간 ? pl.stem : (E.HIDDEN[pl.branch] || [])[0];
       const g = st != null ? 십(st) : null;
       const 글자 = q.천간 ? E.STEMS[pl.stem] : E.BRANCHES[pl.branch];
+      const 독음 = q.천간 ? E.STEMS_KO[pl.stem] : E.BRANCHES_KO[pl.branch];
       const 궁이름 = { year: q.천간 ? '년간' : '년지', month: q.천간 ? '월간' : '월지', day: '일지', hour: q.천간 ? '시간' : '시지' }[q.궁];
       const 상태 = q.천간 ? (합[q.궁] ? ['합거'] : []) : 지지상태(궁이름);
       let 말;
       // 조사는 낱말에 맞춘다 — 「아버지이에요」「자식는」「육합(午未)을」이 2000판에서 나왔다.
       // 모양표(「차곡차곡 지키고 실속을 챙기는」)·정신표는 감성 서술이라 2026-09-04 걷었다 — 글자와 십신에서 멈추고, 좋고 나쁨은 여섯 눈이 말한다.
-      if (q.첫인상) 말 = '사람들은 공주님을 먼저 년간의 ' + 글자 + '(' + g + ')' + 조(g, '으로', '로') + ' 봅니다. 속과 다를 수 있습니다.';
-      else if (q.집) 말 = '자란 집은 년지의 ' + 글자 + '(' + g + ')입니다. 스무 살 전의 바탕이고, 부모는 월주가 따로 말합니다.';
-      else if (q.사람아님) 말 = '정신세계는 시간에 앉은 ' + 글자 + '(' + g + ')의 결입니다.';
-      else 말 = q.이름 + 조(q.이름, '은', '는') + ' ' + 궁이름 + '의 ' + 글자 + '(' + g + ')입니다.';
+      if (q.첫인상) 말 = '사람들은 공주님을 먼저 ' + 독음 + '(' + 글자 + ') — ' + g + '의 글자로 봅니다. 속과 다를 수 있습니다.';
+      else if (q.집) 말 = '자란 집에 앉은 것은 ' + 독음 + '(' + 글자 + ') — ' + g + '의 글자입니다. 스무 살 전의 바탕이고, 부모는 따로 말합니다.';
+      else if (q.사람아님) 말 = '정신세계에 앉은 것은 ' + 독음 + '(' + 글자 + ') — ' + g + '의 결입니다.';
+      else 말 = q.이름 + 조(q.이름, '은', '는') + ' 그 자리에 앉은 ' + 독음 + '(' + 글자 + ') — ' + g + '의 글자입니다.';
       if (상태.length) {
         const 묶은 = 상태.join('·');
         말 += q.천간
           ? ' 다만 그 자리가 합으로 묶여 있습니다 — 있는데 힘을 못 쓰는 자리예요.'
-          : ' 그 자리는 원국 안에서 ' + 묶은 + 조(묶은.replace(/\)$/, '').slice(-1), '을', '를') + ' 맺고 있습니다.';
+          : ' 그 자리는 타고난 기운 안에서 다른 자리와 ' + 묶은 + 조(묶은.slice(-1), '으로', '로') + ' 엮여 있습니다.';
       }
       const 해 = g ? 오는해(g) : null;
       if (해 != null && !q.사람아님) 말 += ' ' + (해 === y0 ? '올해' : 해 + '년') + ' 그 글자가 하늘로 옵니다.';
