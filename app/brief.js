@@ -33,13 +33,17 @@
     '정인': { tone:'배우고 받는 날. 도움 주는 사람이 나타나고 문서·자격·공부 운이 좋습니다.', care:'편안한 만큼 게을러지기 쉽습니다.', act:'배우고 싶던 것 신청하거나, 어른·선배에게 안부 전화 한 통 하세요.' },
   };
 
+  // 십신 이름을 화면 말로 — 낱말은 새로 짓지 않고 조립기의 문(ChaeksaDan.공주님말)을 그대로 쓴다.
+  // 표를 두 벌 두면 같은 글자가 화면마다 다른 이름으로 나온다.
+  const 오는것 = (g) => { try { return global.ChaeksaDan.공주님말(g); } catch (e) { return g; } };
+
   // 지지 관계
   const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
   function branchRelation(mine, today) {
-    if (mine === today) return { type:'복음', text:'오늘 일진이 내 일주와 같은 글자라 감정이 평소보다 크게 느껴질 수 있습니다. 과하게 반응하지 않으면 괜찮습니다.' };
+    if (mine === today) return { type:'복음', text:'오늘 날짜의 글자가 내가 태어난 날과 같습니다. 감정이 평소보다 크게 느껴질 수 있습니다. 과하게 반응하지 않으면 괜찮습니다.' };
     // 충은 뺀다 — 제23조(운에서 오는 충의 해석은 불가지). 「이동·변동이 생기기 쉬워요」는
     // 조문이 못 박은 방향 단정이고 「중요한 확정은 피하고」는 재지 않은 근거로 행동을 막는 말이다.
-    if (YUKHAP[mine] === today) return { type:'합', text:'오늘 일진이 내 일지와 합을 이루는 날입니다. 사람과 잘 엮이고 일이 부드럽게 붙습니다. 협력·만남에 좋습니다.' };
+    if (YUKHAP[mine] === today) return { type:'합', text:'오늘 날짜의 글자가 내 짝 자리와 합을 이루는 날입니다. 사람과 잘 엮이고 일이 부드럽게 붙습니다. 협력·만남에 좋습니다.' };
     return null;
   }
 
@@ -59,10 +63,10 @@
 
     const paragraphs = [];
     // 십신 성격 서술(g.tone 「생각이 깊어지고 혼자 있고 싶은 날」)은 2026-09-04 걷었다 — 값에서 멈춘다. 좋고 나쁨은 여섯 눈이 말한다.
-    paragraphs.push(`오늘은 <b>${E.fmt.pillar(tf.day)}(${E.fmt.pillarKo(tf.day)})</b>일. 내게는 <b>${godDay}</b>의 글자입니다.`);
+    paragraphs.push(`오늘은 <b>${E.fmt.pillar(tf.day)}(${E.fmt.pillarKo(tf.day)})</b>일. 오늘 오는 것은 <b>${오는것(godDay)}</b>입니다.`);
     if (rel) paragraphs.push(rel.text);
     paragraphs.push((helpful ? `오늘 들어오는 ${dayElem} 기운은 내 사주에 도움이 되는 쪽이라 전체적으로 순풍입니다. ` : `오늘 ${dayElem} 기운은 내게 꼭 필요한 기운은 아니라 무리하지 않는 게 좋습니다. `));
-    paragraphs.push(`<span style="color:var(--ink3);font-size:14px">이달은 ${godMonth}, 올해는 ${godYear}의 흐름. 집중이 잘 되는 시간대는 ${ELEM_HOURS[a.yongCandidates[0]]}.</span>`);
+    paragraphs.push(`<span style="color:var(--ink3);font-size:14px">이달은 ${오는것(godMonth)}, 올해는 ${오는것(godYear)} 쪽입니다. 집중이 잘 되는 시간대는 ${ELEM_HOURS[a.yongCandidates[0]]}.</span>`);
     // 「오늘 할 하나」(g.act)도 감성 표였다 — 여섯 눈의 요약으로 바꾼다(chaeksadan.육안). 없으면 비운다.
     let action = '';
     try { const D = global.ChaeksaDan; if (D && D.육안) { const 눈 = D.육안(result, date || new Date(), '오늘'); if (눈.length) action = D.육안요약(눈); } } catch (e) {}
@@ -224,5 +228,5 @@
     },
   };
 
-  global.ChaeksaBrief = { dayMaster: (i) => DAY_MASTER[i], today, GOD_TODAY, DAY_MASTER, MZ, ROAST, MERCY, PASTJOB, BANLIST, BAN_EXTRA, CAREER };
+  global.ChaeksaBrief = { dayMaster: (i) => DAY_MASTER[i], today, GOD_TODAY, 오는것, DAY_MASTER, MZ, ROAST, MERCY, PASTJOB, BANLIST, BAN_EXTRA, CAREER };
 })(window);

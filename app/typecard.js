@@ -3977,7 +3977,8 @@
     const lines = [];
     if (curIdx >= 0) {
       const g = gradeOf(list[curIdx].v);
-      lines.push('지금은 ' + list[curIdx].d.startAge + '세 대운 ' + E.fmt.pillar(list[curIdx].d) + ' — ' + g.name + '. ' + g.line);
+      // 간지는 화면에 안 낸다 — 나이 구간이 공주님께 필요한 전부다(공주님 원칙)
+      lines.push('지금은 ' + list[curIdx].d.startAge + '세부터의 십 년 — ' + g.name + '. ' + g.line);
     } else {
       lines.push('아직 첫 대운 전 — 곡선은 ' + list[0].d.startAge + '세부터 시작합니다');
     }
