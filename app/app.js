@@ -2577,6 +2577,48 @@
       b.disabled = false;
       setTimeout(() => { b.textContent = '십 년 그림 자랑하기'; }, 2500);
     };
+    상태차줄();
+  }
+
+  // ───── 지금과 그때 — 상태차 181칸(sangtae:1)을 인생 곡선 아래에 편다 ─────
+  // 표는 「무엇이 많고 적은가」만 말하고, 대운 관계·크게 벌어진 자리·원국 대조는 M.판칸이 붙인다.
+  function 상태차줄() {
+    const M = window.ChaeksaMun, box = $('lifeDiff'); if (!M || !M.판칸 || !box) return;
+    const y0 = today.getFullYear(), 생 = profile.year;
+    const list = (R.daeun && R.daeun.list) || [];
+    if (!list.length) { box.innerHTML = ''; return; }
+    // 대운마다 대표 해 하나 — 구간 한가운데. 지금 지나는 대운은 올해로 본다.
+    const 줄들 = list.map((d, i) => {
+      const 시작 = 생 + d.startAge, 끝 = 생 + d.endAge;
+      const 지금 = y0 >= 시작 && y0 <= 끝;
+      return { i, 시작, 끝, 나이: d.startAge + '~' + d.endAge + '살', 해: 지금 ? y0 : 시작 + 5, 지금 };
+    }).filter(r => r.해 >= 생 + 1);
+    const 칸들 = 줄들.map(r => Object.assign(r, { q: r.지금 ? null : M.판칸(R, y0, r.해) }));
+    const 줄틀 = 'display:block;width:100%;text-align:left;padding:11px 2px;border:0;border-top:1px solid var(--line2);'
+      + 'background:none;font-family:inherit;cursor:pointer;color:inherit';
+    box.innerHTML = 칸들.map((r, n) =>
+      '<button class="sd-row" data-n="' + n + '" style="' + 줄틀 + '">'
+      + '<span class="hint" style="font-size:11.5px' + (r.지금 ? ';color:var(--accent);font-weight:700' : '') + '">'
+      + esc(r.나이) + (r.지금 ? ' · 지금' : '') + '</span>'
+      + '<span style="display:block;font-size:14px;line-height:1.55;margin-top:3px' + (r.지금 ? ';color:var(--ink3)' : '') + '">'
+      + esc(r.지금 ? '여기가 지금 지나는 십 년이에요' : ((r.q.칸 && r.q.칸.답) || '')) + '</span></button>').join('');
+    const 상세 = $('lifeDiffBox');
+    box.querySelectorAll('.sd-row').forEach(btn => { btn.onclick = () => {
+      const r = 칸들[+btn.dataset.n];
+      box.querySelectorAll('.sd-row').forEach(x => { x.style.background = x === btn ? 'var(--line3, rgba(0,0,0,.04))' : 'none'; });
+      if (r.지금) {
+        상세.innerHTML = '<p class="k">' + esc(r.나이) + ' · 지금</p><p>지금 지나는 십 년이라 견줄 대상이 아니에요. 다른 구간을 누르면 이 십 년과 무엇이 다른지 나옵니다.</p>';
+      } else {
+        const q = r.q;
+        상세.innerHTML = '<p class="k">' + esc(r.나이) + '</p>'
+          + (q.앞말 ? '<p class="hint">' + esc(q.앞말) + '</p>' : '')
+          + '<p><b>' + esc(q.그때) + ' ' + esc((q.칸 && q.칸.답) || '') + '</b></p>'
+          + '<p>' + esc((q.칸 && q.칸.왜) || '') + '</p>'
+          + (q.뒷말 ? '<p class="hint">' + esc(q.뒷말) + '</p>' : '');
+      }
+      상세.classList.remove('hide');
+      상세.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }; });
   }
 
   // ───── 천직 — 천직첩 ─────
