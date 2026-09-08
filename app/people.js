@@ -75,6 +75,8 @@
     if (patch.relation != null) arr[i].relation = patch.relation;
     if (patch.birth) arr[i].birth = birthOf(patch.birth);
     if (patch.isSelf) { arr.forEach(x => { x.isSelf = false; }); arr[i].isSelf = true; }
+    // 역산(32조) — 공주님이 본 「요즘 먼저 달라진 것」. 값: 여자·돈·말·자리·없음, 빈 문자열이면 지운다
+    if (patch.관찰 != null) { if (patch.관찰) arr[i].관찰 = String(patch.관찰); else delete arr[i].관찰; }
     arr[i]._at = new Date().toISOString();
     save(arr);
     return true;
@@ -94,7 +96,7 @@
   /** 엔진에 넘길 형태 — 기존 코드가 쓰던 모양(생년월일 + name)을 그대로 유지한다 */
   function toProfile(p) {
     if (!p) return null;
-    return Object.assign({}, p.birth, { name: p.name, id: p.id, relation: p.relation, isSelf: p.isSelf });
+    return Object.assign({}, p.birth, { name: p.name, id: p.id, relation: p.relation, isSelf: p.isSelf, 관찰: p.관찰 || '' });
   }
 
   /** 예전 단일 프로필 구조에서 옮겨오기 (한 번만) */

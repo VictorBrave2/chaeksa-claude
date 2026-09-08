@@ -48,6 +48,14 @@
     const 운 = (pl) => ({ 하늘: 무리(pl.stem) === 나무리, 땅: 무리((e.HIDDEN[pl.branch] || [])[0]) === 나무리 });
     let du = null; try { const cur = e.currentDaeun(Rm, now); if (cur) du = Object.assign({ start: cur.startAge, end: cur.endAge }, 운(cur)); } catch (x) {}
     const 올해 = 운(tfNow.year), 이달 = 운(tfNow.month);
+    // 역산(32조) — 지금 대운이 「나」의 기운에 닿게 하는 길. 남자: 재성 운(여자·돈) · 식상 운(말, 식생재) · 관성 운(자리, 관제비겁) · 없.
+    // 여자(나무리=관성)면 관성 운(남자) · 재성 운(재생관) · 인성 운(관인상생) 순으로 같은 틀.
+    const 길표 = 남 ? { 재성: '재', 식상: '식', 관성: '관' } : { 관성: '재', 재성: '식', 인성: '관' };
+    const 길of = (pl) => { if (!pl) return '없'; const a = 무리(pl.stem), b = 무리((e.HIDDEN[pl.branch] || [])[0]); return 길표[a] || 길표[b] || '없'; };
+    let 역산 = { 엔진길: '없', 이전길: '없', 대운: null };
+    try { const cur = e.currentDaeun(Rm, now); if (cur) { const L = Rm.daeun.list, i = L.indexOf(cur); 역산 = { 엔진길: 길of(cur), 이전길: i > 0 ? 길of(L[i - 1]) : '없', 대운: { start: cur.startAge, end: cur.endAge } }; } } catch (x) {}
+    const 관찰원 = (Rm.input && Rm.input.관찰) || '';
+    역산.관찰 = 관찰원 === '여자' || 관찰원 === '돈' ? '재' : 관찰원 === '말' ? '식' : 관찰원 === '자리' ? '관' : 관찰원 === '없음' ? '없' : '';
     // 만난 해 — 그 사람에게 무슨 기운이 왔나
     let 만남 = null;
     if (metYear) { try { const tf = e.dateFortune(metYear, 6, 15); const a = 무리(tf.year.stem), b = 무리((e.HIDDEN[tf.year.branch] || [])[0]); 만남 = { year: metYear, 하늘: a, 땅: b, 인연: a === 나무리 || b === 나무리 }; } catch (x) {} }
@@ -76,7 +84,7 @@
     const 판 = (축) => { const c = 눈.find(x => x.축 === 축); return c ? c.판 : '—'; };
     let 열 = [];
     if (d && d.그사람) { try { 열 = d.그사람(Rf, Rm, { 나: '공주님', 그: 그이름 || '그 사람' }, now) || []; } catch (x) { 열 = []; } }
-    return { 남, 상태, 나세기, 갈래, 수, 묶임, 눌림, 먹힘: 나먹힘.length, du, 올해, 이달, 만남, 짝, 지난해, 다음해, 달들, 등, 꺼짐, 켜짐, 켜지는해, 센무리: 센 ? 센.무리 : null,
+    return { 남, 상태, 나세기, 갈래, 수, 묶임, 눌림, 먹힘: 나먹힘.length, du, 올해, 이달, 만남, 짝, 지난해, 다음해, 달들, 등, 꺼짐, 켜짐, 켜지는해, 센무리: 센 ? 센.무리 : null, 역산,
              눈: { 잣대: 판('잣대'), 적천: 판('적천수'), 궁통: 판('궁통보감') }, 열 };
   }
 
@@ -181,7 +189,11 @@
     try { const Mn = global.ChaeksaMun; if (Mn) {
       const A = v.상태 === '속·먹힘' ? '먹힘' : Mn.상태(v.상태);
       const B = (v.du && (v.du.하늘 || v.du.땅)) ? '대운' : ((v.올해 && (v.올해.하늘 || v.올해.땅)) || (v.이달 && (v.이달.하늘 || v.이달.땅))) ? '이달' : '안';
-      Mn.덮기('maeum', 1, Q, 'A' + A + '-B' + B + '-C' + (v.눌림 ? '눌림' : '안눌림'));
+      // 역산(32조) — 공주님이 「먼저 달라진 것」을 골랐으면 그 표가 앞선다: A 원래4(먹힘→속) · E 엔진이 본 대운의 길 · S 공주님이 본 길. 대운 나이는 표 밖에서 앞에.
+      const 역 = v.역산 || {};
+      const 역산됨 = 역.관찰 && Mn.덮기('maeum', 1, Q, 'A' + Mn.상태(v.상태) + '-E' + (역.엔진길 || '없') + '-S' + 역.관찰);
+      if (역산됨 && 역.대운 && 역.엔진길 !== '없') Q[0].답 = 역.대운.start + '살부터 ' + 역.대운.end + '살까지 — ' + Q[0].답;
+      if (!역산됨) Mn.덮기('maeum', 1, Q, 'A' + A + '-B' + B + '-C' + (v.눌림 ? '눌림' : '안눌림'));
       // 10번: A 적천(채움/뺌/무) · B 궁통(맞음/거슬림/무) · C 겉/속 · D 짝(붙/충/무)
       const eA = v.눈.적천 === '좋다' ? '채움' : v.눈.적천 === '나쁘다' ? '뺌' : '무';
       const eB = v.눈.궁통 === '좋다' ? '맞음' : v.눈.궁통 === '나쁘다' ? '거슬림' : '무';

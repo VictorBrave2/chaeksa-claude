@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=658">
+<link rel="stylesheet" href="style.css?v=659">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -682,6 +682,15 @@
           <select id="shPick" aria-label="그 사람 선택"></select>
           <label>만난 해 (모르면 비워 두세요)</label>
           <input id="shMet" type="number" placeholder="예: 2024" min="1950" max="2030">
+          <label>요즘 그 사람에게서 먼저 달라진 것 (모르면 비워 두세요)</label>
+          <select id="shSeen" aria-label="먼저 달라진 것">
+            <option value="">아직 안 봤어요</option>
+            <option value="여자">나한테 다가와요</option>
+            <option value="돈">돈 씀씀이가 달라졌어요</option>
+            <option value="말">말이 늘고 표현이 생겼어요</option>
+            <option value="자리">일이나 자리가 바뀌었어요</option>
+            <option value="없음">달라진 게 없어요</option>
+          </select>
         </div>
         <button class="btn" id="btnSh">비밀 열기</button>
         <button class="btn ghost" id="btnShAdd">그 사람 생년월일 넣기</button>
@@ -715,6 +724,15 @@
         <select id="mmPick" aria-label="그 사람 선택"></select>
         <label>만난 해 (모르면 비워 두세요)</label>
         <input id="mmMet" type="number" placeholder="예: 2024" min="1950" max="2030">
+        <label>요즘 그 사람에게서 먼저 달라진 것 (모르면 비워 두세요)</label>
+        <select id="mmSeen" aria-label="먼저 달라진 것">
+          <option value="">아직 안 봤어요</option>
+          <option value="여자">나한테 다가와요</option>
+          <option value="돈">돈 씀씀이가 달라졌어요</option>
+          <option value="말">말이 늘고 표현이 생겼어요</option>
+          <option value="자리">일이나 자리가 바뀌었어요</option>
+          <option value="없음">달라진 게 없어요</option>
+        </select>
         <button class="btn" id="btnMm">비밀 열기</button>
         <button class="btn ghost" id="btnMmAdd">그 사람 생년월일 넣기</button>
       </section>
@@ -881,36 +899,36 @@
   </div>
 </div>
 
-<script src="config.js?v=658"></script>
-<script src="track.js?v=658"></script>
-<script src="cloud.js?v=658"></script>
-<script src="usage.js?v=658"></script>
-<script src="places.js?v=658"></script>
-<script src="people.js?v=658"></script>
-<script src="astro.js?v=658"></script>
-<script src="lunar.js?v=658"></script>
-<script src="engine.js?v=658"></script>
-<script src="chaeyong.js?v=658"></script>
-<script src="brief.js?v=658"></script>
-<script src="chaeksadan.js?v=658"></script>
-<script src="geunamja.js?v=658"></script>
-<script src="maeum.js?v=658"></script>
-<script src="gunghap.js?v=658"></script>
-<script src="sheets.js?v=658"></script>
-<script src="hwakin.js?v=658"></script>
-<script src="mun.js?v=658"></script>
-<script src="mun/all.js?v=658"></script>
-<script src="typecard.js?v=658"></script>
-<script src="gyeokguk.js?v=658"></script>
-<script src="memo.js?v=658"></script>
-<script src="classic.js?v=658"></script>
-<script src="calendar.js?v=658"></script>
-<script src="tongbyeon.js?v=658"></script>
-<script src="rules-wealth-love.js?v=658"></script>
-<script src="rules-health-study-move.js?v=658"></script>
-<script src="share.js?v=658"></script>
-<script src="ai.js?v=658"></script>
-<script src="pay.js?v=658"></script>
-<script src="app.js?v=658"></script>
+<script src="config.js?v=659"></script>
+<script src="track.js?v=659"></script>
+<script src="cloud.js?v=659"></script>
+<script src="usage.js?v=659"></script>
+<script src="places.js?v=659"></script>
+<script src="people.js?v=659"></script>
+<script src="astro.js?v=659"></script>
+<script src="lunar.js?v=659"></script>
+<script src="engine.js?v=659"></script>
+<script src="chaeyong.js?v=659"></script>
+<script src="brief.js?v=659"></script>
+<script src="chaeksadan.js?v=659"></script>
+<script src="geunamja.js?v=659"></script>
+<script src="maeum.js?v=659"></script>
+<script src="gunghap.js?v=659"></script>
+<script src="sheets.js?v=659"></script>
+<script src="hwakin.js?v=659"></script>
+<script src="mun.js?v=659"></script>
+<script src="mun/all.js?v=659"></script>
+<script src="typecard.js?v=659"></script>
+<script src="gyeokguk.js?v=659"></script>
+<script src="memo.js?v=659"></script>
+<script src="classic.js?v=659"></script>
+<script src="calendar.js?v=659"></script>
+<script src="tongbyeon.js?v=659"></script>
+<script src="rules-wealth-love.js?v=659"></script>
+<script src="rules-health-study-move.js?v=659"></script>
+<script src="share.js?v=659"></script>
+<script src="ai.js?v=659"></script>
+<script src="pay.js?v=659"></script>
+<script src="app.js?v=659"></script>
 </body>
 </html>

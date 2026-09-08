@@ -32,7 +32,7 @@ def conv(path):
     out = os.path.join(ROOT, 'app', 'mun', name + '.js')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     js = ('/* 문장표 — %s (%s 비밀 %d). docs/%s 에서 tools_mun.py 로 만든다. 여기 직접 고치지 말 것. */\n'
-          '(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; g.ChaeksaMun.표[%s] = %s; })(window);\n'
+          '(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; var k = %s; g.ChaeksaMun.표[k] = Object.assign(g.ChaeksaMun.표[k] || {}, %s); })(window);\n'
           % (name, code, q, os.path.basename(path), json.dumps(code + ':' + str(q), ensure_ascii=False),
              json.dumps(cells, ensure_ascii=False, indent=1)))
     io.open(out, 'w', encoding='utf-8', newline='\n').write(js)

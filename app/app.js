@@ -1580,8 +1580,13 @@
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnMm').disabled = !list.length;
     $('btnMmAdd').onclick = () => openPersonForm(null);
+    // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
+    const 채움 = () => { const p = P.get($('mmPick').value); if ($('mmSeen')) $('mmSeen').value = (p && p.관찰) || ''; };
+    $('mmPick').onchange = 채움; 채움();
     $('btnMm').onclick = () => {
-      const p = P.get($('mmPick').value); if (!p) return;
+      const p0 = P.get($('mmPick').value); if (!p0) return;
+      if ($('mmSeen')) P.update(p0.id, { 관찰: $('mmSeen').value });
+      const p = P.get(p0.id);
       const met = parseInt($('mmMet').value, 10) || null;
       showMaeum(P.toProfile(p), p.name, met);
     };
@@ -1608,8 +1613,9 @@
         <p>그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
         <button class="btn nx-cta" id="btnMmBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
         <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
+    const 관찰말 = { 여자: '나한테 다가옴', 돈: '돈 씀씀이', 말: '말·표현', 자리: '일·자리', 없음: '달라진 것 없음' }[you0.관찰] || '';
     box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
-      <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${관찰말 ? '먼저 달라진 것 ' + 관찰말 + ' · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
       ${절}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
@@ -1686,8 +1692,16 @@
     $('btnSh').disabled = 장.둘 && !list.length;
     $('btnShAdd').onclick = () => openPersonForm(null);
     $('shResult').classList.add('hide');
+    // 역산(32조) — 사람마다 「먼저 달라진 것」을 기억한다. 고르는 사람이 바뀌면 그 사람 것으로 채운다
+    const 채움 = () => { const p = P.get($('shPick').value); if ($('shSeen')) $('shSeen').value = (p && p.관찰) || ''; };
+    $('shPick').onchange = 채움; 채움();
     $('btnSh').onclick = () => {
-      if (장.둘) { const p = P.get($('shPick').value); if (!p) return; showSheet(장, P.toProfile(p), p.name, parseInt($('shMet').value, 10) || null); }
+      if (장.둘) {
+        const p0 = P.get($('shPick').value); if (!p0) return;
+        if ($('shSeen')) P.update(p0.id, { 관찰: $('shSeen').value });
+        const p = P.get(p0.id);
+        showSheet(장, P.toProfile(p), p.name, parseInt($('shMet').value, 10) || null);
+      }
       else showSheet(장, null, '', null);
     };
   }
