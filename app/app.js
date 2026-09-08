@@ -1531,8 +1531,10 @@
     if (!골.length) return '';
     return '<p class="gn-cards-k">한눈에</p><div class="gn-cards">' + 골.map((i) => { const q = Q[i];
       const 열림 = paid || 미리.has(i);
+      // 카드 제목은 물음이다 — 「비밀 3」만 적으면 무슨 답인지 모른 채 읽는다(2026-09-08 외부 감수 1번)
       const 머리 = q.구간 ? esc(q.구간) + ' · ' : '';
       return '<div class="gn-cd' + (열림 ? '' : ' locked') + '"><span class="k">' + 머리 + '비밀 ' + (i + 1) + '</span>'
+        + '<i class="gn-cq">' + esc(q.물음) + '</i>'
         + '<b>' + (열림 ? esc(q.답) : '결제하면 열려요') + '</b>'
         + (접기 && 열림 && q.왜 ? '<details><summary>왜 그런지</summary><p>' + esc(q.왜) + '</p></details>' : '')
         + '</div>';
@@ -2201,7 +2203,7 @@
         return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
           <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span>${표 ? `<span style="display:block;font-size:9px;color:var(--accent)">${표}</span>` : ''}</div>`;
       }).join('') + `</div>
-      <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 하늘에 온 글자가 <b>돈</b>(재성)인지 <b>자리</b>(관성)인지 <b>연</b>(배우자성)인지. 홈의 오늘 한마디와 같은 잣대입니다.</p>
+      <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 하늘에 온 것이 <b>돈</b>인지 <b>자리</b>인지 <b>인연</b>인지. 홈의 오늘 한마디와 같은 잣대입니다.</p>
       ${주절}${좋은절}${조심절}
       <p class="pb-ft">잣대 공개 — 그날 하늘에 온 글자가 나에게 무슨 십신인가, 그것뿐입니다. 좋은 날·조심할 날의 점수는 매기지 않습니다(2026-09-04). 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 12시진 곡선으로 그려드립니다.</p>
       ${예고}`;
@@ -3683,7 +3685,7 @@
          못 버는 사주가 아니라 <b>아직 재성의 파도가 안 온 사주</b>입니다. 이런 원국일수록 올 때 크게 옵니다.</p></div>`;
     const 샌절 = v.샌해.length
       ? `<p class="ls-shake">그리고 ${v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)').join(' · ')} 무렵은
-         나눠 갖는 손(겁재)가 온 해 — 지출이 커졌거나 돈이 샜기 쉬운 자리입니다.</p>` : '';
+         나눠 갖는 손이 온 해 — 지출이 커졌거나 돈이 샜기 쉬운 자리입니다.</p>` : '';
 
     const 현재상태2 = v.현재.판 === '들어옴' || v.현재.판 === '벌이' ? 'open' : v.현재.판 === '샘' ? 'leak' : 'quiet';
     const 현재절 = `<div class="ls-now ls-${v.현재.판 === '들어옴' ? 'open' : v.현재.판 === '조용' ? 'quiet' : 'mid'}">
