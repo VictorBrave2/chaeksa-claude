@@ -17,6 +17,25 @@ import io, os, re, sys, glob, json
 sys.stdout.reconfigure(encoding='utf-8')
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
+BANNED = ['재성', '식상', '관성', '인성', '비겁', '일간', '뿌리', '누르는', '글자', '쪽에 가까워요', '일 수 있어요', '해 보여요', '기운이']
+def check(path):
+    """역산 표 검수 — 금지 낱말 · 같은 첫 문장 · 왜 길이. 문제 줄만 찍는다"""
+    s = io.open(path, encoding='utf-8').read().replace(chr(13) + chr(10), chr(10))
+    NL = chr(10)
+    cells = re.findall(r'\*\*([A-Za-z0-9가-힣\-·+]+)\*\*\s*' + NL + r'답:\s*(.+?)' + NL + r'왜:\s*(.+?)(?=' + NL + NL + '|' + NL + r'\*\*|' + NL + r'---|\Z)', s, re.S)
+    n = 0; firsts = {}
+    for key, ans, why in cells:
+        t = ans + ' ' + why
+        hits = [b for b in BANNED if b in t]
+        if hits: print('  X', key, '금지 낱말', hits); n += 1
+        if len(why) > 600: print('  X', key, '왜 너무 김', len(why)); n += 1
+        f = why.split('.')[0]
+        if not f.endswith('하셨죠'): firsts.setdefault(f[:20], []).append(key)  # 역산 표의 첫 문장은 공주님 말을 받는 자리라 같아도 된다
+        if not re.search(r'[.!?요]$', ans.strip()) or ans.count('.') > 2: print('  ?', key, '답 형식', ans[:40]); n += 1
+    for f, ks in firsts.items():
+        if len(ks) > 4: print('  ?', '같은 첫 문장', f, len(ks), '칸'); n += 1
+    print('check', os.path.basename(path), len(cells), '칸', n, '지적')
+
 def conv(path):
     s = io.open(path, encoding='utf-8').read().replace('\r\n', '\n')
     m = re.search(r'<!--\s*mun:\s*code=(\w+)\s+q=(\d+)\s*-->', s)
@@ -39,6 +58,9 @@ def conv(path):
     print('O', name, '→', code, q, len(cells), '칸')
 
 if __name__ == '__main__':
+    if len(sys.argv) > 2 and sys.argv[1] == '--check':
+        for f in sys.argv[2:]: check(os.path.join(ROOT, 'docs', '33_문장표_' + f + '.md'))
+        sys.exit(0)
     arg = sys.argv[1] if len(sys.argv) > 1 else None
     files = glob.glob(os.path.join(ROOT, 'docs', '33_문장표_*.md'))
     if arg: files = [f for f in files if arg in f]

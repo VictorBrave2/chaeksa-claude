@@ -1,5 +1,5 @@
 /* 문장표 — 결혼몇번째 (gyeolhon 비밀 2). docs/33_문장표_결혼몇번째.md 에서 tools_mun.py 로 만든다. 여기 직접 고치지 말 것. */
-(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; g.ChaeksaMun.표["gyeolhon:2"] = {
+(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; var k = "gyeolhon:2"; g.ChaeksaMun.표[k] = Object.assign(g.ChaeksaMun.표[k] || {}, {
  "A1-B인연": {
   "답": "첫째예요. 사람이 먼저인 사람이에요.",
   "왜": "이 사람 안에서 가장 힘이 센 게 공주님 같은 사람의 자리예요. 관계를 앞에 두는 사람이라 결혼 얘기를 먼저 꺼내는 쪽일 수 있어요. 결혼을 미루는 일이 있다면 순서가 아니라 형편이에요. 순서로는 언제든 준비된 사람이에요."
@@ -64,4 +64,4 @@
   "답": "(닿지 않는 칸)",
   "왜": "첫째가 인연이면 첫째 자리는 인연이에요."
  }
-}; })(window);
+}); })(window);

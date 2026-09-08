@@ -1,5 +1,5 @@
 /* 문장표 — 속_그의정 (sok 비밀 2). docs/33_문장표_속_그의정.md 에서 tools_mun.py 로 만든다. 여기 직접 고치지 말 것. */
-(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; g.ChaeksaMun.표["sok:2"] = {
+(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; var k = "sok:2"; g.ChaeksaMun.표[k] = Object.assign(g.ChaeksaMun.표[k] || {}, {
  "A관-B합-C0": {
   "답": "(닿지 않는 칸)",
   "왜": "중심 글자가 합하면 합수가 0일 수 없어요."
@@ -144,4 +144,4 @@
   "답": "(닿지 않는 칸)",
   "왜": "중심 글자가 합하면 합수가 0일 수 없어요."
  }
-}; })(window);
+}); })(window);

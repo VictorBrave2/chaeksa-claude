@@ -1,5 +1,5 @@
 /* 문장표 — 지금_좋은날 (jigeum 비밀 7). docs/33_문장표_지금_좋은날.md 에서 tools_mun.py 로 만든다. 여기 직접 고치지 말 것. */
-(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; g.ChaeksaMun.표["jigeum:7"] = {
+(function (g) { g.ChaeksaMun = g.ChaeksaMun || { 표: {} }; var k = "jigeum:7"; g.ChaeksaMun.표[k] = Object.assign(g.ChaeksaMun.표[k] || {}, {
  "A0-B무": {
   "답": "이번 주엔 특별히 없어요.",
   "왜": "이번 주 이레 동안 이 사람에게 인연의 기운이 오는 날도, 두 사람 짝 자리와 붙는 날도 없어요. 못 만난다는 뜻이 아니라 만나도 평소인 주예요. 이번 주는 약속을 억지로 잡지 않아도 돼요. 좋은 날은 만나기 쉬운 날이지 만나야 하는 날은 아니에요."
@@ -24,4 +24,4 @@
   "답": "(닿지 않는 칸)",
   "왜": "좋은 날이 없으면 붙는 날도 없어요."
  }
-}; })(window);
+}); })(window);

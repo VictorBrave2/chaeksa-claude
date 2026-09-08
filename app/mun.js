@@ -25,6 +25,32 @@
     item.답 = c.답; item.왜 = c.왜; item.표키 = key; return true;
   };
 
+  /** 역산(법전 32조) — 지금 대운이 「나」의 기운에 닿게 하는 길과 공주님이 본 「먼저 달라진 것」.
+   *  남자: 재성→재(여자·돈) · 식상→식(말) · 관성→관(자리). 여자: 관성→재 · 재성→식 · 인성→관.
+   *  돌려주는 것 {엔진길, 이전길, 대운:{start,end}, 관찰} — 관찰은 Rm.input.관찰(여자·돈→재, 말→식, 자리→관, 없음→없, 없으면 '') */
+  M.역산 = (Rm, now) => {
+    const e = global.ChaeksaEngine; const out = { 엔진길: '없', 이전길: '없', 대운: null, 관찰: '' };
+    try {
+      const ds = Rm.pillars.day.stem, 남 = ((Rm.input && Rm.input.gender) || 'M') === 'M';
+      const 무리표 = { 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상', 편재: '재성', 정재: '재성', 편관: '관성', 정관: '관성', 편인: '인성', 정인: '인성' };
+      const 길표 = 남 ? { 재성: '재', 식상: '식', 관성: '관' } : { 관성: '재', 재성: '식', 인성: '관' };
+      const 무리 = (st) => 무리표[e.TEN_GODS[e.tenGod(ds, st)]];
+      const 길of = (pl) => { if (!pl) return '없'; return 길표[무리(pl.stem)] || 길표[무리((e.HIDDEN[pl.branch] || [])[0])] || '없'; };
+      const cur = e.currentDaeun(Rm, now || new Date());
+      if (cur) { const L = Rm.daeun.list, i = L.indexOf(cur); out.엔진길 = 길of(cur); out.이전길 = i > 0 ? 길of(L[i - 1]) : '없'; out.대운 = { start: cur.startAge, end: cur.endAge }; }
+    } catch (x) {}
+    const 원 = (Rm.input && Rm.input.관찰) || '';
+    out.관찰 = 원 === '여자' || 원 === '돈' ? '재' : 원 === '말' ? '식' : 원 === '자리' ? '관' : 원 === '없음' ? '없' : '';
+    return out;
+  };
+  /** 역산 표로 덮기 — 관찰이 있을 때만. 키 'A<원래>-E<엔진길>-S<관찰>'. 덮였고 길이 있으면 대운 나이를 답 앞에 붙인다 */
+  M.역산덮기 = (code, q, Q, 원래, 역) => {
+    if (!역 || !역.관찰) return false;
+    const ok = M.덮기(code, q, Q, 'A' + 원래 + '-E' + (역.엔진길 || '없') + '-S' + 역.관찰);
+    if (ok && 역.대운 && 역.엔진길 !== '없') Q[q - 1].답 = 역.대운.start + '살부터 ' + 역.대운.end + '살까지 — ' + Q[q - 1].답;
+    return ok;
+  };
+
   /** 어느 문항에 표가 있나 — 점검용 */
   M.있는표 = () => Object.keys(M.표).map(k => k + '(' + Object.keys(M.표[k]).length + ')');
 })(window);

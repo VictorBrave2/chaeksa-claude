@@ -1512,8 +1512,13 @@
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGn').disabled = !list.length;
     $('btnGnAdd').onclick = () => openPersonForm(null);
+    // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
+    const 채움 = () => { const p = P.get($('gnPick').value); if ($('gnSeen')) $('gnSeen').value = (p && p.관찰) || ''; };
+    $('gnPick').onchange = 채움; 채움();
     $('btnGn').onclick = () => {
-      const p = P.get($('gnPick').value); if (!p) return;
+      const p0 = P.get($('gnPick').value); if (!p0) return;
+      if ($('gnSeen')) P.update(p0.id, { 관찰: $('gnSeen').value });
+      const p = P.get(p0.id);
       const met = parseInt($('gnMet').value, 10) || null;
       showGeunamja(P.toProfile(p), p.name, met);
     };
@@ -1637,8 +1642,13 @@
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGh').disabled = !list.length;
     $('btnGhAdd').onclick = () => openPersonForm(null);
+    // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
+    const 채움 = () => { const p = P.get($('ghPick').value); if ($('ghSeen')) $('ghSeen').value = (p && p.관찰) || ''; };
+    $('ghPick').onchange = 채움; 채움();
     $('btnGh').onclick = () => {
-      const p = P.get($('ghPick').value); if (!p) return;
+      const p0 = P.get($('ghPick').value); if (!p0) return;
+      if ($('ghSeen')) P.update(p0.id, { 관찰: $('ghSeen').value });
+      const p = P.get(p0.id);
       const met = parseInt($('ghMet').value, 10) || null;
       showGunghap(P.toProfile(p), p.name, met);
     };
