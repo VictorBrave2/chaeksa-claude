@@ -54,6 +54,33 @@
     return ok;
   };
 
+  /** 상태 x(해) — 그 해에 작동하는 대운·세운 네 글자(천간 둘 + 지지 본기 둘)를 다섯 무리로 센다.
+   *  가중치를 두지 않는다. 개수만 센다 — 무게를 매기는 순간 그 숫자를 우리가 정하게 된다(docs/15 C절). */
+  const 무리표 = { 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상', 편재: '재성', 정재: '재성', 편관: '관성', 정관: '관성', 편인: '인성', 정인: '인성' };
+  M.무리들 = ['비겁', '식상', '재성', '관성', '인성'];
+  M.판 = (R, 해) => {
+    const e = global.ChaeksaEngine; const out = { 비겁: 0, 식상: 0, 재성: 0, 관성: 0, 인성: 0 };
+    try {
+      const ds = R.pillars.day.stem;
+      const du = e.currentDaeun(R, new Date(해, 6, 1)), tf = e.dateFortune(해, 7, 1);
+      const 넣 = (st) => { if (st == null) return; const g = 무리표[e.TEN_GODS[e.tenGod(ds, st)]]; if (g) out[g]++; };
+      [du && du.stem, du && (e.HIDDEN[du.branch] || [])[0], tf.year.stem, (e.HIDDEN[tf.year.branch] || [])[0]].forEach(넣);
+      return { x: out, 대운: du ? e.fmt.pillar(du) : '', 세운: e.fmt.pillar(tf.year) };
+    } catch (x) { return { x: out, 대운: '', 세운: '' }; }
+  };
+  /** 두 시점의 차 — 키 다섯 자리(비겁·식상·재성·관성·인성), `+` 늘고 `0` 그대로 `-` 줄고.
+   *  과거를 물으면 판차(R, 올해, 그해)로 부른다 — 「지금은 이런데 그때는」이 되게. */
+  M.판차 = (R, 기준해, 볼해) => {
+    const a = M.판(R, 기준해), b = M.판(R, 볼해);
+    return { 키: M.무리들.map(g => { const d = b.x[g] - a.x[g]; return d > 0 ? '+' : d < 0 ? '-' : '0'; }).join(''),
+             기준: a, 볼: b, 델타: M.무리들.reduce((o, g) => (o[g] = b.x[g] - a.x[g], o), {}) };
+  };
+  /** 상태차 표(sangtae:1)에서 그 칸을 꺼낸다 */
+  M.판칸 = (R, 기준해, 볼해) => {
+    const d = M.판차(R, 기준해, 볼해); const t = M.표['sangtae:1'];
+    return Object.assign(d, { 칸: (t && t[d.키]) || null });
+  };
+
   /** 어느 문항에 표가 있나 — 점검용 */
   M.있는표 = () => Object.keys(M.표).map(k => k + '(' + Object.keys(M.표[k]).length + ')');
 })(window);
