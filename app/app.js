@@ -1707,13 +1707,15 @@
     $('shTitle').textContent = 장.제목;
     $('shHint').innerHTML = 장.둘 ? '그 사람의 생년월일시와 두 분이 만난 해만 있으면 됩니다. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.' : '공주님 사주만으로 봅니다. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.';
     $('shPickWrap').classList.toggle('hide', !장.둘); $('btnShAdd').classList.toggle('hide', !장.둘);
+    if ($('shSoloWrap')) $('shSoloWrap').classList.toggle('hide', !!장.둘);
     const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
     $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(p.name)} · ${esc(p.relation)}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
     $('btnSh').disabled = 장.둘 && !list.length;
     $('btnShAdd').onclick = () => openPersonForm(null);
     $('shResult').classList.add('hide');
     // 역산(32조) — 사람마다 「먼저 달라진 것」을 기억한다. 고르는 사람이 바뀌면 그 사람 것으로 채운다
-    const 채움 = () => { const p = P.get($('shPick').value); if ($('shSeen')) $('shSeen').value = (p && p.관찰) || ''; };
+    const 채움 = () => { const p = P.get($('shPick').value); if ($('shSeen')) $('shSeen').value = (p && p.관찰) || '';
+      if ($('shSeenMe')) $('shSeenMe').value = (me && me.관찰) || ''; };
     $('shPick').onchange = 채움; 채움();
     $('btnSh').onclick = () => {
       if (장.둘) {
@@ -1722,13 +1724,18 @@
         const p = P.get(p0.id);
         showSheet(장, P.toProfile(p), p.name, parseInt($('shMet').value, 10) || null);
       }
-      else showSheet(장, null, '', null);
+      else {   // 혼자 보는 장(짝)은 공주님 자신의 「먼저 달라진 것」을 쓴다
+        const me0 = P.active(); if (me0 && $('shSeenMe')) P.update(me0.id, { 관찰: $('shSeenMe').value });
+        showSheet(장, null, '', null);
+      }
     };
   }
   function showSheet(장, you0, youName, met) {
     const S = window.ChaeksaSheets; const box = $('shResult'); if (!box) return;
     let Rm = null; if (장.둘) { try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; } }
-    let v, f; try { v = 장.둘 ? 장.값(Rm, R, met, today, youName) : 장.값(R, null, met, today); f = 장.둘 ? 장.문장(v, today, youName) : 장.문장(v, today); }
+    // 공주님 쪽 관찰(역산)이 엔진까지 가려면 방금 저장한 값으로 다시 계산해야 한다
+    let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
+    let v, f; try { v = 장.둘 ? 장.값(Rm, Rf, met, today, youName) : 장.값(Rf, null, met, today); f = 장.둘 ? 장.문장(v, today, youName) : 장.문장(v, today); }
     catch (e) { try { console.warn('sheet', 장.code, e); } catch (x) {} box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
     const 열쇠 = 장.code + ':' + (장.둘 ? [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-') : 'me');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey(장.code, 열쇠)) || null;
