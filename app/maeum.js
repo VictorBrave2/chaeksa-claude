@@ -48,14 +48,8 @@
     const 운 = (pl) => ({ 하늘: 무리(pl.stem) === 나무리, 땅: 무리((e.HIDDEN[pl.branch] || [])[0]) === 나무리 });
     let du = null; try { const cur = e.currentDaeun(Rm, now); if (cur) du = Object.assign({ start: cur.startAge, end: cur.endAge }, 운(cur)); } catch (x) {}
     const 올해 = 운(tfNow.year), 이달 = 운(tfNow.month);
-    // 역산(32조) — 지금 대운이 「나」의 기운에 닿게 하는 길. 남자: 재성 운(여자·돈) · 식상 운(말, 식생재) · 관성 운(자리, 관제비겁) · 없.
-    // 여자(나무리=관성)면 관성 운(남자) · 재성 운(재생관) · 인성 운(관인상생) 순으로 같은 틀.
-    const 길표 = 남 ? { 재성: '재', 식상: '식', 관성: '관' } : { 관성: '재', 재성: '식', 인성: '관' };
-    const 길of = (pl) => { if (!pl) return '없'; const a = 무리(pl.stem), b = 무리((e.HIDDEN[pl.branch] || [])[0]); return 길표[a] || 길표[b] || '없'; };
-    let 역산 = { 엔진길: '없', 이전길: '없', 대운: null };
-    try { const cur = e.currentDaeun(Rm, now); if (cur) { const L = Rm.daeun.list, i = L.indexOf(cur); 역산 = { 엔진길: 길of(cur), 이전길: i > 0 ? 길of(L[i - 1]) : '없', 대운: { start: cur.startAge, end: cur.endAge } }; } } catch (x) {}
-    const 관찰원 = (Rm.input && Rm.input.관찰) || '';
-    역산.관찰 = 관찰원 === '여자' || 관찰원 === '돈' ? '재' : 관찰원 === '말' ? '식' : 관찰원 === '자리' ? '관' : 관찰원 === '없음' ? '없' : '';
+    // 역산(32조) — 공용 계산기 하나로 (app/mun.js). 남녀 길표·관찰 코드 변환이 거기 있다
+    const 역산 = (global.ChaeksaMun && global.ChaeksaMun.역산) ? global.ChaeksaMun.역산(Rm, now) : { 엔진길: '없', 이전길: '없', 대운: null, 관찰: '' };
     // 만난 해 — 그 사람에게 무슨 기운이 왔나
     let 만남 = null;
     if (metYear) { try { const tf = e.dateFortune(metYear, 6, 15); const a = 무리(tf.year.stem), b = 무리((e.HIDDEN[tf.year.branch] || [])[0]); 만남 = { year: metYear, 하늘: a, 땅: b, 인연: a === 나무리 || b === 나무리 }; } catch (x) {} }

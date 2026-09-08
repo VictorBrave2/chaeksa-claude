@@ -1544,7 +1544,9 @@
   function showGeunamja(you0, youName, met) {
     const G = window.ChaeksaGeunamja; const box = $('gnResult'); if (!box) return;
     let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    // 역산 — 공주님 쪽 「먼저 달라진 것」이 바뀌었을 수 있으니 내 사주도 다시 계산한다
+    let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
+    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
     // 한 남자에 한 번 — 열쇠는 그 남자의 생년월일시. 다른 남자는 새로 산다(사장님 「개별로 받아야지」).
     const 열쇠 = 'geunamja:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('geunamja', 열쇠)) || null;
@@ -1601,7 +1603,9 @@
   function showMaeum(you0, youName, met) {
     const G = window.ChaeksaMaeum; const box = $('mmResult'); if (!box) return;
     let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    // 역산 — 공주님 쪽 「먼저 달라진 것」이 바뀌었을 수 있으니 내 사주도 다시 계산한다
+    let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
+    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
     const 열쇠 = 'maeum:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('maeum', 열쇠)) || null;
     const 미리 = new Set([0, 1, 3]);
@@ -1645,11 +1649,13 @@
     $('btnGh').disabled = !list.length;
     $('btnGhAdd').onclick = () => openPersonForm(null);
     // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
-    const 채움 = () => { const p = P.get($('ghPick').value); if ($('ghSeen')) $('ghSeen').value = (p && p.관찰) || ''; };
+    const 채움 = () => { const p = P.get($('ghPick').value); if ($('ghSeen')) $('ghSeen').value = (p && p.관찰) || '';
+      const me = P.active(); if ($('ghSeen2')) $('ghSeen2').value = (me && me.관찰) || ''; };
     $('ghPick').onchange = 채움; 채움();
     $('btnGh').onclick = () => {
       const p0 = P.get($('ghPick').value); if (!p0) return;
       if ($('ghSeen')) P.update(p0.id, { 관찰: $('ghSeen').value });
+      const me0 = P.active(); if (me0 && $('ghSeen2')) P.update(me0.id, { 관찰: $('ghSeen2').value });
       const p = P.get(p0.id);
       const met = parseInt($('ghMet').value, 10) || null;
       showGunghap(P.toProfile(p), p.name, met);
@@ -1658,7 +1664,9 @@
   function showGunghap(you0, youName, met) {
     const G = window.ChaeksaGunghap; const box = $('ghResult'); if (!box) return;
     let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    let v, f; try { v = G.값(Rm, R, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    // 역산 — 공주님 쪽 「먼저 달라진 것」이 바뀌었을 수 있으니 내 사주도 다시 계산한다
+    let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
+    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
     const 열쇠 = 'gunghap:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('gunghap', 열쇠)) || null;
     const 미리 = new Set([0, 4, 8]);
