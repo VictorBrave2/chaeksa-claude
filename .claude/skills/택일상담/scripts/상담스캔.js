@@ -179,8 +179,11 @@ function evaluate(R, CFG, W) {
     });
   });
 
+  // _du 는 대운 점수다. 예전엔 이 자리가 _d 였는데, 아래 rows.push 의 `...v` 가
+  // 날짜 _d 를 덮어써서 동점 정렬이 「날짜순」이 아니라 「대운 점수순」으로 돌았다
+  // (2026-09-09 발견). 이름이 겹치면 오류 없이 조용히 틀린다.
   return { _s: Math.max(0, Math.round(s)),
-    _d: dTot ? Math.round(dSc / dTot * 100) : 50,
+    _du: dTot ? Math.round(dSc / dTot * 100) : 50,
     강약: a.strength, 강약값: a.strengthScore, 통근: root, 유통: flow,
     오행: ec.map((n, i) => EL[i] + n).join(' '), 없는: a.missing.join('·') || '없음',
     충: chung.join(', ') || '없음', 합: hap.join(', ') || '없음',
@@ -250,7 +253,7 @@ function run(CFG) {
   const 합수 = r => (r.가족어울림 === '—' ? 0 : r.가족어울림.split(' / ').length);
   const by = rows.slice().sort((x, y) => y._s - x._s || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
   // 원국+대운 종합 — 그릇이 먼저라는 통설대로 60:40. 비중은 의뢰인에게 공개한다.
-  rows.forEach(r => { r._t = Math.round(r._s * 0.6 + r._d * 0.4); });
+  rows.forEach(r => { r._t = Math.round(r._s * 0.6 + r._du * 0.4); });
   const byT = rows.slice().sort((x, y) => y._t - x._t || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
   by.forEach((r, i) => r.순위 = i + 1);
 
@@ -284,9 +287,9 @@ function run(CFG) {
     // 한 축으로 점점 좁힌다: 원국 → 대운을 얹고 → 병원 시간(평일 09~17)만 남긴다.
     // 세 번째를 다른 기준으로 다시 섞으면 안 된다. ②의 순위에서 거른 것이 ③이다.
     원국_TOP5: by.slice(0, 5).map(f),
-    원국대운_TOP5: byT.slice(0, 5).map(r => f(r) + ` | 대운 ${r._d} 종합 ${r._t}`),
+    원국대운_TOP5: byT.slice(0, 5).map(r => f(r) + ` | 대운 ${r._du} 종합 ${r._t}`),
     원국대운_09에서17시_TOP5: byT.filter(r => r.등급 === '정규').slice(0, 5)
-      .map(r => f(r) + ` | 대운 ${r._d} 종합 ${r._t}`),
+      .map(r => f(r) + ` | 대운 ${r._du} 종합 ${r._t}`),
     가족충없는3: by.filter(r => r.가족부딪힘 === '없음').slice(0, 3).map(f),
     최하위3: by.slice(-3).reverse().map(f),
     등급분포: ['정규','연장','야간','주말'].map(g => `${g} ${rows.filter(r => r.등급 === g).length}`).join(' · '),
