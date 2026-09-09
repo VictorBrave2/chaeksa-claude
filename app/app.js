@@ -761,31 +761,11 @@
     // T.jichim · T.naepyeon · T.inyeon · T.yearFlow · T.lifeCurve · T.career · T.관계지도 ·
     // T.love · T.wealth · T.cachedSample 을 홈을 그릴 때마다 돌려서 안 보이는 칸에 쓰고 있었다.
     // 그 화면들이 필요로 하면 그 탭이 열릴 때 제가 돈다. 홈에서는 안 돈다.
-    const P2 = People();
-    // 비망록 배너 — 꺼낼 것이 있으면 그걸 먼저 말한다
-    (function () {
-      const M = window.ChaeksaMemo; if (!M || !$('memoSub')) return;
-      const pid = P2 && P2.active() ? P2.active().id : 'solo';
-      const due = M.due(pid, today), next = M.upcoming(pid, today);
-      const 미기록 = M.tracks(pid).filter(t => !M.loggedThisMonth(t, today));
-      if (미기록.length) {
-        $('memoBadge').textContent = '이번 달';
-        $('memoTitle').textContent = 미기록[0].q;
-        $('memoSub').textContent = '이번 달은 어떤지 눌러만 주세요' + (미기록.length > 1 ? ' (외 ' + (미기록.length - 1) + '건)' : '');
-      } else if (due.length) {
-        $('memoBadge').textContent = '꺼낼 것';
-        $('memoTitle').textContent = due[0].q;
-        $('memoSub').textContent = M.label(due[0].ym) + ' — 말씀하신 그때입니다' + (due.length > 1 ? ' (외 ' + (due.length - 1) + '건)' : '');
-      } else if (next.length) {
-        $('memoBadge').textContent = '비망록';
-        $('memoTitle').textContent = next[0].q;
-        $('memoSub').textContent = M.label(next[0].ym) + '에 다시 꺼내 드리겠습니다';
-      } else {
-        $('memoBadge').textContent = '비망록';
-        $('memoTitle').textContent = '판단 기록장';
-        $('memoSub').textContent = '물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다';
-      }
-    })();
+    // 홈의 비망록 배너를 걷었다(2026-09-10). #memoBadge · #memoTitle · #memoSub 가
+    // index.html 에 **한 번도 없었다** — 첫 줄의 `if (!$('memoSub')) return;` 에 걸려
+    // 늘 그냥 돌아 나왔다. 오류가 안 나니 아무도 몰랐다. tools_check 4번이 잡았다.
+    // 비망록은 2026-08-31 에 서고에서 내린 물건이라(「공주님께 숙제를 시킨다」) 되살리지 않는다.
+    // 화면은 #memo 로 그대로 열린다.
   }
   // data-scroll 이 있으면 탭을 연 뒤 그 자리로 내린다 — 홈 「이달의 나」가 오늘 탭의 달력(#myMonth)으로 간다.
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {

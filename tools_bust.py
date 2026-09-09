@@ -3,7 +3,12 @@
    sw.js 의 캐시 이름(chaeksa-vN)과 버전을 맞춘다."""
 import io, os, re, sys, subprocess
 
-# 배포 전 필수 검사 — 따옴표 문자열 안 줄바꿈이 있으면 앱이 통째로 죽는다
+# 윈도에서 이 콘솔은 기본이 cp949 라, 검사 결과에 「—」 같은 글자가 있으면
+# print 하다가 UnicodeEncodeError 로 죽는다. 검사는 통과했는데 배포가 막힌다(2026-09-10).
+try: sys.stdout.reconfigure(encoding='utf-8')
+except Exception: pass
+
+# 배포 전 필수 검사 — 조용히 틀리는 것들을 잡는다(tools_check.py 참고)
 _here = os.path.dirname(os.path.abspath(__file__))
 _r = subprocess.run([sys.executable, os.path.join(_here, 'tools_check.py')], capture_output=True, text=True, encoding='utf-8', errors='replace')
 print(_r.stdout.strip() or _r.stderr.strip())
