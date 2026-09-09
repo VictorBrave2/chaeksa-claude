@@ -1428,3 +1428,6 @@ details.fold > .tiles { margin-top: 10px; }
 @media (max-width:420px){.gn-cards{grid-template-columns:1fr}}
 .dr-note{margin:4px 0 2px;font-size:12.5px;line-height:1.5;color:var(--ink3)}
 .wt .daily{margin:6px 0 14px}
+
+/* 문의 버튼의 인장 글자 — 이모지 대신 한자를 쓴다(공주님 원칙 기각 목록) */
+.btn .seal{margin-right:6px;font-weight:700}
