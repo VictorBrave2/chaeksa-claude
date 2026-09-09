@@ -579,11 +579,10 @@
       $('stAhead').classList.toggle('hide', !ah);
       if (ah) { $('stAheadHead').textContent = ah.head; $('stAheadText').textContent = ' ' + ah.text; }
     })();
-    // 타일 미리보기 — 고정 문구는 남의 얘기로 읽힌다. 내 사주에서 나온 사실을 걸되
-    // 결론은 감춰서 열어보게 만든다. 표본(1만 명)이 필요한 값은 여기서 쓰지 않는다 —
-    // 홈이 표본 굽기를 기다리게 되면 첫 화면이 멈춘다.
+    // 「타일 미리보기」는 옛 서고(#shelves)의 배지·부제를 채우던 코드였다.
+    // 서고를 지웠으므로(2026-09-09) 여기서 세던 것도 걷었다 — 홈은 renderWtHome 하나가 그린다.
+    // tf 는 아래 홈 장면(hs-day)과 나눔 문구가 그대로 쓴다.
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    $('tiTodayGz').textContent = f.pillar(tf.day);
     // ── 홈의 얼굴 (2026-08-30 「양산형 홈페이지 같잖아」) ──
     // 스무 개짜리 균일 타일 그리드는 앱 런처 문법이라 궁정이 되지 않는다.
     // 홈을 하루로 만든다: 오늘의 장면 → 첫 의논 → 오늘 나온 책사 하나.
@@ -758,76 +757,11 @@
       });
 
     }
-    $('tiMeStr').textContent = ChaeksaBrief.MZ.STEM[a.dayStem].nick;
-    $('tiMeStr').style.fontSize = '17px';
-    const T = window.ChaeksaTypecard;
-    const set = (id, txt) => { const el = $(id); if (el && txt) el.textContent = txt; };
-    // 유형 카드 — 표본을 이미 만들어 뒀으면 **내 등급을 타일에 미리 보여준다.**
-    // 「789개 중 하나」는 남 얘기고, 「SSR · 만 개 중 한 개」는 내 얘기다.
-    // 표본이 없으면(첫 방문) 기본 문구 그대로 두고, 뽑기 탭에서 만든다.
-    if (T && T.cachedSample) try {
-      const smp = T.cachedSample();
-      if (smp) {
-        const m = T.mine(R, smp);
-        if (m && m.rar) {
-          set('tiGachaBig', '牌 ' + m.rar.tier);
-          set('tiGachaSub', m.rar.unique
-            ? '사주 만 개를 지어 견주니 같은 카드가 하나도 없습니다'
-            : '사주 만 개 가운데 ' + m.rar.count + '개 · ' + m.rar.pct + '%');
-        }
-      }
-    } catch (e) {}
+    // 서고(#shelves)의 배지·부제 열둘을 채우던 자리였다. 서고를 지웠다(2026-09-09 「홈 하나로 정리」).
+    // T.jichim · T.naepyeon · T.inyeon · T.yearFlow · T.lifeCurve · T.career · T.관계지도 ·
+    // T.love · T.wealth · T.cachedSample 을 홈을 그릴 때마다 돌려서 안 보이는 칸에 쓰고 있었다.
+    // 그 화면들이 필요로 하면 그 탭이 열릴 때 제가 돈다. 홈에서는 안 돈다.
     const P2 = People();
-    const others = P2 ? P2.list().filter(x => !P2.active() || x.id !== P2.active().id) : [];
-    if (T) {
-      try { const jc = T.jichim(R);
-        set('tiJcBig', jc.채.map(k => k.오행).join('·'));
-        set('tiJcSub', jc.깎[0][0] + ' 지치고 · ' + jc.채.map(k => k.말[0]).join('·') + '으로 채웁니다');
-      } catch (e) {}
-      try { const np = T.naepyeon(R, today);
-        set('tiNpBig', np.결.map(k => k.오행).join('·'));
-        // 「자라는 결의 사람」은 은유가 두 겹이라 문 앞에서 뜻이 안 선다. 표의 [3]을 쓴다.
-        set('tiNpSub', np.결.map(k => k.사람).join(' · '));
-      } catch (e) {}
-      try {
-        const iy = T.inyeon(R, today.getFullYear(), 10);
-        if (iy.첫해) { set('tiInBig', iy.첫해.해 + '년'); set('tiInSub', iy.말 + ' · 열 해 중 가장 가까운 자리'); }
-        else set('tiInSub', '앞으로 대운(10년)은 조용한 구간입니다');
-      } catch (e) {}
-      // 이달 — 시간순 홈의 둘째 줄(docs/29 셋). standing 은 원국 탭의 첫 마디와 같은 값이다.
-      try { const M = window.ChaeksaMemo, st = M && M.standing ? M.standing(R, today) : null;
-        if (st) { set('tiMonthBig', st.grade);
-          // 「5월부터」가 내년 5월이면 해를 붙인다 — 안 붙이면 지난 5월로 읽힌다.
-          const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 결이 바뀝니다') : '';
-          // 달력을 산 달이면 서른 칸에서 풀리는 날을 그대로 건다 — 산 것이 홈에서 보여야 다시 연다.
-          let 줄 = st.head + (언제 ? ' · ' + 언제 : '');
-          // 「풀리는 날」 미리보기는 좋은 날 배점 폐지(2026-09-04)로 걷었다.
-          set('tiMonthSub', 줄); } } catch (e) {}
-      try { const yf = T.yearFlow(R, today.getFullYear(), today);
-        set('tiYearBig', yf.bestTxt);
-        set('tiYearSub', yf.kind + ' — ' + (yf.남은표기 ? '남은 달 중 최고' : '올해 최고')); } catch (e) {}
-      try { const lc = T.lifeCurve(R, today);
-        set('tiLifeBig', lc.kind + '형'); set('tiLifeSub', (lc.지남 && lc.앞최고Txt)
-          ? '앞으로 남은 구간 중 ' + lc.앞최고Txt + ' — 곡선으로 보기'
-          : '최고 구간 ' + lc.peakTxt + ' — 곡선으로 보기'); } catch (e) {}
-      // 배지에 「비겁축」 같은 십신 이름을 찍지 않는다 — 문 앞 간판은 읽히는 말이어야 한다.
-      // 부제도 처방이 아니라 위치로(docs/27 아홉). 「맞는 일」은 우리가 정해 주지 않는다.
-      // 홈 줄 이름이 「자리가 열리는 해」로 바뀌었다(docs/29 셋 — 시간순). 배지는 그 해, 부제는 위치.
-      try { const c = T.career(R, null), y = T.영역해 ? T.영역해(R, today.getFullYear(), 10) : null;
-        set('tiJikBig', (y && y.첫해) ? y.첫해.해 + '년' : c.name);
-        set('tiJikSub', (y && y.첫해) ? y.말 + ' · ' + c.name + ' 쪽' : '사회 속 어디에 서 계신지'); } catch (e) {}
-      // 곁의 사람들 — 겉에 선 사람 수를 배지로, 겉에 선 이름을 부제로(docs/30)
-      try { const gw = T.관계지도 ? T.관계지도(R, today.getFullYear()) : null;
-        // 궁이 사람이다 — 홈 줄은 아버지·어머니의 모양 한 줄
-        if (gw) { const 찾 = (n) => gw.궁사람들.filter(s => s.이름 === n && s.십신)[0];
-          const 아 = 찾('아버지'), 엄 = 찾('어머니');
-          set('tiGwBig', (아 ? 아.십신 : '') + (아 && 엄 ? '·' : '') + (엄 ? 엄.십신 : ''));
-          set('tiGwSub', [아 ? 아.십신 + ' 같은 아버지' : '', 엄 ? 엄.십신 + ' 같은 어머니' : ''].filter(Boolean).join(' · ') || '자리에 앉은 글자가 그 사람의 모양입니다'); } } catch (e) {}
-      try { const l = T.love(R, new Date(), null); // l.key 는 686 유형 코드다 — 앞 두 글자를 그냥 찍으면 공주님께는 「一心」 같은
-        // 뜻 없는 내부 코드가 박힌다. 오른쪽 칸은 비워 두고 설명으로 말한다.
-        set('tiDoBig', ''); set('tiDoSub', '배우자궁 ' + l.key.slice(2) + ' · 20유형 중 하나'); } catch (e) {}
-      try { const w = T.wealth(R, new Date(), null); set('tiNokBig', w.raw.jae === 0 ? '무재' : (w.lines[0] || '').split(' —')[0]); set('tiNokSub', '몇 섬 그릇인지, 상위 몇 %인지'); } catch (e) {}
-    }
     // 비망록 배너 — 꺼낼 것이 있으면 그걸 먼저 말한다
     (function () {
       const M = window.ChaeksaMemo; if (!M || !$('memoSub')) return;
@@ -852,9 +786,6 @@
         $('memoSub').textContent = '물어본 것과 그때의 판단을 남겨두면, 그 달이 왔을 때 먼저 알려드립니다';
       }
     })();
-    set('tiAccSub', !others.length ? '사람을 한 명 더 등록하면 열립니다'
-      : others.length === 1 ? others[0].name + '님과 대조해 보기'
-      : others[0].name + ' 외 ' + (others.length - 1) + '명과 대조 가능');
   }
   // data-scroll 이 있으면 탭을 연 뒤 그 자리로 내린다 — 홈 「이달의 나」가 오늘 탭의 달력(#myMonth)으로 간다.
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {
@@ -1182,9 +1113,7 @@
       const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
       const ban = T.banToday(R);
       $('banSvg').innerHTML = T.drawBan(profile.name || '공주님', ban);
-      // 이모지 금지(기각 목록). v355 에서 다 걷었는데 이 한 자리가 남아 있었다.
-      $('tiBanGz').textContent = ban.god;
-      $('tiBanSub').textContent = ban.관계 ? `오늘은 ${ban.관계}까지 — 금지 ${ban.금지.length}개` : `오늘 금지 ${ban.금지.length}개`;
+      // 서고의 「오늘 조심할 것」 배지·부제를 채우던 두 줄은 걷었다(2026-09-09 서고 삭제).
       $('btnBanShare').onclick = async () => {
         const b = $('btnBanShare'); b.disabled = true; b.textContent = '만드는 중…';
         try {
@@ -3125,7 +3054,11 @@
     { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',       기본: 'hyeopgi',  오늘: true },
     { tab: 'today',     묶음: '이달', 이름: '이달 나는',            기본: 'unro',     오늘: true, scroll: 'myMonth', key: 'myMonth', 말탭: 'cal' },
     // 올해 나는·인연은 언제 오나·일은 언제 풀리나 — 다음 해를 말하는 칸이라 홈에서 뺌(docs/31 「무료는 다음 주, 유료는 다음 달, 다음 해는 안 판다」). 탭 코드는 남긴다.
-    // 인생 곡선(life)·곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
+    // 곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
+    // 인생 곡선(life)은 09-04 에 같은 이유로 뺐다가 되돌렸다(2026-09-09) — 상태차 181칸이 붙어
+    // 법이 생겼다. 합계 보존으로 나올 수 있는 칸만 남긴 표라 「법 있는 것으로만」을 통과한다.
+    // 그리고 서고를 지우면 이 화면은 주소로만 열리는 화면이 된다.
+    { tab: 'life',      묶음: '나',   이름: '지금과 그때, 나는',    기본: 'unro',    말: '대운마다 지금과 견주어 무엇이 더 많고 적은지' },
     { tab: 'ganmyeong', 묶음: '나',   이름: '나를 두고 열 사람이',  기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 말이 갈리면 갈린 채로' },
     { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
     // 어떤 사람이 오나(lovestory) — 「내 배우자성을 일간으로 타고난 사람」 읽기 전체가 09-04 삭제 대상. 홈에서 뺌.
@@ -3238,8 +3171,14 @@
       } else if (h.tab === 'ban') {
         try { const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); 말 = '오늘 조심할 것 하나'; } catch (e) {}
       } else if (h.key === 'myMonth') {
-        const big = $('tiMonthBig') ? $('tiMonthBig').textContent.trim() : '', sub = $('tiMonthSub') ? $('tiMonthSub').textContent.trim() : '';
-        if (sub || big) 말 = sub || big;   // 등급 이름(담금질…)은 안 낸다
+        // 예전엔 숨은 서고의 #tiMonthSub 글자를 읽어 왔다 — 홈이 홈의 다른 반쪽에 기대고 있었다.
+        // 서고를 지우면서 값을 여기서 바로 센다(2026-09-09).
+        try { const MM = window.ChaeksaMemo, st = MM && MM.standing ? MM.standing(R, today) : null;
+          if (st) {
+            // 「5월부터」가 내년 5월이면 해를 붙인다 — 안 붙이면 지난 5월로 읽힌다.
+            const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 결이 바뀝니다') : '';
+            말 = st.head + (언제 ? ' · ' + 언제 : '') || 말;   // 등급 이름(담금질…)은 안 낸다
+          } } catch (e) {}
       }
       if (!말) 말 = h.말 || '';
       const n = 묶.reduce((s, g) => s + g.본문들.length, 0);
