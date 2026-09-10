@@ -53,6 +53,32 @@ def 문장들(html):
     return [m.group(1).strip() for m in re.finditer(r'<p>(.*?)</p>', html, re.S)]
 
 
+def 원문대조(키, 취용):
+    """글에 실은 조건절 옆에 **원문 전문**을 나란히 놓는다.
+
+    흉 조항의 뒷말(死無棺槨 · 非貧即夭 · 孤苦零丁)을 잘라내고 싣기로 했는데,
+    자른 자리를 사장님이 못 보면 그건 감춘 것이다. 여기서만 둘을 함께 보인다.
+    """
+    from tools_taekil_gen import 조건절, 근사말
+    쓴 = {}
+    for r in 취용['달'][키]:
+        i, n = r[3], r[4]
+        if i < 0 or not n:
+            continue
+        for s in 취용['조항'][i].split('/'):
+            쓴[s] = 쓴.get(s, 0) + n
+    줄 = []
+    for s, n in sorted(쓴.items(), key=lambda kv: -kv[1]):
+        실은 = ('「%s」' % 조건절[s]) if s in 조건절 else 근사말.get(s, '(안 실음)')
+        원 = s if s in 조건절 else '원문 아님 — 관계식·근사'
+        줄.append('<tr><td class="cut">%s</td><td class="src">%s</td>'
+                  '<td class="cnt">%d칸</td></tr>' % (실은, 원, n))
+    if not 줄:
+        return '<p class="none">이달은 원문이 경계하는 짜임에 걸린 칸이 없습니다.</p>'
+    return ('<table class="cutt"><tr><th>글에 실은 것</th><th>원문 전문</th><th></th></tr>'
+            + ''.join(줄) + '</table>')
+
+
 def 근거(v, rows):
     """그 달에서 기계가 셀 수 있는 것 전부. 문장이 여기서 나왔어야 한다."""
     n, shift = v['n'], v['shift']
@@ -123,6 +149,8 @@ def main():
                              encoding='utf-8'))
     메모 = json.load(io.open(os.path.join(ROOT, '.taekil', '_taekil_notes.json'),
                             encoding='utf-8'))
+    취용 = json.load(io.open(os.path.join(ROOT, '.taekil', '_chwiyong.json'),
+                            encoding='utf-8'))
     차례 = sorted(데이터, key=lambda s: (int(s.split('-')[0]), int(s.split('-')[1])))
 
     nav, 몸 = [], []
@@ -150,9 +178,10 @@ def main():
             '<div class="two">'
             '<div class="say-box"><p class="zone">사람이 봐야 하는 곳 — 판단이 들어갔습니다</p>%s</div>'
             '<div class="fact"><p class="zone ok">기계가 이미 센 것 — 검사기가 맞대봤습니다</p>'
-            '<table class="kv">%s</table></div>'
+            '<table class="kv">%s</table>'
+            '<p class="zone cutz">원문에서 잘라낸 자리 — 뒷말을 뺐습니다</p>%s</div>'
             '</div>%s</section>'
-            % (m, y, m, v['n'], ''.join(블록), 표, 히트(v)))
+            % (m, y, m, v['n'], ''.join(블록), 표, 원문대조(키, 취용), 히트(v)))
 
     p = os.path.join(ROOT, 'marketing', '검수-출산택일.html')
     with io.open(p, 'w', encoding='utf-8', newline='\r\n') as f:
@@ -222,6 +251,16 @@ table.kv{width:100%;border-collapse:collapse;font-size:12.5px}
 table.kv th{text-align:left;color:var(--ink3);font-weight:500;white-space:nowrap;
   padding:5px 12px 5px 0;vertical-align:top;width:1%}
 table.kv td{padding:5px 0;color:var(--ink2);font-variant-numeric:tabular-nums}
+.cutz{margin:18px 0 8px;color:var(--seal);font-weight:700}
+table.cutt{width:100%;border-collapse:collapse;font-size:12.5px}
+table.cutt th{text-align:left;color:var(--ink3);font-weight:500;padding:0 10px 5px 0;
+  border-bottom:1px solid var(--line)}
+table.cutt td{padding:5px 10px 5px 0;vertical-align:top;border-bottom:1px dotted var(--line)}
+table.cutt .cut{color:var(--ink);white-space:nowrap}
+table.cutt .src{color:var(--ink3)}
+table.cutt .cnt{color:var(--ink3);text-align:right;white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.fact .none{color:var(--ink3);font-size:12.5px;margin:0}
 /* 격자를 **제 안에서 구르는 판**으로 만든다. 가로만 구르게 하면(overflow-x:auto)
    그 감싸개가 sticky 의 기준을 가로채서, 머리글이 쪽을 따라 안 내려온다.
    세로도 함께 구르게 해야 머리글이 판 안에 붙는다. 열두 달을 견주기에도
