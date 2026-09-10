@@ -16,3 +16,5 @@ app/_u.js
 scratch_*.txt
 app/_probe.html
 app/_*.html
+__pycache__/
+*.pyc
