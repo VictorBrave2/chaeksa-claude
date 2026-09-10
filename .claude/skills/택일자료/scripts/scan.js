@@ -92,7 +92,7 @@ function score(R) {
 
 function run(CONFIG) {
   const { year, month, lon = 126.98, place = 'KR:서울', gender = 'M',
-          parents = [], dayFrom = 8.5, dayTo = 17 } = CONFIG;
+          parents = [], dayFrom = 9, dayTo = 17 } = CONFIG;
   const last = new Date(year, month, 0).getDate();
   const rows = [];
 
@@ -216,7 +216,11 @@ window.__택일 = run({
   gender: 'M',          // 원국은 성별 무관. 대운 방향만 갈린다
   parents: [],          // 예: [{name:'아버지 갑인일주', branch:2}, {name:'어머니 신유일주', branch:9}]
                         // branch 는 지지 인덱스: 자0 축1 인2 묘3 진4 사5 오6 미7 신8 유9 술10 해11
-  dayFrom: 8.5, dayTo: 17, // 시계 기준 08:30~17:00. 병원이 흔히 잡는 범위
+  // 시계 기준 09:00~17:00. `택일상담` 스킬의 등급표대로 **정규는 평일 09~17시**다.
+  // 07~09 는 「연장」이라 정규가 아니다. 예전 기본값 8.5 로 자료를 냈다가
+  // 진(辰)시가 매일 1위로 올라와 12월 자료가 31일 중 22일 「08:30~09:27」로 도배됐다(2026-09-10).
+  // 이 값은 **[주]/[야] 표시에만** 쓴다 — 계산과 순위는 24시간 전부다.
+  dayFrom: 9, dayTo: 17,
 });
 // 요약만 돌려준다. 상세는 window.__택일._rows 에 있다.
 return Object.assign({}, window.__택일, { _rows: `(${window.__택일._rows.length}개 — window.__택일._rows 참조)` });
