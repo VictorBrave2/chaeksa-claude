@@ -2146,6 +2146,11 @@
   // 2026-08-30 「카카오로 물어보기도 다 치우자」 — 비워두면 카카오 버튼이 스스로 숨고
   // 메일만 남는다(그렇게 만들어 두었다). 채널 아이디는 되살릴 때를 위해 주석으로 남긴다: '_jdqxaX'
   const KAKAO_CHANNEL = '';
+  // 택일 신청서(네이버폼). 여기가 주 창구다 — 2026-09-10 까지 이 탭의 유일한 창구가
+  // mailto: 하나였는데, 모바일에서 메일 앱이 안 잡히면 눌러도 아무 일이 안 난다.
+  // 블로그에서 오는 사람은 거의 모바일이라 사실상 창구가 없었던 셈이다.
+  // 비우면 메일이 다시 주 버튼으로 올라간다.
+  const TAEK_FORM_URL = 'https://naver.me/FdqTMrhq';
 
   const KAKAO_CHAT = (() => {
     const v = String(KAKAO_CHANNEL || '').trim();
@@ -2197,14 +2202,23 @@
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(TAEK_FORM);
 
+    // 신청서가 주 버튼이다(화면에 그렇게 적혀 있다). 주소가 비어 있을 때만
+    // 메일을 도로 올린다 — 그때는 메일이 유일한 창구라 작게 두면 안 된다.
+    const f = $('btnTaekForm');
+    if (f) {
+      if (TAEK_FORM_URL) { f.href = TAEK_FORM_URL; }
+      else {
+        f.classList.add('hide');
+        if ($('taekFormNote')) $('taekFormNote').classList.add('hide');
+        a.className = 'btn';
+        a.innerHTML = '<span class="seal">書</span> 상담 문의하기';
+      }
+    }
+
     const k = $('btnTaekKakao');
     if (!k || !KAKAO_CHAT) return;
     k.classList.remove('hide');
     if ($('taekKakaoNote')) $('taekKakaoNote').classList.remove('hide');
-    // 카카오가 켜지면 그쪽이 주인공이다. 메일은 뒤로 물러난다 —
-    // 반대로 카카오가 꺼져 있으면 메일이 유일한 문의 수단이라 주 버튼으로 남아야 한다.
-    a.className = 'btn ghost small';
-    a.textContent = '📧 메일이 편하시면';
     const ch = $('taekChannel'), cl = $('taekChannelLink');
     if (ch && cl && KAKAO_HOME !== KAKAO_CHAT) {
       cl.href = KAKAO_HOME;
