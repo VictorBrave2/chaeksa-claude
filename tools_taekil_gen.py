@@ -117,6 +117,20 @@ def 조후표(경로):
     return 표
 
 
+def 원문줄(일간, 취, 구절):
+    """그 칸의 궁통보감 취용 구절. 검증을 지난 100칸에만 있다.
+
+    없는 칸은 **아무 말도 안 한다.** 없는 것을 있는 것처럼 채우면
+    이 자료가 파는 것이 통째로 없어진다(docs/35 채록 기록 참조).
+    """
+    말 = []
+    for b in 취[0].split('/'):
+        c = 구절.get(일간 + b)
+        if c and c not in 말:
+            말.append(c)
+    return ('원문 — ' + ' · '.join('「%s」' % c for c in 말)) if 말 else None
+
+
 def 취용줄(일간, 취, 표):
     """그날의 「먼저 찾을 글자」 한 줄. 120칸이 다 있으므로 빠지는 날이 없다."""
     월지들, 주, 보 = 취[0].split('/'), 취[1], 취[2]
@@ -167,7 +181,7 @@ def 충날(월, 부모지지):
     return hit
 
 
-def 날블록(월, row, 취, 조항, 표):
+def 날블록(월, row, 취, 조항, 표, 구절):
     d, w, 일주 = row[0], row[1], row[2]
     점, 순 = row[3:15], row[15:27]
     칸 = sorted(range(12), key=lambda i: (-점[i], 순[i]))
@@ -181,6 +195,9 @@ def 날블록(월, row, 취, 조항, 표):
     elif 센칸:
         머리 += ' — 상위 20위에 %s 자리' % 관형[센칸]
     줄 = [머리, '&nbsp;&nbsp;' + 취용줄(일주[0], 취, 표)]
+    원 = 원문줄(일주[0], 취, 구절)
+    if 원:
+        줄.append('&nbsp;&nbsp;' + 원)
     흉 = 흉줄(취, 조항)
     if 흉:
         줄.append('&nbsp;&nbsp;' + 흉)
@@ -191,7 +208,7 @@ def 날블록(월, row, 취, 조항, 표):
     return '<br>\n        '.join(줄)
 
 
-def 본문(키, 월, 절기말, 특징, 취목, 조항, 표):
+def 본문(키, 월, 절기말, 특징, 취목, 조항, 표, 구절):
     y, m =키.split('-')
     n = 월['n']
     날 = 월['d']
@@ -220,7 +237,8 @@ def 본문(키, 월, 절기말, 특징, 취목, 조항, 표):
         블록.append('<h3>%s월 %d일 ~ %d일</h3>\n\n    <blockquote>\n      <p>%s</p>\n    </blockquote>'
                     % (m, a, min(b, 골[-1][0]),
                        '<br>\n        '.join(
-                           날블록(월, r, 취목[r[0] - 1], 조항, 표) for r in 골)))
+                           날블록(월, r, 취목[r[0] - 1], 조항, 표, 구절)
+                           for r in 골)))
 
     return (본문틀
             .replace('{{Y}}', y).replace('{{M}}', m).replace('{{N}}', str(n))
@@ -249,6 +267,8 @@ def main():
     with io.open(os.path.join(ROOT, '.taekil', '_chwiyong.json'), encoding='utf-8') as f:
         취용 = json.load(f)
     표 = 조후표(os.path.join(ROOT, 'docs', '12_조후용신표.md'))
+    with io.open(os.path.join(ROOT, '.taekil', '_wonmun_ok.json'), encoding='utf-8') as f:
+        구절 = json.load(f)
 
     for 키, 월 in sorted(데이터.items()):
         y, m = 키.split('-')
@@ -258,7 +278,7 @@ def main():
             raise SystemExit('%s 취용 자료가 %d일인데 점수 자료는 %d일이다'
                              % (키, len(취목), len(월['d'])))
         b = 본문(키, 월, n.get('절기', ''), n.get('특징', ''),
-                취목, 취용['조항'], 표)
+                취목, 취용['조항'], 표, 구절)
         h = 머리.replace('{{Y}}', y).replace('{{M}}', m)
         out = os.path.join(ROOT, 'marketing', '붙여넣기-%s월출산택일.html' % m)
         with io.open(out, 'w', encoding='utf-8', newline='\r\n') as f:

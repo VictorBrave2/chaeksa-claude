@@ -79,7 +79,7 @@ def 원문대조(키, 취용):
             + ''.join(줄) + '</table>')
 
 
-def 근거(v, rows):
+def 근거(v, rows, 키=None, 취용=None, 구절=None):
     """그 달에서 기계가 셀 수 있는 것 전부. 문장이 여기서 나왔어야 한다."""
     n, shift = v['n'], v['shift']
     낮 = [x for x in rows if x[3] in 낮칸 and x[2] not in ('토', '일')]
@@ -105,7 +105,24 @@ def 근거(v, rows):
             '%d일 최저 %d점' % (d, min(s)) for d, s in 고른)),
         ('낙차 큰 날', ' · '.join(
             '%d일 %d점 차' % (d, max(s) - min(s)) for d, s in 낙차)),
+        ('원문 구절', 원문칸(키, v, 취용, 구절)),
     ]
+
+
+def 원문칸(키, v, 취용, 구절):
+    """원문 구절이 안 붙은 날을 **드러낸다.** 안 보이면 비운 걸 감춘 것이다."""
+    if not 키:
+        return '—'
+    빈 = []
+    for r, 취 in zip(v['d'], 취용['달'][키]):
+        일간 = r[2][0]
+        if not any(구절.get(일간 + b) for b in 취[0].split('/')):
+            빈.append('%d일 %s' % (r[0], r[2]))
+    붙 = len(v['d']) - len(빈)
+    if not 빈:
+        return '%d일 전부 붙었습니다' % 붙
+    return ('%d일 붙음 · <b>%d일 비어 있음</b> — %s (원문 대조 미완, docs/35)'
+            % (붙, len(빈), ' · '.join(빈)))
 
 
 def 히트(v):
@@ -151,6 +168,8 @@ def main():
                             encoding='utf-8'))
     취용 = json.load(io.open(os.path.join(ROOT, '.taekil', '_chwiyong.json'),
                             encoding='utf-8'))
+    구절 = json.load(io.open(os.path.join(ROOT, '.taekil', '_wonmun_ok.json'),
+                            encoding='utf-8'))
     차례 = sorted(데이터, key=lambda s: (int(s.split('-')[0]), int(s.split('-')[1])))
 
     nav, 몸 = [], []
@@ -170,7 +189,7 @@ def main():
                         % (이름, len(ps), 줄 or '<li class="none">비어 있음</li>'))
 
         표 = ''.join('<tr><th>%s</th><td>%s</td></tr>' % (a, b)
-                     for a, b in 근거(v, rows))
+                     for a, b in 근거(v, rows, 키, 취용, 구절))
 
         몸.append(
             '<section id="m%s">'
