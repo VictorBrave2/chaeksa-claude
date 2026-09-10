@@ -75,7 +75,7 @@
     if (patch.relation != null) arr[i].relation = patch.relation;
     if (patch.birth) arr[i].birth = birthOf(patch.birth);
     if (patch.isSelf) { arr.forEach(x => { x.isSelf = false; }); arr[i].isSelf = true; }
-    // 역산(32조) — 공주님이 본 「요즘 먼저 달라진 것」. 값: 여자·돈·말·자리·없음, 빈 문자열이면 지운다
+    // 역산(32조) — 본인이 본 「요즘 먼저 달라진 것」. 값: 여자·돈·말·자리·없음, 빈 문자열이면 지운다
     if (patch.관찰 != null) { if (patch.관찰) arr[i].관찰 = String(patch.관찰); else delete arr[i].관찰; }
     arr[i]._at = new Date().toISOString();
     save(arr);

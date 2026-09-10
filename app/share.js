@@ -166,7 +166,9 @@
 
   /**
    * 오늘의 한마디 카드.
-   * @param {{초상:string, 이름:string, 직함:string, 말:string, 공주:string, 간지:string}} v
+   * @param {{초상:string, 이름:string, 직함:string, 말:string, 본인:string, 간지:string}} v
+   *   이름·직함은 **책사**의 것이고, 본인은 카드를 만든 사람의 이름이다(없으면 빈 값).
+   *   예전 키 이름이 「공주」였다 — 호칭을 걷으면서 바꿨다(2026-09-10).
    */
   async function drawSay(canvas, v) {
     if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
@@ -215,7 +217,8 @@
     y = Math.max(y + 26, 1200);
     ctx.strokeStyle = C.line; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(W / 2 - 60, y - 44); ctx.lineTo(W / 2 + 60, y - 44); ctx.stroke();
-    center(ctx, (v.공주 || '') + (v.간지 ? ' · ' + v.간지 : ''), W / 2, y, `400 28px ${SANS}`, C.ink2);
+    // 이름이 비면 「 · 丙戌일」처럼 구분점이 앞에 남는다. 있는 것만 이어 붙인다(2026-09-10).
+    center(ctx, [v.본인, v.간지].filter(Boolean).join(' · '), W / 2, y, `400 28px ${SANS}`, C.ink2);
 
     // 푸터
     ctx.textAlign = 'left';
