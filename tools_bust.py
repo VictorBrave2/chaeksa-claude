@@ -32,7 +32,7 @@ if new != cur:
 # 결제 화면 셋이 config·cloud·pay.js 를 버전 없이 불러서, pay.js 를 고쳐도 재방문자는
 # 옛 파일을 물고 있었다 — 상품 그림이 결제 화면에만 안 뜬 게 그것이다(2026-09-11).
 # 스크립트를 부르는 페이지를 새로 만들면 여기에 넣어야 한다.
-PAGES = ['index.html', 'pay.html', 'pay-done.html', 'pay-fail.html']
+PAGES = ['index.html', 'pay.html', 'pay-done.html', 'pay-fail.html', 'taekil.html']
 pages, tagged = {}, 0
 for pg in PAGES:
     p = os.path.join(APP, pg)

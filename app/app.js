@@ -2198,6 +2198,11 @@
   function wireTaekil() {
     const a = $('btnTaekMail'); if (!a || a.dataset.wired) return;
     a.dataset.wired = '1';
+    // 값은 products 표 한 곳에만 있다(docs/17). 화면 글자는 표에서 받아 채운다 —
+    // 적어 두면 표를 바꿀 때 어긋나고, 결제 금액과 다르면 토스 심사에서 걸린다.
+    if (window.ChaeksaPay && ChaeksaPay.product) ChaeksaPay.product('taekil').then(p => {
+      if (p) document.querySelectorAll('[data-price="taekil"]').forEach(el => { el.textContent = ChaeksaPay.won(p.amount); });
+    }).catch(() => {});
     a.href = 'mailto:b01099991263@gmail.com?subject='
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(TAEK_FORM);
@@ -3236,12 +3241,16 @@
     ];
     let h = '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
       + 유료.map((f, i) => {
-          // 상품 표지는 결제 화면과 **같은 그림**을 쓴다(ChaeksaPay.그림, 2026-09-11).
-          // 책사 얼굴을 자리로 골라 쓰면 속궁합·내 짝이 같은 그림(inyeon-4)이 됐다 —
-          // 토스 심사가 「같은 상품 이미지 반복」으로 떨어뜨리는 꼴이다. 상품이 아닌 카드만 얼굴을 쓴다.
-          const 코드 = f.id === 'myMonth' ? 'month' : f.id;
-          const 상품그림 = window.ChaeksaPay && ChaeksaPay.그림 && ChaeksaPay.그림[코드];
-          const 파일 = 상품그림 || (window.CHAEKSA_ART ? 초상(f.k, f.자리, false) : '');
+          // 홈 표지는 **책사 얼굴**이다(v564 설계 — 그 카드의 첫 마디 화자).
+          // 2026-09-11 에 가로 3:1 상품 장면으로 바꿨다가 그날 되돌렸다(사장님 「삽화가 병신같이
+          // 들어갔잖아」). 칸이 거의 정사각이라 사람이 잘려 나갔다 — 「잘 맞아요?」는 팔만, 「속궁합」은 손만.
+          // 대신 같은 책사를 쓰는 카드끼리 **같은 날 같은 그림이 안 겹치게** 벌을 나눈다.
+          // 예전 초상(k, 자리)은 연희 카드 넷이 받아침 벌을 뺀 세 벌을 나눠 써서 **매일** 겹쳤다
+          // (속궁합·내 짝이 같은 inyeon-4) — 토스 심사가 떨어뜨리는 「같은 상품 이미지 반복」이다.
+          const 벌 = 벌목록(f.k);
+          const 앞선같은책사 = 유료.slice(0, i).filter(x => x.k === f.k).length;
+          const 파일 = (window.CHAEKSA_ART && 벌.length)
+            ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
           return '<button class="wt-feature" data-fi="' + i + '" type="button">'
             + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
             + '<div class="wf-body"><span class="wf-k">' + esc(f.위) + '</span><b>' + esc(f.제목) + '</b>'
