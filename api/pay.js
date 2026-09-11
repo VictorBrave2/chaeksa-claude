@@ -157,23 +157,51 @@ module.exports = async (req, res) => {
       }
 
       const auth = 'Basic ' + Buffer.from(secret + ':').toString('base64');
-      const tr = await fetch(TOSS_CONFIRM, {
-        method: 'POST',
-        headers: { authorization: auth, 'content-type': 'application/json',
-                   // 같은 키로 두 번 부르면 토스가 한 번만 처리한다. 새로고침·재시도 방어.
-                   'Idempotency-Key': orderId },
-        body: JSON.stringify({ paymentKey, orderId, amount: chk.amount }),
-      });
-      const tj = await tr.json().catch(() => ({}));
+      let tr = null, tj = {};
+      try {
+        tr = await fetch(TOSS_CONFIRM, {
+          method: 'POST',
+          headers: { authorization: auth, 'content-type': 'application/json',
+                     // 같은 키로 두 번 부르면 토스가 한 번만 처리한다. 새로고침·재시도 방어.
+                     'Idempotency-Key': orderId },
+          body: JSON.stringify({ paymentKey, orderId, amount: chk.amount }),
+        });
+        tj = await tr.json().catch(() => ({}));
+      } catch (_) { tr = null; }
 
-      if (!tr.ok) {
-        await rpc('order_failed', {
-          p_order: orderId,
-          p_code: String(tj.code || tr.status),
-          p_message: String(tj.message || ''),
-        }, token).catch(() => {});
-        return res.status(400).json({ ok: false, reason: 'toss',
-                                      code: tj.code || null, message: tj.message || '결제 승인에 실패했습니다' });
+      // 승인 실패를 곧바로 「결제 실패」로 적지 않는다(토스 LLM 안내서 §8, 2026-09-11 대조).
+      // 응답이 유실되거나(시간초과·5xx) 토스 쪽에서는 이미 승인된 경우가 있다.
+      // 그걸 실패로 적으면 **돈은 빠졌는데 상품은 안 열린다.** 적기 전에 결제 조회로 묻는다.
+      // 조회 응답 필드(status·orderId·totalAmount)는 토스 API 문서에서 확인한 이름만 쓴다.
+      if (!tr || !tr.ok) {
+        const tossQuery = async () => {
+          try {
+            const r = await fetch('https://api.tosspayments.com/v1/payments/' +
+                                  encodeURIComponent(paymentKey), { headers: { authorization: auth } });
+            if (r.ok) return { known: true, p: await r.json().catch(() => null) };
+            return { known: r.status >= 400 && r.status < 500, p: null };  // 4xx 는 확답, 5xx 는 모름
+          } catch (_) { return { known: false, p: null }; }
+        };
+        const q = await tossQuery();
+        const p = q.p;
+        if (p && p.status === 'DONE' && p.orderId === orderId && p.totalAmount === chk.amount) {
+          tj = p;   // 이미 승인된 결제다 — 아래 성공 경로로 그대로 흘려보낸다
+        } else if (!q.known) {
+          // 승인도 조회도 답이 없다. 이때 실패로 적으면 위의 사고가 난다.
+          // 주문을 open 그대로 두고, 사용자에게는 확인 중이라고만 말한다.
+          return res.status(502).json({ ok: false, reason: 'unverified', code: null,
+            message: '결제 확인이 늦어지고 있습니다. 카드에서 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.' });
+        } else {
+          // 토스가 승인 안 됐다고 답했다. 다만 DONE 인데 주문·금액이 다르면 손으로 볼 자리라 코드를 따로 남긴다.
+          const mismatch = p && p.status === 'DONE';
+          await rpc('order_failed', {
+            p_order: orderId,
+            p_code: mismatch ? 'DONE_MISMATCH' : String(tj.code || (tr ? tr.status : 'NETWORK')),
+            p_message: String(tj.message || (p && p.status) || ''),
+          }, token).catch(() => {});
+          return res.status(400).json({ ok: false, reason: 'toss',
+                                        code: tj.code || null, message: tj.message || '결제 승인에 실패했습니다' });
+        }
       }
 
       // 승인은 됐는데 우리 기록이 실패할 수 있다. 그때도 사용자에게는 성공이다 —

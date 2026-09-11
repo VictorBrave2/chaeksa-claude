@@ -28,7 +28,7 @@
 </head>
 <body>
 <div class="doc" id="out">
-  <div class="mark">⏳</div>
+  <div class="mark">驗</div>
   <h1>결제를 확인하고 있습니다</h1>
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
@@ -51,7 +51,7 @@
   function draw(html) { out.innerHTML = html; }
 
   function fail(msg, code) {
-    draw('<div class="mark">🌙</div>'
+    draw('<div class="mark">止</div>'
       + '<h1>결제를 마치지 못했습니다</h1>'
       + '<p>' + esc(msg) + '</p>'
       + (code ? '<p class="warn">코드 ' + esc(code) + '</p>' : '')
@@ -72,7 +72,7 @@
   ChaeksaPay.confirm({ paymentKey: paymentKey, orderId: orderId, amount: amount })
     .then(function (r) {
       if (!r || !r.ok) { fail(r && r.message || '승인에 실패했습니다.', r && r.code); return; }
-      draw('<div class="mark">🌸</div>'
+      draw('<div class="mark">成</div>'
         + '<h1>결제가 끝났습니다</h1>'
         + '<p>' + (r.already ? '이미 처리된 주문입니다.' : '고맙습니다. 곧 시작하겠습니다.') + '</p>'
         + '<div class="box">'
