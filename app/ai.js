@@ -525,7 +525,7 @@ ${prof}` : ''}`;
     const ck = briefKey(r, today);
     const cached = localStorage.getItem(ck);
     if (cached) return cached;
-    await buildProfile(r, today);
+    // 예전엔 여기서 buildProfile(유료 원국 정독, Opus)을 결제 확인 없이 먼저 구웠다 — 무료 버튼 하나가 1만 원짜리를 굽고 보여 줬다(2026-09-12 걷음).
     const df = global.ChaeksaTongbyeon ? global.ChaeksaTongbyeon.dayFrame(r, today) : null;
     const sys = systemPrompt(r, today) + (df ? `
 
@@ -546,7 +546,7 @@ ${dayFrameText(df)}
 
   // 대화
   async function chat(r, today, history, question) {
-    await buildProfile(r, today);
+    // 부르는 곳이 없는 옛 대화 — 살아나도 유료 원국 정독을 공짜로 굽지 않게 buildProfile 을 뺐다(2026-09-12).
     const df = global.ChaeksaTongbyeon ? global.ChaeksaTongbyeon.dayFrame(r, today) : null;
     const sys = systemPrompt(r, today) + (df ? `
 

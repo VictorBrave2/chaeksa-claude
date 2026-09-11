@@ -474,7 +474,9 @@
   const NO_PROFILE_TABS = ['taekil'];
 
   function goHash(booted) {
-    const t = (location.hash || '').replace(/^#/, '');
+    let t = (location.hash || '').replace(/^#/, '');
+    // #sheet-ibyeol 꼴 — 결제 화면(pay.html)이 사람마다 사는 장을 그 장으로 곧장 보낸다(2026-09-12)
+    const 장m = /^sheet-([a-z]+)$/.exec(t); if (장m) { window.현재장 = 장m[1]; t = 'sheet'; }
     if (!t || !document.querySelector('.tab[data-tab="' + t + '"]')) return;
     // 검색으로 들어오는 사람은 프로필이 없다. taekil.html 의 '상담 신청하기'가
     // #taekil 로 보내는데 랜딩이 뜨면 버튼이 안 먹는 것과 같다.
@@ -545,22 +547,16 @@
     ];
     el.innerHTML = `${장면()}<p class="hero-eyebrow">${부름('을 위한 첫 의논', '첫 의논')}</p>
       <p class="pb-lede">열 사람의 책사가 내 사주를 앞에 놓고 둘러앉습니다. 보는 눈이 서로 달라, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
-      <button class="btn" id="chongBake">의논을 청하겠습니다 — 약 1~2분</button>
+      <button class="btn" id="chongBake">의논 다시 펴기</button>
 
       <div id="chongFeats"></div>
       <p class="hint hide" id="chongWait">둘러앉는 중…</p>`;
+    // 무료 화면에서는 LLM 을 굽지 않는다(2026-09-12 사장님 「LLM 은 유료 콘텐츠에」).
+    // 여기까지 오는 것은 조립기(원가 0)가 실패했을 때뿐이라, 조립을 한 번 더 펴 본다.
     $('chongBake').onclick = () => {
-      $('chongBake').disabled = true;
-      $('chongBake').textContent = '의논 중입니다 — 새로고침하지 마시고 잠시만요';
-      $('chongWait').classList.remove('hide');
-      간명예열();
-      const box = $('chongFeats');
-      box.insertAdjacentHTML('beforeend', '<p class="pb-lede" style="margin-top:12px">기다리시는 동안 — 이 간명이 다른 곳과 다른 다섯 가지입니다.</p>');
-      특.forEach((f, i) => setTimeout(() => { if (!box || !box.isConnected) return;
-        box.insertAdjacentHTML('beforeend', `<div class="nx-diag" style="margin-top:10px"><p class="nx-diag-k">${i + 1} · ${f[0]}</p><p>${f[1]}</p></div>`); }, i === 0 ? 0 : i * 6000));
-      let sec = 0; const tick = setInterval(() => { const w = $('chongWait');
-        if (!w || !w.isConnected) { clearInterval(tick); return; }
-        sec += 5; w.textContent = '간명 중… ' + sec + '초'; }, 5000);
+      chongFor = null;
+      renderChong();
+      if (!간명캐시()) { const w = $('chongWait'); if (w) { w.classList.remove('hide'); w.textContent = '지금은 의논을 펴지 못했습니다 — 잠시 뒤 다시 열어 주세요.'; } }
     };
   }
   window.renderChongSoon = () => { chongFor = null; renderChong(); };
@@ -962,7 +958,11 @@
   async function loadAiBrief() {
     const box = $('aiBrief'), cta = $('aiBriefCta');
     const stale = $('hdGate'); if (stale) stale.remove();
-    if (!AI.ready()) { heroFallback(); cta.classList.remove('hide'); return; }
+    // 무료 화면에는 LLM 을 부르지 않는다(2026-09-12 사장님 「LLM 은 유료 콘텐츠에」).
+    // 예전 「좌장에게 오늘을 묻기」는 결제 확인 없이 원국 정독(Opus)까지 구웠다. 오늘 이미 구워 둔 것만 펴고(원가 0), 없으면 규칙 문장.
+    { const 구운 = AI && AI.briefCached ? AI.briefCached(R, today) : null; if (cta) cta.classList.add('hide');
+      if (구운) { box.className = 'hd-lede'; box.textContent = 구운; const c = $('hdFresh'); if (c) c.textContent = 'AI 비서'; collapseRuleCard(true); } else heroFallback();
+      return; }
     // 앱을 여는 것만으로 원가가 나가면 안 된다. 오늘치가 이미 구워져 있으면 그대로 펴고,
     // 없으면 규칙 엔진의 문장을 세운 뒤 「청하기」를 내민다.
     // (dailyBrief 는 안에서 buildProfile 까지 부르므로 자동으로 두 번이 나갔다.)
@@ -1335,7 +1335,8 @@
     if (!card) { card = document.createElement('section'); card.className = 'card'; card.id = 'aiProfile'; $('daeun').closest('.card').after(card); }
     const 머리 = '<h2>좌장이 읽는 원국</h2>';
     const cached = AI.getProfile(R);
-    if (cached) { card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
+    // 캐시를 결제 확인보다 먼저 그리면 산 적 없는 사람에게도 원국 정독이 나간다(2026-09-12 고침 — 무료 브리핑이 굽던 것까지 보였다).
+    if (cached && window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wongook')) { card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
     if (!AI.ready()) { card.innerHTML = 머리 + '<p class="hint">지금은 좌장을 부를 수 없습니다. 위 계산은 그대로 유효합니다.</p>'; return; }
     // **유료 상품이다**(products.wongook · migrate-15 · 2026-08-31 결재).
     //   판정을 가두는 것이 아니다 — 강약·용신·격국·대운은 위 카드에 **무료로 다 있다.**
@@ -3509,13 +3510,11 @@
         // **클릭 없이 굽지 않는다.** 앱을 여는 것만으로 돈이 나가면 안 된다 —
         // 바로 옆 renderChong 이 같은 이유로 버튼을 세워 두었는데 여기만 자동이었다.
         // #ganmyeong 해시로 들어오면 클릭 0회로 구워졌다.
-        el.innerHTML = '<div class="nx-diag"><p>의논이 아직 없습니다.</p></div>'
-          + '<button class="btn" id="gmBake" style="margin-top:12px">의논을 청하겠습니다 — 약 1~2분</button>';
+        // 무료 화면에서는 LLM 을 굽지 않는다(2026-09-12) — 조립을 한 번 더 펴 볼 뿐이다(원가 0).
+        el.innerHTML = '<div class="nx-diag"><p>의논을 펴지 못했습니다.</p></div>'
+          + '<button class="btn" id="gmBake" style="margin-top:12px">의논 다시 펴기</button>';
         const bb = el.querySelector('#gmBake');
-        if (bb) bb.onclick = () => {
-          bb.disabled = true; bb.textContent = '의논 중입니다 — 새로고침하지 마시고 잠시만요';
-          간명예열();
-        };
+        if (bb) bb.onclick = () => { bb.disabled = true; mountGanmyeong(el, whereTag); };
         return;
       }
     }

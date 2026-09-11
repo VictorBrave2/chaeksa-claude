@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=735">
+<link rel="stylesheet" href="style.css?v=736">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -94,9 +94,9 @@
   </div>
 </div>
 
-<script src="config.js?v=735"></script>
-<script src="cloud.js?v=735"></script>
-<script src="pay.js?v=735"></script>
+<script src="config.js?v=736"></script>
+<script src="cloud.js?v=736"></script>
+<script src="pay.js?v=736"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -172,6 +172,10 @@
 
     function pick(el) {
       if (el.getAttribute('data-code') === 'taekil') { location.href = 'taekil-apply.html'; return; }
+      // 사람마다 따로 사는 장(여덟)을 여기서 사면 열쇠 없이 결제된다 — 9,900원을 내고 아무것도 안 열린다(2026-09-12).
+      // 그 장으로 곧장 보내서, 그 사람을 고른 뒤 그 자리에서 결제하게 한다.
+      var 장길 = { maeum: 'maeum', gunghap: 'gunghap', geunamja: 'geunamja', gyeolhon: 'sheet-gyeolhon', ibyeol: 'sheet-ibyeol', jigeum: 'sheet-jigeum', jjak: 'sheet-jjak', sok: 'sheet-sok' }[el.getAttribute('data-code')];
+      if (장길) { location.href = './#' + 장길; return; }
       picked = st.products.filter(function (p) { return p.code === el.getAttribute('data-code'); })[0];
       Array.prototype.forEach.call(list.children, function (c) {
         c.setAttribute('aria-selected', String(c === el));
