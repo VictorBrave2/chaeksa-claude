@@ -26,11 +26,10 @@
   const PLANS = {
     // 비로그인: AI 없음. 계산 기능은 전부 열려 있다.
     guest: { label: '둘러보기', period: 'life', limits: { brief: 0, chat: 0, consult: 0, profile: 0, compat: 0, story: 0 } },
-    // 무료: 평생 체험분. 소진되면 규칙 기반으로 계속 사용.
-    // story 40 — 결제해도 등급은 free 로 남는다(등급을 올리려면 service_role 이 필요한데
-    // 그 키는 쓰지 않기로 했다). 1년 열람 상품이 분기마다 다시 굽는 것을 감당하려면
-    // 24 로는 열람 기간이 끝나기 전에 바닥난다. 서버(schema-9)와 같은 값이어야 한다.
-    free: { label: '무료', period: 'life', limits: { brief: 5, chat: 5, consult: 1, profile: 1, compat: 1, story: 40 } },
+    // 무료: LLM 0 (2026-09-12 사장님 결정 「LLM 은 유료 콘텐츠에」). 무료 화면은 규칙 조립기로 원가 0.
+    // 유료 LLM 은 등급이 아니라 결제된 주문으로 연다 — ai.js call() 의 opts.product → 서버 llm_gate.
+    // 예전 story 40(결제해도 등급이 free 라 버티던 값)은 그 문이 생겨 필요 없어졌다. 서버(migrate-26)와 같은 값이다.
+    free: { label: '무료', period: 'life', limits: { brief: 0, chat: 0, consult: 0, profile: 0, compat: 0, story: 0 } },
     // 구독: 매달 초기화.
     member: { label: '구독', period: 'month', limits: { brief: 62, chat: 100, consult: 15, profile: 4, compat: 20, story: 60 } },
     // 슈퍼: 운영자 확인용. 서버(schema-9)의 ai_usage_limit 과 같은 값이어야 한다.
@@ -107,8 +106,9 @@
     }
     if (p === 'free') {
       return {
-        title: `${NAMES[task] || 'AI'} 체험을 다 쓰셨습니다`,
-        body: '만세력·원국·대운·택일·궁합과 규칙 기반 브리핑은 계속 무제한으로 쓰실 수 있습니다. AI가 매일 써주는 글을 원하시면 구독을 준비 중입니다.',
+        // 무료 등급은 처음부터 0 이라 「다 쓰셨습니다」는 거짓말이 된다(2026-09-12).
+        title: '책사단이 한 편으로 엮는 글은 결제한 풀이에서 열립니다',
+        body: '만세력·원국·대운·택일·궁합과 규칙으로 쓴 풀이는 계속 무료로 쓰실 수 있습니다.',
         cta: null,
       };
     }

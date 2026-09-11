@@ -55,9 +55,8 @@ async function rpc(name, args, userToken) {
   return await res.json();
 }
 
-/* 결제는 돈이 오가므로 '장애 시 통과'가 없다. api/chat.js 는 Supabase 가 죽으면
- * 사용자를 막지 않고 통과시키지만(우리 장애를 사용자 장애로 만들지 않으려고),
- * 여기서는 반대다 — 확인 못 하면 승인하지 않는다. */
+/* 결제는 돈이 오가므로 '장애 시 통과'가 없다 — 확인 못 하면 승인하지 않는다.
+ * api/chat.js 의 결제 확인(llm_gate, 2026-09-12)도 같은 쪽이다: 확인 못 하면 LLM 을 부르지 않는다. */
 
 const READY = () => !!(env('TOSS_SECRET_KEY') && env('TOSS_CLIENT_KEY'));
 
@@ -148,6 +147,18 @@ module.exports = async (req, res) => {
       if (!chk || !chk.ok) return res.status(400).json(chk || { ok: false, reason: 'db' });
       if (chk.already) {
         // 착지 페이지를 새로고침한 경우. 이미 낸 것이므로 성공으로 답한다.
+        // 첫 승인 때 결제 모드를 못 적었으면(migrate-26) 여기서 채운다 — 다만 **지금 키로 토스에 이 결제가 보일 때만**.
+        // 시험 키와 운영 키는 서로의 결제를 못 본다. 그래서 시험 때 산 주문이 운영 전환 뒤 새로고침으로 「운영」이 되지 않는다.
+        // order_mode 는 모드가 빈 결제완료 주문만 바꾸므로 이미 적힌 주문에는 아무 일도 없다. 무엇이 실패해도 응답은 그대로다.
+        try {
+          const r = await fetch('https://api.tosspayments.com/v1/payments/' + encodeURIComponent(paymentKey),
+            { headers: { authorization: 'Basic ' + Buffer.from(secret + ':').toString('base64') } });
+          const p = r.ok ? await r.json().catch(() => null) : null;
+          if (p && p.status === 'DONE' && p.orderId === orderId) {
+            await rpc('order_mode', { p_order: orderId, p_mode: /^live_/.test(secret) ? 'live' : 'test',
+                                     p_server: env('PAY_HOOK_SECRET') || null }, token).catch(() => null);
+          }
+        } catch (_) {}
         return res.status(200).json({ ok: true, already: true, name: chk.name,
                                       amount: chk.amount, receipt: chk.receipt });
       }
@@ -216,6 +227,16 @@ module.exports = async (req, res) => {
         p_receipt: (tj.receipt && tj.receipt.url) || null,
         p_server: env('PAY_HOOK_SECRET') || null,
       }, token).catch(() => ({ ok: false, reason: 'save_failed' }));
+
+      // 결제 모드(시험/운영)를 주문에 적는다 — 운영 키로 바뀐 뒤에는 운영 결제 주문만 유료 LLM 을 연다(migrate-26).
+      // 토스 키는 test_… / live_… 로 시작한다. 함수가 아직 없어도(사장님 SQL 전) 결제 기록은 위에서 끝났으므로 여기 실패는 무시한다.
+      // order_paid 의 답이 끊겨 실패로 보여도 DB 에는 들어갔을 수 있으니 결과와 상관없이 부른다(결제완료가 아닌
+      // 주문이면 아무것도 안 바꾼다). 빠지면 운영 결제가 시험 주문으로 보여 LLM 을 못 연다 — 한 번만 더 부른다.
+      {
+        const 모드 = { p_order: orderId, p_mode: /^live_/.test(secret) ? 'live' : 'test', p_server: env('PAY_HOOK_SECRET') || null };
+        const m1 = await rpc('order_mode', 모드, token).catch(() => null);
+        if (!m1 || !m1.ok) await rpc('order_mode', 모드, token).catch(() => null);
+      }
 
       return res.status(200).json({
         ok: true,

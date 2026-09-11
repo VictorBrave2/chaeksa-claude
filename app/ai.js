@@ -120,7 +120,7 @@ ${chartText(r, today)}`;
     // 천장은 목표가 아니라 천장이라 안 쓰면 안 쓴다(465줄 각주).
     // strict 를 켜 **잘리면 캐시에 안 굳고 던진다** — 프로필은 한 번 굳으면 평생 간다.
     const text = await call(sys, [{ role: 'user', content: q }],
-      { task: 'profile', maxTokens: 4000, effort: 'high', strict: true });
+      { task: 'profile', maxTokens: 4000, effort: 'high', strict: true, product: 'wongook' });
     localStorage.setItem(profileKey(r), text);
     return text;
   }
@@ -159,7 +159,8 @@ ${prof}` : ''}`;
     const task = opts.task || 'chat';
     // 개인 키를 직접 넣은 사용자는 본인이 비용을 내므로 한도를 걸지 않는다
     const U = global.ChaeksaUsage;
-    if (U && !s.apiKey && !U.can(task)) {
+    // 유료 LLM(opts.product)은 등급 한도가 아니라 서버가 결제된 주문으로 막는다(api/chat.js llm_gate, 2026-09-12)
+    if (U && !s.apiKey && !opts.product && !U.can(task)) {
       const m = U.blockedMessage(task);
       const err = new Error(m.title);
       err.blocked = m;
@@ -185,6 +186,9 @@ ${prof}` : ''}`;
       // 프록시가 서버에서 인증·계량한다 (api/chat.js + server/schema-5.sql).
       // 토큰이 없으면 안 실어 보낸다 — 서버가 401로 막고, 그 메시지를 그대로 보여준다.
       headers['x-chaeksa-task'] = task;
+      // 무엇을 산 주문으로 부르나 — 서버(llm_gate)가 DB 의 결제된 주문과 맞춘다. 사람마다 사는 장은 열쇠(note)까지.
+      if (opts.product) headers['x-chaeksa-product'] = opts.product;
+      if (opts.note) headers['x-chaeksa-note'] = opts.note;
       if (opts.cachePk) headers['x-chaeksa-cache'] = opts.cachePk;
       try {
         const C = global.ChaeksaCloud;
@@ -210,7 +214,15 @@ ${prof}` : ''}`;
         err.timeout = true;
         throw err;
       }
-      if (kind === 'quota' || kind === 'auth') {
+      if (kind === 'truncated') {
+        // 프록시가 끝을 못 맺은 글을 넘기지 않고 횟수를 되돌렸다. 이미 쓴 토큰이라 자동 재시도 금지 — 손으로만 다시.
+        const err = new Error(raw || '글이 길이 제한에 걸려 끝을 못 맺었습니다.');
+        err.truncated = true;
+        throw err;
+      }
+      if (kind === 'refusal') throw new Error('이 질문에는 답하지 않는 게 좋겠어요. 다른 방식으로 물어봐 주세요.');
+      // 'unverified'(결제 확인을 잠시 못 함)는 여기 안 걸리고 아래 서버 사정(5xx) 갈래로 가서 「다시 시도」가 그려진다.
+      if (kind === 'quota' || kind === 'auth' || kind === 'paid' || kind === 'cap') {
         // 화면 카운터를 서버 판정에 맞춘다. 지운 localStorage로 다시 물어봐도 서버가 다시 막는다.
         if (kind === 'quota' && global.ChaeksaUsage) {
           // record()로 채워야 저장까지 된다. state()가 주는 건 사본이다.
@@ -239,7 +251,7 @@ ${prof}` : ''}`;
     }
     const j = await res.json();
     if (j.usage) global.__chaeksaLastUsage = j.usage;
-    if (global.ChaeksaUsage && !s.apiKey) global.ChaeksaUsage.record(task);
+    if (global.ChaeksaUsage && !s.apiKey && !opts.product) global.ChaeksaUsage.record(task);
     if (j.stop_reason === 'refusal') throw new Error('이 질문에는 답하지 않는 게 좋겠어요. 다른 방식으로 물어봐 주세요.');
     // 잘린 글을 받아 캐시에 굳히면 「맺음말 없는 간명서」가 영원히 남는다.
     // 짧은 브리핑은 천장에 닿는 게 정상이라 strict 를 켠 곳에서만 실패로 다룬다.
@@ -351,7 +363,9 @@ ${prof}` : ''}`;
     + '각 책사는 제 축 밖의 것을 말하지 않는다. 최소 두 번은 앞사람 말을 받아라.\n'
     + '읽는 사람을 부르는 말은 쓰지 않는다 — 주어를 지우고 존댓말 어미로만 높인다. 번호는 붙이지 않는다(채점하는 글이 아니다). 소제목·마크다운 금지, 문단 사이 빈 줄.\n';
 
-  async function storyTell(kind, facts) {
+  // cachePk — 서버에도 굽힌 글을 둔다(프록시 ganmyeong_cache, 사람마다 따로). 기기를 바꾸거나 굽는 중
+  // 새로고침해도 주문의 한 달 횟수를 다시 쓰지 않는다(2026-09-12 검토). 헤더라서 ASCII 만 된다.
+  async function storyTell(kind, facts, cachePk) {
     // whom(어떤 사람이 나를 사랑하는가)은 연표가 아니라 인물 서술이라 판이 다르다.
     if (kind === 'whom') {
       const sys = '너는 「책사단」의 기록자다. 읽는 사람이 값을 치르고 여신 「어떤 사람이 나를 사랑하는가」의 본문이며, 이 대목은 〔인연〕이 맡는다. 화면 위에는 규칙 엔진이 낸 결론(상대의 오행·정과 편의 글자·합·매력·배우자 방 재료)이 표로 떠 있고 [계산된 사실]이 그 전부다.\n'
@@ -364,7 +378,7 @@ ${prof}` : ''}`;
       return await call(sys, [{ role: 'user', content: '나를 사랑하게 될 사람 이야기를 처음부터 끝까지 써줘.' }],
         // 천장 4000 — strict 를 켠 이상 잘리면 실패로 던진다. 2600 은 사고 토큰까지
         // 나눠 쓰기에 800~1,200자를 담기 빠듯했다(형제 가지와 같은 이유).
-        { task: 'story', maxTokens: 4000, effort: 'medium', strict: true });
+        { task: 'story', maxTokens: 4000, effort: 'medium', strict: true, product: 'inyeon', cachePk });
     }
     const 주제 = kind === 'wealth' ? '재물' : '인연';
     const sys = '너는 「책사단」의 기록자다. 지금 이 글은 읽는 사람이 값을 치르고 여신 ' + 주제 + ' 화면의 본문이다. 화면 위쪽에는 규칙 엔진이 계산한 연표(과거 구간·현재·다가오는 열두 달·날·시진)가 표로 떠 있고, 아래 [계산된 사실]이 그 전부다.\n'
@@ -410,7 +424,7 @@ ${prof}` : ''}`;
     // 4500 + effort high 가 바로 그 덫이었다. strict 가 없으면 잘린 2만원짜리 본문이
     // 그대로 캐시에 굳는다 — 새로고침해도 그 달 내내 같은 자리에서 끊긴다.
     return await call(sys, [{ role: 'user', content: 주제 + ' 이야기를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 7000, effort: 'high', strict: true });
+      { task: 'story', maxTokens: 7000, effort: 'high', strict: true, product: kind === 'wealth' ? 'wealth' : 'inyeon', cachePk });
   }
 
   // ── 간명서 — 채팅에서 90% 채점을 받은 간명 방식을 그대로 이식한다 ──

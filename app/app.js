@@ -2025,6 +2025,7 @@
   }
 
   async function aiNarrate(box, kind, facts) {
+    let 스토리키 = null, 저장키 = null;   // 아래 catch 의 「굽는 중 기다림」이 쓴다
     try {
       if (!window.ChaeksaAI || !AI.ready()) return;
       const pb = box.querySelector('.paidbox'); if (!pb) return;
@@ -2044,6 +2045,7 @@
         + (R.pillars.hour ? f.pillar(R.pillars.hour) : '시모름')
         + '.' + (i0.gender || '?') + (profile && profile.genderUnknown ? 'u' : '')
         + '.' + 분기;
+      저장키 = key;
       let cached = null;
       try { cached = localStorage.getItem(key); } catch (e) {}
       const el = document.createElement('div');
@@ -2062,13 +2064,38 @@
       // chartText 는 여덟 글자·일간·지장간·대운과 「직접 판단하라」는 지침을 함께 담는다.
       const 실을것 = Object.assign({}, facts);
       try { if (AI.chartText) 실을것.원국 = AI.chartText(R, today); } catch (e) {}
-      const out = await AI.storyTell(kind, 실을것);
+      // 서버 캐시 열쇠 — 위 key 를 짧게 흩는다(FNV-1a). key 에 간지 글자가 있어 그대로는 헤더에 못 싣는다.
+      // 같은 key 면 기기가 달라도 같은 열쇠라, 굽힌 글을 서버에서 공짜로 다시 받는다(주문 횟수를 안 쓴다).
+      let 흩 = 0x811c9dc5;
+      for (let i = 0; i < key.length; i++) { 흩 ^= key.charCodeAt(i); 흩 = Math.imul(흩, 16777619); }
+      스토리키 = 'st.' + kind + '.' + (흩 >>> 0).toString(36) + '.' + key.length.toString(36);
+      const out = await AI.storyTell(kind, 실을것, 스토리키);
       try { localStorage.setItem(key, out); } catch (e) {}
       draw(out);
     } catch (e) {
       // 조용히 지우면 왜 안 나오는지 아무도 모른다(2026-08-30 「그대로인데?」).
       // 규칙 화면만으로도 완결이므로 크게 벌리지는 않되, 흔적은 남긴다.
       try { console.warn('책사단 서술 실패:', e); } catch (e2) {}
+      // 같은 글을 다른 요청이 굽는 중이다(409 — 새로고침 전의 굽기, 다른 기기). 실패가 아니다.
+      // 서버 캐시를 「읽기만」 하며 기다린다 — 새로 굽지 않는다(시간초과 뒤 자동 재시도 금지와 같은 이유, 원가 0).
+      if (e && e.baking && 스토리키 && window.ChaeksaCloud && ChaeksaCloud.api) {
+        const w = box.querySelector('.pb-ai');
+        if (!w) return;
+        w.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">앞서 청하신 글을 책사단이 아직 쓰는 중입니다 — 끝나는 대로 여기 펴 드립니다…</p>';
+        for (let 회 = 0; 회 < 18; 회++) {           // 10초씩 3분 — 프록시 자물쇠(3분)와 같은 길이
+          await new Promise(r => setTimeout(r, 10000));
+          if (!w.isConnected) return;
+          let j = null;
+          try { j = await ChaeksaCloud.api('/rest/v1/rpc/ganmyeong_get', { method: 'POST', body: JSON.stringify({ p_pk: 스토리키 }) }); } catch (e5) {}
+          const t = j && j.ok && j.hit && j.body;
+          if (t && t.indexOf(BAKING표식) !== 0) {
+            try { if (저장키) localStorage.setItem(저장키, t); } catch (e6) {}
+            w.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>' + 발언들(String(t).split(/[\r\n]+/).filter(Boolean));
+            return;
+          }
+          if (!t) break;   // 자물쇠가 풀렸는데 글이 없다 = 그 굽기가 실패했다. 아래 「다시 시도」로 — 손으로만 다시.
+        }
+      }
       const el = box.querySelector('.pb-ai');
       if (!el) return;
       // 「이 화면을 다시 열어 주세요」는 아무 일도 하지 않았다 — 유료 화면들은
