@@ -3236,7 +3236,12 @@
     ];
     let h = '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
       + 유료.map((f, i) => {
-          const 파일 = window.CHAEKSA_ART ? 초상(f.k, f.자리, false) : '';
+          // 상품 표지는 결제 화면과 **같은 그림**을 쓴다(ChaeksaPay.그림, 2026-09-11).
+          // 책사 얼굴을 자리로 골라 쓰면 속궁합·내 짝이 같은 그림(inyeon-4)이 됐다 —
+          // 토스 심사가 「같은 상품 이미지 반복」으로 떨어뜨리는 꼴이다. 상품이 아닌 카드만 얼굴을 쓴다.
+          const 코드 = f.id === 'myMonth' ? 'month' : f.id;
+          const 상품그림 = window.ChaeksaPay && ChaeksaPay.그림 && ChaeksaPay.그림[코드];
+          const 파일 = 상품그림 || (window.CHAEKSA_ART ? 초상(f.k, f.자리, false) : '');
           return '<button class="wt-feature" data-fi="' + i + '" type="button">'
             + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
             + '<div class="wf-body"><span class="wf-k">' + esc(f.위) + '</span><b>' + esc(f.제목) + '</b>'

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=710">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -17,10 +17,13 @@
   .item{padding:16px 18px;border-radius:14px;border:1px solid var(--line);margin-bottom:11px;
         cursor:pointer;transition:border-color .15s, background .15s}
   .item[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+  .item:not([role]){cursor:default}   /* 결제 준비 전 — 고를 수 없는 카드가 누를 수 있어 보이면 안 된다 */
   .item h3{font-family:var(--serif);font-size:16.5px;margin:0 0 4px;display:flex;
            justify-content:space-between;align-items:baseline;gap:10px}
   .item h3 b{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
   .item p{font-size:13px;line-height:1.7;color:var(--ink3);margin:0}
+  .item .thumb{display:block;width:100%;aspect-ratio:3/1;object-fit:cover;object-position:center 32%;
+    border-radius:10px;margin:0 0 12px;background:var(--line)}
   .note{width:100%;margin-top:16px;padding:13px 14px;border-radius:12px;border:1px solid var(--line);
         background:transparent;color:var(--ink);font-size:14px;line-height:1.7;font-family:inherit;
         min-height:96px;resize:vertical;box-sizing:border-box}
@@ -91,9 +94,9 @@
   </div>
 </div>
 
-<script src="config.js"></script>
-<script src="cloud.js"></script>
-<script src="pay.js"></script>
+<script src="config.js?v=710"></script>
+<script src="cloud.js?v=710"></script>
+<script src="pay.js?v=710"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -125,20 +128,30 @@
   }
 
   ChaeksaPay.state().then(function (st) {
-    // 키가 아직 없으면(심사 전) 결제 대신 카카오로 보낸다. 없는 버튼을 보여주지 않는다.
-    if (!st.ready || !(st.products || []).length) {
-      list.innerHTML = '<div class="soon">'
-        + '<p>온라인 결제는 준비 중입니다.<br>곧 이 자리에서 달·날·시각까지 열립니다.</p>'
-        + '</div>';
+    var 상품 = st.products || [];
+    // 상품은 **키가 없어도 보여준다**(2026-09-11 토스 심사 안내 「판매 가능한 상품을 1개 이상」).
+    // 예전엔 키가 없으면 목록 대신 「준비 중」만 띄워서, 심사하는 사람이 상품을 하나도 못 봤다.
+    // 결제 양식만 키에 매인다 — 없는 버튼을 보여주지 않는다는 원칙은 그대로다.
+    if (!상품.length) {
+      list.innerHTML = '<div class="soon"><p>상품을 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</p></div>';
       return;
     }
 
-    list.innerHTML = st.products.map(function (p) {
-      return '<div class="item" role="button" tabindex="0" aria-selected="false" data-code="'
-        + esc(p.code) + '">'
+    var 그림 = ChaeksaPay.그림 || {};
+    list.innerHTML = 상품.map(function (p) {
+      var g = 그림[p.code];
+      return '<div class="item"' + (st.ready ? ' role="button" tabindex="0" aria-selected="false"' : '')
+        + ' data-code="' + esc(p.code) + '">'
+        + (g ? '<img class="thumb" alt="' + esc(p.name) + '" src="' + g + '" loading="lazy">' : '')
         + '<h3>' + esc(p.name) + ' <b>' + esc(ChaeksaPay.won(p.amount)) + '</b></h3>'
         + '<p>' + esc(p.blurb || '') + '</p></div>';
     }).join('');
+
+    if (!st.ready) {
+      list.insertAdjacentHTML('beforeend', '<div class="soon">'
+        + '<p>온라인 결제는 준비 중입니다.<br>곧 이 자리에서 바로 결제하실 수 있습니다.</p></div>');
+      return;   // 결제 양식은 키가 들어온 뒤에 연다
+    }
     form.hidden = false;
 
     function pick(el) {

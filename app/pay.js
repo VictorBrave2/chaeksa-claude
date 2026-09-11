@@ -18,6 +18,21 @@
   const SDK = 'https://js.tosspayments.com/v2/standard';
   const BASE = 'https://chaeksa.kr';
 
+  // 상품 그림 — 상품마다 **서로 다른 그림 한 장**. 토스 심사가 「상품 이미지가 없거나
+  // 같은 그림을 반복해 쓰면」 떨어뜨린다(2026-09-11 전자계약 심사 안내).
+  // 결제 화면(pay.html)과 앱 홈 유료 카드(app.js)가 **이 표 하나**를 같이 쓴다.
+  // art/love-shake-summer.webp 는 love-open-summer.webp 와 바이트까지 같은 파일이라 안 쓴다.
+  // products 표에 상품을 새로 넣으면 여기에도 한 줄 넣어야 한다 — 빠지면 그림 없는 상품이 된다.
+  const 그림 = {
+    maeum: 'art/love-open-spring.webp',    gunghap: 'art/love-open-summer.webp',
+    sok: 'art/love-open-winter.webp',      gyeolhon: 'art/love-quiet-autumn.webp',
+    ibyeol: 'art/love-shake-winter.webp',  jigeum: 'art/love-quiet-spring.webp',
+    jjak: 'art/love-quiet-winter.webp',    relation: 'art/love-open-autumn.webp',
+    geunamja: 'art/wealth-open-autumn.webp', wealth: 'art/wealth-open-spring.webp',
+    inyeon: 'art/chaeksa-inyeon.webp',     month: 'art/chaeksa-unro.webp',
+    taekil: 'art/chaeksa-hyeopgi.webp',
+  };
+
   let _state = null;          // GET 결과 캐시. 한 화면에서 여러 번 그리므로 한 번만 받는다
   let _sdk = null;            // SDK 로드 약속
 
@@ -223,5 +238,5 @@
     if (!hasNote) return rows[0];
     return rows.find((r) => r.note === key) || null;
   }
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey };
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey, 그림 };
 })(window);

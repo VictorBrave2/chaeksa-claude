@@ -28,24 +28,36 @@ if new != cur:
     sw = sw.replace('chaeksa-v%d' % cur, 'chaeksa-v%d' % new)
     io.open(os.path.join(APP, 'sw.js'), 'w', encoding='utf-8').write(sw)
 
-html = io.open(os.path.join(APP, 'index.html'), encoding='utf-8').read()
-for f in FILES:
-    html = re.sub(r'(["\'])' + re.escape(f) + r'(\?v=\d+)?\1',
-                  lambda m: '%s%s?v=%d%s' % (m.group(1), f, new, m.group(1)), html)
-io.open(os.path.join(APP, 'index.html'), 'w', encoding='utf-8').write(html)
+# 스크립트를 부르는 HTML 은 **전부** 여기서 버전을 올린다.
+# 결제 화면 셋이 config·cloud·pay.js 를 버전 없이 불러서, pay.js 를 고쳐도 재방문자는
+# 옛 파일을 물고 있었다 — 상품 그림이 결제 화면에만 안 뜬 게 그것이다(2026-09-11).
+# 스크립트를 부르는 페이지를 새로 만들면 여기에 넣어야 한다.
+PAGES = ['index.html', 'pay.html', 'pay-done.html', 'pay-fail.html']
+pages, tagged = {}, 0
+for pg in PAGES:
+    p = os.path.join(APP, pg)
+    h = io.open(p, encoding='utf-8').read()
+    for f in FILES:
+        h = re.sub(r'(["\'])' + re.escape(f) + r'(\?v=\d+)?\1',
+                   lambda m: '%s%s?v=%d%s' % (m.group(1), f, new, m.group(1)), h)
+    io.open(p, 'w', encoding='utf-8').write(h)
+    pages[pg] = h
+    tagged += len(re.findall(r'\?v=%d' % new, h))
 print('version', new)
-print('tagged:', len(re.findall(r'\?v=%d' % new, html)))
+print('tagged:', tagged, '(%s)' % ' · '.join(PAGES))
 
 # -- 빠진 파일을 잡는다 --
 # FILES 목록에 안 적힌 스크립트는 ?v= 가 안 올라가고, URL 이 안 바뀌니
 # 브라우저가 영원히 옛 파일을 물고 있는다. 2026-08-28 gyeokguk.js 가 그랬다.
 _pat_v  = re.compile(r'src=.([A-Za-z0-9_.-]+\.js)\?v=(\d+)')
 _pat_no = re.compile(r'src=.([A-Za-z0-9_.-]+\.js)(?!\?)')
-_missed = [(m.group(1), m.group(2)) for m in _pat_v.finditer(html) if int(m.group(2)) != new]
-_notag  = [m.group(1) for m in _pat_no.finditer(html)]
+_missed, _notag = [], []
+for pg, h in pages.items():
+    _missed += [(pg, m.group(1), m.group(2)) for m in _pat_v.finditer(h) if int(m.group(2)) != new]
+    _notag  += [(pg, m.group(1)) for m in _pat_no.finditer(h)]
 if _missed or _notag:
     print()
     print('!! 버전이 안 올라간 스크립트가 있습니다 - FILES 목록에 넣으세요')
-    for f, v in _missed: print('   %-28s ?v=%s  (현재 %d)' % (f, v, new))
-    for f in _notag:     print('   %-28s ?v= 없음' % f)
+    for pg, f, v in _missed: print('   %-14s %-28s ?v=%s  (현재 %d)' % (pg, f, v, new))
+    for pg, f in _notag:     print('   %-14s %-28s ?v= 없음' % (pg, f))
     sys.exit(1)
