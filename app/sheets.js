@@ -337,7 +337,7 @@
         if (Mn.덮기('jigeum', 9, Q, 'A' + 하 + '-B' + (첫 === 운.이달.하늘 ? '같음' : '다름')) && 첫 && 첫 !== 운.이달.하늘) Q[8].답 = '원래 붙드는 건 ' + (무리말[첫] || '') + ' — ' + Q[8].답;
         const j10A = 이달옴 ? '옴' : v.g.능동 ? '능동' : '수동';
         if (!Mn.역산덮기('jigeum', 10, Q, j10A, m.역산, true))
-          Mn.덮기('jigeum', 10, Q, 'A' + (이달옴 ? '옴' : '안') + '-B' + (날.length ? '있' : '없') + '-C' + (v.g.능동 ? '능동' : '수동'));
+          if (Mn.덮기('jigeum', 10, Q, 'A' + (이달옴 ? '옴' : '안') + '-B' + (날.length ? '있' : '없') + '-C' + (v.g.능동 ? '능동' : '수동')) && 날.length) Q[9].답 = 날.slice(0, 3).map(x => x.이름 + '(' + x.날 + ')').join(', ') + ' — ' + Q[9].답;
       } } catch (e) {}
       try { if (global.ChaeksaHwakin) global.ChaeksaHwakin.붙이기('jigeum', Q, v, 그); } catch (e) {}
       return { Q, 카드: [Q[0].답, Q[2].답, Q[9].답] };
