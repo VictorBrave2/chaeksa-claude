@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=719">
+<link rel="stylesheet" href="style.css?v=720">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -94,9 +94,9 @@
   </div>
 </div>
 
-<script src="config.js?v=719"></script>
-<script src="cloud.js?v=719"></script>
-<script src="pay.js?v=719"></script>
+<script src="config.js?v=720"></script>
+<script src="cloud.js?v=720"></script>
+<script src="pay.js?v=720"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -109,7 +109,7 @@
 
   var list = document.getElementById('list'), form = document.getElementById('form');
   var cta = document.getElementById('cta'), agree = document.getElementById('agree');
-  // 출산택일의 가족 정보·기간은 결제 뒤 주문서(pay-done)에서 받는다 — 여기 메모 칸은 걷었다(2026-09-11).
+  // 출산택일은 신청 페이지(taekil-apply)에서 신청서와 함께 결제한다 — 여기 메모 칸은 걷었다(2026-09-11).
   var msg = document.getElementById('msg');
   var picked = null, busy = false;
 
@@ -193,6 +193,8 @@
   });
 
   agree.addEventListener('change', refresh);
+  // 결제창에서 뒤로 가기로 돌아와 페이지가 되살아나면 단추가 「여는 중」에 멈춘다 — 풀어 준다(2026-09-11 검토).
+  window.addEventListener('pageshow', function (e) { if (e.persisted) { busy = false; refresh(); } });
 
   cta.addEventListener('click', function () {
     if (!picked || busy) return;

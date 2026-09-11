@@ -4218,12 +4218,13 @@
     if (came) ChaeksaCloud.me().catch(() => {});
     // 출산택일 신청 페이지에서 로그인하러 떠난 손님이 여기(첫 화면)로 떨어졌으면 제자리로 돌려보낸다.
     // Supabase 는 허용 목록에 없는 복귀 주소를 받으면 사이트 첫 주소로 보낸다 — 그러면 신청하던 사람이
-    // 앱 첫 화면에서 길을 잃는다(2026-09-11). 같은 사이트의 짧은 .html 경로만, 30분 안의 것만 따른다.
+    // 앱 첫 화면에서 길을 잃는다(2026-09-11). 같은 사이트의 짧은 .html 경로만, 10분 안의 것만 따른다
+    // (오래 남은 표시가 나중의 딴 로그인을 끌고 가지 않게 — 신청 페이지는 열릴 때마다 표시를 지운다).
     if (came) {
       try {
         const 돌아갈 = JSON.parse(localStorage.getItem('chaeksa.return') || 'null');
         localStorage.removeItem('chaeksa.return');
-        if (돌아갈 && /^\/[\w.-]+\.html$/.test(돌아갈.path || '') && Date.now() - (돌아갈.at || 0) < 30 * 60 * 1000) {
+        if (돌아갈 && /^\/[\w.-]+\.html$/.test(돌아갈.path || '') && Date.now() - (돌아갈.at || 0) < 10 * 60 * 1000) {
           location.replace(돌아갈.path);
         }
       } catch (e) {}

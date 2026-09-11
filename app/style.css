@@ -150,6 +150,14 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .intake .msg{font-size:13px;line-height:1.75;margin:12px 0 0;color:var(--ink3)}
 .intake .msg.bad{color:#b4534f}
 .intake .msg a{color:var(--accent)}
+.intake .agree{display:flex;gap:9px;align-items:flex-start;margin:14px 0 0;font-size:13px;line-height:1.7;
+               color:var(--ink2);letter-spacing:0;cursor:pointer}
+/* 전역 input{width:100%;padding…} 이 체크박스에도 걸린다 — 풀지 않으면 글이 한 글자씩 세로로 선다 */
+.intake .agree input{width:auto;padding:0;margin:3px 0 0;flex:none;accent-color:var(--accent)}
+.intake .agree a{color:var(--accent)}
+.intake .notice{margin:14px 0 0;padding:12px 14px;border-radius:12px;border:1px solid var(--accent-line);
+                background:var(--accent-soft);font-size:13px;line-height:1.75;color:var(--ink2)}
+.intake .notice a{color:var(--accent)}
 
 /* ───── 원국 기둥 ───── */
 .pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;text-align:center}

@@ -83,7 +83,11 @@
     }
     return true;
   }
-  function signOut() { clearSession(); localStorage.removeItem(SKEY); }
+  // 출산택일 신청서 초안·접수 요약·로그인 복귀 표시 — 로그아웃·탈퇴 때 이 기기에 남기지 않는다(2026-09-11 검토).
+  const 신청지움 = () => {
+    try { ['chaeksa.taekil.draft', 'chaeksa.taekil.sent', 'chaeksa.return'].forEach((k) => localStorage.removeItem(k)); } catch (_) {}
+  };
+  function signOut() { clearSession(); localStorage.removeItem(SKEY); 신청지움(); }
 
   /** 카카오·구글 등 소셜 로그인 — Supabase가 대신 처리하고 토큰을 주소에 붙여 돌려보낸다.
    *  네이버는 Supabase가 지원하지 않아 넣지 않았다. */
@@ -227,6 +231,7 @@
     clearSession();
     localStorage.removeItem(SKEY);
     localStorage.removeItem(PAT);
+    신청지움();
     return true;
   }
 

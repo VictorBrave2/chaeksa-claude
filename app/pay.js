@@ -242,6 +242,7 @@
       return { ok: false, reason: 'unauthenticated' };
     }
     const 원래 = btn.textContent;
+    btn.dataset.label = 원래;   // 뒤로 가기로 되살아난 페이지에서 되돌릴 글(아래 pageshow)
     btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = '결제창을 여는 중…';
     꼬리.textContent = '';
     let r;
@@ -382,11 +383,20 @@
     if (!hasNote) return rows[0];
     return rows.find((r) => r.note === key) || null;
   }
+  // 결제창에서 뒤로 가기로 돌아오면 iOS 사파리·카카오톡·네이버 인앱은 페이지를 통째로 되살린다 —
+  // 그러면 여는 중이던 단추가 「결제창을 여는 중…」에 멈춰 있다. 되살아난 페이지면 풀어 준다(2026-09-11 검토).
+  global.addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+    document.querySelectorAll('[data-busy]').forEach((b) => {
+      b.disabled = false; if (b.dataset.label) b.textContent = b.dataset.label; delete b.dataset.busy;
+    });
+  });
+
   // ── 출산택일 신청서 ─────────────────────────────────────────────
   // 신청 페이지(taekil-apply.html)와 결제 뒤 화면(pay-done.html)이 **같은 틀**을 쓴다 — 두 벌이면 어긋난다.
   // 칸은 네이버폼 택일 신청서와 택일상담 순서를 따른다: 기간·지역·성별·시간대 · 무엇을 앞세우나 · 가족 생년월일시.
-  // 가족 정보는 거르는 체라 선택이다(없어도 보고서가 나온다). 다른 곳에서 받은 택일은 묻지 않는다.
-  // 병원이 말한 날짜는 의학 판단이라 그 안에서만 본다.
+  // 가족 정보는 거르는 체라 선택이다(없어도 보고서가 나온다). 어디서 받았는지는 묻지 않는다
+  // (받아 둔 날짜는 적어 주시면 나란히 비교한다). 병원이 말한 날짜는 의학 판단이라 그 안에서만 본다.
   // 적는 동안 이 기기에 초안으로 둔다 — 카카오 로그인이나 결제창을 다녀와도 다시 쓰지 않게(2026-09-11
   // 사장님 「결제하러 가기가 너무 빡세고 어지러워」). 접수되면 지우고, 접수된 것은 주문번호로 기억한다.
   const 문의메일 = 'b01099991263@gmail.com';
@@ -400,10 +410,12 @@
   };
   const 칸 = (id, 이름, 꼭, 예, 메일) => '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
     + '<input id="' + id + '"' + (메일 ? ' type="email" autocomplete="email" inputmode="email"' : '')
-    + ' placeholder="' + 글(예) + '">';
+    + ' maxlength="200" placeholder="' + 글(예) + '">';
   const 고르기 = (id, 이름, 갈래) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '">'
     + 갈래.map((g) => '<button type="button" data-v="' + 글(g[0]) + '">' + 글(g[1]) + '</button>').join('') + '</div>';
-  const 앞세움 = [['무난', '두루 무난하게'], ['재관', '재물·자리'], ['건강', '건강'], ['학업', '공부'], ['가족', '가족 화목']];
+  // 재물과 자리는 따로 묻는다 — 「재관」이라 해도 재물 쪽인지 관직 쪽인지에 따라 답이 갈린다(택일상담). 둘 다 재관 저울.
+  const 앞세움 = [['무난', '두루 무난하게'], ['재물', '재물'], ['자리', '자리(직업·지위)'],
+                 ['건강', '건강'], ['학업', '공부'], ['가족', '가족 화목']];
   const 성별 = [['남아', '남아'], ['여아', '여아'], ['모름', '아직 몰라요']];
   const 주문서 = {
     /** 칸들만 돌려준다. 감싸는 form·제목·보내기 단추는 쓰는 쪽이 둔다(신청 페이지는 사이에 동의 칸이 있다). */
@@ -411,10 +423,11 @@
       return 칸('i_mail', '결과를 받으실 메일 주소', true, 'name@example.com', true)
         + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일')
         + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요')
+        + '<p class="hint">날짜는 의사가 정합니다. 병원이 말한 범위 안에서만 봅니다.</p>'
         // 이미 받아 둔 택일을 교차검증하러 오는 분이 많다(택일상담 — 두 건 다 그 경로였다).
         // 묻지 않는 것은 「어디서」 받았는지다. 「무엇을」 받았는지는 적어 주시면 비교해 드린다.
         + 칸('i_have', '이미 받아 두신 날짜·시간', false, '있으면 — 예) 10월 8일 오전 10시')
-        + '<p class="hint">어디서 받으셨는지는 적지 않으셔도 됩니다. 틀렸다고 하지 않고, 왜 그렇게 나오는지 함께 보여 드립니다.</p>'
+        + '<p class="hint">받으신 날짜가 틀렸다고 하지 않습니다. 저희 기준으로는 어떻게 나오는지 나란히 보여 드립니다.</p>'
         + 칸('i_place', '태어날 지역', true, '예) 경기도 성남 — 시·군까지면 됩니다')
         + 고르기('i_sex', '아이 성별', 성별)
         + 칸('i_time', '수술 가능한 시간대', false, '예) 평일 09시 ~ 19시')
@@ -426,9 +439,9 @@
         + 칸('i_sib', '형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력')
         + '<p class="hint">가족 정보는 아이와 가족이 서로 부딪히는 날을 걸러 내는 데만 씁니다. 모르시면 비워 두셔도 보고서는 나옵니다.</p>'
         + '<label for="i_wish">바라는 점</label>'
-        + '<textarea id="i_wish" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
+        + '<textarea id="i_wish" maxlength="1500" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
         + '<label for="i_ask">궁금한 점</label>'
-        + '<textarea id="i_ask"></textarea>';
+        + '<textarea id="i_ask" maxlength="1500"></textarea>';
     },
     값(root) {
       const v = (id) => { const el = root.querySelector('#' + id); return el ? String(el.value || '').trim() : ''; };
@@ -463,7 +476,12 @@
           if (el && em && /@/.test(em)) el.value = em;
         } catch (_) {}
       }
-      const 남김 = () => 쓰기(초안키, { data: 주문서.값(root), at: Date.now() });
+      // 동의는 칸이 아니라 값()에 없다 — 앞서 남긴 동의가 있으면 이어 붙인다(검토: 한 글자만 고쳐도 동의가 지워졌다).
+      const 남김 = () => {
+        const d = 주문서.값(root), 옛 = 주문서.초안();
+        if (옛 && 옛.consent) d.consent = 옛.consent;
+        쓰기(초안키, { data: d, at: Date.now() });
+      };
       [['i_sex', 'sex'], ['i_first', 'first']].forEach(([id, 열쇠]) => {
         const box = root.querySelector('#' + id); if (!box) return;
         const 켬 = (v) => {
@@ -478,13 +496,33 @@
     },
     초안() {
       const j = 읽기(초안키);
-      return j && j.data && (Date.now() - (j.at || 0)) < 초안수명 ? j.data : null;
+      // 지난 초안은 읽지 않을 뿐 아니라 지운다 — 「임시로」 둔다고 적어 두었다(개인정보처리방침).
+      if (j && (!j.data || (Date.now() - (j.at || 0)) >= 초안수명)) { 쓰기(초안키, null); return null; }
+      return j ? j.data : null;
     },
     초안지움: () => 쓰기(초안키, null),
     초안저장: (d) => 쓰기(초안키, { data: d, at: Date.now() }),
     /** 접수된 것을 주문번호로 기억한다 — 결제 뒤 화면을 새로고침해도 빈 양식이 아니라 「접수됐습니다」가 뜨게. */
-    보냄(orderId) { const j = 읽기(보낸키); return j && j.orderId === orderId ? j.data : null; },
-    보냄기록: (orderId, d) => 쓰기(보낸키, { orderId, data: d, at: Date.now() }),
+    // 접수 확인 화면에 보일 요약만 30일 남긴다 — 가족 생년월일시 같은 것은 접수 뒤 기기에 두지 않는다(검토).
+    보냄(orderId) {
+      const j = 읽기(보낸키);
+      if (j && Date.now() - (j.at || 0) > 30 * 24 * 3600 * 1000) { 쓰기(보낸키, null); return null; }
+      return j && j.orderId === orderId ? j.data : null;
+    },
+    보냄기록: (orderId, d) => 쓰기(보낸키, { orderId, at: Date.now(),
+      data: { mail: d.mail, range: d.range, place: d.place, sex: d.sex, first: d.first } }),
+    최근보냄: () => 읽기(보낸키),
+    /** 저장이 막힌 이유를 손님 말로. 영어 코드를 그대로 보이지 않는다. */
+    이유(r) {
+      return ({ unauthenticated: '로그인이 풀렸습니다 — 다시 로그인한 뒤 보내 주세요',
+                network: '인터넷 연결이 끊겼습니다', missing: '저장소가 아직 준비되지 않았습니다',
+                bad_request: '내용이 너무 깁니다 — 바라는 점·궁금한 점을 줄여 주세요',
+                no_order: '이 주문을 찾지 못했습니다' })[r && r.reason] || '저장하는 데 문제가 생겼습니다';
+    },
+    // 신청서 내용 이용 동의 — 신청 페이지와 결제 뒤 화면이 같은 말을 쓴다. 건강과 이어진 내용이 있어 따로 받는다.
+    동의문: '[필수] 건강과 이어진 정보(출산 예정 기간, 병원이 말한 수술 가능 날짜·시간대)와 가족의 생년월일시를 '
+      + '출산택일 보고서를 만들고 보내 드리는 데만 쓰는 것에 동의합니다. 동의하지 않으시면 보고서를 만들 수 없습니다. '
+      + '(<a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)',
     앞세움이름: (v) => (앞세움.find((g) => g[0] === v) || [])[1] || '',
     메일초안(orderId, d) {
       const 줄 = ['주문번호: ' + orderId, '받으실 메일: ' + d.mail, '출산 예정 기간: ' + d.range,

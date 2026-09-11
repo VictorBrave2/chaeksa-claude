@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=719">
+<link rel="stylesheet" href="style.css?v=720">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -35,9 +35,9 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=719"></script>
-<script src="cloud.js?v=719"></script>
-<script src="pay.js?v=719"></script>
+<script src="config.js?v=720"></script>
+<script src="cloud.js?v=720"></script>
+<script src="pay.js?v=720"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -84,34 +84,43 @@
   }
 
   function 양식(자리, orderId, 앞) {
+    // 신청 페이지에서 받은 동의가 초안에 있으면 그대로 잇는다(켜기가 초안을 다시 쓰기 전에 챙긴다).
+    // 없으면(다른 길로 결제) 여기서 같은 말로 동의를 받는다 — 건강과 이어진 내용이라 따로 받아야 한다(검토).
+    var 앞선동의 = (F.초안() || {}).consent || null;
     자리.innerHTML = '<form class="intake" id="intake" novalidate><h2>신청서</h2>'
       + '<p class="lead">아래를 적어 보내 주시면 이 주문과 함께 제게 옵니다. 결과는 적어 주신 메일로 보내 드립니다 — '
       +   '보통 2~3일, 길어지면 미리 알려 드립니다.</p>'
       + F.틀()
-      + '<p class="hint">적어 주신 내용은 보고서를 만들고 보내 드리는 데만 쓰고, 이 주문 기록과 함께 보관합니다.</p>'
+      + '<p class="hint">적어 주신 내용은 보고서를 만들고 보내 드리는 데만 쓰고, 이 주문 기록과 함께 보관합니다. '
+      +   '부모님·형제자매의 정보는 그분들께 알린 뒤 적어 주세요.</p>'
+      + (앞선동의 ? '' : '<label class="agree"><input type="checkbox" id="agreeData"><span>' + F.동의문 + '</span></label>')
       + '<button type="submit" class="send" id="i_send">신청서 보내기</button>'
       + '<p class="msg" id="i_msg"></p></form>';
     var f = document.getElementById('intake'), msg = document.getElementById('i_msg'), send = document.getElementById('i_send');
     F.켜기(f);
-    if (앞) {
+    // 막혔을 때는 손님 탓처럼 들리지 않게, 영어 코드 없이 — 적은 것은 그대로 있고 메일로도 보낼 수 있다고.
+    var 못보냄 = function (r, d) {
       msg.className = 'msg bad';
-      msg.textContent = '신청서를 이 주문에 붙이지 못했습니다. 내용을 확인하고 한 번 더 보내 주세요.'
-        + (앞.reason ? ' (' + 앞.reason + ')' : '');
-    }
+      msg.innerHTML = esc(F.이유(r)) + '. 적으신 내용은 그대로 있습니다 — 한 번 더 보내 보시고, 또 안 되면 '
+        + '<a href="' + esc(F.메일초안(orderId, d)) + '"><b>메일로 보내기 →</b></a>';
+    };
+    if (앞) 못보냄(앞, F.값(f));
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       if (send.disabled) return;
-      var d = F.값(f), 빈 = F.빈칸(d);
+      var d = F.값(f), 빈 = F.빈칸(d), 동의칸 = document.getElementById('agreeData');
       if (빈.length) { msg.className = 'msg bad'; msg.textContent = '비어 있거나 틀린 칸이 있습니다 — ' + 빈.join(' · '); return; }
+      if (!앞선동의 && !(동의칸 && 동의칸.checked)) {
+        msg.className = 'msg bad'; msg.textContent = '신청서 내용 이용에 동의해 주셔야 보낼 수 있습니다.'; return;
+      }
+      d.consent = 앞선동의 || { data: true, at: new Date().toISOString() };
       send.disabled = true; send.textContent = '보내는 중…';
       msg.className = 'msg'; msg.textContent = '';
       ChaeksaPay.intake(orderId, d).then(function (r) {
-        if (r && r.ok) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); return; }
+        // already = 이 주문에 이미 신청서가 붙어 있다(migrate-25 가 덮어쓰기를 막는다) — 접수된 것으로 본다.
+        if (r && (r.ok || r.reason === 'already')) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); return; }
         send.disabled = false; send.textContent = '신청서 보내기';
-        msg.className = 'msg bad';
-        msg.innerHTML = '신청서를 저장하지 못했습니다' + (r && r.reason ? ' (' + esc(r.reason) + ')' : '')
-          + '. 적으신 그대로 메일로 보내실 수 있습니다 — '
-          + '<a href="' + esc(F.메일초안(orderId, d)) + '"><b>메일로 보내기 →</b></a>';
+        못보냄(r, d);
       });
     });
   }
@@ -125,7 +134,7 @@
     if (d && !F.빈칸(d).length) {
       자리.innerHTML = '<div class="intake"><p class="lead">신청서를 이 주문에 붙이고 있습니다…</p></div>';
       ChaeksaPay.intake(orderId, d).then(function (r) {
-        if (r && r.ok) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); }
+        if (r && (r.ok || r.reason === 'already')) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); }
         else 양식(자리, orderId, r || { reason: 'db' });   // 초안은 남아 있어 양식에 그대로 채워진다
       });
       return;
