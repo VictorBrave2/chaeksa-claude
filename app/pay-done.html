@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=715">
+<link rel="stylesheet" href="style.css?v=716">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -24,6 +24,22 @@
   .btn.go{background:var(--accent);color:#fff}
   .btn.sub{color:var(--ink3)}
   .warn{font-size:12.5px;color:var(--ink3);margin-top:18px}
+  /* 버튼 셋이 모두 금색 통으로 보이고 보조 버튼 글씨가 묻혔다(2026-09-11 캡처) — 보조는 바탕을 걷는다 */
+  .btn.sub{background:transparent;box-shadow:none;color:var(--ink2)}
+  /* 출산택일 주문서 — 결제 뒤 이 자리에서 받는다 */
+  .intake{margin:26px 0 8px;padding:20px 18px 22px;border-radius:14px;border:1px solid var(--line);
+          background:var(--card);text-align:left}
+  .intake h2{font-family:var(--serif);font-size:18px;margin:0 0 6px}
+  .intake .lead{font-size:13.5px;line-height:1.8;color:var(--ink2);margin:0 0 4px}
+  .intake .hint{font-size:12px;line-height:1.65;color:var(--ink3);margin:8px 0 0}
+  .intake label em{font-style:normal;font-size:11px;color:var(--accent);margin-left:5px;letter-spacing:0}
+  .intake textarea{min-height:76px;font-size:15px}
+  .intake .send{width:100%;margin-top:20px;padding:15px;border:0;border-radius:13px;cursor:pointer;
+                background:var(--seal-bg);color:var(--seal-ink);font-size:15.5px;font-weight:700;font-family:var(--sans)}
+  .intake .send[disabled]{opacity:.5;cursor:default}
+  .intake .msg{font-size:13px;line-height:1.75;margin:12px 0 0;color:var(--ink3)}
+  .intake .msg.bad{color:#b4534f}
+  .intake .msg a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -33,9 +49,9 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=715"></script>
-<script src="cloud.js?v=715"></script>
-<script src="pay.js?v=715"></script>
+<script src="config.js?v=716"></script>
+<script src="cloud.js?v=716"></script>
+<script src="pay.js?v=716"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -58,6 +74,106 @@
       + '<p class="warn">돈이 빠져나갔는데 이 화면이 보인다면 아래로 알려주세요. 바로 확인해 돌려드립니다.</p>'
       + '<p><a class="btn go" href="./">책사로 돌아가기</a></p>'
       + '<p><a class="btn sub" href="mailto:b01099991263@gmail.com">b01099991263@gmail.com</a></p>');
+  }
+
+  // ── 출산택일 주문서 ──────────────────────────────────────────
+  // 결제 뒤 이 자리에서 받는다(2026-09-11 사장님 「메일로 이어가지 말고 주문서를」).
+  // 적은 것은 그 주문 한 줄에 붙는다(ChaeksaPay.intake → order_intake · server/migrate-23).
+  // 저장이 막히면 적은 그대로 메일 초안으로 물러난다 — 손님이 다시 쓰게 하지 않는다.
+  // 받는 칸은 네이버폼 택일 신청서와 같다. 가족 정보는 거르는 체라 선택이고(없어도 보고서가 나온다),
+  // 다른 곳에서 받은 택일은 묻지 않는다(택일상담 원칙). 병원이 말한 날짜는 의학 판단이라 그 안에서만 본다.
+  var 문의메일 = 'b01099991263@gmail.com';
+
+  function 주문서틀() {
+    var 칸 = function (id, 이름, 꼭, 예, 메일) {
+      return '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
+        + '<input id="' + id + '"' + (메일 ? ' type="email" autocomplete="email"' : '')
+        + ' placeholder="' + esc(예) + '">';
+    };
+    return '<form class="intake" id="intake" novalidate>'
+      + '<h2>주문서</h2>'
+      + '<p class="lead">아래를 적어 보내 주시면 이 주문에 그대로 붙어 제게 옵니다. '
+      +   '결과는 적어 주신 메일로 보내 드립니다 — 보통 2~3일, 길어지면 미리 알려 드립니다.</p>'
+      + 칸('i_mail', '결과를 받으실 메일 주소', true, 'name@example.com', true)
+      + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일')
+      + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요')
+      + 칸('i_place', '태어날 지역', true, '예) 경기도 성남 — 시·군까지면 됩니다')
+      + '<label>아이 성별</label>'
+      + '<div class="seg" id="i_sex"><button type="button" data-v="남아">남아</button>'
+      +   '<button type="button" data-v="여아">여아</button>'
+      +   '<button type="button" data-v="모름">아직 몰라요</button></div>'
+      + 칸('i_time', '가능한 시간', false, '예) 평일 09시 ~ 19시')
+      + '<div class="check"><input type="checkbox" id="i_weekend">'
+      +   '<label for="i_weekend" style="margin:0">주말도 가능해요</label></div>'
+      + 칸('i_dad', '아버지 생년월일시', false, '예) 1994년 12월 10일 오후 12시 10분 · 양력')
+      + 칸('i_mom', '어머니 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력')
+      + '<p class="hint">부모님 정보는 아이와 부딪히는 자리를 거르는 데만 씁니다. 모르시면 비워 두셔도 보고서는 나옵니다.</p>'
+      + '<label for="i_wish">바라는 점</label>'
+      + '<textarea id="i_wish" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
+      + '<label for="i_ask">궁금한 점</label>'
+      + '<textarea id="i_ask"></textarea>'
+      + '<p class="hint">날짜는 의사가 정합니다. 병원이 말한 범위 안에서만 봅니다.</p>'
+      + '<button type="submit" class="send" id="i_send">주문서 보내기</button>'
+      + '<p class="msg" id="i_msg"></p>'
+      + '</form>';
+  }
+
+  function 메일초안(orderId, d) {
+    var 줄 = ['주문번호: ' + orderId, '받으실 메일: ' + d.mail, '출산 예정 기간: ' + d.range,
+              '병원이 말한 날짜: ' + (d.hospital || '없음'), '태어날 지역: ' + d.place,
+              '아이 성별: ' + (d.sex || '미정'),
+              '가능한 시간: ' + (d.time || '-') + (d.weekend ? ' · 주말 가능' : ''),
+              '아버지: ' + (d.father || '-'), '어머니: ' + (d.mother || '-'),
+              '바라는 점: ' + (d.wish || '-'), '궁금한 점: ' + (d.ask || '-')];
+    return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent('[책사] 출산택일 주문서 ' + orderId)
+      + '&body=' + encodeURIComponent(줄.join('\n'));
+  }
+
+  function 주문서켜기(orderId) {
+    var f = document.getElementById('intake');
+    if (!f) return;
+    var 값 = function (id) { var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+    var 성별 = '';
+    var 성별칸 = f.querySelectorAll('#i_sex button');
+    Array.prototype.forEach.call(성별칸, function (b) {
+      b.addEventListener('click', function () {
+        성별 = b.getAttribute('data-v');
+        Array.prototype.forEach.call(성별칸, function (x) { x.classList.toggle('on', x === b); });
+      });
+    });
+    // 로그인한 계정에 메일이 있으면 미리 채운다(카카오 로그인은 없을 수 있다)
+    try {
+      var em = window.ChaeksaCloud && typeof ChaeksaCloud.email === 'function' && ChaeksaCloud.email();
+      if (em && /@/.test(em)) document.getElementById('i_mail').value = em;
+    } catch (e) {}
+    var msg = document.getElementById('i_msg'), send = document.getElementById('i_send');
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (send.disabled) return;
+      var d = { mail: 값('i_mail'), range: 값('i_range'), hospital: 값('i_hosp'), place: 값('i_place'),
+                sex: 성별, time: 값('i_time'), weekend: !!(document.getElementById('i_weekend') || {}).checked,
+                father: 값('i_dad'), mother: 값('i_mom'), wish: 값('i_wish'), ask: 값('i_ask') };
+      var 빈칸 = [];
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.mail)) 빈칸.push('메일 주소');
+      if (!d.range) 빈칸.push('출산 예정 기간');
+      if (!d.place) 빈칸.push('태어날 지역');
+      if (빈칸.length) { msg.className = 'msg bad'; msg.textContent = '비어 있거나 틀린 칸이 있습니다 — ' + 빈칸.join(' · '); return; }
+      send.disabled = true; send.textContent = '보내는 중…';
+      msg.className = 'msg'; msg.textContent = '';
+      ChaeksaPay.intake(orderId, d).then(function (r) {
+        if (r && r.ok) {
+          f.outerHTML = '<div class="intake"><h2>주문서를 받았습니다</h2>'
+            + '<p class="lead"><b>' + esc(d.mail) + '</b>로 보고서를 보내 드립니다. 보통 2~3일, 길어지면 미리 알려 드립니다.</p>'
+            + '<p class="lead">고칠 것이 생기면 이 화면을 새로고침해 다시 보내 주세요. 마지막에 보내신 것으로 봅니다.</p></div>';
+          return;
+        }
+        send.disabled = false; send.textContent = '주문서 보내기';
+        msg.className = 'msg bad';
+        msg.innerHTML = '주문서를 저장하지 못했습니다' + (r && r.reason ? ' (' + esc(r.reason) + ')' : '')
+          + '. 적으신 그대로 메일로 보내실 수 있습니다 — '
+          + '<a href="' + esc(메일초안(orderId, d)) + '"><b>메일로 보내기 →</b></a>';
+      });
+    });
   }
 
   var paymentKey = q.get('paymentKey'), orderId = q.get('orderId'), amount = q.get('amount');
@@ -83,9 +199,9 @@
         + (function () {
             // 무엇을 샀는지는 주문번호가 안다: ck_<상품>_...
             var code = (String(orderId).match(/^ck_([a-z]+)_/) || [])[1];
-            if (code === 'taekil') return ''
-              + '<p>출산택일은 <b>사람이 직접 계산</b>합니다. 결과는 메일로 보내드립니다 (보통 2~3일).</p>'
-              + '<p><a class="btn go" href="mailto:b01099991263@gmail.com?subject=%5B%EC%B1%85%EC%82%AC%5D%20%EC%B6%9C%EC%82%B0%ED%83%9D%EC%9D%BC&body=' + encodeURIComponent('주문번호: ' + orderId) + '">메일로 이어가기</a></p>';
+            // 출산택일은 메일로 넘기지 않고 이 자리에서 주문서를 받는다(위 주문서틀).
+            if (code === 'taekil') return '<p>출산택일은 <b>사람이 직접 계산</b>합니다. '
+              + '아래 주문서를 보내 주시면 바로 시작합니다.</p>' + 주문서틀();
             var back = { inyeon: '인연이 오는 해 화면에 그 해 열두 달이',
                          relation: '우리 둘 사이 화면에 날짜와 시진이',
                          month: '오늘 탭에 이번 달 일운 달력이',
@@ -95,7 +211,9 @@
           })()
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
         + '<p><a class="btn sub" href="./">책사로 돌아가기</a></p>'
-        + (r.saveWarning ? '<p class="warn">결제는 되었으나 주문 기록에 문제가 있었습니다. 주문번호를 남겨 두세요.</p>' : ''));
+        + (r.saveWarning ? '<p class="warn">결제는 되었으나 주문 기록에 문제가 있었습니다. 주문번호를 남겨 두세요. ('
+            + esc(r.saveWarning) + ')</p>' : ''));
+      if ((String(orderId).match(/^ck_([a-z]+)_/) || [])[1] === 'taekil') 주문서켜기(orderId);
     })
     .catch(function (e) { fail(String(e && e.message || e)); });
 })();

@@ -258,6 +258,31 @@
     return await post({ action: 'fail', orderId: q.orderId, code: q.code, message: q.message });
   }
 
+  /**
+   * 출산택일 주문서를 그 주문에 붙인다(order_intake · server/migrate-23). 결제 뒤 pay-done 이 부른다.
+   * 던지지 않는다 — 막히면 { ok:false, reason } 이고, 부르는 쪽이 「적은 그대로 메일로」로 물러난다.
+   * 함수가 아직 없으면(migrate-23 전) 404 → reason 'missing'.
+   */
+  async function intake(orderId, data) {
+    const C = global.ChaeksaCloud;
+    try {
+      const tok = C && C.token ? await C.token() : null;
+      if (!tok) return { ok: false, reason: 'unauthenticated' };
+      const cfg = global.CHAEKSA_SUPABASE;
+      const r = await fetch(cfg.url + '/rest/v1/rpc/order_intake', {
+        method: 'POST',
+        headers: { apikey: cfg.anonKey, authorization: 'Bearer ' + tok,
+                   'content-type': 'application/json' },
+        body: JSON.stringify({ p_order: orderId, p_intake: data }),
+      });
+      if (!r.ok) return { ok: false, reason: r.status === 404 ? 'missing' : 'db' };
+      const j = await r.json();
+      return j && typeof j === 'object' ? j : { ok: false, reason: 'db' };
+    } catch (_) {
+      return { ok: false, reason: 'network' };
+    }
+  }
+
   /** 내 주문 목록. 로그인 안 했으면 빈 배열. */
   async function mine() {
     const C = global.ChaeksaCloud;
@@ -347,5 +372,5 @@
     if (!hasNote) return rows[0];
     return rows.find((r) => r.note === key) || null;
   }
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판 };
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, intake, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판 };
 })(window);
