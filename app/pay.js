@@ -106,8 +106,8 @@
     if (!st.ready) st = await state(true);
     if (!st.ready) return { ok: false, message: REASON.not_ready };
 
-    const opened = await post({ action: 'open', product: code, note: note || null });
-    if (!opened || !opened.ok) return { ok: false, message: say(opened) };
+    // 주문은 결제 직전에 연다 — 아래 두 갈래가 각자 부른다.
+    const 주문열기 = () => post({ action: 'open', product: code, note: note || null });
 
     let Toss;
     try { Toss = await loadSdk(); } catch (e) { return { ok: false, message: e.message }; }
@@ -121,14 +121,14 @@
 
     // 막히거나 닫혔을 때. 실패로 기록만 하고 조용히 돌아간다 — 닫은 것은 사람의 뜻이지 오류가 아니다.
     const 닫힘 = (e) => /취소|닫|CLOSE|CANCEL/i.test(String((e && (e.code + ' ' + e.message)) || ''));
-    const 막힘 = async (e) => {
-      await post({ action: 'fail', orderId: opened.orderId,
-                   code: (e && e.code) || 'CLOSED', message: (e && e.message) || '' }).catch(() => {});
+    const 막힘 = async (e, orderId) => {
+      if (orderId) await post({ action: 'fail', orderId,
+                                code: (e && e.code) || 'CLOSED', message: (e && e.message) || '' }).catch(() => {});
       const closed = 닫힘(e);
       return { ok: false, closed, message: closed ? '' : ((e && e.message) || '결제창을 열지 못했습니다.') };
     };
-    const 요청 = { orderId: opened.orderId, orderName: opened.name,
-                   successUrl: BASE + '/pay-done.html', failUrl: BASE + '/pay-fail.html' };
+    const 요청 = (o) => ({ orderId: o.orderId, orderName: o.name,
+                           successUrl: BASE + '/pay-done.html', failUrl: BASE + '/pay-fail.html' });
 
     // 키 종류가 문을 정한다(2026-09-11). 사장님 화면에 「API 개별 연동 키의 클라이언트 키로 SDK를
     // 연동해주세요. 주문서형, 결제창형 연동 키는 지원하지 않습니다」가 떴다 — 이 파일이 payment() 하나만
@@ -142,37 +142,60 @@
       // 순서는 문서 그대로 — setAmount → renderPaymentWindow → 'paymentRequest' 안에서 requestPayment.
       // widgets 의 requestPayment 에는 amount·method 가 없다. 금액은 setAmount 로만 넘긴다.
       // variantKey 는 안 넘긴다 → 상점 기본 UI. 우리 test_gck 로 뜨는 것을 운영에서 확인했다(2026-09-11).
+      //
+      // 주문은 **토스 창 안에서 「결제하기」를 누른 뒤에** 연다(2026-09-11). 창을 띄울 때 열었더니 창을 닫거나
+      // 오류가 날 때마다 실패 주문이 한 줄씩 쌓여, 사장님이 테스트하는 사이 하루 한도(order_open 24시간 20건)에
+      // 걸렸다 — 「오늘 연 주문이 너무 많습니다」. 창만 열었다 닫는 것은 주문이 아니다.
+      // 창에 먼저 거는 금액은 상품표(state)의 값이다. 주문을 연 뒤 서버가 정한 금액과 다르면 setAmount 로 다시 맞춘다.
+      // 어느 쪽이든 승인 때 order_check 가 DB 금액과 대조한다 — 여기 금액은 방어가 아니라 보여주는 값이다.
+      const 상품 = (st.products || []).find((p) => p.code === code);
+      if (!상품) return { ok: false, message: REASON.no_product };
       let win = null;
       const 치움 = () => Promise.resolve().then(() => win && win.destroy()).catch(() => {});
       try {
         const widgets = tp.widgets({ customerKey });
-        await widgets.setAmount({ currency: 'KRW', value: opened.amount });
+        await widgets.setAmount({ currency: 'KRW', value: 상품.amount });
         win = await widgets.renderPaymentWindow();
         return await new Promise((done) => {
+          let 주문 = null, 누름 = false;
           win.on('paymentRequest', async () => {
-            try { await widgets.requestPayment(요청); done({ ok: true }); }   // 성공이면 페이지가 떠난다
-            catch (e) { await 치움(); done(await 막힘(e)); }
+            if (누름) return;   // 한 창에서 주문은 하나
+            누름 = true;
+            try {
+              주문 = await 주문열기();
+              if (!주문 || !주문.ok) { await 치움(); return done({ ok: false, message: say(주문) }); }
+              if (주문.amount !== 상품.amount) await widgets.setAmount({ currency: 'KRW', value: 주문.amount });
+              await widgets.requestPayment(요청(주문));
+              done({ ok: true });   // 성공이면 페이지가 떠난다
+            } catch (e) { await 치움(); done(await 막힘(e, 주문 && 주문.ok ? 주문.orderId : null)); }
           });
           // 창을 닫거나 그만두면 온다. 창은 한 번에 하나만 뜰 수 있어서 치워야 다음에 다시 연다.
-          win.on('cancel', async () => { await 치움(); done(await 막힘({ code: 'CLOSED', message: '' })); });
+          // 주문을 열기 전에 닫았으면 적을 것이 없다.
+          win.on('cancel', async () => {
+            await 치움();
+            done(await 막힘({ code: 'CLOSED', message: '' }, 주문 && 주문.ok ? 주문.orderId : null));
+          });
         });
       } catch (e) {
         await 치움();
-        return 막힘(e);
+        return 막힘(e, null);
       }
     }
 
     // API 개별 연동 키(ck)가 들어오면 예전 길 그대로 — 결제창(구버전), 카드.
+    // 이 길은 창을 여는 순간 주문번호가 있어야 해서 먼저 연다.
+    const opened = await 주문열기();
+    if (!opened || !opened.ok) return { ok: false, message: say(opened) };
     try {
       await tp.payment({ customerKey }).requestPayment({
         method: 'CARD',
         amount: { currency: 'KRW', value: opened.amount },
-        ...요청,
+        ...요청(opened),
         card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false },
       });
     } catch (e) {
       // 사용자가 결제창을 닫은 것도 여기로 온다.
-      return 막힘(e);
+      return 막힘(e, opened.orderId);
     }
     return { ok: true };
   }
