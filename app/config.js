@@ -24,6 +24,10 @@ window.CHAEKSA_ART = 'wealth';
 // 돌아온 사람 세기 (docs/29 여덟). server/migrate-16 을 Supabase 에서 돌린 **뒤에** 1 로.
 // 먼저 켜면 모르는 열이라며 방문 기록 전체가 거절된다.
 window.CHAEKSA_TRACK_VID = 0;
+// 유료 LLM 「한 편」(2026-09-12 사장님 결정 「문장표는 무료 · LLM 은 유료」 3단계 — app.js 한편붙이기).
+// 0 이면 super 계정만 본다(시험). 1 이면 그 장을 산 사람 모두에게 「한 편 청하기」가 선다.
+// 켜기 전에 super 로 여덟 장을 굽어 읽어 볼 것 — 판정이 위 표와 어긋나거나 금지어가 새면 켜지 않는다.
+window.CHAEKSA_SHEET_LLM = 0;
 window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 돌아오면 그대로 쓴다
 
 /* 책사 초상 — **있는 것만 적는다.** 목록의 숫자가 곧 파일 꼬리다.

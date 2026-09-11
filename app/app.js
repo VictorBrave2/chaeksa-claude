@@ -1491,10 +1491,12 @@
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
       ${절}
+      ${한편자리(paid, youName)}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
+    한편붙이기(box, 'geunamja', { 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 이 사람이 나한테 도움이 되는 사람인지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnGnBuy');
     if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'geunamja', 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1553,10 +1555,12 @@
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${관찰말 ? '먼저 달라진 것 ' + 관찰말 + ' · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
       ${절}
+      ${한편자리(paid, youName)}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
+    한편붙이기(box, 'maeum', { 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 이 사람이 나한테 좋은 사람인지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnMmBuy');
     if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'maeum', 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1615,10 +1619,12 @@
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, false)}
       ${절}
+      ${한편자리(paid, youName)}
       ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
+    한편붙이기(box, 'gunghap', { 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되는지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnGhBuy');
     if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'gunghap', 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1685,9 +1691,11 @@
       <p class="hint">${장.둘 ? esc(youName) + ' · ' : ''}${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, paid, !장.둘)}
       ${장.둘 ? 절 : ''}
+      ${한편자리(paid, 장.둘 ? youName : '올 사람')}
       ${paid ? (열 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>` : '') + `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
+    한편붙이기(box, 장.code, 장, f, met, 장.둘 && you0 ? you0.관찰 : null, 열쇠, 장.둘 ? youName : '올 사람');
     const bb = box.querySelector('#btnShBuy');
     if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 장.code, 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2118,6 +2126,156 @@
       const rb = el.querySelector('#aiRetry');
       if (rb) rb.onclick = () => { rb.disabled = true; try { el.remove(); } catch (e3) {} aiNarrate(box, kind, facts); };
     }
+  }
+
+  // ───── 「그 사람 한 편」 — 장마다 결제 뒤 LLM 이 쓰는 한 편 (2026-09-12 사장님 결정 3단계) ─────
+  // 산 사람에게만(paidForKey), 그리고 스위치(config CHAEKSA_SHEET_LLM)가 꺼져 있으면 super 계정만 본다(시험).
+  // 누르셔야 굽는다 — 화면을 여는 것만으로 원가가 나가면 안 된다. 서버에 이미 쓴 것은 공짜로 먼저 읽는다.
+  // 굽는 중(409)이면 서버 캐시를 「읽기만」 하며 기다린다. 시간초과·잘림·검사 탈락은 자동으로 다시 굽지 않는다.
+  const 한편판 = 'v1';   // 틀(ai.js 한편틀)을 고치면 올린다 — 옛 한 편 대신 새로 쓴다
+  function 한편보임(paid) {
+    if (!paid || !window.ChaeksaAI || !ChaeksaAI.sheetPiece) return false;
+    if (window.CHAEKSA_SHEET_LLM) return true;
+    try { return !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) { return false; }
+  }
+  function 한편자리(paid, 이름표) {
+    return 한편보임(paid)
+      ? `<div class="paidbox pb-piece"><p class="pb-k">${esc(이름표)} 한 편</p><p class="pb-lede">위 열 가지 답을 책사가 한 사람의 이야기로 엮어 드립니다. 판정은 위 답 그대로이고, 한 번 쓰면 이달 안에는 그대로 남습니다.</p><div class="pb-ai-slot"></div></div>`
+      : '';
+  }
+  // 「먼저 달라진 것」은 공주님이 직접 적어 둔 관찰이다. 판정이 아니라 알아보는 장면으로만 쓴다.
+  const 관찰말표 = { 여자: '다른 사람에게 눈이 가는 모습이 먼저 보였다', 돈: '돈 쓰는 모습이 먼저 달라졌다', 말: '말과 표현이 먼저 늘었다', 자리: '맡은 일이 먼저 늘고 친구들과 멀어졌다' };
+  const 관찰말표나 = { 재: '돈이나 사람이 먼저 들어왔다', 식: '말과 표현이 먼저 늘었다', 관: '맡은 일이 먼저 늘었다' };
+  // 엔진이 부제를 안 주는 세 장 — 홈 표지의 물음을 그대로 쓴다(설계 facts_spec: 한 곳에서만 채운다)
+  const 한편부제 = { geunamja: '그래서 나한테 도움이 되나요?', maeum: '그래서 나한테 좋은 사람인가요?', gunghap: '그래서 이 사람이랑 가도 되나요?' };
+  const 요일말 = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  // 숫자 날짜는 LLM 에게 안 보낸다 — 표를 베낀 것처럼 읽히고, 화면 위 표에 이미 있다.
+  const 날치우기 = (s) => String(s || '').replace(/\s*\(\d{1,2}\/\d{1,2}\)/g, '');
+  /** 표 문장을 그대로 보내면 금지어에 걸리는 자리가 있다. 보내는 사본만 고친다(화면은 그대로). */
+  function 한편씻기(s) {
+    return 날치우기(s)
+      .replace(/원국에/g, '타고난 데에').replace(/원국/g, '타고난 것')
+      .replace(/짝 자리는/g, '짝은').replace(/짝 자리/g, '짝')   // 「짝 자리는」을 먼저 — 안 그러면 「짝는」이 된다
+      .replace(/인연의 기운이/g, '인연이').replace(/대운\(10년\)은/g, '요 몇 해는')
+      .replace(/붙는 자리예요/g, '붙는 사이예요').replace(/보는 자리가/g, '보는 데가')
+      .replace(/편인(?=[데지가])/g, '쪽인')
+      .replace(/제일/g, '무엇보다').replace(/가장 /g, '')
+      .replace(/선을 그어 보세요/g, '나눠 보세요');
+  }
+  function 한편자료(장, code, f, met, 관찰) {
+    const m = today.getMonth() + 1, 올 = today.getFullYear();
+    const 앞해 = [], 뒤해 = [];
+    const 문항 = f.Q.map((q, i) => {
+      const 답0 = String(q.답 || '');
+      const 갈 = 답0.indexOf(' — ');
+      let 때 = 갈 > 0 && 갈 <= 40 ? 답0.slice(0, 갈).trim() : '';
+      const 답 = 갈 > 0 && 갈 <= 40 ? 답0.slice(갈 + 3).trim() : 답0;
+      (때.match(/\d{4}(?=년)/g) || []).forEach(y => 앞해.push(+y));
+      if (/^\d+살부터/.test(때)) 때 = '';                      // 나이는 화면에 안 낸다(역산이 드러난다)
+      else if (met && 때 === met + '년') 때 = '처음 만난 그해';
+      else if (/^\d{4}년$/.test(때)) 때 = '';                   // 먼 해는 「쓸 수 있는 해」로만 간다
+      let 왜 = String(q.왜 || '');
+      const h = 왜.indexOf(' 확인할 것:'); if (h > 0) 왜 = 왜.slice(0, h);
+      (왜.match(/\d{4}(?=년)/g) || []).forEach(y => 뒤해.push(+y));
+      let 할일 = '';
+      const t = 왜.match(/(?:^|(?<=[.!?] ))오늘은 [^.!?]*[.!?]/);
+      if (t) { 할일 = t[0].trim(); 왜 = (왜.slice(0, t.index) + 왜.slice(t.index + t[0].length)).replace(/\s{2,}/g, ' ').trim(); }
+      const 칸 = { n: i + 1 };
+      if (q.구간) 칸.구간 = q.구간;
+      if (때) 칸.때 = 한편씻기(때);
+      칸.물음 = 한편씻기(q.물음); 칸.답 = 한편씻기(답); 칸.왜 = 한편씻기(왜);
+      return { 칸, 할일: 할일 ? 한편씻기(할일) : '' };
+    });
+    // 쓸 수 있는 해: 올해보다 뒤인 것만, 답 앞머리에 붙은 해를 먼저. 달: 답·왜에 나온 달 + 이달·다음 달(합집합이 없으면 짝 편의 「9월」이 막힌다)
+    const 해목록 = [...new Set([...앞해, ...뒤해])].filter(y => y > 올);
+    const 달숫자 = (문항.map(x => x.칸.답 + ' ' + x.칸.왜 + ' ' + (x.칸.때 || '')).join('\n').match(/\d{1,2}(?=월)/g) || []).map(Number);
+    const 달목록 = [...new Set([...달숫자, m, m % 12 + 1])].map(x => x + '월');
+    const 날목록 = [...new Set(f.Q.map(q => String(q.답 || '')).join(' ').match(/(내일|모레|[일월화수목금토]요일)/g) || [])];
+    return {
+      편: { 제목: 장.제목, 부제: 장.부제 || 한편부제[code] || '' },
+      때: { 오늘: m + '월 ' + today.getDate() + '일 ' + 요일말[today.getDay()], 이달: m + '월', '다음 달': (m % 12 + 1) + '월' },
+      '쓸 수 있는 해': 해목록,
+      '쓸 수 있는 달': 달목록,
+      '쓸 수 있는 날': 날목록,
+      '먼저 달라진 것': (code === 'jjak' ? 관찰말표나 : 관찰말표)[관찰] || null,
+      문항: 문항.map(x => x.칸),
+      '오늘 할 일 후보': 문항.filter(x => x.할일).map(x => ({ n: x.칸.n, '할 일': x.할일 })),
+    };
+  }
+  // 글 → 줄. 마크다운이 섞여도 화면엔 순수 글만(간명과 같은 씻기).
+  function 한편줄(t) {
+    return String(t).replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *[*•-] +/gm, '')
+      .split(/[\r\n]+/).map(s => s.trim()).filter(Boolean);
+  }
+  function 한편붙이기(box, code, 장, f, met, 관찰, 열쇠, 이름표) {
+    const pb = box.querySelector('.pb-piece'); const slot = pb && pb.querySelector('.pb-ai-slot'); if (!slot) return;
+    // 표에서 온 답이어야 판정이 잠긴다 — 표키 없는 칸(코드가 쓴 기본 문장)이 하나라도 있으면 한 편을 열지 않는다.
+    if (!f.Q.every(q => q && q.표키)) {
+      try { console.warn('한 편 안 엶 — 표키 없는 칸:', code, f.Q.map(q => (q && q.표키) ? 1 : 0).join('')); } catch (e) {}
+      pb.remove();
+      return;
+    }
+    // 열쇠: 결제 열쇠(그 사람) + 내 사주 + 먼저 달라진 것 + 달. 위 표의 답이 달마다 바뀌므로 한 편도 달마다 새로 쓴다
+    // (한 주문으로 한 달 세 번까지는 서버가 센다).
+    const 나 = (R && R.input) || {};
+    const key = ['chaeksa.piece', 한편판, 열쇠, [나.year, 나.month, 나.day, 나.hour, 나.minute, 나.gender].join('-'), 관찰 || '',
+      today.getFullYear() + '-' + (today.getMonth() + 1)].join('.');
+    let 흩 = 0x811c9dc5;
+    for (let i = 0; i < key.length; i++) { 흩 ^= key.charCodeAt(i); 흩 = Math.imul(흩, 16777619); }
+    const pk = 'pc.' + code + '.' + (흩 >>> 0).toString(36) + '.' + key.length.toString(36);   // 헤더라 ASCII 만, 40자 안
+    const 그리기 = (raw) => {
+      // 첫 줄 대괄호 제목은 떼어 따로 세운다 — 안 떼면 대괄호가 그대로 찍힌다.
+      const p = (window.ChaeksaAI && ChaeksaAI.pieceParts) ? ChaeksaAI.pieceParts(raw) : { 제목: '', 본문: raw };
+      slot.innerHTML = '<div class="pb-ai"><p class="pb-ai-k">열 가지를 한 편으로 풀었어요</p>'
+        + (p.제목 ? '<p class="pb-ai-t">' + esc(p.제목) + '</p>' : '')
+        + 발언들(한편줄(p.본문))
+        + '<p class="pb-ft">엔진이 낸 결과를 생성형 AI가 말로 옮겼습니다. 판정은 위 답 그대로입니다.</p></div>';
+    };
+    const 알림 = (말, 단추) => {
+      slot.innerHTML = '<div class="pb-ai">' + (말 ? '<p class="pb-ai-load">' + esc(말) + '</p>' : '')
+        + (단추 ? '<button class="btn nx-cta" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">' + esc(이름표) + ' 한 편 청하기</button>' : '') + '</div>';
+      const b = slot.querySelector('button'); if (b) b.onclick = () => { b.disabled = true; 굽기(); };
+    };
+    const 서버읽기 = async () => {
+      try {
+        if (!window.ChaeksaCloud || !ChaeksaCloud.api || !ChaeksaCloud.signedIn || !ChaeksaCloud.signedIn()) return null;
+        const j = await ChaeksaCloud.api('/rest/v1/rpc/ganmyeong_get', { method: 'POST', body: JSON.stringify({ p_pk: pk }) });
+        return (j && j.ok && j.hit && j.body) || null;   // 굽는 중 표식이면 그대로 돌려준다 — 부르는 쪽이 가른다
+      } catch (e) { return null; }
+    };
+    const 굽기 = async () => {
+      알림('책사가 위 열 가지 답을 한 사람의 이야기로 엮는 중입니다 — 1분 안팎 걸립니다. 화면을 벗어나셔도 끝까지 씁니다.', false);
+      try {
+        const r = await ChaeksaAI.sheetPiece(code, 한편자료(장, code, f, met, 관찰), { note: 열쇠, cachePk: pk });
+        try { localStorage.setItem(key, r.raw); } catch (e) {}
+        if (r.warn && r.warn.length) { try { console.info('한 편 경고:', code, r.warn); } catch (e) {} }
+        그리기(r.raw);
+      } catch (e) {
+        try { console.warn('한 편 실패:', code, e); } catch (e2) {}
+        if (e && e.baking) {
+          알림('앞서 청하신 한 편을 아직 쓰는 중입니다 — 끝나는 대로 여기 펴 드립니다…', false);
+          for (let 회 = 0; 회 < 18; 회++) {           // 10초씩 3분 — 프록시 자물쇠와 같은 길이. 새로 굽지 않는다
+            await new Promise(r => setTimeout(r, 10000));
+            if (!slot.isConnected) return;
+            const t = await 서버읽기();
+            if (t && t.indexOf(BAKING표식) !== 0) { try { localStorage.setItem(key, t); } catch (e6) {} 그리기(t); return; }
+            if (!t) break;   // 자물쇠가 풀렸는데 글이 없다 = 그 굽기가 실패했다. 아래 단추로 — 손으로만 다시
+          }
+        }
+        const b = e && e.blocked;
+        if (b) { 알림((b.title || '지금은 쓸 수 없습니다.') + (b.body ? ' ' + b.body : ''), false); return; }
+        알림(e && e.gate ? '이번 글이 검사를 넘지 못해 드리지 않았습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
+          : e && (e.timeout || e.truncated) ? '이번에는 끝까지 쓰지 못했습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
+          : '지금은 한 편을 쓰지 못했습니다. 잠시 뒤 다시 청해 주세요.', true);
+      }
+    };
+    let 있던 = null; try { 있던 = localStorage.getItem(key); } catch (e) {}
+    if (있던) { 그리기(있던); return; }
+    알림('', true);
+    // 다른 기기에서 이미 쓴 한 편이 서버에 있으면 공짜로 편다(읽기만)
+    서버읽기().then(t => {
+      if (t && t.indexOf(BAKING표식) !== 0 && slot.isConnected) { try { localStorage.setItem(key, t); } catch (e) {} 그리기(t); }
+    });
   }
 
   // ── 이번 달 일운 달력 — 달마다 다시 사는 상품 ──

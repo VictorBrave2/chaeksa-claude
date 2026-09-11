@@ -36,6 +36,74 @@ const ALLOWED_TASKS = new Set(['sheet', 'story', 'profile']);
 const TASK_MAX = { sheet: 8000, story: 12000, profile: 4000 };
 // 요청 몸통 상한 — 예전엔 입력 크기를 안 봐서 원가가 입력으로 샐 수 있었다.
 const MAX_BODY_CHARS = 80000;
+// 「한 편」(task sheet) 출구 검사 — 화면에 못 나가는 말(한자·이모지·사주 낱말·조문 용어·겁주는 말)과
+// 입력에 없는 해·달(새로 지어낸 판정). 걸리면 손님에게 넘기지 않고, 캐시에 굳히지 않고, 횟수를 되돌린다.
+// app/ai.js 한편막음 과 같은 목록이어야 한다. 일상에도 쓰이는 말(자리·기운·일지·손을 맞잡 …)은 여기 넣지 않는다 — 앱이 경고만 남긴다.
+const 한편막음 = [
+  ['한자', /[㐀-䶿一-鿿豈-﫿]/u],
+  ['이모지', /\p{Extended_Pictographic}/u],
+  ['십신', /(?<![가-힣])(?:정관|편관|칠살|관살|관성(?!적)|정재|편재|재성|정인|편인(?![데지가])|식신|겁재|비겁(?![하한해했])|양인|건록)/u],
+  ['사주말', /(?<![가-힣])(?:일간|일지|월지|시지|연지|지장간|천간|십신|십성|격국|신강|신약|용신|기신|조후|억부|육합|삼합|반합|원국|암장|합거|투출|투간|합화|오행)/u],
+  ['조문말', /회전문|채가는 손|방아쇠|쟁합|접착|두 번 법칙|안정형|불안형|엮임|열눈|얼빡|자리말|되받아쓰/u],
+  ['격이름', /정관격|재격|식신격|칠살격|상관격|편인격|양인격|건록격|월겁격/u],
+  ['출처말', /(?<![가-힣])(?:사주|팔자|명리|만세력|운세|점괘)/u],
+  ['겁주기', /삼재|대흉|조심하(?:세요|십시오|셔야|시고)/u],
+  ['야한말', /음란|음탕|사통|창녀|섹스|성관계|정사|애무|삽입|알몸|나체|잠자리/u],
+  ['호칭', /공주님|도련님|당신|고객님|그대(?![로록])/u],
+  ['마크다운', /\*\*|^#{1,6}\s|^\s*[-]\s|^\s*\d+[.)]\s/mu],
+  ['지난때', /지난주|지난달|지난해|작년|재작년|엊그제|그저께/u],
+  ['나이', /\d+\s*살|\d+\s*세(?![상요])|\d+\s*퍼센트|\d+\s*%|\d+\s*점(?![심])/u],
+  ['숫자날짜', /\d{1,2}\s*\/\s*\d{1,2}/u],
+];
+function 입력글(b) {
+  const s = typeof b.system === 'string' ? b.system : (Array.isArray(b.system) ? b.system.map(x => x.text || '').join('\n') : '');
+  const m = (b.messages || []).map(x => typeof x.content === 'string' ? x.content : (x.content || []).map(c => c.text || '').join('\n')).join('\n');
+  return s + '\n' + m;
+}
+// 〔억부〕 안의 「억부」가 금지어다 — 검사 전에 이름표를 벗긴다(안 벗기면 마음·궁합 편이 매번 막히고 환불된다).
+const 태그뺀 = (t) => String(t || '').replace(/〔[^〕]{1,12}〕/g, '');
+// 앱이 헤더로 보내는 허용 목록('y:2029;m:9,10'). 없으면 입력에서 긁어 쓴다(느슨한 쪽).
+function 허용읽기(h) {
+  const s = String(h || ''), y = /y:([\d,]*)/.exec(s), m = /m:([\d,]*)/.exec(s);
+  const 쪼개 = (x) => new Set((((x && x[1]) || '').split(',')).filter(Boolean));
+  return { years: 쪼개(y), months: 쪼개(m), 있음: !!(y || m) };
+}
+/** 두 글에서 똑같이 겹치는 가장 긴 토막. app/ai.js 긴겹침 과 같은 것이다. */
+function 긴겹침(a, b, n) {
+  n = n || 12;
+  const A = String(a).replace(/\s+/g, ' '), B = String(b).replace(/\s+/g, ' ');
+  if (A.length < n || B.length < n) return '';
+  const 격자 = new Set();
+  for (let i = 0; i + n <= B.length; i++) 격자.add(B.slice(i, i + n));
+  let 최장 = '';
+  for (let i = 0; i + n <= A.length; i++) {
+    if (!격자.has(A.slice(i, i + n))) continue;
+    let j = n;
+    while (i + j < A.length && B.indexOf(A.slice(i, i + j + 1)) >= 0) j++;
+    if (j > 최장.length) 최장 = A.slice(i, i + j);
+    i += j - n;
+  }
+  return 최장;
+}
+function 한편검사(글, 입력, 허용) {
+  const raw = String(글 || ''), scan = 태그뺀(raw), block = [];
+  for (const [이름, re] of 한편막음) { const m = scan.match(re); if (m) block.push(이름 + ':' + m[0]); }
+  // 해·달: 앱이 준 목록에 없는 것은 지어낸 판정이다. 해는 글 전체에서 한 번만.
+  const 해 = scan.match(/(?<!\d)\d{4}(?=\s*년)/g) || [], 달 = scan.match(/(?<!\d)\d{1,2}(?=\s*월)/g) || [];
+  const 목록 = 허용 && 허용.있음 ? 허용
+    : { years: new Set(String(입력).match(/\d{4}/g) || []), months: new Set(String(입력).match(/\d{1,2}(?=월)/g) || []) };
+  if (해.length > 1) block.push('해많음:' + 해.length);
+  for (const y of 해) if (!목록.years.has(y)) block.push('해:' + y);
+  for (const m of 달) if (!목록.months.has(m)) block.push('달:' + m);
+  const 몇 = (scan.match(/오늘은/g) || []).length;
+  if (몇 !== 1) block.push('오늘은:' + 몇);
+  if (raw.length < 1600 || raw.length > 2600) block.push('길이:' + raw.length);
+  // 표를 베꼈나 — 맺음 한 문장은 재료에서 고르라고 시킨 것이라 빼고 잰다.
+  const 줄 = scan.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  const 겹 = 긴겹침(줄.slice(0, -1).join('\n'), 입력);
+  if (겹.length > 20) block.push('베낌:' + 겹.length);
+  return { ok: !block.length, block };
+}
 // 굽기를 우리 손으로 끊는 시각. Vercel 함수 상한(vercel.json 120초)보다 짧아야
 // 자물쇠를 풀고 계량을 되돌릴 기회가 남는다 — 상한에 걸려 죽으면 그 기회가 없다.
 const BAKE_LIMIT_MS = 110000;
@@ -111,7 +179,7 @@ module.exports = async (req, res) => {
 
   res.setHeader('Access-Control-Allow-Origin', originOk ? origin || '*' : 'null');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'content-type, anthropic-version, anthropic-beta, authorization, x-chaeksa-task, x-chaeksa-cache, x-chaeksa-product, x-chaeksa-note');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, anthropic-version, anthropic-beta, authorization, x-chaeksa-task, x-chaeksa-cache, x-chaeksa-product, x-chaeksa-note, x-chaeksa-allow');
   res.setHeader('Vary', 'Origin');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -317,7 +385,14 @@ module.exports = async (req, res) => {
     try { j = JSON.parse(text); } catch (e) {}
     const stop = j && j.stop_reason;
     // 200 이어도 끝을 못 맺었거나(max_tokens) 거절했으면(refusal) 손님은 받은 게 없다 — 횟수를 되돌린다.
-    const 못씀 = !upstream.ok || stop === 'max_tokens' || stop === 'refusal';
+    let 못씀 = !upstream.ok || stop === 'max_tokens' || stop === 'refusal';
+    // 한 편(sheet)은 출구 검사를 넘어야 넘긴다. 못 넘으면 캐시에도 굳히지 않고 횟수를 되돌린다.
+    let 막힘 = null;
+    if (!못씀 && task === 'sheet') {
+      const 글 = ((j && j.content) || []).filter(c => c.type === 'text').map(c => c.text).join('');
+      const g = 한편검사(글, 입력글(body), 허용읽기(req.headers['x-chaeksa-allow']));
+      if (!g.ok) { 못씀 = true; 막힘 = g.block; }
+    }
     if (upstream.ok && cachePk) {
       // 성공한 글은 서버에 저장 — 반드시 await: 응답을 먼저 보내면 Vercel이
       // 함수를 얼려 저장이 증발한다(2026-08-30 「pc에도 굽고 모바일에도 굽는다」의 원인).
@@ -338,13 +413,17 @@ module.exports = async (req, res) => {
         p_use: useId, p_key: useKey, p_server: 서버열쇠, p_model: (j && j.model) || body.model,
         p_in: u.input_tokens || null, p_out: u.output_tokens || null,
         p_cr: u.cache_read_input_tokens || null, p_cw: u.cache_creation_input_tokens || null,
-        p_ms: Date.now() - t0, p_stop: stop || String(upstream.status),
+        p_ms: Date.now() - t0, p_stop: 막힘 ? ('gate:' + 막힘.slice(0, 3).join('|')) : (stop || String(upstream.status)),
       }, userToken).catch(() => {});
     }
     if (못씀) await 되돌리기();
     if (못씀 && upstream.ok) {
       // 끝을 못 맺었거나 거절한 글은 넘기지 않는다. 되돌린 호출이 글까지 가져가면 한 주문으로 끝없이 부른다(2026-09-12 검토).
       // 앱(ai.js strict)도 이런 글은 실패로 버렸다 — 잃는 것이 없다.
+      if (막힘) {
+        return res.status(502).json({ type: 'error', error: { type: 'gate',
+          message: '이번 글이 검사를 넘지 못해 드리지 않았습니다. 다시 눌러 주세요 — 사용 횟수는 되돌려 놓았습니다.' } });
+      }
       const 거절 = stop === 'refusal';
       return res.status(502).json({ type: 'error', error: { type: 거절 ? 'refusal' : 'truncated',
         message: 거절 ? '이 요청에는 답하지 않았습니다.' : '글이 길이 제한에 걸려 끝을 못 맺었습니다. 다시 눌러 주세요 — 사용 횟수는 되돌려 놓았습니다.' } });

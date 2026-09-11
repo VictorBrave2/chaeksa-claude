@@ -580,6 +580,8 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 .pb-fold[open]{padding-bottom:10px}
 .pb-fold[open] > summary{border-bottom:1px solid var(--line);margin-bottom:8px}
 /* 답이 맨 위에 선다 — 값을 치른 자리에서 제일 먼저 보여야 할 것 */
+/* 「한 편」 제목 줄 — 모델이 첫 줄에 대괄호로 짓고, 앱이 벗겨서 여기 세운다(2026-09-12) */
+.pb-ai-t { font-family: var(--letter, inherit); font-size: 16.5px; color: var(--accent); margin: 0 0 10px; line-height: 1.5; }
 .pb-ai-slot:empty{display:none}
 .pb-ai-slot .pb-ai{margin:14px 0 4px}
 
