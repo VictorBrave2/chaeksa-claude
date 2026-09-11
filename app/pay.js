@@ -97,7 +97,10 @@
    * 막힌 경우에만 { ok:false, message } 로 돌아온다.
    */
   async function buy(code, note) {
-    const st = await state();
+    // 「준비 안 됨」을 캐시에서 믿지 않는다. 키가 들어가기 전에 연 앱은 그 답을 들고 있어서,
+    // 키가 들어온 뒤에도 새로고침 전까지 결제가 안 됐다(2026-09-11). 준비 안 됨이면 한 번 더 묻는다.
+    let st = await state();
+    if (!st.ready) st = await state(true);
     if (!st.ready) return { ok: false, message: REASON.not_ready };
 
     const opened = await post({ action: 'open', product: code, note: note || null });
@@ -132,6 +135,48 @@
       return { ok: false, closed, message: closed ? '' : ((e && e.message) || '결제창을 열지 못했습니다.') };
     }
     return { ok: true };
+  }
+
+  /**
+   * 앱 안 결제 버튼을 눌렀을 때. buy() 의 답을 **버리지 않는다**(2026-09-11).
+   *
+   * 예전엔 버튼 다섯이 `try { buy(...) } catch {}` 로 buy() 를 부르고 답을 버렸다.
+   * buy() 는 비동기라 막히면 던지지 않고 { ok:false, message } 를 돌려주는데, 그걸 아무도
+   * 안 받아서 로그인이 안 됐거나 막히면 **화면에 아무 일도 안 일어났다** — 사장님 「결제 터치해도
+   * 창이 안 뜨네」. 운영에서 로그인 없이 눌러 보니 buy() 는 「먼저 로그인해 주세요」를 돌려주고 있었다.
+   *
+   * 그래서: 로그인이 안 됐으면 **주문을 열기 전에** 로그인부터 청하고, 막히면 그 이유를 버튼 아래 적는다.
+   * 로그인 여는 법은 화면마다 달라서 부르는 쪽이 넘긴다(앱은 카카오 → 안 되면 설정 창).
+   */
+  async function 누르면(btn, code, note, 로그인) {
+    if (!btn || btn.dataset.busy) return null;
+    // 버튼 밑 안내(.nx-ft)는 덮지 않는다 — 제 자리를 따로 둔다.
+    let 꼬리 = btn.nextElementSibling;
+    if (!(꼬리 && 꼬리.classList.contains('pay-say'))) {
+      꼬리 = document.createElement('p');
+      꼬리.className = 'hint pay-say';
+      btn.insertAdjacentElement('afterend', 꼬리);
+    }
+    const C = global.ChaeksaCloud;
+    if (!(C && C.signedIn && C.signedIn())) {
+      꼬리.innerHTML = '결제하시려면 먼저 로그인해 주세요 — 결제한 것을 그 계정에 매어 두어야 다른 기기에서도 열립니다. '
+        + '<a href="#" class="pay-login"><b>카카오로 로그인 →</b></a>';
+      const a = 꼬리.querySelector('.pay-login');
+      if (a) a.onclick = (e) => {
+        e.preventDefault();
+        if (로그인) 로그인(); else if (C && C.signInWith) C.signInWith('kakao');
+      };
+      return { ok: false, reason: 'unauthenticated' };
+    }
+    const 원래 = btn.textContent;
+    btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = '결제창을 여는 중…';
+    꼬리.textContent = '';
+    let r;
+    try { r = await buy(code, note); } catch (e) { r = { ok: false, message: String((e && e.message) || e) }; }
+    // 결제창으로 넘어가면 이 아래는 대개 안 돈다. 돌아왔다면 막힌 것이거나 창을 닫은 것이다.
+    delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;
+    if (r && r.ok === false && !r.closed) 꼬리.textContent = r.message || '결제창을 열지 못했습니다.';
+    return r;
   }
 
   /** 착지 페이지에서 부른다. 여기가 끝나야 결제가 끝난 것이다. */
@@ -239,5 +284,5 @@
     if (!hasNote) return rows[0];
     return rows.find((r) => r.note === key) || null;
   }
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey, 그림 };
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면 };
 })(window);

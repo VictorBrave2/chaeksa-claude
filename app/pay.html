@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=711">
+<link rel="stylesheet" href="style.css?v=712">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -29,7 +29,9 @@
         min-height:96px;resize:vertical;box-sizing:border-box}
   .agree{display:flex;gap:9px;align-items:flex-start;margin-top:18px;font-size:13px;
          line-height:1.7;color:var(--ink2);cursor:pointer}
-  .agree input{margin-top:3px;flex:none}
+  /* style.css 의 input{width:100%;padding…} 이 체크박스에도 걸린다 — 풀지 않으면 칸이 줄 폭을 다 먹고
+     글이 한 글자씩 세로로 선다(2026-09-11 사장님 화면). index.html 의 .check input 과 같은 풀이. */
+  .agree input{width:auto;padding:0;margin:3px 0 0;flex:none;accent-color:var(--accent)}
   .agree a{color:var(--accent)}
   .cta{width:100%;margin-top:18px;padding:15px;border-radius:13px;border:0;background:var(--accent);
        color:#fff;font-size:15.5px;font-weight:700;font-family:inherit;cursor:pointer}
@@ -94,9 +96,9 @@
   </div>
 </div>
 
-<script src="config.js?v=711"></script>
-<script src="cloud.js?v=711"></script>
-<script src="pay.js?v=711"></script>
+<script src="config.js?v=712"></script>
+<script src="cloud.js?v=712"></script>
+<script src="pay.js?v=712"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';

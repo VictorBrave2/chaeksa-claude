@@ -1348,7 +1348,8 @@
         + '<p class="hint">위 계산과 카드는 그대로 보십니다. 여기서는 좌장 태윤이 그 여덟 글자를 <b>한 편으로 엮어</b> 읽어 드립니다 — 무엇을 타고나셨고, 무엇이 채우고 무엇이 거슬리며, 사회 속 어디에 서 계신지. <b>한 번 읽으면 그대로 남습니다.</b></p>'
         + '<button class="btn" id="btnProfileBuy">원국 정독 열기</button>';
       const pb = card.querySelector('#btnProfileBuy');
-      if (pb) pb.onclick = () => { try { ChaeksaPay.buy('wongook'); } catch (e) { go('me'); } };
+      // buy() 의 답을 버리면 막혀도 화면이 조용하다(2026-09-11). 누르면() 이 받아서 버튼 아래 적는다.
+      if (pb) pb.onclick = () => ChaeksaPay.누르면(pb, 'wongook', null, 결제로그인);
       return;
     }
     // 산 뒤에도 **누르셔야 굽는다** — 화면을 여는 것만으로 원가가 나가면 안 된다.
@@ -1494,9 +1495,12 @@
       ${결제}`;
     box.classList.remove('hide');
     const bb = box.querySelector('#btnGnBuy');
-    if (bb) bb.onclick = () => { try { ChaeksaPay.buy('geunamja', 열쇠); } catch (e) { location.href = 'pay.html?p=geunamja'; } };
+    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'geunamja', 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
+  /** 결제 버튼에서 로그인이 필요할 때. 앱의 다른 로그인 자리와 같은 꼴(카카오 → 안 되면 설정 창). */
+  function 결제로그인() { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } }
 
   // ───── 그 사람, 나한테 마음이 있을까요? (둘째 장 · maeum.js) ─────
   function renderMaeum() {
@@ -1553,7 +1557,7 @@
       ${결제}`;
     box.classList.remove('hide');
     const bb = box.querySelector('#btnMmBuy');
-    if (bb) bb.onclick = () => { try { ChaeksaPay.buy('maeum', 열쇠); } catch (e) { location.href = 'pay.html?p=maeum'; } };
+    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'maeum', 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1615,7 +1619,7 @@
       ${결제}`;
     box.classList.remove('hide');
     const bb = box.querySelector('#btnGhBuy');
-    if (bb) bb.onclick = () => { try { ChaeksaPay.buy('gunghap', 열쇠); } catch (e) { location.href = 'pay.html?p=gunghap'; } };
+    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'gunghap', 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1684,7 +1688,7 @@
       ${결제}`;
     box.classList.remove('hide');
     const bb = box.querySelector('#btnShBuy');
-    if (bb) bb.onclick = () => { try { ChaeksaPay.buy(장.code, 열쇠); } catch (e) { location.href = 'pay.html?p=' + 장.code; } };
+    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 장.code, 열쇠, 결제로그인);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
