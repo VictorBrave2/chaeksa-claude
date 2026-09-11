@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=716">
+<link rel="stylesheet" href="style.css?v=718">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -243,6 +243,9 @@
       <section class="card">
         <h2>擇 · 출산택일 보고서</h2>
         <p class="hint" style="margin:0 0 14px">카드와 콘텐츠는 전부 자동 계산이지만, 택일은 <b>사람이 직접 봅니다.</b> 되돌릴 수 없는 결정이기 때문입니다.</p>
+        <!-- 신청은 맨 위에서 바로 — 아래 설명을 다 읽어야 단추가 나오던 것을 올렸다(2026-09-11). -->
+        <a class="btn" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none;margin:0 0 6px"><span class="seal">擇</span> 보고서 신청하기 — <span data-price="taekil">99,000원</span></a>
+        <p class="hint" style="margin:0 0 18px;text-align:center">신청서 한 장 적고 결제하시면 끝입니다. 보통 2~3일, 메일로 보내 드립니다.</p>
 
         <h3 class="doc-h">이렇게 봅니다</h3>
         <div class="doc">
@@ -272,7 +275,7 @@
 
         <!-- 금액 글자는 products 표에서 받아 채운다(app.js wireTaekil). 적어 둔 값은 못 받았을 때만 보인다. -->
         <p class="hint" style="margin:16px 0 10px"><b>출산택일 보고서 — <span data-price="taekil">99,000원</span></b>. 부가세 포함, 따로 붙는 수수료는 없습니다. 작업을 시작하기 전에는 이유를 묻지 않고 전액 돌려드립니다.</p>
-        <a class="btn" id="btnTaekPay" href="pay.html?p=taekil" style="display:block;text-align:center;text-decoration:none"><span class="seal">擇</span> 보고서 신청하기</a>
+        <a class="btn" id="btnTaekPay" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none"><span class="seal">擇</span> 보고서 신청하기</a>
         <a class="btn ghost small" id="btnTaekForm" href="#" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:10px">결제 전에 먼저 물어보기 (신청서)</a>
         <p class="hint" id="taekFormNote" style="margin-top:10px">적어주신 것은 <b>검토에만 쓰고 답변 뒤에 지웁니다.</b></p>
         <button class="btn kakao hide" id="btnTaekKakao"><span class="seal">話</span>카카오톡으로 문의하기</button>
@@ -757,6 +760,8 @@
   <button data-go="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg><span>오늘</span></button>
   <button data-go="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>달력</span></button>
   <button data-go="me"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="4" height="16" rx="1"/><rect x="9.7" y="4" width="4" height="16" rx="1"/><rect x="15.9" y="4" width="4" height="16" rx="1"/></svg><span>원국</span></button>
+  <!-- 2026-09-11 사장님 「출산택일 탭을 만들던지 — 출산택일을 하러 가는 게 너무 어렵다」 -->
+  <button data-go="taekil"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 1.8"/><path d="M9.5 3h5"/></svg><span>택일</span></button>
 </nav>
 
 
@@ -874,36 +879,36 @@
   </div>
 </div>
 
-<script src="config.js?v=716"></script>
-<script src="track.js?v=716"></script>
-<script src="cloud.js?v=716"></script>
-<script src="usage.js?v=716"></script>
-<script src="places.js?v=716"></script>
-<script src="people.js?v=716"></script>
-<script src="astro.js?v=716"></script>
-<script src="lunar.js?v=716"></script>
-<script src="engine.js?v=716"></script>
-<script src="chaeyong.js?v=716"></script>
-<script src="brief.js?v=716"></script>
-<script src="chaeksadan.js?v=716"></script>
-<script src="geunamja.js?v=716"></script>
-<script src="maeum.js?v=716"></script>
-<script src="gunghap.js?v=716"></script>
-<script src="sheets.js?v=716"></script>
-<script src="hwakin.js?v=716"></script>
-<script src="mun.js?v=716"></script>
-<script src="mun/all.js?v=716"></script>
-<script src="typecard.js?v=716"></script>
-<script src="gyeokguk.js?v=716"></script>
-<script src="memo.js?v=716"></script>
-<script src="classic.js?v=716"></script>
-<script src="calendar.js?v=716"></script>
-<script src="tongbyeon.js?v=716"></script>
-<script src="rules-wealth-love.js?v=716"></script>
-<script src="rules-health-study-move.js?v=716"></script>
-<script src="share.js?v=716"></script>
-<script src="ai.js?v=716"></script>
-<script src="pay.js?v=716"></script>
-<script src="app.js?v=716"></script>
+<script src="config.js?v=718"></script>
+<script src="track.js?v=718"></script>
+<script src="cloud.js?v=718"></script>
+<script src="usage.js?v=718"></script>
+<script src="places.js?v=718"></script>
+<script src="people.js?v=718"></script>
+<script src="astro.js?v=718"></script>
+<script src="lunar.js?v=718"></script>
+<script src="engine.js?v=718"></script>
+<script src="chaeyong.js?v=718"></script>
+<script src="brief.js?v=718"></script>
+<script src="chaeksadan.js?v=718"></script>
+<script src="geunamja.js?v=718"></script>
+<script src="maeum.js?v=718"></script>
+<script src="gunghap.js?v=718"></script>
+<script src="sheets.js?v=718"></script>
+<script src="hwakin.js?v=718"></script>
+<script src="mun.js?v=718"></script>
+<script src="mun/all.js?v=718"></script>
+<script src="typecard.js?v=718"></script>
+<script src="gyeokguk.js?v=718"></script>
+<script src="memo.js?v=718"></script>
+<script src="classic.js?v=718"></script>
+<script src="calendar.js?v=718"></script>
+<script src="tongbyeon.js?v=718"></script>
+<script src="rules-wealth-love.js?v=718"></script>
+<script src="rules-health-study-move.js?v=718"></script>
+<script src="share.js?v=718"></script>
+<script src="ai.js?v=718"></script>
+<script src="pay.js?v=718"></script>
+<script src="app.js?v=718"></script>
 </body>
 </html>

@@ -372,5 +372,124 @@
     if (!hasNote) return rows[0];
     return rows.find((r) => r.note === key) || null;
   }
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, intake, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판 };
+  // ── 출산택일 신청서 ─────────────────────────────────────────────
+  // 신청 페이지(taekil-apply.html)와 결제 뒤 화면(pay-done.html)이 **같은 틀**을 쓴다 — 두 벌이면 어긋난다.
+  // 칸은 네이버폼 택일 신청서와 택일상담 순서를 따른다: 기간·지역·성별·시간대 · 무엇을 앞세우나 · 가족 생년월일시.
+  // 가족 정보는 거르는 체라 선택이다(없어도 보고서가 나온다). 다른 곳에서 받은 택일은 묻지 않는다.
+  // 병원이 말한 날짜는 의학 판단이라 그 안에서만 본다.
+  // 적는 동안 이 기기에 초안으로 둔다 — 카카오 로그인이나 결제창을 다녀와도 다시 쓰지 않게(2026-09-11
+  // 사장님 「결제하러 가기가 너무 빡세고 어지러워」). 접수되면 지우고, 접수된 것은 주문번호로 기억한다.
+  const 문의메일 = 'b01099991263@gmail.com';
+  const 초안키 = 'chaeksa.taekil.draft', 보낸키 = 'chaeksa.taekil.sent';
+  const 초안수명 = 3 * 24 * 3600 * 1000;   // 사흘 지난 초안은 스스로 붙이지 않는다(남의 기기·옛 신청일 수 있다)
+  const 글 = (s) => String(s == null ? '' : s).replace(/[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const 읽기 = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (_) { return null; } };
+  const 쓰기 = (k, v) => {
+    try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (_) {}
+  };
+  const 칸 = (id, 이름, 꼭, 예, 메일) => '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
+    + '<input id="' + id + '"' + (메일 ? ' type="email" autocomplete="email" inputmode="email"' : '')
+    + ' placeholder="' + 글(예) + '">';
+  const 고르기 = (id, 이름, 갈래) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '">'
+    + 갈래.map((g) => '<button type="button" data-v="' + 글(g[0]) + '">' + 글(g[1]) + '</button>').join('') + '</div>';
+  const 앞세움 = [['무난', '두루 무난하게'], ['재관', '재물·자리'], ['건강', '건강'], ['학업', '공부'], ['가족', '가족 화목']];
+  const 성별 = [['남아', '남아'], ['여아', '여아'], ['모름', '아직 몰라요']];
+  const 주문서 = {
+    /** 칸들만 돌려준다. 감싸는 form·제목·보내기 단추는 쓰는 쪽이 둔다(신청 페이지는 사이에 동의 칸이 있다). */
+    틀() {
+      return 칸('i_mail', '결과를 받으실 메일 주소', true, 'name@example.com', true)
+        + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일')
+        + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요')
+        // 이미 받아 둔 택일을 교차검증하러 오는 분이 많다(택일상담 — 두 건 다 그 경로였다).
+        // 묻지 않는 것은 「어디서」 받았는지다. 「무엇을」 받았는지는 적어 주시면 비교해 드린다.
+        + 칸('i_have', '이미 받아 두신 날짜·시간', false, '있으면 — 예) 10월 8일 오전 10시')
+        + '<p class="hint">어디서 받으셨는지는 적지 않으셔도 됩니다. 틀렸다고 하지 않고, 왜 그렇게 나오는지 함께 보여 드립니다.</p>'
+        + 칸('i_place', '태어날 지역', true, '예) 경기도 성남 — 시·군까지면 됩니다')
+        + 고르기('i_sex', '아이 성별', 성별)
+        + 칸('i_time', '수술 가능한 시간대', false, '예) 평일 09시 ~ 19시')
+        + '<div class="check"><input type="checkbox" id="i_weekend">'
+        +   '<label for="i_weekend" style="margin:0">주말도 가능해요</label></div>'
+        + 고르기('i_first', '가장 앞세우고 싶은 것', 앞세움)
+        + 칸('i_dad', '아버지 생년월일시', false, '예) 1994년 12월 10일 오후 3시 10분 · 양력')
+        + 칸('i_mom', '어머니 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력')
+        + 칸('i_sib', '형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력')
+        + '<p class="hint">가족 정보는 아이와 가족이 서로 부딪히는 날을 걸러 내는 데만 씁니다. 모르시면 비워 두셔도 보고서는 나옵니다.</p>'
+        + '<label for="i_wish">바라는 점</label>'
+        + '<textarea id="i_wish" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
+        + '<label for="i_ask">궁금한 점</label>'
+        + '<textarea id="i_ask"></textarea>';
+    },
+    값(root) {
+      const v = (id) => { const el = root.querySelector('#' + id); return el ? String(el.value || '').trim() : ''; };
+      const s = (id) => { const el = root.querySelector('#' + id); return (el && el.dataset.v) || ''; };
+      const w = root.querySelector('#i_weekend');
+      return { mail: v('i_mail'), range: v('i_range'), hospital: v('i_hosp'), place: v('i_place'),
+               sex: s('i_sex'), time: v('i_time'), weekend: !!(w && w.checked), first: s('i_first'),
+               have: v('i_have'), father: v('i_dad'), mother: v('i_mom'), siblings: v('i_sib'),
+               wish: v('i_wish'), ask: v('i_ask') };
+    },
+    빈칸(d) {
+      const 빈 = [];
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((d && d.mail) || '')) 빈.push('메일 주소');
+      if (!(d && d.range)) 빈.push('출산 예정 기간');
+      if (!(d && d.place)) 빈.push('태어날 지역');
+      return 빈;
+    },
+    /** 초안을 칸에 채우고, 고르는 칸을 켜고, 적을 때마다 초안을 남긴다. */
+    켜기(root) {
+      const 채울 = 주문서.초안() || {};
+      const 짝 = { i_mail: 'mail', i_range: 'range', i_hosp: 'hospital', i_place: 'place', i_time: 'time',
+                  i_have: 'have', i_dad: 'father', i_mom: 'mother', i_sib: 'siblings', i_wish: 'wish', i_ask: 'ask' };
+      Object.keys(짝).forEach((id) => {
+        const el = root.querySelector('#' + id);
+        if (el && 채울[짝[id]]) el.value = 채울[짝[id]];
+      });
+      const w = root.querySelector('#i_weekend'); if (w) w.checked = !!채울.weekend;
+      if (!채울.mail) {   // 로그인한 계정에 메일이 있으면 미리 채운다(카카오 로그인은 없을 수 있다)
+        try {
+          const C = global.ChaeksaCloud, em = C && typeof C.email === 'function' && C.email();
+          const el = root.querySelector('#i_mail');
+          if (el && em && /@/.test(em)) el.value = em;
+        } catch (_) {}
+      }
+      const 남김 = () => 쓰기(초안키, { data: 주문서.값(root), at: Date.now() });
+      [['i_sex', 'sex'], ['i_first', 'first']].forEach(([id, 열쇠]) => {
+        const box = root.querySelector('#' + id); if (!box) return;
+        const 켬 = (v) => {
+          box.dataset.v = v || '';
+          box.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+        };
+        켬(채울[열쇠]);
+        box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { 켬(b.dataset.v); 남김(); }));
+      });
+      root.addEventListener('input', 남김);
+      root.addEventListener('change', 남김);
+    },
+    초안() {
+      const j = 읽기(초안키);
+      return j && j.data && (Date.now() - (j.at || 0)) < 초안수명 ? j.data : null;
+    },
+    초안지움: () => 쓰기(초안키, null),
+    초안저장: (d) => 쓰기(초안키, { data: d, at: Date.now() }),
+    /** 접수된 것을 주문번호로 기억한다 — 결제 뒤 화면을 새로고침해도 빈 양식이 아니라 「접수됐습니다」가 뜨게. */
+    보냄(orderId) { const j = 읽기(보낸키); return j && j.orderId === orderId ? j.data : null; },
+    보냄기록: (orderId, d) => 쓰기(보낸키, { orderId, data: d, at: Date.now() }),
+    앞세움이름: (v) => (앞세움.find((g) => g[0] === v) || [])[1] || '',
+    메일초안(orderId, d) {
+      const 줄 = ['주문번호: ' + orderId, '받으실 메일: ' + d.mail, '출산 예정 기간: ' + d.range,
+        '병원이 말한 날짜: ' + (d.hospital || '없음'), '이미 받아 둔 날짜: ' + (d.have || '-'),
+        '태어날 지역: ' + d.place,
+        '아이 성별: ' + (d.sex || '미정'),
+        '수술 가능한 시간대: ' + (d.time || '-') + (d.weekend ? ' · 주말 가능' : ''),
+        '가장 앞세우고 싶은 것: ' + (주문서.앞세움이름(d.first) || '-'),
+        '아버지: ' + (d.father || '-'), '어머니: ' + (d.mother || '-'), '형제자매: ' + (d.siblings || '-'),
+        '바라는 점: ' + (d.wish || '-'), '궁금한 점: ' + (d.ask || '-')];
+      return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청서 ' + orderId)
+        + '&body=' + encodeURIComponent(줄.join('\n'));
+    },
+    문의메일,
+  };
+
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, intake, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판, 주문서 };
 })(window);

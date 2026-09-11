@@ -133,6 +133,24 @@ input::placeholder{color:var(--ink3);opacity:.7}
 .hint{font-size:12px;color:var(--ink3);margin-top:9px;line-height:1.65}
 hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 
+/* ───── 출산택일 신청서(.intake) — 신청 페이지(taekil-apply)와 결제 뒤 화면(pay-done)이 같이 쓴다 ───── */
+.intake{margin:22px 0 8px;padding:20px 18px 22px;border-radius:14px;border:1px solid var(--line);
+        background:var(--card);text-align:left}
+.intake h2{font-family:var(--serif);font-size:18px;margin:0 0 6px}
+.intake .lead{font-size:13.5px;line-height:1.8;color:var(--ink2);margin:0 0 4px}
+.intake .hint{font-size:12px;line-height:1.65;color:var(--ink3);margin:8px 0 0}
+.intake label em{font-style:normal;font-size:11px;color:var(--accent);margin-left:5px;letter-spacing:0}
+/* 글자 크기는 input 과 같은 16px — 그보다 작으면 아이폰이 누를 때 화면을 키운다(전역 textarea 는 15.5px) */
+.intake textarea{min-height:76px;font-size:16px}
+.intake .seg{flex-wrap:wrap}
+.intake .seg button{flex:1 1 28%;min-width:0}
+.intake .send{width:100%;margin-top:20px;padding:15px;border:0;border-radius:13px;cursor:pointer;
+              background:var(--seal-bg);color:var(--seal-ink);font-size:15.5px;font-weight:700;font-family:var(--sans)}
+.intake .send[disabled]{opacity:.5;cursor:default}
+.intake .msg{font-size:13px;line-height:1.75;margin:12px 0 0;color:var(--ink3)}
+.intake .msg.bad{color:#b4534f}
+.intake .msg a{color:var(--accent)}
+
 /* ───── 원국 기둥 ───── */
 .pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;text-align:center}
 .pillar{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 4px 10px;position:relative}
