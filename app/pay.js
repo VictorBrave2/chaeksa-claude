@@ -110,29 +110,66 @@
     try { Toss = await loadSdk(); } catch (e) { return { ok: false, message: e.message }; }
 
     // customerKey 는 사람마다 다르고 순서를 못 읽는 값이어야 한다. 계정 id 가 딱 맞다.
+    // (widgets() 는 2~50자에 - _ = . @ 가 하나는 있어야 한다 — 계정 id 는 36자 UUID 라 '-' 가 있다)
     let uid = null;
     try { const m = await global.ChaeksaCloud.me(); uid = m && m.id; } catch (_) {}
+    const customerKey = uid || Toss.ANONYMOUS;
+    const tp = Toss(st.clientKey);
 
-    const payment = Toss(st.clientKey).payment({
-      customerKey: uid || Toss.ANONYMOUS,
-    });
+    // 막히거나 닫혔을 때. 실패로 기록만 하고 조용히 돌아간다 — 닫은 것은 사람의 뜻이지 오류가 아니다.
+    const 닫힘 = (e) => /취소|닫|CLOSE|CANCEL/i.test(String((e && (e.code + ' ' + e.message)) || ''));
+    const 막힘 = async (e) => {
+      await post({ action: 'fail', orderId: opened.orderId,
+                   code: (e && e.code) || 'CLOSED', message: (e && e.message) || '' }).catch(() => {});
+      const closed = 닫힘(e);
+      return { ok: false, closed, message: closed ? '' : ((e && e.message) || '결제창을 열지 못했습니다.') };
+    };
+    const 요청 = { orderId: opened.orderId, orderName: opened.name,
+                   successUrl: BASE + '/pay-done.html', failUrl: BASE + '/pay-fail.html' };
 
+    // 키 종류가 문을 정한다(2026-09-11). 사장님 화면에 「API 개별 연동 키의 클라이언트 키로 SDK를
+    // 연동해주세요. 주문서형, 결제창형 연동 키는 지원하지 않습니다」가 떴다 — 이 파일이 payment() 하나만
+    // 부르는데 들어온 키가 gck 였다. 토스 문서(sdk/v2/js/environment · api-keys · error-codes 대조):
+    //   gck = 주문서형·결제창형 연동 키 → widgets()   지금 우리 키이자 토스의 현행 상품
+    //   ck  = API 개별 연동 키          → payment()   결제창(구버전). 새 연동엔 권하지 않는다
+    // 바꿔 부르면 토스가 거절한다(NOT_SUPPORTED_WIDGET_KEY / NOT_SUPPORTED_API_INDIVIDUAL_KEY).
+    // 승인(api/pay.js)은 두 갈래가 같다 — 짝이 되는 시크릿 키(gsk / sk)만 맞으면 된다.
+    if (/_gck_/.test(String(st.clientKey))) {
+      // 결제창형 결제: 우리 버튼을 누르면 토스 창이 페이지 위에 뜬다. 담을 칸(div)이 필요 없다.
+      // 순서는 문서 그대로 — setAmount → renderPaymentWindow → 'paymentRequest' 안에서 requestPayment.
+      // widgets 의 requestPayment 에는 amount·method 가 없다. 금액은 setAmount 로만 넘긴다.
+      // variantKey 는 안 넘긴다 → 상점 기본 UI. 우리 test_gck 로 뜨는 것을 운영에서 확인했다(2026-09-11).
+      let win = null;
+      const 치움 = () => Promise.resolve().then(() => win && win.destroy()).catch(() => {});
+      try {
+        const widgets = tp.widgets({ customerKey });
+        await widgets.setAmount({ currency: 'KRW', value: opened.amount });
+        win = await widgets.renderPaymentWindow();
+        return await new Promise((done) => {
+          win.on('paymentRequest', async () => {
+            try { await widgets.requestPayment(요청); done({ ok: true }); }   // 성공이면 페이지가 떠난다
+            catch (e) { await 치움(); done(await 막힘(e)); }
+          });
+          // 창을 닫거나 그만두면 온다. 창은 한 번에 하나만 뜰 수 있어서 치워야 다음에 다시 연다.
+          win.on('cancel', async () => { await 치움(); done(await 막힘({ code: 'CLOSED', message: '' })); });
+        });
+      } catch (e) {
+        await 치움();
+        return 막힘(e);
+      }
+    }
+
+    // API 개별 연동 키(ck)가 들어오면 예전 길 그대로 — 결제창(구버전), 카드.
     try {
-      await payment.requestPayment({
+      await tp.payment({ customerKey }).requestPayment({
         method: 'CARD',
         amount: { currency: 'KRW', value: opened.amount },
-        orderId: opened.orderId,
-        orderName: opened.name,
-        successUrl: BASE + '/pay-done.html',
-        failUrl: BASE + '/pay-fail.html',
+        ...요청,
         card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false },
       });
     } catch (e) {
-      // 사용자가 결제창을 닫은 것도 여기로 온다. 실패로 기록만 하고 조용히 돌아간다.
-      await post({ action: 'fail', orderId: opened.orderId,
-                   code: (e && e.code) || 'CLOSED', message: (e && e.message) || '' }).catch(() => {});
-      const closed = /취소|닫|CLOSE|CANCEL/i.test(String((e && (e.code + ' ' + e.message)) || ''));
-      return { ok: false, closed, message: closed ? '' : ((e && e.message) || '결제창을 열지 못했습니다.') };
+      // 사용자가 결제창을 닫은 것도 여기로 온다.
+      return 막힘(e);
     }
     return { ok: true };
   }
