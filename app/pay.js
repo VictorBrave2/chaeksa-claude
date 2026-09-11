@@ -17,6 +17,9 @@
   const API = 'https://chaeksa-claude.vercel.app/api/pay';
   const SDK = 'https://js.tosspayments.com/v2/standard';
   const BASE = 'https://chaeksa.kr';
+  // 이 파일이 몇 판인지(?v=). 결제가 막혔을 때 문구 뒤에 붙인다 — 캡처 한 장으로 「옛 화면이 떠 있던 것」과
+  // 「새 코드의 문제」를 가른다(2026-09-11: 고친 뒤에도 같은 오류를 다시 받았는데 운영 코드로는 재현되지 않았다).
+  const 판 = ((document.currentScript && document.currentScript.src || '').match(/[?&]v=(\d+)/) || [])[1] || '';
 
   // 상품 그림 — 상품마다 **서로 다른 그림 한 장**. 토스 심사가 「상품 이미지가 없거나
   // 같은 그림을 반복해 쓰면」 떨어뜨린다(2026-09-11 전자계약 심사 안내).
@@ -212,7 +215,7 @@
     try { r = await buy(code, note); } catch (e) { r = { ok: false, message: String((e && e.message) || e) }; }
     // 결제창으로 넘어가면 이 아래는 대개 안 돈다. 돌아왔다면 막힌 것이거나 창을 닫은 것이다.
     delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;
-    if (r && r.ok === false && !r.closed) 꼬리.textContent = r.message || '결제창을 열지 못했습니다.';
+    if (r && r.ok === false && !r.closed) 꼬리.textContent = (r.message || '결제창을 열지 못했습니다.') + (판 ? ' (화면 ' + 판 + ')' : '');
     return r;
   }
 
@@ -321,5 +324,5 @@
     if (!hasNote) return rows[0];
     return rows.find((r) => r.note === key) || null;
   }
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면 };
+  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판 };
 })(window);

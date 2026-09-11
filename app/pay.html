@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=713">
+<link rel="stylesheet" href="style.css?v=714">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -96,9 +96,9 @@
   </div>
 </div>
 
-<script src="config.js?v=713"></script>
-<script src="cloud.js?v=713"></script>
-<script src="pay.js?v=713"></script>
+<script src="config.js?v=714"></script>
+<script src="cloud.js?v=714"></script>
+<script src="pay.js?v=714"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -114,7 +114,12 @@
   var msg = document.getElementById('msg'), note = document.getElementById('note');
   var picked = null, busy = false;
 
-  function say(t, bad) { msg.textContent = t || ''; msg.className = 'msg' + (bad ? ' bad' : ''); }
+  // 막혔을 때는 화면 번호(pay.js 의 ?v=)를 같이 적는다 — 캡처만 보고 옛 화면인지 가린다.
+  function say(t, bad) {
+    var 판 = window.ChaeksaPay && ChaeksaPay.판;
+    msg.textContent = t ? t + (bad && 판 ? ' (화면 ' + 판 + ')' : '') : '';
+    msg.className = 'msg' + (bad ? ' bad' : '');
+  }
 
   function refresh() {
     var signed = window.ChaeksaCloud && ChaeksaCloud.signedIn && ChaeksaCloud.signedIn();
