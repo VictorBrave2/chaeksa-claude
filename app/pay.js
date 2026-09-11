@@ -23,18 +23,28 @@
 
   // 상품 그림 — 상품마다 **서로 다른 그림 한 장**. 토스 심사가 「상품 이미지가 없거나
   // 같은 그림을 반복해 쓰면」 떨어뜨린다(2026-09-11 전자계약 심사 안내).
-  // 결제 화면(pay.html)이 쓴다. 가로 3:1 장면이라 결제 화면의 넓은 칸에 맞는다.
-  // 앱 홈 카드는 칸이 정사각이라 책사 얼굴을 쓴다(2026-09-11 — 여기 장면을 넣었다가 사람이 잘렸다).
-  // art/love-shake-summer.webp 는 love-open-summer.webp 와 바이트까지 같은 파일이라 안 쓴다.
+  // 결제 화면(pay.html)만 쓴다. 칸은 **정사각**이다 — 정사각 그림을 정사각 칸에 넣으면 잘릴 데가 없다.
+  // 2026-09-11 오전에는 여기 연애 장면(love-*)을 3:1 로 넣었는데, 그 벌은 판이 바뀌기 전 그림(서양 저택·
+  // 낯선 남자)이라 앱에서 이미 꺼 둔 것이었다(config.js CHAEKSA_ART). 그림 111장을 눈으로 다 보고
+  // (워크플로 감사 · 심판 둘 같은 결론) 지금 세계의 책사 그림으로 바꿨다 — 홈 표지와 같은 책사가 같은 질문에 나온다.
+  // 연희의 네 장은 붉은 실을 든 모습이 서로 달라 네 질문을 나눠 맡는다.
+  // 값이 [파일, 위치] 면 정사각이 아닌 그림이라 얼굴이 보이게 object-position 을 준다(그려 보고 고른 값).
   // products 표에 상품을 새로 넣으면 여기에도 한 줄 넣어야 한다 — 빠지면 그림 없는 상품이 된다.
   const 그림 = {
-    maeum: 'art/love-open-spring.webp',    gunghap: 'art/love-open-summer.webp',
-    sok: 'art/love-open-winter.webp',      gyeolhon: 'art/love-quiet-autumn.webp',
-    ibyeol: 'art/love-shake-winter.webp',  jigeum: 'art/love-quiet-spring.webp',
-    jjak: 'art/love-quiet-winter.webp',    relation: 'art/love-open-autumn.webp',
-    geunamja: 'art/wealth-open-autumn.webp', wealth: 'art/wealth-open-spring.webp',
-    inyeon: 'art/chaeksa-inyeon.webp',     month: 'art/chaeksa-unro.webp',
-    taekil: 'art/chaeksa-hyeopgi.webp',
+    maeum: 'art/chaeksa-inyeon-2.webp',     // 연희 — 붉은 실이 화면 밖 누군가에게 이어진다
+    gunghap: 'art/chaeksa-gungwi-2.webp',   // 성아 — 별자리 판에 두 사람을 겹쳐 본다
+    sok: 'art/chaeksa-inyeon.webp',         // 연희 — 가장 가까운 얼굴, 팽팽한 실
+    gyeolhon: 'art/chaeksa-gungwi-4.webp',  // 성아 — 차분한 반신, 판의 호
+    ibyeol: 'art/chaeksa-inyeon-4.webp',    // 연희 — 고개를 돌렸고 실이 느슨하다
+    jigeum: 'art/chaeksa-gungtong.webp',    // 온서 — 막 말하려는 얼굴
+    jjak: 'art/chaeksa-inyeon-3.webp',      // 연희 — 새끼손가락에 묶인 실
+    geunamja: 'art/chaeksa-jaemul.webp',    // 계상(jaemul-4 는 서양 프록코트라 뺐다)
+    relation: ['art/say-gungwi.webp', '70% 50%'],        // 성아 — 달 아래 발코니(성아 셋이 서로 다르게)
+    wealth: ['art/wealth-open-winter.webp', '70% 50%'],  // 재물 화면과 같은 벌 중 밤빛인 한 장
+    inyeon: ['art/say-inyeon.webp', '75% 50%'],          // 연희 — 인연 첫머리, 말을 건네는 모습
+    month: 'art/chaeksa-unro-2.webp',       // 소현 — 별자리 판을 들고 웃는다
+    taekil: 'art/chaeksa-hyeopgi-5.webp',   // 검명 — 인장과 빈 종이, 사람이 봉해 보내는 보고서
+    wongook: 'art/chaeksa-jwajang.webp',    // 태윤(좌장) — migrate-15 가 돌아 상품이 생기면 쓰인다
   };
 
   let _state = null;          // GET 결과 캐시. 한 화면에서 여러 번 그리므로 한 번만 받는다

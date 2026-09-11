@@ -8,22 +8,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=718">
+<link rel="stylesheet" href="style.css?v=719">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
   .doc h1{font-family:var(--serif);font-size:25px;margin-bottom:8px}
   .lede{font-size:14.5px;line-height:1.85;color:var(--ink2);margin-bottom:26px}
-  .item{padding:16px 18px;border-radius:14px;border:1px solid var(--line);margin-bottom:11px;
-        cursor:pointer;transition:border-color .15s, background .15s}
+  /* 상품 카드 — 왼쪽 정사각 그림 + 오른쪽 글(홈 표지 카드와 같은 꼴). 정사각 그림을 정사각 칸에 넣으니
+     얼굴이 잘릴 데가 없다(2026-09-11 — 3:1 띠에서 머리·턱·소품이 잘리던 것을 구조로 막았다). */
+  .item{display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;border-radius:14px;
+        border:1px solid var(--line);margin-bottom:11px;cursor:pointer;transition:border-color .15s, background .15s}
   .item[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
   .item:not([role]){cursor:default}   /* 결제 준비 전 — 고를 수 없는 카드가 누를 수 있어 보이면 안 된다 */
-  .item h3{font-family:var(--serif);font-size:16.5px;margin:0 0 4px;display:flex;
-           justify-content:space-between;align-items:baseline;gap:10px}
-  .item h3 b{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .item .thumb{flex:none;display:block;width:clamp(96px,28%,124px);height:auto;aspect-ratio:1/1;object-fit:cover;
+    object-position:50% 50%;border-radius:10px;margin:0;background:var(--line)}
+  .item .tx{flex:1;min-width:0}
+  .item h3{font-family:var(--serif);font-size:16px;line-height:1.45;margin:0 0 6px;display:flex;
+           flex-direction:column;align-items:flex-start;gap:3px}
+  .item h3 b{font-size:14.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
   .item p{font-size:13px;line-height:1.7;color:var(--ink3);margin:0}
-  .item .thumb{display:block;width:100%;aspect-ratio:3/1;object-fit:cover;object-position:center 32%;
-    border-radius:10px;margin:0 0 12px;background:var(--line)}
+  .item p:empty{display:none}
   .agree{display:flex;gap:9px;align-items:flex-start;margin-top:18px;font-size:13px;
          line-height:1.7;color:var(--ink2);cursor:pointer}
   /* style.css 의 input{width:100%;padding…} 이 체크박스에도 걸린다 — 풀지 않으면 칸이 줄 폭을 다 먹고
@@ -90,9 +94,9 @@
   </div>
 </div>
 
-<script src="config.js?v=718"></script>
-<script src="cloud.js?v=718"></script>
-<script src="pay.js?v=718"></script>
+<script src="config.js?v=719"></script>
+<script src="cloud.js?v=719"></script>
+<script src="pay.js?v=719"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -144,13 +148,19 @@
     }
 
     var 그림 = ChaeksaPay.그림 || {};
+    // sort 가 같은 상품(9,900원 여덟)은 서버가 순서를 정해 주지 않는다 — 홈 표지와 같은 순서로 세운다.
+    // 그러면 연희 카드 넷이 나란히 붙지 않는다.
+    var 홈순서 = ['maeum', 'gunghap', 'sok', 'gyeolhon', 'ibyeol', 'jigeum', 'geunamja', 'jjak'];
+    var 순번 = function (c) { var i = 홈순서.indexOf(c); return i < 0 ? 99 : i; };
+    상품 = 상품.slice().sort(function (a, b) { return ((a.sort || 0) - (b.sort || 0)) || (순번(a.code) - 순번(b.code)); });
     list.innerHTML = 상품.map(function (p) {
-      var g = 그림[p.code];
+      var g = 그림[p.code], 파일 = Array.isArray(g) ? g[0] : g, 위치 = Array.isArray(g) ? g[1] : '';
       return '<div class="item"' + (st.ready ? ' role="button" tabindex="0" aria-selected="false"' : '')
         + ' data-code="' + esc(p.code) + '">'
-        + (g ? '<img class="thumb" alt="' + esc(p.name) + '" src="' + g + '" loading="lazy">' : '')
-        + '<h3>' + esc(p.name) + ' <b>' + esc(ChaeksaPay.won(p.amount)) + '</b></h3>'
-        + '<p>' + esc(p.blurb || '') + '</p></div>';
+        + (파일 ? '<img class="thumb" alt="' + esc(p.name) + '" src="' + esc(파일) + '"'
+            + (위치 ? ' style="object-position:' + esc(위치) + '"' : '') + ' loading="lazy">' : '')
+        + '<div class="tx"><h3>' + esc(p.name) + ' <b>' + esc(ChaeksaPay.won(p.amount)) + '</b></h3>'
+        + '<p>' + esc(p.blurb || '') + '</p></div></div>';
     }).join('');
 
     if (!st.ready) {
