@@ -3514,12 +3514,15 @@
           const 앞선같은책사 = 유료.slice(0, i).filter(x => x.k === f.k).length;
           const 파일 = (window.CHAEKSA_ART && 벌.length)
             ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
+          // 제목을 그림 **안에** 얹는다 (2026-09-12 사장님 「삽화에 콘텐츠 이름을 넣고 삽화를 만들면」).
+          // 그림 파일에 한글을 그려 넣지는 않는다 — 글자가 깨지고, 말을 고칠 때마다 그림을 다시 그려야 한다.
+          // 글자는 글자로 얹고 아래에 드리움을 깔면 웹툰 표지와 같은 모양이 되면서 말은 언제든 고쳐진다.
           return '<button class="wt-cd" data-fi="' + i + '" type="button">'
             + '<span class="cd-img">'
             + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
             + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
-            + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '') + '</span>'
-            + '<b>' + esc(f.제목) + '</b>'
+            + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '')
+            + '<b class="cd-t">' + esc(f.제목) + '</b></span>'
             + '<span class="cd-s">' + esc(f.값) + '</span></button>';
         }).join('')
       + '</div>';
