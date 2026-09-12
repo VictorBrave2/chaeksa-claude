@@ -410,16 +410,33 @@
   // 결제 이력을 한 번이라도 제대로 받았는가. 못 받았으면 탭을 옮길 때마다 다시 묻는다.
   let 결제이력받음 = false;
 
+  // 홈은 보던 자리를 기억한다 (2026-09-12 사장님 「콘텐츠 들어갔다가 뒤로가면 스크롤 다시
+  // 내려야하는게 너무 불편해」). 표지를 눌러 들어갔다 「← 홈」 으로 돌아오면 그 표지 앞에 선다.
+  // **홈 하나만** 기억한다 — 다른 화면은 사람이나 장이 바뀌면 길이도 바뀌어서 옛 자리가 엉뚱한 데다.
+  let 홈자리 = 0;
+  const 지금자리 = () => window.scrollY || document.documentElement.scrollTop || 0;
+  const 열린탭 = () => { const el = document.querySelector('.tab:not(.hide)'); return el ? el.dataset.tab : ''; };
+
   function go(tab) {
+    // 떠나기 전에 자리를 적어 둔다. 그리기 전에 해야 한다 — 그린 뒤엔 이미 0 으로 튕겨 있다.
+    // 홈에서 아래 「홈」을 다시 누르는 것은 「맨 위로」라는 뜻이다. 그때만 자리를 잊는다.
+    if (열린탭() === 'home') 홈자리 = (tab === 'home') ? 0 : 지금자리();
     // 유형 카드(789 유형·SSR 등급·시즌 카드)는 2026-09-04 삭제 — 「무슨 말인지도 모르더라」. 옛 링크는 홈으로.
     if (tab === 'gacha') tab = 'home';
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
-    window.scrollTo({ top: 0 });
     try { renderChorus(tab); } catch (e) {}
     if (tab !== 'home') 본표시(tab); else { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
+    // 자리 잡기 — 홈이면 보던 데로, 아니면 맨 위로.
+    // 그림이 늦게 서면 그만큼 짧아진 문서에 맞춰 브라우저가 잘라 버린다. 한 박자씩 두 번 더 민다.
+    if (tab === 'home' && 홈자리 > 0) {
+      const 되돌리기 = () => window.scrollTo({ top: 홈자리 });
+      되돌리기();
+      requestAnimationFrame(되돌리기);
+      setTimeout(되돌리기, 140);
+    } else window.scrollTo({ top: 0 });
     // 결제 이력 조회가 부팅 때 한 번 실패하면(네트워크·토큰 갱신) 그 세션 내내
     // 「산 게 없음」이었다 — 어제 2만원 낸 손님이 무료 화면을 보고 또 결제한다.
     // 탭을 옮길 때 조용히 다시 물어보고, 그제서야 산 게 나오면 이 탭을 다시 그린다.
