@@ -1421,12 +1421,15 @@ details.fold > .tiles { margin-top: 10px; }
 .st-day b{font-size:14px;color:var(--ink)}
 .st-day b small{display:block;font-size:11px;color:var(--ink3);font-weight:400}
 .st-day i{font-style:normal;font-size:17px;line-height:1.2;text-align:center}
-.st-day.g3 i,.st-day.g2 i{color:#2a9d5c}
-.st-day.g1 i{color:var(--ink3)}
-.st-day.g0 i{color:var(--accent)}
+/* 줄 바탕은 카드색 그대로. 색은 ○△✕ 와 왼쪽 테두리에만 — 줄마다 초록·카키로 칠하면 읽기 전에 눈이 먼저 지친다. */
+.st-day.s3 i,.st-day.s2 i{color:#2a9d5c}
+.st-day.s1 i{color:var(--ink3)}
+.st-day.s0 i{color:var(--accent)}
+.st-day.s3,.st-day.s2{box-shadow:inset 3px 0 0 #2a9d5c}
+.st-day.s0{box-shadow:inset 3px 0 0 var(--accent)}
 .st-day em{font-style:normal;font-weight:700;color:var(--ink);margin-right:4px}
 .st-day span{color:var(--ink2)}
-.st-day.today{background:var(--accent-soft)}
+.st-day.today b{color:var(--accent)}
 .st-best{margin:10px 2px 0;font-size:14px;color:var(--ink2);line-height:1.55}
 .st-best b{color:var(--ink)}
 /* 하루 한 줄 = 결론 / 이유 / 할 것 — 셋을 줄 바꿔 세운다. 이유는 옅게, 할 것은 강조색 */

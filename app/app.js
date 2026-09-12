@@ -3297,7 +3297,8 @@
     const 주 = S.일주일(R, Rm, st, today);
     const paid = !!(window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month'));
     // 하루 한 줄 = 결론 / 그 사람 쪽 + 내 쪽 / 할 것
-    const 줄 = (x, 오늘) => '<li class="st-day g' + x.등급 + (오늘 ? ' today' : '') + '">'
+    // 등급 이름은 s0~s3 — g0~g3 은 달력이 칸 전체를 초록·카키로 칠하는 이름이라 줄에 새어 들어왔다(2026-09-12 사장님 「색상분배 이거 맞아??」).
+    const 줄 = (x, 오늘) => '<li class="st-day s' + x.등급 + (오늘 ? ' today' : '') + '">'
       + '<b>' + (오늘 ? '오늘' : x.요일) + '<small>' + x.날 + '일</small></b>'
       + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
     let h = 머리
@@ -3311,7 +3312,7 @@
       const g = S.묶음(st, 달);
       const 묶 = (제목, arr) => arr.length ? '<p class="mnk" style="margin-top:16px">' + escP(제목) + '</p><ul class="st-days">' + arr.map(x => 줄(x, false)).join('') + '</ul>' : '';
       h += '<p class="mnk" style="margin-top:22px">이번 달 30일</p>'
-        + '<ul class="st-days mini">' + 달.map(x => '<li class="st-day g' + x.등급 + '"><b>' + x.요일 + '<small>' + x.날 + '일</small></b><i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em></span></li>').join('') + '</ul>'
+        + '<ul class="st-days mini">' + 달.map(x => '<li class="st-day s' + x.등급 + '"><b>' + x.요일 + '<small>' + x.날 + '일</small></b><i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em></span></li>').join('') + '</ul>'
         + 묶(st.묶음.좋음 + ' 셋', g.좋음) + 묶(st.묶음.조심 + ' 셋', g.조심) + 묶(st.묶음.짝, g.짝);
     } else {
       h += nextStep('이번 달 30일', '오늘부터 7일은 무료',
