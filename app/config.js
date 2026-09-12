@@ -23,7 +23,7 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 // 2026-09-12 밤 — 그림 110장을 전부 지웠다(사장님 「웹툰식 삽화로 가고싶은데 기존 삽화 전체 삭제하고 새로 뽑자」).
 //   책사 초상·말 건네는 컷·회의 장면·연애·재물 장면 다. 꺼 둔다('') — 얼굴은 안 세우고, 장면은 SVG 컷으로, 랜딩은 글자 히어로로.
 //   새 그림은 콘텐츠마다 한 장(art/story-<id>.webp)이고 이 스위치와 상관없이 있으면 뜬다.
-window.CHAEKSA_ART = '20260912';   // 09-12 밤 이야기 표지 11장 도착 — 값이 곧 캐시 버전
+window.CHAEKSA_ART = '20260912b';   // 09-12 밤 이야기 표지 11장 도착 — 값이 곧 캐시 버전
 // 돌아온 사람 세기 (docs/29 여덟). server/migrate-16 을 Supabase 에서 돌린 **뒤에** 1 로.
 // 먼저 켜면 모르는 열이라며 방문 기록 전체가 거절된다.
 window.CHAEKSA_TRACK_VID = 0;
