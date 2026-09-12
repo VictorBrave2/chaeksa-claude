@@ -103,7 +103,9 @@ function 한편검사(글, 입력, 허용) {
   // 재료(답·왜)와만 견준다. 지시문 전체와 견주면 틀에 든 본보기 문장을 따라 쓴 것까지 베낌으로 잡힌다(2026-09-12).
   const j0 = String(입력).lastIndexOf('[재료]');
   const 겹 = 긴겹침(줄.slice(0, -1).join('\n'), j0 >= 0 ? String(입력).slice(j0) : String(입력));
-  if (겹.length > 20) block.push('베낌:' + 겹.length);
+  // 막는 선은 마흔 글자다. 심사가 「같은 문장을 두 번 읽게 된다」고 잡은 구간이 44~46 글자였다.
+  // 스무 글자는 구절 하나라 그걸로 2천 자를 버리면 손님만 손해다 — 그 아래는 앱이 기록만 남기고 내가 읽는다(2026-09-12 첫 실물 굽기).
+  if (겹.length > 40) block.push('베낌:' + 겹.length);
   return { ok: !block.length, block };
 }
 // 굽기를 우리 손으로 끊는 시각. Vercel 함수 상한(vercel.json 120초)보다 짧아야
