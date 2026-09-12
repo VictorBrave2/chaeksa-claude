@@ -3379,7 +3379,7 @@
     // 새 이야기(질문 하나 + 썸네일 하나, 7일 무료 · 30일 유료)를 앞에 세운다 — stories.js 에 한 줄 더하면 진열대에 선다.
     try {
       const S = window.ChaeksaStories;
-      if (S && S.목록) 이야기.unshift(...S.목록.map(st => ({ id: 'st-' + st.id, tab: 'story', story: st.id, k: st.k, 사이: st.사이, 제목: st.질문, 소개: st.소개, 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + st.id + '.webp' })));
+      if (S && S.목록) 이야기.unshift(...S.목록.map(st => ({ id: 'st-' + st.id, tab: 'story', story: st.id, k: st.k, 사이: st.사이, 제목: st.질문, 소개: st.소개, 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + st.id + '-s.webp' })));   // 격자는 작은 판(-s, tools_thumb.py)
     } catch (e) {}
     const 사이들 = ['전체', '썸', '연애 중', '재회', '결혼', '돈과 생활'];
     const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이번 달 30일 전체 보기', 말: '오늘부터 7일은 무료예요 · 30일 전체는 이번 달 결제로 열려요' };
@@ -3390,10 +3390,13 @@
       const 앞선같은책사 = 이야기.slice(0, i).filter(x => x.k === f.k).length;
       const 파일 = (window.CHAEKSA_ART && 벌.length) ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
       // 새 이야기는 제 썸네일(art/story-*.webp)이 먼저다. 없으면 책사 얼굴로 물러난다.
-      const 그림 = f.썸 ? '<img alt="" src="' + f.썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()">' : '';
+      // 그림은 보이는 것만 받는다(loading=lazy). 진열대 셋은 첫 화면이라 바로 받고, 격자는 내려올 때 받는다.
+      // 백 장이 되면 한 번에 10MB 다. 첫 화면에 필요한 건 열 장 안팎이다(2026-09-12 사장님 「삽화 10개 넘어가서 렉이걸려?」).
+      const 받기 = 큰 ? '' : ' loading="lazy" decoding="async"';
+      const 그림 = f.썸 ? '<img alt="" src="' + f.썸 + '?v=' + (window.CHAEKSA_ART || 1) + '"' + 받기 + ' onerror="this.remove()">' : '';
       return '<button class="wt-cd" data-fi="' + i + '" data-s="' + esc(f.사이) + '" type="button">'
         + '<span class="cd-img">'
-        + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '') + 그림
+        + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '"' + 받기 + ' onerror="this.remove()">' : '') + 그림
         + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
         + (번호 ? '<span class="cd-num">' + 번호 + '</span>' : '')
         + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '')

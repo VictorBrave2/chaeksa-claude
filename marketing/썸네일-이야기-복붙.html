@@ -12,7 +12,8 @@ textarea{width:100%;box-sizing:border-box;height:118px;font:13px/1.55 ui-monospa
 <h1>이야기 썸네일 주문서</h1><p class="lead">이야기 하나에 그림 한 장. 글자는 넣지 않는다 — 제목은 화면에서 얹는다.</p>
 <div class="how"><b>뽑는 법</b><ol>
 <li>ChatGPT 새 채팅에 카드의 글을 붙여 보낸다. 참조 그림은 필요 없다(사람 얼굴이 아니라 장면이다).</li>
-<li>뜬 그림을 저장한다. 이름은 카드에 적힌 대로. <code>app/art/</code>에 넣으면 바로 뜬다.</li>
+<li>뜬 그림을 저장한다. 이름은 카드에 적힌 대로. <code>app/art/</code>에 넣는다.</li>
+<li>그다음 <code>python tools_thumb.py</code> 한 번. 홈 격자용 작은 판(<code>-s.webp</code>, 30KB쯤)을 만들어 준다. 이걸 안 하면 격자엔 그림이 안 뜬다.</li>
 <li>세로 그림이다(1024×1536). 홈에서는 세로로, 이야기 화면에서는 가운데를 가로로 잘라 쓴다 — 그래서 <b>사람은 가운데 띠에</b> 두라고 적어 뒀다.</li>
 <li>그림에 글자·워터마크가 들어오면 다시 뽑는다. 한글이든 영어든 안 된다.</li></ol></div>
 
