@@ -3133,6 +3133,8 @@
   const 책사키 = { 자평진전: 'japyung', 궁통보감: 'gungtong', 억부: 'eokbu', 궁위: 'gungwi',
                    인연: 'inyeon', 재물: 'jaemul', 천직: 'cheonjik', 운로: 'unro',
                    택일: 'hyeopgi', 좌장: 'jwajang' };
+  /** 그림 열쇠(inyeon)로 인장 한 글자를 찾는다. 그림이 없을 때 빈 액자를 두지 않기 위한 것이다. */
+  const 인장of = (k) => { const 축 = Object.keys(책사키).find(a => 책사키[a] === k); return (축 && 책사인장[축]) || '策'; };
   // 몇 벌 그려져 있는지는 config.js 가 안다 — 그림이 도착하면 거기 숫자만 올린다.
   // 스물일곱 장을 그려 놓고 열 장만 쓰고 있었다(2026-08-30). 열일곱 장이 놀았다.
   // 있는 벌의 목록. 숫자가 곧 파일 꼬리다(1 이면 꼬리 없음).
@@ -3456,22 +3458,19 @@
     // 짝을 아직 안 적으신 분께는 그 자리에서 「생년월일만 있으면 된다」고 말한다.
     //   안 그러면 네 장이 빈 고르개로 보내는 헛문이 된다(2026-09-12 심사에서 잡힘).
     const 짝있음 = (() => { try { const P0 = People(); return !!(P0 && P0.others && P0.others().length); } catch (e) { return true; } })();
-    const 값기본 = 표무료() ? '비밀 열 가지 모두 무료 · 한 편으로 엮으면 9,900원' : '세 가지 비밀은 무료 · 나머지는 9,900원';
-    const 짝값 = '그 사람 생년월일만 있으면 돼요 · 9,900원';
-    const 값of = (짝필요) => (짝필요 && !짝있음) ? 짝값 : 값기본;
+    // 칸이 108px 밖에 안 된다. 무료 표시는 그림 위 띠로 올리고 아래 줄에는 값만 남긴다 —
+    // 한 줄에 둘 다 적으면 잘린다(재 봤다: 「우리 · 셋은 무료 · 9,900원」은 15자라 안 들어간다).
+    const 띠기본 = 표무료() ? '열 가지 무료' : '셋 무료';
     const 유료 = [
-      { id: 'maeum', tab: 'maeum', k: 'inyeon', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 나한테 좋은 사람인가요?', 값: 값of(1), 가기: '비밀 열기' },
-      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되나요?', 값: 값of(1), 가기: '비밀 열기' },
-      { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람 지금 무슨 생각해요?', 부제: '그래서 지금 나는 어떻게 하면 되나요?', 값: 값of(1), 가기: '비밀 열기' },
-      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요?', 값: 값of(1), 가기: '비밀 열기' },
-      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 자리: 4, 위: '나 · 비밀 열 가지', 제목: '내 짝은 언제 와요?', 부제: '그래서 지금 뭘 하면 되나요?', 값: 값기본, 가기: '비밀 열기' },
-      { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 값: '', 가기: '읽어보기' },
-    ];
-    // 접어 두는 셋. 지우는 게 아니라 한 겹 아래다 — 한 번 누르면 그 자리에서 펼쳐진다.
-    const 그사람더 = [
-      { id: 'sok', tab: 'sheet', sheet: 'sok', 이름: '우리 둘, 속궁합은요?', 말: '누가 더 뜨겁고, 정이 어디로 가는지' },
-      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', 이름: '그 사람, 결혼 생각 있을까요?', 말: '그래서 이 사람과 결혼해도 되나요?' },
-      { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', 이름: '헤어질까요, 계속 갈까요?', 말: '그래서 어떻게 하면 되나요?' },
+      { id: 'maeum', tab: 'maeum', k: 'inyeon', 제목: '그 사람, 나한테 마음이 있을까요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 제목: '우리 둘, 잘 맞아요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 제목: '그 사람 지금 무슨 생각해요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 제목: '우리 둘, 속궁합은요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 제목: '그 사람, 결혼 생각 있을까요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 제목: '헤어질까요, 계속 갈까요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 제목: '이 남자, 나한테 돈을 쓸까요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 제목: '내 짝은 언제 와요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'wongook', tab: 'me', k: 'jwajang', 제목: '나를 한 편으로 읽어 주세요', 띠: '', 값: '원국 정독' },
     ];
     // 이달은 표지 대신 이레 띠 끝의 한 줄로 내린다. 값 한 조각은 반드시 남긴다 —
     // 없으면 유료 문이 무료 줄로 읽히고, 눌렀다 결제 벽을 만나는 사람이 는다.
@@ -3496,8 +3495,14 @@
         + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>'
       + 줄목록([이달], 'm')
-    // ② 먼저 볼 것 여섯 — 파는 것은 표지로 세운다(2026-09-04 사장님 지시). 나머지 셋은 바로 아래 접어 둔다.
-      + '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
+    // ② 파는 것 아홉 장 — 웹툰 메인처럼 세 칸 격자다(2026-09-12 사장님 「아무리 작아도 3열은 나오는데」).
+    //    가로로 긴 카드 한 장이 화면 높이의 사분의 일을 먹어서, 여섯 장만 세워도 스크롤이 길었다.
+    //    격자로 세우니 아홉 장이 두 장 반 높이에 다 들어간다 — 접어 뒀던 셋을 도로 꺼냈다.
+    //    (09-04 「메인콘텐츠 식으로 유료 콘텐츠를 나열하자」가 이 격자로 그대로 산다.)
+    //    짝을 아직 안 적으신 분께는 칸마다 적지 않고 머리에 한 번만 적는다.
+      + '<div class="wt-head"><b>그 사람을 두고</b><span>'
+      + (짝있음 ? '비밀 하나가 한 장이에요' : '그 사람 생년월일만 있으면 바로 열려요') + '</span></div>'
+      + '<div class="wt-grid">'
       + 유료.map((f, i) => {
           // 홈 표지는 **책사 얼굴**이다(v564 설계 — 그 카드의 첫 마디 화자).
           // 2026-09-11 에 가로 3:1 상품 장면으로 바꿨다가 그날 되돌렸다(사장님 「삽화가 병신같이
@@ -3509,16 +3514,15 @@
           const 앞선같은책사 = 유료.slice(0, i).filter(x => x.k === f.k).length;
           const 파일 = (window.CHAEKSA_ART && 벌.length)
             ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
-          return '<button class="wt-feature" data-fi="' + i + '" type="button">'
+          return '<button class="wt-cd" data-fi="' + i + '" type="button">'
+            + '<span class="cd-img">'
             + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
-            + '<div class="wf-body"><span class="wf-k">' + esc(f.위) + '</span><b>' + esc(f.제목) + '</b>'
-            + '<span class="wf-s">' + esc(f.부제) + '</span>'
-            + (f.값 ? '<span class="wf-p">' + esc(f.값) + '</span>' : '')
-            + '<span class="wf-go">' + esc(f.가기) + ' ▸</span></div></button>';
+            + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
+            + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '') + '</span>'
+            + '<b>' + esc(f.제목) + '</b>'
+            + '<span class="cd-s">' + esc(f.값) + '</span></button>';
         }).join('')
-      + '<details class="wt-fold"' + 폄('more') + ' data-fold="more"><summary><b>그 사람을 두고 세 가지 더</b>'
-      + '<span>' + (표무료() ? '속궁합 · 결혼 생각 · 헤어질까요 — 한 편은 9,900원' : '속궁합 · 결혼 생각 · 헤어질까요 — 9,900원 셋') + '</span></summary>'
-      + 줄목록(그사람더, 'x') + '</details>';
+      + '</div>';
     // ③ 나를 두고 — 전부 무료다. 여덟 줄이 늘 펼쳐져 있어서 화면이 길었다. 접되 DOM 은 그대로 둔다.
     const 무료 = 타일.filter(t => t.tab !== 'geunamja' && !(t.tab === 'today' && t.scroll === 'myMonth'));
     h += '<details class="wt-fold"' + 폄('me') + ' data-fold="me"><summary><b>무료로 더 볼 것</b>'
@@ -3529,9 +3533,8 @@
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
-    box.querySelectorAll('.wt-free button[data-x]').forEach(b => { b.onclick = () => 열기(그사람더[+b.dataset.x]); });
     box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
-    box.querySelectorAll('.wt-feature').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
+    box.querySelectorAll('.wt-cd').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
     // 접기 여닫음을 기기에 남긴다. 나중에 「접힌 것을 여는 비율」을 잴 값이기도 하다.
     box.querySelectorAll('details.wt-fold').forEach(d => { d.ontoggle = () => {
       try { 접힘[d.dataset.fold] = d.open ? 1 : 0; localStorage.setItem('chaeksa.fold', JSON.stringify(접힘)); } catch (e) {}
