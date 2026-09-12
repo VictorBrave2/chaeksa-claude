@@ -1411,8 +1411,9 @@ details.fold > .tiles { margin-top: 10px; }
 .wt-cd .cd-img img + img{z-index:1}
 
 /* ───── 이야기 화면 — 질문 하나, 날짜로 답 (2026-09-12) ───── */
-.st-cover{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#241f4d,#161433);margin:0 0 6px}
-.st-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* 표지 그림은 2:3 세로판(사람은 가운데 띠). 16:9 로 자르면 얼굴이 날아간다(09-12 사장님 「삽화 다 짤린다」) — 4:3 에 위쪽을 잡는다. */
+.st-cover{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#241f4d,#161433);margin:0 0 6px}
+.st-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%}
 .st-cover::after{content:'';position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(180deg,rgba(16,14,38,0),rgba(16,14,38,.9))}
 .st-cover b{position:absolute;left:14px;right:14px;bottom:12px;z-index:2;font-family:var(--letter);font-size:20px;line-height:1.3;color:#fbf7ef;text-shadow:0 1px 6px rgba(0,0,0,.8)}
 .st-days{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
