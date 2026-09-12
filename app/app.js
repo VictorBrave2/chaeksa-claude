@@ -241,7 +241,7 @@
     else { renderPeopleBtn(); renderPartners(); renderHome(); }
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
     try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
-      ['gnPick', 'mmPick', 'ghPick', 'shPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
+      ['gnPick', 'mmPick', 'ghPick', 'shPick', 'stPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
     } catch (e) {}
   }
 
@@ -3279,30 +3279,48 @@
   // 7일은 무료. 30일은 「이번 달 30일」 상품(month) 하나로 모든 이야기가 열린다 — 이야기마다 따로 팔지 않는다.
   // 말투는 사장님 말투(짧게 · A = B · 존댓말). 십신 이름은 그대로 부른다(법전 27조) — 이 탭은 data-plain 이다.
   function renderStory() {
-    const S = window.ChaeksaStories, box = $('stResult'); if (!S || !box || !R) return;
+    const S = window.ChaeksaStories, box = $('stResult'), P = People(); if (!S || !box || !R || !P) return;
     const st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
-    const 주 = S.일주일(R, st, today);
-    const 최고 = S.제일좋은(주);
+    const 썸 = 'art/story-' + st.id + '.webp';
+    const 머리 = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(st.질문) + '</b></div>'
+      + '<p class="hint" style="margin:8px 0 12px">' + escP(st.소개) + '</p>';
+    // 그 사람 고르기 — 두 사람 사주를 다 봐야 답이 된다. 기존 장(shPick)과 같은 목록이다.
+    const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
+    if (!list.length) {
+      box.innerHTML = 머리 + '<div class="st-pick"><p>그 사람 생년월일을 먼저 넣어 주세요. 그래야 두 사람을 놓고 봐요.</p><button class="btn" id="btnStAdd" type="button">그 사람 추가</button></div>';
+      $('btnStAdd').onclick = () => openPersonForm(null);
+      return;
+    }
+    if (!window.현재그사람 || !list.some(p => p.id === window.현재그사람)) window.현재그사람 = list[0].id;
+    const p = P.get(window.현재그사람);
+    let Rm; try { Rm = E.calc(P.toProfile(p)); } catch (e) { box.innerHTML = 머리 + '<p class="hint">그 사람 사주를 계산하지 못했어요.</p>'; return; }
+    const 주 = S.일주일(R, Rm, st, today);
     const paid = !!(window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month'));
+    // 하루 한 줄 = 결론 / 그 사람 쪽 + 내 쪽 / 할 것
     const 줄 = (x, 오늘) => '<li class="st-day g' + x.등급 + (오늘 ? ' today' : '') + '">'
       + '<b>' + (오늘 ? '오늘' : x.요일) + '<small>' + x.날 + '일</small></b>'
-      + '<i>' + x.표 + '</i><span><em>' + escP(x.한마디) + '</em>' + (x.말 ? ' ' + escP(x.말) : '') + '</span></li>';
-    const 썸 = 'art/story-' + st.id + '.webp';
-    let h = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(st.질문) + '</b></div>'
-      + '<p class="hint" style="margin:8px 0 14px">' + escP(st.소개) + '</p>'
+      + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
+    let h = 머리
+      + '<div class="st-pick"><label for="stPick">그 사람</label><select id="stPick">'
+      + list.map(q => '<option value="' + q.id + '"' + (q.id === p.id ? ' selected' : '') + '>' + esc(사람이름(q.name) || '그 사람') + ' · ' + esc(q.relation || '') + '</option>').join('')
+      + '</select><button class="btn ghost small" id="btnStAdd" type="button">추가</button></div>'
       + '<p class="mnk">오늘부터 7일 · 무료</p><ul class="st-days">' + 주.map((x, i) => 줄(x, i === 0)).join('') + '</ul>'
-      + (최고 ? '<p class="st-best">이번 주 제일 좋은 날 = <b>' + esc(최고.요일) + '요일 ' + 최고.날 + '일</b></p>' : '');
+      + '<p class="st-best">' + escP(S.그래서(st, 주)) + '</p>';
     if (paid) {
-      const 달 = S.이번달(R, st, today).slice(7);
-      const 달최고 = S.제일좋은(S.이번달(R, st, today));
-      h += '<p class="mnk" style="margin-top:18px">이번 달 30일</p><ul class="st-days">' + 달.map(x => 줄(x, false)).join('') + '</ul>'
-        + (달최고 ? '<p class="st-best">이번 달 제일 좋은 날 = <b>' + esc(달최고.요일) + '요일 ' + 달최고.날 + '일</b></p>' : '');
+      const 달 = S.이번달(R, Rm, st, today);
+      const g = S.묶음(st, 달);
+      const 묶 = (제목, arr) => arr.length ? '<p class="mnk" style="margin-top:16px">' + escP(제목) + '</p><ul class="st-days">' + arr.map(x => 줄(x, false)).join('') + '</ul>' : '';
+      h += '<p class="mnk" style="margin-top:22px">이번 달 30일</p>'
+        + '<ul class="st-days mini">' + 달.map(x => '<li class="st-day g' + x.등급 + '"><b>' + x.요일 + '<small>' + x.날 + '일</small></b><i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em></span></li>').join('') + '</ul>'
+        + 묶(st.묶음.좋음 + ' 셋', g.좋음) + 묶(st.묶음.조심 + ' 셋', g.조심) + 묶(st.묶음.짝, g.짝);
     } else {
       h += nextStep('이번 달 30일', '오늘부터 7일은 무료',
-        (today.getMonth() + 1) + '월 남은 날 전부 — 날마다 ○△✕와 한 줄. 이 상품 하나로 다른 이야기의 30일도 다 열려요. 달이 바뀌면 새로 사요.',
+        (today.getMonth() + 1) + '월 남은 날 전부 — ' + st.묶음.좋음 + ' 셋, ' + st.묶음.조심 + ' 셋, ' + st.묶음.짝 + '까지. 이 상품 하나로 다른 이야기의 30일도 다 열려요.',
         (profile && profile.name || '') + '님 ' + (today.getMonth() + 1) + '월 30일을 보고 싶습니다', 'month', null);
     }
     box.innerHTML = h;
+    $('stPick').onchange = () => { window.현재그사람 = $('stPick').value; renderStory(); };
+    $('btnStAdd').onclick = () => openPersonForm(null);
   }
 
   function renderWtHome() {

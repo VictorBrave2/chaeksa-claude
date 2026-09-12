@@ -1427,8 +1427,17 @@ details.fold > .tiles { margin-top: 10px; }
 .st-day em{font-style:normal;font-weight:700;color:var(--ink);margin-right:4px}
 .st-day span{color:var(--ink2)}
 .st-day.today{background:var(--accent-soft)}
-.st-best{margin:10px 2px 0;font-size:14px;color:var(--ink2)}
+.st-best{margin:10px 2px 0;font-size:14px;color:var(--ink2);line-height:1.55}
 .st-best b{color:var(--ink)}
+/* 하루 한 줄 = 결론 / 이유 / 할 것 — 셋을 줄 바꿔 세운다. 이유는 옅게, 할 것은 강조색 */
+.st-day .why{color:var(--ink3);font-size:13px}
+.st-day .do{color:var(--accent);font-size:13.5px}
+.st-days.mini .st-day{padding:7px 12px;font-size:13px}
+.st-days.mini .st-day span{align-self:center}
+.st-pick{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:14px}
+.st-pick label{color:var(--ink3);font-size:12px;flex:none}
+.st-pick select{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14px}
+.st-pick p{margin:0;flex:1;line-height:1.5}
 
 /* 무료 칸 — 글자 목록 */
 .wt-free{list-style:none;margin:0 0 16px;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
