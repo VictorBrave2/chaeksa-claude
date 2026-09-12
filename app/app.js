@@ -591,8 +591,8 @@
     // 홈을 하루로 만든다: 오늘의 장면 → 첫 의논 → 오늘 나온 책사 하나.
     // 나머지 타일은 전부 서랍에 넣었다(index.html 의 details.fold).
     // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
-    let 오늘차례 = 날번호() % 오늘의책사.length;
-    let [키0, 이름0, 탭0, 말0] = 오늘의책사[오늘차례];
+    // 차례는 도열 칸에서 오늘 나온 이를 밝히는 데 쓰였다. 도열을 걷어서(2026-09-12) 자리만 고른다.
+    let [키0, 이름0, 탭0, 말0] = 오늘의책사[날번호() % 오늘의책사.length];
     let 행동0 = '', 비 = null;
     // 비서(docs/29 둘) — 오늘 이 사람에게 잰 값으로 한 사람이 말한다.
     // 위의 문 안내 문장은 값이 하나도 없을 때만 남는다(엔진이 못 재면 물러난다).
@@ -600,7 +600,6 @@
       비 = (window.ChaeksaDan && ChaeksaDan.오늘) ? ChaeksaDan.오늘(R, today) : null;
       if (비 && 비.말) {
         이름0 = 비.축; 키0 = 책사키[비.축] || 키0; 탭0 = 비.탭 || 탭0; 말0 = 비.말; 행동0 = 비.행동 || '';
-        const i = 오늘의책사.findIndex(x => x[0] === 키0); if (i >= 0) 오늘차례 = i;
       }
     } catch (e) {}
     const sc = $('homeScene');
@@ -736,30 +735,12 @@
         }
       }
     } catch (e) {}
-    // 책사단이 도열한다 — 대접의 핵심은 「나를 위해 여럿이 나와 있다」이다.
-    // 겸사겸사 서랍에 숨은 화면들의 문이 되기도 한다: 열 사람이 곧 열 개의 문.
-    const ev = $('todayEnvoy');
-    if (ev) {
-      const 오늘 = 오늘차례;
-      const 줄 = 오늘의책사.map(([k, 이름], i) =>
-        '<button class="cm' + (i === 오늘 ? ' on' : '') + '" type="button" data-i="' + i + '">'
-        + '<span class="cm-face"><img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">'
-        + '<span class="cm-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
-        + '<span class="cm-name">' + esc(이름of(이름)) + '</span></button>').join('');
-      // 회의 그림을 도열의 배경으로 깐다 — 「떼로 나와 있다」를 여기서 맡는다
-      ev.innerHTML = '<section class="corps">'
-        + '<div class="corps-bg"></div>'
-        + '<p class="corps-k">책사단 열 사람이 나와 있습니다</p>'
-        + '<div class="corps-row">' + 줄 + '</div>'
-        + '</section>';
-      회의장면(u => { const g = ev.querySelector('.corps-bg');
-        if (g) { g.style.backgroundImage = 'url("' + u + '")'; g.classList.add('on'); } });
-      // data-open 은 시작할 때 한 번만 묶인다 — 나중에 그린 것은 손으로 묶는다
-      ev.querySelectorAll('.cm').forEach(b => {
-        b.onclick = () => go(오늘의책사[+b.dataset.i][2]);
-      });
-
-    }
+    // 책사단 도열(#todayEnvoy)이 여기 있었다. 2026-09-12 사장님 「이동경로가 꼬이네」로 걷었다.
+    // 열 얼굴이 곧 열 개의 문이었는데, 그 열 곳 가운데 일곱이 09-04 에 사장님이 홈에서 빼신 화면이다
+    // (index.html 176줄 — year·inyeon·jikcheop·dohwa·lovestory·gacha·gwangye).
+    // 홈 목록은 「뺀다」 하고 도열은 「들어간다」 하니, 한 화면 안에서 두 길이 서로 어긋났다.
+    // 화면과 탭 코드는 살아 있다 — 주소(#jikcheop)와 그날 한마디 단추(위 hs-say)로 열린다.
+    // 열 사람을 세우는 자리는 랜딩(showLanding 의 #lpCorps)에 남겼다. 거기선 문이 아니라 소개다.
     // 서고(#shelves)의 배지·부제 열둘을 채우던 자리였다. 서고를 지웠다(2026-09-09 「홈 하나로 정리」).
     // T.jichim · T.naepyeon · T.inyeon · T.yearFlow · T.lifeCurve · T.career · T.관계지도 ·
     // T.love · T.wealth · T.cachedSample 을 홈을 그릴 때마다 돌려서 안 보이는 칸에 쓰고 있었다.
