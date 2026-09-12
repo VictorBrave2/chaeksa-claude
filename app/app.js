@@ -524,11 +524,14 @@
     chongFor = state;
     el.classList.remove('hide');
     if (캐시) {
-      // 나에 대한 긴 글은 접어 둔다(2026-09-04 사장님 「여자들은 나에 대해 궁금하지 않다」) — 카드 한 장, 누르면 펼친다.
+      // 나에 대한 긴 글은 접어 둔다(2026-09-04 사장님 「여자들은 나에 대해 궁금하지 않다」) — 맛보기 한 장.
+      // 2026-09-12: 예전엔 단추가 둘이었다 — 「펼쳐 읽기」로 홈에서 통째로 펴고, 그 안에 「이어서 읽기」가
+      // 또 있었다(접혀 있는 동안엔 잘려서 보이지도 않았다). 홈에 같은 글이 두 벌 서는 셈이라 하나로 합쳤다.
+      // 다 읽는 자리는 의논 화면 하나다.
       el.classList.add('fold');
-      el.innerHTML = `${장면()}<p class="hero-eyebrow">${부름('을 위한 첫 의논', '첫 의논')}</p><div id="chongGm"></div><button class="btn ghost small" id="chongMore" type="button">펼쳐 읽기</button>`;
+      el.innerHTML = `${장면()}<p class="hero-eyebrow">${부름('을 위한 첫 의논', '첫 의논')}</p><div id="chongGm"></div><button class="btn ghost small" id="chongMore" type="button">열 사람의 의논 다 읽기 ▸</button>`;
       mountGanmyeong($('chongGm'), 'home');
-      $('chongMore').onclick = () => { el.classList.toggle('fold'); $('chongMore').textContent = el.classList.contains('fold') ? '펼쳐 읽기' : '접기'; };
+      $('chongMore').onclick = () => go('ganmyeong');
       return;
     }
     // 자동 굽기 금지(2026-08-30 「켤 때마다 굽는데… 클릭으로 바꾸던가」) —
@@ -637,7 +640,7 @@
         + '<button class="hs-say" type="button">'
         + '<span class="cs-txt">' + esc(말0)
         + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + esc(행동0) + '</span>' : '')
-        + '</span><span class="cs-go">▸</span></button>'
+        + '</span><span class="cs-go">' + (탭이름(탭0) ? esc(탭이름(탭0)) + ' ' : '') + '▸</span></button>'
         + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
       // 그림 없는 책사가 오늘 차례면 얼빡 자리를 접는다 — 빈 액자를 두지 않는다.
       // (onerror 로 접는 길은 img 를 아예 안 세울 때는 안 지나간다)
@@ -3349,14 +3352,22 @@
       + 줄('신살', r.신살) + (r.엮임 ? 줄('얽힘', r.엮임) : '')
       + (r.행동 ? 줄('하나', r.행동) : '');
   }
-  function renderDailyReport() {
-    const sc = $('homeScene'); if (!sc || !R) return;
-    const old = document.getElementById('dailyReport'); if (old && !old.closest('#wtHome')) old.remove();
-    const r = 일일리포트(today);
-    return 리포트HTML(r, '오늘 · ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일');
+  // 세는 말 — 「나를 두고 열 가지」처럼 개수를 한글로 적는다. 숫자를 적으면 목록표처럼 읽힌다.
+  const 한글수 = (n) => ['영', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두'][n] || String(n);
+  /** 그 탭이 화면에서 무엇이라 불리는지. 홈의 오늘 한마디가 어디로 가는지 적는 데 쓴다.
+   *  이름표를 새로 만들지 않는다 — 화면에 이미 선 제목을 읽는다. 두 벌이 되면 반드시 어긋난다.
+   *  제목 앞의 인장 한 글자(「緣 · 」)는 뗀다. 화면에 한자를 안 쓴다(CLAUDE.md). */
+  function 탭이름(tab) {
+    if (!tab) return '';
+    try {
+      const el = document.querySelector('[data-tab="' + tab + '"] h2, [data-tab="' + tab + '"] h3');
+      const t = el ? String(el.textContent || '').trim().replace(/^\S+\s*·\s*/, '') : '';
+      if (t) return t.length > 14 ? t.slice(0, 13) + '…' : t;
+    } catch (e) {}
+    const h = 홈목록.find(x => x.tab === tab && !x.scroll);
+    return h ? h.이름 : '';
   }
   function renderWtHome() {
-    let 리포트 = ''; try { 리포트 = renderDailyReport() || ''; } catch (e) {}
     const box = $('wtHome'); if (!box || !R) return;
     let 전체 = {};
     // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
@@ -3391,10 +3402,6 @@
       const 인 = 첫 ? (책사인장[첫.축] || '策') : '策';
       return Object.assign({}, h, { k, 말, n, 파일, 인, seen: !!seen[h.key || h.tab], id: h.key || h.tab });
     });
-    const 그림 = (t, cls) => t.파일
-      ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">'
-      : '<span class="' + cls + '">' + esc(t.인) + '</span>';
-    // 1) 지금! 오늘 먼저 볼 것 — 시간순 여섯 장(번호는 순서지 인기가 아니다)
     // 1) 오늘부터 이레 (2026-09-04 사장님 「다음달이 궁금하진 않아, 오늘~다음주까지 집중」)
     //    날마다 그날의 책사 얼굴과 한 줄. 오늘의 한마디와 같은 고르기(chaeksadan.오늘)를 날짜만 바꿔 돌린다.
     const 이레 = [];
@@ -3425,23 +3432,55 @@
     });
     const 조심 = 이레.reduce((b, t) => (t.나쁨.length >= 2 && (!b || t.나쁨.length > b.나쁨.length)) ? t : b, null);
     if (조심) 조심.조심 = true;
-    // 메인 콘텐츠 — 유료 콘텐츠를 표지 카드 꼴로 세로 나열(2026-09-04 사장님 「네이버 웹툰식 말고, 메인콘텐츠 식으로 유료 콘텐츠를 나열하자」)
+    // 메인 콘텐츠 — 유료 콘텐츠를 표지 카드 꼴로 세로 나열(2026-09-04 사장님 「네이버 웹툰식 말고, 메인콘텐츠 식으로 유료 콘텐츠를 나열하자」).
+    // 2026-09-12 사장님 「홈화면과 콘텐츠의 길이 너무 복잡해」 — 나열은 남기되 **첫 층에 여섯 장만** 세운다.
+    // 열 장이 다 세로 카드라 표지만으로 화면 여러 개였고, 부제 여덟 줄이 글자 그대로 같아서 한 문장으로 읽혔다.
+    // 값은 부제에서 떼어 단추 아래 작은 줄로 내린다 — 제목이 살고, 값은 그대로 보인다.
+    // 짝을 아직 안 적으신 분께는 그 자리에서 「생년월일만 있으면 된다」고 말한다.
+    //   안 그러면 네 장이 빈 고르개로 보내는 헛문이 된다(2026-09-12 심사에서 잡힘).
+    const 짝있음 = (() => { try { const P0 = People(); return !!(P0 && P0.others && P0.others().length); } catch (e) { return true; } })();
+    const 값기본 = 표무료() ? '비밀 열 가지 모두 무료 · 한 편으로 엮으면 9,900원' : '세 가지 비밀은 무료 · 나머지는 9,900원';
+    const 짝값 = '그 사람 생년월일만 있으면 돼요 · 9,900원';
+    const 값of = (짝필요) => (짝필요 && !짝있음) ? 짝값 : 값기본;
     const 유료 = [
-      { id: 'maeum', tab: 'maeum', k: 'inyeon', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 나한테 좋은 사람인가요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 자리: 4, 위: '우리 · 비밀 열 가지', 제목: '우리 둘, 속궁합은요?', 부제: '그래서 누가 더 뜨겁고, 정이 어디로 가는지 — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 결혼 생각 있을까요?', 부제: '그래서 이 사람과 결혼해도 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '헤어질까요, 계속 갈까요?', 부제: '그래서 어떻게 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람 지금 무슨 생각해요?', 부제: '그래서 지금 나는 어떻게 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 자리: 4, 위: '나 · 비밀 열 가지', 제목: '내 짝은 언제 와요?', 부제: '그래서 지금 뭘 하면 되나요? — 세 가지 비밀은 무료, 나머지는 9,900원', 가기: '비밀 열기' },
-      { id: 'myMonth', tab: 'today', scroll: 'myMonth', k: 'unro', 자리: 2, 위: '이달 · 서른 날', 제목: '다음 달까지, 나는', 부제: '오늘과 이번 주는 무료예요. 서른 날 전체는 이달 결제로 열려요', 가기: '열어보기' },
-      { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 가기: '읽어보기' },
+      { id: 'maeum', tab: 'maeum', k: 'inyeon', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 나한테 좋은 사람인가요?', 값: 값of(1), 가기: '비밀 열기' },
+      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 자리: 2, 위: '우리 · 비밀 열 가지', 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되나요?', 값: 값of(1), 가기: '비밀 열기' },
+      { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '그 사람 지금 무슨 생각해요?', 부제: '그래서 지금 나는 어떻게 하면 되나요?', 값: 값of(1), 가기: '비밀 열기' },
+      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 자리: 3, 위: '우리 · 비밀 열 가지', 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 나한테 도움이 되나요?', 값: 값of(1), 가기: '비밀 열기' },
+      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 자리: 4, 위: '나 · 비밀 열 가지', 제목: '내 짝은 언제 와요?', 부제: '그래서 지금 뭘 하면 되나요?', 값: 값기본, 가기: '비밀 열기' },
+      { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 값: '', 가기: '읽어보기' },
     ];
-    // 표가 무료가 되면 표지의 「세 가지만 무료」가 거짓말이 된다. 꼬리 한 줄만 한 곳에서 갈아 끼운다.
-    const 옛꼬리 = ' — 세 가지 비밀은 무료, 나머지는 9,900원';
-    if (표무료()) 유료.forEach(x => { x.부제 = x.부제.replace(옛꼬리, ' — 비밀 열 가지 모두 무료, 한 편으로 엮으면 9,900원'); });
-    let h = '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
+    // 접어 두는 셋. 지우는 게 아니라 한 겹 아래다 — 한 번 누르면 그 자리에서 펼쳐진다.
+    const 그사람더 = [
+      { id: 'sok', tab: 'sheet', sheet: 'sok', 이름: '우리 둘, 속궁합은요?', 말: '누가 더 뜨겁고, 정이 어디로 가는지' },
+      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', 이름: '그 사람, 결혼 생각 있을까요?', 말: '그래서 이 사람과 결혼해도 되나요?' },
+      { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', 이름: '헤어질까요, 계속 갈까요?', 말: '그래서 어떻게 하면 되나요?' },
+    ];
+    // 이달은 표지 대신 이레 띠 끝의 한 줄로 내린다. 값 한 조각은 반드시 남긴다 —
+    // 없으면 유료 문이 무료 줄로 읽히고, 눌렀다 결제 벽을 만나는 사람이 는다.
+    const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이달 서른 날 전체 보기', 말: '오늘과 이번 주는 무료예요 · 서른 날 전체는 이달 결제로 열려요' };
+    // 접기 상태는 기기에 기억한다. 한 번 펼친 분께는 다음에도 펼쳐 둔다 —
+    // 그리고 이 숫자가 곧 「접힌 것을 여는 비율」이라 나중에 실측할 값이 된다(docs/29 방아쇠).
+    let 접힘 = {}; try { 접힘 = JSON.parse(localStorage.getItem('chaeksa.fold') || '{}'); } catch (e) {}
+    const 폄 = (k) => 접힘[k] ? ' open' : '';
+    const 줄목록 = (arr, 이름) => '<ul class="wt-free">'
+      + arr.map((t, i) => '<li><button data-' + 이름 + '="' + i + '"><b>' + esc(t.이름) + '</b>'
+        + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('') + '</ul>';
+    // ① 오늘부터 이레 — 오늘 하나가 첫 화면이다(docs/29). 오늘 칸은 처음부터 펼쳐 둔다.
+    //    예전엔 같은 글이 같은 화면에 두 번 있었다(#dailyReport 와 오늘 칩이 같은 리포트HTML).
+    //    조심할 날은 **있는 날만** 적는다 — 값이 없는 것과 조용한 것을 가른다(docs/29).
+    let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
+      + (조심
+        ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
+          + 조심.나쁨.map(c => '<p>' + esc(c.근거) + '</p>').join('') + '</div>'
+        : '')
+      + '<div class="wt-strip" id="wtWeek">'
+      + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
+        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
+      + '</div><div class="wt-daybox hide" id="wtDay"></div>'
+      + 줄목록([이달], 'm')
+    // ② 먼저 볼 것 여섯 — 파는 것은 표지로 세운다(2026-09-04 사장님 지시). 나머지 셋은 바로 아래 접어 둔다.
+      + '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
       + 유료.map((f, i) => {
           // 홈 표지는 **책사 얼굴**이다(v564 설계 — 그 카드의 첫 마디 화자).
           // 2026-09-11 에 가로 3:1 상품 장면으로 바꿨다가 그날 되돌렸다(사장님 「삽화가 병신같이
@@ -3456,27 +3495,30 @@
           return '<button class="wt-feature" data-fi="' + i + '" type="button">'
             + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
             + '<div class="wf-body"><span class="wf-k">' + esc(f.위) + '</span><b>' + esc(f.제목) + '</b>'
-            + '<span class="wf-s">' + esc(f.부제) + '</span><span class="wf-go">' + esc(f.가기) + ' ▸</span></div></button>';
+            + '<span class="wf-s">' + esc(f.부제) + '</span>'
+            + (f.값 ? '<span class="wf-p">' + esc(f.값) + '</span>' : '')
+            + '<span class="wf-go">' + esc(f.가기) + ' ▸</span></div></button>';
         }).join('')
-      + (리포트 ? '<section class="card daily" id="dailyReport">' + 리포트 + '</section>' : '')
-      + '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
-      + (조심
-        ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
-          + 조심.나쁨.map(c => '<p>' + esc(c.근거) + '</p>').join('') + '</div>'
-        : '<p class="wt-care none">이번 주에는 유난히 조심할 날이 없습니다 — 나쁘게 보는 눈이 둘 넘게 겹치는 날이 없습니다.</p>')
-      + '<div class="wt-strip" id="wtWeek">'
-      + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
-        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
-      + '</div><div class="wt-daybox hide" id="wtDay"></div>';
-    // 무료 칸 — 격자 대신 글자 목록(2026-09-04). 표지는 유료에만 준다.
+      + '<details class="wt-fold"' + 폄('more') + ' data-fold="more"><summary><b>그 사람을 두고 세 가지 더</b>'
+      + '<span>' + (표무료() ? '속궁합 · 결혼 생각 · 헤어질까요 — 한 편은 9,900원' : '속궁합 · 결혼 생각 · 헤어질까요 — 9,900원 셋') + '</span></summary>'
+      + 줄목록(그사람더, 'x') + '</details>';
+    // ③ 나를 두고 — 전부 무료다. 여덟 줄이 늘 펼쳐져 있어서 화면이 길었다. 접되 DOM 은 그대로 둔다.
     const 무료 = 타일.filter(t => t.tab !== 'geunamja' && !(t.tab === 'today' && t.scroll === 'myMonth'));
-    h += '<div class="wt-head"><b>무료로 보는 것</b><span>오늘과 이번 주까지</span></div><ul class="wt-free">'
-      + 무료.map((t, i) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
-      + '</ul>';
+    h += '<details class="wt-fold"' + 폄('me') + ' data-fold="me"><summary><b>무료로 더 볼 것</b>'
+      + '<span>' + 한글수(무료.length) + ' 가지 — 오늘 · 나 · 우리</span></summary>'
+      + '<ul class="wt-free">'
+      + 무료.map((t) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
+      + '</ul></details>';
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
-    box.querySelectorAll('.wt-free button').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.wt-free button[data-x]').forEach(b => { b.onclick = () => 열기(그사람더[+b.dataset.x]); });
+    box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
     box.querySelectorAll('.wt-feature').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
+    // 접기 여닫음을 기기에 남긴다. 나중에 「접힌 것을 여는 비율」을 잴 값이기도 하다.
+    box.querySelectorAll('details.wt-fold').forEach(d => { d.ontoggle = () => {
+      try { 접힘[d.dataset.fold] = d.open ? 1 : 0; localStorage.setItem('chaeksa.fold', JSON.stringify(접힘)); } catch (e) {}
+    }; });
     // 이레 — 누르면 그날을 그 자리에서 편다(말 전부 · 행동 · 그날 글자가 어떻게 오는지). 오늘은 그 탭으로도 간다.
     box.querySelectorAll('.wt-post').forEach(b => { b.onclick = () => {
       const t = 이레.find(x => x.i === +b.dataset.w); const db = $('wtDay'); if (!t || !db) return;
@@ -3491,11 +3533,8 @@
       db.classList.remove('hide');
       const m = db.querySelector('.wt-more'); if (m) m.onclick = () => go(t.비.탭);
     }; });
-    box.querySelectorAll('.wt-tabs button').forEach(b => { b.onclick = () => {
-      box.querySelectorAll('.wt-tabs button').forEach(x => x.classList.toggle('on', x === b));
-      const f = b.dataset.f;
-      box.querySelectorAll('.wt-tile').forEach(t => { t.hidden = !(f === '전체' || t.dataset.f === f); });
-    }; });
+    // 오늘 칸은 처음부터 펼쳐 둔다 — 예전엔 같은 글을 담은 카드(#dailyReport)가 위에 따로 또 있었다.
+    const 오늘칩 = box.querySelector('.wt-post[data-w="0"]'); if (오늘칩) 오늘칩.click();
   }
   /** 한 줄. 새화자가 아니면(false) 얼굴 띠를 세우지 않는다. */
   function 발언줄(t, 새화자) {
@@ -3762,14 +3801,11 @@
       밀린 = 이번;
       html.push('<div class="nx-diag" style="margin-top:10px">' + 본문 + '</div>');
     });
-    const 전체문 = parts.length - 1;
     if (홈맛보기) {
-      const 남은 = 전체문 - 보일수;
-      if (남은 > 0) html.push('<button class="btn" id="gmMore">이어서 읽기 — 남은 '
-        + 남은 + '개 발언</button>');
+      // 「이어서 읽기」 단추를 여기서 안 세운다(2026-09-12). 맛보기는 150px 로 잘려 있어서
+      // 이 단추가 잘린 안쪽에 묻혀 있었고, 바깥의 「열 사람의 의논 다 읽기」와 가는 곳이 같았다.
+      // 같은 자리로 가는 단추가 둘이면 그게 곧 꼬인 길이다. 바깥 것 하나만 남긴다.
       el.innerHTML = html.join('');
-      const mb = el.querySelector('#gmMore');
-      if (mb) mb.onclick = () => go('ganmyeong');
       return;   // 맺음은 홈에서 보이지 않는다 — 다 읽으신 분께만 나오는 말이다
     }
     // 회의를 맺는 말. 채점 알약을 달지 않는다 — 좌장은 판정하지 않고 앉힌다.
