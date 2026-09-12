@@ -100,7 +100,9 @@ function 한편검사(글, 입력, 허용) {
   if (raw.length < 1600 || raw.length > 2600) block.push('길이:' + raw.length);
   // 표를 베꼈나 — 맺음 한 문장은 재료에서 고르라고 시킨 것이라 빼고 잰다.
   const 줄 = scan.split(/\n+/).map(s => s.trim()).filter(Boolean);
-  const 겹 = 긴겹침(줄.slice(0, -1).join('\n'), 입력);
+  // 재료(답·왜)와만 견준다. 지시문 전체와 견주면 틀에 든 본보기 문장을 따라 쓴 것까지 베낌으로 잡힌다(2026-09-12).
+  const j0 = String(입력).lastIndexOf('[재료]');
+  const 겹 = 긴겹침(줄.slice(0, -1).join('\n'), j0 >= 0 ? String(입력).slice(j0) : String(입력));
   if (겹.length > 20) block.push('베낌:' + 겹.length);
   return { ok: !block.length, block };
 }
@@ -421,7 +423,8 @@ module.exports = async (req, res) => {
       // 끝을 못 맺었거나 거절한 글은 넘기지 않는다. 되돌린 호출이 글까지 가져가면 한 주문으로 끝없이 부른다(2026-09-12 검토).
       // 앱(ai.js strict)도 이런 글은 실패로 버렸다 — 잃는 것이 없다.
       if (막힘) {
-        return res.status(502).json({ type: 'error', error: { type: 'gate',
+        // 걸린 규칙을 함께 보낸다 — 안 보내면 왜 막혔는지 화면에서도 기록에서도 알 수가 없다(운영자 화면에만 뜬다).
+        return res.status(502).json({ type: 'error', error: { type: 'gate', block: 막힘.slice(0, 6),
           message: '이번 글이 검사를 넘지 못해 드리지 않았습니다. 다시 눌러 주세요 — 사용 횟수는 되돌려 놓았습니다.' } });
       }
       const 거절 = stop === 'refusal';

@@ -202,8 +202,8 @@ ${prof}` : ''}`;
     else { url = 'https://api.anthropic.com/v1/messages'; headers['x-api-key'] = s.apiKey; headers['anthropic-dangerous-direct-browser-access'] = 'true'; }
     const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
     if (!res.ok) {
-      let msg = `HTTP ${res.status}`, raw = '', kind = '';
-      try { const j = await res.json(); raw = j.error?.message || ''; kind = j.error?.type || ''; msg = raw || msg; } catch (e) {}
+      let msg = `HTTP ${res.status}`, raw = '', kind = '', blk = [];
+      try { const j = await res.json(); raw = j.error?.message || ''; kind = j.error?.type || ''; blk = j.error?.block || []; msg = raw || msg; } catch (e) {}
       // 서버가 한도·로그인을 막은 것 — 혼잡·장애와 섞으면 안 된다.
       if (kind === 'baking') {
         // 다른 요청이 같은 간명을 굽는 중 — 실패가 아니라 「기다리면 온다」 신호
@@ -221,6 +221,7 @@ ${prof}` : ''}`;
         // 프록시가 금지어·입력에 없는 해/달을 잡아 넘기지 않고 횟수를 되돌렸다(한 편). 자동 재시도 금지 — 손으로만 다시.
         const err = new Error(raw || '이번 글이 검사를 넘지 못했습니다.');
         err.gate = true;
+        err.block = blk;   // 걸린 규칙 — 운영자 화면에 그대로 보인다
         throw err;
       }
       if (kind === 'truncated') {
