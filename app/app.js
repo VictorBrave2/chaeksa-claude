@@ -530,59 +530,9 @@
   // ───── 총평 — 로그인·입력 직후 제일 먼저 보는 카드 ─────
   // 순서가 전략이다: 총평(구조) → 결함 → 과거(본인이 검증) → 현재 → 미래는 결제.
   // 과거를 맞힌 잣대가 미래를 잰다는 사실을 화면에 적는다 — 스토리 틀 그대로.
-  let chongFor = null;
   // ── 첫 화면 = 간명서 (2026-08-29 「문진 말고 특장점 창을 띄워야지」) ──
-  // 간명서가 구워지는 약 1분 동안, 이 간명이 왜 다른지 다섯 장을 순차로 보여준다.
-  // 문진은 뺐다 — 신뢰 각인은 사람을 시험하는 게 아니라 우리를 설명하는 걸로.
-  function renderChong() {
-    const el = $('chong'); if (!el) return;
-    const T = window.ChaeksaTypecard;
-    if (!T || !T.간명자료 || !profile) { el.classList.add('hide'); return; }
-    const 캐시 = 간명캐시();
-    const state = String(R) + '|' + !!캐시;
-    if (chongFor === state) return;
-    chongFor = state;
-    el.classList.remove('hide');
-    if (캐시) {
-      // 나에 대한 긴 글은 접어 둔다(2026-09-04 사장님 「여자들은 나에 대해 궁금하지 않다」) — 맛보기 한 장.
-      // 2026-09-12: 예전엔 단추가 둘이었다 — 「펼쳐 읽기」로 홈에서 통째로 펴고, 그 안에 「이어서 읽기」가
-      // 또 있었다(접혀 있는 동안엔 잘려서 보이지도 않았다). 홈에 같은 글이 두 벌 서는 셈이라 하나로 합쳤다.
-      // 다 읽는 자리는 의논 화면 하나다.
-      el.classList.add('fold');
-      el.innerHTML = `${장면()}<p class="hero-eyebrow">${부름('을 위한 첫 의논', '첫 의논')}</p><div id="chongGm"></div><button class="btn ghost small" id="chongMore" type="button">열 사람의 의논 다 읽기 ▸</button>`;
-      mountGanmyeong($('chongGm'), 'home');
-      $('chongMore').onclick = () => go('ganmyeong');
-      return;
-    }
-    // 자동 굽기 금지(2026-08-30 「켤 때마다 굽는데… 클릭으로 바꾸던가」) —
-    // 앱을 여는 것만으로 돈이 나가면 안 된다. 버튼이 방아쇠다.
-    // 기다리는 동안 보여주는 말. 예전에는 우리가 얼마나 엄정한지를 다섯 장에 걸쳐
-    // 늘어놓았다 — 절기 시각, 원문 판본, 자기검증 서른 가지. 그건 만든 사람이
-    // 자랑하고 싶은 것이지 공주님이 보러 온 것이 아니다(2026-08-31 「우린 여성향 사이트 그뿐」).
-    // 기각 목록의 「명리 용어를 전문성의 증거로 전면에」가 정확히 이 자리였다.
-    // 이제 **곧 듣게 될 이야기**를 미리 들려준다.
-    const 특 = [
-      ['자리에 앉는 중입니다', '법도를 보는 정율, 계절을 보는 온서, 인연을 맡은 연희 — 아홉이 둘러앉고 좌장 태윤이 끝을 맺습니다.'],
-      ['먼저 내가 어떤 사람인지', '타고난 것과 곁에서 보는 모습. 남들이 보는 나와 안에서 사는 내가 다를 수도 있습니다.'],
-      ['그리고 사랑을 두고', '어떤 사람에게 마음이 기우는지, 곁자리에 어떤 글자가 앉아 있는지. 지나온 해도 함께 짚습니다.'],
-      ['갈리면 갈린 채로 올립니다', '열 사람이 같은 사주를 각자의 눈으로 봅니다. 맞춰 놓으면 읽은 것이 아니라 달래 드린 것이 됩니다.'],
-      ['겁주지 않습니다', '삼재니 대흉이니 하며 불안을 팔지 않습니다. 좋지 않은 자리도 어떻게 지나가면 되는지와 함께 아룁니다.'],
-    ];
-    el.innerHTML = `${장면()}<p class="hero-eyebrow">${부름('을 위한 첫 의논', '첫 의논')}</p>
-      <p class="pb-lede">열 사람의 책사가 내 사주를 앞에 놓고 둘러앉습니다. 보는 눈이 서로 달라, 갈리는 자리에서는 갈린 채로 들려드립니다.</p>
-      <button class="btn" id="chongBake">의논 다시 펴기</button>
-
-      <div id="chongFeats"></div>
-      <p class="hint hide" id="chongWait">둘러앉는 중…</p>`;
-    // 무료 화면에서는 LLM 을 굽지 않는다(2026-09-12 사장님 「LLM 은 유료 콘텐츠에」).
-    // 여기까지 오는 것은 조립기(원가 0)가 실패했을 때뿐이라, 조립을 한 번 더 펴 본다.
-    $('chongBake').onclick = () => {
-      chongFor = null;
-      renderChong();
-      if (!간명캐시()) { const w = $('chongWait'); if (w) { w.classList.remove('hide'); w.textContent = '지금은 의논을 펴지 못했습니다 — 잠시 뒤 다시 열어 주세요.'; } }
-    };
-  }
-  window.renderChongSoon = () => { chongFor = null; renderChong(); };
+  // 첫 의논 맛보기(renderChong · #chong)를 여기서 걷었다 (2026-09-12 이야기 서점 전략 — 홈은 표지만 세운다).
+  // 의논 전문은 의논 화면(renderGanmyeong)이 그대로 그린다. 홈에서는 전체 목록 → 「나를 두고 열 사람이」로 간다.
 
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
@@ -3303,80 +3253,9 @@
   // 열쇠를 chaeksa.seen 에서 chaeksa.본것 으로 옮겼다(2026-09-12) — track.js 가 첫 방문 판별에
   // 같은 이름을 쓰고 있었다. 한쪽은 '1' 을 적고 한쪽은 객체를 적어서, 한 열쇠에 주인이 둘이었다.
   function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.본것') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.본것', JSON.stringify(s)); } catch (e) {} }
-  // ── 일일 리포트 — 오늘의 운세 꼴 (2026-09-04 사장님 「오늘 / 천간 / 지지 / 신살 / 오늘의 운세 식으로」) ──
-  // 세 줄이다: 천간(하늘 글자) · 지지(땅 글자) · 신살. 값이 없는 줄은 없다고 적는다. 지어내지 않는다.
-  function 일일리포트(d) {
-    const out = { 날: d, 천간: '', 지지: '', 신살: '', 행동: '', 간지: '', 눈: [] };
-    try {
-      const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, d.getDate());
-      out.간지 = f.pillar(tf.day) + '(' + f.pillarKo(tf.day) + ')';
-      let 비 = null; try { 비 = ChaeksaDan.오늘(R, d); } catch (e) {}
-      const 모두 = (비 && 비.모두) || [];
-      const 머리 = /^(오늘 [^ ]+일 — |오늘은 )/;
-      const 하늘 = 모두.find(x => /하늘에/.test(x.말));
-      const 땅 = 모두.find(x => /땅의 글자|지지/.test(x.말));
-      let k = []; try { k = ChaeksaDan.육안글자(R, d, tf.day.stem, tf.day.branch, { 궁합: true }) || []; } catch (e) {}
-      out.눈 = k;
-      const 눈of = (축) => { const c = k.find(x => x.축 === 축 && x.판 !== '—' && x.근거); return c ? c.근거 : ''; };
-      const 적천 = 눈of('적천수'), 궁통 = 눈of('궁통보감'), 신살 = 눈of('통설·신살');
-      // 천간 — 하늘 글자 사건이 있으면 그것, 없으면 그 글자의 기운이 몸에 어떤지(적천)·계절에 어떤지(궁통)
-      out.천간 = 하늘 ? 하늘.말.replace(머리, '') : [적천, 궁통].filter(Boolean).join(' ') || '이 글자를 두고 특별히 짚을 것이 없습니다.';
-      // 지지 — 땅 글자 사건이 있으면 그것, 없으면 일지 충(적천 근거에 「충」), 그것도 없으면 없다고
-      out.지지 = 땅 ? 땅.말.replace(머리, '') : (/충/.test(적천) ? 적천 : '배우자 자리와 합도 충도 없고, 돈·자리·인연의 글자도 아닙니다.');
-      out.신살 = 신살 || '오늘 걸리는 신살이 없습니다.';
-      const 행 = (하늘 && 하늘.행동) || (땅 && 땅.행동) || (비 && 비.행동) || '';
-      out.행동 = 행;
-      // ── 엮임 — 변질의 화면 표현 (제27조·제28조, 2026-09-04 「변질로 가자」) ──
-      // 원국만 풀었을 때와 오늘 지지를 더해 풀었을 때의 차이만. 합화·열림/부서짐·득실은 적지 않는다.
-      try {
-        const 줄 = [];
-        // 반합은 안 본다(사장님 「엮임에서 반합을 빼보자」 2026-09-04) — 삼합 > 육합 > 충만
-        const 원 = E.branchRels(R.pillars, null, { 반합: false }), 운 = E.branchRels(R.pillars, [[tf.day.branch, '오늘']], { 반합: false });
-        const 키 = (x) => x.종류 + ':' + x.글자;
-        const 원성 = new Set(원.성립.map(키)), 운성 = new Set(운.성립.map(키));
-        const 자리이름 = { 일지: '짝 자리', 월지: '어머니 자리', 연지: '집안 자리', 시지: '자식 자리' };
-        // 자리 이름만 낸다 — 「(일지)」 같은 계산 낱말은 화면에 안 쓴다(공주님 원칙)
-        const 자리말 = (x) => (x.자리 || []).filter(a => a !== '오늘').map(a => 자리이름[a] || a).join('·');
-        const 붙말 = (x) => x.종류 === '충' ? '부딪힘' : '붙음';
-        const 받 = (w) => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 !== 0; };
-        const 토 = (독음, a, b) => 받(독음) ? a : b;
-        const 지독 = E.BRANCHES_KO[tf.day.branch], 지 = 지독 + '(' + E.BRANCHES[tf.day.branch] + ')';
-        // 오늘 글자가 새로 엮은 것
-        운.성립.filter(x => (x.자리 || []).includes('오늘')).forEach(x => {
-          줄.push('오늘 글자 ' + 지 + 토(지독, '이', '가') + ' 내 ' + 자리말(x) + '와 ' + (x.종류 === '충' ? '부딪힙니다' : '붙습니다') + '. 이런 날은 그 자리의 일이 움직인다고 봅니다.');
-        });
-        // 원국에 있던 것이 뺏겨 풀린 것
-        원.성립.filter(x => !운성.has(키(x))).forEach(x => {
-          줄.push('타고난 기운에서 ' + 자리말(x) + (x.종류 === '충' ? '가 서로 부딪히던 것이 오늘은 묶여 잠잠해진다고 봅니다' : '가 붙어 있던 것이 오늘은 풀린다고 봅니다') + '.');
-        });
-        // 원국에서 묶여 있다가 살아난 것(오늘 글자가 낀 것은 위에서 이미 말했다)
-        운.성립.filter(x => !원성.has(키(x)) && !(x.자리 || []).includes('오늘')).forEach(x => {
-          줄.push('타고난 기운에서 묶여 있던 ' + 자리말(x) + (x.종류 === '충' ? '의 부딪힘이 오늘 살아난다고 봅니다' : '의 붙음이 오늘 선다고 봅니다') + '.');
-        });
-        // 천간합 — 제28조: 첫 번은 묶이고, 대운·월간에 같은 글자가 이미 떠 있으면 둘째라 뚫린다
-        const du = E.currentDaeun(R, d);
-        [['year', '연간'], ['month', '월간'], ['hour', '시간']].forEach(([k, 이름]) => {
-          const pl = R.pillars[k]; if (!pl || !E.isHap(tf.day.stem, pl.stem)) return;
-          const 둘째 = (du && du.stem === tf.day.stem) || tf.month.stem === tf.day.stem;
-          const 글독 = E.STEMS_KO[tf.day.stem], 원독 = E.STEMS_KO[pl.stem];
-          const 글 = E.STEMS[tf.day.stem] + '(' + 글독 + ')', 원글 = E.STEMS[pl.stem] + '(' + 원독 + ')';
-          줄.push('오늘 하늘 글자 ' + 글 + 토(글독, '이', '가') + ' 타고난 기운의 ' + 원글 + '(' + 이름 + ')' + 토(원독, '과', '와') + ' 합합니다. ' + (둘째 ? '대운이나 이달에 같은 글자가 이미 떠 있어 둘째 글자라, 묶이지 않고 뚫린다고 봅니다.' : '첫 번이라 오늘은 묶인다고 봅니다.'));
-        });
-        out.엮임 = 줄.length ? 줄.join(' ') : '오늘 글자는 타고난 기운의 얽힘을 바꾸지 않는다고 봅니다.';
-      } catch (e) { out.엮임 = ''; }
-    } catch (e) {}
-    return out;
-  }
-  function 리포트HTML(r, 제목) {
-    if (!r || !r.간지) return '';
-    const 줄 = (k, v) => '<div class="dr-row"><b>' + k + '</b><span>' + esc(v) + '</span></div>';
-    return '<p class="dr-head">' + esc(제목) + ' <i>' + esc(r.간지) + '일</i></p>'
-      // 줄 이름은 26조로 — 천간은 마음, 지지는 행동. 「엮임」은 제가 만든 말이라 「얽힘」으로(2026-09-04 사장님 「한국인이 쓰는 말투로」)
-      + 줄('마음', r.천간) + 줄('행동', r.지지)
-      + '<p class="dr-note">마음 줄은 하늘 글자, 행동 줄은 땅 글자예요. 둘이 다르게 읽히면 그날은 마음과 행동이 따로 오는 날이에요. 어느 쪽이 맞느냐가 아니라 둘 다 와요.</p>'
-      + 줄('신살', r.신살) + (r.엮임 ? 줄('얽힘', r.엮임) : '')
-      + (r.행동 ? 줄('하나', r.행동) : '');
-  }
+  // 일일 리포트(일일리포트 · 리포트HTML)를 여기서 걷었다 (2026-09-12). 홈의 오늘 리포트 카드와 이레의 오늘 칸이 쓰던 것인데
+  // 둘 다 걷혀서 부르는 곳이 없어졌다. 「엮임」(원국 얽힘이 오늘 글자로 어떻게 달라지나) 계산이 여기 있었다 —
+  // 살릴 일이 생기면 git 에서 꺼낸다(2f24d4d 이전). 엔진 E.branchRels 는 그대로 있다.
   // 세는 말 — 「나를 두고 열 가지」처럼 개수를 한글로 적는다. 숫자를 적으면 목록표처럼 읽힌다.
   const 한글수 = (n) => ['영', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두'][n] || String(n);
   /** 그 탭이 화면에서 무엇이라 불리는지. 홈의 오늘 한마디가 어디로 가는지 적는 데 쓴다.
@@ -3620,14 +3499,10 @@
     }
     try { localStorage.setItem(간명키(), t); } catch (e) {}
     간명예열.busy = false; 간명예열.rounds = 0; 간명예열.fails = 0;
-    chongFor = null;
-    if (window.renderChongSoon) renderChongSoon();
     const g = $('gmBody'); if (g && g.isConnected) renderGanmyeong();
   }
   function 간명말(msg, 재시도) {
-    const w = $('chongWait'); if (w) w.textContent = msg;
-    const b = $('chongBake');
-    if (재시도 && b) { b.disabled = false; b.textContent = '다시 시도'; }
+    // 홈의 첫 의논 카드(#chongWait·#chongBake)는 걷었다(2026-09-12). 이제 의논 화면(#gmBody)에만 말한다.
     const g = $('gmBody');
     if (g && g.isConnected && !간명캐시()) {
       g.innerHTML = '<p class="hint">' + esc(msg) + '</p>'
@@ -4170,14 +4045,7 @@
       im.src = 후보[i];
     })(0);
   }
-  /** 장면 한 컷 — 그림이 꺼져 있으면 아무것도 내놓지 않는다.
-   *  자리만 먼저 잡아두고(옛 장면), 오늘의 회의 장면이 있으면 갈아 끼운다. */
-  function 장면() {
-    if (!window.CHAEKSA_ART) return '';
-    const s0 = 계절이름(), v = window.CHAEKSA_ART;
-    setTimeout(() => 회의장면(u => { const g = $('gmScene'); if (g) g.src = u; }), 0);
-    return '<img class="gm-scene" id="gmScene" alt="" src="art/council-' + s0 + '.webp?v=' + v + '">';
-  }
+  // 장면()(첫 의논 카드 위의 회의 그림 한 컷)은 renderChong 과 함께 걷었다(2026-09-12). 회의장면()은 랜딩이 그대로 쓴다.
   // ───── 랜딩 ─────
   function showLanding() {
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());

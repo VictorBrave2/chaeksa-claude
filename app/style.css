@@ -584,9 +584,6 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
   letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);
   border:1px solid var(--accent-line);border-radius:999px;padding:2px 9px;margin-right:8px;
   vertical-align:2px;white-space:nowrap}
-.gm-scene{width:100%;aspect-ratio:3/1;object-fit:cover;object-position:50% 28%;
-  display:block;border-radius:14px;margin:0 0 16px}
-
 .lp-feat{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}
 .lp-feat:last-child{border:0;padding-bottom:0}
 .lp-feat i{
@@ -1257,19 +1254,7 @@ details.fold > .tiles { margin-top: 10px; }
 .wt-head{display:flex;align-items:baseline;gap:8px;margin:6px 2px 10px}
 .wt-head b{font-family:var(--letter);font-size:17px;color:var(--ink)}
 .wt-head span{font-size:11px;color:var(--ink3);letter-spacing:.12em}
-.wt-strip{display:flex;gap:10px;overflow-x:auto;padding:0 2px 6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.wt-strip::-webkit-scrollbar{display:none}
-.wt-post{position:relative;flex:0 0 128px;height:172px;border-radius:12px;overflow:hidden;border:0;padding:0;
-  background:linear-gradient(160deg,#241f4d,#161433);scroll-snap-align:start;cursor:pointer;text-align:left;font-family:inherit}
-.wt-post img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%}
-.wt-post::after{content:'';position:absolute;left:0;right:0;bottom:0;height:62%;
-  background:linear-gradient(180deg,rgba(18,16,44,0),rgba(18,16,44,.88));pointer-events:none}
-.wt-post .num{position:absolute;left:8px;bottom:6px;z-index:2;font-family:var(--letter);font-size:40px;font-weight:900;
-  color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.6)}
-.wt-post b{position:absolute;left:44px;right:8px;bottom:12px;z-index:2;font-size:12px;line-height:1.4;color:#f7f3ff;
-  font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.7);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.wt-seal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:"Noto Serif KR",serif;font-size:44px;color:rgba(230,201,138,.5)}
+/* 이레 띠(.wt-strip · .wt-post · .wt-seal)는 2026-09-12 이야기 서점 전략으로 홈에서 걷었다. 오늘 탭의 「이번 주 한눈에」가 그 몫이다. */
 /* 접어 두는 칸 — 없애는 게 아니라 한 겹 아래다(2026-09-12 「홈화면과 콘텐츠의 길이 너무 복잡해」).
    여닫는 표시를 오른쪽에 세우고 기본 삼각형은 지운다. 열면 안의 목록이 그 자리에서 그대로 펴진다.
    (여기 있던 시간순 탭 .wt-tabs · 격자 .wt-grid · 타일 .wt-tile · 표지 .wt-cover 는 걷었다 —
@@ -1361,39 +1346,7 @@ details.fold > .tiles { margin-top: 10px; }
 .hs-yday .k{display:block;font-size:11px;letter-spacing:.04em;opacity:.7;margin-bottom:2px}
 .hs-yday p{margin:0;line-height:1.45}
 
-/* 오늘부터 이레 — 띠의 날짜 표와 그날을 펴는 상자 */
-.wt-post .wt-up{position:absolute;top:6px;left:6px;z-index:2;font-size:10px;font-style:normal;padding:2px 6px;border-radius:5px;background:rgba(0,0,0,.45);color:#f7f3ff;font-weight:700}
-.wt-post[data-w="0"] .wt-up{background:#2a9d5c}
-.wt-post.on{outline:2px solid var(--accent)}
-.wt-daybox{margin:8px 2px 14px;padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:14px;line-height:1.55}
-.wt-daybox .k{margin:0 0 6px;font-size:12px;color:var(--ink3);letter-spacing:.03em}
-.wt-daybox p{margin:0 0 6px}
-.wt-daybox .act{color:var(--ink2)}
-.wt-daybox .eye{color:var(--ink3);font-size:13px}
-.wt-more{margin-top:4px;background:none;border:0;padding:0;color:var(--accent);font-weight:700;cursor:pointer}
-
-/* 이번 주 조심할 날 하나 — 띠 위. 겁주지 않는다: 근거만 */
-.wt-care{margin:0 2px 10px;padding:10px 14px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--accent-line);font-size:14px;line-height:1.5}
-.wt-care .k{margin:0;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.03em}
-.wt-care .d{margin:2px 0 6px;font-weight:700}
-.wt-care p{margin:0 0 3px}
-.wt-care.none{color:var(--ink3);font-size:13px;background:none;border-color:var(--line)}
-.wt-post.care .wt-up{background:var(--accent)}
-
-/* 이레 타일 — 하늘 한 줄 아래 땅 한 줄 · 펼침 상자의 나머지 사건 */
-.wt-post b small{display:block;margin-top:3px;font-size:10.5px;line-height:1.35;color:#cfc7e6;font-weight:400}
-.wt-daybox .more{color:var(--ink2);font-size:13.5px}
-.wt-daybox .more b{color:var(--ink);margin-right:4px}
-.wt-daybox .more .act{color:var(--ink3)}
-
-/* 일일 리포트 — 오늘의 운세 꼴. 천간·지지·신살 세 줄 */
-.daily{padding:14px 16px}
-.dr-head{margin:0 0 8px;font-family:var(--letter);font-size:16px;font-weight:700}
-.dr-head i{font-style:normal;font-weight:400;color:var(--ink3);font-size:13px;margin-left:6px}
-.dr-row{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.5}
-.dr-row:first-of-type{border-top:0}
-.dr-row b{color:var(--accent);font-size:13px;letter-spacing:.04em;padding-top:1px}
-.wt-daybox .dr-row{padding:5px 0}
+/* 이레 펼침 상자(.wt-daybox) · 조심할 날(.wt-care) · 일일 리포트(.daily .dr-*)는 2026-09-12 에 걷었다 — 그리는 코드가 없어졌다. */
 
 /* 이 남자, 나한테 돈을 쓸까요? — 물음 열 개 */
 .gn-q{padding:12px 0;border-top:1px solid var(--line)}
@@ -1473,13 +1426,9 @@ details.fold > .tiles { margin-top: 10px; }
 .gn-cd details{margin-top:6px}
 .gn-cd summary{font-size:12px;color:var(--ink3);cursor:pointer}
 .gn-cd details p{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--ink2)}
-#chong.fold #chongGm{max-height:150px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
-#chongMore{margin-top:8px}
 .gn-cards-k{margin:10px 0 0;font-size:11.5px;letter-spacing:.14em;color:var(--ink3)}
 .gn-cd b{font-size:14px;line-height:1.5}
 @media (max-width:420px){.gn-cards{grid-template-columns:1fr}}
-.dr-note{margin:4px 0 2px;font-size:12.5px;line-height:1.5;color:var(--ink3)}
-.wt .daily{margin:6px 0 14px}
 
 /* 문의 버튼의 인장 글자 — 이모지 대신 한자를 쓴다(공주님 원칙 기각 목록) */
 .btn .seal{margin-right:6px;font-weight:700}
