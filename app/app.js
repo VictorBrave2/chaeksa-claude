@@ -1446,12 +1446,12 @@
   }
   // ───── 카드 줄 (2026-09-04 밤 사장님 「나에 대한 건 카드식, 그에 대한 건 섬세하게 문장+카드로」) ─────
   // 그 사람 장: 위에 카드 한 줄(한눈에) + 아래 문장. 나 장: 카드만, 문장은 접어 둔다.
-  function 카드줄(Q, 미리, paid, 접기) {
+  function 카드줄(Q, 미리, 다열림, 접기) {
     // 그 사람 장(접기 아님): 열린 비밀만 요약 카드로, 잠긴 것은 본문에서 한 번만(2026-09-04 밤 점검 「카드가 읽기를 지연」).
-    const 골 = 접기 ? Q.map((q, i) => i) : Q.map((q, i) => i).filter(i => paid || 미리.has(i)).slice(0, 3);
+    const 골 = 접기 ? Q.map((q, i) => i) : Q.map((q, i) => i).filter(i => 다열림 || 미리.has(i)).slice(0, 3);
     if (!골.length) return '';
     return '<p class="gn-cards-k">한눈에</p><div class="gn-cards">' + 골.map((i) => { const q = Q[i];
-      const 열림 = paid || 미리.has(i);
+      const 열림 = 다열림 || 미리.has(i);
       // 카드 제목은 물음이다 — 「비밀 3」만 적으면 무슨 답인지 모른 채 읽는다(2026-09-08 외부 감수 1번)
       const 머리 = q.구간 ? esc(q.구간) + ' · ' : '';
       return '<div class="gn-cd' + (열림 ? '' : ' locked') + '"><span class="k">' + 머리 + '비밀 ' + (i + 1) + '</span>'
@@ -1472,8 +1472,9 @@
     const 열쇠 = 'geunamja:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('geunamja', 열쇠)) || null;
     const 미리 = new Set([0, 1, 5]);
+    const 다 = paid || 표무료();   // 표가 무료가 되면 산 사람이 아니어도 열 가지가 다 열린다
     const 절 = f.Q.map((q, i) => {
-      const 열림 = paid || 미리.has(i);
+      const 열림 = 다 || 미리.has(i);
       return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
@@ -1483,16 +1484,13 @@
       const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
       return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
     }).join('');
-    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
-        <p>그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnGnBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
+    const 결제 = paid ? '' : 결제상자('btnGnBuy', youName, '그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.');
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${카드줄(f.Q, 미리, paid, false)}
+      ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
-      ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
+      ${다 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
@@ -1535,8 +1533,9 @@
     const 열쇠 = 'maeum:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('maeum', 열쇠)) || null;
     const 미리 = new Set([0, 1, 3]);
+    const 다 = paid || 표무료();
     const 절 = f.Q.map((q, i) => {
-      const 열림 = paid || 미리.has(i);
+      const 열림 = 다 || 미리.has(i);
       return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
@@ -1546,17 +1545,14 @@
       const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
       return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
     }).join('');
-    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
-        <p>그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnMmBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
+    const 결제 = paid ? '' : 결제상자('btnMmBuy', youName, '그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.');
     const 관찰말 = { 여자: '나한테 다가옴', 돈: '돈 씀씀이', 말: '말·표현', 자리: '일·자리', 없음: '달라진 것 없음' }[you0.관찰] || '';
     box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${관찰말 ? '먼저 달라진 것 ' + 관찰말 + ' · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${카드줄(f.Q, 미리, paid, false)}
+      ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
-      ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
+      ${다 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
@@ -1598,9 +1594,10 @@
     const 열쇠 = 'gunghap:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('gunghap', 열쇠)) || null;
     const 미리 = new Set([0, 4, 8]);
+    const 다 = paid || 표무료();
     let 앞구간 = '';
     const 절 = f.Q.map((q, i) => {
-      const 열림 = paid || 미리.has(i);
+      const 열림 = 다 || 미리.has(i);
       const 머리 = q.구간 && q.구간 !== 앞구간 ? `<p class="gn-sec">${esc(q.구간)}</p>` : ''; 앞구간 = q.구간 || 앞구간;
       return 머리 + `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
@@ -1611,16 +1608,13 @@
       const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
       return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
     }).join('');
-    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
-        <p>네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnGhBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(youName)} 한 장 열기</button>
-        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
+    const 결제 = paid ? '' : 결제상자('btnGhBuy', youName, '네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.');
     box.innerHTML = `<h2>우리 둘, 잘 맞아요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${카드줄(f.Q, 미리, paid, false)}
+      ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
-      ${paid ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
+      ${다 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
       <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
@@ -1670,9 +1664,10 @@
     const 열쇠 = 장.code + ':' + (장.둘 ? [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-') : 'me');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey(장.code, 열쇠)) || null;
     const 미리 = new Set(장.무료);
+    const 다 = paid || 표무료();
     let 앞구간 = '';
     const 절 = f.Q.map((q, i) => {
-      const 열림 = paid || 미리.has(i);
+      const 열림 = 다 || 미리.has(i);
       const 머리 = q.구간 && q.구간 !== 앞구간 ? `<p class="gn-sec">${esc(q.구간)}</p>` : ''; 앞구간 = q.구간 || 앞구간;
       return 머리 + `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`) + '</div>';
@@ -1683,16 +1678,13 @@
       return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
     }).join('');
     const 이름표 = 장.둘 ? youName : '내 사주';
-    const 결제 = paid ? '' : `<div class="paidbox"><p class="pb-k">세 가지 비밀은 여기까지</p>
-        <p>${esc(장.부제)}는 나머지 일곱 가지 비밀${장.둘 ? '과 열 책사의 한마디' : ''}에서 봅니다.</p>
-        <button class="btn nx-cta" id="btnShBuy" type="button"${payReady ? '' : ' disabled'} style="background:var(--accent);color:#fff;border-color:var(--accent)">9,900원 · ${esc(이름표)} 한 장 열기</button>
-        <p class="nx-ft">${payReady ? '결제하면 바로 열립니다.' : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.'}</p></div>`;
+    const 결제 = paid ? '' : 결제상자('btnShBuy', 이름표, esc(장.부제) + '는 나머지 일곱 가지 비밀' + (장.둘 ? '과 열 책사의 한마디' : '') + '에서 봅니다.', 장.둘 ? youName : '올 사람');
     box.innerHTML = `<h2>${esc(장.제목)}</h2>
       <p class="hint">${장.둘 ? esc(youName) + ' · ' : ''}${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${카드줄(f.Q, 미리, paid, !장.둘)}
+      ${카드줄(f.Q, 미리, 다, !장.둘)}
       ${장.둘 ? 절 : ''}
       ${한편자리(paid, 장.둘 ? youName : '올 사람')}
-      ${paid ? (열 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>` : '') + `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${다 ? (열 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>` : '') + `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
     한편붙이기(box, 장.code, 장, f, met, 장.둘 && you0 ? you0.관찰 : null, 열쇠, 장.둘 ? youName : '올 사람');
@@ -2126,6 +2118,29 @@
       const rb = el.querySelector('#aiRetry');
       if (rb) rb.onclick = () => { rb.disabled = true; try { el.remove(); } catch (e3) {} aiNarrate(box, kind, facts); };
     }
+  }
+
+  // ───── 표는 무료, 한 편이 유료 (2026-09-12 사장님 「문장표를 무료콘텐츠로, LLM을 유료 콘텐츠로」) ─────
+  // 스위치 하나(config CHAEKSA_SHEET_LLM)가 둘을 같이 뒤집는다. 따로 두면 표만 공짜가 되고 팔 것이 없는 날이 생긴다.
+  //   꺼짐 = 예전 그대로. 세 가지 답만 무료, 나머지 일곱과 열 책사는 9,900원.
+  //   켜짐 = 열 가지 답·열 책사·간직하기 카드가 전부 무료. 돈 받는 것은 「한 편」 하나뿐이다.
+  function 표무료() { return !!window.CHAEKSA_SHEET_LLM; }
+  /** 결제 상자 — 무엇을 파는지가 위 스위치에 달렸다. 단추 id 는 장마다 달라 받아 쓴다. */
+  function 결제상자(id, 이름표, 예전안내, 한편이름) {
+    const 무료 = 표무료();
+    // 한 편의 이름표는 「올 사람」처럼 표 이름표와 다를 때가 있다(짝 장). 산 뒤에 뜨는 상자와 같은 말을 써야 한다.
+    const 편 = esc(한편이름 || 이름표);
+    const 머리 = 무료 ? 편 + ' 한 편' : '세 가지 비밀은 여기까지';
+    const 몸 = 무료 ? '위 열 가지 답은 전부 열려 있어요. 그 답들이 한 사람 안에서 어떻게 맞물리는지를 책사가 한 편으로 엮어 드립니다.' : 예전안내;
+    const 단추 = 무료 ? '9,900원 · ' + 편 + ' 한 편 받기' : '9,900원 · ' + esc(이름표) + ' 한 장 열기';
+    const 꼬리 = payReady
+      ? (무료 ? '결제하시면 이 자리에서 바로 청하실 수 있어요.' : '결제하면 바로 열립니다.')
+      : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.';
+    return '<div class="paidbox"><p class="pb-k">' + 머리 + '</p>'
+      + '<p>' + 몸 + '</p>'
+      + '<button class="btn nx-cta" id="' + id + '" type="button"' + (payReady ? '' : ' disabled')
+      + ' style="background:var(--accent);color:#fff;border-color:var(--accent)">' + 단추 + '</button>'
+      + '<p class="nx-ft">' + 꼬리 + '</p></div>';
   }
 
   // ───── 「그 사람 한 편」 — 장마다 결제 뒤 LLM 이 쓰는 한 편 (2026-09-12 사장님 결정 3단계) ─────
@@ -3442,6 +3457,9 @@
       { id: 'myMonth', tab: 'today', scroll: 'myMonth', k: 'unro', 자리: 2, 위: '이달 · 서른 날', 제목: '다음 달까지, 나는', 부제: '오늘과 이번 주는 무료예요. 서른 날 전체는 이달 결제로 열려요', 가기: '열어보기' },
       { id: 'wongook', tab: 'me', k: 'jwajang', 자리: 2, 위: '나 · 한 편으로', 제목: '나를 한 편으로 읽어 주세요', 부제: '좌장 태윤이 여덟 글자를 한 편의 글로 엮어요 — 원국 정독', 가기: '읽어보기' },
     ];
+    // 표가 무료가 되면 표지의 「세 가지만 무료」가 거짓말이 된다. 꼬리 한 줄만 한 곳에서 갈아 끼운다.
+    const 옛꼬리 = ' — 세 가지 비밀은 무료, 나머지는 9,900원';
+    if (표무료()) 유료.forEach(x => { x.부제 = x.부제.replace(옛꼬리, ' — 비밀 열 가지 모두 무료, 한 편으로 엮으면 9,900원'); });
     let h = '<div class="wt-head"><b>그 사람을 두고</b><span>비밀 하나가 한 장이에요</span></div>'
       + 유료.map((f, i) => {
           // 홈 표지는 **책사 얼굴**이다(v564 설계 — 그 카드의 첫 마디 화자).
