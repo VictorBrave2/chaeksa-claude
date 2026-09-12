@@ -2269,9 +2269,17 @@
         }
         const b = e && e.blocked;
         if (b) { 알림((b.title || '지금은 쓸 수 없습니다.') + (b.body ? ' ' + b.body : ''), false); return; }
-        알림(e && e.gate ? '이번 글이 검사를 넘지 못해 드리지 않았습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
+        // 운영자에게는 까닭을 붙인다 — 「지금은 못 썼습니다」만으로는 결제인지 검사인지 서버인지 알 수가 없다.
+        let 까닭 = '';
+        try {
+          if (window.ChaeksaUsage && ChaeksaUsage.plan() === 'super') {
+            까닭 = ' (운영자에게만: ' + String((e && (e.detail || e.message)) || e).slice(0, 200)
+              + ((e && e.block && e.block.length) ? ' · ' + e.block.join(',') : '') + ')';
+          }
+        } catch (x) {}
+        알림((e && e.gate ? '이번 글이 검사를 넘지 못해 드리지 않았습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
           : e && (e.timeout || e.truncated) ? '이번에는 끝까지 쓰지 못했습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
-          : '지금은 한 편을 쓰지 못했습니다. 잠시 뒤 다시 청해 주세요.', true);
+          : '지금은 한 편을 쓰지 못했습니다. 잠시 뒤 다시 청해 주세요.') + 까닭, true);
       }
     };
     let 있던 = null; try { 있던 = localStorage.getItem(key); } catch (e) {}

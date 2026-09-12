@@ -726,7 +726,18 @@
     const T = global.ChaeksaTypecard, E = global.ChaeksaEngine;
     if (!T || !E || !Rme || !Ryou || !T.relation) return [];
     now = now || new Date();
-    const 나 = String((이름 && 이름.나) || '본인'), 그 = String((이름 && 이름.그) || '그분');
+    // 부르는 쪽(maeum·gunghap·sheets)이 자기 이름 자리에 글자 그대로 '나'를 넘긴다 — 그대로 두면 「나님」이 찍힌다.
+    // 사람 목록에서 본인 이름을 찾아 쓰고, 없으면 「본인」으로 물러난다(옛 대체 이름은 이름이 아니다).
+    const 내이름 = (() => {
+      const n0 = String((이름 && 이름.나) || '').trim();
+      if (n0 && n0 !== '나') return n0;
+      try {
+        const P = global.ChaeksaPeople, me = P && P.self && P.self();
+        const n = me && String(me.name || '').trim();
+        return (!n || ['나', '공주님', '도련님', '당신', '이름 없음'].indexOf(n) >= 0) ? '' : n;
+      } catch (e) { return ''; }
+    })();
+    const 나 = String(내이름 || '본인'), 그 = String((이름 && 이름.그) || '그분');
     // 이름을 안 적으신 분은 「본인」이다 — 여기에 님을 또 붙이면 「본인님」이 된다
     const 님 = (n) => (/님$/.test(n) || n === '본인' ? n : n + '님');
     const 나님 = 님(나), 그님 = 님(그);
