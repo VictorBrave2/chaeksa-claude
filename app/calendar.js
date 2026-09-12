@@ -25,7 +25,8 @@
   }
 
   function scoreDay(result, y, m, d, purposeKey) {
-    const P = PURPOSES[purposeKey] || PURPOSES.all;
+    // 이름(문자열)이면 표에서 찾고, 객체면 그대로 쓴다 — stories.js 가 기준을 직접 넘길 수 있게(2026-09-12)
+    const P = (purposeKey && typeof purposeKey === 'object') ? purposeKey : (PURPOSES[purposeKey] || PURPOSES.all);
     const a = result.analysis, ds = a.dayStem;
     const tf = E.dateFortune(y, m, d);
     const god = E.TEN_GODS[E.tenGod(ds, tf.day.stem)];

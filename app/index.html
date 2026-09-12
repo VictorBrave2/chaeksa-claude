@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=769">
+<link rel="stylesheet" href="style.css?v=772">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -489,6 +489,11 @@
     </div>
 
     <!-- 오늘 -->
+    <!-- 이야기 — 질문 하나 + 썸네일 하나, 답은 날짜로. 7일 무료 · 30일은 이번 달 결제 (2026-09-12). app.js renderStory 가 그린다. -->
+    <div class="tab hide" data-tab="story" data-plain="1">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <section class="card" id="stResult"></section>
+    </div>
     <div class="tab hide" data-tab="today">
       <!-- 오늘의 얼빡·한마디·기억은 홈에서 여기로 옮겨 왔다 (2026-09-12 이야기 서점 전략). 홈은 표지만 세운다.
            data-plain: 한마디는 십신을 이름으로 부른다. app.js 의 낱말 바꿔치기 문이 여기는 건너뛴다. -->
@@ -879,36 +884,37 @@
   </div>
 </div>
 
-<script src="config.js?v=769"></script>
-<script src="track.js?v=769"></script>
-<script src="cloud.js?v=769"></script>
-<script src="usage.js?v=769"></script>
-<script src="places.js?v=769"></script>
-<script src="people.js?v=769"></script>
-<script src="astro.js?v=769"></script>
-<script src="lunar.js?v=769"></script>
-<script src="engine.js?v=769"></script>
-<script src="chaeyong.js?v=769"></script>
-<script src="brief.js?v=769"></script>
-<script src="chaeksadan.js?v=769"></script>
-<script src="geunamja.js?v=769"></script>
-<script src="maeum.js?v=769"></script>
-<script src="gunghap.js?v=769"></script>
-<script src="sheets.js?v=769"></script>
-<script src="hwakin.js?v=769"></script>
-<script src="mun.js?v=769"></script>
-<script src="mun/all.js?v=769"></script>
-<script src="typecard.js?v=769"></script>
-<script src="gyeokguk.js?v=769"></script>
-<script src="memo.js?v=769"></script>
-<script src="classic.js?v=769"></script>
-<script src="calendar.js?v=769"></script>
-<script src="tongbyeon.js?v=769"></script>
-<script src="rules-wealth-love.js?v=769"></script>
-<script src="rules-health-study-move.js?v=769"></script>
-<script src="share.js?v=769"></script>
-<script src="ai.js?v=769"></script>
-<script src="pay.js?v=769"></script>
-<script src="app.js?v=769"></script>
+<script src="config.js?v=772"></script>
+<script src="track.js?v=772"></script>
+<script src="cloud.js?v=772"></script>
+<script src="usage.js?v=772"></script>
+<script src="places.js?v=772"></script>
+<script src="people.js?v=772"></script>
+<script src="astro.js?v=772"></script>
+<script src="lunar.js?v=772"></script>
+<script src="engine.js?v=772"></script>
+<script src="chaeyong.js?v=772"></script>
+<script src="brief.js?v=772"></script>
+<script src="chaeksadan.js?v=772"></script>
+<script src="geunamja.js?v=772"></script>
+<script src="maeum.js?v=772"></script>
+<script src="gunghap.js?v=772"></script>
+<script src="sheets.js?v=772"></script>
+<script src="hwakin.js?v=772"></script>
+<script src="mun.js?v=772"></script>
+<script src="mun/all.js?v=772"></script>
+<script src="typecard.js?v=772"></script>
+<script src="gyeokguk.js?v=772"></script>
+<script src="memo.js?v=772"></script>
+<script src="classic.js?v=772"></script>
+<script src="calendar.js?v=772"></script>
+<script src="stories.js?v=772"></script>
+<script src="tongbyeon.js?v=772"></script>
+<script src="rules-wealth-love.js?v=772"></script>
+<script src="rules-health-study-move.js?v=772"></script>
+<script src="share.js?v=772"></script>
+<script src="ai.js?v=772"></script>
+<script src="pay.js?v=772"></script>
+<script src="app.js?v=772"></script>
 </body>
 </html>

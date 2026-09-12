@@ -62,6 +62,9 @@
   // 화면으로 나가는 마지막 문 — 십신·격 이름을 공주님말로 바꾼 뒤 이스케이프한다(2026-09-04 「보이지 않는 심장」).
   const 공말 = (s) => (window.ChaeksaDan && ChaeksaDan.공주님말) ? ChaeksaDan.공주님말(s) : s;
   const esc = (s) => 공말(String(s == null ? '' : s)).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  // 십신을 이름 그대로 내는 자리(이야기 화면 · 오늘 한마디)는 이걸로 — esc() 는 공주님말을 거쳐서 「상관」이 「튀는 재주」로 바뀐다.
+  // 2026-09-12 이야기 화면에서 「튀는 재주 오는 날 = 말이 세게 나가요」가 나가고서야 알았다. 화면 감시자 면제(data-plain)만으로는 안 된다.
+  const escP = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   // 받침 조사 — 표(讀)는 typecard 한 벌뿐이다. 여기서 또 만들면 반드시 어긋난다.
   // 한자 뒤에 「戊이」 「癸과」를 박아 두었던 자리가 실제로 있었다(3000판 18건).
   const 조 = (s, 있, 없) => {
@@ -480,6 +483,7 @@
     if (tab === 'maeum') renderMaeum();
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
+    if (tab === 'story') renderStory();
     if (tab === 'life') renderLife();
     if (tab === 'year') renderYear();
     if (tab === 'memo') renderMemo();
@@ -608,8 +612,8 @@
         + '<p class="hs-who">' + esc(이름of(이름0)) + '</p>'
         + '<p class="hs-role">' + esc(직함of(이름0)) + ' · ' + esc(이름0) + '</p>'
         + '<button class="hs-say" type="button">'
-        + '<span class="cs-txt">' + esc(말0)
-        + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + esc(행동0) + '</span>' : '')
+        + '<span class="cs-txt">' + escP(말0)
+        + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + escP(행동0) + '</span>' : '')
         + '</span><span class="cs-go">' + (탭이름(탭0) ? esc(탭이름(탭0)) + ' ' : '') + '▸</span></button>'
         + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
       // 그림 없는 책사가 오늘 차례면 얼빡 자리를 접는다 — 빈 액자를 두지 않는다.
@@ -3271,6 +3275,36 @@
     const h = 홈목록.find(x => x.tab === tab && !x.scroll);
     return h ? h.이름 : '';
   }
+  // ───── 이야기 화면 — 질문 하나, 답은 날짜로 (2026-09-12 사장님 「1컨텐츠+1질문+1삽화, 무료 7일 유료 30일」) ─────
+  // 7일은 무료. 30일은 「이번 달 30일」 상품(month) 하나로 모든 이야기가 열린다 — 이야기마다 따로 팔지 않는다.
+  // 말투는 사장님 말투(짧게 · A = B · 존댓말). 십신 이름은 그대로 부른다(법전 27조) — 이 탭은 data-plain 이다.
+  function renderStory() {
+    const S = window.ChaeksaStories, box = $('stResult'); if (!S || !box || !R) return;
+    const st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
+    const 주 = S.일주일(R, st, today);
+    const 최고 = S.제일좋은(주);
+    const paid = !!(window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month'));
+    const 줄 = (x, 오늘) => '<li class="st-day g' + x.등급 + (오늘 ? ' today' : '') + '">'
+      + '<b>' + (오늘 ? '오늘' : x.요일) + '<small>' + x.날 + '일</small></b>'
+      + '<i>' + x.표 + '</i><span><em>' + escP(x.한마디) + '</em>' + (x.말 ? ' ' + escP(x.말) : '') + '</span></li>';
+    const 썸 = 'art/story-' + st.id + '.webp';
+    let h = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(st.질문) + '</b></div>'
+      + '<p class="hint" style="margin:8px 0 14px">' + escP(st.소개) + '</p>'
+      + '<p class="mnk">오늘부터 7일 · 무료</p><ul class="st-days">' + 주.map((x, i) => 줄(x, i === 0)).join('') + '</ul>'
+      + (최고 ? '<p class="st-best">이번 주 제일 좋은 날 = <b>' + esc(최고.요일) + '요일 ' + 최고.날 + '일</b></p>' : '');
+    if (paid) {
+      const 달 = S.이번달(R, st, today).slice(7);
+      const 달최고 = S.제일좋은(S.이번달(R, st, today));
+      h += '<p class="mnk" style="margin-top:18px">이번 달 30일</p><ul class="st-days">' + 달.map(x => 줄(x, false)).join('') + '</ul>'
+        + (달최고 ? '<p class="st-best">이번 달 제일 좋은 날 = <b>' + esc(달최고.요일) + '요일 ' + 달최고.날 + '일</b></p>' : '');
+    } else {
+      h += nextStep('이번 달 30일', '오늘부터 7일은 무료',
+        (today.getMonth() + 1) + '월 남은 날 전부 — 날마다 ○△✕와 한 줄. 이 상품 하나로 다른 이야기의 30일도 다 열려요. 달이 바뀌면 새로 사요.',
+        (profile && profile.name || '') + '님 ' + (today.getMonth() + 1) + '월 30일을 보고 싶습니다', 'month', null);
+    }
+    box.innerHTML = h;
+  }
+
   function renderWtHome() {
     const box = $('wtHome'); if (!box || !R) return;
     let 전체 = {};
@@ -3324,6 +3358,11 @@
       { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 사이: '결혼', 제목: '그 사람, 결혼 생각 있을까요?', 소개: '그래서 이 사람과 결혼해도 되나요?', 띠: 띠기본, 값: '9,900원' },
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 사이: '돈과 생활', 제목: '이 남자, 나한테 돈을 쓸까요?', 소개: '그래서 나한테 도움이 되나요?', 띠: 띠기본, 값: '9,900원' },
     ];
+    // 새 이야기(질문 하나 + 썸네일 하나, 7일 무료 · 30일 유료)를 앞에 세운다 — stories.js 에 한 줄 더하면 진열대에 선다.
+    try {
+      const S = window.ChaeksaStories;
+      if (S && S.목록) 이야기.unshift(...S.목록.map(st => ({ id: 'st-' + st.id, tab: 'story', story: st.id, k: st.k, 사이: st.사이, 제목: st.질문, 소개: st.소개, 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + st.id + '.webp' })));
+    } catch (e) {}
     const 사이들 = ['전체', '썸', '연애 중', '재회', '결혼', '돈과 생활'];
     const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이번 달 30일 전체 보기', 말: '오늘부터 7일은 무료예요 · 30일 전체는 이번 달 결제로 열려요' };
     // 표지 — 책사 얼굴에 제목을 얹는다(2026-09-12). 같은 책사를 쓰는 칸끼리 같은 날 같은 그림이 안 겹치게 벌을 나눈다.
@@ -3332,9 +3371,11 @@
       const 벌 = 벌목록(f.k);
       const 앞선같은책사 = 이야기.slice(0, i).filter(x => x.k === f.k).length;
       const 파일 = (window.CHAEKSA_ART && 벌.length) ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
+      // 새 이야기는 제 썸네일(art/story-*.webp)이 먼저다. 없으면 책사 얼굴로 물러난다.
+      const 그림 = f.썸 ? '<img alt="" src="' + f.썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()">' : '';
       return '<button class="wt-cd" data-fi="' + i + '" data-s="' + esc(f.사이) + '" type="button">'
         + '<span class="cd-img">'
-        + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
+        + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '') + 그림
         + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
         + (번호 ? '<span class="cd-num">' + 번호 + '</span>' : '')
         + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '')
@@ -3365,7 +3406,7 @@
     const top = $('wtTop');
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
-    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
+    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) window.현재이야기 = t.story; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
     box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
