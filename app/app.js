@@ -2271,9 +2271,9 @@
     const y = today.getFullYear(), m = today.getMonth() + 1;
     const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month');
     if (!paid) {
-      box.innerHTML = nextStep('이번 달 서른 날', '오늘과 이번 주까지',
-        m + '월 한 달 전체 — 날마다 하늘에 무슨 글자가 오는지(돈·자리·연)를 서른 칸으로 봅니다. 달이 바뀌면 새 달을 새로 봅니다.',
-        (profile.name || '') + '님 ' + m + '월 일운 — 서른 날의 글자를 보고 싶습니다', 'month',
+      box.innerHTML = nextStep('이번 달 30일', '오늘부터 7일은 무료',
+        m + '월 한 달 전체 — 날마다 무슨 기운이 오는지(돈·일·연애) 30일을 다 봅니다. 달이 바뀌면 새로 봅니다.',
+        (profile.name || '') + '님 ' + m + '월 30일을 보고 싶습니다', 'month',
         T.monthWhy ? T.monthWhy(R).말 : null);
       return;
     }
@@ -3325,7 +3325,7 @@
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 사이: '돈과 생활', 제목: '이 남자, 나한테 돈을 쓸까요?', 소개: '그래서 나한테 도움이 되나요?', 띠: 띠기본, 값: '9,900원' },
     ];
     const 사이들 = ['전체', '썸', '연애 중', '재회', '결혼', '돈과 생활'];
-    const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이달 서른 날 전체 보기', 말: '오늘과 이번 주는 무료예요 · 서른 날 전체는 이달 결제로 열려요' };
+    const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이번 달 30일 전체 보기', 말: '오늘부터 7일은 무료예요 · 30일 전체는 이번 달 결제로 열려요' };
     // 표지 — 책사 얼굴에 제목을 얹는다(2026-09-12). 같은 책사를 쓰는 칸끼리 같은 날 같은 그림이 안 겹치게 벌을 나눈다.
     // 큰 표지(진열대)는 아래에 짧은 소개 + 무료 첫 장까지, 작은 표지(격자)는 값만.
     const 표지 = (f, i, 큰, 번호) => {
