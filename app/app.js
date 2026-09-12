@@ -636,7 +636,7 @@
               // 변주가 없는 책사가 있으므로(궁위·인연·운로는 -3 이 없다) 못 찾으면
               // 대표 그림으로 한 번 물러난다. 빈 액자는 그 다음이다.
               // 그려진 벌만 아는 초상() 이 고른다 — 없는 -3 을 부르고 404 를 맞던 자리다.
-              // 그림이 아예 없는 책사(소현)는 빈 문자열이 와서 얼빡을 안 세운다.
+              // 그림이 한 벌도 없는 책사가 생기면 빈 문자열이 와서 얼빡을 안 세운다(지금은 열 명 다 있다).
               const 파일0 = 초상(키0, 0);
               if (!파일0) return '';
               const 밑 = 얼굴파일(키0, (벌목록(키0)[0] || 1)) + '?v=' + window.CHAEKSA_ART;
@@ -3153,7 +3153,7 @@
    *  난수가 아니라 결정이라 같은 날 같은 자리는 늘 같은 얼굴이다. */
   function 초상(k, 자리, 받아침) {
     const 벌 = 벌목록(k);
-    if (!벌.length) return '';           // 그림이 없는 책사 — 인장만 세운다(소현)
+    if (!벌.length) return '';           // 그림이 한 벌도 없으면 인장만 세운다
     if (벌.length === 1) return 얼굴파일(k, 벌[0]);
     if (받아침 && 벌.indexOf(3) >= 0) return 얼굴파일(k, 3);
     const 평 = 벌.filter(i => i !== 3);   // 받아치는 얼굴은 평상시에 안 쓴다 — 아껴야 세진다
@@ -3200,7 +3200,7 @@
     const 인 = esc(책사인장[축] || String(who).slice(0, 1));
     // 변주가 못 오면 대표 그림으로 한 번 물러난다. 그것도 없으면 인장만 남는다 —
     // 인장을 늘 뒤에 깔아 두므로 빈 액자가 되지 않는다.
-    // 그림이 아예 없는 책사(소현)는 초상()이 빈 문자열을 돌려준다 — img 를 안 세운다.
+    // 그림이 한 벌도 없으면 초상()이 빈 문자열을 돌려준다 — img 를 안 세운다.
     const 파일 = k ? 초상(k, 자리, 받아침) : '';
     const 그림 = (파일 && window.CHAEKSA_ART)
       ? '<img class="say-face" alt="" data-base="' + 얼굴파일(k, (벌목록(k)[0] || 1)) + '?v=' + window.CHAEKSA_ART + '"'
@@ -3257,9 +3257,9 @@
     return '<p class="mnk">' + esc(단위) + ' ' + esc(대상) + ' — 이렇게 옵니다</p><div class="six">' + 줄.map(c =>
       '<div class="sx ' + (cls[c.판] || 'none') + '"><i>' + esc(c.판) + '</i><span>' + esc(c.근거) + '</span></div>').join('') + '</div>';
   }
-  // 층 칩 — 누가 그렇게 말하는가. 원전(책) · 잣대(책사의 판, 실측) · 통설(유파 갈림)
-  // 층은 판정키다 — 화면에 칩으로 내지 않는다(2026-09-04 사장님 「기준 공개」 부연 삭제). 꼬리는 여전히 떼어 낸다.
-  const 층칩 = () => '';
+  // 층칩() 을 여기서 걷었다 (2026-09-12). 언제나 빈 글자를 돌려주는 함수였다 —
+  // 2026-09-04 「기준 공개」 부연을 지우면서 칩을 끄고, 껍데기만 두 자리에서 계속 부르고 있었다.
+  // 층은 판정키다. 화면에는 안 나간다. 발언 꼬리의 ⟪잣대⟫ 표시는 아래에서 여전히 떼어 낸다.
   function 열눈HTML(묶, 제목) {
     return '<p class="mnk">' + esc(제목) + '</p>' + 묶.map((g, i) => {
       const k = 책사키[g.축];
@@ -3268,7 +3268,7 @@
         ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[g.축] || '') + '</span>\'">'
         : '<span class="ch-seal">' + esc(책사인장[g.축] || '') + '</span>';
       return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
-        + g.본문들.map((t, j) => '<p>' + esc(t) + 층칩(g.층들 && g.층들[j]) + '</p>').join('') + '</div></div>';
+        + g.본문들.map((t) => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
     }).join('');
   }
   // ── 홈 — 웹툰 목록처럼 (2026-09-04 사장님 「네이버 웹툰 메인처럼」) ──
@@ -3296,7 +3296,10 @@
     { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '나에게 그 사람은' },
     { tab: 'geunamja',  묶음: '우리', 이름: '이 남자, 나한테 돈을 쓸까요?', 기본: 'jaemul', 말: '그래서 나한테 도움이 되나요?' },
   ];
-  function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.seen', JSON.stringify(s)); } catch (e) {} }
+  // 어느 화면을 언제 봤는지 적어 둔다. 「최근 본」 배지를 짓게 되면 이 값을 쓴다.
+  // 열쇠를 chaeksa.seen 에서 chaeksa.본것 으로 옮겼다(2026-09-12) — track.js 가 첫 방문 판별에
+  // 같은 이름을 쓰고 있었다. 한쪽은 '1' 을 적고 한쪽은 객체를 적어서, 한 열쇠에 주인이 둘이었다.
+  function 본표시(tab) { try { const s = JSON.parse(localStorage.getItem('chaeksa.본것') || '{}'); s[tab] = Date.now(); localStorage.setItem('chaeksa.본것', JSON.stringify(s)); } catch (e) {} }
   // ── 일일 리포트 — 오늘의 운세 꼴 (2026-09-04 사장님 「오늘 / 천간 / 지지 / 신살 / 오늘의 운세 식으로」) ──
   // 세 줄이다: 천간(하늘 글자) · 지지(땅 글자) · 신살. 값이 없는 줄은 없다고 적는다. 지어내지 않는다.
   function 일일리포트(d) {
@@ -3391,7 +3394,6 @@
     let 전체 = {};
     // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
     try { 전체 = (window.ChaeksaDan && ChaeksaDan.열눈전체) ? (ChaeksaDan.열눈전체(R, today, false) || {}) : {}; } catch (e) { 전체 = {}; }
-    let seen = {}; try { seen = JSON.parse(localStorage.getItem('chaeksa.seen') || '{}'); } catch (e) {}
     const 문장 = (t) => { const s = (String(t || '').split(/(?<=[.!?])\s+/)[0] || '').trim(); return s.length > 64 ? s.slice(0, 62) + '…' : s; };
     const 쓴 = {};
     const 타일 = 홈목록.map((h, i) => {
@@ -3419,7 +3421,8 @@
       const n = 묶.reduce((s, g) => s + g.본문들.length, 0);
       const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 80, false) : '';
       const 인 = 첫 ? (책사인장[첫.축] || '策') : '策';
-      return Object.assign({}, h, { k, 말, n, 파일, 인, seen: !!seen[h.key || h.tab], id: h.key || h.tab });
+      // 「최근 본」 배지 값(seen)을 2026-09-12 에 걷었다 — 칸마다 만들어 붙였는데 그리는 쪽에서 한 번도 안 읽었다.
+      return Object.assign({}, h, { k, 말, n, 파일, 인, id: h.key || h.tab });
     });
     // 1) 오늘부터 이레 (2026-09-04 사장님 「다음달이 궁금하진 않아, 오늘~다음주까지 집중」)
     //    날마다 그날의 책사 얼굴과 한 줄. 오늘의 한마디와 같은 고르기(chaeksadan.오늘)를 날짜만 바꿔 돌린다.
@@ -3569,13 +3572,14 @@
     if (!m) return '<p>' + esc(t) + '</p>';
     // 발언 번호(①②③…)가 곧 자리다. 번호가 없는 줄(맺음말)은 0.
     const 자리 = m[1] ? 번호자리(m[1]) : 0;
-    // 층 꼬리 ⟪원전|잣대|통설⟫ 를 떼어 칩으로 찍는다(2026-09-04 세 층). 옛 캐시(꼬리 없음)는 칩 없이 그대로.
-    let 본문 = t.slice(m[0].length), 층 = '';
-    const tm = 본문.match(/\s*⟪(원전|잣대|통설)⟫\s*$/); if (tm) { 층 = tm[1]; 본문 = 본문.slice(0, tm.index); }
+    // 층 꼬리 ⟪원전|잣대|통설⟫ 는 떼기만 한다. 화면에는 안 나간다(판정키).
+    // 서버에 구워 둔 옛 글에 이 꼬리가 들어 있어서, 떼는 일은 계속 해야 한다.
+    let 본문 = t.slice(m[0].length);
+    const tm = 본문.match(/\s*⟪(원전|잣대|통설)⟫\s*$/); if (tm) 본문 = 본문.slice(0, tm.index);
     return (새화자 === false ? '' : 얼굴띠(m[2], 자리, 받아치는가(본문, m[2])))
       // 번호는 자리(얼굴 변주·맺음 분리)에만 쓰고 화면에는 안 찍는다(2026-09-03 「멘트 칠 때 앞에 번호가 필요한가」).
-      // 층이 말끝을 정한다(2026-09-04) — 원전은 「~라고 봅니다」, 잣대는 「~일 수 있습니다」, 통설은 「~라고들 합니다」
-      + '<p class="gm-say">' + esc((window.ChaeksaDan && ChaeksaDan.말끝) ? ChaeksaDan.말끝(본문, 층 || '잣대') : 본문) + 층칩(층) + '</p>';
+      // 층별 말끝 바꿔치기는 2026-09-12 에 걷었다 — 문장은 쓴 대로 나간다.
+      + '<p class="gm-say">' + esc(본문) + '</p>';
   }
   /** 여러 줄. 같은 책사가 이어 말하면 얼굴을 다시 세우지 않는다 —
    *  안 그러면 무료 의논 스무 발언에 얼굴이 스무 번 나온다. */
