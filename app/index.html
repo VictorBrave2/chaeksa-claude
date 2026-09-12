@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=756">
+<link rel="stylesheet" href="style.css?v=757">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -155,6 +155,11 @@
   <div id="app" class="hide">
     <!-- 홈 — 타일 · 만세력(사람 전환) · 타일 -->
     <div class="tab" data-tab="home">
+      <!-- 파는 것 아홉 장이 **맨 위**다 (2026-09-12 사장님 「웹툰처럼 콘텐츠를 최상단으로 올려」).
+           네이버 웹툰 홈이 그렇다 — 문을 열면 작품이 먼저 있고 나머지는 그 아래다.
+           docs/29:42 「첫 화면은 오늘 하나다」와는 어긋난다. 사장님 지시가 먼저다.
+           오늘(얼빡·한마디)은 격자 바로 아래에 그대로 있다. app.js renderWtHome 이 여기에 격자만 그린다. -->
+      <div id="wtTop" class="wt hide"></div>
       <!-- 「지금 어디에 계신지」는 원국 탭으로 옮겼다 (2026-08-28).
            앱을 열자마자 「지금은 눌리는 구간입니다」가 첫 인사일 수는 없다.
            궁금해서 원국을 열어본 사람에게 할 말이지, 문을 열고 들어온 사람에게 할 말이 아니다. -->
@@ -887,36 +892,36 @@
   </div>
 </div>
 
-<script src="config.js?v=756"></script>
-<script src="track.js?v=756"></script>
-<script src="cloud.js?v=756"></script>
-<script src="usage.js?v=756"></script>
-<script src="places.js?v=756"></script>
-<script src="people.js?v=756"></script>
-<script src="astro.js?v=756"></script>
-<script src="lunar.js?v=756"></script>
-<script src="engine.js?v=756"></script>
-<script src="chaeyong.js?v=756"></script>
-<script src="brief.js?v=756"></script>
-<script src="chaeksadan.js?v=756"></script>
-<script src="geunamja.js?v=756"></script>
-<script src="maeum.js?v=756"></script>
-<script src="gunghap.js?v=756"></script>
-<script src="sheets.js?v=756"></script>
-<script src="hwakin.js?v=756"></script>
-<script src="mun.js?v=756"></script>
-<script src="mun/all.js?v=756"></script>
-<script src="typecard.js?v=756"></script>
-<script src="gyeokguk.js?v=756"></script>
-<script src="memo.js?v=756"></script>
-<script src="classic.js?v=756"></script>
-<script src="calendar.js?v=756"></script>
-<script src="tongbyeon.js?v=756"></script>
-<script src="rules-wealth-love.js?v=756"></script>
-<script src="rules-health-study-move.js?v=756"></script>
-<script src="share.js?v=756"></script>
-<script src="ai.js?v=756"></script>
-<script src="pay.js?v=756"></script>
-<script src="app.js?v=756"></script>
+<script src="config.js?v=757"></script>
+<script src="track.js?v=757"></script>
+<script src="cloud.js?v=757"></script>
+<script src="usage.js?v=757"></script>
+<script src="places.js?v=757"></script>
+<script src="people.js?v=757"></script>
+<script src="astro.js?v=757"></script>
+<script src="lunar.js?v=757"></script>
+<script src="engine.js?v=757"></script>
+<script src="chaeyong.js?v=757"></script>
+<script src="brief.js?v=757"></script>
+<script src="chaeksadan.js?v=757"></script>
+<script src="geunamja.js?v=757"></script>
+<script src="maeum.js?v=757"></script>
+<script src="gunghap.js?v=757"></script>
+<script src="sheets.js?v=757"></script>
+<script src="hwakin.js?v=757"></script>
+<script src="mun.js?v=757"></script>
+<script src="mun/all.js?v=757"></script>
+<script src="typecard.js?v=757"></script>
+<script src="gyeokguk.js?v=757"></script>
+<script src="memo.js?v=757"></script>
+<script src="classic.js?v=757"></script>
+<script src="calendar.js?v=757"></script>
+<script src="tongbyeon.js?v=757"></script>
+<script src="rules-wealth-love.js?v=757"></script>
+<script src="rules-health-study-move.js?v=757"></script>
+<script src="share.js?v=757"></script>
+<script src="ai.js?v=757"></script>
+<script src="pay.js?v=757"></script>
+<script src="app.js?v=757"></script>
 </body>
 </html>

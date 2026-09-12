@@ -3482,7 +3482,7 @@
     const 줄목록 = (arr, 이름) => '<ul class="wt-free">'
       + arr.map((t, i) => '<li><button data-' + 이름 + '="' + i + '"><b>' + esc(t.이름) + '</b>'
         + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('') + '</ul>';
-    // ① 오늘부터 이레 — 오늘 하나가 첫 화면이다(docs/29). 오늘 칸은 처음부터 펼쳐 둔다.
+    // ① 오늘부터 이레. 오늘 칸은 처음부터 펼쳐 둔다.
     //    예전엔 같은 글이 같은 화면에 두 번 있었다(#dailyReport 와 오늘 칩이 같은 리포트HTML).
     //    조심할 날은 **있는 날만** 적는다 — 값이 없는 것과 조용한 것을 가른다(docs/29).
     let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
@@ -3494,13 +3494,14 @@
       + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
         + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>'
-      + 줄목록([이달], 'm')
+      + 줄목록([이달], 'm');
     // ② 파는 것 아홉 장 — 웹툰 메인처럼 세 칸 격자다(2026-09-12 사장님 「아무리 작아도 3열은 나오는데」).
     //    가로로 긴 카드 한 장이 화면 높이의 사분의 일을 먹어서, 여섯 장만 세워도 스크롤이 길었다.
     //    격자로 세우니 아홉 장이 두 장 반 높이에 다 들어간다 — 접어 뒀던 셋을 도로 꺼냈다.
     //    (09-04 「메인콘텐츠 식으로 유료 콘텐츠를 나열하자」가 이 격자로 그대로 산다.)
+    //    **이 격자는 홈 맨 위 #wtTop 에 따로 그린다**(2026-09-12 「웹툰처럼 콘텐츠를 최상단으로」).
     //    짝을 아직 안 적으신 분께는 칸마다 적지 않고 머리에 한 번만 적는다.
-      + '<div class="wt-head"><b>그 사람을 두고</b><span>'
+    let 위 = '<div class="wt-head"><b>그 사람을 두고</b><span>'
       + (짝있음 ? '비밀 하나가 한 장이에요' : '그 사람 생년월일만 있으면 바로 열려요') + '</span></div>'
       + '<div class="wt-grid">'
       + 유료.map((f, i) => {
@@ -3533,11 +3534,13 @@
       + '<ul class="wt-free">'
       + 무료.map((t) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
       + '</ul></details>';
+    const top = $('wtTop');
+    if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
     box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
-    box.querySelectorAll('.wt-cd').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
+    if (top) top.querySelectorAll('.wt-cd').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
     // 접기 여닫음을 기기에 남긴다. 나중에 「접힌 것을 여는 비율」을 잴 값이기도 하다.
     box.querySelectorAll('details.wt-fold').forEach(d => { d.ontoggle = () => {
       try { 접힘[d.dataset.fold] = d.open ? 1 : 0; localStorage.setItem('chaeksa.fold', JSON.stringify(접힘)); } catch (e) {}
