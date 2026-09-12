@@ -2210,9 +2210,14 @@
   function 한편붙이기(box, code, 장, f, met, 관찰, 열쇠, 이름표) {
     const pb = box.querySelector('.pb-piece'); const slot = pb && pb.querySelector('.pb-ai-slot'); if (!slot) return;
     // 표에서 온 답이어야 판정이 잠긴다 — 표키 없는 칸(코드가 쓴 기본 문장)이 하나라도 있으면 한 편을 열지 않는다.
-    if (!f.Q.every(q => q && q.표키)) {
-      try { console.warn('한 편 안 엶 — 표키 없는 칸:', code, f.Q.map(q => (q && q.표키) ? 1 : 0).join('')); } catch (e) {}
-      pb.remove();
+    const 빈칸 = f.Q.map((q, i) => (q && q.표키) ? 0 : i + 1).filter(Boolean);
+    if (빈칸.length) {
+      try { console.warn('한 편 안 엶 — 표키 없는 칸:', code, 빈칸.join(',')); } catch (e) {}
+      // 운영자에게는 왜 안 열렸는지 보인다 — 조용히 사라지면 「버튼이 없다」로만 보인다. 손님 화면에서는 그냥 없다.
+      let 수퍼 = false; try { 수퍼 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) {}
+      if (수퍼) slot.innerHTML = '<div class="pb-ai"><p class="pb-ai-load">표에서 온 답이 아닌 칸이 있어 한 편을 열지 않았습니다 — '
+        + esc(빈칸.join('·')) + '번. 이 줄은 운영자에게만 보입니다.</p></div>';
+      else pb.remove();
       return;
     }
     // 열쇠: 결제 열쇠(그 사람) + 내 사주 + 먼저 달라진 것 + 달. 위 표의 답이 달마다 바뀌므로 한 편도 달마다 새로 쓴다
