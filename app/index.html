@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>책사 — 나의 명리비서</title>
-<meta name="description" content="오늘·이달·올해 무엇이 오는지 열 사람의 책사가 각자 잰 값으로 말합니다. 인연이 오는 해, 자리가 열리는 해, 우리 둘 사이까지 무료. 절기 시각까지 천문 계산한 만세력 위에서 봅니다.">
+<meta name="description" content="그 사람 때문에 궁금해진 모든 이야기. 두 사람 생년월일을 놓고 「이번 주 먼저 연락해도 될까요?」 같은 질문에 날짜로 답해요. 오늘부터 7일은 무료.">
 <link rel="canonical" href="https://chaeksa.kr/">
 <!-- 네이버 웹마스터도구 소유확인. 지우면 확인이 풀린다 — 등록 뒤에도 두어야 한다. -->
 <meta name="naver-site-verification" content="47ce3558f6a916bf636e928f9f2a8780e11a9cbb">
@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
 <meta property="og:title" content="책사 — 나의 명리비서">
-<meta property="og:description" content="오늘·이달·올해 무엇이 오는지, 열 사람의 책사가 각자 잰 값으로. 인연이 오는 해·자리가 열리는 해·우리 둘 사이 무료.">
+<meta property="og:description" content="그 사람 때문에 궁금해진 모든 이야기. 두 사람 생년월일로 날짜마다 답해요. 오늘부터 7일은 무료.">
 <meta property="og:url" content="https://chaeksa.kr/">
 <meta property="og:image" content="https://chaeksa.kr/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=775">
+<link rel="stylesheet" href="style.css?v=778">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -67,29 +67,21 @@
   <section id="landing" class="hide">
     <div class="lp-hero" id="lpHero">
       <div class="lp-seal">策</div>
-      <h1>사주 하나를 두고<br>열 사람이 다툽니다</h1>
-      <p class="lp-lead">한 사람이 봐 드리지 않습니다.<br><b>열 사람의 책사</b>가 둘러앉아 그 사주를 두고 의논합니다 —<br><b>생년월일시 하나면 그 자리를 열겠습니다.</b></p>
+      <h1>그 사람 때문에<br>궁금해진 모든 이야기</h1>
+      <p class="lp-lead">두 사람 생년월일을 놓고 날짜로 답해요.<br><b>오늘부터 7일은 무료</b>예요.</p>
       <div class="lp-today">
         <span class="lp-today-label">오늘</span>
         <b id="lpGanji">―</b>
         <span id="lpGanjiKo"></span>
       </div>
-      <button class="btn lp-cta" id="btnStart">제 이야기로 의논해 주세요</button>
-      <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 주시면 됩니다</p>
+      <button class="btn lp-cta" id="btnStart">내 생년월일 넣기</button>
+      <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 있으면 돼요</p>
     </div>
 
     <section class="card">
-      <h2>열 사람이 나와 있습니다</h2>
-      <div id="lpCorps"></div>
-      <p class="hint" style="text-align:center;margin-top:12px">
-        같은 사주를 열 사람이 각자의 눈으로 봅니다.
-        말이 갈리면 갈린 채로 올립니다.</p>
-    </section>
-
-    <section class="card">
-      <h2>첫 만남에 드리는 것</h2>
-      <div class="lp-feat"><i>議</i><div><b>책사단의 첫 의논</b><p>법도를 보는 <b>정율</b>, 계절을 보는 <b>온서</b>, 저울을 든 <b>형준</b>, 자리를 읽는 <b>성아</b>, 인연을 맡은 <b>연희</b>, 셈에 밝은 <b>계상</b>, 일을 보는 <b>장현</b>, 멀리 보는 <b>소현</b>, 때를 고르는 <b>검명</b>. 아홉이 다투고 좌장 <b>태윤</b>이 정리해 올립니다.</p></div></div>
-      <div class="lp-feat"><i>日</i><div><b>오늘, 이달, 올해</b><p>오늘 어떤 날인지, 이달 어떤 때인지, 올해 어디로 기우는지. 열 때마다 오늘의 말이 새로 섭니다.</p></div></div>
+      <h2>이렇게 봐요</h2>
+      <div class="lp-feat"><i>問</i><div><b>질문 하나에 답 하나</b><p>「이번 주 먼저 연락해도 될까요?」 같은 질문을 고르면, 두 사람 사주를 놓고 날마다 ○△✕로 답해요. 이유도 한 줄로.</p></div></div>
+      <div class="lp-feat"><i>日</i><div><b>7일은 무료, 30일은 이번 달 결제</b><p>오늘부터 7일은 그냥 봐요. 한 달 전체는 이번 달 결제 하나로 모든 질문이 열려요.</p></div></div>
     </section>
 
 
@@ -884,37 +876,37 @@
   </div>
 </div>
 
-<script src="config.js?v=775"></script>
-<script src="track.js?v=775"></script>
-<script src="cloud.js?v=775"></script>
-<script src="usage.js?v=775"></script>
-<script src="places.js?v=775"></script>
-<script src="people.js?v=775"></script>
-<script src="astro.js?v=775"></script>
-<script src="lunar.js?v=775"></script>
-<script src="engine.js?v=775"></script>
-<script src="chaeyong.js?v=775"></script>
-<script src="brief.js?v=775"></script>
-<script src="chaeksadan.js?v=775"></script>
-<script src="geunamja.js?v=775"></script>
-<script src="maeum.js?v=775"></script>
-<script src="gunghap.js?v=775"></script>
-<script src="sheets.js?v=775"></script>
-<script src="hwakin.js?v=775"></script>
-<script src="mun.js?v=775"></script>
-<script src="mun/all.js?v=775"></script>
-<script src="typecard.js?v=775"></script>
-<script src="gyeokguk.js?v=775"></script>
-<script src="memo.js?v=775"></script>
-<script src="classic.js?v=775"></script>
-<script src="calendar.js?v=775"></script>
-<script src="stories.js?v=775"></script>
-<script src="tongbyeon.js?v=775"></script>
-<script src="rules-wealth-love.js?v=775"></script>
-<script src="rules-health-study-move.js?v=775"></script>
-<script src="share.js?v=775"></script>
-<script src="ai.js?v=775"></script>
-<script src="pay.js?v=775"></script>
-<script src="app.js?v=775"></script>
+<script src="config.js?v=778"></script>
+<script src="track.js?v=778"></script>
+<script src="cloud.js?v=778"></script>
+<script src="usage.js?v=778"></script>
+<script src="places.js?v=778"></script>
+<script src="people.js?v=778"></script>
+<script src="astro.js?v=778"></script>
+<script src="lunar.js?v=778"></script>
+<script src="engine.js?v=778"></script>
+<script src="chaeyong.js?v=778"></script>
+<script src="brief.js?v=778"></script>
+<script src="chaeksadan.js?v=778"></script>
+<script src="geunamja.js?v=778"></script>
+<script src="maeum.js?v=778"></script>
+<script src="gunghap.js?v=778"></script>
+<script src="sheets.js?v=778"></script>
+<script src="hwakin.js?v=778"></script>
+<script src="mun.js?v=778"></script>
+<script src="mun/all.js?v=778"></script>
+<script src="typecard.js?v=778"></script>
+<script src="gyeokguk.js?v=778"></script>
+<script src="memo.js?v=778"></script>
+<script src="classic.js?v=778"></script>
+<script src="calendar.js?v=778"></script>
+<script src="stories.js?v=778"></script>
+<script src="tongbyeon.js?v=778"></script>
+<script src="rules-wealth-love.js?v=778"></script>
+<script src="rules-health-study-move.js?v=778"></script>
+<script src="share.js?v=778"></script>
+<script src="ai.js?v=778"></script>
+<script src="pay.js?v=778"></script>
+<script src="app.js?v=778"></script>
 </body>
 </html>

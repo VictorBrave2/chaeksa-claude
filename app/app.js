@@ -336,43 +336,7 @@
     }
   }
 
-  // ───── 온보딩 ─────
-  /** 첫 만남의 예. 열 사람이 자리에 앉는 것을 보여 드리고 물러난다.
-   *  처음 사주를 넣으신 그 한 번만 뜬다. 아무 데나 누르면 바로 건너뛴다. */
-  function 착석(끝나면) {
-    let 닫힘 = false;
-    const 닫기 = () => {
-      if (닫힘) return; 닫힘 = true;
-      try { document.removeEventListener('keydown', 키); } catch (e) {}
-      if (막) { 막.classList.add('out'); setTimeout(() => { try { 막.remove(); } catch (e) {} }, 420); }
-      try { 끝나면(); } catch (e) {}
-    };
-    let 막 = null;
-    try {
-      const 덜 = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      막 = document.createElement('div');
-      막.className = 'seatin' + (덜 ? ' still' : '');
-      막.innerHTML = '<div class="si-in">'
-        + '<p class="si-k">책사단이 자리에 앉습니다</p>'
-        + '<div class="si-row">'
-        + 오늘의책사.map(([k, 이름], i) =>
-            '<span class="si-m" style="animation-delay:' + (0.12 + i * 0.11).toFixed(2) + 's">'
-            + '<span class="si-face"><img src="art/chaeksa-' + k + '.webp" alt="" '
-            + 'onerror="this.remove()">'
-            + '<span class="si-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
-            + '<span class="si-name">' + esc(이름of(이름)) + '</span></span>').join('')
-        + '</div>'
-        + '<p class="si-hail">' + 부름(', 기다리고 있었습니다.', '기다리고 있었습니다.') + '</p>'
-        + '<p class="si-skip">아무 데나 누르시면 넘어갑니다</p>'
-        + '</div>';
-      막.onclick = 닫기;
-      document.body.appendChild(막);
-    } catch (e) { 닫기(); return; }
-    const 키 = () => 닫기();
-    document.addEventListener('keydown', 키);
-    // 붙잡지 않는다. 열 사람이 앉고 인사 한 줄이면 끝이다.
-    setTimeout(닫기, matchMedia('(prefers-reduced-motion: reduce)').matches ? 1400 : 3400);
-  }
+  // 첫 방문 착석 연출(열 사람이 자리에 앉는 것)은 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
 
   function readForm() {
     const noTime = $('noTime').checked;
@@ -399,13 +363,6 @@
       start(People().toProfile(People().active()));
     } else start(p);
     if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
-    // 첫 만남의 예 — 처음 사주를 넣으신 이 한 번만. 홈은 이미 뒤에 다 그려져 있다.
-    try {
-      if (!localStorage.getItem('chaeksa.seatin')) {
-        localStorage.setItem('chaeksa.seatin', '1');
-        착석(() => {});
-      }
-    } catch (e) {}
   };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
@@ -433,7 +390,7 @@
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
-    try { renderChorus(tab); } catch (e) {}
+    // 탭 위의 열 책사 한마디(renderChorus)는 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
     if (tab !== 'home') 본표시(tab); else { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
     // 자리 잡기 — 홈이면 보던 데로, 아니면 맨 위로.
     // 그림이 늦게 서면 그만큼 짧아진 문서에 맞춰 브라우저가 잘라 버린다. 한 박자씩 두 번 더 민다.
@@ -585,40 +542,18 @@
       // 맞이하는 말이 먼저다 — 사실 통보는 그 다음이다.
       // 「기다리고 있었습니다」는 연출이지 명리 주장이 아니다(판정은 엔진, 전달은 우리 몫).
       // 얼굴이 없으면 얼빡 자리를 비우고 인장만 세운다 — 빈 액자는 두지 않는다.
+      // 책사 얼굴·이름·직함은 걷었다(2026-09-12 「열책사 어쩌고 다 지우자」). 오늘 한마디 문장만 남긴다.
       sc.innerHTML =
-        (window.CHAEKSA_ART
-          ? (() => {
-              // 얼빡도 날마다 얼굴을 바꾼다 — 변주(-2·-3)는 이미 그려져 있는데 여태
-              // 안 쓰이고 있었다. 매일 같은 그림이면 내일 다시 올 이유가 하나 준다.
-              // 변주가 없는 책사가 있으므로(궁위·인연·운로는 -3 이 없다) 못 찾으면
-              // 대표 그림으로 한 번 물러난다. 빈 액자는 그 다음이다.
-              // 그려진 벌만 아는 초상() 이 고른다 — 없는 -3 을 부르고 404 를 맞던 자리다.
-              // 그림이 한 벌도 없는 책사가 생기면 빈 문자열이 와서 얼빡을 안 세운다(지금은 열 명 다 있다).
-              const 파일0 = 초상(키0, 0);
-              if (!파일0) return '';
-              const 밑 = 얼굴파일(키0, (벌목록(키0)[0] || 1)) + '?v=' + window.CHAEKSA_ART;
-              return '<img class="hs-face" alt="" data-base="' + 밑 + '"'
-                + ' src="' + 파일0 + '?v=' + window.CHAEKSA_ART + '"'
-                + ' onerror="var b=this.dataset.base;'
-                + 'if(b){this.removeAttribute(\'data-base\');this.src=b;return;}'
-                + 'this.closest(\'.home-scene\').classList.add(\'noface\');this.remove()">';
-            })()
-          : '')
-        + '<div class="hs-veil"></div><div class="hs-body">'
-        + '<p class="hs-hail">기다리고 있었습니다.</p>'
+        '<div class="hs-veil"></div><div class="hs-body">'
+        + '<p class="hs-hail">오늘</p>'
         + '<p class="hs-name">' + esc(nim()) + '</p>'
-        + '<p class="hs-day">오늘은 ' + esc(f.pillar(tf.day)) + '일 — '
-        + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날입니다</p>'
-        + '<p class="hs-who">' + esc(이름of(이름0)) + '</p>'
-        + '<p class="hs-role">' + esc(직함of(이름0)) + ' · ' + esc(이름0) + '</p>'
+        + '<p class="hs-day">' + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날이에요</p>'
         + '<button class="hs-say" type="button">'
         + '<span class="cs-txt">' + escP(말0)
         + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + escP(행동0) + '</span>' : '')
         + '</span><span class="cs-go">' + (탭이름(탭0) ? esc(탭이름(탭0)) + ' ' : '') + '▸</span></button>'
         + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
-      // 그림 없는 책사가 오늘 차례면 얼빡 자리를 접는다 — 빈 액자를 두지 않는다.
-      // (onerror 로 접는 길은 img 를 아예 안 세울 때는 안 지나간다)
-      sc.classList.toggle('noface', !sc.querySelector('.hs-face'));
+      sc.classList.add('noface');   // 얼굴 자리를 접는다 — 얼굴을 안 세우니 늘 접힌다
       const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
       // ── 어제와 오늘이 이어진다 (2026-09-04 1단계 「내일 다시 열 이유」) ──
       // 오늘의 한마디를 날짜별로 남겨 두고, 어제 것이 있으면 그 아래 세운다. 온 날도 센다(기기 안에서만).
@@ -717,7 +652,7 @@
     // (index.html 176줄 — year·inyeon·jikcheop·dohwa·lovestory·gacha·gwangye).
     // 홈 목록은 「뺀다」 하고 도열은 「들어간다」 하니, 한 화면 안에서 두 길이 서로 어긋났다.
     // 화면과 탭 코드는 살아 있다 — 주소(#jikcheop)와 그날 한마디 단추(위 hs-say)로 열린다.
-    // 열 사람을 세우는 자리는 랜딩(showLanding 의 #lpCorps)에 남겼다. 거기선 문이 아니라 소개다.
+    // 랜딩의 열 사람 도열(#lpCorps)도 2026-09-12 밤에 걷었다(「열책사 어쩌고 다 지우자」).
     // 서고(#shelves)의 배지·부제 열둘을 채우던 자리였다. 서고를 지웠다(2026-09-09 「홈 하나로 정리」).
     // T.jichim · T.naepyeon · T.inyeon · T.yearFlow · T.lifeCurve · T.career · T.관계지도 ·
     // T.love · T.wealth · T.cachedSample 을 홈을 그릴 때마다 돌려서 안 보이는 칸에 쓰고 있었다.
@@ -1437,19 +1372,13 @@
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
     }).join('');
-    const 열 = G.열사람(v).map((x, i) => {
-      const k = 책사키[x.축]; const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 70, false) : '';
-      const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
-      return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
-    }).join('');
-    const 결제 = paid ? '' : 결제상자('btnGnBuy', youName, '그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.');
+    const 결제 = paid ? '' : 결제상자('btnGnBuy', youName, '그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀에서 봅니다.');
     box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
-      ${다 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
-      <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
     한편붙이기(box, 'geunamja', { 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 이 사람이 나한테 도움이 되는 사람인지' }, f, met, you0.관찰, 열쇠, youName);
@@ -1498,20 +1427,14 @@
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
     }).join('');
-    const 열 = G.열사람(v).map((x, i) => {
-      const k = 책사키[x.축]; const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 70, false) : '';
-      const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
-      return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
-    }).join('');
-    const 결제 = paid ? '' : 결제상자('btnMmBuy', youName, '그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.');
+    const 결제 = paid ? '' : 결제상자('btnMmBuy', youName, '그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀에서 봅니다.');
     const 관찰말 = { 여자: '나한테 다가옴', 돈: '돈 씀씀이', 말: '말·표현', 자리: '일·자리', 없음: '달라진 것 없음' }[you0.관찰] || '';
     box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${관찰말 ? '먼저 달라진 것 ' + 관찰말 + ' · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
-      ${다 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
-      <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
     한편붙이기(box, 'maeum', { 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 이 사람이 나한테 좋은 사람인지' }, f, met, you0.관찰, 열쇠, youName);
@@ -1561,19 +1484,13 @@
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
     }).join('');
-    const 열 = G.열사람(v).map((x, i) => {
-      const k = 책사키[x.축]; const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 70, false) : '';
-      const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
-      return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
-    }).join('');
-    const 결제 = paid ? '' : 결제상자('btnGhBuy', youName, '네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀과 열 책사의 한마디에서 봅니다.');
+    const 결제 = paid ? '' : 결제상자('btnGhBuy', youName, '네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀에서 봅니다.');
     box.innerHTML = `<h2>우리 둘, 잘 맞아요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
-      ${다 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>
-      <div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
     한편붙이기(box, 'gunghap', { 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되는지' }, f, met, you0.관찰, 열쇠, youName);
@@ -1630,19 +1547,14 @@
       return 머리 + `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`) + '</div>';
     }).join('');
-    const 열 = (장.둘 ? S.열사람(v) : []).map((x, i) => {
-      const k = 책사키[x.축]; const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 70, false) : '';
-      const 얼 = 파일 ? `<img class="ch-face" alt="" src="${파일}?v=${window.CHAEKSA_ART}" onerror="this.outerHTML='<span class=ch-seal>${esc(책사인장[x.축] || '')}</span>'">` : `<span class="ch-seal">${esc(책사인장[x.축] || '')}</span>`;
-      return `<div class="ch-row">${얼}<div><b>${esc(이름of(x.축))}</b><p>「${esc(x.말)}」</p></div></div>`;
-    }).join('');
     const 이름표 = 장.둘 ? youName : '내 사주';
-    const 결제 = paid ? '' : 결제상자('btnShBuy', 이름표, esc(장.부제) + '는 나머지 일곱 가지 비밀' + (장.둘 ? '과 열 책사의 한마디' : '') + '에서 봅니다.', 장.둘 ? youName : '올 사람');
+    const 결제 = paid ? '' : 결제상자('btnShBuy', 이름표, esc(장.부제) + '는 나머지 일곱 가지 비밀에서 봅니다.', 장.둘 ? youName : '올 사람');
     box.innerHTML = `<h2>${esc(장.제목)}</h2>
       <p class="hint">${장.둘 ? esc(youName) + ' · ' : ''}${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
       ${카드줄(f.Q, 미리, 다, !장.둘)}
       ${장.둘 ? 절 : ''}
       ${한편자리(paid, 장.둘 ? youName : '올 사람')}
-      ${다 ? (열 ? `<div class="tenbox"><p class="mnk">열 책사가 짚어보는 서로 다른 관점</p><div class="chorus">${열}</div></div>` : '') + `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
+      ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
     한편붙이기(box, 장.code, 장, f, met, 장.둘 && you0 ? you0.관찰 : null, 열쇠, 장.둘 ? youName : '올 사람');
@@ -1725,7 +1637,7 @@
     // 열 사람이 그 사람을 두고 — 칸 제한 없음(2026-09-03). 값이 있는 책사는 전부, 있는 만큼.
     let 열절 = '';
     try {
-      const 열 = (window.ChaeksaDan && ChaeksaDan.그사람) ? ChaeksaDan.그사람(R, you, { 나: meName, 그: youName }, today) : [];
+      const 열 = [];   // 「열 사람이 〇〇님을 두고」는 2026-09-12 걷었다. 아래 조립은 빈 배열이라 안 선다.
       if (열.length) {
         const 총 = 열.reduce((s, g) => s + g.본문들.length, 0);
         열절 = '<div class="tenbox"><p class="mnk">열 사람이 ' + esc(youName) + '님을 두고</p><div class="chorus">'
@@ -3169,65 +3081,8 @@
       + '<span class="say-id"><b>' + esc(이름of(who)) + '</b>'
       + '<span>' + esc(직함of(who)) + '</span></span></div>';
   }
-  // ── 코러스 — 콘텐츠마다 책사들이 한 번씩 나와 한 문장씩 (2026-09-03 「일반인은 누가 누군지 몰라」) ──
-  // 담당 책사를 두지 않는다. 그 화면의 물음에 대해 이 사람 값으로 쓴 발언의 첫 문장을
-  // 얼굴과 함께 세운다(chaeksadan.코러스). 할 말이 없는 탭은 비운다. 얼굴이 곧 삽화다.
-  function renderChorus(tab) {
-    const el = document.querySelector('.tab[data-tab="' + tab + '"]'); if (!el) return;
-    let box = el.querySelector('.chorus');
-    // 2026-09-03 「일단 모든 콘텐츠에 적용시켜줘」 — 한 사람 한 문장(코러스)에서 칸 없는 열눈으로.
-    let 묶 = [];
-    if (R && window.ChaeksaDan && ChaeksaDan.열눈) { try { 묶 = ChaeksaDan.열눈(R, today, tab) || []; } catch (e) { 묶 = []; } }
-    if (!묶.length) { if (box) box.remove(); return; }
-    if (!box) {
-      box = document.createElement('div'); box.className = 'chorus tenbox';
-      // 첫 카드의 제목 아래. 제목이 없는 탭(나)은 맨 위.
-      const h = el.querySelector(':scope > section.card:not(.hide) > h2');
-      if (h) h.after(box);
-      else { const back = el.querySelector(':scope > .backhome'); if (back) back.after(box); else el.prepend(box); }
-    }
-    // 육안 — 오늘·이달·올해는 여섯 축(자평·적천·궁통·잣대·통설 둘)이 먼저 선다(2026-09-04)
-    const 단위 = tab === 'today' ? '오늘' : tab === 'year' ? '올해' : '';
-    box.innerHTML = (단위 ? 육안HTML(단위) : '') + 열눈HTML(묶, '이 화면을 두고');
-    // 오늘 탭에는 「이달의 나」 달력이 같이 산다 — 그 앞에 이달의 눈을 따로 세운다.
-    // 달력(#myMonth)은 renderToday 가 나중에 만드니 한 박자 뒤에 붙인다.
-    if (tab === 'today') setTimeout(() => {
-      const mm = $('myMonth'); if (!mm) return;
-      let b2 = document.getElementById('chorusMonth');
-      let 묶2 = []; try { 묶2 = ChaeksaDan.열눈(R, today, 'cal') || []; } catch (e) {}
-      if (!묶2.length) { if (b2) b2.remove(); return; }
-      if (!b2) { b2 = document.createElement('div'); b2.id = 'chorusMonth'; b2.className = 'chorus tenbox'; mm.parentNode.insertBefore(b2, mm); }
-      b2.innerHTML = 육안HTML('이달') + 열눈HTML(묶2, '이달을 두고');
-    }, 0);
-  }
-  /** 여섯 칸 — 갈리는 채로 나란히. 평균 내지 않는다. */
-  function 육안HTML(단위) {
-    let 칸 = []; try { 칸 = (window.ChaeksaDan && ChaeksaDan.육안) ? ChaeksaDan.육안(R, today, 단위) : []; } catch (e) { 칸 = []; }
-    if (!칸.length) return '';
-    const cls = { 좋다: 'good', 나쁘다: 'bad', 열림: 'open', 표시: 'mark' };
-    const E2 = window.ChaeksaEngine;
-    let 대상 = '';
-    try { const tf = E2.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate()); const pl = 단위 === '오늘' ? tf.day : 단위 === '이달' ? tf.month : tf.year; 대상 = E2.fmt.pillar(pl) + (단위 === '오늘' ? '일' : 단위 === '이달' ? '월' : '년'); } catch (e) {}
-    // 축 이름·표는 화면에 안 낸다 — 좋다·나쁘다로 본 근거만 문장으로, 갈리면 갈린 채로(2026-09-04)
-    const 줄 = 칸.filter(c => (c.판 === '좋다' || c.판 === '나쁘다') && c.근거);
-    if (!줄.length) return '';
-    return '<p class="mnk">' + esc(단위) + ' ' + esc(대상) + ' — 이렇게 옵니다</p><div class="six">' + 줄.map(c =>
-      '<div class="sx ' + (cls[c.판] || 'none') + '"><i>' + esc(c.판) + '</i><span>' + esc(c.근거) + '</span></div>').join('') + '</div>';
-  }
-  // 층칩() 을 여기서 걷었다 (2026-09-12). 언제나 빈 글자를 돌려주는 함수였다 —
-  // 2026-09-04 「기준 공개」 부연을 지우면서 칩을 끄고, 껍데기만 두 자리에서 계속 부르고 있었다.
-  // 층은 판정키다. 화면에는 안 나간다. 발언 꼬리의 ⟪잣대⟫ 표시는 아래에서 여전히 떼어 낸다.
-  function 열눈HTML(묶, 제목) {
-    return '<p class="mnk">' + esc(제목) + '</p>' + 묶.map((g, i) => {
-      const k = 책사키[g.축];
-      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 40, false) : '';
-      const 얼 = 파일
-        ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[g.축] || '') + '</span>\'">'
-        : '<span class="ch-seal">' + esc(책사인장[g.축] || '') + '</span>';
-      return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
-        + g.본문들.map((t) => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
-    }).join('');
-  }
+  // 탭 위의 열 책사 한마디(renderChorus · 육안HTML · 열눈HTML)는 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
+  // 열눈전체()는 홈 전체 목록의 한 줄 소개에 아직 쓴다(chaeksadan.js 쪽은 그대로).
   // ── 홈 — 웹툰 목록처럼 (2026-09-04 사장님 「네이버 웹툰 메인처럼」) ──
   // 표지마다 얼굴, 제목은 그 사람 값으로 쓴 한 줄(약속), 시간순 탭, 오늘·최근 본 배지.
   // 제목은 지어내지 않는다 — 열눈의 첫 마디 첫 문장. 값이 없는 콘텐츠는 분류 제목 그대로.
@@ -3243,7 +3098,6 @@
     // 법이 생겼다. 합계 보존으로 나올 수 있는 칸만 남긴 표라 「법 있는 것으로만」을 통과한다.
     // 그리고 서고를 지우면 이 화면은 주소로만 열리는 화면이 된다.
     { tab: 'life',      묶음: '나',   이름: '지금과 그때, 나는',    기본: 'unro',    말: '대운마다 지금과 견주어 무엇이 더 많고 적은지' },
-    { tab: 'ganmyeong', 묶음: '나',   이름: '나를 두고 열 사람이',  기본: 'jwajang', 말: '열 사람이 둘러앉아 다툽니다 — 말이 갈리면 갈린 채로' },
     { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
     // 어떤 사람이 오나(lovestory) — 「내 배우자성을 일간으로 타고난 사람」 읽기 전체가 09-04 삭제 대상. 홈에서 뺌.
     { tab: 'jichim',    묶음: '나',   이름: '나는 언제 지치나',     기본: 'eokbu' },
@@ -4126,19 +3980,7 @@
       // 오늘의 회의 장면이 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
       회의장면(u => hero.style.setProperty('--hero-art', 'url("' + u + '")'));
     }
-    // 랜딩에도 열 사람을 세운다. 홈과 같은 표에서 가져오므로 이름이 어긋나지 않는다.
-    // 첫 화면에서 대접이 시작되어야 한다 — 들어와야 받는 대접은 늦다.
-    const lc = $('lpCorps');
-    if (lc) {
-      lc.innerHTML = '<section class="corps"><div class="corps-row">'
-        + 오늘의책사.map(([k, 이름]) =>
-            '<span class="cm" style="cursor:default">'
-            + '<span class="cm-face"><img src="art/chaeksa-' + k + '.webp" alt="" '
-            + 'onerror="this.remove()">'
-            + '<span class="cm-seal">' + esc(책사인장[이름] || 이름.slice(0, 1)) + '</span></span>'
-            + '<span class="cm-name">' + esc(이름of(이름)) + '</span></span>').join('')
-        + '</div></section>';
-    }
+    // 랜딩의 열 사람 도열(#lpCorps)은 2026-09-12 걷었다.
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
     $('btnSettings').classList.add('hide');
