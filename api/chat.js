@@ -95,9 +95,10 @@ function 한편검사(글, 입력, 허용) {
   if (해.length > 1) block.push('해많음:' + 해.length);
   for (const y of 해) if (!목록.years.has(y)) block.push('해:' + y);
   for (const m of 달) if (!목록.months.has(m)) block.push('달:' + m);
-  const 몇 = (scan.match(/오늘은/g) || []).length;
-  if (몇 !== 1) block.push('오늘은:' + 몇);
-  if (raw.length < 1600 || raw.length > 2600) block.push('길이:' + raw.length);
+  // 여기서 버리는 것은 「화면에 나가면 안 되는 것」뿐이다 — 한자·사주 낱말·겁주는 말·재료에 없는 해와 달.
+  // 길이가 짧거나 맺음이 어긋나는 것은 품질 문제라 버리지 않는다. 돈 낸 글을 뺏는 대신 앱이 경고로 남기고 내가 읽는다.
+  // (2026-09-12 첫 실물 굽기에서 베낌 25·길이 1,563 으로 멀쩡한 글을 두 번 버렸다.)
+  if (raw.length < 600 || raw.length > 3200) block.push('길이:' + raw.length);
   // 표를 베꼈나 — 맺음 한 문장은 재료에서 고르라고 시킨 것이라 빼고 잰다.
   const 줄 = scan.split(/\n+/).map(s => s.trim()).filter(Boolean);
   // 재료(답·왜)와만 견준다. 지시문 전체와 견주면 틀에 든 본보기 문장을 따라 쓴 것까지 베낌으로 잡힌다(2026-09-12).
