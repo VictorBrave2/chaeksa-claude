@@ -35,6 +35,9 @@
       // 십신 낱말만 정리한다 — 화면에 서기까지 치환을 한 번만 거친다.
       if (십신자.test(n.nodeValue) && window.ChaeksaDan && ChaeksaDan.공주님말) {
         const p = n.parentNode; if (p && /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)) return;
+        // 십신을 이름으로 부르고 그 자리에서 뜻을 푸는 칸(data-plain)은 건드리지 않는다(2026-09-12 사장님).
+        // 이 문이 그 칸까지 바꿔치기하면 「천간에 정관이」가 도로 「자리가」로 돌아간다.
+        if (n.parentElement && n.parentElement.closest('[data-plain]')) return;
         const v = ChaeksaDan.공주님말(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v;
       }
       // 「잣대 공개 —」 꼬리말은 기준 공개 시절의 것 — 심장은 보이지 않는다(2026-09-04). 그 문단을 숨긴다.
@@ -3493,7 +3496,7 @@
         ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
           + 조심.나쁨.map(c => '<p>' + esc(c.근거) + '</p>').join('') + '</div>'
         : '')
-      + '<div class="wt-strip" id="wtWeek">'
+      + '<div class="wt-strip" id="wtWeek" data-plain="1">'
       + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
         + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
       + '</div><div class="wt-daybox hide" id="wtDay"></div>'
