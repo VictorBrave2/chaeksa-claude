@@ -30,21 +30,12 @@
   // 연희의 네 장은 붉은 실을 든 모습이 서로 달라 네 질문을 나눠 맡는다.
   // 값이 [파일, 위치] 면 정사각이 아닌 그림이라 얼굴이 보이게 object-position 을 준다(그려 보고 고른 값).
   // products 표에 상품을 새로 넣으면 여기에도 한 줄 넣어야 한다 — 빠지면 그림 없는 상품이 된다.
+  // 2026-09-12 밤 — 책사 그림 전부 지움. 이제 콘텐츠마다 한 장(art/story-<코드>.webp, 웹툰식 장면)이고
+  // 결제 화면도 그 그림을 쓴다. 아직 없는 그림은 onerror 로 빠진다 — 빈 액자가 아니라 글자 카드가 된다.
   const 그림 = {
-    maeum: 'art/chaeksa-inyeon-2.webp',     // 연희 — 붉은 실이 화면 밖 누군가에게 이어진다
-    gunghap: 'art/chaeksa-gungwi-2.webp',   // 성아 — 별자리 판에 두 사람을 겹쳐 본다
-    sok: 'art/chaeksa-inyeon.webp',         // 연희 — 가장 가까운 얼굴, 팽팽한 실
-    gyeolhon: 'art/chaeksa-gungwi-4.webp',  // 성아 — 차분한 반신, 판의 호
-    ibyeol: 'art/chaeksa-inyeon-4.webp',    // 연희 — 고개를 돌렸고 실이 느슨하다
-    jigeum: 'art/chaeksa-gungtong.webp',    // 온서 — 막 말하려는 얼굴
-    jjak: 'art/chaeksa-inyeon-3.webp',      // 연희 — 새끼손가락에 묶인 실
-    geunamja: 'art/chaeksa-jaemul.webp',    // 계상(jaemul-4 는 서양 프록코트라 뺐다)
-    relation: ['art/say-gungwi.webp', '70% 50%'],        // 성아 — 달 아래 발코니(성아 셋이 서로 다르게)
-    wealth: ['art/wealth-open-winter.webp', '70% 50%'],  // 재물 화면과 같은 벌 중 밤빛인 한 장
-    inyeon: ['art/say-inyeon.webp', '75% 50%'],          // 연희 — 인연 첫머리, 말을 건네는 모습
-    month: 'art/chaeksa-unro-2.webp',       // 소현 — 별자리 판을 들고 웃는다
-    taekil: 'art/chaeksa-hyeopgi-5.webp',   // 검명 — 인장과 빈 종이, 사람이 봉해 보내는 보고서
-    wongook: 'art/chaeksa-jwajang.webp',    // 태윤(좌장) — migrate-15 가 돌아 상품이 생기면 쓰인다
+    maeum: 'art/story-maeum.webp', gunghap: 'art/story-gunghap.webp', sok: 'art/story-sok.webp',
+    gyeolhon: 'art/story-gyeolhon.webp', ibyeol: 'art/story-ibyeol.webp', jigeum: 'art/story-jigeum.webp',
+    jjak: 'art/story-jjak.webp', geunamja: 'art/story-geunamja.webp',
   };
 
   let _state = null;          // GET 결과 캐시. 한 화면에서 여러 번 그리므로 한 번만 받는다

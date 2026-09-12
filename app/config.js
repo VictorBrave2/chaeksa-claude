@@ -20,7 +20,10 @@ window.CHAEKSA_VAPID = 'BOnkk9JIqSpMRYLSm3MewtToERQ6BnFDJNiNYffkpe2u7ce_hHAqrg2b
 //   재물 12장은 한지 수채(벼·항아리)라 우리 세계와 맞아 그대로 둔다.
 //   책사단 세계의 연애 삽화가 도착하면 'all' 로 되돌린다(프롬프트: marketing/삽화-연희-복붙.html).
 //   끄면 파라메트릭 SVG 컷으로 돌아간다 — 빈 자리가 되지 않는다.
-window.CHAEKSA_ART = 'wealth';
+// 2026-09-12 밤 — 그림 110장을 전부 지웠다(사장님 「웹툰식 삽화로 가고싶은데 기존 삽화 전체 삭제하고 새로 뽑자」).
+//   책사 초상·말 건네는 컷·회의 장면·연애·재물 장면 다. 꺼 둔다('') — 얼굴은 안 세우고, 장면은 SVG 컷으로, 랜딩은 글자 히어로로.
+//   새 그림은 콘텐츠마다 한 장(art/story-<id>.webp)이고 이 스위치와 상관없이 있으면 뜬다.
+window.CHAEKSA_ART = '';
 // 돌아온 사람 세기 (docs/29 여덟). server/migrate-16 을 Supabase 에서 돌린 **뒤에** 1 로.
 // 먼저 켜면 모르는 열이라며 방문 기록 전체가 거절된다.
 window.CHAEKSA_TRACK_VID = 0;
@@ -46,16 +49,11 @@ window.CHAEKSA_ART_VAR = { love: 3, wealth: 1 };   // 연애 3벌은 그림이 �
  * 아래 목록이 곧 app/art/ 에 있는 파일이다. 지금은 열 명 전부 네 벌 이상이라 빈 사람이 없다.
  * (「소현은 빈 칸」이라 적혀 있던 주석을 2026-09-12 에 걷었다 — 09-03 에 넷 다 도착했는데
  *  주석만 열흘 동안 남아 있었다. 코드를 읽는 사람이 없는 줄 알고 지나간다.) */
-window.CHAEKSA_FACE_VAR = {
-  japyung: [1, 2, 3, 4], gungtong: [1, 2, 3, 4], eokbu: [1, 2, 3, 4],
-  gungwi: [1, 2, 3, 4], inyeon: [1, 2, 3, 4], jaemul: [1, 2, 3, 4],
-  cheonjik: [1, 2, 3, 4], unro: [1, 2, 3, 4], hyeopgi: [1, 2, 3, 4, 5], jwajang: [1, 2, 3, 4],
-};   // 2026-09-03 소현 셋·궁위 셋째 도착(ChatGPT 로 뽑음) — 소현이 처음으로 얼굴을 얻었다
-     // 2026-09-03 밤 — 형준·태윤·소현 넷째(듣는 얼굴) 도착. 열 명 전부 네 벌 이상.
+window.CHAEKSA_FACE_VAR = {};   // 2026-09-12 밤 — 초상 41장을 지웠다. 비어 있으면 얼굴 자리를 안 만든다.
 
 /* 「이 한마디 간직하기」 카드에 쓰는 말 건네는 컷(art/say-<키>.webp, 3:2).
  * 있는 키만 적는다. 없는 책사는 초상으로 물러난다. 2026-09-03 아홉 장 도착 — 검명(hyeopgi)만 아직 없다. */
-window.CHAEKSA_SAY_ART = ['jwajang', 'inyeon', 'gungtong', 'jaemul', 'unro', 'cheonjik', 'eokbu', 'japyung', 'gungwi'];
+window.CHAEKSA_SAY_ART = [];   // 2026-09-12 밤 — 아홉 장 지웠다. 간직하기 카드는 글자만으로 선다.
 
 /* 회의 장면(council-<계절>[-벌].webp)이 계절마다 몇 벌인가.
  * 봄 1 · 여름 1 · 가을 2 · 겨울 2 가 지금 전부다. */

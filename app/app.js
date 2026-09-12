@@ -3231,6 +3231,8 @@
       { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 사이: '결혼', 제목: '그 사람, 결혼 생각 있을까요?', 소개: '그래서 이 사람과 결혼해도 되나요?', 띠: 띠기본, 값: '9,900원' },
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 사이: '돈과 생활', 제목: '이 남자, 나한테 돈을 쓸까요?', 소개: '그래서 나한테 도움이 되나요?', 띠: 띠기본, 값: '9,900원' },
     ];
+    // 여덟 장도 콘텐츠마다 한 장(art/story-<id>-s.webp)을 쓴다 — 책사 얼굴은 2026-09-12 밤에 다 지웠다. 없으면 글자 표지.
+    이야기.forEach(f => { if (!f.썸) f.썸 = 'art/story-' + f.id + '-s.webp'; });
     // 새 이야기(질문 하나 + 썸네일 하나, 7일 무료 · 30일 유료)를 앞에 세운다 — stories.js 에 한 줄 더하면 진열대에 선다.
     try {
       const S = window.ChaeksaStories;
