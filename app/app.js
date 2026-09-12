@@ -586,7 +586,7 @@
 
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
-    renderChong();
+    // 첫 의논(#chong)은 홈에서 걷었다(2026-09-12 이야기 서점 전략). 의논 화면(ganmyeong)은 전체 목록에서 연다.
     const a = R.analysis;
     // 첫 마디 — 오늘 여기 들어온 사람에게 제일 먼저 할 말
     (function () {
@@ -3427,146 +3427,79 @@
       // 「최근 본」 배지 값(seen)을 2026-09-12 에 걷었다 — 칸마다 만들어 붙였는데 그리는 쪽에서 한 번도 안 읽었다.
       return Object.assign({}, h, { k, 말, n, 파일, 인, id: h.key || h.tab });
     });
-    // 1) 오늘부터 이레 (2026-09-04 사장님 「다음달이 궁금하진 않아, 오늘~다음주까지 집중」)
-    //    날마다 그날의 책사 얼굴과 한 줄. 오늘의 한마디와 같은 고르기(chaeksadan.오늘)를 날짜만 바꿔 돌린다.
-    const 이레 = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-      let 비 = null; try { 비 = ChaeksaDan.오늘 ? ChaeksaDan.오늘(R, d) : null; } catch (e) {}
-      if (!비 || !비.말) continue;
-      const k = 책사키[비.축] || 'jwajang';
-      const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 20, false) : '';
-      const 날말 = i === 0 ? '오늘' : i === 1 ? '내일' : (['일','월','화','수','목','금','토'][d.getDay()] + '요일');
-      // 고르기는 「오늘」이라고 말한다 — 그날 이름으로 바꿔 부른다(「내일 오는 화 기운은」).
-      const 날로 = (x) => i > 0 ? Object.assign({}, x, { 말: String(x.말).replace(/^오늘은 /, 날말 + '은 ').replace(/^오늘 /, 날말 + ' ').replace(/오늘/g, '그날'), 행동: String(x.행동 || '').replace(/오늘/g, '그날') }) : x;
-      const 모두 = (비.모두 || []).map(날로);
-      비 = 날로(비);
-      // 땅 줄 — 지지를 말하는 사건(땅의 글자·지지·합·충) 가운데 고른 말이 아닌 것 하나
-      const 땅 = 모두.find(x => x.말 !== 비.말 && /땅의 글자|지지/.test(x.말)) || null;
-      이레.push({ i, d, 비, 모두, 땅, k, 파일, 인: 책사인장[비.축] || '策', 날말 });
-    }
-    // 이번 주 조심할 날 하나 (사장님 「조심할 날 하나 ㄱㄱ」) — 배점 없이, 그날 글자를 나쁘게 보는 눈의 수로만.
-    // 둘 이상이어야 「조심」이다. 같으면 가까운 날. 하나도 없으면 없다고 말한다.
-    이레.forEach(t => {
-      try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate());
-        const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true });
-        t.나쁨 = k.filter(c => c.판 === '나쁘다'); t.간지 = f.pillar(tf2.day);
-        // 지지 사건이 없는 날은 신살 눈(공망·도화·역마·귀인)으로 땅 줄을 채운다 — 값이 있을 때만
-        if (!t.땅) { const s = k.find(c => c.축 === '통설·신살' && c.판 !== '—' && c.근거); if (s) t.땅 = { 축: '택일', 말: s.근거, 신살: true }; }
-      } catch (e) { t.나쁨 = []; }
-    });
-    const 조심 = 이레.reduce((b, t) => (t.나쁨.length >= 2 && (!b || t.나쁨.length > b.나쁨.length)) ? t : b, null);
-    if (조심) 조심.조심 = true;
-    // 메인 콘텐츠 — 유료 콘텐츠를 표지 카드 꼴로 세로 나열(2026-09-04 사장님 「네이버 웹툰식 말고, 메인콘텐츠 식으로 유료 콘텐츠를 나열하자」).
-    // 2026-09-12 사장님 「홈화면과 콘텐츠의 길이 너무 복잡해」 — 나열은 남기되 **첫 층에 여섯 장만** 세운다.
-    // 열 장이 다 세로 카드라 표지만으로 화면 여러 개였고, 부제 여덟 줄이 글자 그대로 같아서 한 문장으로 읽혔다.
-    // 값은 부제에서 떼어 단추 아래 작은 줄로 내린다 — 제목이 살고, 값은 그대로 보인다.
-    // 짝을 아직 안 적으신 분께는 그 자리에서 「생년월일만 있으면 된다」고 말한다.
-    //   안 그러면 네 장이 빈 고르개로 보내는 헛문이 된다(2026-09-12 심사에서 잡힘).
+    // ── 이야기 서점 (2026-09-12 사장님 확정 전략) ──
+    // 「웹툰처럼 고르고 → 내 이야기라서 읽고 → 다음이 궁금해서 결제하고 → 다른 이야기도 찾아보는 서비스」.
+    // 이야기 하나는 물음 하나다(사장님 「한개의 콘텐츠에 한개의 질문」). 지금은 여덟 장의 머리 물음을 이야기로 세운다.
+    // 원국 정독(나)은 그 사람 이야기가 아니라 진열대에서 뺐다 — 아래 내비 「원국」으로 간다.
+    // 오늘·이레·첫 의논은 홈에서 걷었다. 오늘은 「오늘」 탭에, 의논은 전체 목록에.
+    // 짝을 아직 안 적으신 분께는 칸마다 적지 않고 진열대 머리에 한 번만 적는다.
     const 짝있음 = (() => { try { const P0 = People(); return !!(P0 && P0.others && P0.others().length); } catch (e) { return true; } })();
-    // 칸이 108px 밖에 안 된다. 무료 표시는 그림 위 띠로 올리고 아래 줄에는 값만 남긴다 —
-    // 한 줄에 둘 다 적으면 잘린다(재 봤다: 「우리 · 셋은 무료 · 9,900원」은 15자라 안 들어간다).
     const 띠기본 = 표무료() ? '열 가지 무료' : '셋 무료';
-    const 유료 = [
-      { id: 'maeum', tab: 'maeum', k: 'inyeon', 제목: '그 사람, 나한테 마음이 있을까요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 제목: '우리 둘, 잘 맞아요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 제목: '그 사람 지금 무슨 생각해요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 제목: '우리 둘, 속궁합은요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 제목: '그 사람, 결혼 생각 있을까요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 제목: '헤어질까요, 계속 갈까요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 제목: '이 남자, 나한테 돈을 쓸까요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 제목: '내 짝은 언제 와요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'wongook', tab: 'me', k: 'jwajang', 제목: '나를 한 편으로 읽어 주세요', 띠: '', 값: '원국 정독' },
+    const 이야기 = [
+      { id: 'maeum', tab: 'maeum', k: 'inyeon', 사이: '썸', 제목: '그 사람, 나한테 마음이 있을까요?', 소개: '그래서 나한테 좋은 사람인가요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 사이: '썸', 제목: '내 짝은 언제 와요?', 소개: '그래서 지금 뭘 하면 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 사이: '연애 중', 제목: '그 사람 지금 무슨 생각해요?', 소개: '그래서 지금 나는 어떻게 하면 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 사이: '연애 중', 제목: '우리 둘, 잘 맞아요?', 소개: '그래서 이 사람이랑 가도 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 사이: '연애 중', 제목: '우리 둘, 속궁합은요?', 소개: '누가 더 뜨겁고, 정이 어디로 가는지', 띠: 띠기본, 값: '9,900원' },
+      { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 사이: '재회', 제목: '헤어질까요, 계속 갈까요?', 소개: '그래서 어떻게 하면 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 사이: '결혼', 제목: '그 사람, 결혼 생각 있을까요?', 소개: '그래서 이 사람과 결혼해도 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 사이: '돈과 생활', 제목: '이 남자, 나한테 돈을 쓸까요?', 소개: '그래서 나한테 도움이 되나요?', 띠: 띠기본, 값: '9,900원' },
     ];
-    // 이달은 표지 대신 이레 띠 끝의 한 줄로 내린다. 값 한 조각은 반드시 남긴다 —
-    // 없으면 유료 문이 무료 줄로 읽히고, 눌렀다 결제 벽을 만나는 사람이 는다.
+    const 사이들 = ['전체', '썸', '연애 중', '재회', '결혼', '돈과 생활'];
     const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이달 서른 날 전체 보기', 말: '오늘과 이번 주는 무료예요 · 서른 날 전체는 이달 결제로 열려요' };
-    // 접기 상태는 기기에 기억한다. 한 번 펼친 분께는 다음에도 펼쳐 둔다 —
-    // 그리고 이 숫자가 곧 「접힌 것을 여는 비율」이라 나중에 실측할 값이 된다(docs/29 방아쇠).
+    // 표지 — 책사 얼굴에 제목을 얹는다(2026-09-12). 같은 책사를 쓰는 칸끼리 같은 날 같은 그림이 안 겹치게 벌을 나눈다.
+    // 큰 표지(진열대)는 아래에 짧은 소개 + 무료 첫 장까지, 작은 표지(격자)는 값만.
+    const 표지 = (f, i, 큰, 번호) => {
+      const 벌 = 벌목록(f.k);
+      const 앞선같은책사 = 이야기.slice(0, i).filter(x => x.k === f.k).length;
+      const 파일 = (window.CHAEKSA_ART && 벌.length) ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
+      return '<button class="wt-cd" data-fi="' + i + '" data-s="' + esc(f.사이) + '" type="button">'
+        + '<span class="cd-img">'
+        + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
+        + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
+        + (번호 ? '<span class="cd-num">' + 번호 + '</span>' : '')
+        + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '')
+        + '<b class="cd-t">' + esc(f.제목) + '</b></span>'
+        + (큰 ? '<span class="cd-s">' + esc(f.소개) + '</span><span class="cd-free">' + esc(f.띠 + ' · ' + f.값) + '</span>'
+              : '<span class="cd-s">' + esc(f.값) + '</span>')
+        + '</button>';
+    };
+    // ① 지금 마음에 걸리는 이야기 — 셋. 무엇이 많이 읽히는지 잰 값이 아직 없어서 날마다 돌린다.
+    const 시작 = 날번호() % 이야기.length;
+    const 걸리는 = [0, 1, 2].map(j => 이야기[(시작 + j) % 이야기.length]);
+    const 위 = '<div class="wt-head"><b>지금 마음에 걸리는 이야기</b><span>' + (짝있음 ? '' : '그 사람 생년월일만 있으면 바로 열려요') + '</span></div>'
+      + '<div class="wt-hero">' + 걸리는.map((f, j) => 표지(f, 이야기.indexOf(f), true, j + 1)).join('') + '</div>';
+    // ② 어떤 사이가 궁금하세요 + ③ 표지 목록(모바일 3열). 주제별 진열대는 한 사이에 이야기가 셋을 넘으면 세운다 — 지금은 여덟이라 한 격자.
+    let h = '<div class="wt-head"><b>어떤 사이가 궁금하세요?</b></div>'
+      + '<div class="wt-chips">' + 사이들.map((s, i) => '<button type="button" data-s="' + esc(s) + '"' + (i === 0 ? ' class="on"' : '') + '>' + esc(s) + '</button>').join('') + '</div>'
+      + '<div class="wt-grid">' + 이야기.map((f, i) => 표지(f, i, false)).join('') + '</div>';
+    // ④ 전체 목록 — 모든 콘텐츠를 여기서 찾을 수 있게(전략). 이야기 여덟 · 이달 · 무료로 보는 것.
     let 접힘 = {}; try { 접힘 = JSON.parse(localStorage.getItem('chaeksa.fold') || '{}'); } catch (e) {}
-    const 폄 = (k) => 접힘[k] ? ' open' : '';
-    const 줄목록 = (arr, 이름) => '<ul class="wt-free">'
-      + arr.map((t, i) => '<li><button data-' + 이름 + '="' + i + '"><b>' + esc(t.이름) + '</b>'
-        + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('') + '</ul>';
-    // ① 오늘부터 이레. 오늘 칸은 처음부터 펼쳐 둔다.
-    //    예전엔 같은 글이 같은 화면에 두 번 있었다(#dailyReport 와 오늘 칩이 같은 리포트HTML).
-    //    조심할 날은 **있는 날만** 적는다 — 값이 없는 것과 조용한 것을 가른다(docs/29).
-    let h = '<div class="wt-head"><b>오늘부터 이레</b><span>날마다 그날의 책사가 한 줄</span></div>'
-      + (조심
-        ? '<div class="wt-care"><p class="k">이번 주 조심할 날 하나</p><p class="d">' + esc(조심.날말) + ' · ' + (조심.d.getMonth() + 1) + '월 ' + 조심.d.getDate() + '일 · ' + esc(조심.간지) + '일</p>'
-          + 조심.나쁨.map(c => '<p>' + esc(c.근거) + '</p>').join('') + '</div>'
-        : '')
-      + '<div class="wt-strip" id="wtWeek" data-plain="1">'
-      + 이레.map(t => '<button class="wt-post' + (t.조심 ? ' care' : '') + '" data-w="' + t.i + '">' + (t.파일 ? '<img alt="" src="' + t.파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '<span class="wt-seal">' + esc(t.인) + '</span>')
-        + '<span class="num">' + t.d.getDate() + '</span><i class="wt-up">' + esc(t.날말) + (t.조심 ? ' · 조심' : '') + '</i><b>' + esc(문장(t.비.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + (t.땅 ? '<small>' + esc(문장(t.땅.말).replace(/^(\S+ [^ ]+일 — |[가-힣]+은 )/, '')) + '</small>' : '') + '</b></button>').join('')
-      + '</div><div class="wt-daybox hide" id="wtDay"></div>'
-      + 줄목록([이달], 'm');
-    // ② 파는 것 아홉 장 — 웹툰 메인처럼 세 칸 격자다(2026-09-12 사장님 「아무리 작아도 3열은 나오는데」).
-    //    가로로 긴 카드 한 장이 화면 높이의 사분의 일을 먹어서, 여섯 장만 세워도 스크롤이 길었다.
-    //    격자로 세우니 아홉 장이 두 장 반 높이에 다 들어간다 — 접어 뒀던 셋을 도로 꺼냈다.
-    //    (09-04 「메인콘텐츠 식으로 유료 콘텐츠를 나열하자」가 이 격자로 그대로 산다.)
-    //    **이 격자는 홈 맨 위 #wtTop 에 따로 그린다**(2026-09-12 「웹툰처럼 콘텐츠를 최상단으로」).
-    //    짝을 아직 안 적으신 분께는 칸마다 적지 않고 머리에 한 번만 적는다.
-    let 위 = '<div class="wt-head"><b>그 사람을 두고</b><span>'
-      + (짝있음 ? '비밀 하나가 한 장이에요' : '그 사람 생년월일만 있으면 바로 열려요') + '</span></div>'
-      + '<div class="wt-grid">'
-      + 유료.map((f, i) => {
-          // 홈 표지는 **책사 얼굴**이다(v564 설계 — 그 카드의 첫 마디 화자).
-          // 2026-09-11 에 가로 3:1 상품 장면으로 바꿨다가 그날 되돌렸다(사장님 「삽화가 병신같이
-          // 들어갔잖아」). 칸이 거의 정사각이라 사람이 잘려 나갔다 — 「잘 맞아요?」는 팔만, 「속궁합」은 손만.
-          // 대신 같은 책사를 쓰는 카드끼리 **같은 날 같은 그림이 안 겹치게** 벌을 나눈다.
-          // 예전 초상(k, 자리)은 연희 카드 넷이 받아침 벌을 뺀 세 벌을 나눠 써서 **매일** 겹쳤다
-          // (속궁합·내 짝이 같은 inyeon-4) — 토스 심사가 떨어뜨리는 「같은 상품 이미지 반복」이다.
-          const 벌 = 벌목록(f.k);
-          const 앞선같은책사 = 유료.slice(0, i).filter(x => x.k === f.k).length;
-          const 파일 = (window.CHAEKSA_ART && 벌.length)
-            ? 얼굴파일(f.k, 벌[(날번호() + 앞선같은책사) % 벌.length]) : '';
-          // 제목을 그림 **안에** 얹는다 (2026-09-12 사장님 「삽화에 콘텐츠 이름을 넣고 삽화를 만들면」).
-          // 그림 파일에 한글을 그려 넣지는 않는다 — 글자가 깨지고, 말을 고칠 때마다 그림을 다시 그려야 한다.
-          // 글자는 글자로 얹고 아래에 드리움을 깔면 웹툰 표지와 같은 모양이 되면서 말은 언제든 고쳐진다.
-          return '<button class="wt-cd" data-fi="' + i + '" type="button">'
-            + '<span class="cd-img">'
-            + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.remove()">' : '')
-            + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
-            + (f.띠 ? '<span class="cd-tag">' + esc(f.띠) + '</span>' : '')
-            + '<b class="cd-t">' + esc(f.제목) + '</b></span>'
-            + '<span class="cd-s">' + esc(f.값) + '</span></button>';
-        }).join('')
-      + '</div>';
-    // ③ 나를 두고 — 전부 무료다. 여덟 줄이 늘 펼쳐져 있어서 화면이 길었다. 접되 DOM 은 그대로 둔다.
     const 무료 = 타일.filter(t => t.tab !== 'geunamja' && !(t.tab === 'today' && t.scroll === 'myMonth'));
-    h += '<details class="wt-fold"' + 폄('me') + ' data-fold="me"><summary><b>무료로 더 볼 것</b>'
-      + '<span>' + 한글수(무료.length) + ' 가지 — 오늘 · 나 · 우리</span></summary>'
+    h += '<details class="wt-fold"' + (접힘.all ? ' open' : '') + ' data-fold="all"><summary><b>전체 목록</b>'
+      + '<span>이야기 ' + 한글수(이야기.length) + ' · 무료로 보는 것 ' + 한글수(무료.length + 1) + '</span></summary>'
       + '<ul class="wt-free">'
+      + 이야기.map((f, i) => '<li><button data-fi="' + i + '"><b>' + esc(f.제목) + '</b><span>' + esc(f.사이 + ' · ' + f.값) + '</span></button></li>').join('')
+      + '<li><button data-m="0"><b>' + esc(이달.이름) + '</b><span>' + esc(이달.말) + '</span></button></li>'
       + 무료.map((t) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
       + '</ul></details>';
     const top = $('wtTop');
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
+    [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
     box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
-    if (top) top.querySelectorAll('.wt-cd').forEach(b => { b.onclick = () => 열기(유료[+b.dataset.fi]); });
-    // 접기 여닫음을 기기에 남긴다. 나중에 「접힌 것을 여는 비율」을 잴 값이기도 하다.
+    // 사이 칩 — 격자를 거른다. 진열대 셋은 안 거른다(지금 마음에 걸리는 것은 사이를 안 탄다).
+    box.querySelectorAll('.wt-chips button').forEach(b => { b.onclick = () => {
+      box.querySelectorAll('.wt-chips button').forEach(x => x.classList.toggle('on', x === b));
+      const s = b.dataset.s;
+      box.querySelectorAll('.wt-grid .wt-cd').forEach(c => { c.hidden = !(s === '전체' || c.dataset.s === s); });
+    }; });
+    // 접기 여닫음을 기기에 남긴다.
     box.querySelectorAll('details.wt-fold').forEach(d => { d.ontoggle = () => {
       try { 접힘[d.dataset.fold] = d.open ? 1 : 0; localStorage.setItem('chaeksa.fold', JSON.stringify(접힘)); } catch (e) {}
     }; });
-    // 이레 — 누르면 그날을 그 자리에서 편다(말 전부 · 행동 · 그날 글자가 어떻게 오는지). 오늘은 그 탭으로도 간다.
-    box.querySelectorAll('.wt-post').forEach(b => { b.onclick = () => {
-      const t = 이레.find(x => x.i === +b.dataset.w); const db = $('wtDay'); if (!t || !db) return;
-      box.querySelectorAll('.wt-post').forEach(x => x.classList.toggle('on', x === b));
-      let 눈 = ''; try { const tf2 = E.dateFortune(t.d.getFullYear(), t.d.getMonth() + 1, t.d.getDate()); const k = ChaeksaDan.육안글자(R, t.d, tf2.day.stem, tf2.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
-      // 그날의 일일 리포트 — 홈의 오늘 리포트와 같은 꼴(천간·지지·신살·하나)
-      const r = 일일리포트(t.d);
-      if (t.i > 0) ['천간', '지지', '신살', '행동', '엮임'].forEach(k => { r[k] = String(r[k] || '').replace(/오늘/g, '그날'); });
-      db.innerHTML = 리포트HTML(r, t.날말 + ' · ' + (t.d.getMonth() + 1) + '월 ' + t.d.getDate() + '일')
-        + (눈 ? '<p class="eye">' + esc(눈) + '</p>' : '')
-        + (t.i === 0 && t.비.탭 ? '<button class="wt-more" type="button">이 이야기로 가기 ▸</button>' : '');
-      db.classList.remove('hide');
-      const m = db.querySelector('.wt-more'); if (m) m.onclick = () => go(t.비.탭);
-    }; });
-    // 오늘 칸은 처음부터 펼쳐 둔다 — 예전엔 같은 글을 담은 카드(#dailyReport)가 위에 따로 또 있었다.
-    const 오늘칩 = box.querySelector('.wt-post[data-w="0"]'); if (오늘칩) 오늘칩.click();
   }
   /** 한 줄. 새화자가 아니면(false) 얼굴 띠를 세우지 않는다. */
   function 발언줄(t, 새화자) {

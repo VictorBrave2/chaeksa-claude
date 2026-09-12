@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=765">
+<link rel="stylesheet" href="style.css?v=766">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -155,32 +155,14 @@
   <div id="app" class="hide">
     <!-- 홈 — 타일 · 만세력(사람 전환) · 타일 -->
     <div class="tab" data-tab="home">
-      <!-- 파는 것 아홉 장이 **맨 위**다 (2026-09-12 사장님 「웹툰처럼 콘텐츠를 최상단으로 올려」).
-           네이버 웹툰 홈이 그렇다 — 문을 열면 작품이 먼저 있고 나머지는 그 아래다.
-           docs/29:42 「첫 화면은 오늘 하나다」와는 어긋난다. 사장님 지시가 먼저다.
-           오늘(얼빡·한마디)은 격자 바로 아래에 그대로 있다. app.js renderWtHome 이 여기에 격자만 그린다. -->
+      <!-- 홈은 이야기 서점이다 (2026-09-12 사장님 확정 전략 — 「웹툰처럼 고르고 → 내 이야기라서 읽고 →
+           다음이 궁금해서 결제하고 → 다른 이야기도 찾아보는 서비스」). 긴 소개문 없이 바로 표지.
+           ① 지금 마음에 걸리는 이야기(큰 표지 가로 진열대) ② 어떤 사이가 궁금하세요(칩) ③ 표지 목록(모바일 3열)
+           ④ 전체 목록(접기) — 모든 콘텐츠를 여기서 찾을 수 있게. app.js renderWtHome 이 다 그린다.
+           오늘(얼빡·한마디·기억)은 「오늘」 탭으로 옮겼다. 첫 의논(#chong)은 걷었다 — 의논 화면은 전체 목록에서 연다.
+           docs/29 「서고에서 비서로」와 반대 방향이다. 사장님이 전략을 바꾸셨다. -->
+      <p class="wt-tag">그 사람 때문에 궁금해진 모든 이야기.</p>
       <div id="wtTop" class="wt hide"></div>
-      <!-- 「지금 어디에 계신지」는 원국 탭으로 옮겼다 (2026-08-28).
-           앱을 열자마자 「지금은 눌리는 구간입니다」가 첫 인사일 수는 없다.
-           궁금해서 원국을 열어본 사람에게 할 말이지, 문을 열고 들어온 사람에게 할 말이 아니다. -->
-      <!-- data-plain: 오늘의 한마디는 십신을 이름으로 부른다. app.js 의 낱말 바꿔치기 문이 여기는 건너뛴다(2026-09-12). -->
-      <div class="home-scene hide" id="homeScene" data-plain="1"></div>
-      <!-- 기억 — 지난번에 한 말을 들고 있다가 묻는다 「맞으셨나요」(docs/29 넷). 세지 않는다. -->
-      <section class="card hide" id="remember"></section>
-      <!-- 책사단 도열(#todayEnvoy)을 여기서 걷었다 (2026-09-12 사장님 「이동경로가 꼬이네」).
-           열 얼굴이 열 개의 문이었는데, 그 열 곳 가운데 일곱이 09-04 에 사장님이 홈에서 빼신 화면이었다
-           (아래 176줄 목록 — year·inyeon·jikcheop·dohwa·lovestory·gacha·gwangye).
-           홈 목록은 「빼자」 하고 도열은 「들어가자」 하니 한 화면에서 두 길이 어긋났다.
-           화면과 탭 코드는 그대로 살아 있고 #jikcheop 처럼 주소로는 열린다.
-           열 사람을 세우는 자리는 랜딩(#lpCorps)에 남아 있다 — 거기선 문이 아니라 소개다. -->
-      <!-- 첫 의논을 목록 **위로** 올렸다 (2026-09-12 사장님 「홈화면과 콘텐츠의 길이 너무 복잡해」).
-           예전엔 표지 열 장·리포트·이레 칩 일곱·무료 열 줄을 다 지나야 나왔다. 광고비로 데려온 사람이
-           무료로 값을 느끼는 자리가 스크롤 맨 밑에 묻혀 있었다. 값이 먼저, 파는 것은 그 다음이다. -->
-      <section class="card" id="chong"></section>
-      <!-- 홈 목록 — 웹툰 메인처럼(2026-09-04 사장님). 표지에 얼굴, 제목은 그 사람 값으로 쓴 약속 한 줄.
-           app.js renderWtHome 이 그린다. **홈은 이것 하나다**(2026-09-09 「홈 하나로 정리」).
-           09-12 에 세 겹으로 줄였다 — 오늘부터 이레 / 먼저 볼 것 여섯 / 접어 둔 둘.
-           (시간순 탭 전체·오늘·이달·나·우리는 그리는 코드가 아예 없었다. 배선과 CSS 만 남아 있어서 같이 걷었다.) -->
       <div id="wtHome" class="wt hide"></div>
       <!-- 옛 서고(#shelves)를 지웠다 (2026-09-09 사장님 「홈 하나로 정리」).
            09-04 에 홈을 웹툰식 목록으로 갈면서 서고를 숨기기만 하고 안 지웠다. 그 뒤
@@ -508,6 +490,10 @@
 
     <!-- 오늘 -->
     <div class="tab hide" data-tab="today">
+      <!-- 오늘의 얼빡·한마디·기억은 홈에서 여기로 옮겨 왔다 (2026-09-12 이야기 서점 전략). 홈은 표지만 세운다.
+           data-plain: 한마디는 십신을 이름으로 부른다. app.js 의 낱말 바꿔치기 문이 여기는 건너뛴다. -->
+      <div class="home-scene hide" id="homeScene" data-plain="1"></div>
+      <section class="card hide" id="remember"></section>
       <section class="card hide" id="todayMemo"></section>
       <section class="hero-day">
         <div class="hd-top">
@@ -893,36 +879,36 @@
   </div>
 </div>
 
-<script src="config.js?v=765"></script>
-<script src="track.js?v=765"></script>
-<script src="cloud.js?v=765"></script>
-<script src="usage.js?v=765"></script>
-<script src="places.js?v=765"></script>
-<script src="people.js?v=765"></script>
-<script src="astro.js?v=765"></script>
-<script src="lunar.js?v=765"></script>
-<script src="engine.js?v=765"></script>
-<script src="chaeyong.js?v=765"></script>
-<script src="brief.js?v=765"></script>
-<script src="chaeksadan.js?v=765"></script>
-<script src="geunamja.js?v=765"></script>
-<script src="maeum.js?v=765"></script>
-<script src="gunghap.js?v=765"></script>
-<script src="sheets.js?v=765"></script>
-<script src="hwakin.js?v=765"></script>
-<script src="mun.js?v=765"></script>
-<script src="mun/all.js?v=765"></script>
-<script src="typecard.js?v=765"></script>
-<script src="gyeokguk.js?v=765"></script>
-<script src="memo.js?v=765"></script>
-<script src="classic.js?v=765"></script>
-<script src="calendar.js?v=765"></script>
-<script src="tongbyeon.js?v=765"></script>
-<script src="rules-wealth-love.js?v=765"></script>
-<script src="rules-health-study-move.js?v=765"></script>
-<script src="share.js?v=765"></script>
-<script src="ai.js?v=765"></script>
-<script src="pay.js?v=765"></script>
-<script src="app.js?v=765"></script>
+<script src="config.js?v=766"></script>
+<script src="track.js?v=766"></script>
+<script src="cloud.js?v=766"></script>
+<script src="usage.js?v=766"></script>
+<script src="places.js?v=766"></script>
+<script src="people.js?v=766"></script>
+<script src="astro.js?v=766"></script>
+<script src="lunar.js?v=766"></script>
+<script src="engine.js?v=766"></script>
+<script src="chaeyong.js?v=766"></script>
+<script src="brief.js?v=766"></script>
+<script src="chaeksadan.js?v=766"></script>
+<script src="geunamja.js?v=766"></script>
+<script src="maeum.js?v=766"></script>
+<script src="gunghap.js?v=766"></script>
+<script src="sheets.js?v=766"></script>
+<script src="hwakin.js?v=766"></script>
+<script src="mun.js?v=766"></script>
+<script src="mun/all.js?v=766"></script>
+<script src="typecard.js?v=766"></script>
+<script src="gyeokguk.js?v=766"></script>
+<script src="memo.js?v=766"></script>
+<script src="classic.js?v=766"></script>
+<script src="calendar.js?v=766"></script>
+<script src="tongbyeon.js?v=766"></script>
+<script src="rules-wealth-love.js?v=766"></script>
+<script src="rules-health-study-move.js?v=766"></script>
+<script src="share.js?v=766"></script>
+<script src="ai.js?v=766"></script>
+<script src="pay.js?v=766"></script>
+<script src="app.js?v=766"></script>
 </body>
 </html>

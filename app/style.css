@@ -1411,6 +1411,25 @@ details.fold > .tiles { margin-top: 10px; }
    가로로 긴 카드는 한 장이 화면의 사분의 일을 먹어서 여섯 장만 세워도 스크롤이 길었다.
    격자로 세우니 아홉 장이 두 줄 반에 들어간다 — 접어 뒀던 셋을 도로 꺼냈다.
    제목은 두 줄까지 보이고 넘치면 자른다. 칸이 좁아 부제는 안 세우고 값 한 줄만 남긴다. */
+/* ───── 이야기 서점 (2026-09-12 사장님 확정 전략) ─────
+   한 줄 소개 → 큰 표지 진열대 → 사이 칩 → 3열 표지 → 전체 목록. 긴 소개문은 없다. */
+.wt-tag{margin:6px 4px 12px;font-family:var(--letter);font-size:17px;color:var(--ink);letter-spacing:-.01em}
+.wt-hero{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.wt-hero::-webkit-scrollbar{display:none}
+.wt-hero .wt-cd{flex:0 0 58%;scroll-snap-align:start}
+@media(min-width:560px){.wt-hero .wt-cd{flex-basis:30%}}
+.wt-hero .wt-cd .cd-img{aspect-ratio:3/4}
+.wt-hero .wt-cd .cd-t{font-size:15px;left:10px;right:9px;bottom:10px}
+.wt-hero .wt-cd .cd-num{position:absolute;left:8px;top:6px;z-index:3;font-family:var(--letter);font-size:30px;font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.wt-hero .wt-cd .cd-tag{left:auto;right:6px}
+.wt-hero .wt-cd .cd-s{white-space:normal;color:var(--ink2);font-size:12px;line-height:1.45}
+.wt-hero .wt-cd .cd-free{font-size:10.5px;color:var(--ink3)}
+.wt-chips{display:flex;gap:6px;overflow-x:auto;margin:6px 0 12px;padding:0 2px 4px;-webkit-overflow-scrolling:touch}
+.wt-chips::-webkit-scrollbar{display:none}
+.wt-chips button{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);
+  background:var(--card);font-family:inherit;cursor:pointer;white-space:nowrap}
+.wt-chips button.on{background:var(--ink);color:var(--card);border-color:var(--ink);font-weight:700}
+.wt-grid .wt-cd[hidden]{display:none}
 .wt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 8px;margin:0 0 18px}
 @media(min-width:560px){.wt-grid{grid-template-columns:repeat(4,1fr)}}
 .wt-cd{display:flex;flex-direction:column;gap:6px;min-width:0;border:0;background:none;padding:0;
