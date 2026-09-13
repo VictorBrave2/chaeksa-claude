@@ -241,9 +241,9 @@
     else { renderPeopleBtn(); renderPartners(); renderHome(); }
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
     try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
-      ['gnPick', 'mmPick', 'ghPick', 'shPick', 'stPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
+      ['gnPick', 'mmPick', 'ghPick', 'shPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
       // 이야기 화면에서 「+ 추가」로 넣은 사람은 곧 그 질문의 그 사람이다 — 방금 넣고 또 고르게 하지 않는다.
-      if (새 && $('stPick') && [...$('stPick').options].some(o => o.value === 새)) { window.현재그사람 = 새; renderStory(); }
+      if (새 && $('stWho') && document.querySelector('.tab[data-tab="story"]:not(.hide)')) { window.현재그사람 = 새; renderStory(); }
     } catch (e) {}
   }
 
@@ -2954,13 +2954,25 @@
     // 그 사람은 손님이 고른다 — 목록 첫 사람으로 멋대로 열지 않는다(09-13 사장님 「그 사람이 정해지지 않았는데 답변이 열려 있다」).
     // 안 골랐으면 고르는 칸만 서고 7일은 닫혀 있다.
     const 고름 = !!(window.현재그사람 && list.some(q => q.id === window.현재그사람));
-    const 고르기 = (p) => '<div class="st-pick"><label for="stPick">그 사람</label><select id="stPick">'
-      + (p ? '' : '<option value="" selected disabled>누구 얘기예요?</option>')
-      + list.map(q => '<option value="' + q.id + '"' + (p && q.id === p.id ? ' selected' : '') + '>' + esc(사람이름(q.name) || '그 사람') + ' · ' + esc(q.relation || '') + '</option>').join('')
-      + '</select><button class="btn ghost small" id="btnStAdd" type="button">+ 추가</button></div>';
+    // 네이티브 select 는 브라우저가 네모로 그린다(09-13 사장님 「너무 네모네모하게 나오는데」) — 목록을 직접 그린다.
+    const 이름표 = (q) => esc(사람이름(q.name) || '그 사람') + '<small>' + esc(q.relation || '') + '</small>';
+    const 고르기 = (p) => '<div class="st-pick"><label>그 사람</label>'
+      + '<div class="st-who"><button type="button" class="st-who-b' + (p ? '' : ' empty') + '" id="stWho" aria-haspopup="listbox" aria-expanded="false">'
+      + (p ? 이름표(p) : '누구 얘기예요?') + '<i class="chev"></i></button>'
+      + '<div class="st-menu hide" id="stMenu" role="listbox">'
+      + list.map(q => '<button type="button" role="option" data-id="' + q.id + '"' + (p && q.id === p.id ? ' class="on"' : '') + '>' + 이름표(q) + '</button>').join('')
+      + '</div></div>'
+      + '<button class="btn ghost small" id="btnStAdd" type="button">+ 추가</button></div>';
+    const 고르기연결 = () => {
+      const b = $('stWho'), m = $('stMenu'); if (!b || !m) return;
+      const 닫기 = () => { m.classList.add('hide'); b.setAttribute('aria-expanded', 'false'); document.removeEventListener('click', 바깥); };
+      const 바깥 = (e) => { if (!m.contains(e.target) && e.target !== b && !b.contains(e.target)) 닫기(); };
+      b.onclick = () => { const 열림 = !m.classList.contains('hide'); if (열림) return 닫기(); m.classList.remove('hide'); b.setAttribute('aria-expanded', 'true'); setTimeout(() => document.addEventListener('click', 바깥), 0); };
+      m.querySelectorAll('button').forEach(x => x.onclick = () => { window.현재그사람 = x.dataset.id; renderStory(); });
+    };
     if (!고름) {
       box.innerHTML = 머리 + 고르기(null) + '<p class="hint" style="margin:0 0 18px">그 사람을 고르면 오늘부터 7일이 바로 열려요. 목록에 없으면 「+ 추가」로 생년월일을 넣어 주세요.</p>';
-      $('stPick').onchange = () => { window.현재그사람 = $('stPick').value; renderStory(); };
+      고르기연결();
       $('btnStAdd').onclick = () => openPersonForm(null);
       return;
     }
@@ -2989,7 +3001,7 @@
         (profile && profile.name || '') + '님 ' + (today.getMonth() + 1) + '월 30일을 보고 싶습니다', 'month', null);
     }
     box.innerHTML = h;
-    $('stPick').onchange = () => { window.현재그사람 = $('stPick').value; renderStory(); };
+    고르기연결();
     $('btnStAdd').onclick = () => openPersonForm(null);
   }
 
