@@ -803,7 +803,7 @@
   function mountSuper() {
     try { if (!window.ChaeksaUsage || ChaeksaUsage.plan() !== 'super') return; } catch (e) { return; }
     if (!$('coordBox')) {
-      const cta = $('aiBriefCta');
+      const cta = $('aiBrief');
       if (cta) cta.insertAdjacentHTML('afterend', '<div class="coord" id="coordBox"></div>');
     }
     if (!$('chaeyongCard')) {
@@ -848,52 +848,8 @@
       <div class="chain">${esc(live.length + 1)}층 적층 · ${esc(chain)}</div>`;
   }
 
-  async function loadAiBrief() {
-    const box = $('aiBrief'), cta = $('aiBriefCta');
-    const stale = $('hdGate'); if (stale) stale.remove();
-    // 무료 화면에는 LLM 을 부르지 않는다(2026-09-12 사장님 「LLM 은 유료 콘텐츠에」).
-    // 예전 「좌장에게 오늘을 묻기」는 결제 확인 없이 원국 정독(Opus)까지 구웠다. 오늘 이미 구워 둔 것만 펴고(원가 0), 없으면 규칙 문장.
-    { const 구운 = AI && AI.briefCached ? AI.briefCached(R, today) : null; if (cta) cta.classList.add('hide');
-      if (구운) { box.className = 'hd-lede'; box.textContent = 구운; const c = $('hdFresh'); if (c) c.textContent = 'AI 비서'; collapseRuleCard(true); } else heroFallback();
-      return; }
-    // 앱을 여는 것만으로 원가가 나가면 안 된다. 오늘치가 이미 구워져 있으면 그대로 펴고,
-    // 없으면 규칙 엔진의 문장을 세운 뒤 「청하기」를 내민다.
-    // (dailyBrief 는 안에서 buildProfile 까지 부르므로 자동으로 두 번이 나갔다.)
-    const 구운것 = AI.briefCached ? AI.briefCached(R, today) : null;
-    if (!구운것 && !loadAiBrief.청함) {
-      heroFallback();
-      cta.classList.remove('hide');
-      const bb = $('btnAiBrief');
-      if (bb) {
-        bb.textContent = '좌장에게 오늘을 묻기';
-        bb.onclick = () => { loadAiBrief.청함 = true; loadAiBrief(); };
-      }
-      return;
-    }
-    cta.classList.add('hide');
-    box.className = 'hd-lede loading'; box.textContent = '좌장이 오늘을 읽는 중…';
-    try { const t = await AI.dailyBrief(R, today); box.className = 'hd-lede'; box.textContent = t; const c = $('hdFresh'); if (c) c.textContent = 'AI 비서'; collapseRuleCard(true); }
-    catch (e) {
-      box.className = 'hd-lede';
-      if (e.blocked) {
-        collapseRuleCard(false);                       // 규칙 브리핑을 펼쳐서 계속 쓸 수 있게 한다
-        heroFallback();                                // 히어로에는 읽을 문장을 남긴다
-        box.insertAdjacentHTML('afterend', `<div class="hd-gate" id="hdGate"><b>${esc(e.blocked.title)}</b><p>${esc(e.blocked.body)}</p>`
-          + (e.blocked.cta ? `<button class="btn kakao" id="gateLogin"><span>💬</span>${esc(e.blocked.cta)}</button>` : '')
-          + `</div>`);
-        const g = $('gateLogin');
-        if (g) g.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (err) { openSettings(); } };
-      } else {
-        collapseRuleCard(false);
-        heroFallback();
-        // 저희 쪽 사정이면 사용자에게 실패를 떠넘기지 않는다
-        const note = e.serverSide ? esc(e.message)
-                                  : `AI 브리핑을 가져오지 못했어요 · ${esc(e.message)}`;
-        box.insertAdjacentHTML('beforeend', `<span class="hd-note">${note}</span>`);
-        if (e.detail) try { console.warn('[chaeksa] AI 오류 상세:', e.detail); } catch (_) {}
-      }
-    }
-  }
+  // loadAiBrief(「좌장에게 오늘을 묻기」 LLM 브리핑)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 히어로는 규칙 문장만 선다.
+  function loadAiBrief() { heroFallback(); }
   // AI를 못 쓸 때도 히어로는 비지 않는다 — 규칙 엔진의 첫 문장을 세운다
   function heroFallback() {
     const box = $('aiBrief');
@@ -903,7 +859,6 @@
     box.textContent = (b.paragraphs && b.paragraphs[0]) ? String(b.paragraphs[0]).replace(/<[^>]+>/g, '') : '';
     const chip = $('hdFresh'); if (chip) chip.textContent = '오늘의 말';
   }
-  $('btnAiBrief').onclick = () => openSettings();
   function collapseRuleCard(on) {
     const card = $('brief').closest('.card'), h = card.querySelector('h2');
     if (!on) { $('brief').classList.remove('hide'); h.textContent = '흐름 읽기'; h.onclick = null; return; }
@@ -1223,66 +1178,8 @@
     await renderShareCard();
     ChaeksaShare.save($('shareCanvas'), profile.name);
   };
-  async function renderProfileCard() {
-    let card = $('aiProfile');
-    if (!card) { card = document.createElement('section'); card.className = 'card'; card.id = 'aiProfile'; $('daeun').closest('.card').after(card); }
-    const 머리 = '<h2>좌장이 읽는 원국</h2>';
-    const cached = AI.getProfile(R);
-    // 캐시를 결제 확인보다 먼저 그리면 산 적 없는 사람에게도 원국 정독이 나간다(2026-09-12 고침 — 무료 브리핑이 굽던 것까지 보였다).
-    if (cached && window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wongook')) { card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(cached)}</div>`; return; }
-    if (!AI.ready()) { card.innerHTML = 머리 + '<p class="hint">지금은 좌장을 부를 수 없습니다. 위 계산은 그대로 유효합니다.</p>'; return; }
-    // **유료 상품이다**(products.wongook · migrate-15 · 2026-08-31 결재).
-    //   판정을 가두는 것이 아니다 — 강약·용신·격국·대운은 위 카드에 **무료로 다 있다.**
-    //   파는 것은 그것을 **알아듣게 엮는 일**이다(CLAUDE.md 넷 「판정 유료화 폐기」에 안 걸린다).
-    //   무료로 두면 Opus + effort high 가 무료 화면에 붙는다 —
-    //   memory 「원가 자물쇠」가 「돈이 타는 유일한 곳은 굽기」라 못박은 것을 어긴다.
-    const 산분 = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wongook');
-    if (!산분) {
-      card.innerHTML = 머리
-        + '<p class="hint">위 계산과 카드는 그대로 보십니다. 여기서는 좌장 태윤이 그 여덟 글자를 <b>한 편으로 엮어</b> 읽어 드립니다 — 무엇을 타고나셨고, 무엇이 채우고 무엇이 거슬리며, 사회 속 어디에 서 계신지. <b>한 번 읽으면 그대로 남습니다.</b></p>'
-        + '<button class="btn" id="btnProfileBuy">원국 정독 열기</button>';
-      const pb = card.querySelector('#btnProfileBuy');
-      // buy() 의 답을 버리면 막혀도 화면이 조용하다(2026-09-11). 누르면() 이 받아서 버튼 아래 적는다.
-      if (pb) pb.onclick = () => ChaeksaPay.누르면(pb, 'wongook', null, 결제로그인);
-      return;
-    }
-    // 산 뒤에도 **누르셔야 굽는다** — 화면을 여는 것만으로 원가가 나가면 안 된다.
-    card.innerHTML = 머리
-      + '<p class="hint">여덟 글자와 대운을 좌장 태윤이 한 번에 읽어 드립니다. 한 번 읽으면 그대로 남습니다.</p>'
-      + '<button class="btn" id="btnProfileAsk">좌장에게 청하기</button>';
-    const b = card.querySelector('#btnProfileAsk');
-    if (!b) return;
-    b.onclick = async () => {
-      b.disabled = true;
-      card.innerHTML = 머리 + '<div class="brief loading">좌장이 원국을 읽는 중… (한 번만 읽고 그대로 둡니다)</div>';
-      try {
-        const t = await AI.buildProfile(R, today);
-        card.innerHTML = 머리 + `<div class="brief" style="font-size:15px">${mdLite(t)}</div>`;
-        if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
-      } catch (e) {
-        // 원문 오류를 공주님께 보여 드리지 않는다. 무슨 말인지 알 수 없고 고칠 수도 없다.
-        try { console.warn('원국 해석 실패:', e); } catch (e2) {}
-        // e.blocked 는 불리언이 아니라 {title, body, cta} 객체다(usage.js blockedMessage).
-        // 그걸 참/거짓으로만 읽고 「한도를 다 쓰셨습니다」를 찍고 있었다 —
-        // 한 번도 안 쓴 손님에게 나가던 거짓말이다. 손님 몫 문구는 따로 들어 있다:
-        // 「책사단의 글은 로그인하면 열립니다」 + 카카오 버튼.
-        const b = e && e.blocked;
-        const 한도 = !b && /한도|limit/i.test(String(e && e.message));
-        card.innerHTML = 머리
-          + (b
-              ? '<p class="hint"><b>' + esc(b.title) + '</b><br>' + esc(b.body) + '</p>'
-                + (b.cta ? '<button class="btn kakao" id="btnProfileLogin"><span>💬</span>' + esc(b.cta) + '</button>' : '')
-              : '<p class="hint">' + (한도
-                  ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다.'
-                  : '지금은 좌장을 부르지 못했습니다 — 위 계산은 그대로 유효합니다.') + '</p>'
-                + (한도 ? '' : '<button class="btn" id="btnProfileRetry">다시 청하기</button>'));
-        const gb = card.querySelector('#btnProfileLogin');
-        if (gb) gb.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (err) { openSettings(); } };
-        const rb = card.querySelector('#btnProfileRetry');
-        if (rb) rb.onclick = () => renderProfileCard();
-      }
-    };
-  }
+  // renderProfileCard(「좌장이 읽는 원국」 Opus 정독)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. wongook 상품은 팔지 않는다.
+  async function renderProfileCard() { const c = $('aiProfile'); if (c) c.remove(); }
 
   // ───── 달력 ─────
   let calY = today.getFullYear(), calM = today.getMonth() + 1, purpose = 'all', selDay = null;
@@ -1894,101 +1791,8 @@
       : { 연: m.연, 월: m.월, 간지: m.간지, 결: m.결 || null, 조용: true });
   }
 
-  async function aiNarrate(box, kind, facts) {
-    let 스토리키 = null, 저장키 = null;   // 아래 catch 의 「굽는 중 기다림」이 쓴다
-    try {
-      if (!window.ChaeksaAI || !AI.ready()) return;
-      const pb = box.querySelector('.paidbox'); if (!pb) return;
-      // v2 — 책사단으로 원국이 바뀌었다. 옛 단일 화자 글은 한 번 다시 쓴다.
-      // v4 — 키를 두 군데 고쳤다(2026-08-30).
-      //  ① 시주·성별이 빠져 있었다. 성별은 대운 순행/역행을 통째로 뒤집고 시주는
-      //     여덟 글자를 바꾼다. 고치고 나면 위 표는 새 계산인데 아래 글은 옛 달을
-      //     말했다. 같은 브라우저에 생일이 같은 사람이 둘 있으면 서로의 글을 봤다.
-      //  ② 달마다 다시 구웠다. 1년 열람 상품인데 매달 두 편씩 = 24회. 무료 등급의
-      //     평생 story 한도가 정확히 24라 열람 기간이 끝나기 전에 글이 영영 사라진다.
-      //     원가도 회당 950원이라 2만원 상품에 22,800원이 들어간다. 분기로 늦춘다 —
-      //     석 달에 한 번이면 원가 7,600원이고 글이 크게 낡지도 않는다.
-      const i0 = (R && R.input) || {};
-      const 분기 = today.getFullYear() + 'Q' + (Math.floor(today.getMonth() / 3) + 1);
-      const key = 'chaeksa.storyai.v4.' + kind + '.'
-        + f.pillar(R.pillars.year) + f.pillar(R.pillars.month) + f.pillar(R.pillars.day)
-        + (R.pillars.hour ? f.pillar(R.pillars.hour) : '시모름')
-        + '.' + (i0.gender || '?') + (profile && profile.genderUnknown ? 'u' : '')
-        + '.' + 분기;
-      저장키 = key;
-      let cached = null;
-      try { cached = localStorage.getItem(key); } catch (e) {}
-      const el = document.createElement('div');
-      el.className = 'pb-ai';
-      // 답은 맨 위다. 자리가 마련돼 있으면 거기에, 아니면 예전처럼 뒤에 붙인다.
-      const slot = pb.querySelector('.pb-ai-slot');
-      (slot || pb).appendChild(el);
-      const draw = (t) => {
-        el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
-          + 발언들(String(t).split(/[\r\n]+/).filter(Boolean));
-      };
-      if (cached) { draw(cached); return; }
-      el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">위 계산을 놓고 책사단이 의논하는 중입니다 — 한 편의 풀이라 30초에서 1분쯤 걸립니다…</p>';
-      if (facts && facts.열두달) facts = Object.assign({}, facts, { 열두달: 달줄이기(facts.열두달) });
-      // 원국을 직접 보여준다 — 엔진 결론만 주면 LLM 이 조립공이 된다(2026-08-30 「다 열어봐」).
-      // chartText 는 여덟 글자·일간·지장간·대운과 「직접 판단하라」는 지침을 함께 담는다.
-      const 실을것 = Object.assign({}, facts);
-      try { if (AI.chartText) 실을것.원국 = AI.chartText(R, today); } catch (e) {}
-      // 서버 캐시 열쇠 — 위 key 를 짧게 흩는다(FNV-1a). key 에 간지 글자가 있어 그대로는 헤더에 못 싣는다.
-      // 같은 key 면 기기가 달라도 같은 열쇠라, 굽힌 글을 서버에서 공짜로 다시 받는다(주문 횟수를 안 쓴다).
-      let 흩 = 0x811c9dc5;
-      for (let i = 0; i < key.length; i++) { 흩 ^= key.charCodeAt(i); 흩 = Math.imul(흩, 16777619); }
-      스토리키 = 'st.' + kind + '.' + (흩 >>> 0).toString(36) + '.' + key.length.toString(36);
-      const out = await AI.storyTell(kind, 실을것, 스토리키);
-      try { localStorage.setItem(key, out); } catch (e) {}
-      draw(out);
-    } catch (e) {
-      // 조용히 지우면 왜 안 나오는지 아무도 모른다(2026-08-30 「그대로인데?」).
-      // 규칙 화면만으로도 완결이므로 크게 벌리지는 않되, 흔적은 남긴다.
-      try { console.warn('책사단 서술 실패:', e); } catch (e2) {}
-      // 같은 글을 다른 요청이 굽는 중이다(409 — 새로고침 전의 굽기, 다른 기기). 실패가 아니다.
-      // 서버 캐시를 「읽기만」 하며 기다린다 — 새로 굽지 않는다(시간초과 뒤 자동 재시도 금지와 같은 이유, 원가 0).
-      if (e && e.baking && 스토리키 && window.ChaeksaCloud && ChaeksaCloud.api) {
-        const w = box.querySelector('.pb-ai');
-        if (!w) return;
-        w.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p><p class="pb-ai-load">앞서 청하신 글을 책사단이 아직 쓰는 중입니다 — 끝나는 대로 여기 펴 드립니다…</p>';
-        for (let 회 = 0; 회 < 18; 회++) {           // 10초씩 3분 — 프록시 자물쇠(3분)와 같은 길이
-          await new Promise(r => setTimeout(r, 10000));
-          if (!w.isConnected) return;
-          let j = null;
-          try { j = await ChaeksaCloud.api('/rest/v1/rpc/ganmyeong_get', { method: 'POST', body: JSON.stringify({ p_pk: 스토리키 }) }); } catch (e5) {}
-          const t = j && j.ok && j.hit && j.body;
-          if (t && t.indexOf(BAKING표식) !== 0) {
-            try { if (저장키) localStorage.setItem(저장키, t); } catch (e6) {}
-            w.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>' + 발언들(String(t).split(/[\r\n]+/).filter(Boolean));
-            return;
-          }
-          if (!t) break;   // 자물쇠가 풀렸는데 글이 없다 = 그 굽기가 실패했다. 아래 「다시 시도」로 — 손으로만 다시.
-        }
-      }
-      const el = box.querySelector('.pb-ai');
-      if (!el) return;
-      // 「이 화면을 다시 열어 주세요」는 아무 일도 하지 않았다 — 유료 화면들은
-      // lsFor/msFor/dohwaFor 캐시로 스스로를 막아, 탭을 나갔다 와도 다시 안 그린다.
-      // 시키는 대로 해도 안 되면 손님에게는 그냥 고장이다. 버튼을 준다.
-      // 위와 같은 병 — e.blocked 는 객체다. 손님에게 「한도를 다 쓰셨습니다」가 나가고
-      // 있었고, 그 안에 들어 있던 카카오 버튼(cta)은 버려지고 있었다.
-      const b = e && e.blocked;
-      const 한도 = !b && /한도|limit/i.test(String(e && e.message));
-      el.innerHTML = '<p class="pb-ai-k">책사단이 이어 말합니다</p>'
-        + (b
-            ? '<p class="pb-ai-load"><b>' + esc(b.title) + '</b><br>' + esc(b.body) + '</p>'
-              + (b.cta ? '<button class="btn kakao" id="aiLogin"><span>💬</span>' + esc(b.cta) + '</button>' : '')
-            : '<p class="pb-ai-load">' + (한도
-                ? 'AI 서술 한도를 다 쓰셨습니다 — 위 계산은 그대로 유효합니다. 메일로 알려주시면 열어 드리겠습니다.'
-                : '지금은 의논을 옮겨 적지 못했습니다 — 위 계산은 그대로 유효합니다.') + '</p>'
-              + (한도 ? '' : '<button class="btn" id="aiRetry">다시 시도</button>'));
-      const lg = el.querySelector('#aiLogin');
-      if (lg) lg.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e4) { openSettings(); } };
-      const rb = el.querySelector('#aiRetry');
-      if (rb) rb.onclick = () => { rb.disabled = true; try { el.remove(); } catch (e3) {} aiNarrate(box, kind, facts); };
-    }
-  }
+  // aiNarrate(인연·재물 「책사단이 이어 말합니다」 LLM 한 편)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 유료 화면은 엔진 결론과 열두 달 표로 완결이다.
+  async function aiNarrate() {}
 
   // ───── 표는 무료, 한 편이 유료 (2026-09-12 사장님 「문장표를 무료콘텐츠로, LLM을 유료 콘텐츠로」) ─────
   // 스위치 하나(config CHAEKSA_SHEET_LLM)가 둘을 같이 뒤집는다. 따로 두면 표만 공짜가 되고 팔 것이 없는 날이 생긴다.
@@ -3861,23 +3665,10 @@
   // 「비서가 답하는 방식」(깊게·균형·간결하게) 칸은 2026-09-13 에 뺐다(사장님 「빼버려」) —
   // 무료 의논이 LLM 을 안 쓰게 된 뒤로 하는 일이 없고, 유료는 설정과 상관없이 opus 다(ai.js modelFor).
   // 저장된 tier 값은 그대로 두고 안 읽는다.
-  function renderUsage() {
-    const box = $('usageBox'); if (!box || !window.ChaeksaUsage) return;
-    const U = ChaeksaUsage, p = U.plan();
-    // chat·consult 는 v390 에서 지운 기능이다. 영원히 0 인 막대를 세워 두지 않는다.
-    const rows = [['brief', '오늘 브리핑'], ['story', '책사단의 글'], ['profile', '좌장의 원국 해석']];
-    box.innerHTML = `<p class="hint" style="margin:0 0 8px">이번 달 사용량 · 등급 <b>${U.PLANS[p].label}</b></p>`
-      + rows.map(([k, name]) => {
-          const lim = U.limit(k), use = U.used(k);
-          const w = lim ? Math.min(100, use / lim * 100) : 0;
-          return `<div class="ub"><span>${name}</span><i><b style="width:${w}%"></b></i><span>${use}/${lim || '—'}</span></div>`;
-        }).join('')
-      + `<p class="hint">${U.period() === 'life' ? '무료 체험분입니다(평생 기준).' : '매달 1일에 새로 열립니다.'}
-         만세력·원국·대운·택일·공범 판결과 규칙 기반 브리핑은 <b>한도 없이</b> 쓰실 수 있습니다.</p>`;
-  }
+  // 사용량 상자(오늘 브리핑·책사단의 글·좌장의 원국 해석)는 2026-09-13 에 뺐다 — 사장님 「다 삭제해」. 그 셋을 부르는 문 자체를 지웠다.
   function openSettings() {
     renderCloud();
-    renderUsage(); const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
+    const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
   }
   $('btnSettings').onclick = openSettings;
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
