@@ -10,9 +10,9 @@
  *
  * 신강·신약은 여기 없다(29조). 「壬이 丁에 닿는가」가 표의 한 칸이다.
  *
- * 쓰는 법:  ChaeksaSaenggeuk.표(pillars, 운천간들)  →  { 글자, 쌍, 닿음, 통관 }
- *   pillars  = R.pillars (engine calc 결과의 그것)
- *   운천간들 = [{ stem, name }] — 대운·세운·월운·일운 천간. 없으면 원국만.
+ * 쓰는 법:  ChaeksaSaenggeuk.표(pillars, 운들, R)  →  { 글자, 쌍, 닿음, 통관, 제복, 끊김, 격 }
+ *   pillars = R.pillars · 운들 = [{ stem, branch, name }] 대운·세운·월운·일운(지지도 넣으면 뿌리터에 든다, 27조) · R 을 주면 격 이름을 얹는다.
+ * 살아 있다 = 힘 1.0 이상(09-14). 길흉은 붙이지 않는다 — 관계만 말한다.
  */
 (function (global) {
   'use strict';
@@ -27,7 +27,9 @@
     const 자리 = [['year', '연간', E.NATAL_WEIGHT.yearBranch], ['month', '월간', E.NATAL_WEIGHT.monthBranch],
                   ['day', '일간', E.NATAL_WEIGHT.dayBranch], ['hour', '시간', E.NATAL_WEIGHT.hourBranch]]
       .filter(([k]) => pillars[k]);
-    const 뿌리터 = 자리.map(([k, , w]) => [pillars[k].branch, w]);
+    // 뿌리터 = 원국 지지 + 운의 지지(27조 「운의 지지를 원국에 더해 다시 푼다」). 운 지지 무게는 1.0.
+    const 뿌리터 = 자리.map(([k, , w]) => [pillars[k].branch, w])
+      .concat((운천간들 || []).filter(u => u.branch != null).map(u => [u.branch, 1.0]));
     const out = 자리.map(([k, 이름]) => ({
       key: k, 이름, stem: pillars[k].stem, 글자: E.STEMS[pillars[k].stem], 오행: E.STEM_ELEM[pillars[k].stem],
       힘: k === 'day' ? null : Math.round(E.stemPower(pillars[k].stem, 뿌리터) * 100) / 100,
@@ -43,17 +45,20 @@
       let 묶은 = null;
       if (후보.length) { 후보[0].합거 = u.name || '운'; 묶은 = 후보[0].이름 + ' ' + 후보[0].글자; }
       out.push({ key: 'un' + out.length, 이름: u.name || '운', stem: u.stem, 글자: E.STEMS[u.stem], 오행: E.STEM_ELEM[u.stem],
-                 힘: Math.round(E.stemPower(u.stem, 뿌리터.concat(u.branch != null ? [[u.branch, 1.0]] : [])) * 100) / 100,
+                 힘: Math.round(E.stemPower(u.stem, 뿌리터) * 100) / 100,
                  일간: false, 운: true, 합거: 묶은 ? '원국 ' + 묶은 + '과 합' : null });
     });
-    // 「산다」 — 일간이거나, 뿌리 있고 합거 안 된 것
-    out.forEach(g => { g.산다 = g.일간 || (g.힘 > 0 && !g.합거); });
+    // 「산다」 — 일간이거나, 힘 1.0 이상이고 합거 안 된 것(사장님 09-14 「살아있다 = 1.0」)
+    out.forEach(g => { g.산다 = g.일간 || (g.힘 >= 1.0 && !g.합거); });
     return out;
   }
 
   /** 모든 쌍의 생극과 통관. */
-  function 표(pillars, 운천간들) {
+  function 표(pillars, 운천간들, R) {
     const 글자 = 글자들(pillars, 운천간들);
+    // 격의 주인(31조) — 격 판정은 gyeokguk 이 이미 낸다. 이름만 얹는다. 길흉은 붙이지 않는다(사장님 「길흉을 따지지 마」).
+    let 격 = null;
+    try { const G = global.ChaeksaGyeokguk; if (R && G && G.judge) { const j = G.judge(R); 격 = j && j.격 ? { 이름: j.격, 상신: j.상신 || null } : null; } } catch (e) { 격 = null; }
     const ds = 글자.find(g => g.일간).stem;
     const 십신 = (g) => g.일간 ? '일간' : E.TEN_GODS[E.tenGod(ds, g.stem)];
     글자.forEach(g => { g.십신 = 십신(g); });
@@ -99,12 +104,13 @@
     const 끊김 = 쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다).filter(r =>
       쌍.some(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘)).map(r =>
       r.from.글자 + '→' + r.to.글자 + ' 생이 약하다(' + 쌍.filter(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘).map(q => q.from.글자).join('·') + '이 ' + r.from.글자 + '을 친다)');
-    return { 글자, 쌍, 닿음, 통관, 제복, 끊김 };
+    return { 글자, 쌍, 닿음, 통관, 제복, 끊김, 격 };
   }
 
   /** 사람이 읽을 요약 — 한 줄씩. */
   function 줄(t) {
     const out = [];
+    if (t.격) out.push('격: ' + t.격.이름 + '격' + (t.격.상신 ? ' · 상신 ' + t.격.상신 : ''));
     t.글자.forEach(g => { if (!g.일간) out.push(g.이름 + ' ' + g.글자 + '(' + g.십신 + ') 힘 ' + g.힘 + (g.합거 ? ' · 합거(' + g.합거 + ')' : '') + (g.산다 ? '' : ' · 죽어 있음')); });
     t.닿음.forEach(x => out.push('일간: ' + x.말 + ' → ' + x.결과));
     t.통관.forEach(x => out.push('통관: ' + x));
