@@ -94,7 +94,7 @@
    *  공유되는 물건이라 여기가 옛말로 남으면 화면과 어긋난다. */
   function 판정말(J) {
     const L = (global.ChaeksaGyeok && global.ChaeksaGyeok.LABEL) || {};
-    return (L[J && J.판정] && L[J.판정].짧게) || (J && J.ok ? '온전' : '무너짐');
+    return (L[J && J.판정] && L[J.판정].짧게) || (J && J.ok ? '성격' : '파격');
   }
 
   function gyeok(R) {
@@ -2942,8 +2942,8 @@
     try {
       const g = gyeok(Ryou);
       if (g && g.name) 그사람.push({ 결: '뼈대', 이름: g.name + '격',
-        말: g.판정 === '섰다' ? '뼈대가 선 사주입니다'
-          : g.판정 === '깨졌다' ? '뼈대가 흔들린 데가 있습니다 — 반듯한 길보다 제 길로 가는 쪽입니다'
+        말: g.판정 === '섰다' ? '성격이에요.'
+          : g.판정 === '깨졌다' ? '파격이에요.'
           : '' });
     } catch (e) {}
 
