@@ -58,7 +58,7 @@
     const 글자 = 글자들(pillars, 운천간들);
     // 격의 주인(31조) — 격 판정은 gyeokguk 이 이미 낸다. 이름만 얹는다. 길흉은 붙이지 않는다(사장님 「길흉을 따지지 마」).
     let 격 = null;
-    try { const G = global.ChaeksaGyeokguk; if (R && G && G.judge) { const j = G.judge(R); 격 = j && j.격 ? { 이름: j.격, 상신: j.상신 || null } : null; } } catch (e) { 격 = null; }
+    try { const G = global.ChaeksaGyeok; if (R && G && G.judge) { const j = G.judge(R); 격 = j && j.격 ? { 이름: j.격, 상신: j.상신 || null } : null; } } catch (e) { 격 = null; }
     const ds = 글자.find(g => g.일간).stem;
     const 십신 = (g) => g.일간 ? '일간' : E.TEN_GODS[E.tenGod(ds, g.stem)];
     글자.forEach(g => { g.십신 = 십신(g); });
@@ -175,5 +175,46 @@
     return null;
   }
 
-  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말 };
+  /** 층마다 격을 다시 낸다(35조, 변격). 원격 이름은 gyeokguk/typecard 가 낸 것을 받는다.
+   *  격의 주인 천간이 이 층에서 묶여 있으면 — 남은 살아 있는 천간(원국·운) 중 월지 지장간과 같은 오행으로 투간한 것이 격을 잡는다(본기>중기>여기).
+   *  새 주인을 막힘 없이 극하는 살아 있는 글자가 있으면 그 격은 깨진다. 길흉 말은 여기서 안 붙인다 — 「깨짐」 사실만. */
+  function 층격(pillars, 운들, 원격, R) {
+    if (!pillars || !원격) return null;
+    운들 = 운들 || [];
+    const t = 표(pillars, 운들);
+    const 나 = t.글자.find(g => g.일간);
+    // 이 층의 상태를 자평진전 격표에 그대로 넘긴다(사장님 「인수격이 경금 재성을 보았을 때를 보면 되잖아」) — 성패는 격표가 낸다.
+    const 층 = { 합거: {}, 운: [] };
+    t.글자.forEach(g => { if (!g.운 && !g.일간 && g.합거) 층.합거[g.key] = true; });
+    const 운글자 = t.글자.filter(g => g.운);                       // 글자들() 이 운들 순서대로 밀어 넣는다
+    운글자.forEach((g, i) => { if (g.산다) 층.운.push({ stem: g.stem, branch: 운들[i] ? 운들[i].branch : null, name: g.이름 }); });
+    // 33조가 격표 위에 선다 — 격의 주인을 막힘 없이 극하는 살아 있는 글자가 있으면 격표가 뭐라 하든 깨진 것이다
+    // (09-14 사장님: 정미 대운에 庚이 甲을 바로 치니 인수격이 재에 깨졌다. 격표의 힘 비교(인 1.24 > 재 0.82)로는 안 걸렸다).
+    const 깨는것 = (주인) => 주인 ? t.쌍.filter(r => r.to === 주인 && r.관계 === '극' && r.from.산다 && !r.막힘 && !r.from.일간).map(r => r.from) : [];
+    const 성패 = (격, 주인) => {
+      let j = null;
+      try { const Gk = global.ChaeksaGyeok; j = (R && Gk && Gk.judge && 격) ? Gk.judge(R, 격, 층) : null; } catch (e) { j = null; }
+      const 침 = 깨는것(주인);
+      if (침.length && (!j || j.판정 !== '깨졌다')) {
+        const 십 = 주인.십신, 치는십 = 침[0].십신;
+        const 말 = (십 === '정인' || 십 === '편인') && (치는십 === '정재' || 치는십 === '편재')
+          ? '재가 인을 친다 — 재극인(' + E.STEMS[침[0].stem] + '이 ' + E.STEMS[주인.stem] + '을 바로 친다, 받아 줄 글자가 없다)'
+          : E.STEMS[침[0].stem] + '이 격의 주인 ' + E.STEMS[주인.stem] + '을 바로 친다 — 받아 줄 글자가 없다';
+        j = Object.assign({}, j || {}, { 격, 판정: '깨졌다', ok: 0, 격표판정: j ? j.판정 : null, 근거: Object.assign({}, (j && j.근거) || {}, { 깨졌다: [말] }) });
+      }
+      return j;
+    };
+    const 주인들 = t.글자.filter(g => !g.일간 && !g.운 && g.십신 === 원격);
+    if (!주인들.length) return { 원격, 지금격: 원격, 변질: false, 주인: null, 성패: 성패(원격, null) };
+    const 산주인 = 주인들.find(g => g.산다);
+    if (산주인) return { 원격, 지금격: 원격, 변질: false, 주인: 산주인, 성패: 성패(원격, 산주인) };
+    // 주인이 다 묶였다 — 월지 지장간 오행 순서로 후보를 찾는다
+    const 지장 = (E.HIDDEN[pillars.month.branch] || []).map(h => E.STEM_ELEM[typeof h === 'number' ? h : h[0]]);
+    let 새 = null;
+    for (const 오행 of 지장) { 새 = t.글자.find(g => !g.일간 && g.산다 && g.오행 === 오행 && g.오행 !== 나.오행); if (새) break; }
+    if (!새) return { 원격, 지금격: null, 변질: true, 주인: null, 성패: null, 묶인주인: 주인들[0] };
+    return { 원격, 지금격: 새.십신, 변질: true, 주인: 새, 성패: 성패(새.십신, 새), 묶인주인: 주인들[0] };
+  }
+
+  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말, 층격 };
 })(window);

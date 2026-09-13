@@ -59,14 +59,19 @@
   // 이로써 이 파일에 우리가 지어낸 숫자는 하나도 없다.
 
   /** 판정에 쓸 재료를 한 벌 만든다. */
-  function 재료(R) {
+  // 층(35조 변격): 운이 묶은 원국 자리(합거)와 운으로 온 살아 있는 천간(운)을 원국에 얹어 같은 격표로 잰다.
+  function 재료(R, 층) {
+    층 = 층 || {};
     const p = R.pillars, ds = p.day.stem, de = E.STEM_ELEM[ds], W = E.NATAL_WEIGHT;
     const 지지 = [[p.year.branch, W.yearBranch], [p.month.branch, W.monthBranch],
                   [p.day.branch, W.dayBranch]];
     if (p.hour) 지지.push([p.hour.branch, W.hourBranch]);
+    (층.운 || []).forEach(u => { if (u.branch != null) 지지.push([u.branch, 1.0]); });   // 운의 지지도 뿌리터(27조)
 
-    const 합거 = E.natalHap(p);
+    const 합거 = Object.assign({}, E.natalHap(p), 층.합거 || {});
     const 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    // 운 천간 — 살아 있는 것만 투출로 친다(묶인 운 글자는 이미 걸러져 온다)
+    const 운천간 = (층.운 || []).map((u, i) => ({ key: 'un' + i, stem: u.stem, 이름: u.name || '운' }));
 
     // 천간에 드러난 것 — 합거된 자리는 명령을 못 내므로 뺀다
     const 투출 = {}, 투출자리 = {};
@@ -74,7 +79,12 @@
       if (!p[k] || 합거[k]) return;
       const g = 신(p[k].stem);
       투출[g] = (투출[g] || 0) + 1;
-      (투출자리[g] = 투출자리[g] || []).push({ 자리: 자리이름[k], 글자: E.STEMS[p[k].stem], key: k });
+      (투출자리[g] = 투출자리[g] || []).push({ 자리: 자리이름[k], 글자: E.STEMS[p[k].stem], key: k, stem: p[k].stem });
+    });
+    운천간.forEach(u => {
+      const g = 신(u.stem);
+      투출[g] = (투출[g] || 0) + 1;
+      (투출자리[g] = 투출자리[g] || []).push({ 자리: u.이름, 글자: E.STEMS[u.stem], key: u.key, stem: u.stem });
     });
 
     // 지장간까지 포함한 존재
@@ -102,6 +112,7 @@
     });
 
     const 전체 = {};
+    운천간.forEach(u => { const g = 신(u.stem); 전체[g] = (전체[g] || 0) + 1; });
     ['year', 'month', 'day', 'hour'].forEach(k => {
       if (!p[k]) return;
       if (k !== 'day' && !합거[k]) { const g = 신(p[k].stem); 전체[g] = (전체[g] || 0) + 1; }
@@ -118,6 +129,7 @@
       const g = 신(p[k].stem), v = E.stemPower(p[k].stem, 지지);
       힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v;
     });
+    운천간.forEach(u => { const g = 신(u.stem), v = E.stemPower(u.stem, 지지); 힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v; });
     const 일간힘 = 지지.reduce((s, [b, w]) => s + w * E.power(ds, b), 0);
 
     // 인접 — 합거에서 정한 것과 같은 규칙. 월간-시간은 일간을 사이에 둔 격(隔)이다.
@@ -133,7 +145,7 @@
       return null;
     };
 
-    const 유근 = (g) => (투출자리[g] || []).some(v => E.stemPower(p[v.key].stem, 지지) > 0);
+    const 유근 = (g) => (투출자리[g] || []).some(v => E.stemPower(v.stem != null ? v.stem : p[v.key].stem, 지지) > 0);
     const 강약 = R.analysis ? R.analysis.strength : E.strengthOf(p).strength;
 
     return {
@@ -562,13 +574,13 @@
   격표.겁재 = 격표.양인;
 
   /** 자평진전 성패 판정. 격 이름은 typecard.gyeok 이 정한 것을 그대로 쓴다. */
-  function judge(R, 격이름) {
+  function judge(R, 격이름, 층) {
     const T = global.ChaeksaTypecard;
     const 격 = 격이름 || (T && T.gyeokName ? T.gyeokName(R) : null);
     const 표 = 격 && 격표[격];
     if (!표) return { 격, 판정: '미상', ok: 0, 상신: null, 근거: [] };
 
-    const m = 재료(R);
+    const m = 재료(R, 층);
     const 맞은 = (목록) => (목록 || []).filter(([f]) => { try { return !!f(m); } catch (e) { return false; } });
 
     const 성 = 맞은(표.성), 패 = 맞은(표.패), 기 = 맞은(표.기), 구 = 맞은(표.구);
