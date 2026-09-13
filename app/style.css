@@ -762,7 +762,6 @@ nav .dot{position:absolute;top:3px;right:calc(50% - 16px);width:6px;height:6px;b
 .cy.dn .cy-bar i{background:var(--fire)}
 .cy.base{background:var(--accent-soft);margin:-4px -10px 6px;padding:12px 10px;border-radius:10px;border-bottom:0}
 .cy p{font-size:12.5px;color:var(--ink2);line-height:1.7;margin-top:5px}
-.seg.tier button{font-size:13px;padding:10px 4px}
 
 /* ───── 사용량 · 잠금 안내 ───── */
 .gate{padding:15px 16px;border-radius:13px;background:var(--accent-soft);border:1px solid var(--accent-line)}
