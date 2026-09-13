@@ -172,7 +172,7 @@
     const d = 돌아감(원표);
     const 걸린말 = d.걸린 ? '<p class="wg-key">그래서 이 사주는 <b>' + esc(이름(d.걸린.stem)) + '</b> 하나에 걸려 있어요. ' + esc(이가(이름(d.걸린.stem))) + ' 힘이 있으면 다 받아서 들어오고, 묶이면 바로 와요.</p>' : '';
     // ③ 격
-    const 격 = 원표.격 ? '<p class="wg-gk"><b>' + esc(원표.격.이름) + '격</b> — 태어난 달이 정한 이 사주의 짜임이에요.' + (원표.격.상신 ? ' 이 짜임을 쓰게 해 주는 글자는 ' + esc(원표.격.상신) + '이에요.' : '') + '</p>' : '';
+    const 격 = 원표.격 ? '<p class="wg-gk top"><b>' + esc(원표.격.이름) + '격</b> — 태어난 달이 정한 이 사주의 짜임이에요.' + (원표.격.상신 ? ' 이 짜임을 쓰게 해 주는 글자는 ' + esc(원표.격.상신) + '이에요.' : '') + '</p>' : '';
     // ④⑤ 운
     const 오늘 = 운.find(u => u.name === '오늘'), 이달 = 운.find(u => u.name === '이달'), 올해 = 운.find(u => u.name === '올해'), 대운 = 운.find(u => u.name === '대운');
     // 큰 층부터 — 대운 → 올해 → 이달 → 오늘(사장님 09-14). 머리말은 간지 「정미(丁未) 대운이라」.
@@ -198,10 +198,11 @@
     box.innerHTML =
       '<section class="wg" data-plain="1">'
       + '<div class="wg-head"><b>내 원국</b><span>여덟 글자가 서로 무엇을 하는지</span></div>'
+      + 격                                                     // 격 얘기가 맨 위(사장님 09-14 「정관격 얘기를 맨 위로 올리라고」)
       + '<div class="wg-table">' + 글자칸 + '</div>'
       + 걸린말 + 갈림
       + '<details class="wg-fold"><summary>이 사주는 이렇게 돌아가요</summary>'
-      + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>' + 격
+      + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>'
       + '<div class="wg-head sub"><b>지금 오는 글자</b></div>' + 운줄
       + (조심줄 ? '<div class="wg-head sub"><b>조심할 글자</b></div><ul class="wg-care">' + 조심줄 + '</ul>' : '')
       + '</details>'
