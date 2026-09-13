@@ -59,7 +59,7 @@
       else 줄.push(이가(첫(r.from)) + ' 나한테 바로 와요. 사이에 받아 주는 글자가 없어요.' + 뜻한번(r.from));
     });
     // 나와 같은 힘 · 내가 내보내는 것 · 내가 쥐는 것 — 극이 없는 사주도 한 줄은 서야 한다
-    t.글자.filter(g => !g.일간 && !g.운 && g.산다 && g.오행 === 나.오행).forEach(g => { 본[g.십신] = 1; 줄.push(은는(첫(g)) + ' 나와 같은 힘이에요. 같은 글자가 하나 더 서 있어요.'); });
+    t.글자.filter(g => !g.일간 && !g.운 && g.산다 && g.오행 === 나.오행).forEach(g => { 본[g.십신] = 1; 줄.push(은는(첫(g)) + ' 나와 같은 힘이에요. 같은 글자가 하나 더 힘이 있어요.'); });
     t.쌍.filter(r => r.from === 나 && r.to.산다 && !r.to.운).forEach(r => {
       if (r.관계 === '생') 줄.push('내 힘은 ' + 을를(첫(r.to)) + ' 만들어요. 내가 내놓는 자리예요.' + 뜻한번(r.to));
       else if (r.통관) 줄.push('나는 ' + 을를(첫(r.to)) + ' 쥐는 자리인데, ' + 이가(묶어(r.셋째.map(c => 이름(c.stem)))) + ' 사이에서 받아 줘요.' + 뜻한번(r.to));
@@ -89,7 +89,7 @@
     // 묶이는 원국 글자
     const 묶임 = t.글자.filter(x => !x.운 && !x.일간 && x.합거 && /운|올해|이달|오늘|대운/.test(x.합거) && !원표.글자.find(y => y.key === x.key && y.합거));
     if (묶임.length) 말.push(이가(묶어(묶임.map(x => 이름(x.stem)))) + ' 묶여요. 그동안 ' + 이가(묶어(묶임.map(x => 이름(x.stem)))) + ' 없는 거예요.');
-    if (!g.산다 && !g.합거) 말.push('뿌리가 없어서 이름만 와요.');
+    if (!g.산다 && !g.합거) 말.push('힘이 없어서 이름만 와요.');
     // 나에게 어떻게 오나
     const r = t.쌍.find(x => x.from === g && x.to === 나);
     if (r && g.산다) {
@@ -135,7 +135,7 @@
     const 자리 = ['hour', 'day', 'month', 'year'].filter(k => p[k]);
     const ds = p.day.stem;
     const 지십신 = (b) => { const h = E.HIDDEN[b]; const st = h && (typeof h[0] === 'number' ? h[0] : h[0][0]); return st == null ? '' : E.TEN_GODS[E.tenGod(ds, st)]; };
-    const 칸 = (k, f) => 자리.map(k2 => '<div class="' + (k2 === 'day' ? 'me' : '') + '">' + f(k2) + '</div>').join('');
+    const 칸 = (k, f) => 자리.map(k2 => '<div class="' + (k2 === 'day' ? 'mine' : '') + '">' + f(k2) + '</div>').join('');
     const 글자칸 = '<div class="wg-row lab">' + 칸(null, k => ({ hour: '시', day: '일', month: '월', year: '년' })[k]) + '</div>'
       + '<div class="wg-row god">' + 칸(null, k => esc(k === 'day' ? '나' : 원표.글자.find(x => x.key === k).십신)) + '</div>'
       + '<div class="wg-row han">' + 칸(null, k => esc(E.STEMS[p[k].stem])) + '</div>'
@@ -143,7 +143,7 @@
       + '<div class="wg-row god">' + 칸(null, k => esc(지십신(p[k].branch))) + '</div>';
     // ② 돌아감
     const d = 돌아감(원표);
-    const 걸린말 = d.걸린 ? '<p class="wg-key">그래서 이 사주는 <b>' + esc(이름(d.걸린.stem)) + '</b> 하나에 걸려 있어요. ' + esc(이가(이름(d.걸린.stem))) + ' 서 있으면 다 받아서 들어오고, 묶이면 바로 와요.</p>' : '';
+    const 걸린말 = d.걸린 ? '<p class="wg-key">그래서 이 사주는 <b>' + esc(이름(d.걸린.stem)) + '</b> 하나에 걸려 있어요. ' + esc(이가(이름(d.걸린.stem))) + ' 힘이 있으면 다 받아서 들어오고, 묶이면 바로 와요.</p>' : '';
     // ③ 격
     const 격 = 원표.격 ? '<p class="wg-gk"><b>' + esc(원표.격.이름) + '격</b> — 태어난 달이 정한 이 사주의 짜임이에요.' + (원표.격.상신 ? ' 이 짜임을 쓰게 해 주는 글자는 ' + esc(원표.격.상신) + '이에요.' : '') + '</p>' : '';
     // ④⑤ 운
@@ -162,7 +162,7 @@
       const 뿌리터 = 자리.map(k => [p[k].branch, E.NATAL_WEIGHT[k + 'Branch']]);
       const 내힘 = E.stemPower(p.day.stem, 뿌리터);
       const 국 = E.samhapOf(뿌리터);
-      if (내힘 < 0.5 && 국.length) 갈림 = '<p class="wg-fork">이 사주는 판이 다르게 설 수 있어요. 나를 받쳐 주는 뿌리가 없고 한 기운이 판을 덮고 있어서요. 이런 사주는 사람이 봐야 해요.</p>';
+      if (내힘 < 0.5 && 국.length) 갈림 = '<p class="wg-fork">이 사주는 판이 다르게 설 수 있어요. 나한테 힘이 없고 한 기운이 판을 덮고 있어서요. 이런 사주는 사람이 봐야 해요.</p>';
     } catch (e) {}
 
     // 밴드 — 글자 넷 + 걸린 글자 한 줄만 보이고, 부가 설명은 접어 둔다(사장님 「부가설명은 접어두고」).

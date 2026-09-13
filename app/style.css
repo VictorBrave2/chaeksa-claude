@@ -1522,5 +1522,5 @@ details.fold > .tiles { margin-top: 10px; }
 .wg-row.lab div{font-size:10px;color:var(--ink3);padding-bottom:2px}
 .wg-row.god div{font-size:11.5px;font-weight:700;color:var(--ink2);padding:2px 0}
 .wg-row.han div{font-family:"Noto Serif KR",serif;font-size:26px;line-height:1.25;letter-spacing:1px}
-.wg-row div.me{color:var(--accent)}
-.wg-row.god div.me{color:var(--accent)}
+.wg-row div.mine{color:var(--accent)}
+.wg-row.god div.mine{color:var(--accent)}
