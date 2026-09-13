@@ -105,8 +105,23 @@
         격 = { 이름: 고른.격, 상신, 근거: 고른.근거 };
       }
     } catch (e) { 격 = null; }
+    // 46조(초안, docs/36) — 궁(지지)을 표에 올린다. 지지는 치는 쪽이 되지 않고(명령은 천간, 15:743·806) 맞는 쪽·자리로만 선다.
+    // 힘은 자리 무게(월 2.0·시 1.5·연·일 1.0)만 — 12운성은 천간이 받는 것(15:185). 궁은 늘 채워져 있어 「없다」가 없다(docs/30). 상태는 원국 안의 합·충(30:108).
+    const 궁 = [];
+    try {
+      const 궁자리 = [['year', 'yearB', '연지', E.NATAL_WEIGHT.yearBranch], ['month', 'monthB', '월지', E.NATAL_WEIGHT.monthBranch],
+                     ['day', 'dayB', '일지', E.NATAL_WEIGHT.dayBranch], ['hour', 'hourB', '시지', E.NATAL_WEIGHT.hourBranch]].filter(([k]) => pillars[k]);
+      const rel = E.branchRels ? E.branchRels(pillars) : { 성립: [] };
+      궁자리.forEach(([k, key, 이름, w]) => {
+        const b = pillars[k].branch, 본기 = (E.HIDDEN[b] || [])[0];
+        const g = { key, 이름, branch: b, 글자: E.BRANCHES[b], 오행: E.BRANCH_ELEM[b], stem: 본기, 십신: E.TEN_GODS[E.tenGod(ds, 본기)],
+                    지지: true, 궁: true, 일간: false, 운: false, 산다: true, 힘: w, 합거: null, 합: [], 충: [], 이력: [] };
+        (rel.성립 || []).forEach(x => { if (x.자리 && x.자리.indexOf(이름) >= 0) { if (x.종류 === '충') g.충.push(x.글자); else g.합.push(x.종류 + ' ' + x.글자); } });
+        궁.push(g);
+      });
+    } catch (e) {}
     const 쌍 = [];
-    for (const a of 글자) for (const b of 글자) {
+    for (const a of 글자) for (const b of 글자.concat(궁)) {
       if (a === b) continue;
       let 관계 = null;
       if (생(a.오행, b.오행)) 관계 = '생';
@@ -156,19 +171,19 @@
         : r.from.글자 + '이 나를 바로 친다',
     }));
     // 통관 목록 — 사람이 읽을 한 줄씩
-    const 통관 = 쌍.filter(r => r.통관 && r.from.산다 && r.to.산다).map(r =>
+    const 통관 = 쌍.filter(r => r.통관 && r.from.산다 && r.to.산다 && !r.to.궁).map(r =>
       r.from.글자 + '(' + r.from.십신 + ')→' + r.셋째.map(c => c.글자).join('·') + '→' + r.to.글자 + '(' + r.to.십신 + ')');
     // 제복 목록 — 극이 잡혀서 못 닿는 자리
-    const 제복 = 쌍.filter(r => r.제복 && !r.통관 && r.from.산다 && r.to.산다 && !r.from.일간).map(r =>   // 일간은 주체라 잡히지 않는다
+    const 제복 = 쌍.filter(r => r.제복 && !r.통관 && r.from.산다 && r.to.산다 && !r.from.일간 && !r.to.궁).map(r =>   // 일간은 주체라 잡히지 않는다
       r.잡는.map(c => c.글자).join('·') + '이 ' + r.from.글자 + '(' + r.from.십신 + ')을 잡아 ' + r.to.글자 + '(' + r.to.십신 + ')에 못 닿는다');
     // 힘 차이로 못 치는 자리 — 사람이 읽을 한 줄씩
-    const 힘차이 = 쌍.filter(r => r.힘차이 && !r.통관 && !r.제복 && r.from.산다 && r.to.산다).map(r =>
+    const 힘차이 = 쌍.filter(r => r.힘차이 && !r.통관 && !r.제복 && r.from.산다 && r.to.산다 && !r.to.궁).map(r =>
       r.from.글자 + '(' + r.from.십신 + ')이 ' + r.to.글자 + '(' + r.to.십신 + ')을 치기엔 힘이 모자란다(' + r.from.힘 + ' 대 ' + r.to.힘 + ')');
     // 끊긴 생 — a 가 b 를 생하는데 a 를 막힘 없이 극하는 살아 있는 글자가 있다
-    const 끊김 = 쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다).filter(r =>
+    const 끊김 = 쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다 && !r.to.궁).filter(r =>
       쌍.some(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘)).map(r =>
       r.from.글자 + '→' + r.to.글자 + ' 생이 약하다(' + 쌍.filter(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘).map(q => q.from.글자).join('·') + '이 ' + r.from.글자 + '을 친다)');
-    return { 글자, 쌍, 닿음, 통관, 제복, 힘차이, 끊김, 격 };
+    return { 글자, 궁, 쌍, 닿음, 통관, 제복, 힘차이, 끊김, 격 };
   }
 
   /** 사람이 읽을 요약 — 한 줄씩. */
@@ -187,6 +202,7 @@
   // 글자 이름 「임수(壬)」(34조) 와 받침 조사 — 달력·이야기·원국 밴드가 같은 말을 쓴다.
   const 오행자 = ['목', '화', '토', '금', '수'];
   const 이름 = (stem) => E.STEMS_KO[stem] + 오행자[E.STEM_ELEM[stem]] + '(' + E.STEMS[stem] + ')';
+  const 지이름 = (b) => E.BRANCHES_KO[b] + 오행자[E.BRANCH_ELEM[b]] + '(' + E.BRANCHES[b] + ')';   // 묘목(卯)
   const 받침 = (s) => { const t = String(s).replace(/\([^)]*\)\s*$/, ''); const c = t.slice(-1).charCodeAt(0); return c >= 0xAC00 && c <= 0xD7A3 && ((c - 0xAC00) % 28) !== 0; };
   const 조 = (s, 있, 없) => s + (받침(s) ? 있 : 없);
   const 이가 = (s) => 조(s, '이', '가'), 을를 = (s) => 조(s, '을', '를'), 은는 = (s) => 조(s, '은', '는'), 과와 = (s) => 조(s, '과', '와');
@@ -308,5 +324,5 @@
     비율: { 최소: 0, 최대: null, 문턱: { 못침: 2 }, 말: '맞는 쪽 합산 ÷ 치는 쪽 · 2배부터 못 친다' },
   };
   const 힘말 = (v) => v == null ? '' : v + ' (0~2.0' + (v > 2.0 ? ', 국 4.5' : '') + ')';
-  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말, 층격, 취격, 눈금, 힘말 };
+  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 지이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말, 층격, 취격, 눈금, 힘말 };
 })(window);
