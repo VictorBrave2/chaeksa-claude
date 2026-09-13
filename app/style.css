@@ -1407,8 +1407,6 @@ details.fold > .tiles { margin-top: 10px; }
 /* backdrop-filter 를 뺐다 — 표지 61장이면 흐림 61개가 스크롤마다 다시 그려져 폰이 버벅인다(09-13 사장님 「모바일에서 렉이 심해졌다」).
    화면 밖 표지는 그리지 않는다(content-visibility). 3열 폭에서 표지 한 칸은 대략 108x160 + 글 두 줄. */
 .wt-grid .wt-cd{content-visibility:auto;contain-intrinsic-size:108px 190px}
-.wt-more{margin:-6px 0 18px}
-.wt-more[hidden]{display:none}
 .wt-cd .cd-s{font-size:10.5px;line-height:1.3;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wt-cd:active .cd-img{transform:scale(.97);transition:transform .06s ease}
 /* 그림이 둘이면(책사 얼굴 + 이야기 썸네일) 썸네일이 위에 온다 */
