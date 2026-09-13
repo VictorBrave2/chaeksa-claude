@@ -1830,14 +1830,9 @@
     let box = $('myMonth');
     if (!box) { wkCard.insertAdjacentHTML('afterend', '<section class="card" id="myMonth"></section>'); box = $('myMonth'); }
     const y = today.getFullYear(), m = today.getMonth() + 1;
+    // 「이번 달 일운 달력」 상품은 2026-09-14 삭제(사장님) — 결제 권유를 걷고, 이미 산 분만 그대로 연다.
     const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month');
-    if (!paid) {
-      box.innerHTML = nextStep('이번 달 30일', '오늘부터 7일은 무료',
-        m + '월 한 달 전체 — 날마다 무슨 기운이 오는지(돈·일·연애) 30일을 다 봅니다. 달이 바뀌면 새로 봅니다.',
-        (profile.name || '') + '님 ' + m + '월 30일을 보고 싶습니다', 'month',
-        T.monthWhy ? T.monthWhy(R).말 : null);
-      return;
-    }
+    if (!paid) { box.innerHTML = ''; box.classList.add('hide'); return; }
     const v = T.myDays(R, y, m);
     // 좋은 날 배점(monthScoreFor)은 2026-09-04 폐지 — 점수·좋은 날·조심할 날·주 단위 평균을 걷고,
     // 서른 칸에는 그날 하늘에 온 글자(십신 · 돈/자리/연)만 남긴다. 아래 주절·좋은절·조심절·예고는 비운다.
@@ -2866,11 +2861,8 @@
       h += '<p class="mnk" style="margin-top:22px">이번 달 30일</p>'
         + '<ul class="st-days mini">' + 달.map(x => '<li class="st-day s' + x.등급 + '"><b>' + x.요일 + '<small>' + x.날 + '일</small></b><i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em></span></li>').join('') + '</ul>'
         + 묶(st.묶음.좋음 + ' 셋', g.좋음) + 묶(st.묶음.조심 + ' 셋', g.조심) + (st.묶음.짝 ? 묶(st.묶음.짝, g.짝) : '');
-    } else {
-      h += nextStep('이번 달 30일', '오늘부터 7일은 무료',
-        (today.getMonth() + 1) + '월 남은 날 전부 — ' + st.묶음.좋음 + ' 셋, ' + st.묶음.조심 + ' 셋' + (st.묶음.짝 ? ', ' + st.묶음.짝 : '') + '까지. 이 상품 하나로 다른 이야기의 30일도 다 열려요.',
-        (profile && profile.name || '') + '님 ' + (today.getMonth() + 1) + '월 30일을 보고 싶습니다', 'month', null);
     }
+    // 30일 결제 권유는 2026-09-14 상품 삭제와 함께 걷었다 — 이야기는 오늘부터 7일 무료가 전부다.
     box.innerHTML = h;
   }
 
@@ -2956,7 +2948,7 @@
           if (!subs.length) return null;
           const 사이들 = subs.map(st => st.사이).filter((x, i, a) => a.indexOf(x) === i);
           return { id: 'gl-' + g.키, tab: 'story', 갈래: g.키, story: subs[0].id, k: subs[0].k, 사이: 사이들[0], 사이들,
-                   제목: g.날고르기, 소개: g.이름 + ' · 상황 ' + subs.length + '가지', 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + subs[0].id + '-s.webp' };
+                   제목: g.날고르기, 소개: g.이름 + ' · 상황 ' + subs.length + '가지', 띠: '무료', 값: '오늘부터 7일', 썸: 'art/story-' + subs[0].id + '-s.webp' };
         }).filter(Boolean);
         이야기.unshift(...갈래카드);
       }
