@@ -24,7 +24,10 @@
   };
   const modelFor = (task) => {
     const s = settings();
-    if (s.model) return s.model;                       // 사용자가 하나로 고정한 경우
+    // 돈 낸 글(story·sheet·profile)은 설정이 무엇이든 opus 다 — 2026-09-13 사장님 「설정에 따라 유료 답변이 달라지는 것 아니지?」.
+    // 옛 값 s.model 이 남아 있어도 유료는 못 내린다. 등급은 무료 쪽 짧은 답에만 닿는다.
+    if (task === 'story' || task === 'sheet' || task === 'profile') return 'claude-opus-5';
+    if (s.model) return s.model;                       // 사용자가 하나로 고정한 경우(옛 값)
     const t = TIERS[s.tier || 'balanced'] || TIERS.balanced;
     return t[task] || t.chat;
   };
