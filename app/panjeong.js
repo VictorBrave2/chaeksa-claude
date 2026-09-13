@@ -270,7 +270,17 @@
    *  차이를 갈래마다 읽는다: 칸이 좋아지면 보완, 나빠지면 하락. 두 방향(나 ← 그 사람 / 그 사람 ← 나)을 따로 낸다 — 합치지 않는다. */
   function 궁합(R, Rm, today, opts) {
     const 갈래들 = (opts && opts.갈래들) || ['관계', '배우자', '이별', '재물', '친구', '직장', '학습', '가족'];
-    const 한쪽 = (A, B, 여자A, 여자B) => {
+    // 사람층of(B, 나를얹고): B의 격신을 「그 사람」 층으로. 나를얹고 = A의 격신을 B에 먼저 얹은 뒤의 B 격신(되돌아오는 효과 Γ 용).
+    const 사람층of = (B, A얹기) => {
+      const pB = 판정(B, today, A얹기 ? { 운들: 운들of(B, today).concat(A얹기) } : undefined);
+      const 글B = pB.오늘.표.글자;
+      const 격신B = pB.오늘.격 && pB.오늘.격.주인 && !pB.오늘.격.주인.운 ? 글B.find(g => g.key === pB.오늘.격.주인.key) : null;
+      if (opts && opts.전부) return 글B.filter(g => !g.운 && g.산다 && !g.일간).map(g => ({ stem: g.stem, branch: null, name: '그 사람', 힘: g.힘 }));
+      if (격신B && 격신B.산다) return [{ stem: 격신B.stem, branch: null, name: '그 사람', 힘: 격신B.힘 }];
+      if (pB.오늘.격 && pB.오늘.격.지금격) { const 본기 = (E.HIDDEN[B.pillars.month.branch] || [])[0]; const st = typeof 본기 === 'number' ? 본기 : 본기[0]; return [{ stem: st, branch: null, name: '그 사람', 힘: E.NATAL_WEIGHT.monthBranch }]; }
+      return [];
+    };
+    const 한쪽 = (A, B, 여자A, 여자B, 사람층주어진) => {
       const pB = 판정(B, today);
       const 글B = pB.오늘.표.글자;
       const 일간B = 글B.find(g => g.일간);
@@ -279,20 +289,16 @@
       const 격신B = pB.오늘.격 && pB.오늘.격.주인 && !pB.오늘.격.주인.운 ? 글B.find(g => g.key === pB.오늘.격.주인.key) : null;
       // 그 사람 = 그 사람의 격신(사장님 09-14 「그녀가 병화 일간에 정관격이라면 내게는 그녀가 계수짓을 한다」). 일간이 아니라 그 사람을 부리는 글자가 내게 온다.
       // 격신이 천간에 없으면(본기만 있는 격) 월지 속 본기 지장간을 그 사람으로(46조, 힘 = 자리 무게). 격을 못 잡으면 「안 나왔어요」.
-      let 사람층 = [];
-      if (opts && opts.전부) 사람층 = 글B.filter(g => !g.운 && g.산다 && !g.일간).map(g => ({ stem: g.stem, branch: null, name: '그 사람', 힘: g.힘 }));
-      else if (격신B && 격신B.산다) 사람층 = [{ stem: 격신B.stem, branch: null, name: '그 사람', 힘: 격신B.힘 }];
-      else if (pB.오늘.격 && pB.오늘.격.지금격) {
-        const 본기 = (E.HIDDEN[B.pillars.month.branch] || [])[0]; const st = typeof 본기 === 'number' ? 본기 : 본기[0];
-        사람층 = [{ stem: st, branch: null, name: '그 사람', 힘: E.NATAL_WEIGHT.monthBranch }];
-      }
+      const 사람층 = 사람층주어진 || 사람층of(B, null);
       const 기본 = 운들of(A, today);
       const 앞 = 판정(A, today, { 운들: 기본 });
       const 뒤 = 판정(A, today, { 운들: 기본.concat(사람층) });
       const 줄 = [];
+      const 남은 = {};   // 연결 후 남은 칸(GPT 「얼마나 좋아졌나」와 「지금 작동하나」는 다른 질문)
       갈래들.forEach(갈 => {
         let a, b; try { a = 이야기결과(A, 갈, today, { 여자: 여자A, 운들: 기본 }); b = 이야기결과(A, 갈, today, { 여자: 여자A, 운들: 기본.concat(사람층) }); } catch (e) { return; }
         const da = 칸차례[a.칸], db = 칸차례[b.칸];
+        남은[갈] = { 칸: b.칸, 결과: b.결과.키 };
         if (db > da) 줄.push({ 갈래: 갈, 방향: '보완', 전: a.결과.키, 후: b.결과.키, 말: b.이유 });
         else if (db < da) 줄.push({ 갈래: 갈, 방향: '하락', 전: a.결과.키, 후: b.결과.키, 말: b.이유 });
       });
@@ -302,10 +308,22 @@
       const 격신A = 앞.오늘.격 && 앞.오늘.격.주인;
       if (격신A) { const g = 뒤.오늘.표.글자.find(x => x.key === 격신A.key); if (g && !g.산다 && g.이력.some(h => /그 사람/.test(h.말))) 줄.unshift({ 갈래: '격', 방향: '하락', 전: 앞.오늘.범주, 후: 뒤.오늘.범주, 말: '그 사람 글자가 내 격신 ' + G.이름(g.stem) + ' ' + g.십신 + '을 합거해요. 근거가 사라져요.' }); }
       const 사람말 = 사람층.map(u => G.이름(u.stem) + ' ' + E.TEN_GODS[E.tenGod(A.pillars.day.stem, u.stem)] + '(' + u.name + ')').join(' · ');
-      return { 줄, 묶음, 앞범주: 앞.오늘.범주, 뒤범주: 뒤.오늘.범주, 사람말 };
+      return { 줄, 묶음, 남은, 앞범주: 앞.오늘.범주, 뒤범주: 뒤.오늘.범주, 사람말 };
     };
     const 여자 = (X) => ((X.input && X.input.gender) || 'M') !== 'M';
-    return { 나에게: 한쪽(R, Rm, 여자(R), 여자(Rm)), 그사람에게: 한쪽(Rm, R, 여자(Rm), 여자(R)) };
+    const 나에게 = 한쪽(R, Rm, 여자(R), 여자(Rm)), 그사람에게 = 한쪽(Rm, R, 여자(Rm), 여자(R));
+    // 되돌아오는 효과(Γ) — 나를 먼저 얹어 그 사람의 격신이 바뀌면(변격·구제), 그 바뀐 격신이 다시 내게 온다. 한 방향 결과와 다른 것만 「되돌림」으로 낸다.
+    let 되돌림 = null;
+    try {
+      const 나층 = 사람층of(R, null);
+      const 그다음 = 사람층of(Rm, 나층);
+      const 같다 = JSON.stringify(그다음.map(u => u.stem)) === JSON.stringify(사람층of(Rm, null).map(u => u.stem));
+      if (!같다 && 그다음.length) {
+        const 둘째 = 한쪽(R, Rm, 여자(R), 여자(Rm), 그다음);
+        되돌림 = { 사람말: 둘째.사람말, 줄: 둘째.줄.filter(j => !나에게.줄.some(k => k.갈래 === j.갈래 && k.방향 === j.방향)) };
+      }
+    } catch (e) { 되돌림 = null; }
+    return { 나에게, 그사람에게, 되돌림 };
   }
   function 운들of(R, today) {
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
