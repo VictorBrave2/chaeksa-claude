@@ -33,11 +33,11 @@
     const out = 자리.map(([k, 이름]) => ({
       key: k, 이름, stem: pillars[k].stem, 글자: E.STEMS[pillars[k].stem], 오행: E.STEM_ELEM[pillars[k].stem],
       힘: k === 'day' ? null : Math.round(E.stemPower(pillars[k].stem, 뿌리터) * 100) / 100,
-      일간: k === 'day', 운: false, 합거: null,
+      일간: k === 'day', 운: false, 합거: null, 이력: [],   // 이력 = 어느 조문으로 상태가 바뀌었나(판정 모듈 B)
     }));
     // 원국 합거(연간-월간). 일간은 합거하지 않는다.
     const nh = E.natalHap(pillars);
-    Object.keys(nh).forEach(k => { const g = out.find(x => x.key === k); if (g) g.합거 = '원국 ' + (out.find(x => x.key === nh[k]) || {}).이름; });
+    Object.keys(nh).forEach(k => { const g = out.find(x => x.key === k); if (g) { g.합거 = '원국 ' + (out.find(x => x.key === nh[k]) || {}).이름; g.이력.push({ 조: '3조', 말: '원국 ' + (out.find(x => x.key === nh[k]) || {}).이름 + '과 합 — 합거' }); } });
     // 운 천간 — 하나씩 들어와 아직 안 묶인 원국 천간(일간 제외) 중 합하는 것을 묶는다(28조 두번법칙: 첫 번은 묶이고 둘째부터 뚫린다).
     (운천간들 || []).forEach(u => {
       // 뒤에 온 운 글자는 원국 글자뿐 아니라 앞서 온 운 글자도 묶는다 — 월운 辛이 세운 丙을 묶으면 구응이 사라진다(09-14 사장님).
@@ -50,13 +50,18 @@
           || (!a.운 && !b.운 ? (원국차례[a.key] - 원국차례[b.key]) : 0));
       // 합은 서로 묶는다 — 갑목을 묶은 기토는 그 합에 쓰여서 제 명령(임수를 잡는 일)을 못 한다(사장님 「기토 오면 임수가 닿는다」).
       let 묶은 = null;
-      if (후보.length) { 후보[0].합거 = u.name || '운'; 묶은 = (후보[0].운 ? '' : '원국 ') + 후보[0].이름 + ' ' + 후보[0].글자; }
+      if (후보.length) {
+        후보[0].합거 = u.name || '운'; 묶은 = (후보[0].운 ? '' : '원국 ') + 후보[0].이름 + ' ' + 후보[0].글자;
+        const 왜 = 후보.length > 1 ? (후보[0].운 ? '28조(운끼리 먼저, 가까운 층부터)' : '37조(연간→월간→시간)') : '28조';
+        후보[0].이력.push({ 조: 왜, 말: (u.name || '운') + ' ' + E.STEMS[u.stem] + '이 묶음' + (후보.length > 1 ? ' — 쟁합 ' + 후보.map(x => x.이름).join('·') + ' 중 첫째' : '') });
+      }
       out.push({ key: 'un' + out.length, 이름: u.name || '운', stem: u.stem, 글자: E.STEMS[u.stem], 오행: E.STEM_ELEM[u.stem],
                  힘: Math.round(E.stemPower(u.stem, 뿌리터) * 100) / 100,
-                 일간: false, 운: true, 합거: 묶은 ? 묶은 + '과 합' : null });
+                 일간: false, 운: true, 합거: 묶은 ? 묶은 + '과 합' : null,
+                 이력: 묶은 ? [{ 조: '28조', 말: 묶은 + '과 합에 쓰임 — 제 명령 없음' }] : [] });
     });
     // 「산다」 — 일간이거나, 힘 0.5 이상이고 합거 안 된 것(사장님 09-14 「살아있다를 0.5로 가자, 제 역할은 할 수 있으니까」. 연지·일지 장생 0.55·월지 목욕 1.0 까지 산다)
-    out.forEach(g => { g.산다 = g.일간 || (g.힘 >= 0.5 && !g.합거); });
+    out.forEach(g => { g.산다 = g.일간 || (g.힘 >= 0.5 && !g.합거); if (!g.일간 && !g.합거 && g.힘 < 0.5) g.이력.push({ 조: '33조', 말: '힘 ' + g.힘 + ' < 0.5 — 무근' }); });
     return out;
   }
 
