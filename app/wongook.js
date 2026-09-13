@@ -67,6 +67,7 @@
     });
     // 글자끼리 (일간 뺀 것) — 통관·제복·끊김
     t.쌍.filter(r => r.관계 === '극' && r.from.산다 && r.to.산다 && !r.from.일간 && !r.to.일간 && !r.from.운 && !r.to.운).forEach(r => {
+      if (r.힘차이 && !r.통관 && !r.제복) { 줄.push(이가(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 치려 하지만 힘이 많이 모자라요. ' + 은는(이름(r.to.stem)) + ' 끄떡없어요.' + 뜻한번(r.from)); return; }
       if (r.통관) 줄.push(은는(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 치는 글자예요. 그런데 ' + 이가(묶어(r.셋째.map(c => 이름(c.stem)))) + ' 사이에서 받아 줘요. ' + 은는(이름(r.to.stem)) + ' 다치지 않아요.' + 뜻한번(r.from));
       else if (r.제복) 줄.push(이가(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 치려는데 ' + 이가(묶어(r.잡는.map(c => 이름(c.stem)))) + ' 막아 줘요.' + 뜻한번(r.from));
       else 줄.push(이가(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 쳐요. ' + 이가(이름(r.to.stem)) + ' 힘을 못 써요.' + 뜻한번(r.from));
@@ -125,6 +126,7 @@
     }
     // 원국 글자에게 무엇을 하나 — 치는 것만(받아 주는 글자 있으면 같이)
     t.쌍.filter(x => x.from === g && x.관계 === '극' && !x.to.일간 && x.to.산다 && g.산다).forEach(x => {
+      if (x.힘차이 && !x.통관 && !x.제복) { 말.push(을를(이름(x.to.stem)) + ' 치려 하지만 힘이 많이 모자라요.'); return; }
       if (x.통관) 말.push(을를(이름(x.to.stem)) + ' 치는 글자인데 ' + 이가(묶어(x.셋째.map(c => 이름(c.stem)))) + ' 받아 줘요.');
       else if (x.제복) 말.push(을를(이름(x.to.stem)) + ' 치려는데 ' + 이가(묶어(x.잡는.map(c => 이름(c.stem)))) + ' 막아 줘요.');
       else 말.push(을를(이름(x.to.stem)) + ' 쳐요.');
