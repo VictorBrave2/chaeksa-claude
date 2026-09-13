@@ -1607,7 +1607,8 @@
       const s1 = 나.score;
       const 등급1 = s1 >= 5 ? 3 : s1 >= 2 ? 2 : s1 >= -1 ? 1 : 0;
       const 꼴1 = 등급말(등급1);
-      const 바탕 = (story.나 && story.나[나.god]) || 내쪽[나.god] || '';
+      const 표말 = global.ChaeksaSaenggeuk && global.ChaeksaSaenggeuk.오늘말 ? global.ChaeksaSaenggeuk.오늘말(나.길) : null;
+      const 바탕 = 표말 || (story.나 && story.나[나.god]) || 내쪽[나.god] || '';
       let 내말 = 바탕;
       if (등급1 >= 2 && (나.rel === '합' || 나.rel === '삼합')) 내말 = story.나붙음 || 바탕;
       else if (등급1 === 0 && 나.rel === '충') 내말 = story.나어긋 || 바탕;
@@ -1627,7 +1628,8 @@
     else if (등급 === 0 && 그.rel === '충') 그쪽말 = story.그쪽어긋;
     else if (그.god === 배우자성) 그쪽말 = story.그쪽짝;
     else 그쪽말 = story.그쪽[그.god] || '';
-    const 내쪽말 = 내쪽[나.god] || '';
+    // 내 쪽은 원국 표를 읽는다(33조) — 「기토(己)가 갑목(甲)을 묶는 날」. 표가 할 말이 없는 날만 옛 공용 표.
+    const 내쪽말 = (global.ChaeksaSaenggeuk && global.ChaeksaSaenggeuk.오늘말 && global.ChaeksaSaenggeuk.오늘말(나.길)) || 내쪽[나.god] || '';
     const 이유 = '그 사람은 오늘 ' + 그쪽말 + '(' + 그.god + '), 나는 ' + 내쪽말 + '(' + 나.god + ')이거든요.';
     const 짝날 = 그.god === 배우자성;
     return { d, 요일: 요일[d.getDay()], 날: dd, 등급, 꼴, 표: 등급 >= 2 ? '○' : 등급 === 1 ? '△' : '✕',

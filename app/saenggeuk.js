@@ -119,5 +119,44 @@
     return out;
   }
 
-  global.ChaeksaSaenggeuk = { 표, 줄, 글자들 };
+  // 글자 이름 「임수(壬)」(34조) 와 받침 조사 — 달력·이야기·원국 밴드가 같은 말을 쓴다.
+  const 오행자 = ['목', '화', '토', '금', '수'];
+  const 이름 = (stem) => E.STEMS_KO[stem] + 오행자[E.STEM_ELEM[stem]] + '(' + E.STEMS[stem] + ')';
+  const 받침 = (s) => { const t = String(s).replace(/\([^)]*\)\s*$/, ''); const c = t.slice(-1).charCodeAt(0); return c >= 0xAC00 && c <= 0xD7A3 && ((c - 0xAC00) % 28) !== 0; };
+  const 조 = (s, 있, 없) => s + (받침(s) ? 있 : 없);
+  const 이가 = (s) => 조(s, '이', '가'), 을를 = (s) => 조(s, '을', '를'), 은는 = (s) => 조(s, '은', '는'), 과와 = (s) => 조(s, '과', '와');
+  const 묶어 = (arr) => arr.length === 1 ? arr[0] : arr.slice(0, -1).map(x => 과와(x)).join(' ') + ' ' + arr[arr.length - 1];
+
+  /** 오늘 온 글자 하나가 내 표를 어떻게 건드리나 — 달력 점수와 이야기 「나는 …날」이 같이 쓴다. */
+  const 원표캐시 = new WeakMap();
+  function 오늘길(result, stem, branch) {
+    if (!result || !result.pillars) return null;
+    let 원 = 원표캐시.get(result);
+    if (!원) { 원 = 표(result.pillars, [], result); 원표캐시.set(result, 원); }
+    const t = 표(result.pillars, [{ stem, branch, name: '오늘' }], result);
+    const 운 = t.글자.find(g => g.운), 나 = t.글자.find(g => g.일간);
+    if (!운) return null;
+    const r = t.쌍.find(x => x.from === 운 && x.to === 나);
+    const 묶임 = t.글자.filter(g => !g.운 && !g.일간 && g.합거 === '오늘');
+    const 전 = 원.닿음.filter(x => x.결과 === '받음' || x.결과 === '잡힘').map(x => x.글자);
+    const 후 = t.닿음.filter(x => x.결과 === '받음' || x.결과 === '잡힘').map(x => x.글자);
+    const 아직 = t.닿음.map(x => x.글자);
+    const 끊 = 전.filter(x => !후.includes(x) && 아직.includes(x)).map(x => E.STEMS.indexOf(x.replace(/\(.*\)/, '')));
+    const 결과 = !운.산다 ? '이름만' : r ? (r.관계 === '생' ? '도움' : r.통관 ? '받음' : r.제복 ? '잡힘' : '닿음') : '무관';
+    return { 운, 결과, 셋째: r ? r.셋째 : [], 잡는: r ? r.잡는 : [], 묶임, 끊 };
+  }
+  /** 「나는 …날」 — 이야기 하루 줄의 내 쪽. 반드시 「…날」로 끝난다(뒤에 「(십신)이거든요」가 붙는다). 없으면 null. */
+  function 오늘말(L) {
+    if (!L || !L.운) return null;
+    const N = (g) => 이름(g.stem);
+    if (L.끊.length) return 이가(N(L.운)) + ' ' + 을를(묶어(L.묶임.map(N))) + ' 묶어서 ' + 이가(묶어(L.끊.map(s => 이름(s)))) + ' 나한테 바로 오는 날';
+    if (L.묶임.length) return 이가(N(L.운)) + ' ' + 을를(묶어(L.묶임.map(N))) + ' 묶는 날';
+    if (L.결과 === '닿음') return 이가(N(L.운)) + ' 나한테 바로 오는 날';
+    if (L.결과 === '받음') return 이가(N(L.운)) + ' 오는데 ' + 이가(묶어(L.셋째.map(N))) + ' 받아 넘겨 주는 날';
+    if (L.결과 === '잡힘') return 이가(N(L.운)) + ' 오는데 ' + 이가(묶어(L.잡는.map(N))) + ' 막아 주는 날';
+    if (L.결과 === '도움') return 이가(N(L.운)) + ' 나를 채워 주는 날';
+    return null;
+  }
+
+  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말 };
 })(window);

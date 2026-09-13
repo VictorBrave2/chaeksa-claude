@@ -38,13 +38,23 @@
     else if (rel === '삼합') { s += 1; reasons.push('내 자리와 한편(삼합)'); }
     else if (rel === '복음') { s -= 1; reasons.push('내 글자가 겹침(복음)'); }
     if (STEM_HAP[ds] === tf.day.stem) { s += 1; reasons.push('하늘 글자가 나와 맞물림(천간합)'); }
-    const elem = E.ELEM[E.STEM_ELEM[tf.day.stem]];
-    if (a.yongCandidates.includes(elem)) { s += 1.5; reasons.push(elem + ' 기운 도움'); }
+    // 용신 오행 +1.5 는 29조로 걷었다(강약에서 나온 값). 대신 오늘 온 글자가 내 생극제화 표를 어떻게 건드리나(33조):
+    // 받아 넘겨지거나 채워 주면 +1.5, 바로 닿으면 −1.5, 방패가 묶여 뚫리면 −1.5 더. 크기 1.5 는 옛 용신 항과 같은 눈금(우리가 정한 값).
+    let 길 = null;
+    try {
+      const G = global.ChaeksaSaenggeuk;
+      길 = (G && G.오늘길) ? G.오늘길(result, tf.day.stem, tf.day.branch) : null;
+      if (길) {
+        if (길.결과 === '받음' || 길.결과 === '도움') { s += 1.5; reasons.push('오늘 글자가 나를 채움'); }
+        else if (길.결과 === '닿음') { s -= 1.5; reasons.push('오늘 글자가 나한테 바로 닿음'); }
+        if (길.끊.length) { s -= 1.5; reasons.push('방패가 묶임'); }
+      }
+    } catch (e) { 길 = null; }
     // 월 단위 흐름도 약간 반영
     const godM = E.TEN_GODS[E.tenGod(ds, tf.month.stem)];
     s += (P.w[godM] ?? 0) * 0.3;
     const grade = s >= 5 ? 3 : s >= 2 ? 2 : s >= -1 ? 1 : 0; // 3 최고, 0 피함
-    return { y, m, d, tf, god, rel, score: Math.round(s * 10) / 10, grade, reasons };
+    return { y, m, d, tf, god, rel, score: Math.round(s * 10) / 10, grade, reasons, 길 };
   }
 
   function month(result, y, m, purposeKey) {
