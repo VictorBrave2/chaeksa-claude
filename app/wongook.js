@@ -81,10 +81,11 @@
   }
 
   /** ④⑤ 운 글자 하나가 표를 어떻게 건드리나 — 원국 표와 운 하나를 넣은 표를 견준다 */
-  function 운한줄(R, 원표0, u, 이름표, 앞운들) {
+  function 운한줄(R, 원표0, u, 이름표, 앞운들, 층, 앞층) {
     const 앞 = (앞운들 || []).filter(x => x && x.stem != null);
-    const 원표 = 앞.length ? G.표(R.pillars, 앞, R) : 원표0;         // 앞 층(대운·올해·이달)을 얹은 상태가 기준
-    const t = G.표(R.pillars, 앞.concat([u]), R);
+    // 40조 — 판정 모듈이 낸 층을 그대로 읽는다. 없으면(옛 호출) 여기서 표를 만든다.
+    const 원표 = 앞층 ? 앞층.표 : (앞.length ? G.표(R.pillars, 앞, R) : 원표0);
+    const t = 층 ? 층.표 : G.표(R.pillars, 앞.concat([u]), R);
     const g = t.글자.filter(x => x.운).slice(-1)[0];
     if (!g) return '';
     const 나 = t.글자.find(x => x.일간);
@@ -96,8 +97,8 @@
     // 변격(35조) — 이 층에서 격의 주인이 묶였으면 누가 격을 잡는지, 그 주인이 깨지는지.
     try {
       const 원격 = 원표0.격 && 원표0.격.이름;
-      const 앞격 = 원격 && G.층격 ? G.층격(R.pillars, 앞, 원격, R) : null;               // 이 층 오기 전
-      const 지금 = 원격 && G.층격 ? G.층격(R.pillars, 앞.concat([u]), 원격, R) : null;    // 이 층까지
+      const 앞격 = 앞층 ? 앞층.격 : (원격 && G.층격 ? G.층격(R.pillars, 앞, 원격, R) : null);               // 이 층 오기 전
+      const 지금 = 층 ? 층.격 : (원격 && G.층격 ? G.층격(R.pillars, 앞.concat([u]), 원격, R) : null);    // 이 층까지
       const 판 = (x) => x && x.성패 ? x.성패.판정 + '|' + x.지금격 : '';
       if (지금 && 지금.변질 && !(앞격 && 앞격.변질 && 앞격.지금격 === 지금.지금격)) {
         if (지금.지금격) 말.push(원격 + '격이 ' + 지금.지금격 + '격으로 변격했어요. 이제 ' + 이가(이름(지금.주인.stem)) + ' 격신이에요.');
@@ -137,6 +138,8 @@
     const 아직산다 = t.닿음.map(x => x.글자);   // 이 운에서도 살아서 나한테 오는 것만 — 묶여 없어진 글자는 「바로 온다」고 하지 않는다
     const 끊 = 전.filter(x => !후.includes(x) && 아직산다.includes(x));
     if (끊.length) 말.push('그래서 ' + 이가(묶어(끊.map(x => x.replace(/\(.*\)/, '')).map(s => 이름(E.STEMS.indexOf(s))))) + ' 나를 바로 극해요.');
+    // 40조 결과 범주 — 층마다 하나. 「규칙 보완 필요」도 그대로 낸다.
+    if (층 && 층.범주) 말.push('판정은 「' + 층.범주 + '」 — ' + 층.근거 + '.');
     return 말.join(' ');
   }
 
@@ -184,11 +187,16 @@
     const 오늘 = 운.find(u => u.name === '오늘'), 이달 = 운.find(u => u.name === '이달'), 올해 = 운.find(u => u.name === '올해'), 대운 = 운.find(u => u.name === '대운');
     // 큰 층부터 — 대운 → 올해 → 이달 → 오늘(사장님 09-14). 머리말은 간지 「정미(丁未) 대운이라」.
     const 간지 = (u) => E.STEMS_KO[u.stem] + E.BRANCHES_KO[u.branch] + '(' + E.STEMS[u.stem] + E.BRANCHES[u.branch] + ')';
+    // 40조 — 판정 모듈이 층을 한 번 내고, 밴드는 그 결과만 읽는다.
+    let 판 = null;
+    try { const P = global.ChaeksaPanjeong; if (P) 판 = P.판정(R, today, { 운들: 운.filter(u => u && u.stem != null) }); } catch (e) { try { console.warn('판정 실패:', e); } catch (e2) {} 판 = null; }
+    const 층of = (name) => 판 ? 판.층들.find(l => l.이름 === name) : null;
+    const 앞of = (name) => { if (!판) return null; const i = 판.층들.findIndex(l => l.이름 === name); return i > 0 ? 판.층들[i - 1] : null; };
     const 운줄 = [
-      대운 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 대운, 간지(대운) + ' 대운이라', [])) + '</p>' : '',
-      올해 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 올해, 간지(올해) + ' 올해라', [대운])) + '</p>' : '',
-      이달 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 이달, 간지(이달) + ' 이달이라', [대운, 올해])) + '</p>' : '',
-      오늘 ? '<p class="wg-un now">' + esc(운한줄(R, 원표, 오늘, 간지(오늘) + ' 오늘이라', [대운, 올해, 이달])) + '</p>' : '',
+      대운 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 대운, 간지(대운) + ' 대운이라', [], 층of('대운'), 앞of('대운'))) + '</p>' : '',
+      올해 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 올해, 간지(올해) + ' 올해라', [대운], 층of('올해'), 앞of('올해'))) + '</p>' : '',
+      이달 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 이달, 간지(이달) + ' 이달이라', [대운, 올해], 층of('이달'), 앞of('이달'))) + '</p>' : '',
+      오늘 ? '<p class="wg-un now">' + esc(운한줄(R, 원표, 오늘, 간지(오늘) + ' 오늘이라', [대운, 올해, 이달], 층of('오늘'), 앞of('오늘'))) + '</p>' : '',
     ].join('');
     // ⑥ 조심
     const 조심줄 = 조심(d.걸린).map(s => '<li>' + esc(s) + '</li>').join('');
