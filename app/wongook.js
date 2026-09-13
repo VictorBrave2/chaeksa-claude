@@ -13,7 +13,7 @@
   if (!E || !G) return;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 오행자 = ['목', '화', '토', '금', '수'];
-  const 이름 = (stem) => E.STEMS_KO[stem] + 오행자[E.STEM_ELEM[stem]];          // 임수 · 갑목
+  const 이름 = (stem) => E.STEMS_KO[stem] + 오행자[E.STEM_ELEM[stem]] + '(' + E.STEMS[stem] + ')';   // 임수(壬) · 갑목(甲) — 사장님 09-14 「임수(임한자) 식으로 붙여줘야 알아먹을듯」
   const 지이름 = (b) => E.BRANCHES_KO[b];
   // 십신 뜻 — 처음 한 번 그 자리에서 푼다(27조). 저능아도 읽는 말(28조).
   const 뜻 = {
@@ -23,7 +23,7 @@
   };
   const 자리이름 = { year: '태어난 해', month: '태어난 달', day: '태어난 날', hour: '태어난 시' };
   // 받침 조사 — 「갑목이 / 임수가」. 마지막 글자가 한글이면 받침으로 가른다.
-  const 받침 = (s) => { const c = String(s).slice(-1).charCodeAt(0); return c >= 0xAC00 && c <= 0xD7A3 && ((c - 0xAC00) % 28) !== 0; };
+  const 받침 = (s) => { const t = String(s).replace(/\([^)]*\)\s*$/, ''); const c = t.slice(-1).charCodeAt(0); return c >= 0xAC00 && c <= 0xD7A3 && ((c - 0xAC00) % 28) !== 0; };   // 「임수(壬)가」 — 조사는 괄호 앞 글자로
   const 조 = (s, 있, 없) => s + (받침(s) ? 있 : 없);
   const 이가 = (s) => 조(s, '이', '가'), 은는 = (s) => 조(s, '은', '는'), 을를 = (s) => 조(s, '을', '를'), 과와 = (s) => 조(s, '과', '와');
   const 묶어 = (arr, 마지막이가) => arr.length === 1 ? arr[0] : arr.slice(0, -1).map(x => 과와(x)).join(' ') + ' ' + arr[arr.length - 1];
