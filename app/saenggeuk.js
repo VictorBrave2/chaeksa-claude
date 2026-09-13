@@ -42,8 +42,12 @@
     (운천간들 || []).forEach(u => {
       // 뒤에 온 운 글자는 원국 글자뿐 아니라 앞서 온 운 글자도 묶는다 — 월운 辛이 세운 丙을 묶으면 구응이 사라진다(09-14 사장님).
       // **운끼리 먼저 묶이고 원국은 그 뒤다** — 「갑X 대운에 기X 세운이면 대운이랑 세운이 묶이는 거지 원국을 묶지 않지」(09-14). 앞 운이 여럿이면 가까운 층부터.
+      // 37조 쟁합: 원국 안에서는 연간 → 월간 → 시간 순서로 묶인다(사장님 09-14). 운끼리는 가까운 층부터(28조). 운이 원국보다 먼저.
+      const 원국차례 = { year: 0, month: 1, hour: 2 };
       const 후보 = out.filter(x => !x.일간 && !x.합거 && E.isHap(x.stem, u.stem))
-        .sort((a, b) => (b.운 ? 1 : 0) - (a.운 ? 1 : 0) || out.indexOf(b) - out.indexOf(a));
+        .sort((a, b) => (b.운 ? 1 : 0) - (a.운 ? 1 : 0)
+          || (a.운 && b.운 ? out.indexOf(b) - out.indexOf(a) : 0)
+          || (!a.운 && !b.운 ? (원국차례[a.key] - 원국차례[b.key]) : 0));
       // 합은 서로 묶는다 — 갑목을 묶은 기토는 그 합에 쓰여서 제 명령(임수를 잡는 일)을 못 한다(사장님 「기토 오면 임수가 닿는다」).
       let 묶은 = null;
       if (후보.length) { 후보[0].합거 = u.name || '운'; 묶은 = (후보[0].운 ? '' : '원국 ') + 후보[0].이름 + ' ' + 후보[0].글자; }
@@ -59,12 +63,20 @@
   /** 모든 쌍의 생극과 통관. */
   function 표(pillars, 운천간들, R) {
     const 글자 = 글자들(pillars, 운천간들);
-    // 격의 주인(31조) — 격 판정은 gyeokguk 이 이미 낸다. 이름만 얹는다. 길흉은 붙이지 않는다(사장님 「길흉을 따지지 마」).
-    let 격 = null;
-    try { const G = global.ChaeksaGyeok; if (R && G && G.judge) { const j = G.judge(R); 격 = j && j.격 ? { 이름: j.격, 상신: j.상신 || null } : null; } } catch (e) { 격 = null; }
     const ds = 글자.find(g => g.일간).stem;
     const 십신 = (g) => g.일간 ? '일간' : E.TEN_GODS[E.tenGod(ds, g.stem)];
     글자.forEach(g => { g.십신 = 십신(g); });
+    // 격(38·39조) — 원국 격도 취격() 한 법으로 낸다(운의 변격과 비대칭 금지). 상신은 격표(gyeokguk)에서.
+    let 격 = null;
+    try {
+      const 나0 = 글자.find(g => g.일간);
+      const 고른 = 취격(pillars, { 글자: 글자.filter(g => !g.운) }, 나0);
+      if (고른.격) {
+        let 상신 = null;
+        try { const G = global.ChaeksaGyeok; if (R && G && G.judge) { const j = G.judge(R, 고른.격); 상신 = j && j.상신 || null; } } catch (e) {}
+        격 = { 이름: 고른.격, 상신, 근거: 고른.근거 };
+      }
+    } catch (e) { 격 = null; }
     const 쌍 = [];
     for (const a of 글자) for (const b of 글자) {
       if (a === b) continue;
@@ -214,17 +226,38 @@
       }
       return j;
     };
-    const 주인들 = t.글자.filter(g => !g.일간 && !g.운 && g.십신 === 원격);
-    if (!주인들.length) return { 원격, 지금격: 원격, 변질: false, 주인: null, 성패: 성패(원격, null) };
-    const 산주인 = 주인들.find(g => g.산다);
-    if (산주인) return { 원격, 지금격: 원격, 변질: false, 주인: 산주인, 성패: 성패(원격, 산주인) };
-    // 주인이 다 묶였다 — 월지 지장간 오행 순서로 후보를 찾는다
-    const 지장 = (E.HIDDEN[pillars.month.branch] || []).map(h => E.STEM_ELEM[typeof h === 'number' ? h : h[0]]);
-    let 새 = null;
-    for (const 오행 of 지장) { 새 = t.글자.find(g => !g.일간 && g.산다 && g.오행 === 오행 && g.오행 !== 나.오행); if (새) break; }
-    if (!새) return { 원격, 지금격: null, 변질: true, 주인: null, 성패: null, 묶인주인: 주인들[0] };
-    return { 원격, 지금격: 새.십신, 변질: true, 주인: 새, 성패: 성패(새.십신, 새), 묶인주인: 주인들[0] };
+    // 39조 취격 — 원국이든 층이든 같은 순서로 낸다: ① 월지 낀 국 + 그 오행 투출 ② 월령 본기 투출 ③ 중기 ④ 여기 ⑤ 본기. 투출 = 같은 오행(38조), 살아 있는 것만.
+    const 고른 = 취격(pillars, t, 나);
+    const 주인 = 고른.주인;
+    const 지금격 = 고른.격;
+    const 변질 = !!(원격 && 지금격 && 지금격 !== 원격);
+    const 묶인주인 = t.글자.find(g => !g.일간 && !g.운 && g.십신 === 원격 && !g.산다) || null;
+    return { 원격, 지금격, 변질, 주인, 근거: 고른.근거, 성패: 지금격 ? 성패(지금격, 주인) : null, 묶인주인 };
   }
 
-  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말, 층격 };
+  /** 취격(39조). t = 표(), 나 = 일간 글자. 후보 순서대로 살아 있는 투출을 찾는다. */
+  function 취격(pillars, t, 나) {
+    const mb = pillars.month.branch;
+    const 지장 = (E.HIDDEN[mb] || []).map(h => (typeof h === 'number' ? h : h[0]));
+    const 산것 = (오행) => t.글자.find(g => !g.일간 && g.산다 && g.오행 === 오행 && g.오행 !== 나.오행);
+    // ① 월지 낀 국 + 그 오행 투출 — 국을 지으면 국이 최우선(사장님 09-14 「국을 지으면 국이 최우선인 건 알지?」)
+    let g = null;
+    try {
+      const 자리 = [['year', E.NATAL_WEIGHT.yearBranch], ['month', E.NATAL_WEIGHT.monthBranch], ['day', E.NATAL_WEIGHT.dayBranch], ['hour', E.NATAL_WEIGHT.hourBranch]]
+        .filter(([k]) => pillars[k]).map(([k, w]) => [pillars[k].branch, w]);
+      const 국 = (E.samhapOf(자리) || []).find(x => x.글자.indexOf(mb) >= 0);
+      if (국 && 국.elem !== 나.오행) { g = 산것(국.elem); if (g) return { 격: g.십신, 주인: g, 근거: '월지가 낀 삼합국의 오행이 투출' }; }
+    } catch (e) {}
+    // ② 본기 투출
+    const 본기오행 = E.STEM_ELEM[지장[0]];
+    g = 본기오행 !== 나.오행 ? 산것(본기오행) : null;
+    if (g) return { 격: g.십신, 주인: g, 근거: '월령 본기 ' + E.STEMS[지장[0]] + '의 오행이 투출' };
+    // ③④ 중기·여기 투출
+    for (let i = 1; i < 지장.length; i++) { const o = E.STEM_ELEM[지장[i]]; if (o === 나.오행) continue; g = 산것(o); if (g) return { 격: g.십신, 주인: g, 근거: (i === 1 ? '중기 ' : '여기 ') + E.STEMS[지장[i]] + '의 오행이 투출' }; }
+    // ⑤ 아무것도 안 떴으면 본기(주인 없음 — 지장간이 격)
+    if (본기오행 !== 나.오행) return { 격: E.TEN_GODS[E.tenGod(나.stem, 지장[0])], 주인: null, 근거: '투출이 없어 월령 본기' };
+    return { 격: null, 주인: null, 근거: '격을 잡을 글자가 없다(본기가 일간과 같은 오행)' };
+  }
+
+  global.ChaeksaSaenggeuk = { 표, 줄, 글자들, 이름, 이가, 을를, 은는, 묶어, 오늘길, 오늘말, 층격, 취격 };
 })(window);
