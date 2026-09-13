@@ -43,7 +43,12 @@
     let 길 = null;
     try {
       const G = global.ChaeksaSaenggeuk;
-      길 = (G && G.오늘길) ? G.오늘길(result, tf.day.stem, tf.day.branch) : null;
+      // 대운·올해·이달을 먼저 얹는다 — 이달 丁이 壬을 묶어 두면 오늘 줄도 그걸 안다(28조).
+      const du = E.currentDaeun(result, new Date(y, m - 1, d));
+      const 앞 = [du ? { stem: du.stem, branch: du.branch, name: '대운' } : null,
+                  { stem: tf.year.stem, branch: tf.year.branch, name: '올해' },
+                  { stem: tf.month.stem, branch: tf.month.branch, name: '이달' }];
+      길 = (G && G.오늘길) ? G.오늘길(result, tf.day.stem, tf.day.branch, 앞) : null;
       if (길) {
         if (길.결과 === '받음' || 길.결과 === '도움') { s += 1.5; reasons.push('오늘 글자가 나를 채움'); }
         else if (길.결과 === '닿음') { s -= 1.5; reasons.push('오늘 글자가 나한테 바로 닿음'); }

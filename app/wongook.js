@@ -80,14 +80,16 @@
   }
 
   /** ④⑤ 운 글자 하나가 표를 어떻게 건드리나 — 원국 표와 운 하나를 넣은 표를 견준다 */
-  function 운한줄(R, 원표, u, 이름표) {
-    const t = G.표(R.pillars, [u], R);
-    const g = t.글자.find(x => x.운);
+  function 운한줄(R, 원표0, u, 이름표, 앞운들) {
+    const 앞 = (앞운들 || []).filter(x => x && x.stem != null);
+    const 원표 = 앞.length ? G.표(R.pillars, 앞, R) : 원표0;         // 앞 층(대운·올해·이달)을 얹은 상태가 기준
+    const t = G.표(R.pillars, 앞.concat([u]), R);
+    const g = t.글자.filter(x => x.운).slice(-1)[0];
     if (!g) return '';
     const 나 = t.글자.find(x => x.일간);
     const 말 = [이름표 + ' ' + 이가(십신말(g)) + ' 와요.' + 뜻문(g)];
     // 묶이는 원국 글자
-    const 묶임 = t.글자.filter(x => !x.운 && !x.일간 && x.합거 && /운|올해|이달|오늘|대운/.test(x.합거) && !원표.글자.find(y => y.key === x.key && y.합거));
+    const 묶임 = t.글자.filter(x => !x.운 && !x.일간 && x.합거 === (u.name || '운'));
     if (묶임.length) 말.push(이가(묶어(묶임.map(x => 이름(x.stem)))) + ' 묶여요. 그동안 ' + 이가(묶어(묶임.map(x => 이름(x.stem)))) + ' 없는 거예요.');
     if (!g.산다 && !g.합거) 말.push('힘이 없어서 이름만 와요.');
     // 나에게 어떻게 오나
@@ -149,10 +151,10 @@
     // ④⑤ 운
     const 오늘 = 운.find(u => u.name === '오늘'), 이달 = 운.find(u => u.name === '이달'), 올해 = 운.find(u => u.name === '올해'), 대운 = 운.find(u => u.name === '대운');
     const 운줄 = [
-      오늘 ? '<p class="wg-un now">' + esc(운한줄(R, 원표, 오늘, (today.getMonth() + 1) + '월 ' + today.getDate() + '일 오늘은')) + '</p>' : '',
-      이달 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 이달, '이달은')) + '</p>' : '',
-      올해 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 올해, today.getFullYear() + '년 올해는')) + '</p>' : '',
-      대운 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 대운, '지금 대운 ' + du.startAge + '~' + du.endAge + '세에는')) + '</p>' : '',
+      오늘 ? '<p class="wg-un now">' + esc(운한줄(R, 원표, 오늘, (today.getMonth() + 1) + '월 ' + today.getDate() + '일 오늘은', [대운, 올해, 이달])) + '</p>' : '',
+      이달 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 이달, '이달은', [대운, 올해])) + '</p>' : '',
+      올해 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 올해, today.getFullYear() + '년 올해는', [대운])) + '</p>' : '',
+      대운 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 대운, '지금 대운 ' + du.startAge + '~' + du.endAge + '세에는', [])) + '</p>' : '',
     ].join('');
     // ⑥ 조심
     const 조심줄 = 조심(d.걸린).map(s => '<li>' + esc(s) + '</li>').join('');

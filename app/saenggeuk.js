@@ -73,11 +73,12 @@
       if (관계 === '극') {
         // 셋째 글자(통관): a 가 생하고 b 를 생하는 오행 = (a+1)%5. 살아 있는 것만.
         const 다리 = (a.오행 + 1) % 5;
-        row.셋째 = 글자.filter(c => c !== a && c !== b && c.오행 === 다리 && c.산다);
+        // 일간은 주체라 방패(셋째·잡는 글자) 노릇을 안 한다(09-14 「임수가 정화에 묶여 있잖아」 — 일간 丁을 방패로 세운 것을 잡았다).
+        row.셋째 = 글자.filter(c => c !== a && c !== b && !c.일간 && c.오행 === 다리 && c.산다);
         row.통관 = row.셋째.length > 0;
         // 잡는 글자(제복): a 를 극하는 살아 있는 글자 = 오행 (a+3)%5. 자평진전 「갑목이 무토를 잡아 임수에 못 닿는다」.
         const 잡이 = (a.오행 + 3) % 5;
-        row.잡는 = 글자.filter(c => c !== a && c !== b && c.오행 === 잡이 && c.산다);
+        row.잡는 = 글자.filter(c => c !== a && c !== b && !c.일간 && c.오행 === 잡이 && c.산다);
         row.제복 = row.잡는.length > 0;
         row.막힘 = row.통관 || row.제복;
       }
@@ -128,13 +129,14 @@
   const 묶어 = (arr) => arr.length === 1 ? arr[0] : arr.slice(0, -1).map(x => 과와(x)).join(' ') + ' ' + arr[arr.length - 1];
 
   /** 오늘 온 글자 하나가 내 표를 어떻게 건드리나 — 달력 점수와 이야기 「나는 …날」이 같이 쓴다. */
-  const 원표캐시 = new WeakMap();
-  function 오늘길(result, stem, branch) {
+  // 앞운들 = 대운·올해·이달처럼 오늘보다 큰 층(28·32조 — 묶는 글자는 어느 층이든 센다). 오늘 글자는 그 위에 얹어 잰다.
+  // 09-14 사장님 「난 지금 임수가 정화에 묶여 있잖아」 — 이달 丁이 壬을 묶은 상태를 하루 줄이 몰랐다.
+  function 오늘길(result, stem, branch, 앞운들) {
     if (!result || !result.pillars) return null;
-    let 원 = 원표캐시.get(result);
-    if (!원) { 원 = 표(result.pillars, [], result); 원표캐시.set(result, 원); }
-    const t = 표(result.pillars, [{ stem, branch, name: '오늘' }], result);
-    const 운 = t.글자.find(g => g.운), 나 = t.글자.find(g => g.일간);
+    const 앞 = (앞운들 || []).filter(u => u && u.stem != null);
+    const 원 = 표(result.pillars, 앞, result);                       // 오늘 오기 전 상태(대운·올해·이달까지 얹은 것)
+    const t = 표(result.pillars, 앞.concat([{ stem, branch, name: '오늘' }]), result);
+    const 운 = t.글자.filter(g => g.운).slice(-1)[0], 나 = t.글자.find(g => g.일간);
     if (!운) return null;
     const r = t.쌍.find(x => x.from === 운 && x.to === 나);
     const 묶임 = t.글자.filter(g => !g.운 && !g.일간 && g.합거 === '오늘');
