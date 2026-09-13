@@ -135,7 +135,8 @@
     const 글자칸 = 자리.map(k => {
       const g = 원표.글자.find(x => x.key === k);
       const 뿌리 = g.일간 ? '' : (g.힘 >= 0.5 ? '서 있어요' : '뿌리가 없어요');
-      return '<div class="wg-g' + (g.일간 ? ' me' : '') + '"><small>' + esc(자리이름[k]) + '</small><b>' + esc(이름(g.stem)) + '</b><i>' + esc(지이름(p[k].branch)) + '</i><span>' + esc(g.일간 ? '나' : g.십신) + '</span><em>' + esc(뿌리) + '</em></div>';
+      // 한자로(사장님 09-14 「한자로 넣고」). 한글 이름은 아래 작게.
+      return '<div class="wg-g' + (g.일간 ? ' me' : '') + '"><small>' + esc(자리이름[k]) + '</small><b>' + esc(E.STEMS[g.stem] + E.BRANCHES[p[k].branch]) + '</b><i>' + esc(이름(g.stem) + ' ' + 지이름(p[k].branch)) + '</i><span>' + esc(g.일간 ? '나' : g.십신) + '</span><em>' + esc(뿌리) + '</em></div>';
     }).join('');
     // ② 돌아감
     const d = 돌아감(원표);
@@ -161,14 +162,17 @@
       if (내힘 < 0.5 && 국.length) 갈림 = '<p class="wg-fork">이 사주는 판이 다르게 설 수 있어요. 나를 받쳐 주는 뿌리가 없고 한 기운이 판을 덮고 있어서요. 이런 사주는 사람이 봐야 해요.</p>';
     } catch (e) {}
 
+    // 밴드 — 글자 넷 + 걸린 글자 한 줄만 보이고, 부가 설명은 접어 둔다(사장님 「부가설명은 접어두고」).
     box.innerHTML =
       '<section class="wg" data-plain="1">'
       + '<div class="wg-head"><b>내 원국</b><span>여덟 글자가 서로 무엇을 하는지</span></div>'
       + '<div class="wg-grid">' + 글자칸 + '</div>'
-      + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + 걸린말 + '</div>'
-      + 격 + 갈림
+      + 걸린말 + 갈림
+      + '<details class="wg-fold"><summary>이 사주는 이렇게 돌아가요</summary>'
+      + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>' + 격
       + '<div class="wg-head sub"><b>지금 오는 글자</b></div>' + 운줄
       + (조심줄 ? '<div class="wg-head sub"><b>조심할 글자</b></div><ul class="wg-care">' + 조심줄 + '</ul>' : '')
+      + '</details>'
       + '</section>';
     box.classList.remove('hide');
   }
