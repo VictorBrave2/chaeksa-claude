@@ -77,7 +77,7 @@
         후보[0].이력.push({ 조: 왜, 말: (u.name || '운') + ' ' + E.STEMS[u.stem] + '이 묶음' + (후보.length > 1 ? ' — 쟁합 ' + 후보.map(x => x.이름).join('·') + ' 중 첫째' : '') });
       }
       const 새 = { key: 'un' + out.length, 이름: u.name || '운', stem: u.stem, 글자: E.STEMS[u.stem], 오행: E.STEM_ELEM[u.stem],
-                 힘: Math.round(E.stemPower(u.stem, 뿌리터) * 100) / 100,
+                 힘: u.힘 != null ? u.힘 : Math.round(E.stemPower(u.stem, 뿌리터) * 100) / 100,   // 사람 층(53조)은 제 원국의 힘을 가져온다
                  일간: false, 운: true, 합거: 묶은 ? 묶은 + '과 합' : null,
                  이력: 묶은 ? [{ 조: '28조', 말: 묶은 + '과 합에 쓰임 — 제 명령 없음' }] : [] };
       out.push(새);

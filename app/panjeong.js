@@ -223,7 +223,7 @@
       r = 후보[0]; 병기 = 후보.slice(1);
     } else { const t = 한층(층); r = t.r; 순위 = t.순위; r.지속 = 지속of(r); }
     const 지속 = r.지속 || null;
-    const 지속말 = { 원국: ' 원국이 그래요. 늘 그래요.', 대운: ' 이 대운 10년 동안 그래요.', 올해: ' 올해 내내 그래요.', 이달: ' 이달 내내 그래요.' };
+    const 지속말 = { 원국: ' 원국이 그래요. 늘 그래요.', 대운: ' 이 대운 10년 동안 그래요.', 올해: ' 올해 내내 그래요.', 이달: ' 이달 내내 그래요.', 오늘: '', '그 사람': '' };
     const 병기말 = 병기.filter(x => x.글자).map(x => ' 그리고 ' + 이유문장(x, 층).replace(/이에요\.$/, '이에요.') + (x.지속 ? 지속말[x.지속] : '')).join('');
     return { 판정: p, 층, 결과: r, 순위, 칸: 할일칸[r.키] || '보통', 지속, 병기, 이유: 이유문장(r, 층) + (지속 ? 지속말[지속] : '') + 병기말 };
     // 1순위 안의 궁 무리·글자 무리를 각각 가장 나쁜 결과로 낸다. 1순위가 비면 지장간·2순위로 내려가는 옛 길(한층)을 쓴다.
@@ -264,5 +264,67 @@
     }
   }
 
-  global.ChaeksaPanjeong = { 판정, 요약, 범주표, 글자결과, 대상글자, 이야기결과, 할일칸, 이유문장 };
+  /* ── 53조 궁합 — 사람을 맨 바깥 층으로 얹는다(사장님 09-14 「일운 뒤에 넣어도 결과는 같다 → 맨 바깥」).
+   *  궁합(나 ← 그 사람) = 판정(내 원국 + 운 + 그 사람의 살아 있는 천간을 「그 사람」 층으로) − 판정(내 원국 + 운).
+   *  그 사람 글자의 힘은 그 사람 원국에서 잰 값 그대로. 그 사람이 내게 무슨 십신인지는 내 일간이 정하고, 그것이 기신인지 구응인지는 내 격이 정한다(44조 — 「격에 따라 바뀐다」).
+   *  차이를 갈래마다 읽는다: 칸이 좋아지면 보완, 나빠지면 하락. 두 방향(나 ← 그 사람 / 그 사람 ← 나)을 따로 낸다 — 합치지 않는다. */
+  function 궁합(R, Rm, today, opts) {
+    const 갈래들 = (opts && opts.갈래들) || ['관계', '배우자', '이별', '재물', '친구', '직장', '학습', '가족'];
+    const 한쪽 = (A, B, 여자A, 여자B) => {
+      const pB = 판정(B, today);
+      const 글B = pB.오늘.표.글자;
+      const 일간B = 글B.find(g => g.일간);
+      const 뿌리B = ['year', 'month', 'day', 'hour'].filter(k => B.pillars[k]).map(k => [B.pillars[k].branch, E.NATAL_WEIGHT[k + 'Branch']]);
+      const 일간힘 = Math.round(E.stemPower(일간B.stem, 뿌리B) * 100) / 100;
+      const 격신B = pB.오늘.격 && pB.오늘.격.주인 && !pB.오늘.격.주인.운 ? 글B.find(g => g.key === pB.오늘.격.주인.key) : null;
+      // 그 사람 = 그 사람의 격신(사장님 09-14 「그녀가 병화 일간에 정관격이라면 내게는 그녀가 계수짓을 한다」). 일간이 아니라 그 사람을 부리는 글자가 내게 온다.
+      // 격신이 천간에 없으면(본기만 있는 격) 월지 속 본기 지장간을 그 사람으로(46조, 힘 = 자리 무게). 격을 못 잡으면 「안 나왔어요」.
+      let 사람층 = [];
+      if (opts && opts.전부) 사람층 = 글B.filter(g => !g.운 && g.산다 && !g.일간).map(g => ({ stem: g.stem, branch: null, name: '그 사람', 힘: g.힘 }));
+      else if (격신B && 격신B.산다) 사람층 = [{ stem: 격신B.stem, branch: null, name: '그 사람', 힘: 격신B.힘 }];
+      else if (pB.오늘.격 && pB.오늘.격.지금격) {
+        const 본기 = (E.HIDDEN[B.pillars.month.branch] || [])[0]; const st = typeof 본기 === 'number' ? 본기 : 본기[0];
+        사람층 = [{ stem: st, branch: null, name: '그 사람', 힘: E.NATAL_WEIGHT.monthBranch }];
+      }
+      const 기본 = 운들of(A, today);
+      const 앞 = 판정(A, today, { 운들: 기본 });
+      const 뒤 = 판정(A, today, { 운들: 기본.concat(사람층) });
+      const 줄 = [];
+      갈래들.forEach(갈 => {
+        let a, b; try { a = 이야기결과(A, 갈, today, { 여자: 여자A, 운들: 기본 }); b = 이야기결과(A, 갈, today, { 여자: 여자A, 운들: 기본.concat(사람층) }); } catch (e) { return; }
+        const da = 칸차례[a.칸], db = 칸차례[b.칸];
+        if (db > da) 줄.push({ 갈래: 갈, 방향: '보완', 전: a.결과.키, 후: b.결과.키, 말: b.이유 });
+        else if (db < da) 줄.push({ 갈래: 갈, 방향: '하락', 전: a.결과.키, 후: b.결과.키, 말: b.이유 });
+      });
+      // 그 사람 글자가 내 글자를 묶거나 화한 것(이력에 「그 사람」)
+      const 묶음 = 뒤.오늘.표.글자.filter(g => !g.운 && g.이력.some(h => /그 사람/.test(h.말))).map(g => g.이름 + ' ' + G.이름(g.stem) + ' ' + g.십신 + ': ' + g.이력.filter(h => /그 사람/.test(h.말)).map(h => h.말).join(' / '));
+      // 그 사람이 내 격신을 묶으면 그 자체가 하락이다(48조 — 근거가 사라지고 재가 자유로워지면 칸은 좋아 보여도 근거 없는 것).
+      const 격신A = 앞.오늘.격 && 앞.오늘.격.주인;
+      if (격신A) { const g = 뒤.오늘.표.글자.find(x => x.key === 격신A.key); if (g && !g.산다 && g.이력.some(h => /그 사람/.test(h.말))) 줄.unshift({ 갈래: '격', 방향: '하락', 전: 앞.오늘.범주, 후: 뒤.오늘.범주, 말: '그 사람 글자가 내 격신 ' + G.이름(g.stem) + ' ' + g.십신 + '을 합거해요. 근거가 사라져요.' }); }
+      const 사람말 = 사람층.map(u => G.이름(u.stem) + ' ' + E.TEN_GODS[E.tenGod(A.pillars.day.stem, u.stem)] + '(' + u.name + ')').join(' · ');
+      return { 줄, 묶음, 앞범주: 앞.오늘.범주, 뒤범주: 뒤.오늘.범주, 사람말 };
+    };
+    const 여자 = (X) => ((X.input && X.input.gender) || 'M') !== 'M';
+    return { 나에게: 한쪽(R, Rm, 여자(R), 여자(Rm)), 그사람에게: 한쪽(Rm, R, 여자(Rm), 여자(R)) };
+  }
+  function 운들of(R, today) {
+    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    let du = null; try { du = E.currentDaeun(R, today); } catch (e) { du = null; }
+    const out = [];
+    if (du) out.push({ stem: du.stem, branch: du.branch, name: '대운' });
+    out.push({ stem: tf.year.stem, branch: tf.year.branch, name: '올해' }, { stem: tf.month.stem, branch: tf.month.branch, name: '이달' }, { stem: tf.day.stem, branch: tf.day.branch, name: '오늘' });
+    return out;
+  }
+  /** 궁합 결론 셋 — 서로 보완 / 서로 깎음 / 한쪽이 기대는 사이 */
+  function 궁합결론(g) {
+    const 채움 = (x) => x.줄.filter(j => j.방향 === '보완').length, 손상 = (x) => x.줄.filter(j => j.방향 === '하락').length;
+    const a = 채움(g.나에게) - 손상(g.나에게), b = 채움(g.그사람에게) - 손상(g.그사람에게);
+    if (a > 0 && b > 0) return '서로 보완하는 사이예요.';
+    if (a < 0 && b < 0) return '서로 깎는 사이예요.';
+    if (a > 0 && b <= 0) return '내가 그 사람에게 기대는 사이예요.';
+    if (b > 0 && a <= 0) return '그 사람이 나에게 기대는 사이예요.';
+    return '서로 크게 건드리지 않는 사이예요.';
+  }
+
+  global.ChaeksaPanjeong = { 판정, 요약, 범주표, 글자결과, 대상글자, 이야기결과, 할일칸, 이유문장, 궁합, 궁합결론 };
 })(window);
