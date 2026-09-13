@@ -7,7 +7,7 @@
 <p style="font-size:12px;color:#555">눈금 — 글자 힘 0~2.0(뿌리 하나) · 국을 부리면 4.5까지 · 0.5부터 산다 / 3배 규칙 = 맞는 쪽 합산 ÷ 치는 쪽, 2부터 못 친다 / 지지 하나 힘: 제왕 1.00 · 건록 .82 · 관대 .70 · 쇠 .62 · 장생 .55 · 목욕 .50 · 양 .30 · 병 .20 · 묘고 .20 · 태 .15 · 사 .08 · 절 .05 · 묘 0 / 자리 무게: 월 2.0 · 시 1.5 · 연·일·운 1.0</p>
 <div id="out"></div>
 <script src="config.js"></script><script src="lunar.js"></script><script src="astro.js"></script><script src="engine.js"></script>
-<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=2"></script><script src="panjeong.js?t=2"></script>
+<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=2"></script><script src="panjeong.js?t=2"></script><script src="questions.js?t=1"></script>
 <script>
 const E = ChaeksaEngine, G = ChaeksaSaenggeuk, P = ChaeksaPanjeong;
 const S = E.STEMS, B = E.BRANCHES;
@@ -105,6 +105,19 @@ let 통과 = 0, 실패 = 0;
   out.insertAdjacentHTML('beforeend', html);
 });
 out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
+// ── 질문 생성기(docs/37) — 사장님 사주에 오늘 서는 질문. 격자 전체 수도 같이.
+{
+  const Q = ChaeksaQuestions; const R = { pillars: 나, dayStem: 나.day.stem, input: { gender: 'M' } };
+  const d = new Date(2026, 8, 14), tf = E.dateFortune(2026, 9, 14);
+  const 운들 = [운('丁未', '대운'), { stem: tf.year.stem, branch: tf.year.branch, name: '올해' }, { stem: tf.month.stem, branch: tf.month.branch, name: '이달' }, { stem: tf.day.stem, branch: tf.day.branch, name: '오늘' }];
+  const qs = Q.오늘질문(R, d, { 운들, 여자: false });
+  const 전체 = Q.격자();
+  let html = '<h2>질문 생성기 — 격자 ' + 전체.length + '문(날 고르기 ' + 전체.filter(q => q.꼴 === '날 고르기').length + ' · 상태 묻기 ' + 전체.filter(q => q.꼴 === '상태 묻기').length + ') · 오늘 사장님 사주에 서는 질문</h2>';
+  html += '<table border="1" cellpadding="4" style="border-collapse:collapse;font-size:12px"><tr><th>갈래</th><th>오늘 결과</th><th>칸</th><th>질문</th><th>답</th></tr>';
+  qs.forEach(q => { html += '<tr><td>' + q.갈래이름 + '</td><td>' + q.결과 + '</td><td>' + q.칸 + '</td><td>' + (q.질문 || (q.안나옴 ? '(그 자리가 사주에 안 나왔어요)' : '<i>— 빈 칸</i>')) + '</td><td>' + (q.답 || '').replace(/</g, '&lt;') + '</td></tr>'; });
+  html += '</table>';
+  out.insertAdjacentHTML('beforeend', html);
+}
 // ── 다리 검산(docs/34) — 사장님 사주, 정미 대운, 9/14부터 이레, 갈래마다 1순위 글자와 결과·칸
 {
   const R = { pillars: 나, dayStem: 나.day.stem, input: { gender: 'M' } };
