@@ -60,13 +60,13 @@
     });
     // 나와 같은 힘 · 내가 내보내는 것 · 내가 쥐는 것 — 극이 없는 사주도 한 줄은 서야 한다
     t.글자.filter(g => !g.일간 && !g.운 && g.산다 && g.오행 === 나.오행).forEach(g => { 본[g.십신] = 1; 줄.push(은는(첫(g)) + ' 나와 같은 오행이에요. 비겁이 하나 더 힘이 있어요.'); });
-    t.쌍.filter(r => r.from === 나 && r.to.산다 && !r.to.운 && !r.to.궁).forEach(r => {
+    t.쌍.filter(r => r.from === 나 && r.to.산다 && !r.to.운 && !r.to.지지).forEach(r => {
       if (r.관계 === '생') 줄.push('나는 ' + 을를(첫(r.to)) + ' 생해요. 설기예요.' + 뜻한번(r.to));
       else if (r.통관) 줄.push('나는 ' + 을를(첫(r.to)) + ' 극하는데, ' + 이가(묶어(r.셋째.map(c => 이름(c.stem)))) + ' 통관해요.' + 뜻한번(r.to));
       else 줄.push('나는 ' + 을를(첫(r.to)) + ' 극해요.' + 뜻한번(r.to));
     });
     // 글자끼리 (일간 뺀 것) — 통관·제복·끊김
-    t.쌍.filter(r => r.관계 === '극' && r.from.산다 && r.to.산다 && !r.from.일간 && !r.to.일간 && !r.from.운 && !r.to.운 && !r.to.궁).forEach(r => {
+    t.쌍.filter(r => r.관계 === '극' && r.from.산다 && r.to.산다 && !r.from.일간 && !r.to.일간 && !r.from.운 && !r.to.운 && !r.to.지지).forEach(r => {
       if (r.힘차이 && !r.통관 && !r.제복) { 줄.push(이가(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 극하려 하지만 힘이 두 배 넘게 모자라요. 극이 안 돼요.' + 뜻한번(r.from)); return; }
       if (r.통관) 줄.push(이가(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 극해요. 그런데 ' + 이가(묶어(r.셋째.map(c => 이름(c.stem)))) + ' 통관해요. ' + 은는(이름(r.to.stem)) + ' 안 다쳐요.' + 뜻한번(r.from));
       else if (r.제복) 줄.push(이가(첫(r.from)) + ' ' + 을를(이름(r.to.stem)) + ' 극하려는데 ' + 이가(묶어(r.잡는.map(c => 이름(c.stem)))) + ' ' + 을를(이름(r.from.stem)) + ' 제복해요.' + 뜻한번(r.from));
@@ -74,7 +74,7 @@
     });
     // 걸린 글자 — 셋째·잡는 글자로 제일 많이 쓰인 원국 글자
     const 셈 = {};
-    t.쌍.filter(r => r.관계 === '극' && r.from.산다 && r.to.산다 && !r.to.궁).forEach(r => r.셋째.concat(r.잡는).forEach(c => { if (!c.운) 셈[c.key] = (셈[c.key] || 0) + (r.to.일간 ? 3 : 1); }));   // 나를 지키는 글자가 먼저
+    t.쌍.filter(r => r.관계 === '극' && r.from.산다 && r.to.산다 && !r.to.지지).forEach(r => r.셋째.concat(r.잡는).forEach(c => { if (!c.운) 셈[c.key] = (셈[c.key] || 0) + (r.to.일간 ? 3 : 1); }));   // 나를 지키는 글자가 먼저
     const 걸린키 = Object.keys(셈).sort((a, b) => 셈[b] - 셈[a])[0];
     const 걸린 = 걸린키 ? t.글자.find(g => g.key === 걸린키) : null;
     return { 줄, 걸린 };
@@ -126,7 +126,7 @@
       else 말.push('나를 바로 극해요.');
     }
     // 원국 글자에게 무엇을 하나 — 치는 것만(받아 주는 글자 있으면 같이)
-    t.쌍.filter(x => x.from === g && x.관계 === '극' && !x.to.일간 && !x.to.궁 && x.to.산다 && g.산다).forEach(x => {
+    t.쌍.filter(x => x.from === g && x.관계 === '극' && !x.to.일간 && !x.to.지지 && x.to.산다 && g.산다).forEach(x => {
       if (x.힘차이 && !x.통관 && !x.제복) { 말.push(을를(이름(x.to.stem)) + ' 극하려 하지만 힘이 두 배 넘게 모자라요.'); return; }
       if (x.통관) 말.push(을를(이름(x.to.stem)) + ' 극하는데 ' + 이가(묶어(x.셋째.map(c => 이름(c.stem)))) + ' 통관해요.');
       else if (x.제복) 말.push(을를(이름(x.to.stem)) + ' 극하려는데 ' + 이가(묶어(x.잡는.map(c => 이름(c.stem)))) + ' 제복해요.');

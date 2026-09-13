@@ -107,6 +107,8 @@
     } catch (e) { 격 = null; }
     // 46조(초안, docs/36) — 궁(지지)을 표에 올린다. 지지는 치는 쪽이 되지 않고(명령은 천간, 15:743·806) 맞는 쪽·자리로만 선다.
     // 힘은 자리 무게(월 2.0·시 1.5·연·일 1.0)만 — 12운성은 천간이 받는 것(15:185). 궁은 늘 채워져 있어 「없다」가 없다(docs/30). 상태는 원국 안의 합·충(30:108).
+    const 뿌리터원 = [['year', E.NATAL_WEIGHT.yearBranch], ['month', E.NATAL_WEIGHT.monthBranch], ['day', E.NATAL_WEIGHT.dayBranch], ['hour', E.NATAL_WEIGHT.hourBranch]]
+      .filter(([k]) => pillars[k]).map(([k, w]) => [pillars[k].branch, w]);
     const 궁 = [];
     try {
       const 궁자리 = [['year', 'yearB', '연지', E.NATAL_WEIGHT.yearBranch], ['month', 'monthB', '월지', E.NATAL_WEIGHT.monthBranch],
@@ -120,8 +122,23 @@
         궁.push(g);
       });
     } catch (e) {}
+    // 지장간(41조 군사) — 천간·궁에 대상 글자가 없을 때 당겨 온다(09-14 사장님 「지장간에서 땡겨오면 (지장간)으로 넣고」). 맞는 쪽으로만 선다.
+    // 힘: 본기는 자리 무게 그대로, 중기·여기는 그 반 — 원문에 숫자가 없어 내가 정한 값(동결표 C절). 국에 먹힌 자리는 십신 노릇을 잃으므로(15:815) 국 자리의 지장간은 안 올린다.
+    const 지장간 = [];
+    try {
+      const 국자리 = {}; (E.samhapOf(뿌리터원) || []).forEach(g => g.글자.forEach(b => { 국자리[b] = true; }));
+      [['year', 'yearH', '연지', E.NATAL_WEIGHT.yearBranch], ['month', 'monthH', '월지', E.NATAL_WEIGHT.monthBranch],
+       ['day', 'dayH', '일지', E.NATAL_WEIGHT.dayBranch], ['hour', 'hourH', '시지', E.NATAL_WEIGHT.hourBranch]].filter(([k]) => pillars[k]).forEach(([k, key, 이름, w]) => {
+        const b = pillars[k].branch; if (국자리[b]) return;
+        (E.HIDDEN[b] || []).forEach((h, idx) => {
+          const st = typeof h === 'number' ? h : h[0];
+          지장간.push({ key: key + idx, 이름: 이름 + ' 속', branch: b, stem: st, 글자: E.STEMS[st], 오행: E.STEM_ELEM[st], 십신: E.TEN_GODS[E.tenGod(ds, st)],
+                       지지: true, 지장간: true, 본기: idx === 0, 일간: false, 운: false, 산다: true, 힘: idx === 0 ? w : Math.round(w * 50) / 100, 합거: null, 이력: [] });
+        });
+      });
+    } catch (e) {}
     const 쌍 = [];
-    for (const a of 글자) for (const b of 글자.concat(궁)) {
+    for (const a of 글자) for (const b of 글자.concat(궁, 지장간)) {
       if (a === b) continue;
       let 관계 = null;
       if (생(a.오행, b.오행)) 관계 = '생';
@@ -171,19 +188,19 @@
         : r.from.글자 + '이 나를 바로 친다',
     }));
     // 통관 목록 — 사람이 읽을 한 줄씩
-    const 통관 = 쌍.filter(r => r.통관 && r.from.산다 && r.to.산다 && !r.to.궁).map(r =>
+    const 통관 = 쌍.filter(r => r.통관 && r.from.산다 && r.to.산다 && !r.to.지지).map(r =>
       r.from.글자 + '(' + r.from.십신 + ')→' + r.셋째.map(c => c.글자).join('·') + '→' + r.to.글자 + '(' + r.to.십신 + ')');
     // 제복 목록 — 극이 잡혀서 못 닿는 자리
-    const 제복 = 쌍.filter(r => r.제복 && !r.통관 && r.from.산다 && r.to.산다 && !r.from.일간 && !r.to.궁).map(r =>   // 일간은 주체라 잡히지 않는다
+    const 제복 = 쌍.filter(r => r.제복 && !r.통관 && r.from.산다 && r.to.산다 && !r.from.일간 && !r.to.지지).map(r =>   // 일간은 주체라 잡히지 않는다
       r.잡는.map(c => c.글자).join('·') + '이 ' + r.from.글자 + '(' + r.from.십신 + ')을 잡아 ' + r.to.글자 + '(' + r.to.십신 + ')에 못 닿는다');
     // 힘 차이로 못 치는 자리 — 사람이 읽을 한 줄씩
-    const 힘차이 = 쌍.filter(r => r.힘차이 && !r.통관 && !r.제복 && r.from.산다 && r.to.산다 && !r.to.궁).map(r =>
+    const 힘차이 = 쌍.filter(r => r.힘차이 && !r.통관 && !r.제복 && r.from.산다 && r.to.산다 && !r.to.지지).map(r =>
       r.from.글자 + '(' + r.from.십신 + ')이 ' + r.to.글자 + '(' + r.to.십신 + ')을 치기엔 힘이 모자란다(' + r.from.힘 + ' 대 ' + r.to.힘 + ')');
     // 끊긴 생 — a 가 b 를 생하는데 a 를 막힘 없이 극하는 살아 있는 글자가 있다
-    const 끊김 = 쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다 && !r.to.궁).filter(r =>
+    const 끊김 = 쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다 && !r.to.지지).filter(r =>
       쌍.some(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘)).map(r =>
       r.from.글자 + '→' + r.to.글자 + ' 생이 약하다(' + 쌍.filter(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘).map(q => q.from.글자).join('·') + '이 ' + r.from.글자 + '을 친다)');
-    return { 글자, 궁, 쌍, 닿음, 통관, 제복, 힘차이, 끊김, 격 };
+    return { 글자, 궁, 지장간, 쌍, 닿음, 통관, 제복, 힘차이, 끊김, 격 };
   }
 
   /** 사람이 읽을 요약 — 한 줄씩. */
