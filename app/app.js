@@ -2844,11 +2844,20 @@
     const paid = !!(window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month'));
     // 하루 한 줄 = 결론 / 그 사람 쪽 + 내 쪽 / 할 것
     // 등급 이름은 s0~s3 — g0~g3 은 달력이 칸 전체를 초록·카키로 칠하는 이름이라 줄에 새어 들어왔다(2026-09-12 사장님 「색상분배 이거 맞아??」).
-    const 줄 = (x, 오늘) => '<li class="st-day s' + x.등급 + (오늘 ? ' today' : '') + '">'
-      + '<b>' + (오늘 ? '오늘' : x.요일) + '<small>' + x.날 + '일</small></b>'
+    const 줄 = (x, 오늘, 머리말) => '<li class="st-day s' + x.등급 + (오늘 ? ' today' : '') + '">'
+      + '<b>' + (머리말 || (오늘 ? '오늘' : x.요일)) + '<small>' + x.날 + '일</small></b>'
       + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
+    // 바뀐 날만 말한다(09-14 사장님 「1 ㄱㄱ」) — 결과가 같은 날은 한 줄로 묶는다. 조문대로면 이레 중 바뀌는 날은 하루 이틀이고, 같은 문장을 닷새 되풀이하면 대충 만든 것으로 읽힌다.
+    const 같다 = (a, b) => a.결과 === b.결과 && a.그결과 === b.그결과 && a.등급 === b.등급 && a.이유 === b.이유;
+    const 묶음들 = []; 주.forEach(x => { const l = 묶음들[묶음들.length - 1]; if (l && 같다(l.첫, x)) l.날들.push(x); else 묶음들.push({ 첫: x, 날들: [x] }); });
+    const 이레줄 = 묶음들.map((m, mi) => {
+      const 첫 = m.첫, 끝 = m.날들[m.날들.length - 1], 오늘 = mi === 0;
+      if (m.날들.length === 1) return 줄(첫, 오늘);
+      const 머리말 = (오늘 ? '오늘' : 첫.요일) + '~' + 끝.요일;
+      return 줄(Object.assign({}, 첫, { 날: 첫.날 + '~' + 끝.날 }), 오늘, 머리말).replace('</em><br>', '</em> <small class="same">' + m.날들.length + '일 같아요</small><br>');
+    }).join('');
     let h = 머리 + 고르기칸
-      + '<p class="mnk">오늘부터 7일 · 무료</p><ul class="st-days">' + 주.map((x, i) => 줄(x, i === 0)).join('') + '</ul>'
+      + '<p class="mnk">오늘부터 7일 · 무료' + (묶음들.length < 주.length ? ' · 바뀌는 날 ' + (묶음들.length - 1) + '번' : '') + '</p><ul class="st-days">' + 이레줄 + '</ul>'
       + '<p class="st-best">' + escP(S.그래서(st, 주)) + '</p>';
     if (paid) {
       const 달 = S.이번달(R, Rm, st, today);
