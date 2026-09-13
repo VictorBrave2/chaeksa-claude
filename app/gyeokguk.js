@@ -118,8 +118,11 @@
       if (!p[k]) return;
       if (!산천간 && k !== 'day' && !합거[k]) { const g = 신(p[k].stem); 전체[g] = (전체[g] || 0) + 1; }
       const b = p[k].branch;
-      if (먹힌[b] != null) { const g = 신(먹힌[b]); 전체[g] = (전체[g] || 0) + 1; return; }
-      E.HIDDEN[b].forEach(h => { const g = 신(h); 전체[g] = (전체[g] || 0) + 1; });
+      // 41조 「명령을 잃은 군사」(사장님 09-14) — 국·지장간은 군사, 천간이 명령. 표가 온 층에서는 그 오행의 살아 있는 천간이 없으면
+      // 군사(뿌리·힘)로는 남되 십신으로는 세지 않는다. 壬이 합거되면 申子辰 수국은 관 노릇을 못 한다.
+      const 명령있다 = (st) => !산천간 || 산천간.some(v => E.STEM_ELEM[v.stem] === E.STEM_ELEM[st]);
+      if (먹힌[b] != null) { if (명령있다(먹힌[b])) { const g = 신(먹힌[b]); 전체[g] = (전체[g] || 0) + 1; } return; }
+      E.HIDDEN[b].forEach(h => { if (!명령있다(h)) return; const g = 신(h); 전체[g] = (전체[g] || 0) + 1; });
     });
 
     // 십신별 힘 — 천간의 힘 합. 일간은 지지에서 받은 것의 합(성질이 다르다).
