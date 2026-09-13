@@ -75,13 +75,16 @@
       운들.push({ stem: tf.day.stem, branch: tf.day.branch, name: '오늘' });
     }
 
-    const 원표 = G.표(R.pillars, [], R);
+    // 43조 — 화 여부는 지금 계절(이달 지지)로 본다. 층에 이달이 아직 안 얹혔어도 계절은 지금이다.
+    const 이달u = 운들.find(u => u.name === '이달' && u.branch != null);
+    const 계절 = 이달u ? 이달u.branch : null;
+    const 원표 = G.표(R.pillars, [], R, 계절);
     const 원격이름 = 원표.격 ? 원표.격.이름 : null;
     const 층들 = [];
     let 앞운 = [], 앞 = null;
     // 원국 층
     {
-      const 격 = 원격이름 ? G.층격(R.pillars, [], 원격이름, R) : null;
+      const 격 = 원격이름 ? G.층격(R.pillars, [], 원격이름, R, 계절) : null;
       const 층 = { 이름: '원국', 간지: null, 앞운들: [], 표: 원표, 격 };
       Object.assign(층, 범주(null, 층));
       층.이력 = 원표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));
@@ -89,8 +92,8 @@
     }
     for (const u of 운들) {
       const 앞운들 = 앞운.slice();
-      const 표 = G.표(R.pillars, 앞운들.concat([u]), R);
-      const 격 = 원격이름 ? G.층격(R.pillars, 앞운들.concat([u]), 원격이름, R) : null;
+      const 표 = G.표(R.pillars, 앞운들.concat([u]), R, 계절);
+      const 격 = 원격이름 ? G.층격(R.pillars, 앞운들.concat([u]), 원격이름, R, 계절) : null;
       const 층 = { 이름: u.name, 간지: E.STEMS[u.stem] + (u.branch != null ? E.BRANCHES[u.branch] : ''), 운: u, 앞운들, 표, 격 };
       Object.assign(층, 범주(앞, 층));
       층.이력 = 표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));

@@ -23,7 +23,7 @@
   const 극 = (a, b) => (a + 2) % 5 === b;       // a 가 b 를 극한다
 
   /** 원국 천간 넷(일간 포함) + 운 천간을 「글자」로 세운다. 힘·합거를 붙인다. */
-  function 글자들(pillars, 운천간들) {
+  function 글자들(pillars, 운천간들, 계절지지) {   // 계절지지 = 이달 지지(43조). 없으면 운들 속 이달, 그것도 없으면 원국 월지
     const 자리 = [['year', '연간', E.NATAL_WEIGHT.yearBranch], ['month', '월간', E.NATAL_WEIGHT.monthBranch],
                   ['day', '일간', E.NATAL_WEIGHT.dayBranch], ['hour', '시간', E.NATAL_WEIGHT.hourBranch]]
       .filter(([k]) => pillars[k]);
@@ -35,9 +35,29 @@
       힘: k === 'day' ? null : Math.round(E.stemPower(pillars[k].stem, 뿌리터) * 100) / 100,
       일간: k === 'day', 운: false, 합거: null, 이력: [],   // 이력 = 어느 조문으로 상태가 바뀌었나(판정 모듈 B)
     }));
-    // 원국 합거(연간-월간). 일간은 합거하지 않는다.
+    // 43조 합화 — 합이 화하는 오행(갑기 토·을경 금·병신 수·정임 목·무계 화)이 **지금 계절(이달 지지)**을 얻으면 화한다(사장님 09-14 「가을이잖아」).
+    // 화하면 묶이지 않는다 — 그 오행이 아니던 글자가 그 오행으로 바뀐다(乙이 금이 된다). 계절이 아니면 합이불화 = 합거.
+    const 화오행of = (st) => [2, 3, 4, 0, 1][st % 5];
+    const 이달 = (운천간들 || []).find(u => u.name === '이달' && u.branch != null);
+    const 계절 = E.BRANCH_ELEM[계절지지 != null ? 계절지지 : (이달 ? 이달.branch : pillars.month.branch)];
+    const 화stem = (g, 오행) => { for (let i = 0; i < 10; i++) if (E.STEM_ELEM[i] === 오행 && i % 2 === g.stem % 2) return i; return g.stem; };
+    const 화하다 = (a, b, 조) => {
+      const 오행 = 화오행of(a.stem);
+      [a, b].forEach(g => {
+        if (g.오행 === 오행) { g.이력.push({ 조, 말: E.STEMS[a.stem] + E.STEMS[b.stem] + ' 합화 ' + 오행자[오행] + ' — 제 오행 그대로' }); return; }
+        g.화stem = 화stem(g, 오행); g.오행 = 오행; g.화 = 오행자[오행];
+        if (!g.일간) g.힘 = Math.round(E.stemPower(g.화stem, 뿌리터) * 100) / 100;
+        g.이력.push({ 조, 말: E.STEMS[a.stem] + E.STEMS[b.stem] + ' 합화 — ' + 오행자[오행] + '으로 화함(계절이 ' + 오행자[계절] + ')' });
+      });
+    };
+    // 원국 합(연간-월간). 일간은 합거하지 않는다. 화하면 합거가 아니다.
     const nh = E.natalHap(pillars);
-    Object.keys(nh).forEach(k => { const g = out.find(x => x.key === k); if (g) { g.합거 = '원국 ' + (out.find(x => x.key === nh[k]) || {}).이름; g.이력.push({ 조: '3조', 말: '원국 ' + (out.find(x => x.key === nh[k]) || {}).이름 + '과 합 — 합거' }); } });
+    Object.keys(nh).forEach(k => {
+      const g = out.find(x => x.key === k), 짝 = out.find(x => x.key === nh[k]);
+      if (!g || !짝) return;
+      if (화오행of(g.stem) === 계절) { if (!g.화 && !짝.화) 화하다(g, 짝, '43조'); return; }
+      g.합거 = '원국 ' + 짝.이름; g.이력.push({ 조: '3조', 말: '원국 ' + 짝.이름 + '과 합 — 합거' });
+    });
     // 운 천간 — 하나씩 들어와 아직 안 묶인 원국 천간(일간 제외) 중 합하는 것을 묶는다(28조 두번법칙: 첫 번은 묶이고 둘째부터 뚫린다).
     (운천간들 || []).forEach(u => {
       // 뒤에 온 운 글자는 원국 글자뿐 아니라 앞서 온 운 글자도 묶는다 — 월운 辛이 세운 丙을 묶으면 구응이 사라진다(09-14 사장님).
@@ -49,16 +69,19 @@
           || (a.운 && b.운 ? out.indexOf(b) - out.indexOf(a) : 0)
           || (!a.운 && !b.운 ? (원국차례[a.key] - 원국차례[b.key]) : 0));
       // 합은 서로 묶는다 — 갑목을 묶은 기토는 그 합에 쓰여서 제 명령(임수를 잡는 일)을 못 한다(사장님 「기토 오면 임수가 닿는다」).
-      let 묶은 = null;
-      if (후보.length) {
+      let 묶은 = null, 화짝 = null;
+      if (후보.length && 화오행of(u.stem) === 계절) { 화짝 = 후보[0]; }                       // 43조 — 계절을 얻은 합은 묶지 않고 화한다
+      else if (후보.length) {
         후보[0].합거 = u.name || '운'; 묶은 = (후보[0].운 ? '' : '원국 ') + 후보[0].이름 + ' ' + 후보[0].글자;
         const 왜 = 후보.length > 1 ? (후보[0].운 ? '28조(운끼리 먼저, 가까운 층부터)' : '37조(연간→월간→시간)') : '28조';
         후보[0].이력.push({ 조: 왜, 말: (u.name || '운') + ' ' + E.STEMS[u.stem] + '이 묶음' + (후보.length > 1 ? ' — 쟁합 ' + 후보.map(x => x.이름).join('·') + ' 중 첫째' : '') });
       }
-      out.push({ key: 'un' + out.length, 이름: u.name || '운', stem: u.stem, 글자: E.STEMS[u.stem], 오행: E.STEM_ELEM[u.stem],
+      const 새 = { key: 'un' + out.length, 이름: u.name || '운', stem: u.stem, 글자: E.STEMS[u.stem], 오행: E.STEM_ELEM[u.stem],
                  힘: Math.round(E.stemPower(u.stem, 뿌리터) * 100) / 100,
                  일간: false, 운: true, 합거: 묶은 ? 묶은 + '과 합' : null,
-                 이력: 묶은 ? [{ 조: '28조', 말: 묶은 + '과 합에 쓰임 — 제 명령 없음' }] : [] });
+                 이력: 묶은 ? [{ 조: '28조', 말: 묶은 + '과 합에 쓰임 — 제 명령 없음' }] : [] };
+      out.push(새);
+      if (화짝) 화하다(화짝, 새, '43조');
     });
     // 「산다」 — 일간이거나, 힘 0.5 이상이고 합거 안 된 것(사장님 09-14 「살아있다를 0.5로 가자, 제 역할은 할 수 있으니까」. 연지·일지 장생 0.55·월지 목욕 1.0 까지 산다)
     out.forEach(g => { g.산다 = g.일간 || (g.힘 >= 0.5 && !g.합거); if (!g.일간 && !g.합거 && g.힘 < 0.5) g.이력.push({ 조: '33조', 말: '힘 ' + g.힘 + ' < 0.5 — 무근' }); });
@@ -66,10 +89,10 @@
   }
 
   /** 모든 쌍의 생극과 통관. */
-  function 표(pillars, 운천간들, R) {
-    const 글자 = 글자들(pillars, 운천간들);
+  function 표(pillars, 운천간들, R, 계절지지) {
+    const 글자 = 글자들(pillars, 운천간들, 계절지지);
     const ds = 글자.find(g => g.일간).stem;
-    const 십신 = (g) => g.일간 ? '일간' : E.TEN_GODS[E.tenGod(ds, g.stem)];
+    const 십신 = (g) => g.일간 ? '일간' : E.TEN_GODS[E.tenGod(ds, g.화stem != null ? g.화stem : g.stem)];   // 합화한 글자는 화한 오행의 십신
     글자.forEach(g => { g.십신 = 십신(g); });
     // 격(38·39조) — 원국 격도 취격() 한 법으로 낸다(운의 변격과 비대칭 금지). 상신은 격표(gyeokguk)에서.
     let 격 = null;
@@ -205,10 +228,10 @@
   /** 층마다 격을 다시 낸다(35조, 변격). 원격 이름은 gyeokguk/typecard 가 낸 것을 받는다.
    *  격의 주인 천간이 이 층에서 묶여 있으면 — 남은 살아 있는 천간(원국·운) 중 월지 지장간과 같은 오행으로 투간한 것이 격을 잡는다(본기>중기>여기).
    *  새 주인을 막힘 없이 극하는 살아 있는 글자가 있으면 그 격은 깨진다. 길흉 말은 여기서 안 붙인다 — 「깨짐」 사실만. */
-  function 층격(pillars, 운들, 원격, R) {
+  function 층격(pillars, 운들, 원격, R, 계절지지) {
     if (!pillars || !원격) return null;
     운들 = 운들 || [];
-    const t = 표(pillars, 운들);
+    const t = 표(pillars, 운들, null, 계절지지);
     const 나 = t.글자.find(g => g.일간);
     // 이 층의 상태를 자평진전 격표에 그대로 넘긴다(사장님 「인수격이 경금 재성을 보았을 때를 보면 되잖아」) — 성패는 격표가 낸다.
     const 층 = { 합거: {}, 운: [], 글자: t.글자 };   // 글자: 격표가 천간을 이 표에서만 읽는다(40조, 따로 세지 않는다)
