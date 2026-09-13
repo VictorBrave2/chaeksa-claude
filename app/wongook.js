@@ -210,7 +210,18 @@
     } catch (e) {}
 
     // 밴드 — 글자 넷 + 걸린 글자 한 줄만 보이고, 부가 설명은 접어 둔다(사장님 「부가설명은 접어두고」).
+    // 47조 — 지장간은 그 지지의 시진에만 명령이 나온다. 천간에 없는 십신이 지장간에만 있으면 「이 글자는 ○시에만 나와요」(사장님 09-14).
+    let 속글자 = '';
+    try {
+      const 시각 = ['밤 11시~새벽 1시', '새벽 1~3시', '새벽 3~5시', '새벽 5~7시', '아침 7~9시', '오전 9~11시', '낮 11시~1시', '오후 1~3시', '오후 3~5시', '오후 5~7시', '저녁 7~9시', '밤 9~11시'];
+      const 천간십신 = {}; 원표.글자.forEach(g => { if (!g.일간 && g.산다) 천간십신[g.십신] = 1; });
+      const 본 = {};
+      const 줄들 = (원표.지장간 || []).filter(g => !천간십신[g.십신] && !본[g.십신] && (본[g.십신] = 1))
+        .map(g => 은는(이름(g.stem) + ' ' + g.십신 + '(지장간)') + ' ' + E.BRANCHES_KO[g.branch] + '(' + E.BRANCHES[g.branch] + ')시에만 나와요. ' + 시각[g.branch] + '예요.');
+      if (줄들.length) 속글자 = '<div class="wg-head sub"><b>속에만 있는 글자</b></div><div class="wg-body">' + 줄들.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>';
+    } catch (e) { 속글자 = ''; }
     const 속 = '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>'
+      + 속글자
       + '<div class="wg-head sub"><b>지금 오는 글자</b></div>' + 운줄
       + (조심줄 ? '<div class="wg-head sub"><b>조심할 글자</b></div><ul class="wg-care">' + 조심줄 + '</ul>' : '');
     box.innerHTML =
