@@ -73,19 +73,19 @@
     // 운 천간 — 살아 있는 것만 투출로 친다(묶인 운 글자는 이미 걸러져 온다)
     const 운천간 = (층.운 || []).map((u, i) => ({ key: 'un' + i, stem: u.stem, 이름: u.name || '운' }));
 
-    // 천간에 드러난 것 — 합거된 자리는 명령을 못 내므로 뺀다
+    // 천간 — 뿌리 하나(40조). 생극제화 표(saenggeuk.표)가 준 글자가 있으면 **그것만** 본다: 살아 있는지(산다)·힘은 표가 정한 것.
+    // 격표가 따로 합거·힘을 세면 표와 어긋난다(09-14 사장님 「일처리가 따로국밥」). 표 없이 오면(옛 호출) 예전대로 센다.
+    const 표글자 = Array.isArray(층.글자) && 층.글자.length ? 층.글자 : null;
+    const 산천간 = 표글자
+      ? 표글자.filter(g => !g.일간 && g.산다).map(g => ({ key: g.key, stem: g.stem, 자리: g.운 ? g.이름 : (자리이름[g.key] || g.이름), 힘: g.힘 }))
+      : null;
     const 투출 = {}, 투출자리 = {};
-    ['year', 'month', 'hour'].forEach(k => {
-      if (!p[k] || 합거[k]) return;
-      const g = 신(p[k].stem);
-      투출[g] = (투출[g] || 0) + 1;
-      (투출자리[g] = 투출자리[g] || []).push({ 자리: 자리이름[k], 글자: E.STEMS[p[k].stem], key: k, stem: p[k].stem });
-    });
-    운천간.forEach(u => {
-      const g = 신(u.stem);
-      투출[g] = (투출[g] || 0) + 1;
-      (투출자리[g] = 투출자리[g] || []).push({ 자리: u.이름, 글자: E.STEMS[u.stem], key: u.key, stem: u.stem });
-    });
+    const 넣 = (v) => { const g = 신(v.stem); 투출[g] = (투출[g] || 0) + 1; (투출자리[g] = 투출자리[g] || []).push({ 자리: v.자리, 글자: E.STEMS[v.stem], key: v.key, stem: v.stem }); };
+    if (산천간) 산천간.forEach(넣);
+    else {
+      ['year', 'month', 'hour'].forEach(k => { if (p[k] && !합거[k]) 넣({ key: k, stem: p[k].stem, 자리: 자리이름[k] }); });
+      운천간.forEach(u => 넣({ key: u.key, stem: u.stem, 자리: u.이름 }));
+    }
 
     // 지장간까지 포함한 존재
     //
@@ -112,10 +112,11 @@
     });
 
     const 전체 = {};
-    운천간.forEach(u => { const g = 신(u.stem); 전체[g] = (전체[g] || 0) + 1; });
+    if (산천간) 산천간.forEach(v => { const g = 신(v.stem); 전체[g] = (전체[g] || 0) + 1; });
+    else 운천간.forEach(u => { const g = 신(u.stem); 전체[g] = (전체[g] || 0) + 1; });
     ['year', 'month', 'day', 'hour'].forEach(k => {
       if (!p[k]) return;
-      if (k !== 'day' && !합거[k]) { const g = 신(p[k].stem); 전체[g] = (전체[g] || 0) + 1; }
+      if (!산천간 && k !== 'day' && !합거[k]) { const g = 신(p[k].stem); 전체[g] = (전체[g] || 0) + 1; }
       const b = p[k].branch;
       if (먹힌[b] != null) { const g = 신(먹힌[b]); 전체[g] = (전체[g] || 0) + 1; return; }
       E.HIDDEN[b].forEach(h => { const g = 신(h); 전체[g] = (전체[g] || 0) + 1; });
@@ -124,12 +125,15 @@
     // 십신별 힘 — 천간의 힘 합. 일간은 지지에서 받은 것의 합(성질이 다르다).
     const 힘 = { 비겁:0, 식상:0, 재성:0, 관성:0, 인성:0 };
     const 신힘 = {};
-    ['year', 'month', 'hour'].forEach(k => {
-      if (!p[k] || 합거[k]) return;
-      const g = 신(p[k].stem), v = E.stemPower(p[k].stem, 지지);
-      힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v;
-    });
-    운천간.forEach(u => { const g = 신(u.stem), v = E.stemPower(u.stem, 지지); 힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v; });
+    if (산천간) 산천간.forEach(x => { const g = 신(x.stem), v = x.힘 != null ? x.힘 : E.stemPower(x.stem, 지지); 힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v; });
+    else {
+      ['year', 'month', 'hour'].forEach(k => {
+        if (!p[k] || 합거[k]) return;
+        const g = 신(p[k].stem), v = E.stemPower(p[k].stem, 지지);
+        힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v;
+      });
+      운천간.forEach(u => { const g = 신(u.stem), v = E.stemPower(u.stem, 지지); 힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v; });
+    }
     const 일간힘 = 지지.reduce((s, [b, w]) => s + w * E.power(ds, b), 0);
 
     // 인접 — 합거에서 정한 것과 같은 규칙. 월간-시간은 일간을 사이에 둔 격(隔)이다.
