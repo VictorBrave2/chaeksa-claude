@@ -2944,6 +2944,16 @@
     const 썸 = 'art/story-' + st.id + '.webp';
     const 머리 = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(st.질문) + '</b></div>'
       + '<p class="hint" style="margin:8px 0 12px">' + escP(st.소개) + '</p>';
+    // 혼자 보는 이야기(st.혼자) — 그 사람이 없다. 그래도 「열어야 열린다」(09-13 사장님 「이미 열려 있으니 신뢰도가 떨어지네」): 단추 하나.
+    if (st.혼자) {
+      if (window.현재그사람 !== '나') {
+        box.innerHTML = 머리 + '<div class="st-pick"><p>내 사주만으로 봐요. 그 사람은 필요 없어요.</p><button class="btn ghost small" id="btnStOpen" type="button">7일 열기</button></div>';
+        $('btnStOpen').onclick = () => { window.현재그사람 = '나'; renderStory(); };
+        return;
+      }
+      renderStoryBody(box, 머리, st, null, '');
+      return;
+    }
     // 그 사람 고르기 — 두 사람 사주를 다 봐야 답이 된다. 기존 장(shPick)과 같은 목록이다.
     const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) {
@@ -2978,6 +2988,13 @@
     }
     const p = P.get(window.현재그사람);
     let Rm; try { Rm = E.calc(P.toProfile(p)); } catch (e) { box.innerHTML = 머리 + '<p class="hint">그 사람 사주를 계산하지 못했어요.</p>'; return; }
+    renderStoryBody(box, 머리, st, Rm, 고르기(p));
+    고르기연결();
+    $('btnStAdd').onclick = () => openPersonForm(null);
+  }
+  /** 이야기 본문 — 7일(무료) + 30일(이번 달 결제). 두 사람이면 Rm, 혼자면 null. 고르기칸은 위에 붙일 HTML. */
+  function renderStoryBody(box, 머리, st, Rm, 고르기칸) {
+    const S = window.ChaeksaStories;
     const 주 = S.일주일(R, Rm, st, today);
     const paid = !!(window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month'));
     // 하루 한 줄 = 결론 / 그 사람 쪽 + 내 쪽 / 할 것
@@ -2985,7 +3002,7 @@
     const 줄 = (x, 오늘) => '<li class="st-day s' + x.등급 + (오늘 ? ' today' : '') + '">'
       + '<b>' + (오늘 ? '오늘' : x.요일) + '<small>' + x.날 + '일</small></b>'
       + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
-    let h = 머리 + 고르기(p)
+    let h = 머리 + 고르기칸
       + '<p class="mnk">오늘부터 7일 · 무료</p><ul class="st-days">' + 주.map((x, i) => 줄(x, i === 0)).join('') + '</ul>'
       + '<p class="st-best">' + escP(S.그래서(st, 주)) + '</p>';
     if (paid) {
@@ -2994,15 +3011,13 @@
       const 묶 = (제목, arr) => arr.length ? '<p class="mnk" style="margin-top:16px">' + escP(제목) + '</p><ul class="st-days">' + arr.map(x => 줄(x, false)).join('') + '</ul>' : '';
       h += '<p class="mnk" style="margin-top:22px">이번 달 30일</p>'
         + '<ul class="st-days mini">' + 달.map(x => '<li class="st-day s' + x.등급 + '"><b>' + x.요일 + '<small>' + x.날 + '일</small></b><i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em></span></li>').join('') + '</ul>'
-        + 묶(st.묶음.좋음 + ' 셋', g.좋음) + 묶(st.묶음.조심 + ' 셋', g.조심) + 묶(st.묶음.짝, g.짝);
+        + 묶(st.묶음.좋음 + ' 셋', g.좋음) + 묶(st.묶음.조심 + ' 셋', g.조심) + (st.묶음.짝 ? 묶(st.묶음.짝, g.짝) : '');
     } else {
       h += nextStep('이번 달 30일', '오늘부터 7일은 무료',
-        (today.getMonth() + 1) + '월 남은 날 전부 — ' + st.묶음.좋음 + ' 셋, ' + st.묶음.조심 + ' 셋, ' + st.묶음.짝 + '까지. 이 상품 하나로 다른 이야기의 30일도 다 열려요.',
+        (today.getMonth() + 1) + '월 남은 날 전부 — ' + st.묶음.좋음 + ' 셋, ' + st.묶음.조심 + ' 셋' + (st.묶음.짝 ? ', ' + st.묶음.짝 : '') + '까지. 이 상품 하나로 다른 이야기의 30일도 다 열려요.',
         (profile && profile.name || '') + '님 ' + (today.getMonth() + 1) + '월 30일을 보고 싶습니다', 'month', null);
     }
     box.innerHTML = h;
-    고르기연결();
-    $('btnStAdd').onclick = () => openPersonForm(null);
   }
 
   function renderWtHome() {
@@ -3111,7 +3126,7 @@
     const top = $('wtTop');
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
-    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) window.현재이야기 = t.story; go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
+    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
     box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });

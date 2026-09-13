@@ -633,9 +633,25 @@
   /** 하루 — 내 사주와 그 사람 사주로 각각 점수를 내고 평균한다. 말은 두 쪽을 다 쓴다. */
   function 하루(R, Rm, story, d) {
     const C = global.ChaeksaCalendar, E = global.ChaeksaEngine;
-    if (!C || !E || !R || !Rm) return null;
+    if (!C || !E || !R) return null;
     const y = d.getFullYear(), m = d.getMonth() + 1, dd = d.getDate();
-    const 나 = C.scoreDay(R, y, m, dd, story.기준), 그 = C.scoreDay(Rm, y, m, dd, story.기준);
+    const 나 = C.scoreDay(R, y, m, dd, story.기준);
+    // 혼자 보는 이야기(story.혼자 — 이직·이사·계약처럼 그 사람이 없는 질문, 09-13 「돈과 생활」 길) — 내 사주만으로 잰다.
+    if (story.혼자 || !Rm) {
+      if (!story.혼자) return null;
+      const s1 = 나.score;
+      const 등급1 = s1 >= 5 ? 3 : s1 >= 2 ? 2 : s1 >= -1 ? 1 : 0;
+      const 꼴1 = 등급말(등급1);
+      const 바탕 = (story.나 && story.나[나.god]) || 내쪽[나.god] || '';
+      let 내말 = 바탕;
+      if (등급1 >= 2 && (나.rel === '합' || 나.rel === '삼합')) 내말 = story.나붙음 || 바탕;
+      else if (등급1 === 0 && 나.rel === '충') 내말 = story.나어긋 || 바탕;
+      const 이유1 = '오늘은 ' + 내말 + '(' + 나.god + ')이거든요.';
+      return { d, 요일: 요일[d.getDay()], 날: dd, 등급: 등급1, 꼴: 꼴1, 표: 등급1 >= 2 ? '○' : 등급1 === 1 ? '△' : '✕',
+               결론: story.결론[꼴1], 이유: 이유1, 할것: story.할것[꼴1], 점수: Math.round(s1 * 10) / 10,
+               그쪽말: '', 내쪽말: 내말, 십신나: 나.god, 십신그: null, 짝날: false };
+    }
+    const 그 = C.scoreDay(Rm, y, m, dd, story.기준);
     const s = (나.score + 그.score) / 2;
     const 등급 = s >= 5 ? 3 : s >= 2 ? 2 : s >= -1 ? 1 : 0;   // calendar.js 와 같은 눈금
     const 꼴 = 등급말(등급);
@@ -682,6 +698,7 @@
   function 그래서(story, days) {
     const b = 제일좋은(days); if (!b) return '';
     if (b.등급 < 2) return '이번 주는 딱 좋은 날이 없어요. 급하면 ' + b.요일 + '요일(' + b.날 + '일)이 그중 나아요.';
+    if (story.혼자) return '이번 주는 ' + b.요일 + '요일(' + b.날 + '일)이에요. 그날은 ' + b.내쪽말 + '이라서요. ' + story.마무리;
     return '이번 주는 ' + b.요일 + '요일(' + b.날 + '일)이에요. 그날 그 사람은 ' + b.그쪽말 + ' 나는 ' + b.내쪽말 + '이라서요. ' + story.마무리;
   }
 
