@@ -2777,10 +2777,18 @@
   // 말투는 사장님 말투(짧게 · A = B · 존댓말). 십신 이름은 그대로 부른다(법전 27조) — 이 탭은 data-plain 이다.
   function renderStory() {
     const S = window.ChaeksaStories, box = $('stResult'), P = People(); if (!S || !box || !R || !P) return;
-    const st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
+    // 갈래로 열었으면(홈 갈래 카드) 그 갈래의 이야기들이 상황 칩이다 — 판정은 같고 말만 다르니 한 화면에서 고른다(docs/37).
+    const Q = window.ChaeksaQuestions;
+    const 갈래 = window.현재갈래 && Q && Q.갈래들.find(g => g.키 === window.현재갈래);
+    const subs = 갈래 && S.갈래of ? S.목록.filter(x => S.갈래of(x) === 갈래.키) : [];
+    let st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
+    if (subs.length && subs.indexOf(st) < 0) { st = subs[0]; window.현재이야기 = st.id; }
     const 썸 = 'art/story-' + st.id + '.webp';
-    const 머리 = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(st.질문) + '</b></div>'
+    const 칩 = subs.length > 1 ? '<div class="wt-chips st-sit">' + subs.map(x => '<button type="button" data-st="' + x.id + '"' + (x.id === st.id ? ' class="on"' : '') + '>' + escP(x.질문.replace(/\?$/, '')) + '</button>').join('') + '</div>' : '';
+    const 머리 = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(갈래 ? 갈래.날고르기 : st.질문) + '</b></div>'
+      + (갈래 ? '<p class="hint" style="margin:8px 0 6px">어떤 상황이에요? 판정은 같고, 말이 달라요.</p>' + 칩 : '')
       + '<p class="hint" style="margin:8px 0 12px">' + escP(st.소개) + '</p>';
+    if (!box.dataset.sit) { box.dataset.sit = '1'; box.addEventListener('click', (e) => { const b = e.target.closest('.st-sit button'); if (!b) return; window.현재이야기 = b.dataset.st; renderStory(); }); }
     // 혼자 보는 이야기(st.혼자) — 그 사람이 없다. 그래도 「열어야 열린다」(09-13 사장님 「이미 열려 있으니 신뢰도가 떨어지네」): 단추 하나.
     if (st.혼자) {
       if (window.현재그사람 !== '나') {
@@ -2915,9 +2923,19 @@
     // 여덟 장도 콘텐츠마다 한 장(art/story-<id>-s.webp)을 쓴다 — 책사 얼굴은 2026-09-12 밤에 다 지웠다. 없으면 글자 표지.
     이야기.forEach(f => { if (!f.썸) f.썸 = 'art/story-' + f.id + '-s.webp'; });
     // 새 이야기(질문 하나 + 썸네일 하나, 7일 무료 · 30일 유료)를 앞에 세운다 — stories.js 에 한 줄 더하면 진열대에 선다.
+    // 갈래 카드(docs/37) — 판정은 갈래 8개인데 제목을 74개로 늘렸던 것을 접는다(09-14 사장님 「같은 답을 다른 제목으로」). 세부 상황은 이야기 화면 안의 칩.
     try {
-      const S = window.ChaeksaStories;
-      if (S && S.목록) 이야기.unshift(...S.목록.map(st => ({ id: 'st-' + st.id, tab: 'story', story: st.id, k: st.k, 사이: st.사이, 제목: st.질문, 소개: st.소개, 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + st.id + '-s.webp' })));   // 격자는 작은 판(-s, tools_thumb.py)
+      const S = window.ChaeksaStories, Q = window.ChaeksaQuestions;
+      if (S && S.목록 && Q && Q.갈래들 && S.갈래of) {
+        const 갈래카드 = Q.갈래들.map(g => {
+          const subs = S.목록.filter(st => S.갈래of(st) === g.키);
+          if (!subs.length) return null;
+          const 사이들 = subs.map(st => st.사이).filter((x, i, a) => a.indexOf(x) === i);
+          return { id: 'gl-' + g.키, tab: 'story', 갈래: g.키, story: subs[0].id, k: subs[0].k, 사이: 사이들[0], 사이들,
+                   제목: g.날고르기, 소개: g.이름 + ' · 상황 ' + subs.length + '가지', 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + subs[0].id + '-s.webp' };
+        }).filter(Boolean);
+        이야기.unshift(...갈래카드);
+      }
     } catch (e) {}
     const 사이들 = ['전체', '썸', '연애 중', '재회', '결혼', '이별', '가족', '돈과 생활', '친구·직장'];
     // 「이번 달 30일 전체 보기」 타일은 오늘 탭과 함께 걷었다(2026-09-13) — 30일은 이야기 화면 안에서 연다.
@@ -2932,7 +2950,7 @@
       // 백 장이 되면 한 번에 10MB 다. 첫 화면에 필요한 건 열 장 안팎이다(2026-09-12 사장님 「삽화 10개 넘어가서 렉이걸려?」).
       const 받기 = 큰 ? '' : ' loading="lazy" decoding="async"';
       const 그림 = f.썸 ? '<img alt="" src="' + f.썸 + '?v=' + (window.CHAEKSA_ART || 1) + '"' + 받기 + ' onerror="this.remove()">' : '';
-      return '<button class="wt-cd" data-fi="' + i + '" data-s="' + esc(f.사이) + '" type="button">'
+      return '<button class="wt-cd" data-fi="' + i + '" data-s="' + esc((f.사이들 || [f.사이]).join('|')) + '" type="button">'
         + '<span class="cd-img">'
         + (파일 ? '<img alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '"' + 받기 + ' onerror="this.remove()">' : '') + 그림
         + '<span class="cd-seal">' + esc(인장of(f.k)) + '</span>'
@@ -2965,14 +2983,14 @@
     const top = $('wtTop');
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
-    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
+    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
     // 사이 칩 — 격자를 거른다. 진열대 셋은 안 거른다(지금 마음에 걸리는 것은 사이를 안 탄다).
     box.querySelectorAll('.wt-chips button').forEach(b => { b.onclick = () => {
       box.querySelectorAll('.wt-chips button').forEach(x => x.classList.toggle('on', x === b));
       const s = b.dataset.s;
-      box.querySelectorAll('.wt-grid .wt-cd').forEach(c => { c.hidden = !(s === '전체' || c.dataset.s === s); });
+      box.querySelectorAll('.wt-grid .wt-cd').forEach(c => { c.hidden = !(s === '전체' || c.dataset.s.split('|').indexOf(s) >= 0); });
     }; });
     // 접기 여닫음을 기기에 남긴다.
     box.querySelectorAll('details.wt-fold').forEach(d => { d.ontoggle = () => {
