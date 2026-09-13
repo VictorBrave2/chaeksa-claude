@@ -824,44 +824,13 @@
 
   // ───── 나 ─────
   // 한입 카드 — 원국 풀이를 다섯 장으로 분해한 것. 문장은 brief.js의 MZ 자산.
-  function renderMzDeck() {
-    const a = R.analysis, du = E.currentDaeun(R, today);
-    const MZ = ChaeksaBrief.MZ;
-    const EL5 = ['목','화','토','금','수'];
-    const stem = MZ.STEM[a.dayStem];
-    // 「기운의 결」(신강·신약·중화 별명) 카드는 법전 29조로 뺐다(2026-09-13).
-    const ec = a.elemCount, mx = Math.max(...ec, 1);
-    const top = EL5[ec.indexOf(Math.max(...ec))];
-    // 시즌 — 지금 대운이 몇 번째인지, 천간 십신으로 구간의 결을 잡는다
-    let season = '';
-    if (du) {
-      const n = R.daeun.list.findIndex(x => x.stem === du.stem && x.branch === du.branch) + 1;
-      const god = E.TEN_GODS[E.tenGod(a.dayStem, du.stem)];
-      season = `<div class="mzcard"><div class="mk">지금 시즌</div>
-        <div class="mb">인생 ${n}번째 시즌</div>
-        <div class="ms">${du.startAge}~${du.endAge}세 · ${f.pillar(du)}<br><b>${god}</b> — ${MZ.SEASON[god] || ''}</div></div>`;
-    }
-    $('mzDeck').innerHTML = `
-      <div class="mzcard"><div class="mk">타고난 바탕</div>
-        <div class="mb">${stem.nick}</div>
-        <div class="ms">${f.stem(a.dayStem)} ${f.stemKo(a.dayStem)} 일간 · ${stem.one}</div>
-        <div class="mtags">${stem.tags.map(t => `<span>${t}</span>`).join('')}</div></div>
-      <div class="mzcard"><div class="mk">다섯 기운</div>
-        ${EL5.map((el, i) => `<div class="stat"><b class="e-${el}">${el}</b>
-          <div class="bar"><i class="f-${el}" style="width:${Math.round(ec[i] / mx * 100)}%"></i></div>
-          <span class="n">${ec[i]}</span></div>`).join('')}
-        <div class="ms" style="margin-top:2px">가장 두터운 것 <b>${top}</b>${a.missing.length ? ` · 비어 있는 것 <b>${a.missing.join('·')} 채우기</b>` : ' · 다 갖춘 밸런스'}</div></div>
-      <div class="mzcard"><div class="mk">나를 채우는 기운</div>
-        <div class="mb">${a.yongCandidates.join(' · ')}</div>
-        <div class="ms">이 기운이 오면 힘이 붙습니다.<br>${a.yongCandidates.map(el => MZ.BOOST[el]).filter(Boolean).join('<br>')}</div></div>
-      ${season}`;
-  }
+  function renderMzDeck() {}   // 2026-09-14 뺐다 — 원국은 홈 맨 위(wongook.js).
 
 
 
   function renderMe() {
     const a = R.analysis, du = E.currentDaeun(R, today);
-    renderMzDeck();
+    // 한입 카드(renderMzDeck)·오행 막대·태그는 2026-09-14 에 뺐다 — 원국은 홈 맨 위(wongook.js)에서 생극제화 표로 읽는다.
     // 오늘의 금지령 — 탭 열면 바로 그린다 (매일 콘텐츠는 문턱이 없어야 한다)
     (function renderBan() {
       const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
@@ -946,8 +915,6 @@
     const dm = ChaeksaBrief.dayMaster(a.dayStem);
     $('me').innerHTML = `<div class="big ${elemClass(a.dayStem, true)}">${f.stem(a.dayStem)}</div><p><b>${dm.name}</b> — ${dm.one}<br><span style="font-size:13px">${dm.desc}</span></p>`;
     const max = Math.max(...a.elemCount, 1), colors = ['var(--wood)','var(--fire)','var(--earth)','var(--metal)','var(--water)'];
-    $('bars').innerHTML = E.ELEM.map((e, i) => `<div class="bar"><span>${e}</span><i><b style="width:${a.elemCount[i] / max * 100}%;background:${colors[i]}"></b></i><span>${a.elemCount[i]}</span></div>`).join('');
-    $('tags').innerHTML = [`<span class="tag on">${a.dominant} 기운이 강함</span>`, a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`, `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`].join('');
     $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
     const plName = profile.placeName || '서울';
     const bornNote = $('bornNote');
@@ -2938,6 +2905,8 @@
 
   function renderWtHome() {
     const box = $('wtHome'); if (!box || !R) return;
+    // 원국이 메인 — 홈 맨 위(2026-09-14). 표는 saenggeuk.js, 말은 wongook.js.
+    try { if (window.ChaeksaWongook) ChaeksaWongook.render(R, today, $('wgMain')); } catch (e) { try { console.warn('원국 실패:', e); } catch (e2) {} }
     let 전체 = {};
     // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
     try { 전체 = (window.ChaeksaDan && ChaeksaDan.열눈전체) ? (ChaeksaDan.열눈전체(R, today, false) || {}) : {}; } catch (e) { 전체 = {}; }

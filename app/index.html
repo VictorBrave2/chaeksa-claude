@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=809">
+<link rel="stylesheet" href="style.css?v=810">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -153,6 +153,8 @@
            ④ 전체 목록(접기) — 모든 콘텐츠를 여기서 찾을 수 있게. app.js renderWtHome 이 다 그린다.
            오늘(얼빡·한마디·기억)은 「오늘」 탭으로 옮겼다. 첫 의논(#chong)은 걷었다 — 의논 화면은 전체 목록에서 연다.
            docs/29 「서고에서 비서로」와 반대 방향이다. 사장님이 전략을 바꾸셨다. -->
+      <!-- 원국이 메인이다(2026-09-14 사장님). wongook.js 가 그린다. 그 아래가 이야기 서점. -->
+      <div id="wgMain" class="hide"></div>
       <p class="wt-tag">그 사람 때문에 궁금해진 모든 이야기.</p>
       <div id="wtTop" class="wt hide"></div>
       <div id="wtHome" class="wt hide"></div>
@@ -499,7 +501,6 @@
 
     <!-- 나 -->
     <div class="tab hide" data-tab="me">
-      <div class="mzdeck" id="mzDeck" aria-label="한입 요약 카드"></div>
 
 
 
@@ -517,8 +518,6 @@
         <h2>나의 사주 원국</h2>
         <div class="pillars" id="pillars"></div>
         <div class="me" id="me"></div>
-        <div class="bars" id="bars"></div>
-        <div class="tags" id="tags"></div>
         <p class="hint" id="bornNote"></p>
         <div class="solar-cmp hide" id="solarCmp"></div>
       </section>
@@ -819,38 +818,39 @@
   </div>
 </div>
 
-<script src="config.js?v=809"></script>
-<script src="track.js?v=809"></script>
-<script src="cloud.js?v=809"></script>
-<script src="usage.js?v=809"></script>
-<script src="places.js?v=809"></script>
-<script src="people.js?v=809"></script>
-<script src="astro.js?v=809"></script>
-<script src="lunar.js?v=809"></script>
-<script src="engine.js?v=809"></script>
-<script src="saenggeuk.js?v=809"></script>
-<script src="chaeyong.js?v=809"></script>
-<script src="brief.js?v=809"></script>
-<script src="chaeksadan.js?v=809"></script>
-<script src="geunamja.js?v=809"></script>
-<script src="maeum.js?v=809"></script>
-<script src="gunghap.js?v=809"></script>
-<script src="sheets.js?v=809"></script>
-<script src="hwakin.js?v=809"></script>
-<script src="mun.js?v=809"></script>
-<script src="mun/all.js?v=809"></script>
-<script src="typecard.js?v=809"></script>
-<script src="gyeokguk.js?v=809"></script>
-<script src="memo.js?v=809"></script>
-<script src="classic.js?v=809"></script>
-<script src="calendar.js?v=809"></script>
-<script src="stories.js?v=809"></script>
-<script src="tongbyeon.js?v=809"></script>
-<script src="rules-wealth-love.js?v=809"></script>
-<script src="rules-health-study-move.js?v=809"></script>
-<script src="share.js?v=809"></script>
-<script src="ai.js?v=809"></script>
-<script src="pay.js?v=809"></script>
-<script src="app.js?v=809"></script>
+<script src="config.js?v=810"></script>
+<script src="track.js?v=810"></script>
+<script src="cloud.js?v=810"></script>
+<script src="usage.js?v=810"></script>
+<script src="places.js?v=810"></script>
+<script src="people.js?v=810"></script>
+<script src="astro.js?v=810"></script>
+<script src="lunar.js?v=810"></script>
+<script src="engine.js?v=810"></script>
+<script src="saenggeuk.js?v=810"></script>
+<script src="wongook.js?v=810"></script>
+<script src="chaeyong.js?v=810"></script>
+<script src="brief.js?v=810"></script>
+<script src="chaeksadan.js?v=810"></script>
+<script src="geunamja.js?v=810"></script>
+<script src="maeum.js?v=810"></script>
+<script src="gunghap.js?v=810"></script>
+<script src="sheets.js?v=810"></script>
+<script src="hwakin.js?v=810"></script>
+<script src="mun.js?v=810"></script>
+<script src="mun/all.js?v=810"></script>
+<script src="typecard.js?v=810"></script>
+<script src="gyeokguk.js?v=810"></script>
+<script src="memo.js?v=810"></script>
+<script src="classic.js?v=810"></script>
+<script src="calendar.js?v=810"></script>
+<script src="stories.js?v=810"></script>
+<script src="tongbyeon.js?v=810"></script>
+<script src="rules-wealth-love.js?v=810"></script>
+<script src="rules-health-study-move.js?v=810"></script>
+<script src="share.js?v=810"></script>
+<script src="ai.js?v=810"></script>
+<script src="pay.js?v=810"></script>
+<script src="app.js?v=810"></script>
 </body>
 </html>
