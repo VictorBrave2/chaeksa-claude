@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=827">
+<link rel="stylesheet" href="style.css?v=828">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -501,36 +501,22 @@
 
     <!-- 나 -->
     <div class="tab hide" data-tab="me">
-
-
-
-      <!-- 지금 어디에 계신지 — 홈에서 옮겨왔다. 원국을 보러 온 사람에게는 맞는 말이다. -->
-      <section class="card standing" id="standing">
-        <div class="st-head" id="stHead"></div>
-        <p class="st-body" id="stBody"></p>
-        <div class="st-meta" id="stMeta"></div>
-        <div class="st-ahead hide" id="stAhead">
-          <b id="stAheadHead"></b>
-          <span id="stAheadText"></span>
-        </div>
-      </section>
+      <!-- 원국 탭 = 홈 밴드의 펼친 판(2026-09-14 사장님 「원국 탭도 말투랑 다 바꿔줘 옛날식이네」). wongook.js 가 그린다.
+           옛 카드(첫 마디·일간 감성문·짜임 카드·올해와 내년·앞으로 12개월)는 걷었다 — 감성 표는 버린 것(법전), 강약 위에 선 것은 29조. -->
+      <div id="wgFull" data-plain="1"></div>
       <section class="card">
-        <h2>나의 사주 원국</h2>
-        <div class="pillars" id="pillars"></div>
-        <div class="me" id="me"></div>
+        <h2>태어난 시각</h2>
         <p class="hint" id="bornNote"></p>
         <div class="solar-cmp hide" id="solarCmp"></div>
       </section>
-      <section class="card" id="gyeokCard">
-        <h2>짜임 — 무엇으로 돌아가는 사주인가</h2>
-        <p class="hint" style="margin:0 0 14px">태어난 달이 이 사주가 무엇으로 돌아가는지를 정하고,
-          그것을 <b>쓸 수 있게 만들어 주는 글자</b>가 따로 있습니다.
-          그 둘이 어떻게 맞물렸는지를 넷으로 가릅니다 — 온전 · 흠 하나 · 가까스로 · 무너짐.</p>
-        <div id="gyeokBox"></div>
+      <section class="card">
+        <h2>대운 — 10년마다 바뀌는 큰 흐름</h2>
+        <div class="daeun" id="daeun"></div>
+        <p class="hint" id="daeunHint"></p>
       </section>
       <section class="card">
         <h2>카드로 공유하기</h2>
-        <p class="hint" style="margin:0 0 4px">내 원국을 한 장의 이미지로. 카톡·인스타에 그대로 올릴 수 있어요.</p>
+        <p class="hint" style="margin:0 0 4px">내 원국을 그림 한 장으로. 카톡·인스타에 그대로 올려요.</p>
         <div class="share-wrap">
           <canvas id="shareCanvas" width="1080" height="1350"></canvas>
           <div class="share-btns">
@@ -538,22 +524,6 @@
             <button class="btn ghost" id="btnSaveImg">이미지 저장</button>
           </div>
         </div>
-      </section>
-      <!-- 6차원 적층 체용 카드는 걷어냈다 (2026-08-28).
-           「일반인이 무슨 말인지 알겠냐」 — 體·用·적층은 무료 화면에 놓을 말이 아니다.
-           엔진(chaeyong.js)과 renderChaeyong 은 그대로 두었다. 유료 상담에서 쓴다. -->
-      <section class="card">
-        <h2>대운의 흐름</h2>
-        <div class="daeun" id="daeun"></div>
-        <p class="hint" id="daeunHint"></p>
-      </section>
-      <section class="card">
-        <h2>올해와 내년</h2>
-        <div id="yearly"></div>
-      </section>
-      <section class="card">
-        <h2>앞으로 12개월</h2>
-        <div id="monthly"></div>
       </section>
     </div>
 
@@ -818,39 +788,39 @@
   </div>
 </div>
 
-<script src="config.js?v=827"></script>
-<script src="track.js?v=827"></script>
-<script src="cloud.js?v=827"></script>
-<script src="usage.js?v=827"></script>
-<script src="places.js?v=827"></script>
-<script src="people.js?v=827"></script>
-<script src="astro.js?v=827"></script>
-<script src="lunar.js?v=827"></script>
-<script src="engine.js?v=827"></script>
-<script src="saenggeuk.js?v=827"></script>
-<script src="wongook.js?v=827"></script>
-<script src="chaeyong.js?v=827"></script>
-<script src="brief.js?v=827"></script>
-<script src="chaeksadan.js?v=827"></script>
-<script src="geunamja.js?v=827"></script>
-<script src="maeum.js?v=827"></script>
-<script src="gunghap.js?v=827"></script>
-<script src="sheets.js?v=827"></script>
-<script src="hwakin.js?v=827"></script>
-<script src="mun.js?v=827"></script>
-<script src="mun/all.js?v=827"></script>
-<script src="typecard.js?v=827"></script>
-<script src="gyeokguk.js?v=827"></script>
-<script src="memo.js?v=827"></script>
-<script src="classic.js?v=827"></script>
-<script src="calendar.js?v=827"></script>
-<script src="stories.js?v=827"></script>
-<script src="tongbyeon.js?v=827"></script>
-<script src="rules-wealth-love.js?v=827"></script>
-<script src="rules-health-study-move.js?v=827"></script>
-<script src="share.js?v=827"></script>
-<script src="ai.js?v=827"></script>
-<script src="pay.js?v=827"></script>
-<script src="app.js?v=827"></script>
+<script src="config.js?v=828"></script>
+<script src="track.js?v=828"></script>
+<script src="cloud.js?v=828"></script>
+<script src="usage.js?v=828"></script>
+<script src="places.js?v=828"></script>
+<script src="people.js?v=828"></script>
+<script src="astro.js?v=828"></script>
+<script src="lunar.js?v=828"></script>
+<script src="engine.js?v=828"></script>
+<script src="saenggeuk.js?v=828"></script>
+<script src="wongook.js?v=828"></script>
+<script src="chaeyong.js?v=828"></script>
+<script src="brief.js?v=828"></script>
+<script src="chaeksadan.js?v=828"></script>
+<script src="geunamja.js?v=828"></script>
+<script src="maeum.js?v=828"></script>
+<script src="gunghap.js?v=828"></script>
+<script src="sheets.js?v=828"></script>
+<script src="hwakin.js?v=828"></script>
+<script src="mun.js?v=828"></script>
+<script src="mun/all.js?v=828"></script>
+<script src="typecard.js?v=828"></script>
+<script src="gyeokguk.js?v=828"></script>
+<script src="memo.js?v=828"></script>
+<script src="classic.js?v=828"></script>
+<script src="calendar.js?v=828"></script>
+<script src="stories.js?v=828"></script>
+<script src="tongbyeon.js?v=828"></script>
+<script src="rules-wealth-love.js?v=828"></script>
+<script src="rules-health-study-move.js?v=828"></script>
+<script src="share.js?v=828"></script>
+<script src="ai.js?v=828"></script>
+<script src="pay.js?v=828"></script>
+<script src="app.js?v=828"></script>
 </body>
 </html>

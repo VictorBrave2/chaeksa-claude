@@ -152,8 +152,9 @@
     return out;
   }
 
-  function render(R, today, box) {
+  function render(R, today, box, opts) {
     if (!box || !R) return;
+    const full = !!(opts && opts.full);   // 원국 탭 = 펼친 판(2026-09-14). 홈 밴드는 접힌 판.
     const { 운, tf, du } = 운들(R, today);
     const 원표 = G.표(R.pillars, [], R);
     const p = R.pillars;
@@ -201,17 +202,17 @@
     } catch (e) {}
 
     // 밴드 — 글자 넷 + 걸린 글자 한 줄만 보이고, 부가 설명은 접어 둔다(사장님 「부가설명은 접어두고」).
+    const 속 = '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>'
+      + '<div class="wg-head sub"><b>지금 오는 글자</b></div>' + 운줄
+      + (조심줄 ? '<div class="wg-head sub"><b>조심할 글자</b></div><ul class="wg-care">' + 조심줄 + '</ul>' : '');
     box.innerHTML =
-      '<section class="wg" data-plain="1">'
-      + '<div class="wg-head"><b>내 원국</b><span>여덟 글자가 서로 무엇을 하는지</span></div>'
+      '<section class="wg' + (full ? ' full' : '') + '" data-plain="1">'
+      + '<div class="wg-head"><b>' + (full ? '나의 사주 원국' : '내 원국') + '</b><span>여덟 글자가 서로 무엇을 하는지</span></div>'
       + 격                                                     // 격 얘기가 맨 위(사장님 09-14 「정관격 얘기를 맨 위로 올리라고」)
       + '<div class="pillars wg-pillars">' + 글자칸 + '</div>'
       + 걸린말 + 갈림
-      + '<details class="wg-fold"><summary>이 사주는 이렇게 돌아가요</summary>'
-      + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>'
-      + '<div class="wg-head sub"><b>지금 오는 글자</b></div>' + 운줄
-      + (조심줄 ? '<div class="wg-head sub"><b>조심할 글자</b></div><ul class="wg-care">' + 조심줄 + '</ul>' : '')
-      + '</details>'
+      + (full ? '<div class="wg-head sub"><b>이 사주는 이렇게 돌아가요</b></div>' + 속
+              : '<details class="wg-fold"><summary>이 사주는 이렇게 돌아가요</summary>' + 속 + '</details>')
       + '</section>';
     box.classList.remove('hide');
   }

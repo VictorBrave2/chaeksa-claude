@@ -501,23 +501,7 @@
   function renderHome() {
     // 첫 의논(#chong)은 홈에서 걷었다(2026-09-12 이야기 서점 전략). 의논 화면(ganmyeong)은 전체 목록에서 연다.
     const a = R.analysis;
-    // 첫 마디 — 오늘 여기 들어온 사람에게 제일 먼저 할 말
-    (function () {
-      const M = window.ChaeksaMemo; if (!M || !M.standing || !$('standing')) return;
-      const st = M.standing(R, today);
-      if (!st) { $('standing').classList.add('hide'); return; }
-      $('standing').classList.remove('hide');
-      $('standing').className = 'card standing' + (st.눌림 ? ' down' : st.좋음 ? ' up' : '');
-      $('stHead').textContent = st.head;
-      $('stBody').textContent = st.body;
-      $('stMeta').innerHTML = `<span>이달 <b>${esc(st.pillar)}</b></span>`
-        + (st.daeun ? `<span>대운 <b>${esc(st.daeun)}</b></span>` : '')
-        + `<span>${esc(st.grade)}</span>`;
-      // 묻지 않아도 다가오는 것을 먼저 짚는다
-      const ah = M.ahead ? M.ahead(R, today) : null;
-      $('stAhead').classList.toggle('hide', !ah);
-      if (ah) { $('stAheadHead').textContent = ah.head; $('stAheadText').textContent = ' ' + ah.text; }
-    })();
+    // 첫 마디(standing)·「지금 어디에 계신지」는 2026-09-14 원국 탭 개편으로 걷었다.
     // 「타일 미리보기」는 옛 서고(#shelves)의 배지·부제를 채우던 코드였다.
     // 서고를 지웠으므로(2026-09-09) 여기서 세던 것도 걷었다 — 홈은 renderWtHome 하나가 그린다.
     // tf 는 아래 홈 장면(hs-day)과 나눔 문구가 그대로 쓴다.
@@ -698,7 +682,7 @@
     const solar = `${String(c.hh).padStart(2,'0')}:${String(c.mm).padStart(2,'0')}`;
     if (!diff.length) {
       box.innerHTML = `<div class="sc-head"><b>시각 보정</b><span>시계 ${clock} → 실제 태양시 ${solar}</span></div>
-        <p class="sc-same">이 생시는 보정을 넣어도 사주가 같습니다. 경계에서 멀리 있다는 뜻입니다.</p>`;
+        <p class="sc-same">이 시각은 보정을 넣어도 사주가 같아요. 경계에서 멀어요.</p>`;
       return;
     }
     const reasons = [];
@@ -710,7 +694,7 @@
     const lon = profile.longitude;
     if (lon) reasons.push(`${plNameOf(profile)} 경도 보정 (−${Math.round((135 - lon) * 4)}분)`);
     box.innerHTML = `
-      <div class="sc-head"><b>시각 보정으로 ${diff.map(k => NAMES[k]).join('·')}가 바뀝니다</b>
+      <div class="sc-head"><b>시각 보정을 넣으면 ${diff.map(k => NAMES[k]).join('·')}가 바뀌어요</b>
         <span>시계 ${clock} → 실제 태양시 ${solar}</span></div>
       <div class="sc-grid">
         <div class="sc-col off"><div class="t">보정 안 함</div>
@@ -901,46 +885,16 @@
           };
         });
     };
-    const order = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
-    $('pillars').innerHTML = order.map(([k, label]) => {
-      const pl = R.pillars[k];
-      if (!pl) return `<div class="pillar"><div class="t">${label}</div><div class="han" style="color:var(--ink3)">?</div><div class="ko">시간 모름</div></div>`;
-      const g = a.gods[k];
-      return `<div class="pillar ${k === 'day' ? 'day' : ''}"><div class="t">${label}</div>
-        <div class="g">${g.stem ?? '<span style="color:var(--accent)">나</span>'}</div>
-        <div class="han ${elemClass(pl.stem, true)}">${f.stem(pl.stem)}</div><div class="ko">${f.stemKo(pl.stem)} · ${f.stemElem(pl.stem)}</div>
-        <div class="han ${elemClass(pl.branch, false)}" style="margin-top:4px">${f.branch(pl.branch)}</div><div class="ko">${f.branchKo(pl.branch)} · ${f.branchElem(pl.branch)}</div>
-        <div class="g">${g.branch}</div><div class="hidden">${g.hidden.map(h => f.stem(h.stem)).join(' ')}</div></div>`;
-    }).join('');
-    const dm = ChaeksaBrief.dayMaster(a.dayStem);
-    $('me').innerHTML = `<div class="big ${elemClass(a.dayStem, true)}">${f.stem(a.dayStem)}</div><p><b>${dm.name}</b> — ${dm.one}<br><span style="font-size:13px">${dm.desc}</span></p>`;
+    // 명식 카드·일간 감성문은 wongook.js(#wgFull)로 옮겼다(2026-09-14).
     const max = Math.max(...a.elemCount, 1), colors = ['var(--wood)','var(--fire)','var(--earth)','var(--metal)','var(--water)'];
     $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
     const plName = profile.placeName || '서울';
     const bornNote = $('bornNote');
-    if (bornNote) bornNote.innerHTML = `${plName} 출생 기준 · 진태양시 보정 ${profile.solarCorrection === false ? '안 함' : '함'} · 보정된 시각 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>`;
+    if (bornNote) bornNote.innerHTML = `${plName}에서 태어난 걸로 봐요. 진태양시 보정은 ${profile.solarCorrection === false ? '안 넣었어요' : '넣었어요'}. 실제 태양시로는 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>이에요.`;
     renderSolarCompare(profile);
-    $('daeunHint').textContent = `${R.daeun.forward ? '순행' : '역행'} · ${R.daeun.startAge}세부터 10년마다 바뀜` + (du ? ` · 지금은 ${f.pillar(du)} 대운 — ${god(du.stem)}: ${GOD_FLOW[god(du.stem)]}` : '');
-    // 세운
-    const ys = [];
-    for (let i = 0; i < 2; i++) {
-      const y = today.getFullYear() + i, tf = E.dateFortune(y, 6, 15);
-      // 충은 안 적는다 — 제23조. branchRel 은 아직 '충'을 돌려주므로 여기서 거른다.
-      const g = god(tf.year.stem), rel0 = C.branchRel(R.pillars.day.branch, tf.year.branch);
-      const rel = 엮임말(rel0 === '충' ? null : rel0);
-      ys.push(`<div class="flow"><div class="gz ${elemClass(tf.year.stem, true)}">${f.pillar(tf.year)}<small>${y}년</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(짝 자리와 ${rel})</span>` : ''}</p></div>`);
-    }
-    $('yearly').innerHTML = ys.join('');
-    // 월운
-    const ms = [];
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(today.getFullYear(), today.getMonth() + i, 15);
-      const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, 15);
-      const g = god(tf.month.stem), rel1 = C.branchRel(R.pillars.day.branch, tf.month.branch);
-      const rel = 엮임말(rel1 === '충' ? null : rel1);   // 충 표기 없음 — 제23조
-      ms.push(`<div class="flow"><div class="gz ${elemClass(tf.month.stem, true)}">${f.pillar(tf.month)}<small>${d.getFullYear()}.${d.getMonth() + 1}</small></div><p><b>${g}</b> · ${GOD_FLOW[g]}${rel ? ` <span style="color:var(--ink3)">(${rel})</span>` : ''}</p></div>`);
-    }
-    $('monthly').innerHTML = ms.join('');
+    $('daeunHint').textContent = `${R.daeun.startAge}살부터 10년마다 바뀌어요.` + (du ? ` 지금은 ${f.pillarKo(du)}(${f.pillar(du)}) 대운이에요. 이 대운이 내 글자를 어떻게 건드리는지는 위 「지금 오는 글자」에 있어요.` : '');
+    // 「올해와 내년」「앞으로 12개월」은 걷었다(2026-09-14) — 옛 십신 흐름말(GOD_FLOW)이었다. 올해·이달은 wongook 의 「지금 오는 글자」가 표로 읽는다.
+    try { if (window.ChaeksaWongook) ChaeksaWongook.render(R, today, $('wgFull'), { full: true }); } catch (e) { try { console.warn('원국 탭 실패:', e); } catch (e2) {} }
     renderProfileCard();
     renderShareCard();
     renderGyeok();
