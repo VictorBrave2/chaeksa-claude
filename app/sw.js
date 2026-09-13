@@ -3,7 +3,7 @@
  * HTML이 캐시되면 사용자가 계속 옛 버전을 쓰게 된다.
  * 나머지 자원은 URL에 버전이 붙어 있어 네트워크 우선 + 캐시 폴백으로 충분하다.
  */
-const CACHE = 'chaeksa-v866';
+const CACHE = 'chaeksa-v867';
 const FILES = ['./', './index.html', './privacy.html', './terms.html', './taekil.html', './manifest.json', './og.jpg', './favicon.ico', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -44,24 +44,4 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
-/* ── 아침 푸시 ──
- * 서버는 빈 푸시로 깨우기만 하고 문구는 여기서 만든다 (api/push.js 참조).
- * 푸시를 받으면 반드시 알림을 띄워야 한다 — 안 띄우면 브라우저가 구독을 끊는다. */
-self.addEventListener('push', (e) => {
-  const day = ['일','월','화','수','목','금','토'][new Date().getDay()];
-  e.waitUntil(self.registration.showNotification('책사', {
-    body: day + '요일의 흐름이 준비됐습니다. 오늘의 시간대를 확인해 보세요.',
-    icon: './icon-192.png',
-    badge: './icon-192.png',
-    tag: 'chaeksa-daily',                 // 같은 태그면 겹치지 않고 갱신된다
-    data: { url: './' },
-  }));
-});
-
-self.addEventListener('notificationclick', (e) => {
-  e.notification.close();
-  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
-    for (const c of list) { if ('focus' in c) return c.focus(); }
-    return clients.openWindow('./');
-  }));
-});
+/* 아침 푸시는 2026-09-14 걷었다(오늘 탭 없음). */

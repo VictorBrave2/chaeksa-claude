@@ -1,12 +1,6 @@
 {
   "outputDirectory": "app",
   "cleanUrls": true,
-  "crons": [
-    {
-      "path": "/api/push",
-      "schedule": "30 22 * * *"
-    }
-  ],
   "functions": {
     "api/chat.js": {
       "maxDuration": 120
