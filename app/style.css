@@ -1437,9 +1437,15 @@ details.fold > .tiles { margin-top: 10px; }
 .st-day .do{color:var(--accent);font-size:13.5px}
 .st-days.mini .st-day{padding:7px 12px;font-size:13px}
 .st-days.mini .st-day span{align-self:center}
+/* 그 사람 고르기 — 이름 칸 하나가 줄을 다 쓰고, 「추가」는 오른쪽 작은 단추.
+   .btn 은 width:100% + margin-top 이라 그냥 두면 단추가 줄을 먹고 select 가 화살표만 남는다(09-13 사장님 「어색하네」). */
 .st-pick{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:14px}
 .st-pick label{color:var(--ink3);font-size:12px;flex:none}
-.st-pick select{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14px}
+.st-pick select{flex:1;min-width:0;padding:10px 36px 10px 14px;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:14.5px;font-weight:600;
+  appearance:none;-webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink3) 50%),linear-gradient(135deg,var(--ink3) 50%,transparent 50%);
+  background-position:right 18px center,right 13px center;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.st-pick .btn{flex:none;width:auto;margin:0;padding:10px 14px;font-size:13.5px;border-radius:12px;white-space:nowrap}
 .st-pick p{margin:0;flex:1;line-height:1.5}
 
 /* 무료 칸 — 글자 목록 */

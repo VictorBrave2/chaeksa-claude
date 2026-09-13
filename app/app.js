@@ -2962,7 +2962,7 @@
     let h = 머리
       + '<div class="st-pick"><label for="stPick">그 사람</label><select id="stPick">'
       + list.map(q => '<option value="' + q.id + '"' + (q.id === p.id ? ' selected' : '') + '>' + esc(사람이름(q.name) || '그 사람') + ' · ' + esc(q.relation || '') + '</option>').join('')
-      + '</select><button class="btn ghost small" id="btnStAdd" type="button">추가</button></div>'
+      + '</select><button class="btn ghost small" id="btnStAdd" type="button">+ 추가</button></div>'
       + '<p class="mnk">오늘부터 7일 · 무료</p><ul class="st-days">' + 주.map((x, i) => 줄(x, i === 0)).join('') + '</ul>'
       + '<p class="st-best">' + escP(S.그래서(st, 주)) + '</p>';
     if (paid) {
