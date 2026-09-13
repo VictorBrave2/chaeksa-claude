@@ -1595,46 +1595,56 @@
   const 여자 = (R) => ((R && R.input && R.input.gender) || 'M') !== 'M';
   const 등급말 = (g) => g >= 2 ? '좋음' : g === 1 ? '보통' : '조심';
 
-  /** 하루 — 내 사주와 그 사람 사주로 각각 점수를 내고 평균한다. 말은 두 쪽을 다 쓴다. */
+  /** 이야기 → 갈래(docs/34 44조). 갈래가 1순위 글자를 정한다. */
+  function 갈래of(story) {
+    const id = story.id || '', 사 = story.사이 || '';
+    if (사 === '썸' || 사 === '연애 중' || 사 === '재회') return '관계';
+    if (사 === '결혼') return '배우자';
+    if (사 === '이별') return '이별';
+    if (사 === '가족') {
+      if (/^mom/.test(id)) return '어머니'; if (/^dad/.test(id)) return '아버지'; if (/^sibling/.test(id)) return '형제';
+      if (/^kid/.test(id)) return '자식'; if (/^(inlaw|spouse)/.test(id)) return '배우자'; return '가족';
+    }
+    if (사 === '친구·직장') return /^friend/.test(id) ? '친구' : '직장';
+    // 돈과 생활 — 일·자리는 직장, 돈은 재물, 시험은 학습, 몸·습관·이웃은 나
+    if (/^(quit|resign|raise|interview|contract|open-shop|post)/.test(id)) return '직장';
+    if (/^(exam)/.test(id)) return '학습';
+    if (/^(diet|haircut|start-habit|neighbor|move$)/.test(id)) return '나';
+    return '재물';
+  }
+  const 칸점 = { 좋음: 2, 보통: 1, 조심: 0 };
+
+  /** 하루 — 판정 하나로 결론을 낸다(docs/34 다리). 점수표는 걷었다(09-14 사장님 「진행해」).
+   *  내 쪽: 이 이야기의 갈래가 고른 1순위 글자에 오늘 일어난 결과. 그 사람 쪽: 사랑 이야기면 그 사람 원국의 배우자성, 아니면 그 사람 일간. */
   function 하루(R, Rm, story, d) {
-    const C = global.ChaeksaCalendar, E = global.ChaeksaEngine;
-    if (!C || !E || !R) return null;
-    const y = d.getFullYear(), m = d.getMonth() + 1, dd = d.getDate();
-    const 나 = C.scoreDay(R, y, m, dd, story.기준);
-    // 혼자 보는 이야기(story.혼자 — 이직·이사·계약처럼 그 사람이 없는 질문, 09-13 「돈과 생활」 길) — 내 사주만으로 잰다.
+    const P = global.ChaeksaPanjeong, E = global.ChaeksaEngine;
+    if (!P || !E || !R) return null;
+    const dd = d.getDate();
+    const 갈래 = 갈래of(story);
+    let 나; try { 나 = P.이야기결과(R, 갈래, d, { 여자: 여자(R) }); } catch (e) { return null; }
+    const 내십신 = E.TEN_GODS[E.tenGod(R.pillars.day.stem, 나.층.운.stem)];
     if (story.혼자 || !Rm) {
       if (!story.혼자) return null;
-      const s1 = 나.score;
-      const 등급1 = s1 >= 5 ? 3 : s1 >= 2 ? 2 : s1 >= -1 ? 1 : 0;
-      const 꼴1 = 등급말(등급1);
-      const 표말 = global.ChaeksaSaenggeuk && global.ChaeksaSaenggeuk.오늘말 ? global.ChaeksaSaenggeuk.오늘말(나.길) : null;
-      const 바탕 = 표말 || (story.나 && story.나[나.god]) || 내쪽[나.god] || '';
-      let 내말 = 바탕;
-      if (등급1 >= 2 && (나.rel === '합' || 나.rel === '삼합')) 내말 = story.나붙음 || 바탕;
-      else if (등급1 === 0 && 나.rel === '충') 내말 = story.나어긋 || 바탕;
-      const 이유1 = '오늘은 ' + 내말 + '(' + 나.god + ')이거든요.';
+      const 등급1 = 칸점[나.칸];
+      const 꼴1 = 나.칸;
       return { d, 요일: 요일[d.getDay()], 날: dd, 등급: 등급1, 꼴: 꼴1, 표: 등급1 >= 2 ? '○' : 등급1 === 1 ? '△' : '✕',
-               결론: story.결론[꼴1], 이유: 이유1, 할것: story.할것[꼴1], 점수: Math.round(s1 * 10) / 10,
-               그쪽말: '', 내쪽말: 내말, 십신나: 나.god, 십신그: null, 짝날: false };
+               결론: story.결론[꼴1], 이유: '오늘은 ' + 나.이유, 할것: story.할것[꼴1], 점수: 등급1,
+               그쪽말: '', 내쪽말: 나.이유, 십신나: 내십신, 십신그: null, 짝날: false, 결과: 나.결과.키 };
     }
-    const 그 = C.scoreDay(Rm, y, m, dd, story.기준);
-    const s = (나.score + 그.score) / 2;
-    const 등급 = s >= 5 ? 3 : s >= 2 ? 2 : s >= -1 ? 1 : 0;   // calendar.js 와 같은 눈금
-    const 꼴 = 등급말(등급);
+    const 사랑 = 갈래 === '관계' || 갈래 === '배우자' || 갈래 === '이별';
+    let 그; try { 그 = P.이야기결과(Rm, 사랑 ? '관계' : '나', d, { 여자: 여자(Rm) }); } catch (e) { return null; }
     const 배우자성 = 여자(Rm) ? '정관' : '정재';
-    // 그 사람 쪽 — 짝 자리와 붙거나 어긋나는 날은 그 말이 먼저, 배우자성이 오는 날은 짝 말, 나머지는 십신 말.
-    let 그쪽말;
-    if (등급 >= 2 && (그.rel === '합' || 그.rel === '삼합')) 그쪽말 = story.그쪽붙음;
-    else if (등급 === 0 && 그.rel === '충') 그쪽말 = story.그쪽어긋;
-    else if (그.god === 배우자성) 그쪽말 = story.그쪽짝;
-    else 그쪽말 = story.그쪽[그.god] || '';
-    // 내 쪽은 원국 표를 읽는다(33조) — 「기토(己)가 갑목(甲)을 묶는 날」. 표가 할 말이 없는 날만 옛 공용 표.
-    const 내쪽말 = (global.ChaeksaSaenggeuk && global.ChaeksaSaenggeuk.오늘말 && global.ChaeksaSaenggeuk.오늘말(나.길)) || 내쪽[나.god] || '';
-    const 이유 = '그 사람은 오늘 ' + 그쪽말 + '(' + 그.god + '), 나는 ' + 내쪽말 + '(' + 나.god + ')이거든요.';
-    const 짝날 = 그.god === 배우자성;
+    const 그십신 = E.TEN_GODS[E.tenGod(Rm.pillars.day.stem, 그.층.운.stem)];
+    const 짝날 = 그십신 === 배우자성;
+    // 둘을 합친다 — 하나라도 조심이면 조심, 둘 다 좋음이면 3, 하나만 좋음이면 2, 나머지 보통.
+    const a = 칸점[나.칸], b = 칸점[그.칸];
+    const 등급 = (a === 0 || b === 0) ? 0 : (a === 2 && b === 2) ? 3 : (a === 2 || b === 2) ? 2 : 1;
+    const 꼴 = 등급말(등급);
+    const 그쪽말 = 짝날 && story.그쪽짝 ? story.그쪽짝.replace(/고$/, '') + ', ' + 그.이유 : 그.이유;
+    const 이유 = '그 사람은 오늘 ' + 그쪽말 + ' 나는 ' + 나.이유;
     return { d, 요일: 요일[d.getDay()], 날: dd, 등급, 꼴, 표: 등급 >= 2 ? '○' : 등급 === 1 ? '△' : '✕',
-             결론: story.결론[꼴], 이유, 할것: story.할것[꼴], 점수: Math.round(s * 10) / 10,
-             그쪽말, 내쪽말, 십신나: 나.god, 십신그: 그.god, 짝날 };
+             결론: story.결론[꼴], 이유, 할것: story.할것[꼴], 점수: 등급,
+             그쪽말, 내쪽말: 나.이유, 십신나: 내십신, 십신그: 그십신, 짝날, 결과: 나.결과.키, 그결과: 그.결과.키 };
   }
 
   /** 오늘부터 7일 — 무료 */
@@ -1665,8 +1675,8 @@
   function 그래서(story, days) {
     const b = 제일좋은(days); if (!b) return '';
     if (b.등급 < 2) return '이번 주는 딱 좋은 날이 없어요. 급하면 ' + b.요일 + '요일(' + b.날 + '일)이 그중 나아요.';
-    if (story.혼자) return '이번 주는 ' + b.요일 + '요일(' + b.날 + '일)이에요. 그날은 ' + b.내쪽말 + '이라서요. ' + story.마무리;
-    return '이번 주는 ' + b.요일 + '요일(' + b.날 + '일)이에요. 그날 그 사람은 ' + b.그쪽말 + ' 나는 ' + b.내쪽말 + '이라서요. ' + story.마무리;
+    if (story.혼자) return '이번 주는 ' + b.요일 + '요일(' + b.날 + '일)이에요. 그날은 ' + b.내쪽말 + ' ' + story.마무리;
+    return '이번 주는 ' + b.요일 + '요일(' + b.날 + '일)이에요. 그날 ' + b.이유 + ' ' + story.마무리;
   }
 
   /** 30일 묶음 — 좋은 날 셋 · 피할 날 셋 · 그 사람 마음이 오는 날 */
@@ -1677,5 +1687,5 @@
     return { 좋음, 조심, 짝 };
   }
 
-  global.ChaeksaStories = { 목록, 찾기, 하루, 일주일, 이번달, 제일좋은, 그래서, 묶음 };
+  global.ChaeksaStories = { 목록, 찾기, 하루, 일주일, 이번달, 제일좋은, 그래서, 묶음, 갈래of };
 })(window);

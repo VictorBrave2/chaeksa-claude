@@ -77,4 +77,22 @@ let 통과 = 0, 실패 = 0;
   out.insertAdjacentHTML('beforeend', html);
 });
 out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
+// ── 다리 검산(docs/34) — 사장님 사주, 정미 대운, 9/14부터 이레, 갈래마다 1순위 글자와 결과·칸
+{
+  const R = { pillars: 나, dayStem: 나.day.stem, input: { gender: 'M' } };
+  const 갈래들 = ['관계', '배우자', '이별', '재물', '친구', '직장', '학습', '나', '가족'];
+  let html = '<h2>다리 검산 — 壬申 甲辰 丁卯 庚子 · 정미 대운 · 2026-09-14부터 이레</h2><div style="overflow:auto"><table border="1" cellpadding="4" style="border-collapse:collapse;font-size:12px"><tr><th>날</th>' + 갈래들.map(g => '<th>' + g + '</th>').join('') + '</tr>';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(2026, 8, 14 + i);
+    const tf = E.dateFortune(d.getFullYear(), d.getMonth() + 1, d.getDate());
+    const 운들 = [운('丁未', '대운'), { stem: tf.year.stem, branch: tf.year.branch, name: '올해' }, { stem: tf.month.stem, branch: tf.month.branch, name: '이달' }, { stem: tf.day.stem, branch: tf.day.branch, name: '오늘' }];
+    html += '<tr><td>' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + S[tf.day.stem] + B[tf.day.branch] + '</td>' + 갈래들.map(g => {
+      const r = P.이야기결과(R, g, d, { 운들, 여자: false });
+      const 색 = r.칸 === '좋음' ? '#dff5e1' : r.칸 === '조심' ? '#fde0dd' : '#f4f4f4';
+      return '<td style="background:' + 색 + '"><b>' + r.칸 + '</b> · ' + (r.결과.글자 ? r.결과.글자.글자 : '-') + ' ' + r.결과.키 + (r.순위 === 2 ? '(2순위)' : '') + '<br><small>' + r.이유.replace(/</g, '&lt;') + '</small></td>';
+    }).join('') + '</tr>';
+  }
+  html += '</table></div>';
+  out.insertAdjacentHTML('beforeend', html);
+}
 </script></body></html>
