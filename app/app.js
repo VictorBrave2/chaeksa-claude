@@ -242,6 +242,8 @@
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
     try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
       ['gnPick', 'mmPick', 'ghPick', 'shPick', 'stPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
+      // 이야기 화면에서 「+ 추가」로 넣은 사람은 곧 그 질문의 그 사람이다 — 방금 넣고 또 고르게 하지 않는다.
+      if (새 && $('stPick') && [...$('stPick').options].some(o => o.value === 새)) { window.현재그사람 = 새; renderStory(); }
     } catch (e) {}
   }
 
@@ -2949,7 +2951,19 @@
       $('btnStAdd').onclick = () => openPersonForm(null);
       return;
     }
-    if (!window.현재그사람 || !list.some(p => p.id === window.현재그사람)) window.현재그사람 = list[0].id;
+    // 그 사람은 손님이 고른다 — 목록 첫 사람으로 멋대로 열지 않는다(09-13 사장님 「그 사람이 정해지지 않았는데 답변이 열려 있다」).
+    // 안 골랐으면 고르는 칸만 서고 7일은 닫혀 있다.
+    const 고름 = !!(window.현재그사람 && list.some(q => q.id === window.현재그사람));
+    const 고르기 = (p) => '<div class="st-pick"><label for="stPick">그 사람</label><select id="stPick">'
+      + (p ? '' : '<option value="" selected disabled>누구 얘기예요?</option>')
+      + list.map(q => '<option value="' + q.id + '"' + (p && q.id === p.id ? ' selected' : '') + '>' + esc(사람이름(q.name) || '그 사람') + ' · ' + esc(q.relation || '') + '</option>').join('')
+      + '</select><button class="btn ghost small" id="btnStAdd" type="button">+ 추가</button></div>';
+    if (!고름) {
+      box.innerHTML = 머리 + 고르기(null) + '<p class="hint" style="margin:0 0 18px">그 사람을 고르면 오늘부터 7일이 바로 열려요. 목록에 없으면 「+ 추가」로 생년월일을 넣어 주세요.</p>';
+      $('stPick').onchange = () => { window.현재그사람 = $('stPick').value; renderStory(); };
+      $('btnStAdd').onclick = () => openPersonForm(null);
+      return;
+    }
     const p = P.get(window.현재그사람);
     let Rm; try { Rm = E.calc(P.toProfile(p)); } catch (e) { box.innerHTML = 머리 + '<p class="hint">그 사람 사주를 계산하지 못했어요.</p>'; return; }
     const 주 = S.일주일(R, Rm, st, today);
@@ -2959,10 +2973,7 @@
     const 줄 = (x, 오늘) => '<li class="st-day s' + x.등급 + (오늘 ? ' today' : '') + '">'
       + '<b>' + (오늘 ? '오늘' : x.요일) + '<small>' + x.날 + '일</small></b>'
       + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
-    let h = 머리
-      + '<div class="st-pick"><label for="stPick">그 사람</label><select id="stPick">'
-      + list.map(q => '<option value="' + q.id + '"' + (q.id === p.id ? ' selected' : '') + '>' + esc(사람이름(q.name) || '그 사람') + ' · ' + esc(q.relation || '') + '</option>').join('')
-      + '</select><button class="btn ghost small" id="btnStAdd" type="button">+ 추가</button></div>'
+    let h = 머리 + 고르기(p)
       + '<p class="mnk">오늘부터 7일 · 무료</p><ul class="st-days">' + 주.map((x, i) => 줄(x, i === 0)).join('') + '</ul>'
       + '<p class="st-best">' + escP(S.그래서(st, 주)) + '</p>';
     if (paid) {
