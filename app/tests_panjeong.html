@@ -4,6 +4,7 @@
 </head><body>
 <h1>판정 모듈 시험 — 9/14 사장님이 확인한 읽기를 고정한다</h1>
 <p>바뀌면 여기부터 빨개진다. 조문은 docs/19, 순서는 app/panjeong.js.</p>
+<p style="font-size:12px;color:#555">눈금 — 글자 힘 0~2.0(뿌리 하나) · 국을 부리면 4.5까지 · 0.5부터 산다 / 3배 규칙 = 맞는 쪽 합산 ÷ 치는 쪽, 3부터 못 친다 / 지지 하나 힘: 제왕 1.00 · 건록 .82 · 관대 .70 · 쇠 .62 · 장생 .55 · 목욕 .50 · 양 .30 · 병 .20 · 묘고 .20 · 태 .15 · 사 .08 · 절 .05 · 묘 0 / 자리 무게: 월 2.0 · 시 1.5 · 연·일·운 1.0</p>
 <div id="out"></div>
 <script src="config.js"></script><script src="lunar.js"></script><script src="astro.js"></script><script src="engine.js"></script>
 <script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=1"></script><script src="panjeong.js?t=1"></script>
@@ -81,7 +82,7 @@ let 통과 = 0, 실패 = 0;
   let html = '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + c.이름 + '</h2>';
   if (!ok) html += '<pre>' + 문제.join('\n') + '</pre>';
   html += '<details><summary>층별 요약</summary><pre>' + P.요약(p).join('\n') + '</pre></details>';
-  html += '<details><summary>글자 이력 (' + 층.이름 + ')</summary><pre>' + 층.이력.filter(x => x.이력.length).map(x => x.글자 + '\n' + x.이력.map(i => '  ' + i.조 + ' · ' + i.말).join('\n')).join('\n').replace(/</g, '&lt;') + '</pre></details>';
+  html += '<details><summary>글자 힘과 이력 (' + 층.이름 + ')</summary><pre>' + 층.표.글자.filter(g => !g.일간).map(g => g.이름 + ' ' + g.글자 + '(' + g.십신 + ') 힘 ' + G.힘말(g.힘) + (g.산다 ? '' : ' · 죽어 있음') + (g.이력.length ? '\n' + g.이력.map(i => '  ' + i.조 + ' · ' + i.말).join('\n') : '')).join('\n').replace(/</g, '&lt;') + '</pre></details>';
   out.insertAdjacentHTML('beforeend', html);
 });
 out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
