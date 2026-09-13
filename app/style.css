@@ -1525,3 +1525,4 @@ details.fold > .tiles { margin-top: 10px; }
 .wg-row div.mine{color:var(--accent)}
 .wg-row.god div.mine{color:var(--accent)}
 .wg-gk.top{margin:-4px 0 12px;font-size:14.5px;color:var(--ink)}
+.wg-pillars{margin:0 0 10px}

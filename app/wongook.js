@@ -158,16 +158,22 @@
     const 원표 = G.표(R.pillars, [], R);
     const p = R.pillars;
     // ① 글자와 자리
-    // 명식 표 — 시·일·월·년 순서(오른쪽이 년), 위에 천간 십신, 천간, 지지, 아래에 지지 본기 십신(사장님 09-14 그림 그대로).
-    const 자리 = ['hour', 'day', 'month', 'year'].filter(k => p[k]);
-    const ds = p.day.stem;
-    const 지십신 = (b) => { const h = E.HIDDEN[b]; const st = h && (typeof h[0] === 'number' ? h[0] : h[0][0]); return st == null ? '' : E.TEN_GODS[E.tenGod(ds, st)]; };
-    const 칸 = (k, f) => 자리.map(k2 => '<div class="' + (k2 === 'day' ? 'mine' : '') + '">' + f(k2) + '</div>').join('');
-    const 글자칸 = '<div class="wg-row lab">' + 칸(null, k => ({ hour: '시', day: '일', month: '월', year: '년' })[k]) + '</div>'
-      + '<div class="wg-row god">' + 칸(null, k => esc(k === 'day' ? '나' : 원표.글자.find(x => x.key === k).십신)) + '</div>'
-      + '<div class="wg-row han">' + 칸(null, k => esc(E.STEMS[p[k].stem])) + '</div>'
-      + '<div class="wg-row han">' + 칸(null, k => esc(E.BRANCHES[p[k].branch])) + '</div>'
-      + '<div class="wg-row god">' + 칸(null, k => esc(지십신(p[k].branch))) + '</div>';
+    // 명식 카드 — 원국 탭의 .pillars/.pillar 카드를 그대로(사장님 09-14 「원국에서 쓰는 이게 예쁜데 이걸 가져오면 되는 것 아니야?」).
+    // 십신은 이름으로(27조) — 이 밴드는 data-plain 이라 바꿔치기 문을 안 지난다.
+    const ds = p.day.stem, f = E.fmt;
+    const ec = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
+    const 십 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const 지장 = (b) => (E.HIDDEN[b] || []).map(h => (typeof h === 'number' ? h : h[0]));
+    const 글자칸 = [['hour', '시주'], ['day', '일주'], ['month', '월주'], ['year', '연주']].map(([k, label]) => {
+      const pl = p[k];
+      if (!pl) return '<div class="pillar"><div class="t">' + label + '</div><div class="han" style="color:var(--ink3)">?</div><div class="ko">시간 모름</div></div>';
+      const hid = 지장(pl.branch);
+      return '<div class="pillar' + (k === 'day' ? ' day' : '') + '"><div class="t">' + label + '</div>'
+        + '<div class="g">' + (k === 'day' ? '<span style="color:var(--accent)">나</span>' : esc(십(pl.stem))) + '</div>'
+        + '<div class="han ' + ec(pl.stem, true) + '">' + f.stem(pl.stem) + '</div><div class="ko">' + f.stemKo(pl.stem) + ' · ' + f.stemElem(pl.stem) + '</div>'
+        + '<div class="han ' + ec(pl.branch, false) + '" style="margin-top:4px">' + f.branch(pl.branch) + '</div><div class="ko">' + f.branchKo(pl.branch) + ' · ' + f.branchElem(pl.branch) + '</div>'
+        + '<div class="g">' + esc(hid.length ? 십(hid[0]) : '') + '</div><div class="hidden">' + hid.map(h => f.stem(h)).join(' ') + '</div></div>';
+    }).join('');
     // ② 돌아감
     const d = 돌아감(원표);
     const 걸린말 = d.걸린 ? '<p class="wg-key">그래서 이 사주는 <b>' + esc(이름(d.걸린.stem)) + '</b> 하나에 걸려 있어요. ' + esc(이가(이름(d.걸린.stem))) + ' 힘이 있으면 다 받아서 들어오고, 묶이면 바로 와요.</p>' : '';
@@ -199,7 +205,7 @@
       '<section class="wg" data-plain="1">'
       + '<div class="wg-head"><b>내 원국</b><span>여덟 글자가 서로 무엇을 하는지</span></div>'
       + 격                                                     // 격 얘기가 맨 위(사장님 09-14 「정관격 얘기를 맨 위로 올리라고」)
-      + '<div class="wg-table">' + 글자칸 + '</div>'
+      + '<div class="pillars wg-pillars">' + 글자칸 + '</div>'
       + 걸린말 + 갈림
       + '<details class="wg-fold"><summary>이 사주는 이렇게 돌아가요</summary>'
       + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>'
