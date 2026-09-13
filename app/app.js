@@ -3112,7 +3112,9 @@
     // ② 어떤 사이가 궁금하세요 + ③ 표지 목록(모바일 3열). 주제별 진열대는 한 사이에 이야기가 셋을 넘으면 세운다 — 지금은 여덟이라 한 격자.
     let h = '<div class="wt-head"><b>어떤 사이가 궁금하세요?</b></div>'
       + '<div class="wt-chips">' + 사이들.map((s, i) => '<button type="button" data-s="' + esc(s) + '"' + (i === 0 ? ' class="on"' : '') + '>' + esc(s) + '</button>').join('') + '</div>'
-      + '<div class="wt-grid">' + 이야기.map((f, i) => 표지(f, i, false)).join('') + '</div>';
+      + '<div class="wt-grid">' + 이야기.map((f, i) => 표지(f, i, false)).join('') + '</div>'
+      // 격자는 처음 열다섯 장만 그리고 나머지는 「더 보기」 뒤에 — 61장을 한 번에 세우니 폰이 버벅였다(09-13).
+      + (이야기.length > 15 ? '<button type="button" class="btn ghost small wt-more" id="wtMore">이야기 ' + 한글수(이야기.length - 15) + ' 더 보기</button>' : '');
     // ④ 전체 목록 — 모든 콘텐츠를 여기서 찾을 수 있게(전략). 이야기 여덟 · 이달 · 무료로 보는 것.
     let 접힘 = {}; try { 접힘 = JSON.parse(localStorage.getItem('chaeksa.fold') || '{}'); } catch (e) {}
     const 무료 = 타일.filter(t => t.tab !== 'geunamja' && !(t.tab === 'today' && t.scroll === 'myMonth'));
@@ -3131,10 +3133,22 @@
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
     box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
     // 사이 칩 — 격자를 거른다. 진열대 셋은 안 거른다(지금 마음에 걸리는 것은 사이를 안 탄다).
+    // 「전체」는 처음 열다섯 장 + 더 보기. 사이를 고르면 그 사이는 다 편다(한 사이는 스무 장을 안 넘는다).
+    let 더폄 = false, 사이 = '전체';
+    const 격자그리기 = () => {
+      let n = 0;
+      box.querySelectorAll('.wt-grid .wt-cd').forEach(c => {
+        const 맞음 = 사이 === '전체' || c.dataset.s === 사이;
+        c.hidden = !맞음 || (사이 === '전체' && !더폄 && n >= 15);
+        if (맞음) n++;
+      });
+      const mb = $('wtMore'); if (mb) mb.hidden = 사이 !== '전체' || 더폄;
+    };
+    격자그리기();
+    const mb = $('wtMore'); if (mb) mb.onclick = () => { 더폄 = true; 격자그리기(); };
     box.querySelectorAll('.wt-chips button').forEach(b => { b.onclick = () => {
       box.querySelectorAll('.wt-chips button').forEach(x => x.classList.toggle('on', x === b));
-      const s = b.dataset.s;
-      box.querySelectorAll('.wt-grid .wt-cd').forEach(c => { c.hidden = !(s === '전체' || c.dataset.s === s); });
+      사이 = b.dataset.s; 격자그리기();
     }; });
     // 접기 여닫음을 기기에 남긴다.
     box.querySelectorAll('details.wt-fold').forEach(d => { d.ontoggle = () => {
