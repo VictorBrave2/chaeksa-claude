@@ -2869,6 +2869,21 @@
     const box = $('wtHome'); if (!box || !R) return;
     // 원국이 메인 — 홈 맨 위(2026-09-14). 표는 saenggeuk.js, 말은 wongook.js.
     try { if (window.ChaeksaWongook) ChaeksaWongook.render(R, today, $('wgMain')); } catch (e) { try { console.warn('원국 실패:', e); } catch (e2) {} }
+    // 오늘 나에게 필요한 질문(사장님 09-14 이름) — 질문 격자 62문 중 오늘 이 사람의 판정에 걸리는 것만. 답은 판정 이유 그대로.
+    try {
+      const Q = window.ChaeksaQuestions, qb = $('qToday');
+      if (Q && qb) {
+        const 여자 = ((profile && profile.gender) || (R.input && R.input.gender) || 'M') !== 'M';
+        const qs = Q.오늘질문(R, today, { 여자 }).filter(q => q.질문);
+        if (qs.length) {
+          qb.innerHTML = '<section class="wg qt" data-plain="1"><div class="wg-head"><b>오늘 나에게 필요한 질문</b><span>' + escP(today.getMonth() + 1) + '월 ' + escP(today.getDate()) + '일</span></div>'
+            + qs.map(q => '<button type="button" class="qt-q s' + (q.칸 === '좋음' ? 2 : q.칸 === '조심' ? 0 : 1) + '" data-g="' + escP(q.갈래) + '"><b>' + escP(q.질문) + '</b><span>' + escP(q.답) + '</span><small>' + escP(q.갈래이름) + '</small></button>').join('')
+            + '</section>';
+          qb.classList.remove('hide');
+          qb.querySelectorAll('.qt-q').forEach(b => { b.onclick = () => { const S = window.ChaeksaStories; const st = S && S.목록.find(x => S.갈래of(x) === b.dataset.g); if (!st) return; 본표시('gl-' + b.dataset.g); window.현재이야기 = st.id; window.현재그사람 = null; window.현재갈래 = b.dataset.g; go('story'); }; });
+        } else qb.classList.add('hide');
+      }
+    } catch (e) { try { console.warn('오늘 질문 실패:', e); } catch (e2) {} }
     let 전체 = {};
     // 안 돌린다 — 첫 절이 그 탭의 물음이다. 그리고 같은 문장이 두 표지에 서지 않게 앞 표지가 쓴 문장은 건너뛴다.
     try { 전체 = (window.ChaeksaDan && ChaeksaDan.열눈전체) ? (ChaeksaDan.열눈전체(R, today, false) || {}) : {}; } catch (e) { 전체 = {}; }

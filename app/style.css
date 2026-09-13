@@ -1377,6 +1377,9 @@ details.fold > .tiles { margin-top: 10px; }
 .wt-hero .wt-cd .cd-tag{left:auto;right:6px}
 .wt-hero .wt-cd .cd-s{white-space:normal;color:var(--ink2);font-size:12px;line-height:1.45}
 .wt-hero .wt-cd .cd-free{font-size:10.5px;color:var(--ink3)}
+.qt .qt-q{display:block;width:100%;text-align:left;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.qt .qt-q b{display:block;font-size:15px;margin-bottom:4px}.qt .qt-q span{display:block;font-size:13px;color:var(--ink2);line-height:1.5}.qt .qt-q small{display:block;margin-top:4px;font-size:11px;color:var(--ink3)}
+.qt .qt-q.s2{border-left-color:#4f8f5a}.qt .qt-q.s1{border-left-color:#b8963a}.qt .qt-q.s0{border-left-color:#b04a3a}
 .wt-chips{display:flex;gap:6px;overflow-x:auto;margin:6px 0 12px;padding:0 2px 4px;-webkit-overflow-scrolling:touch}
 .wt-chips::-webkit-scrollbar{display:none}
 .wt-chips button{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);
