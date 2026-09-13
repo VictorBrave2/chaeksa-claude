@@ -387,7 +387,7 @@
     // 홈에서 아래 「홈」을 다시 누르는 것은 「맨 위로」라는 뜻이다. 그때만 자리를 잊는다.
     if (열린탭() === 'home') 홈자리 = (tab === 'home') ? 0 : 지금자리();
     // 유형 카드(789 유형·SSR 등급·시즌 카드)는 2026-09-04 삭제 — 「무슨 말인지도 모르더라」. 옛 링크는 홈으로.
-    if (tab === 'gacha') tab = 'home';
+    if (tab === 'gacha' || tab === 'today') tab = 'home';   // 오늘 탭은 2026-09-13 에 걷었다 — 옛 링크는 홈으로
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
@@ -675,77 +675,10 @@
   });
 
   // ───── 오늘 ─────
-  function renderToday() {
-    renderTodayMemo();
-    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const du = E.currentDaeun(R, today);
-    const WD = ['일','월','화','수','목','금','토'];
-    $('todayLabel').textContent = `${today.getMonth() + 1}월 ${today.getDate()}일 ${WD[today.getDay()]}요일`;
-    $('todayGanji').innerHTML = `<span>올해 <b>${f.pillar(tf.year)}</b></span><span>이달 <b>${f.pillar(tf.month)}</b></span><span>오늘 <b>${f.pillar(tf.day)}</b></span>` + (du ? `<span>대운 <b>${f.pillar(du)}</b></span>` : '');
-    const b = ChaeksaBrief.today(R, tf, du, today);
-    // 히어로 — 오늘의 간지와 주도하는 기운
-    $('hdGanji').textContent = f.pillar(tf.day);
-    $('hdGod').textContent = b.godDay || '―';
-    // 오늘 할 하나 — 카드에서 꺼내 지시로 세운다
-    $('actText').textContent = String(b.action || '').replace(/^\s*👉\s*/, '');
-    // 흐름 읽기 — 근거만 남긴다
-    $('brief').innerHTML = b.paragraphs.map(t => `<p>${t}</p>`).join('');
-    mountSuper();
-    renderCoord();
-    renderHours();
-    // 이번 주
-    const wk = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today); d.setDate(today.getDate() + i);
-      const sc = C.scoreDay(R, d.getFullYear(), d.getMonth() + 1, d.getDate(), 'all');
-      wk.push(`<div class="wd ${i === 0 ? 'today' : ''}">${WD[d.getDay()]} ${d.getDate()}<b>${f.pillar(sc.tf.day)}</b>${sc.god}<i class="g${sc.grade}"></i></div>`);
-    }
-    $('week').innerHTML = wk.join('');
-    renderMyMonth();
-    // AI 브리핑
-    loadAiBrief();
-  }
+  function renderToday() { try { renderTodayMemo(); } catch (e) {} }   // 오늘 탭을 걷었다(2026-09-13). 비망록 알림만 남긴다(상자가 없으면 스스로 빠진다).
 
   // 오늘의 시간대 — 12시진 곡선. 用값을 막대 높이로, 십신을 사건 라벨로 바꾼다.
-  let hoursData = null;
-  function renderHours() {
-    const box = $('hours'), card = $('hoursCard');
-    if (!box || !window.ChaeksaChaeyong || !ChaeksaChaeyong.hourCurve) { if (card) card.classList.add('hide'); return; }
-    let hc;
-    try { hc = ChaeksaChaeyong.hourCurve(R, today); }
-    catch (e) { card.classList.add('hide'); return; }
-    if (!hc.rows.length) { card.classList.add('hide'); return; }
-    card.classList.remove('hide');
-    hoursData = hc;
-    const MAX = 3;
-    box.innerHTML = hc.rows.map((r, i) => {
-      const h = Math.max(3, Math.round(Math.abs(r.value) / MAX * 34));
-      const up = r.value >= 0;
-      const cls = r.value > 0.3 ? 'up' : (r.value < -0.3 ? 'dn' : '');
-      return `<button class="hr ${cls} ${i === hc.nowIndex ? 'now' : ''}" data-i="${i}"
-        aria-label="${esc(r.range)}시 ${esc(r.jin)}시 ${esc(r.god)} ${esc(r.label)}">
-        <span class="col"><span class="bar ${up ? 'u' : 'd'}" style="height:${h}px"></span></span>
-        <span class="jin">${esc(r.jin)}</span></button>`;
-    }).join('');
-    $('hoursSub').textContent = hc.peak.value > 0.3
-      ? `가장 센 때 ${hc.peak.jin}시 · 시계 ${hc.peak.clockRange}` : '오늘은 큰 기복이 없습니다';
-    box.querySelectorAll('.hr').forEach(b => b.onclick = () => pickHour(+b.dataset.i));
-    pickHour(hc.nowIndex >= 0 ? hc.nowIndex : hc.rows.indexOf(hc.peak));
-  }
-  function pickHour(i) {
-    if (!hoursData || !hoursData.rows[i]) return;
-    const r = hoursData.rows[i];
-    $('hours').querySelectorAll('.hr').forEach(b => b.classList.toggle('sel', +b.dataset.i === i));
-    const sgn = r.value > 0 ? '+' : '';
-    // 「順 +1.2」는 읽어도 아무것도 남지 않는다. 사람 말을 앞에 세우고
-    // 원래 표기는 잣대 줄로 내린다 — 지우지 않는다, 기준 공개가 이 서비스의 자산이다.
-    const 결말 = r.value > 0.3 ? '나를 돕는 쪽' : (r.value < -0.3 ? '나를 누르는 쪽' : '한쪽으로 기울지 않음');
-    $('hoursPick').innerHTML =
-      `<span class="t">${esc(r.jin)}시 · 시계 ${esc(r.clockRange)}</span>`
-      + `<span class="g">${esc(r.ganji)} ${esc(r.god)}</span>`
-      + `<span class="g">${esc(결말)}</span>`
-      + `<span class="d">${esc(r.label)}</span>`;
-  }
+  // 오늘의 시간대(renderHours·pickHour)는 오늘 탭과 함께 걷었다(2026-09-13). 시운은 판정 단위에서 뺀다 — 시진까지 내리면 틀릴 자리가 12배다.
 
   // 진태양시 보정을 켠 것과 끈 것을 나란히 보여준다.
   // 시각 보정은 이 서비스가 다른 곳과 갈리는 지점이라, 묻기 전에 먼저 보여준다.
@@ -853,20 +786,7 @@
   // loadAiBrief(「좌장에게 오늘을 묻기」 LLM 브리핑)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 히어로는 규칙 문장만 선다.
   function loadAiBrief() { heroFallback(); }
   // AI를 못 쓸 때도 히어로는 비지 않는다 — 규칙 엔진의 첫 문장을 세운다
-  function heroFallback() {
-    const box = $('aiBrief');
-    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const b = ChaeksaBrief.today(R, tf, E.currentDaeun(R, today), today);
-    box.className = 'hd-lede';
-    box.textContent = (b.paragraphs && b.paragraphs[0]) ? String(b.paragraphs[0]).replace(/<[^>]+>/g, '') : '';
-    const chip = $('hdFresh'); if (chip) chip.textContent = '오늘의 말';
-  }
-  function collapseRuleCard(on) {
-    const card = $('brief').closest('.card'), h = card.querySelector('h2');
-    if (!on) { $('brief').classList.remove('hide'); h.textContent = '흐름 읽기'; h.onclick = null; return; }
-    $('brief').classList.add('hide'); h.textContent = '계산 근거 보기 ▸'; h.style.cursor = 'pointer';
-    h.onclick = () => { const open = $('brief').classList.toggle('hide'); h.textContent = open ? '계산 근거 보기 ▸' : '계산 근거 ▾'; };
-  }
+  function heroFallback() {}   // 오늘 탭을 걷었다(2026-09-13 사장님 「근거도 없고 이해도 어려워」) — 히어로가 없다.
 
   // ───── 6차원 적층 체용 ─────
   // 무료 화면에서는 카드를 걷어냈다 (2026-08-28) — 體·用·적층은 일반인이 읽을 말이 아니다.
@@ -2893,9 +2813,7 @@
   // 인기순·적중순은 없다(안 하기로 한 것). 순서는 시간순이다.
   const 홈목록 = [
     // 칸 이름은 명리 과목이 아니라 공주님의 물음이다(2026-09-04 홈 점검).
-    { tab: 'today',     묶음: '오늘', 이름: '오늘 나는',            기본: 'gungtong', 오늘: true },
     { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',       기본: 'hyeopgi',  오늘: true },
-    { tab: 'today',     묶음: '이달', 이름: '이달 나는',            기본: 'unro',     오늘: true, scroll: 'myMonth', key: 'myMonth', 말탭: 'cal' },
     // 올해 나는·인연은 언제 오나·일은 언제 풀리나 — 다음 해를 말하는 칸이라 홈에서 뺌(docs/31 「무료는 다음 주, 유료는 다음 달, 다음 해는 안 판다」). 탭 코드는 남긴다.
     // 곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
     // 인생 곡선(life)은 09-04 에 같은 이유로 뺐다가 되돌렸다(2026-09-09) — 상태차 181칸이 붙어
@@ -3079,7 +2997,7 @@
       if (S && S.목록) 이야기.unshift(...S.목록.map(st => ({ id: 'st-' + st.id, tab: 'story', story: st.id, k: st.k, 사이: st.사이, 제목: st.질문, 소개: st.소개, 띠: '7일 무료', 값: '30일은 이번 달 결제', 썸: 'art/story-' + st.id + '-s.webp' })));   // 격자는 작은 판(-s, tools_thumb.py)
     } catch (e) {}
     const 사이들 = ['전체', '썸', '연애 중', '재회', '결혼', '이별', '가족', '돈과 생활', '친구·직장'];
-    const 이달 = { id: 'myMonth', tab: 'today', scroll: 'myMonth', 이름: '이번 달 30일 전체 보기', 말: '오늘부터 7일은 무료예요 · 30일 전체는 이번 달 결제로 열려요' };
+    // 「이번 달 30일 전체 보기」 타일은 오늘 탭과 함께 걷었다(2026-09-13) — 30일은 이야기 화면 안에서 연다.
     // 표지 — 책사 얼굴에 제목을 얹는다(2026-09-12). 같은 책사를 쓰는 칸끼리 같은 날 같은 그림이 안 겹치게 벌을 나눈다.
     // 큰 표지(진열대)는 아래에 짧은 소개 + 무료 첫 장까지, 작은 표지(격자)는 값만.
     const 표지 = (f, i, 큰, 번호) => {
@@ -3114,12 +3032,11 @@
       // 「열다섯 + 더 보기」는 09-13 렉의 진짜 원인(바탕 fixed · 막대 흐림)을 잡은 뒤 걷었다 — 사장님 「접어둔 거 펼쳐줘」. 격자는 다 편다.
     // ④ 전체 목록 — 모든 콘텐츠를 여기서 찾을 수 있게(전략). 이야기 여덟 · 이달 · 무료로 보는 것.
     let 접힘 = {}; try { 접힘 = JSON.parse(localStorage.getItem('chaeksa.fold') || '{}'); } catch (e) {}
-    const 무료 = 타일.filter(t => t.tab !== 'geunamja' && !(t.tab === 'today' && t.scroll === 'myMonth'));
+    const 무료 = 타일.filter(t => t.tab !== 'geunamja');
     h += '<details class="wt-fold"' + (접힘.all ? ' open' : '') + ' data-fold="all"><summary><b>전체 목록</b>'
-      + '<span>이야기 ' + 한글수(이야기.length) + ' · 무료로 보는 것 ' + 한글수(무료.length + 1) + '</span></summary>'
+      + '<span>이야기 ' + 한글수(이야기.length) + ' · 무료로 보는 것 ' + 한글수(무료.length) + '</span></summary>'
       + '<ul class="wt-free">'
       + 이야기.map((f, i) => '<li><button data-fi="' + i + '"><b>' + esc(f.제목) + '</b><span>' + esc(f.사이 + ' · ' + f.값) + '</span></button></li>').join('')
-      + '<li><button data-m="0"><b>' + esc(이달.이름) + '</b><span>' + esc(이달.말) + '</span></button></li>'
       + 무료.map((t) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
       + '</ul></details>';
     const top = $('wtTop');
@@ -3128,7 +3045,6 @@
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
-    box.querySelectorAll('.wt-free button[data-m]').forEach(b => { b.onclick = () => 열기(이달); });
     // 사이 칩 — 격자를 거른다. 진열대 셋은 안 거른다(지금 마음에 걸리는 것은 사이를 안 탄다).
     box.querySelectorAll('.wt-chips button').forEach(b => { b.onclick = () => {
       box.querySelectorAll('.wt-chips button').forEach(x => x.classList.toggle('on', x === b));
