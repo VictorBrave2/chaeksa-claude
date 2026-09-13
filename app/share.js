@@ -106,7 +106,7 @@
 
     // 태그
     by = 1150;
-    const tags = [a.strength, `${a.dominant} 기운이 강함`, a.missing.length ? `${a.missing.join('·')} 없음` : '오행 고루 갖춤'];
+    const tags = [`${a.dominant} 기운이 강함`, a.missing.length ? `${a.missing.join('·')} 없음` : '오행 고루 갖춤'];
     ctx.font = `400 26px ${SANS}`;
     let tw = tags.map(t => ctx.measureText(t).width + 44);
     let tx = (W - (tw.reduce((s, v) => s + v, 0) + (tags.length - 1) * 14)) / 2;

@@ -208,11 +208,10 @@
   <g transform="translate(38,44)"><rect width="52" height="52" rx="8" fill="#b23a2a"/>
     <text x="26" y="38" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="32" font-weight="900" fill="#fdf3e7">${SEAL[J.name] || '?'}</text></g>
   <text x="322" y="62" text-anchor="end" font-family="Noto Serif KR,serif" font-size="15" fill="#4a4238" letter-spacing="4">${J.name}격 ${J.ok ? '成' : '破'}</text>
-  <text x="322" y="84" text-anchor="end" font-size="12" fill="#7d7566" letter-spacing="3">${a.strength}</text>
   <text x="180" y="316" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="150" font-weight="900" fill="${ELCOL[de]}">${stemCh}</text>
   <text x="180" y="360" text-anchor="middle" font-size="15" fill="#5c5546" letter-spacing="2">${stemKo} 일간 · ${E.fmt.branchKo(p.month.branch)}월생</text>
   <rect x="46" y="410" width="268" height="52" rx="10" fill="#ffffff" opacity=".55"/>
-  <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${판정말(J)} · ${a.strength} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
+  <text x="180" y="432" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#33291c">${J.name}격 ${판정말(J)} · ${stemCh}${E.fmt.branch(p.month.branch)}</text>
   <text x="180" y="452" text-anchor="middle" font-size="12" fill="#6b6254">${rar ? `지어낸 사주 ${rar.n.toLocaleString()}개 중 ${rar.count}개` : ''}</text>
   <g transform="translate(140,478)"><rect width="80" height="30" rx="15" fill="${tcol}"/>
     <text x="40" y="21" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" letter-spacing="2">${tier}</text></g>

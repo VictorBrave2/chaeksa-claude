@@ -909,7 +909,7 @@
     const MZ = ChaeksaBrief.MZ;
     const EL5 = ['목','화','토','금','수'];
     const stem = MZ.STEM[a.dayStem];
-    const st = MZ.STRENGTH[a.strength] || MZ.STRENGTH['중화'];
+    // 「기운의 결」(신강·신약·중화 별명) 카드는 법전 29조로 뺐다(2026-09-13).
     const ec = a.elemCount, mx = Math.max(...ec, 1);
     const top = EL5[ec.indexOf(Math.max(...ec))];
     // 시즌 — 지금 대운이 몇 번째인지, 천간 십신으로 구간의 결을 잡는다
@@ -931,9 +931,6 @@
           <div class="bar"><i class="f-${el}" style="width:${Math.round(ec[i] / mx * 100)}%"></i></div>
           <span class="n">${ec[i]}</span></div>`).join('')}
         <div class="ms" style="margin-top:2px">가장 두터운 것 <b>${top}</b>${a.missing.length ? ` · 비어 있는 것 <b>${a.missing.join('·')} 채우기</b>` : ' · 다 갖춘 밸런스'}</div></div>
-      <div class="mzcard"><div class="mk">기운의 결</div>
-        <div class="mb">${st.nick}</div>
-        <div class="ms">${st.desc}</div></div>
       <div class="mzcard"><div class="mk">나를 채우는 기운</div>
         <div class="mb">${a.yongCandidates.join(' · ')}</div>
         <div class="ms">이 기운이 오면 힘이 붙습니다.<br>${a.yongCandidates.map(el => MZ.BOOST[el]).filter(Boolean).join('<br>')}</div></div>
@@ -1030,7 +1027,7 @@
     $('me').innerHTML = `<div class="big ${elemClass(a.dayStem, true)}">${f.stem(a.dayStem)}</div><p><b>${dm.name}</b> — ${dm.one}<br><span style="font-size:13px">${dm.desc}</span></p>`;
     const max = Math.max(...a.elemCount, 1), colors = ['var(--wood)','var(--fire)','var(--earth)','var(--metal)','var(--water)'];
     $('bars').innerHTML = E.ELEM.map((e, i) => `<div class="bar"><span>${e}</span><i><b style="width:${a.elemCount[i] / max * 100}%;background:${colors[i]}"></b></i><span>${a.elemCount[i]}</span></div>`).join('');
-    $('tags').innerHTML = [`<span class="tag on">${강약말(a.strength)}</span>`, `<span class="tag">${a.dominant} 기운이 강함</span>`, a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`, `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`].join('');
+    $('tags').innerHTML = [`<span class="tag on">${a.dominant} 기운이 강함</span>`, a.missing.length ? `<span class="tag">${a.missing.join('·')} 없음</span>` : `<span class="tag">오행 고루 갖춤</span>`, `<span class="tag">쓰면 좋은 기운: ${a.yongCandidates.join('·')}</span>`].join('');
     $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
     const plName = profile.placeName || '서울';
     const bornNote = $('bornNote');
@@ -1118,7 +1115,8 @@
     // 갈림 — 판정이 사람 손에 넘어가는 자리
     let 갈림 = '';
     try {
-      const fs = E.forks(R.pillars) || [];
+      // 강약 점수가 갈리는 자리(「신약 0.37 / 중화 0.42」)는 법전 29조로 화면에서 뺀다 — 격이 갈리는 자리만 남긴다(2026-09-13).
+      const fs = (E.forks(R.pillars) || []).filter(v => !/신강|신약|중화/.test(String(v.무료) + String(v.다른쪽)));
       if (fs.length) 갈림 = `<div class="gk-fork">
         <p class="t">여기서 판정이 갈립니다</p>
         <p class="arm" style="margin:-4px 0 10px">명리가에 따라 다르게 보는 자리입니다.
@@ -3556,7 +3554,7 @@
       <b>겁재(나눠 갖는 손)</b>가 움직인 해를 만 ${v.시작나이}살부터 짚었습니다. 맞는지는 통장이 압니다.</p>
       ${과거절}${샌절}${현재절}
       <p class="ls-honest">잣대 공개 — 재성이 하늘에 오는가(뿌리까지), 벌이를 만드는 식상인가, 나눠 가는 겁재인가,
-      대운이 무엇을 데려오는가. ${v.강약 === '신약' ? '신약이라 재성 해의 가산을 줄여 계산했습니다(재다신약). ' : ''}단정이 아니라 「이 기준으로는」입니다. 틀렸다면 알려주세요 — 기준을 공개하는 이유입니다.</p>`;
+      대운이 무엇을 데려오는가. 단정이 아니라 「이 기준으로는」입니다. 틀렸다면 알려주세요 — 기준을 공개하는 이유입니다.</p>`;
 
     const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
     const box = $('msNext');
