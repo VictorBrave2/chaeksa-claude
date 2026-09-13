@@ -1516,3 +1516,11 @@ details.fold > .tiles { margin-top: 10px; }
 .wg-fold summary::before{content:'';width:7px;height:7px;border-right:1.5px solid var(--ink3);border-bottom:1.5px solid var(--ink3);transform:rotate(45deg) translateY(-2px);transition:transform .15s}
 .wg-fold[open] summary::before{transform:rotate(-135deg) translateY(-2px)}
 .wg-key{margin:4px 0 0}
+/* 명식 표 — 시 일 월 년, 십신 / 천간 / 지지 / 지지 십신 */
+.wg-table{margin:0 0 6px;padding:8px 6px;border-radius:12px;background:var(--bg2)}
+.wg-row{display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.wg-row.lab div{font-size:10px;color:var(--ink3);padding-bottom:2px}
+.wg-row.god div{font-size:11.5px;font-weight:700;color:var(--ink2);padding:2px 0}
+.wg-row.han div{font-family:"Noto Serif KR",serif;font-size:26px;line-height:1.25;letter-spacing:1px}
+.wg-row div.me{color:var(--accent)}
+.wg-row.god div.me{color:var(--accent)}

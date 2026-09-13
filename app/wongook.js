@@ -131,13 +131,16 @@
     const 원표 = G.표(R.pillars, [], R);
     const p = R.pillars;
     // ① 글자와 자리
-    const 자리 = ['year', 'month', 'day', 'hour'].filter(k => p[k]);
-    const 글자칸 = 자리.map(k => {
-      const g = 원표.글자.find(x => x.key === k);
-      const 뿌리 = g.일간 ? '' : (g.힘 >= 0.5 ? '서 있어요' : '뿌리가 없어요');
-      // 한자로(사장님 09-14 「한자로 넣고」). 한글 이름은 아래 작게.
-      return '<div class="wg-g' + (g.일간 ? ' me' : '') + '"><small>' + esc(자리이름[k]) + '</small><b>' + esc(E.STEMS[g.stem] + E.BRANCHES[p[k].branch]) + '</b><i>' + esc(이름(g.stem) + ' ' + 지이름(p[k].branch)) + '</i><span>' + esc(g.일간 ? '나' : g.십신) + '</span><em>' + esc(뿌리) + '</em></div>';
-    }).join('');
+    // 명식 표 — 시·일·월·년 순서(오른쪽이 년), 위에 천간 십신, 천간, 지지, 아래에 지지 본기 십신(사장님 09-14 그림 그대로).
+    const 자리 = ['hour', 'day', 'month', 'year'].filter(k => p[k]);
+    const ds = p.day.stem;
+    const 지십신 = (b) => { const h = E.HIDDEN[b]; const st = h && (typeof h[0] === 'number' ? h[0] : h[0][0]); return st == null ? '' : E.TEN_GODS[E.tenGod(ds, st)]; };
+    const 칸 = (k, f) => 자리.map(k2 => '<div class="' + (k2 === 'day' ? 'me' : '') + '">' + f(k2) + '</div>').join('');
+    const 글자칸 = '<div class="wg-row lab">' + 칸(null, k => ({ hour: '시', day: '일', month: '월', year: '년' })[k]) + '</div>'
+      + '<div class="wg-row god">' + 칸(null, k => esc(k === 'day' ? '나' : 원표.글자.find(x => x.key === k).십신)) + '</div>'
+      + '<div class="wg-row han">' + 칸(null, k => esc(E.STEMS[p[k].stem])) + '</div>'
+      + '<div class="wg-row han">' + 칸(null, k => esc(E.BRANCHES[p[k].branch])) + '</div>'
+      + '<div class="wg-row god">' + 칸(null, k => esc(지십신(p[k].branch))) + '</div>';
     // ② 돌아감
     const d = 돌아감(원표);
     const 걸린말 = d.걸린 ? '<p class="wg-key">그래서 이 사주는 <b>' + esc(이름(d.걸린.stem)) + '</b> 하나에 걸려 있어요. ' + esc(이가(이름(d.걸린.stem))) + ' 서 있으면 다 받아서 들어오고, 묶이면 바로 와요.</p>' : '';
@@ -166,7 +169,7 @@
     box.innerHTML =
       '<section class="wg" data-plain="1">'
       + '<div class="wg-head"><b>내 원국</b><span>여덟 글자가 서로 무엇을 하는지</span></div>'
-      + '<div class="wg-grid">' + 글자칸 + '</div>'
+      + '<div class="wg-table">' + 글자칸 + '</div>'
       + 걸린말 + 갈림
       + '<details class="wg-fold"><summary>이 사주는 이렇게 돌아가요</summary>'
       + '<div class="wg-body">' + d.줄.map(s => '<p>' + esc(s) + '</p>').join('') + '</div>' + 격
