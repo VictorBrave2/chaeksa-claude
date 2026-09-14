@@ -1228,14 +1228,20 @@
     try {
       const P = window.ChaeksaPanjeong;
       if (P && P.궁합) {
-        const g = P.궁합(Rf, Rm, today);
-        const 줄들 = (x, 누가) => x.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') || '<p class="gh-line"><b>바뀌는 것 없음</b> ' + escP(누가) + ' 판정이 그대로예요.</p>';
+        const Q = window.ChaeksaQuestions;
+        const 둘 = Q && Q.둘사이질문 ? Q.둘사이질문(Rf, Rm, today) : null;
+        const g = 둘 ? 둘.궁합 : P.궁합(Rf, Rm, today);
         const 남은 = (x) => Object.keys(x.남은 || {}).map(k => '<span class="gh-cell s' + (x.남은[k].칸 === '좋음' ? 2 : x.남은[k].칸 === '조심' ? 0 : 1) + '">' + escP(k) + '</span>').join('');
-        판정띠 = '<section class="wg gh-pan" data-plain="1"><div class="wg-head"><b>두 사람을 놓고 본 판정</b><span>' + escP(P.궁합결론(g)) + '</span></div>'
+        // 질문 생성기를 탄 꼴 — 질문 → 답(판정 이유) → 결론·할 것(둘 사이 × 칸). 「우리 둘」 장은 그 질문들을 그리는 자리다.
+        const 질문줄 = (둘 && 둘.질문들.length)
+          ? 둘.질문들.map(q => '<div class="gh-q s' + (q.칸 === '좋음' ? 2 : q.칸 === '조심' ? 0 : 1) + '"><b>' + escP(q.질문) + '</b><span>' + escP(q.답) + '</span></div>').join('')
+          : '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람을 얹어도 내 판정이 그대로예요.</p>';
+        const 그쪽줄 = g.그사람에게.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') || '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람 판정이 그대로예요.</p>';
+        판정띠 = '<section class="wg gh-pan" data-plain="1"><div class="wg-head"><b>두 사람을 놓고 본 판정</b><span>' + escP(둘 ? 둘.결론문 : P.궁합결론(g)) + '</span></div>'
           + '<p class="wg-gk top">나에게 ' + escP(youName) + '은(는) <b>' + escP(g.나에게.사람말 || '안 나왔어요') + '</b>이고, ' + escP(youName) + '에게 나는 <b>' + escP(g.그사람에게.사람말 || '안 나왔어요') + '</b>이에요. 사람의 글자는 그 사람의 격신이에요.</p>'
-          + '<div class="wg-head sub"><b>' + escP(youName) + '이(가) 나에게</b></div>' + 줄들(g.나에게, '내') + '<div class="gh-cells">' + 남은(g.나에게) + '</div>'
-          + '<div class="wg-head sub"><b>내가 ' + escP(youName) + '에게</b></div>' + 줄들(g.그사람에게, '그 사람') + '<div class="gh-cells">' + 남은(g.그사람에게) + '</div>'
-          + (g.되돌림 && g.되돌림.줄.length ? '<div class="wg-head sub"><b>되돌아오는 것</b></div><p class="hint">내가 먼저 얹히면 ' + escP(youName) + '의 격신이 ' + escP(g.되돌림.사람말) + '로 바뀌고, 그것이 다시 내게 와요.</p>' + 줄들(g.되돌림, '') : '')
+          + (둘 ? '<p class="gh-verdict"><em>' + escP(둘.결론) + '</em> ' + escP(둘.할것) + '</p>' : '')
+          + '<div class="wg-head sub"><b>' + escP(youName) + '이(가) 나에게</b></div>' + 질문줄 + '<div class="gh-cells">' + 남은(g.나에게) + '</div>'
+          + '<div class="wg-head sub"><b>내가 ' + escP(youName) + '에게</b></div>' + 그쪽줄 + '<div class="gh-cells">' + 남은(g.그사람에게) + '</div>'
           + '</section>';
       }
     } catch (e) { try { console.warn('궁합 판정 실패:', e); } catch (e2) {} }
