@@ -1223,8 +1223,25 @@
         + '</div>';
     }).join('');
     const 결제 = paid ? '' : 결제상자('btnGhBuy', youName, '네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀에서 봅니다.');
+    // 53조 궁합 — 판정 하나(사람을 맨 바깥 층으로 얹은 차이). 무료. 전문용어 칸이라 data-plain·escP.
+    let 판정띠 = '';
+    try {
+      const P = window.ChaeksaPanjeong;
+      if (P && P.궁합) {
+        const g = P.궁합(Rf, Rm, today);
+        const 줄들 = (x, 누가) => x.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') || '<p class="gh-line"><b>바뀌는 것 없음</b> ' + escP(누가) + ' 판정이 그대로예요.</p>';
+        const 남은 = (x) => Object.keys(x.남은 || {}).map(k => '<span class="gh-cell s' + (x.남은[k].칸 === '좋음' ? 2 : x.남은[k].칸 === '조심' ? 0 : 1) + '">' + escP(k) + '</span>').join('');
+        판정띠 = '<section class="wg gh-pan" data-plain="1"><div class="wg-head"><b>두 사람을 놓고 본 판정</b><span>' + escP(P.궁합결론(g)) + '</span></div>'
+          + '<p class="wg-gk top">나에게 ' + escP(youName) + '은(는) <b>' + escP(g.나에게.사람말 || '안 나왔어요') + '</b>이고, ' + escP(youName) + '에게 나는 <b>' + escP(g.그사람에게.사람말 || '안 나왔어요') + '</b>이에요. 사람의 글자는 그 사람의 격신이에요.</p>'
+          + '<div class="wg-head sub"><b>' + escP(youName) + '이(가) 나에게</b></div>' + 줄들(g.나에게, '내') + '<div class="gh-cells">' + 남은(g.나에게) + '</div>'
+          + '<div class="wg-head sub"><b>내가 ' + escP(youName) + '에게</b></div>' + 줄들(g.그사람에게, '그 사람') + '<div class="gh-cells">' + 남은(g.그사람에게) + '</div>'
+          + (g.되돌림 && g.되돌림.줄.length ? '<div class="wg-head sub"><b>되돌아오는 것</b></div><p class="hint">내가 먼저 얹히면 ' + escP(youName) + '의 격신이 ' + escP(g.되돌림.사람말) + '로 바뀌고, 그것이 다시 내게 와요.</p>' + 줄들(g.되돌림, '') : '')
+          + '</section>';
+      }
+    } catch (e) { try { console.warn('궁합 판정 실패:', e); } catch (e2) {} }
     box.innerHTML = `<h2>우리 둘, 잘 맞아요?</h2>
       <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
+      ${판정띠}
       ${카드줄(f.Q, 미리, 다, false)}
       ${절}
       ${한편자리(paid, youName)}
