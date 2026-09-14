@@ -1237,11 +1237,16 @@
           ? 둘.질문들.map(q => '<div class="gh-q s' + (q.칸 === '좋음' ? 2 : q.칸 === '조심' ? 0 : 1) + '"><b>' + escP(q.질문) + '</b><span>' + escP(q.답) + '</span></div>').join('')
           : '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람을 얹어도 내 판정이 그대로예요.</p>';
         const 그쪽줄 = g.그사람에게.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') || '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람 판정이 그대로예요.</p>';
+        const 머리셋 = 둘 ? 둘.머리.map(q => '<div class="gh-q s' + (q.칸 === '좋음' ? 2 : q.칸 === '조심' ? 0 : 1) + '"><b>' + escP(q.질문) + '</b><span>' + escP(q.답) + '</span></div>').join('') : '';
+        const 되돌림 = 둘 && 둘.실험 && 둘.실험.줄.length ? '<details class="wg-fold"><summary>되돌아오는 것 (실험)</summary><p class="hint">내가 먼저 얹히면 ' + escP(youName) + '의 격신이 ' + escP(둘.실험.사람말) + '로 바뀌고, 그것이 다시 내게 와요.</p>' + 둘.실험.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') + '</details>' : '';
         판정띠 = '<section class="wg gh-pan" data-plain="1"><div class="wg-head"><b>두 사람을 놓고 본 판정</b><span>' + escP(둘 ? 둘.결론문 : P.궁합결론(g)) + '</span></div>'
           + '<p class="wg-gk top">나에게 ' + escP(youName) + '은(는) <b>' + escP(g.나에게.사람말 || '안 나왔어요') + '</b>이고, ' + escP(youName) + '에게 나는 <b>' + escP(g.그사람에게.사람말 || '안 나왔어요') + '</b>이에요. 사람의 글자는 그 사람의 격신이에요.</p>'
+          + 머리셋
           + (둘 ? '<p class="gh-verdict"><em>' + escP(둘.결론) + '</em> ' + escP(둘.할것) + '</p>' : '')
+          + '<details class="wg-fold"><summary>갈래마다 보기</summary>'
           + '<div class="wg-head sub"><b>' + escP(youName) + '이(가) 나에게</b></div>' + 질문줄 + '<div class="gh-cells">' + 남은(g.나에게) + '</div>'
-          + '<div class="wg-head sub"><b>내가 ' + escP(youName) + '에게</b></div>' + 그쪽줄 + '<div class="gh-cells">' + 남은(g.그사람에게) + '</div>'
+          + '<div class="wg-head sub"><b>내가 ' + escP(youName) + '에게</b></div>' + 그쪽줄 + '<div class="gh-cells">' + 남은(g.그사람에게) + '</div></details>'
+          + 되돌림
           + '</section>';
       }
     } catch (e) { try { console.warn('궁합 판정 실패:', e); } catch (e2) {} }
