@@ -2798,15 +2798,38 @@
     // 갈래로 열었으면(홈 갈래 카드) 그 갈래의 이야기들이 상황 칩이다 — 판정은 같고 말만 다르니 한 화면에서 고른다(docs/37).
     const Q = window.ChaeksaQuestions;
     const 갈래 = window.현재갈래 && Q && Q.갈래들.find(g => g.키 === window.현재갈래);
-    const subs = 갈래 && S.갈래of ? S.목록.filter(x => S.갈래of(x) === 갈래.키) : [];
-    let st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
-    if (subs.length && subs.indexOf(st) < 0) { st = subs[0]; window.현재이야기 = st.id; }
-    const 썸 = 'art/story-' + st.id + '.webp';
-    const 칩 = subs.length > 1 ? '<div class="wt-chips st-sit">' + subs.map(x => '<button type="button" data-st="' + x.id + '"' + (x.id === st.id ? ' class="on"' : '') + '>' + escP(x.질문.replace(/\?$/, '')) + '</button>').join('') + '</div>' : '';
-    const 머리 = '<div class="st-cover"><img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()"><b>' + escP(갈래 ? 갈래.날고르기 : st.질문) + '</b></div>'
-      + (갈래 ? '<p class="hint" style="margin:8px 0 6px">어떤 상황이에요? 판정은 같고, 말이 달라요.</p>' + 칩 : '')
+    const 질문 = window.현재질문;   // 격자 질문 콘텐츠(docs/41) — 제목은 격자 문장, 답은 판정, 결론·할 것은 갈래 × 칸
+    let subs = 갈래 && S.갈래of ? S.목록.filter(x => S.갈래of(x) === 갈래.키) : [];
+    let st, 썸, 칩 = '', 오늘답 = '';
+    if (질문 && 갈래) {
+      const 뜻 = { 합거: '그 글자가 이름만 있고 뿌리가 없다', 무근: '그 글자가 이름만 있고 뿌리가 없다', 극닿음: '치는 글자가 바로 닿는다', 극통관: '치는 글자가 있는데 사이 글자가 받아 넘겨 안 다친다', 극제복: '치는 글자를 다른 글자가 잡아 준다', 극힘차이: '치는 글자가 두 배 넘게 약해 못 친다', 생받음: '운 글자가 그 글자를 생한다', 극없음: '아무도 건드리지 않는다', 궁충: '그 자리가 원국에서 충이다', '기신 제복': '격신을 치는 글자가 잡혔다', '기신 방치': '격신을 치는 글자를 아무도 안 잡는다' };
+      const 첫편 = subs[0];
+      st = { id: 'q-' + 갈래.키 + '-' + (질문.결과 || 'day'), 질문: 질문.질문, 갈래: 갈래.키, k: (첫편 && 첫편.k) || 'inyeon', 사이: (첫편 && 첫편.사이) || 갈래.이름,
+             소개: 질문.결과 ? (뜻[질문.결과] || 질문.결과) + ' — 그런 날인지를 날마다 봐요.' : '이 자리를 맡은 글자가 오늘 어떤지로 날을 골라요.',
+             혼자: !갈래.짝, 결론: 갈래.결론, 할것: 갈래.할것, 마무리: '', 묶음: { 좋음: '좋은 날', 조심: '조심할 날', 짝: null } };
+      썸 = 첫편 ? 'art/story-' + 첫편.id + '.webp' : '';
+      const qs = Q.격자().filter(q => q.갈래 === 갈래.키);
+      칩 = '<div class="wt-chips st-sit">' + qs.map(q => '<button type="button" data-q="' + escP(q.결과 || '') + '"' + ((q.결과 || '') === (질문.결과 || '') ? ' class="on"' : '') + '>' + escP(q.질문.replace(/\?$/, '')) + '</button>').join('') + '</div>';
+      // 오늘 이 질문의 답 — 상태 묻기면 오늘 결과가 이 칸인가
+      if (질문.결과) { try { const P = window.ChaeksaPanjeong; const r = P.이야기결과(R, 갈래.키, today, { 여자: ((profile && profile.gender) || 'M') !== 'M' });
+        const 예 = r.결과.키 === 질문.결과;
+        오늘답 = '<div class="qa-today s' + (예 ? (r.칸 === '좋음' ? 2 : r.칸 === '조심' ? 0 : 1) : 1) + '"><b>' + (예 ? '오늘은 그래요.' : '오늘은 아니에요.') + '</b><span>' + escP(r.이유) + '</span></div>'; } catch (e) {} }
+      subs = [];
+    } else {
+      st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
+      if (subs.length && subs.indexOf(st) < 0) { st = subs[0]; window.현재이야기 = st.id; }
+      썸 = 'art/story-' + st.id + '.webp';
+      칩 = subs.length > 1 ? '<div class="wt-chips st-sit">' + subs.map(x => '<button type="button" data-st="' + x.id + '"' + (x.id === st.id ? ' class="on"' : '') + '>' + escP(x.질문.replace(/\?$/, '')) + '</button>').join('') + '</div>' : '';
+    }
+    const 머리 = '<div class="st-cover">' + (썸 ? '<img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()">' : '') + '<b>' + escP(질문 ? 질문.질문 : (갈래 ? 갈래.날고르기 : st.질문)) + '</b></div>'
+      + (갈래 ? '<p class="hint" style="margin:8px 0 6px">' + (질문 ? '같은 갈래의 다른 질문' : '어떤 상황이에요? 판정은 같고, 말이 달라요.') + '</p>' + 칩 : '')
+      + 오늘답
       + '<p class="hint" style="margin:8px 0 12px">' + escP(st.소개) + '</p>';
-    if (!box.dataset.sit) { box.dataset.sit = '1'; box.addEventListener('click', (e) => { const b = e.target.closest('.st-sit button'); if (!b) return; window.현재이야기 = b.dataset.st; renderStory(); }); }
+    if (!box.dataset.sit) { box.dataset.sit = '1'; box.addEventListener('click', (e) => {
+      const b = e.target.closest('.st-sit button'); if (!b) return;
+      if (b.dataset.q != null) { const Q2 = window.ChaeksaQuestions; const q = Q2.격자().find(x => x.갈래 === window.현재갈래 && (x.결과 || '') === b.dataset.q); if (q) window.현재질문 = { 갈래: q.갈래, 결과: q.결과, 질문: q.질문 }; }
+      else { window.현재질문 = null; window.현재이야기 = b.dataset.st; }
+      renderStory(); }); }
     // 혼자 보는 이야기(st.혼자) — 그 사람이 없다. 그래도 「열어야 열린다」(09-13 사장님 「이미 열려 있으니 신뢰도가 떨어지네」): 단추 하나.
     if (st.혼자) {
       if (window.현재그사람 !== '나') {
@@ -3020,11 +3043,34 @@
       + 무료.map((t) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
       + '</ul></details>';
     const top = $('wtTop');
+    // 줄기 콘텐츠(docs/41) — 격자 99문. 질문 하나가 콘텐츠 하나. 기존 진열대는 심사 끝날 때까지 그대로 두고 그 아래 세운다.
+    try {
+      const Q = window.ChaeksaQuestions;
+      if (Q && Q.격자) {
+        const 전체격자 = Q.격자();
+        const 이름표 = { 관계: '썸 · 연애 중 · 재회', 배우자: '결혼', 이별: '이별', 재물: '돈과 생활', 친구: '친구', 직장: '직장', 학습: '시험 · 공부', 가족: '가족', '둘 사이': '우리 둘' };
+        const 갈래순 = ['관계', '배우자', '이별', '재물', '친구', '직장', '학습', '가족', '둘 사이'];
+        h += '<div class="wt-head" style="margin-top:26px"><b>질문으로 보기</b><span>규칙에서 나온 질문 ' + 전체격자.length + '개</span></div>'
+          + '<div class="qg" data-plain="1">' + 갈래순.map(g => {
+            const qs = 전체격자.filter(q => q.갈래 === g);
+            if (!qs.length) return '';
+            return '<details class="qg-g"><summary><b>' + escP(이름표[g] || g) + '</b><span>' + qs.length + '</span></summary><div class="qg-list">'
+              + qs.map(q => '<button type="button" class="qg-q' + (q.꼴 === '날 고르기' ? ' day' : '') + '" data-g="' + escP(g) + '" data-k="' + escP(q.결과 || '') + '">' + escP(q.질문) + '</button>').join('')
+              + '</div></details>';
+          }).join('') + '</div>';
+      }
+    } catch (e) { try { console.warn('격자 목록 실패:', e); } catch (e2) {} }
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
-    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
+    const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; window.현재질문 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.qg-q').forEach(b => { b.onclick = () => {
+      const g = b.dataset.g, k = b.dataset.k || null;
+      if (g === '둘 사이') { 본표시('gunghap'); go('gunghap'); return; }
+      window.현재질문 = { 갈래: g, 결과: k, 질문: b.textContent }; window.현재갈래 = g; window.현재이야기 = null; window.현재그사람 = null;
+      본표시('q-' + g + '-' + (k || 'day')); go('story');
+    }; });
     // 사이 칩 — 격자를 거른다. 진열대 셋은 안 거른다(지금 마음에 걸리는 것은 사이를 안 탄다).
     box.querySelectorAll('.wt-chips button').forEach(b => { b.onclick = () => {
       box.querySelectorAll('.wt-chips button').forEach(x => x.classList.toggle('on', x === b));

@@ -1489,6 +1489,7 @@
 
   /** 이야기 → 갈래(docs/34 44조). 갈래가 1순위 글자를 정한다. */
   function 갈래of(story) {
+    if (story.갈래) return story.갈래;   // 격자 질문 콘텐츠는 갈래를 직접 든다(docs/41)
     const id = story.id || '', 사 = story.사이 || '';
     if (사 === '썸' || 사 === '연애 중' || 사 === '재회') return '관계';
     if (사 === '결혼') return '배우자';
