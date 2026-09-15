@@ -30,7 +30,8 @@ def strip(h): return re.sub(r'<[^>]+>','',h)
 
 def plain_first(doc):
     """제목·부제 다음에 오는 본문 <p> 들(첫 <hr> 뒤부터). 답 첫 줄 검사용."""
-    after = doc.split('<hr>', 1)[1] if '<hr>' in doc else doc
+    m = re.search(r'<p class="alt">.*?</p>', doc, re.S)
+    after = doc[m.end():] if m else (doc.split('</h2>', 1)[1] if '</h2>' in doc else doc)
     return re.findall(r'<p>(.*?)</p>', after, re.S)[:3]
 
 def check_blog(name, s):
