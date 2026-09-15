@@ -267,6 +267,15 @@ function run(CFG) {
     가족: r.가족어울림, 충돌: r.가족부딪힘, 삼합: r.삼합완성,
     원국충: r.충,
   });
+  // 수술 가능 창 — 담당의 시간표. CFG.수술창 = { 1:[13,17], 3:[13,17], 4:[9,12], 5:[13,17] } (요일 0=일 … 6=토, 시계 시각).
+  // 시진 창과 60분 이상 겹쳐야 「가능」이다. 안 주면 평일 09~17(등급 '정규')로 본다.
+  const 수술가능 = (r) => {
+    if (!CFG.수술창) return r.등급 === '정규';
+    const w = CFG.수술창[new Date(y1, r._m - 1, r._d).getDay()]; if (!w) return false;
+    let [a, b] = r.시계창.split('~').map(t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; });
+    if (b < a) b += 1440;
+    return Math.max(0, Math.min(b, w[1] * 60) - Math.max(a, w[0] * 60)) >= 60;
+  };
   // 안내용 시각창은 기간 한가운데 날짜 기준. 실제 행마다의 시계창은 그 날짜 보정을 쓴다.
   const midDt = new Date((from.getTime() + to.getTime()) / 2);
   const midShift = shiftOf(midDt.getFullYear(), midDt.getMonth() + 1, midDt.getDate());
@@ -286,10 +295,17 @@ function run(CFG) {
     보정폭: `기간 중간 기준 ${midShift}분 (경도+균시차, 날짜마다 1~2분 다름)`,
     // 한 축으로 점점 좁힌다: 원국 → 대운을 얹고 → 병원 시간(평일 09~17)만 남긴다.
     // 세 번째를 다른 기준으로 다시 섞으면 안 된다. ②의 순위에서 거른 것이 ③이다.
+    // 네 겹(2026-09-15 사장님): ① 날짜만(원국) ② 대운을 넣고 ③ 가족을 넣고(충하는 자리를 뺀다 — 점수는 안 준다)
+    // ④ 종합 + 수술 가능 시간(CFG.수술창이 있으면 그 요일·시각, 없으면 평일 09~17). 뒤 겹은 앞 겹을 거른 것이다.
     원국_TOP5: by.slice(0, 5).map(f),
-    원국대운_TOP5: byT.slice(0, 5).map(r => f(r) + ` | 대운 ${r._du} 종합 ${r._t}`),
-    원국대운_09에서17시_TOP5: byT.filter(r => r.등급 === '정규').slice(0, 5)
-      .map(r => f(r) + ` | 대운 ${r._du} 종합 ${r._t}`),
+    원국대운_TOP5: byT.slice(0, 5).map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
+    원국대운가족_TOP5: byT.filter(r => r.가족부딪힘 === '없음').slice(0, 5)
+      .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
+    종합_수술가능_TOP5: byT.filter(r => r.가족부딪힘 === '없음' && 수술가능(r)).slice(0, 5)
+      .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
+    // ③에서 빠졌지만 수술 창 안에서 종합이 더 높은 자리 — 맞바꿈으로 따로 적는다(④의 답이 되지는 않는다)
+    가족충_있는_수술가능_상위3: byT.filter(r => r.가족부딪힘 !== '없음' && 수술가능(r)).slice(0, 3)
+      .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}`, 가족충: r.가족부딪힘 })),
     가족충없는3: by.filter(r => r.가족부딪힘 === '없음').slice(0, 3).map(f),
     최하위3: by.slice(-3).reverse().map(f),
     등급분포: ['정규','연장','야간','주말'].map(g => `${g} ${rows.filter(r => r.등급 === g).length}`).join(' · '),
@@ -313,6 +329,8 @@ window.__상담 = run({
     { 이름: '누나', 일주: '壬戌' },
   ],
   주간시작: 8.5, 주간끝: 17,
+  // 담당의 시간표(시계). 요일 0=일 … 6=토. 없으면 지우면 평일 09~17 로 본다.
+  수술창: { 1: [13, 17], 3: [13, 17], 4: [9, 12], 5: [13, 17] },
 });
 return Object.assign({}, window.__상담, {
   _rows: `(${window.__상담._rows.length}개 — window.__상담._rows 참조)`, _f: '(포맷 함수)',

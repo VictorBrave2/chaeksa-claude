@@ -232,6 +232,7 @@
     } else {
       // 사람을 추가해도 보던 프로필은 그대로 둔다 — 첫 사람일 때만 people.js가 활성화한다
       pendingPick = P.add({ name, relation: rel, isSelf: rel === '나' || !P.list().length, birth });
+      try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('profile'); } catch (e) {}   // 깔때기 ② 생년월일 넣음
     }
     $('personForm').classList.add('hide');
     $('peopleSheet').classList.add('hide');
@@ -1670,6 +1671,7 @@
   function 표무료() { return !!window.CHAEKSA_SHEET_LLM; }
   /** 결제 상자 — 무엇을 파는지가 위 스위치에 달렸다. 단추 id 는 장마다 달라 받아 쓴다. */
   function 결제상자(id, 이름표, 예전안내, 한편이름) {
+    try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('sheet'); } catch (e) {}   // 깔때기 ③ 유료 장(결제 단추 보이는 화면) 엶
     const 무료 = 표무료();
     // 한 편의 이름표는 「올 사람」처럼 표 이름표와 다를 때가 있다(짝 장). 산 뒤에 뜨는 상자와 같은 말을 써야 한다.
     const 편 = esc(한편이름 || 이름표);
@@ -3065,6 +3067,10 @@
           }).join('') + '</div>';
       }
     } catch (e) { try { console.warn('격자 목록 실패:', e); } catch (e2) {} }
+    // 출산택일 문 — 지금 돈이 되는 상품인데 홈에는 푸터 링크뿐이었다(2026-09-15 「출산택일의 최적화부터」).
+    // 새 상품이 아니라 있는 상품(#taekil 탭)으로 가는 길이라 심사 중 수정 불가 항목(상품 카테고리)에 안 걸린다.
+    h += '<div class="wt-head" style="margin-top:26px"><b>출산택일 보고서</b><span>병원에서 받은 날짜, 근거로 검토</span></div>'
+      + '<a class="wt-taekil" href="#taekil"><b>후보 기간 전체를 시진 단위로 계산해요.</b><span>부모님 사주와 부딪히는 자리를 거르고, 담당 선생님 수술 시간에 잡히는 자리만 남겨 보고서로 드려요. 시계 몇 시에 잡아야 하는지까지.</span><em><i data-price="taekil">99,000원</i> · 신청하기 →</em></a>';
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; window.현재질문 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };

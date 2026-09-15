@@ -214,6 +214,7 @@
    */
   async function 누르면(btn, code, note, 로그인) {
     if (!btn || btn.dataset.busy) return null;
+    try { global.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('pay'); } catch (e) {}   // 깔때기 ④ 결제 단추 누름
     // 버튼 밑 안내(.nx-ft)는 덮지 않는다 — 제 자리를 따로 둔다.
     let 꼬리 = btn.nextElementSibling;
     if (!(꼬리 && 꼬리.classList.contains('pay-say'))) {

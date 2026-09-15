@@ -25,7 +25,7 @@ window.CHAEKSA_SUPABASE = {
 window.CHAEKSA_ART = '20260913d';   // 09-12 밤 이야기 표지 11장 도착 — 값이 곧 캐시 버전
 // 돌아온 사람 세기 (docs/29 여덟). server/migrate-16 을 Supabase 에서 돌린 **뒤에** 1 로.
 // 먼저 켜면 모르는 열이라며 방문 기록 전체가 거절된다.
-window.CHAEKSA_TRACK_VID = 0;
+window.CHAEKSA_TRACK_VID = 1;   // migrate-16 이 돌아 vid 열이 있다(visits_stats 가 people 을 낸다). 0 이면 돌아온 사람·깔때기가 전부 0 으로 찍힌다(2026-09-15).
 // 유료 LLM 「한 편」(2026-09-12 사장님 결정 「문장표는 무료 · LLM 은 유료」 3단계 — app.js 한편붙이기).
 // 0 이면 super 계정만 본다(시험). 1 이면 그 장을 산 사람 모두에게 「한 편 청하기」가 선다.
 // 켜기 전에 super 로 여덟 장을 굽어 읽어 볼 것 — 판정이 위 표와 어긋나거나 금지어가 새면 켜지 않는다.

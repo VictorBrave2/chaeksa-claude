@@ -111,5 +111,25 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 
-  global.ChaeksaTrack = { sourceOf: sourceOf };
+  /** 깔때기 사건(2026-09-15 사장님 「계기판을 어떻게 살리지」) — 같은 visits 표에 path='ev:이름' 으로 한 줄.
+   *  profile(생년월일 넣음) · sheet(유료 장 엶) · pay(결제 단추 누름). 한 브라우저에서 하루 한 번만.
+   *  집계는 funnel_stats(migrate-30) 가 vid 로 사람을 가른다. 스위치가 꺼져 있으면 vid 없이 보내 사건 수만 남는다. */
+  function event(name) {
+    try {
+      if (!CFG.url || !CFG.anonKey) return;
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
+      var k = 'chaeksa.ev.' + name, today = new Date().toISOString().slice(0, 10);
+      if (localStorage.getItem(k) === today) return;
+      localStorage.setItem(k, today);
+      var row = { source: 'ev', path: 'ev:' + String(name).slice(0, 40), first_time: false };
+      if (global.CHAEKSA_TRACK_VID) { var vid = localStorage.getItem('chaeksa.vid'); if (vid) row.vid = vid; }
+      fetch(CFG.url + '/rest/v1/visits', {
+        method: 'POST', keepalive: true,
+        headers: { 'content-type': 'application/json', apikey: CFG.anonKey, Authorization: 'Bearer ' + CFG.anonKey, Prefer: 'return=minimal' },
+        body: JSON.stringify(row),
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  global.ChaeksaTrack = { sourceOf: sourceOf, event: event };
 })(window);
