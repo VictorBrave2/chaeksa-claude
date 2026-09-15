@@ -1,0 +1,121 @@
+<meta charset="utf-8">
+<title>붙여넣기 · 왜 하루는 밤 11시에 시작하나요</title>
+<style>
+ :root{ --ink:#222; --sub:#888; --line:#e8e8e8; --pt:#03c75a; color-scheme:light; }
+ *{box-sizing:border-box}
+ body{margin:0;background:#f4f4f4;color:var(--ink);
+   font-family:"Noto Sans KR","Malgun Gothic",-apple-system,sans-serif}
+ .bar{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);
+   padding:14px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;z-index:9}
+ .bar b{font-size:14px}
+ .bar span{font-size:13px;color:var(--sub);line-height:1.6}
+ .bar button{background:var(--pt);color:#fff;border:0;border-radius:6px;
+   padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+ .wrap{max-width:720px;margin:22px auto;background:#fff;padding:34px 30px 50px;
+   border:1px solid var(--line)}
+ #doc h2{font-size:22px;line-height:1.4;margin:0 0 6px;font-weight:700}
+ #doc .alt{font-size:13.5px;color:var(--sub);margin:0 0 24px}
+ #doc h3{font-size:20px;font-weight:700;margin:30px 0 14px;line-height:1.45}
+ #doc p{font-size:16px;line-height:1.8;margin:0 0 15px}
+ #doc hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+ #doc blockquote{margin:0 0 16px;padding:14px 16px;background:#f7f7f7;
+   border-left:3px solid var(--pt)}
+ #doc blockquote p{font-size:15px;line-height:1.9;margin:0}
+ #doc .tag{font-size:13px;color:var(--pt);margin-top:26px}
+ .done{background:#111 !important}
+</style>
+
+<div class="bar">
+  <button id="copy">본문 전체 복사</button>
+  <b>왜 하루는 밤 11시에 시작하나요</b>
+  <span>복사 → 네이버 글쓰기 본문에 <b>Ctrl+V</b> → 제목만 따로 입력<br>제목은 검색창에 치는 질문 그대로, 첫 줄이 답.</span>
+</div>
+
+<div class="wrap">
+  <div id="doc">
+    <h2>왜 하루는 밤 11시에 시작하나요</h2>
+    <p class="alt">제목 대안 — 사주에서 하루가 바뀌는 시간 / 자시는 몇 시부터 / 밤 11시에 태어나면 일주는</p>
+    <hr>
+    <p><b>답부터 드리면, 하루의 첫 시진인 자시(子時)가 밤 11시에 열리기 때문입니다.</b></p>
+    <p>자시는 해가 정북, 자정에 있는 두 시간입니다. 자정을 가운데 두고 앞뒤 한 시간씩입니다.</p>
+    <p>그래서 밤 11시부터 새벽 1시까지가 자시이고, 사주의 하루는 거기서 시작합니다.</p>
+    <p>그리고 그 11시는 시계의 11시가 아니라 해의 11시입니다. 날마다 조금씩 다릅니다.</p>
+    <hr>
+    <h3>먼저 — 열두 시진은 해의 자리로 나눕니다</h3>
+    <p>하루를 열둘로 나눈 것이 시진입니다. 두 시간이 한 칸입니다.</p>
+    <p>칸의 이름은 지지 열둘입니다. 자 축 인 묘 진 사 오 미 신 유 술 해.</p>
+    <p>오시(午時)는 해가 정남에 있는 두 시간이라 낮 11시부터 1시입니다.</p>
+    <p>자시는 그 반대편, 해가 정북 아래에 있는 두 시간입니다. 밤 11시부터 1시.</p>
+    <p>모든 시진이 정각을 가운데 두고 앞뒤 한 시간씩입니다. 그래서 홀수 시에 열립니다.</p>
+    <hr>
+    <h3>그러니까 하루는 자정이 아니라 자시에 바뀝니다</h3>
+    <p>달력의 하루는 자정 0시에 바뀝니다. 사주의 하루는 자시가 열리는 밤 11시에 바뀝니다.</p>
+    <p>11시 30분에 태어난 아이는 달력으로는 오늘이지만 사주로는 내일 일주입니다.</p>
+    <blockquote>
+      <p>▸ 9월 15일 밤 10시 30분 — 임진일 신해시</p>
+      <p>▸ 9월 15일 밤 11시 30분 — 계사일 임자시 (일주가 바뀜)</p>
+      <p>▸ 9월 16일 새벽 0시 30분 — 계사일 임자시</p>
+    </blockquote>
+    <p>저희 엔진 값입니다. 밤 11시를 넘는 순간 일주가 다음 날 글자로 넘어갑니다.</p>
+    <hr>
+    <h3>누가 정했나 — 정한 것이 아니라 해가 정합니다</h3>
+    <p>열두 시진은 물시계도 시계도 아니고 해의 자리로 나눈 것입니다.</p>
+    <p>한나라 때 이미 하루를 열두 지지로 불렀고, 그 뒤로 바뀐 적이 없습니다.</p>
+    <p>시계가 생긴 뒤에 「11시」라는 숫자가 붙었을 뿐, 순서는 해가 정했습니다.</p>
+    <hr>
+    <h3>그런데 시계의 11시가 아닙니다</h3>
+    <p>해의 자정은 시계의 자정과 다릅니다. 우리 시계가 동경 135도, 일본 시각이기 때문입니다.</p>
+    <p>대구는 해가 시계보다 약 26분 늦습니다. 여기에 계절마다 균시차 ±16분이 붙습니다.</p>
+    <blockquote>
+      <p>▸ 11월 초 — 대구 자시는 시계로 밤 11시 10분부터</p>
+      <p>▸ 2월 중순 — 대구 자시는 시계로 밤 11시 41분부터</p>
+    </blockquote>
+    <p>같은 「밤 11시」인데 날마다 30분이 흔들립니다.</p>
+    <hr>
+    <h3>저는 이걸 몸으로 먼저 알았습니다</h3>
+    <p>어떤 날은 밤 10시 59분에 하루가 바뀌는 걸 느꼈고, 어떤 날은 10시 45분에 느꼈습니다.</p>
+    <p>시계는 늘 같은데 경계가 왜 움직이는지 몰라서 한동안 당황스러웠습니다.</p>
+    <p>균시차를 알고 나서야 이해가 됐습니다. 해가 정북에 오는 시각이 날마다 다르니 자시도 같이 움직입니다.</p>
+    <p>제가 느낀 시각은 계산보다 조금 앞입니다. 몸이 먼저 아는 건지, 자정으로 하루를 나누는 야자시 유파가 맞는 건지는 아직 모릅니다.</p>
+    <p>모르는 것은 모른다고 적습니다.</p>
+    <hr>
+    <h3>그래서 출산택일에서는</h3>
+    <p>밤 11시 전후에 태어나는 아이는 일주 전체가 갈립니다. 시주만이 아닙니다.</p>
+    <p>제왕절개는 밤에 잡는 일이 드물지만, 유도분만은 밤을 넘기는 일이 흔합니다.</p>
+    <p>경계에 걸리면 저희 표는 그날 보정 시각을 적어 「몇 시 몇 분부터 다음 날」인지 알려 드립니다.</p>
+    <hr>
+    <h3>직접 확인해보실 수 있습니다</h3>
+    <p>생년월일시를 <a href="https://chaeksa.kr/?from=blog-why"><b>chaeksa.kr</b></a> 에 넣으면 시주와 연주가 바로 나옵니다.</p>
+    <p>절기 시각과 진태양시 보정이 들어가 있습니다. 회원가입 없이 무료입니다.</p>
+    <hr>
+    <p>출산을 앞두고 계시면 <b>달마다 모든 날 모든 시각 순위</b>를 올려 두었습니다.</p>
+    <p>표는 무료이고, 부모님 사주와 담당 선생님 시간까지 넣은 보고서는 99,000원입니다.</p>
+    <p><a href="https://naver.me/FdqTMrhq"><b>보고서 신청서 →</b></a></p>
+    <p class="tag">#자시 #사주하루시작 #밤11시 #일주 #진태양시 #균시차 #야자시 #출산택일 #사주 #만세력</p>
+  </div>
+</div>
+
+<script>
+document.getElementById('copy').onclick = async () => {
+  const el = document.getElementById('doc');
+  const clone = el.cloneNode(true);
+  clone.querySelector('h2')?.remove();
+  clone.querySelector('.alt')?.remove();
+  const html = clone.innerHTML;
+  const text = clone.innerText;
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([html], {type:'text/html'}),
+      'text/plain': new Blob([text], {type:'text/plain'}),
+    })]);
+  } catch (e) {
+    const r = document.createRange(); r.selectNodeContents(clone);
+    document.body.appendChild(clone);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    document.execCommand('copy'); sel.removeAllRanges(); clone.remove();
+  }
+  const b = document.getElementById('copy');
+  b.textContent = '복사됐습니다 — 네이버에 붙여넣으세요'; b.classList.add('done');
+  setTimeout(() => { b.textContent = '본문 전체 복사'; b.classList.remove('done'); }, 2600);
+};
+</script>

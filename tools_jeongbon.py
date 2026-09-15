@@ -28,6 +28,9 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     ('담당의시간표택일', 'taekil-doctor-schedule', '담당 선생님 수술 시간이 정해져 있으면 택일은 어떻게 하나요'),
     ('왜진태양시', 'taekil-solar-time', '왜 출산택일은 시계 시각이 아니라 진태양시로 보나요'),
     ('왜2026병오년', 'why-2026-byeongo', '왜 2026년은 병오년인가요'),
+    ('왜하루는밤11시', 'why-day-starts-11pm', '왜 하루는 밤 11시에 시작하나요'),
+    ('왜입춘이새해', 'why-ipchun-new-year', '왜 입춘이 새해인가요, 설이 아니고'),
+    ('왜일간이나', 'why-day-master-is-me', '왜 일간이 나인가요'),
 ]
 
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
