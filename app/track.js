@@ -61,6 +61,8 @@
     if (dnt === '1' || dnt === 'yes') return;
     if (!CFG.url || !CFG.anonKey) return;
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
+    // 내(클로드) 캡처·검사 방문은 세지 않는다 — 주소에 cap= 또는 scan= 이 붙는다(2026-09-15 헤드리스 캡처가 첫 방문 열 건으로 찍혔다).
+    try { var q = new URLSearchParams(location.search); if (q.has('cap') || q.has('scan')) return; } catch (e) {}
     if (tooSoon()) return;
 
     var row = {
