@@ -28,6 +28,11 @@ class Bal(HTMLParser):
 
 def strip(h): return re.sub(r'<[^>]+>','',h)
 
+def plain_first(doc):
+    """제목·부제 다음에 오는 본문 <p> 들(첫 <hr> 뒤부터). 답 첫 줄 검사용."""
+    after = doc.split('<hr>', 1)[1] if '<hr>' in doc else doc
+    return re.findall(r'<p>(.*?)</p>', after, re.S)[:3]
+
 def check_blog(name, s):
     """블로그형 — 네이버 스마트에디터에 붙여넣는 글."""
     bad, warn = [], []
@@ -51,6 +56,17 @@ def check_blog(name, s):
         warn.append('chaeksa.kr 링크가 없다. 유입이 착지할 곳이 없다')
     if not re.search(r'#\S', doc):
         warn.append('해시태그가 없다. 네이버 검색 노출이 준다')
+
+    # GEO 문(2026-09-15 사장님 「헛짓 = GEO 누락」) — 제목이 질문이면 첫 문단이 답이어야 한다.
+    # AI 답변 엔진은 질문 제목 바로 아래 문장을 집어 간다. 「답부터 드리면」이 없으면 인용이 안 된다.
+    h2 = re.search(r'<h2>(.*?)</h2>', doc, re.S)
+    title = strip(h2.group(1)) if h2 else ''
+    if re.search(r'(^왜 |나요\s*$|까요\s*$|인가요|하나요|얼마인가요)', title):
+        first = [strip(x) for x in plain_first(doc)]
+        if not first or not re.search(r'^(답부터|답은 |답부터 드리면)', first[0]):
+            bad.append('GEO — 제목이 질문(「%s」)인데 첫 문단이 답이 아니다. 「답부터 드리면, …」으로 시작해야 AI가 집어 간다' % title[:30])
+        elif len(first[0]) > 90:
+            warn.append('GEO — 답 첫 줄이 %d자. 한 문장으로 짧게 해야 그대로 인용된다' % len(first[0]))
 
     # 본문 문단만 본다. 부제(.alt)와 해시태그(.tag)는 길어도 정상이다.
     plain = re.findall('<p>(.*?)</p>', doc, re.S)
