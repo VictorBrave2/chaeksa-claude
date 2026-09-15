@@ -15,15 +15,17 @@ M = os.path.join(ROOT, 'marketing'); A = os.path.join(ROOT, 'app')
 TODAY = datetime.date.today().isoformat()
 
 MONTHS = [(2026, 9), (2026, 10), (2026, 11), (2026, 12), (2027, 1), (2027, 2), (2027, 3), (2027, 4), (2027, 5), (2027, 6), (2027, 7), (2027, 8)]
-PILLARS = [  # (붙여넣기 이름, slug, 짧은 제목)
-    ('곳마다다른이유', 'taekil-why-different', '출산택일이 곳마다 다르게 나오는 이유'),
-    ('제왕절개날짜정하기', 'taekil-cesarean-date', '제왕절개 날짜 정하기'),
-    ('후보고르는법', 'taekil-how-to-choose', '출산택일 후보 고르는 법'),
-    ('택일검증', 'taekil-verify', '받은 출산택일 검증하는 법'),
-    ('출산택일비용', 'taekil-price', '출산택일 비용'),
-    ('음력12월시작시간', 'taekil-lunar-december', '음력 12월은 언제 시작하나'),
-    ('그릇과타이밍', 'taekil-fate-vs-timing', '그릇이냐 타이밍이냐'),
-    ('담당의시간표택일', 'taekil-doctor-schedule', '담당 선생님 수술 시간이 정해져 있을 때'),
+# 제목은 사람이 검색창·AI에 묻는 말 그대로 — 「왜 …」「어떻게 …」(2026-09-15 사장님 「지금의 SEO·GEO는 전부 왜로 시작한다」).
+# 첫 줄(「이 글의 답 세 줄」)이 그 질문의 답이다. 원래 제목은 부제로 남긴다.
+PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
+    ('곳마다다른이유', 'taekil-why-different', '왜 출산택일은 곳마다 다르게 나올까요'),
+    ('제왕절개날짜정하기', 'taekil-cesarean-date', '제왕절개 날짜는 어떻게 정하나요'),
+    ('후보고르는법', 'taekil-how-to-choose', '출산택일 후보는 어떻게 고르나요'),
+    ('택일검증', 'taekil-verify', '받은 출산택일이 맞는지 어떻게 확인하나요'),
+    ('출산택일비용', 'taekil-price', '출산택일 비용은 얼마인가요'),
+    ('음력12월시작시간', 'taekil-lunar-december', '음력 12월은 왜 12월 1일에 시작하지 않나요'),
+    ('그릇과타이밍', 'taekil-fate-vs-timing', '왜 타고난 사주와 대운이 반대로 갈리나요'),
+    ('담당의시간표택일', 'taekil-doctor-schedule', '담당 선생님 수술 시간이 정해져 있으면 택일은 어떻게 하나요'),
 ]
 
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
@@ -149,8 +151,8 @@ def page(slug, title, desc, body, summary, faq, prev_next, monthly, tags):
 '''
 
 GEN_FAQ = [
-    ("출산택일에서 시계 시각과 사주의 시각은 왜 다른가요?", "한국 표준시는 동경 135도 기준이라 지역마다 태양시가 시계보다 24~34분 늦습니다(서울 32분, 대구·창원 26분, 부산 24분). 여기에 계절마다 균시차가 붙어, 예를 들어 오후 3시 정각 수술은 신시가 아니라 미시가 될 수 있습니다. 병원에는 시계 시각으로 경계를 넘긴 시각을 말해야 합니다."),
-    ("블로그 표만 보고 날짜를 정해도 되나요?", "표는 아이의 원국(타고난 네 기둥)만 본 첫 겹입니다. 실제 택일은 대운, 담당 선생님 수술 가능 시간, 부모·형제 사주와의 충, 무엇을 앞세우는지까지 네 겹을 더 얹어야 하며 그때 순위가 바뀝니다. 출산 날짜는 의사가 정하고, 택일은 그 범위 안에서 고르는 참고자료입니다."),
+    ("왜 출산택일은 시계 시각이 아니라 진태양시로 보나요?","한국 표준시는 동경 135도 기준이라 지역마다 태양시가 시계보다 24~34분 늦습니다(서울 32분, 대구·창원 26분, 부산 24분). 여기에 계절마다 균시차가 붙어, 예를 들어 오후 3시 정각 수술은 신시가 아니라 미시가 될 수 있습니다. 병원에는 시계 시각으로 경계를 넘긴 시각을 말해야 합니다."),
+    ("왜 표만 보고 출산 날짜를 정하면 안 되나요?","표는 아이의 원국(타고난 네 기둥)만 본 첫 겹입니다. 실제 택일은 대운, 담당 선생님 수술 가능 시간, 부모·형제 사주와의 충, 무엇을 앞세우는지까지 네 겹을 더 얹어야 하며 그때 순위가 바뀝니다. 출산 날짜는 의사가 정하고, 택일은 그 범위 안에서 고르는 참고자료입니다."),
 ]
 
 def build():
@@ -166,7 +168,7 @@ def build():
         title, tags, body = transform(doc_of(read(src)), slug)
         summ = summary_lines(body, True)
         desc = f'{y}년 {mo}월 출산택일 — 모든 날 모든 시각을 시진 단위로 전부 계산한 순위. 제왕절개·유도분만 날짜 고를 때 시계 시각 경계와 표가 못 보는 것까지.'
-        faq = [(f'{y}년 {mo}월 출산택일에서 가장 좋은 자리는 언제인가요?', ' / '.join(summ) + ' (원국만 본 순위이며, 시계 시각은 지역 보정을 거친 값입니다.)')] + GEN_FAQ
+        faq = [(f'{y}년 {mo}월 출산택일, 언제가 제일 좋나요?',' / '.join(summ) + ' (원국만 본 순위이며, 시계 시각은 지역 보정을 거친 값입니다.)')] + GEN_FAQ
         prev = (f'taekil-{items[i-1][0]}-{items[i-1][1]:02d}', f'{items[i-1][0]}년 {items[i-1][1]}월') if i > 0 else None
         nxt = (f'taekil-{items[i+1][0]}-{items[i+1][1]:02d}', f'{items[i+1][0]}년 {items[i+1][1]}월') if i + 1 < len(items) else None
         open(os.path.join(A, slug + '.html'), 'wb').write(page(slug, title, desc, body, summ, faq, (prev, nxt), True, tags).replace('\n', '\r\n').encode('utf-8'))
@@ -175,10 +177,12 @@ def build():
     for name, slug, short in PILLARS:
         src = os.path.join(M, f'붙여넣기-{name}.html')
         if not os.path.exists(src): print('없음', name); continue
-        title, tags, body = transform(doc_of(read(src)), slug)
+        title0, tags, body = transform(doc_of(read(src)), slug)
+        body = '<p class="meta" style="margin-top:-8px">' + html.escape(title0) + '</p>\n' + body   # 원래 제목은 부제
+        title = short                                                                          # H1·title 은 질문
         summ = summary_lines(body, False)
         desc = (strip(' '.join(summ)))[:150]
-        faq = [(short + '?', ' '.join(summ))] + GEN_FAQ
+        faq = [(short, ' '.join(summ))] + GEN_FAQ
         open(os.path.join(A, slug + '.html'), 'wb').write(page(slug, title, desc, body, summ, faq, None, False, tags).replace('\n', '\r\n').encode('utf-8'))
         out.append((slug, short, title)); sitemap.append(slug)
     # sitemap
