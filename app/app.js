@@ -3844,6 +3844,16 @@
       try { await C.sendMagicLink(v); cloudMsg('메일을 보냈습니다. 링크를 눌러주세요.', true); }
       catch (e) { cloudMsg(e.message); }
     };
+    // 비밀번호 로그인 — 심사관 테스트 계정용(2026-09-15, 토스 FAQ 10). 위 이메일 칸 + 비밀번호 칸.
+    const bpw = $('btnPw');
+    if (bpw) bpw.onclick = async () => {
+      const v = $('loginEmail').value.trim(), pw = $('loginPw').value;
+      if (!v) { $('loginEmail').focus(); return; }
+      if (!pw) { $('loginPw').focus(); return; }
+      cloudMsg('로그인 중…');
+      try { await C.signInWithPassword(v, pw); location.reload(); }
+      catch (e) { cloudMsg(e.message); }
+    };
     if (bs) bs.onclick = () => cloudSync(true);
     if (bo) bo.onclick = () => { C.signOut(); renderCloud(); cloudMsg('로그아웃했습니다.'); };
     const bp = $('btnPurge');

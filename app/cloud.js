@@ -83,6 +83,24 @@
     }
     return true;
   }
+  /** 이메일 + 비밀번호 로그인(2026-09-15). 토스 카드사 심사관은 카카오·매직링크로는 들어올 수 없어서
+   *  「심사관이 확인할 수 있는 테스트 계정(아이디/비밀번호)」이 필요하다(토스 FAQ 10). 계정은 사장님이
+   *  Supabase 대시보드(Authentication → Add user, 비밀번호 지정)에서 만든다 — 여기서는 만들지 않는다. */
+  async function signInWithPassword(addr, pw) {
+    if (!enabled()) throw new Error('서버 동기화가 아직 설정되지 않았습니다.');
+    const res = await fetch(CFG.url + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: CFG.anonKey, 'content-type': 'application/json' },
+      body: JSON.stringify({ email: addr, password: pw }),
+    });
+    if (!res.ok) {
+      let msg = '로그인하지 못했습니다.';
+      try { const j = await res.json(); msg = j.msg || j.error_description || j.message || msg; } catch (e) {}
+      throw new Error(msg);
+    }
+    saveSession(await res.json());
+    return true;
+  }
   // 출산택일 신청서 초안·접수 요약·로그인 복귀 표시 — 로그아웃·탈퇴 때 이 기기에 남기지 않는다(2026-09-11 검토).
   const 신청지움 = () => {
     try { ['chaeksa.taekil.draft', 'chaeksa.taekil.sent', 'chaeksa.return'].forEach((k) => localStorage.removeItem(k)); } catch (_) {}
@@ -249,7 +267,7 @@
   }
 
   global.ChaeksaCloud = {
-    enabled, signedIn, email, sendMagicLink, signInWith, signOut, deleteAccount, captureRedirect, me, api,
+    enabled, signedIn, email, sendMagicLink, signInWithPassword, signInWith, signOut, deleteAccount, captureRedirect, me, api,
     pull, push, pushSoon, session, token,
   };
 })(window);
