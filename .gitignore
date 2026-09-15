@@ -18,3 +18,6 @@ app/_probe.html
 app/_*.html
 __pycache__/
 *.pyc
+
+# 심사관 계정 비밀번호가 든 파일 — 저장소에 올리지 않는다(2026-09-15)
+marketing/토스_결제경로_chaeksa.pptx

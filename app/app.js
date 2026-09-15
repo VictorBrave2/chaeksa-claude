@@ -3655,6 +3655,15 @@
     const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
   }
   $('btnSettings').onclick = openSettings;
+  // 상단 「로그인」 — 설정 안에 묻혀 있던 로그인을 밖으로(2026-09-15 사장님 「설정에서 로그인을 밖으로 빼줘」).
+  // 설정 창을 열고 로그인 칸으로 내려가 이메일 접이를 편다. 로그인돼 있으면 단추는 숨는다(renderCloud).
+  const bl = $('btnLogin');
+  if (bl) bl.onclick = () => {
+    openSettings();
+    const box = $('cloudOut'); if (!box) return;
+    const fold = box.querySelector('details.mailfold'); if (fold) fold.open = true;
+    setTimeout(() => { try { box.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) {} }, 50);
+  };
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
   $('btnSaveSettings').onclick = () => {
     const cur = AI.settings();
@@ -3800,6 +3809,7 @@
     const inn = C.signedIn();
     $('cloudOut').classList.toggle('hide', inn);
     $('cloudIn').classList.toggle('hide', !inn);
+    if ($('btnLogin')) $('btnLogin').classList.toggle('hide', inn);
     const pb = $('btnPurge'), pn = $('purgeNote');
     if (pb) pb.classList.toggle('hide', !inn);
     if (pn) pn.classList.toggle('hide', !inn);
@@ -3833,7 +3843,7 @@
   }
   function wireCloud() {
     const C = Cloud(); if (!C || !C.enabled()) { renderCloud(); return; }
-    const bk = $('btnKakao'), bg = $('btnGoogle'), bm = $('btnMail'),
+    const bk = $('btnKakao'), bg = null /* 구글 로그인 삭제(2026-09-15 사장님) */, bm = $('btnMail'),
           bs = $('btnSyncNow'), bo = $('btnLogout');
     if (bk) bk.onclick = () => { try { C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };
     if (bg) bg.onclick = () => { try { C.signInWith('google'); } catch (e) { cloudMsg(e.message); } };
