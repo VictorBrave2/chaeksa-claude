@@ -253,7 +253,9 @@ function run(CFG) {
   const 합수 = r => (r.가족어울림 === '—' ? 0 : r.가족어울림.split(' / ').length);
   const by = rows.slice().sort((x, y) => y._s - x._s || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
   // 원국+대운 종합 — 그릇이 먼저라는 통설대로 60:40. 비중은 의뢰인에게 공개한다.
-  rows.forEach(r => { r._t = Math.round(r._s * 0.6 + r._du * 0.4); });
+  // 원점수(_s)는 100에서 시작해 보너스가 붙으면 130도 넘는다. 종합은 0~100으로 편 「점수」로 계산해야
+  // 대운(0~100)과 눈금이 맞는다. 원점수로 곱했더니 111점이 나왔다(2026-09-15 사장님 「111점은 뭐야」).
+  rows.forEach(r => { r._t = Math.round(r.점수 * 0.6 + r._du * 0.4); });
   const byT = rows.slice().sort((x, y) => y._t - x._t || 합수(y) - 합수(x) || x._m - y._m || x._d - y._d || x._hh - y._hh);
   by.forEach((r, i) => r.순위 = i + 1);
 
@@ -295,17 +297,34 @@ function run(CFG) {
     보정폭: `기간 중간 기준 ${midShift}분 (경도+균시차, 날짜마다 1~2분 다름)`,
     // 한 축으로 점점 좁힌다: 원국 → 대운을 얹고 → 병원 시간(평일 09~17)만 남긴다.
     // 세 번째를 다른 기준으로 다시 섞으면 안 된다. ②의 순위에서 거른 것이 ③이다.
-    // 네 겹(2026-09-15 사장님): ① 날짜만(원국) ② 대운을 넣고 ③ 가족을 넣고(충하는 자리를 뺀다 — 점수는 안 준다)
-    // ④ 종합 + 수술 가능 시간(CFG.수술창이 있으면 그 요일·시각, 없으면 평일 09~17). 뒤 겹은 앞 겹을 거른 것이다.
+    // 네 겹(2026-09-15 사장님): ① 원국만 ② 대운 넣고 ③ 수술 가능 시간 넣고(CFG.수술창, 없으면 평일 09~17)
+    // ④ 수술 가능 시간 + 가족 넣고(충·복음 자리를 뺀다 — 점수는 안 준다). 뒤 겹은 앞 겹을 거른 것이다.
+    // ③ 1위와 ④ 1위가 다르면 그 차이가 곧 맞바꿈이다 — 따로 계산하지 않고 두 목록을 나란히 보여 준다.
     원국_TOP5: by.slice(0, 5).map(f),
     원국대운_TOP5: byT.slice(0, 5).map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
-    원국대운가족_TOP5: byT.filter(r => r.가족부딪힘 === '없음').slice(0, 5)
-      .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
-    종합_수술가능_TOP5: byT.filter(r => r.가족부딪힘 === '없음' && 수술가능(r)).slice(0, 5)
-      .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
-    // ③에서 빠졌지만 수술 창 안에서 종합이 더 높은 자리 — 맞바꿈으로 따로 적는다(④의 답이 되지는 않는다)
-    가족충_있는_수술가능_상위3: byT.filter(r => r.가족부딪힘 !== '없음' && 수술가능(r)).slice(0, 3)
+    수술가능_TOP5: byT.filter(r => 수술가능(r)).slice(0, 5)
       .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}`, 가족충: r.가족부딪힘 })),
+    수술가능_가족_TOP5: byT.filter(r => 수술가능(r) && r.가족부딪힘 === '없음').slice(0, 5)
+      .map(r => Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}` })),
+    // ⑤ 최종 후보 — ③·④ 상위를 합쳐 세 고전을 붙인다. 순서는 기계가 아니라 사람이 정한다(SKILL.md 「최종 TOP5」).
+    최종후보: (() => {
+      const pool = []; const seen = new Set();
+      byT.filter(r => 수술가능(r)).slice(0, 5).concat(byT.filter(r => 수술가능(r) && r.가족부딪힘 === '없음').slice(0, 5))
+        .forEach(r => { const k = r._m + '/' + r._d + ' ' + r._hh; if (!seen.has(k)) { seen.add(k); pool.push(r); } });
+      const CL = window.ChaeksaClassic;
+      return pool.map(r => {
+        let 자평 = '-', 궁통 = '-', 적천 = '-';
+        try {
+          const R = E.calc({ year: y1, month: r._m, day: r._d, hour: r._hh, minute: 30, gender: CFG.성별 || 'M',
+                             place: CFG.지역 || 'KR:서울', longitude: lon, tzOffset: null, solarCorrection: true });
+          if (CL && CL.japyung) { const j = CL.japyung(R); 자평 = `${j.격}격 ${j.성 ? (j.score >= 50 ? '성격' : '구응') : (j.score > 0 ? '기신 있음' : '파격')}${j.상신 ? ' · 상신 ' + j.상신 : ''}`; }
+          if (CL && CL.gungtong) { const g2 = CL.gungtong(R); 궁통 = `필요 ${g2.need} ${g2.hasMain ? '투출' : g2.hasAux ? '보좌만' : '없음'} ${g2.score}`; }
+          const 중화 = 1 - Math.min(1, Math.abs(r.강약값 - 0.5) * 2.6), nC = r.충 === '없음' ? 0 : r.충.split(', ').length;
+          적천 = Math.round(중화 * 48 + (r.유통 / 5) * 38 + Math.max(0, 14 - nC * 7));
+        } catch (e) {}
+        return Object.assign(f(r), { 종합: `대운 ${r._du} 종합 ${r._t}`, 가족충: r.가족부딪힘, 자평, 궁통, 적천 });
+      });
+    })(),
     가족충없는3: by.filter(r => r.가족부딪힘 === '없음').slice(0, 3).map(f),
     최하위3: by.slice(-3).reverse().map(f),
     등급분포: ['정규','연장','야간','주말'].map(g => `${g} ${rows.filter(r => r.등급 === g).length}`).join(' · '),
