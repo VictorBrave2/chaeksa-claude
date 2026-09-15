@@ -31,6 +31,9 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     ('왜하루는밤11시', 'why-day-starts-11pm', '왜 하루는 밤 11시에 시작하나요'),
     ('왜입춘이새해', 'why-ipchun-new-year', '왜 입춘이 새해인가요, 설이 아니고'),
     ('왜일간이나', 'why-day-master-is-me', '왜 일간이 나인가요'),
+    ('왜60인가', 'why-sixty', '왜 60갑자인가요, 왜 하필 60인가요'),
+    ('왜사주는넷', 'why-four-pillars', '왜 사주는 네 기둥인가요, 다섯이 아니고'),
+    ('왜합이되면죽나', 'why-hap-dies', '왜 합이 되면 죽는다고 하나요'),
 ]
 
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
@@ -78,7 +81,12 @@ def page(slug, title, desc, body, summary, faq, prev_next, monthly, tags):
          "datePublished": TODAY, "dateModified": TODAY, "inLanguage": "ko-KR",
          "author": {"@type": "Organization", "name": "책사", "url": "https://chaeksa.kr/"},
          "publisher": {"@type": "Organization", "name": "책사", "url": "https://chaeksa.kr/", "logo": {"@type": "ImageObject", "url": "https://chaeksa.kr/icon-512.png"}},
-         "image": "https://chaeksa.kr/og.jpg", "keywords": ', '.join(tags[:10]), "about": "출산택일"},
+         "image": "https://chaeksa.kr/og.jpg", "keywords": ', '.join(tags[:10]), "about": "출산택일",
+         # GEO(2026-09-15): AI 답변 엔진이 집어 가는 문장을 명시한다 — 「이 글의 답 세 줄」이 abstract 이고 speakable 이다.
+         "abstract": ' '.join(summary),
+         "speakable": {"@type": "SpeakableSpecification", "cssSelector": [".note.answer", "h1"]},
+         "citation": ["자평진전(청 심효첨)", "적천수(임철초 주석)", "궁통보감(통용 판본 조후용신표)", "삼명통회(만민영)"],
+         "isAccessibleForFree": True},
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "책사", "item": "https://chaeksa.kr/"},
             {"@type": "ListItem", "position": 2, "name": "출산택일", "item": "https://chaeksa.kr/taekil.html"},

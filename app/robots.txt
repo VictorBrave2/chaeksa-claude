@@ -2,8 +2,31 @@
 User-agent: *
 Allow: /
 
+# AI 답변 엔진 크롤러 — 막지 않는다 (GEO, 2026-09-15). 「왜 …」 질문에 우리 정본이 인용되는 것이 목적이다.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Yeti
+Allow: /
+User-agent: Bingbot
+Allow: /
+
 # 시험용 페이지는 색인하지 않는다 — 검색 결과에 뜨면 신뢰만 깎인다
 Disallow: /cards.html
+Disallow: /tests_panjeong.html
 Disallow: /tools/
 
+# AI 엔진용 안내
+# llms.txt: https://chaeksa.kr/llms.txt
 Sitemap: https://chaeksa.kr/sitemap.xml
