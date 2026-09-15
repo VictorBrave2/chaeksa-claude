@@ -104,6 +104,47 @@
         });
       });
     } catch (e) {}
+    // 54조 운의 충(사장님 09-16 「운에서 편관의 뿌리를 쳤다 — 길한가 흉한가」 → 격 역할로) — 운 지지가 원국 지지를 충하면
+    // 쇠왕(36조 두 배 잣대: 치는 오행 지지 힘 합산 ≥ 맞는 오행의 두 배)으로 뽑힘/흔들림을 가른다. 뽑힌 지지는 뿌리터에서 빠지고
+    // 거기 통근한 천간이 힘을 잃는다. 합에 쓰인 자리는 충을 못 한다(6조). 길흉은 판정 모듈(panjeong 범주)이 격 역할로 정한다.
+    out.운충 = [];
+    try {
+      const 마주 = { 0: 6, 6: 0, 1: 7, 7: 1, 2: 8, 8: 2, 3: 9, 9: 3, 4: 10, 10: 4, 5: 11, 11: 5 };
+      const 육합 = { 0: 1, 1: 0, 2: 11, 11: 2, 3: 10, 10: 3, 4: 9, 9: 4, 5: 8, 8: 5, 6: 7, 7: 6 };
+      const 지이름 = { year: '연지', month: '월지', day: '일지', hour: '시지' };
+      const 원자리 = 자리.map(([k, , w]) => ({ k, 이름: 지이름[k], branch: pillars[k].branch, w }));
+      const 원지 = 원자리.map(x => x.branch);
+      const 합자리 = {};
+      try { (E.branchRels(pillars).성립 || []).forEach(x => { if (x.종류 !== '충') (x.자리 || []).forEach(n => { 합자리[n] = true; }); }); } catch (e) {}
+      const 오행힘 = (elem) => 뿌리터.filter(([b]) => E.BRANCH_ELEM[b] === elem).reduce((a, [, w]) => a + w, 0);
+      (운천간들 || []).filter(u => u.branch != null).forEach(u => {
+        // 운 지지가 원국 지지와 육합이면 합에 쓰인다 — 단 그 원국 지지가 이미 원국 안 합(삼합·육합)에 들었으면 못 잡는다(6조 「한 지지는 하나와만」, 삼합 > 육합).
+        if (원자리.some(x => x.branch === 육합[u.branch] && !합자리[x.이름])) return;
+        if ((E.samhapOf(뿌리터) || []).some(국 => 국.글자.indexOf(u.branch) >= 0)) return;            // 운 지지가 국에 들었음
+        원자리.forEach(x => {
+          if (마주[u.branch] !== x.branch) return;
+          const 항 = { 운: u.name || '운', 운지: E.BRANCHES[u.branch], 자리: x.이름, 원지: E.BRANCHES[x.branch], 뽑힘: false, 잃은: [] };
+          if (합자리[x.이름]) { 항.안섬 = '합에 쓰인 자리'; out.운충.push(항); return; }
+          const 치는 = 오행힘(E.BRANCH_ELEM[u.branch]), 맞는 = 오행힘(E.BRANCH_ELEM[x.branch]);
+          항.치는 = Math.round(치는 * 100) / 100; 항.맞는 = Math.round(맞는 * 100) / 100;
+          항.뽑힘 = 치는 >= 2 * 맞는;
+          if (항.뽑힘) {
+            const i = 뿌리터.findIndex(([b, w]) => b === x.branch && w === x.w);
+            if (i >= 0) 뿌리터.splice(i, 1);
+            out.forEach(g => {
+              if (g.일간) return;
+              const 새 = Math.round(E.stemPower(g.화stem != null ? g.화stem : g.stem, 뿌리터) * 100) / 100;
+              if (새 < g.힘) {
+                항.잃은.push({ key: g.key, 이름: g.이름, 글자: g.글자, 전: g.힘, 후: 새 });
+                g.이력.push({ 조: '54조', 말: 항.운 + ' ' + 항.운지 + '이 ' + x.이름 + ' ' + 항.원지 + '를 뽑음(' + 항.치는 + ' vs ' + 항.맞는 + ') — 뿌리 잃음, 힘 ' + g.힘 + ' → ' + 새 });
+                g.힘 = 새;
+              }
+            });
+          }
+          out.운충.push(항);
+        });
+      });
+    } catch (e) {}
     out.forEach(g => { g.산다 = g.일간 || (g.힘 >= 0.5 && !g.합거); if (!g.일간 && !g.합거 && g.힘 < 0.5) g.이력.push({ 조: '33조', 말: '힘 ' + g.힘 + ' (0~2.0) < 0.5 — 무근' }); });
     return out;
   }
@@ -220,7 +261,7 @@
     const 끊김 = 쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다 && !r.to.지지).filter(r =>
       쌍.some(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘)).map(r =>
       r.from.글자 + '→' + r.to.글자 + ' 생이 약하다(' + 쌍.filter(q => q.관계 === '극' && q.to === r.from && q.from.산다 && !q.막힘).map(q => q.from.글자).join('·') + '이 ' + r.from.글자 + '을 친다)');
-    return { 글자, 궁, 지장간, 쌍, 닿음, 통관, 제복, 힘차이, 끊김, 격 };
+    return { 글자, 궁, 지장간, 쌍, 닿음, 통관, 제복, 힘차이, 끊김, 격, 운충: 글자.운충 || [] };
   }
 
   /** 사람이 읽을 요약 — 한 줄씩. */
