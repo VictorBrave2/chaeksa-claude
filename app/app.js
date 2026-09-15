@@ -1539,7 +1539,7 @@
     $('nokpaeNote').innerHTML = '<div class="manbox">' + (w.lines || []).map((t, i) => {
       const k = String(t).split(' — ')[0];   // 꼬리(「크게 들고 크게 도는 돈」)는 감성이라 안 찍는다
       return '<div class="mn"><span class="mn-k">' + esc(이름표[i] || '') + '</span><span class="mn-v">' + esc(k) + '</span></div>';
-    }).join('') + '<p class="mns">재성·식상·비겁이 어디에 서 있는지로만 읽습니다. 그릇의 크기나 등수는 매기지 않습니다.</p></div>';
+    }).join('') + '<p class="mns">재성·식상·비겁이 어디에 드러나 있는지로만 읽습니다. 그릇의 크기나 등수는 매기지 않습니다.</p></div>';
   }
 
   // ───── 택일 1:1 상담 문의 ─────
