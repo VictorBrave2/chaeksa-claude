@@ -25,9 +25,10 @@ const 만 = (pl) => SM.만들기({ pillars: pl, dayStem: pl.day.stem }, new Date
 
 // ── 사장님 명식이 원형이다 (docs/53 여덟) — 받는 것 甲이 살아 있고 내놓는 것은 속에만(월지 辰 상관) → 수문
 const 나 = 사주('壬申', '甲辰', '丁卯', '庚子');
-검사('원형 — 사장님 명식은 「수문이 닫힌 발전소」', () => {
+검사('원형 — 사장님 명식(丁火 일간)은 수문 패턴 · 화덕 계열', () => {
   const d = 만(나); const 문제 = [];
-  if (!d.장면 || d.장면.키 !== '수문') 문제.push('장면 기대 수문, 실제 ' + (d.장면 && d.장면.키));
+  if (!d.장면 || d.장면.키 !== '수문') 문제.push('패턴 기대 수문, 실제 ' + (d.장면 && d.장면.키));
+  if (d.장면 && d.장면.기계 !== '화덕') 문제.push('기계 기대 화덕(丁火 일간), 실제 ' + d.장면.기계);
   const 받 = d.사슬.find(x => x.key === '받는'), 내 = d.사슬.find(x => x.key === '내놓는');
   if (받.상태 !== '있음') 문제.push('받는 것이 있음이어야 함, 실제 ' + 받.상태);
   if (내.흐름) 문제.push('내놓는 것이 흐르면 안 됨, 실제 ' + 내.상태);
@@ -51,7 +52,7 @@ for (let t = 0; t < 600; t++) {
   let d; try { d = 만(pl); } catch (e) { continue; }
   const k = d.장면 ? d.장면.키 : '보류';
   분포[k] = (분포[k] || 0) + 1;
-  본문모음.push({ k, 이유: d.이유.join(' ') });
+  본문모음.push({ k, 이유: d.이유.join(' '), 이름: d.장면 ? d.장면.이름 : '(보류)' });
 }
 검사('구별 가능성 — 장면이 한 가지로 쏠리지 않는다', () => {
   const n = 본문모음.length, 문제 = [];
@@ -70,27 +71,53 @@ for (let t = 0; t < 600; t++) {
 검사('59조 — 장면 글에 새 주장이 없다', () => {
   const 금지 = /부자|정신력|대박|반드시|틀림없|운명|성공할|적중|확률|%|퍼센트/;
   const 문제 = [];
-  Object.keys(SM.장면표).forEach(k => {
-    const v = SM.장면표[k];
-    ['그림', '조건', '막힘', '실험', '제외'].concat().forEach(f => {
-      if (금지.test(v[f])) 문제.push(k + '.' + f + ' 에 금지어: ' + v[f]);
-    });
+  Object.keys(SM.패턴표).forEach(k => {
+    const v = SM.패턴표[k];
+    ['조건', '막힘', '실험', '제외'].forEach(f => { if (금지.test(v[f])) 문제.push(k + '.' + f + ' 에 금지어: ' + v[f]); });
     (v.질문 || []).forEach(q => { if (금지.test(q)) 문제.push(k + '.질문 에 금지어: ' + q); });
+  });
+  Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
+    if (k === '기계') return;
+    SM.그림표[e][k].forEach(t2 => { if (금지.test(t2)) 문제.push('그림표 ' + e + '.' + k + ' 에 금지어: ' + t2); });
+  }));
+  return 문제;
+});
+검사('58조 — 패턴마다 다섯 칸이 다 있다', () => {
+  const 문제 = [];
+  Object.keys(SM.패턴표).forEach(k => {
+    const v = SM.패턴표[k];
+    ['조건', '막힘', '실험', '제외'].forEach(f => { if (!v[f]) 문제.push(k + ' 에 ' + f + ' 가 없다'); });
+    if (!(v.질문 || []).length) 문제.push(k + ' 에 질문이 없다');
   });
   return 문제;
 });
-검사('58조 — 장면마다 일곱 칸이 다 있다', () => {
+검사('59조 — 일간 오행 다섯이 패턴 다섯을 다 갖는다', () => {
   const 문제 = [];
-  Object.keys(SM.장면표).forEach(k => {
-    const v = SM.장면표[k];
-    ['이름', '그림', '조건', '막힘', '실험', '제외'].forEach(f => { if (!v[f]) 문제.push(k + ' 에 ' + f + ' 가 없다'); });
-    if (!(v.질문 || []).length) 문제.push(k + ' 에 질문이 없다');
+  [0, 1, 2, 3, 4].forEach(e => {
+    const g = SM.그림표[e];
+    if (!g) { 문제.push('오행 ' + e + ' 그림이 없다'); return; }
+    if (!g.기계) 문제.push('오행 ' + e + ' 에 기계 이름이 없다');
+    Object.keys(SM.패턴표).forEach(k => {
+      if (!g[k] || g[k].length !== 2) 문제.push('오행 ' + e + ' 의 ' + k + ' 그림이 없거나 두 줄이 아니다');
+    });
+  });
+  return 문제;
+});
+검사('59조 — 같은 패턴이라도 일간 오행마다 장면 이름이 다르다', () => {
+  const 문제 = [];
+  Object.keys(SM.패턴표).forEach(k => {
+    const 이름들 = [0, 1, 2, 3, 4].map(e => SM.그림표[e][k][0]);
+    const 유일 = {}; 이름들.forEach(n => { 유일[n] = 1; });
+    if (Object.keys(유일).length !== 5) 문제.push(k + ' 의 장면 이름이 겹친다: ' + 이름들.join(' / '));
   });
   return 문제;
 });
 검사('28조 — 「~형입니다」 꼴로 사람을 가르지 않는다', () => {
   const 문제 = [];
-  Object.keys(SM.장면표).forEach(k => { if (/형입니다|형이에요|타입/.test(SM.장면표[k].이름 + SM.장면표[k].그림)) 문제.push(k + ' 이 유형 이름으로 끝난다'); });
+  Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
+    if (k === '기계') return;
+    if (/형입니다|형이에요|타입/.test(SM.그림표[e][k].join(' '))) 문제.push(e + '.' + k + ' 이 유형 이름으로 끝난다');
+  }));
   return 문제;
 });
 
