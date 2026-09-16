@@ -37,6 +37,7 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     ('내사주좋은지', 'how-good-is-my-saju', '내 사주가 좋은지 어떻게 아나요'),
     ('왜뿌리없는글자', 'why-rootless-letters', '왜 뿌리 없는 글자는 쓰이지 않나요 — 믿음과 행동'),
     ('왜충이일어나나', 'why-chung-happens', '왜 충이 일어나고, 충이 오면 무엇을 해야 하나요'),
+    ('왜오행은다섯', 'why-five-elements', '왜 오행은 다섯인가요, 넷도 여섯도 아니고'),
 ]
 
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
