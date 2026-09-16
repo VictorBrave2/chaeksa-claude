@@ -8,7 +8,7 @@
 <p style="font-size:12px;color:#555">이 검사를 통과해도 명리가 맞는다는 뜻이 아니다. 글이 구체적이라는 뜻이다(docs/53 여섯).</p>
 <div id="out"></div>
 <script src="config.js"></script><script src="lunar.js"></script><script src="astro.js"></script><script src="engine.js"></script>
-<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=1"></script><script src="panjeong.js?t=1"></script><script src="seolmyeongseo.js?t=2"></script>
+<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=1"></script><script src="panjeong.js?t=1"></script><script src="seolmyeongseo.js?t=3"></script>
 <script>
 const E = ChaeksaEngine, SM = ChaeksaSeolmyeong;
 const S = E.STEMS, B = E.BRANCHES;
@@ -25,10 +25,12 @@ const 만 = (pl) => SM.만들기({ pillars: pl, dayStem: pl.day.stem }, new Date
 
 // ── 사장님 명식이 원형이다 (docs/53 여덟) — 받는 것 甲이 살아 있고 내놓는 것은 속에만(월지 辰 상관) → 수문
 const 나 = 사주('壬申', '甲辰', '丁卯', '庚子');
-검사('원형 — 사장님 명식(丁火 일간)은 수문 패턴 · 화덕 계열', () => {
+검사('원형 — 사장님 명식(정관격)은 수문 패턴 · 관리자 역할(지시에서 시작)', () => {
   const d = 만(나); const 문제 = [];
   if (!d.장면 || d.장면.키 !== '수문') 문제.push('패턴 기대 수문, 실제 ' + (d.장면 && d.장면.키));
-  if (d.장면 && d.장면.기계 !== '화덕') 문제.push('기계 기대 화덕(丁火 일간), 실제 ' + d.장면.기계);
+  if (d.장면 && d.장면.입구 !== '불러가는') 문제.push('입구 기대 불러가는(정관격), 실제 ' + d.장면.입구);
+  if (d.장면 && d.장면.역할 !== '관리자') 문제.push('역할 기대 관리자, 실제 ' + d.장면.역할);
+  if (d.장면 && !/관리자$/.test(d.장면.이름)) 문제.push('장면 이름이 역할로 안 끝난다: ' + d.장면.이름);
   const 받 = d.사슬.find(x => x.key === '받는'), 내 = d.사슬.find(x => x.key === '내놓는');
   if (받.상태 !== '있음') 문제.push('받는 것이 있음이어야 함, 실제 ' + 받.상태);
   if (내.흐름) 문제.push('내놓는 것이 흐르면 안 됨, 실제 ' + 내.상태);
@@ -76,11 +78,9 @@ for (let t = 0; t < 600; t++) {
     ['실험', '제외'].forEach(f => { if (금지.test(v[f])) 문제.push(k + '.' + f + ' 에 금지어: ' + v[f]); });
     (v.질문 || []).forEach(q => { if (금지.test(q)) 문제.push(k + '.질문 에 금지어: ' + q); });
   });
-  Object.keys(SM.조건표).forEach(e => Object.keys(SM.조건표[e]).forEach(k => SM.조건표[e][k].forEach(t2 => { if (금지.test(t2)) 문제.push('조건표 ' + e + '.' + k + ' 에 금지어: ' + t2); })));
-  Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
-    if (k === '기계') return;
-    SM.그림표[e][k].forEach(t2 => { if (금지.test(t2)) 문제.push('그림표 ' + e + '.' + k + ' 에 금지어: ' + t2); });
-  }));
+  Object.keys(SM.조건표).forEach(k => SM.조건표[k].forEach(t2 => { if (금지.test(t2)) 문제.push('조건표 ' + k + ' 에 금지어: ' + t2); }));
+  Object.keys(SM.그림표).forEach(k => SM.그림표[k].forEach(t2 => { if (금지.test(t2)) 문제.push('그림표 ' + k + ' 에 금지어: ' + t2); }));
+  Object.keys(SM.역할표).forEach(k => { if (금지.test(SM.역할표[k].설명)) 문제.push('역할표 ' + k + ' 에 금지어: ' + SM.역할표[k].설명); });
   return 문제;
 });
 검사('58조 — 패턴마다 제안 세 칸(질문·실험·제외)이 다 있다', () => {
@@ -93,24 +93,22 @@ for (let t = 0; t < 600; t++) {
   return 문제;
 });
 // ── 09-17 다시 씀 — 조건·막힘은 기계 다섯 × 패턴 다섯 스물다섯 벌이고, 글자 자리가 실제 글자로 채워진다.
-검사('59조 — 조건·막힘이 기계 다섯 × 패턴 다섯 스물다섯 벌 다 있고 글자 자리가 있다', () => {
+검사('59조 — 조건·막힘이 막힌 칸 다섯 벌 다 있고 글자 자리({A}~{E})가 있다', () => {
   const 문제 = [];
-  [0, 1, 2, 3, 4].forEach(e => {
-    const 벌 = SM.조건표[e];
-    if (!벌) { 문제.push('오행 ' + e + ' 조건표가 없다'); return; }
-    Object.keys(SM.패턴표).forEach(k => {
-      if (!벌[k] || 벌[k].length !== 2) { 문제.push('오행 ' + e + ' 의 ' + k + ' 조건·막힘이 없거나 두 줄이 아니다'); return; }
-      if (!/\{[A-E]\}/.test(벌[k][0])) 문제.push('오행 ' + e + ' 의 ' + k + ' 조건에 글자 자리가 없다 — 패턴 한 벌로 돌아간 것');
-      if (!/\{[A-E]\}/.test(벌[k][1]) && k !== '바깥일') 문제.push('오행 ' + e + ' 의 ' + k + ' 막힘에 글자 자리가 없다');
-      if (!/\{[A-E]\}/.test(벌[k][1]) && k === '바깥일' && !/겉에 없어/.test(벌[k][1])) 문제.push('오행 ' + e + ' 의 바깥일 막힘이 비어 있다');
-    });
-  });
-  // 같은 기계·같은 패턴이라도 부품 말이 기계마다 다르다
   Object.keys(SM.패턴표).forEach(k => {
-    const 조건들 = [0, 1, 2, 3, 4].map(e => SM.조건표[e][k][0]);
-    const 유일 = {}; 조건들.forEach(n => { 유일[n] = 1; });
-    if (Object.keys(유일).length !== 5) 문제.push(k + ' 의 조건이 기계마다 안 다르다');
+    const 벌 = SM.조건표[k];
+    if (!벌 || 벌.length !== 2) { 문제.push(k + ' 조건·막힘이 없거나 두 줄이 아니다'); return; }
+    if (!/\{[A-E]\}/.test(벌[0])) 문제.push(k + ' 조건에 글자 자리가 없다 — 패턴 한 벌로 돌아간 것');
+    if (!/\{[A-E]\}/.test(벌[1]) && k !== '바깥일') 문제.push(k + ' 막힘에 글자 자리가 없다');
   });
+  return 문제;
+});
+검사('59조 — 격이 입구를 정한다: 여덟 격이 다섯 입구로 다 떨어지고 「양인」이 인성으로 새지 않는다', () => {
+  const 문제 = [];
+  const 기대 = { 정관: '불러가는', 편관: '불러가는', 정인: '받는', 편인: '받는', 식신: '내놓는', 상관: '내놓는', 재: '모이는', 정재: '모이는', 편재: '모이는', 건록: '나', 양인: '나' };
+  Object.keys(기대).forEach(n => { const got = SM.격마디(n); if (got !== 기대[n]) 문제.push(n + '격 → 기대 ' + 기대[n] + ', 실제 ' + got); });
+  Object.keys(SM.역할표).forEach(k => { if (!SM.역할표[k].역할 || !SM.역할표[k].설명) 문제.push('역할표 ' + k + ' 에 역할이나 설명이 없다'); });
+  if (Object.keys(SM.역할표).length !== 5) 문제.push('역할이 다섯이 아니다');
   return 문제;
 });
 검사('구별 가능성 — 같은 패턴이라도 글자가 다르면 조건 글이 다르다', () => {
@@ -120,7 +118,6 @@ for (let t = 0; t < 600; t++) {
   for (let t = 0; t < 2000 && !짝; t++) {
     const g = () => GZ[Math.floor(rnd() * 60)];
     const pl = { year: { ...g() }, month: { ...g() }, day: { ...g() }, hour: { ...g() } };
-    if (E.STEM_ELEM[pl.day.stem] !== 1) continue;
     let d; try { d = 만(pl); } catch (e) { continue; }
     if (d.장면 && d.장면.키 === 원.장면.키 && d.장면.조건 !== 원.장면.조건) 짝 = d;
   }
@@ -136,33 +133,23 @@ for (let t = 0; t < 600; t++) {
   });
   return 문제;
 });
-검사('59조 — 일간 오행 다섯이 패턴 다섯을 다 갖는다', () => {
-  const 문제 = [];
-  [0, 1, 2, 3, 4].forEach(e => {
-    const g = SM.그림표[e];
-    if (!g) { 문제.push('오행 ' + e + ' 그림이 없다'); return; }
-    if (!g.기계) 문제.push('오행 ' + e + ' 에 기계 이름이 없다');
-    Object.keys(SM.패턴표).forEach(k => {
-      if (!g[k] || g[k].length !== 2) 문제.push('오행 ' + e + ' 의 ' + k + ' 그림이 없거나 두 줄이 아니다');
-    });
-  });
-  return 문제;
-});
-검사('59조 — 같은 패턴이라도 일간 오행마다 장면 이름이 다르다', () => {
+검사('59조 — 막힌 칸 다섯 그림이 다 있고 이름에 {역할} 자리가 있다 → 역할 다섯 × 막힘 다섯 = 스물다섯 장면', () => {
   const 문제 = [];
   Object.keys(SM.패턴표).forEach(k => {
-    const 이름들 = [0, 1, 2, 3, 4].map(e => SM.그림표[e][k][0]);
-    const 유일 = {}; 이름들.forEach(n => { 유일[n] = 1; });
-    if (Object.keys(유일).length !== 5) 문제.push(k + ' 의 장면 이름이 겹친다: ' + 이름들.join(' / '));
+    const g = SM.그림표[k];
+    if (!g || g.length !== 2) { 문제.push(k + ' 그림이 없거나 두 줄이 아니다'); return; }
+    if (g[0].indexOf('{역할}') < 0) 문제.push(k + ' 장면 이름에 {역할} 자리가 없다 — 격이 장면에 안 들어간다');
   });
+  // 같은 막힘이라도 역할이 다르면 이름이 다르고, 같은 역할이라도 막힘이 다르면 이름이 다르다
+  const 이름들 = {};
+  Object.keys(SM.패턴표).forEach(k => Object.keys(SM.역할표).forEach(r => { 이름들[SM.그림표[k][0].replace('{역할}', SM.역할표[r].역할)] = 1; }));
+  if (Object.keys(이름들).length !== 25) 문제.push('장면 이름이 스물다섯이 아니라 ' + Object.keys(이름들).length + '개다');
   return 문제;
 });
-검사('28조 — 「~형입니다」 꼴로 사람을 가르지 않는다', () => {
+검사('28조 — 「~형입니다」 꼴로 사람을 가르지 않는다 · 역할은 등급이 아니다', () => {
   const 문제 = [];
-  Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
-    if (k === '기계') return;
-    if (/형입니다|형이에요|타입/.test(SM.그림표[e][k].join(' '))) 문제.push(e + '.' + k + ' 이 유형 이름으로 끝난다');
-  }));
+  Object.keys(SM.그림표).forEach(k => { if (/형입니다|형이에요|타입/.test(SM.그림표[k].join(' '))) 문제.push(k + ' 이 유형 이름으로 끝난다'); });
+  Object.keys(SM.역할표).forEach(k => { if (/높|낮|위|아래|귀|천|상급|하급|좋은|나쁜/.test(SM.역할표[k].설명)) 문제.push('역할표 ' + k + ' 에 등급 말: ' + SM.역할표[k].설명); });
   return 문제;
 });
 
@@ -179,11 +166,9 @@ for (let t = 0; t < 600; t++) {
     ['실험', '제외'].forEach(f => 훑기(v[f], '패턴표 ' + k + '.' + f));
     (v.질문 || []).forEach((q, i) => 훑기(q, '패턴표 ' + k + '.질문' + i));
   });
-  Object.keys(SM.조건표).forEach(e => Object.keys(SM.조건표[e]).forEach(k => SM.조건표[e][k].forEach((t2, i) => 훑기(t2, '조건표 ' + e + '.' + k + '[' + i + ']'))));
-  Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
-    if (k === '기계') return;
-    SM.그림표[e][k].forEach((t2, i) => 훑기(t2, '그림표 ' + e + '.' + k + '[' + i + ']'));
-  }));
+  Object.keys(SM.조건표).forEach(k => SM.조건표[k].forEach((t2, i) => 훑기(t2, '조건표 ' + k + '[' + i + ']')));
+  Object.keys(SM.그림표).forEach(k => SM.그림표[k].forEach((t2, i) => 훑기(t2, '그림표 ' + k + '[' + i + ']')));
+  Object.keys(SM.역할표).forEach(k => 훑기(SM.역할표[k].설명, '역할표 ' + k));
   // 조립기가 실제로 그려 내는 글까지 훑는다 — 표에 없고 코드에 박힌 문장이 여기서 걸린다.
   const 시험명식 = [나, 사주('甲子', '丙寅', '戊辰', '庚申'), 사주('乙亥', '丁丑', '己卯', '辛未'), 사주('壬午', '癸巳', '庚戌', '甲申')];
   const div = document.createElement('div');
