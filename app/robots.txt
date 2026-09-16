@@ -25,6 +25,7 @@ Allow: /
 # 시험용 페이지는 색인하지 않는다 — 검색 결과에 뜨면 신뢰만 깎인다
 Disallow: /cards.html
 Disallow: /tests_panjeong.html
+Disallow: /tests_seolmyeongseo.html
 Disallow: /tools/
 
 # AI 엔진용 안내

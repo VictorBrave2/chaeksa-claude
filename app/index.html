@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=905">
+<link rel="stylesheet" href="style.css?v=906">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -158,6 +158,7 @@
       <div id="wtTop" class="wt hide"></div>
       <!-- 홈 순서 — 「지금 마음에 걸리는 이야기 → 내 원국 → 어떤 사이가 궁금하세요」(2026-09-15 사장님). 원국 밴드는 wongook.js. -->
       <div id="wgMain" class="hide"></div>
+      <div id="smMain" class="hide"></div>
       <div id="wtHome" class="wt hide"></div>
       <div id="qToday" class="hide"></div>
       <!-- 옛 서고(#shelves)를 지웠다 (2026-09-09 사장님 「홈 하나로 정리」).
@@ -506,6 +507,8 @@
       <!-- 원국 탭 = 홈 밴드의 펼친 판(2026-09-14 사장님 「원국 탭도 말투랑 다 바꿔줘 옛날식이네」). wongook.js 가 그린다.
            옛 카드(첫 마디·일간 감성문·짜임 카드·올해와 내년·앞으로 12개월)는 걷었다 — 감성 표는 버린 것(법전), 강약 위에 선 것은 29조. -->
       <div id="wgFull" data-plain="1"></div>
+      <!-- 내 구조를 이해하는 설명서(58·59조, docs/53) — 원국 아래. 조립기라 원가 0, 무료다. -->
+      <div id="smFull" class="hide" data-plain="1"></div>
       <section class="card">
         <h2>태어난 시각</h2>
         <p class="hint" id="bornNote"></p>
@@ -788,41 +791,42 @@
   </div>
 </div>
 
-<script src="config.js?v=905"></script>
-<script src="track.js?v=905"></script>
-<script src="cloud.js?v=905"></script>
-<script src="usage.js?v=905"></script>
-<script src="places.js?v=905"></script>
-<script src="people.js?v=905"></script>
-<script src="astro.js?v=905"></script>
-<script src="lunar.js?v=905"></script>
-<script src="engine.js?v=905"></script>
-<script src="saenggeuk.js?v=905"></script>
-<script src="panjeong.js?v=905"></script>
-<script src="questions.js?v=905"></script>
-<script src="wongook.js?v=905"></script>
-<script src="chaeyong.js?v=905"></script>
-<script src="brief.js?v=905"></script>
-<script src="chaeksadan.js?v=905"></script>
-<script src="geunamja.js?v=905"></script>
-<script src="maeum.js?v=905"></script>
-<script src="gunghap.js?v=905"></script>
-<script src="sheets.js?v=905"></script>
-<script src="hwakin.js?v=905"></script>
-<script src="mun.js?v=905"></script>
-<script src="mun/all.js?v=905"></script>
-<script src="typecard.js?v=905"></script>
-<script src="gyeokguk.js?v=905"></script>
-<script src="memo.js?v=905"></script>
-<script src="classic.js?v=905"></script>
-<script src="calendar.js?v=905"></script>
-<script src="stories.js?v=905"></script>
-<script src="tongbyeon.js?v=905"></script>
-<script src="rules-wealth-love.js?v=905"></script>
-<script src="rules-health-study-move.js?v=905"></script>
-<script src="share.js?v=905"></script>
-<script src="ai.js?v=905"></script>
-<script src="pay.js?v=905"></script>
-<script src="app.js?v=905"></script>
+<script src="config.js?v=906"></script>
+<script src="track.js?v=906"></script>
+<script src="cloud.js?v=906"></script>
+<script src="usage.js?v=906"></script>
+<script src="places.js?v=906"></script>
+<script src="people.js?v=906"></script>
+<script src="astro.js?v=906"></script>
+<script src="lunar.js?v=906"></script>
+<script src="engine.js?v=906"></script>
+<script src="saenggeuk.js?v=906"></script>
+<script src="panjeong.js?v=906"></script>
+<script src="questions.js?v=906"></script>
+<script src="wongook.js?v=906"></script>
+<script src="seolmyeongseo.js?v=906"></script>
+<script src="chaeyong.js?v=906"></script>
+<script src="brief.js?v=906"></script>
+<script src="chaeksadan.js?v=906"></script>
+<script src="geunamja.js?v=906"></script>
+<script src="maeum.js?v=906"></script>
+<script src="gunghap.js?v=906"></script>
+<script src="sheets.js?v=906"></script>
+<script src="hwakin.js?v=906"></script>
+<script src="mun.js?v=906"></script>
+<script src="mun/all.js?v=906"></script>
+<script src="typecard.js?v=906"></script>
+<script src="gyeokguk.js?v=906"></script>
+<script src="memo.js?v=906"></script>
+<script src="classic.js?v=906"></script>
+<script src="calendar.js?v=906"></script>
+<script src="stories.js?v=906"></script>
+<script src="tongbyeon.js?v=906"></script>
+<script src="rules-wealth-love.js?v=906"></script>
+<script src="rules-health-study-move.js?v=906"></script>
+<script src="share.js?v=906"></script>
+<script src="ai.js?v=906"></script>
+<script src="pay.js?v=906"></script>
+<script src="app.js?v=906"></script>
 </body>
 </html>

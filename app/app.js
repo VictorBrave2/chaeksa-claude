@@ -896,6 +896,8 @@
     $('daeunHint').textContent = `${R.daeun.startAge}살부터 10년마다 바뀌어요.` + (du ? ` 지금은 ${f.pillarKo(du)}(${f.pillar(du)}) 대운이에요. 이 대운이 내 글자를 어떻게 건드리는지는 위 「지금 오는 글자」에 있어요.` : '');
     // 「올해와 내년」「앞으로 12개월」은 걷었다(2026-09-14) — 옛 십신 흐름말(GOD_FLOW)이었다. 올해·이달은 wongook 의 「지금 오는 글자」가 표로 읽는다.
     try { if (window.ChaeksaWongook) ChaeksaWongook.render(R, today, $('wgFull'), { full: true }); } catch (e) { try { console.warn('원국 탭 실패:', e); } catch (e2) {} }
+    // 설명서(58·59조) — 원국 아래에 펼친 판으로. 사람마다 따로 기록하므로 pid 를 준다.
+    try { if (window.ChaeksaSeolmyeong) ChaeksaSeolmyeong.render(R, today, $('smFull'), { full: true, pid: (function(){ try { const q = People(); return (q && q.activeId()) || 'me'; } catch (e) { return 'me'; } })() }); } catch (e) { try { console.warn('설명서 탭 실패:', e); } catch (e2) {} }
     renderProfileCard();
     renderShareCard();
     renderGyeok();
@@ -2923,6 +2925,8 @@
     const box = $('wtHome'); if (!box || !R) return;
     // 원국이 메인 — 홈 맨 위(2026-09-14). 표는 saenggeuk.js, 말은 wongook.js.
     try { if (window.ChaeksaWongook) ChaeksaWongook.render(R, today, $('wgMain')); } catch (e) { try { console.warn('원국 실패:', e); } catch (e2) {} }
+    // 설명서(58·59조) — 홈에서는 장면 한 줄만 보이고 나머지는 접어 둔다.
+    try { if (window.ChaeksaSeolmyeong) ChaeksaSeolmyeong.render(R, today, $('smMain'), { pid: (function(){ try { const q = People(); return (q && q.activeId()) || 'me'; } catch (e) { return 'me'; } })() }); } catch (e) { try { console.warn('설명서 실패:', e); } catch (e2) {} }
     // 오늘 나에게 필요한 질문(사장님 09-14 이름) — 질문 격자 62문 중 오늘 이 사람의 판정에 걸리는 것만. 답은 판정 이유 그대로.
     try {
       const Q = window.ChaeksaQuestions, qb = $('qToday');

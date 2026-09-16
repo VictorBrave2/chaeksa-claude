@@ -1539,3 +1539,39 @@ details.fold > .tiles { margin-top: 10px; }
 .wg-row.god div.mine{color:var(--accent)}
 .wg-gk.top{margin:-4px 0 12px;font-size:14.5px;color:var(--ink)}
 .wg-pillars{margin:0 0 10px}
+
+/* 내 구조를 이해하는 설명서 (58·59조) — 원국 밴드와 같은 결, 딱지로 출처를 가른다 */
+.sm{margin:0 0 22px;padding:16px 16px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.sm-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.sm-title b{font-family:var(--serif);font-size:17px}
+.sm-title span{font-size:12px;color:var(--ink3)}
+.sm-scene{margin:0 0 4px;font-size:16px}
+.sm-scene b{font-family:var(--serif);color:var(--accent)}
+.sm-draw{margin:0 0 12px;font-size:14px;color:var(--ink2);line-height:1.75}
+.sm-chain{display:flex;gap:6px;margin:0 0 14px;overflow-x:auto;padding-bottom:2px}
+.sm-node{flex:1 1 0;min-width:88px;padding:9px 8px;border-radius:11px;border:1px solid var(--line);background:var(--bg);text-align:center}
+.sm-node b{display:block;font-size:13px;margin-bottom:2px}
+.sm-node span{display:block;font-size:11px;color:var(--ink3);line-height:1.5}
+.sm-node i{display:block;margin-top:4px;font-style:normal;font-size:11px;color:var(--ink3)}
+.sm-node.sm-on{border-color:var(--accent)}
+.sm-node.sm-on b{color:var(--accent)}
+.sm-node.sm-off{opacity:.55}
+.sm-node.sm-dim{opacity:.8;border-style:dashed}
+.sm-head{display:flex;align-items:center;gap:8px;margin:16px 0 7px}
+.sm-head b{font-family:var(--serif);font-size:14.5px}
+.sm-tag{font-size:10.5px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--ink3);white-space:nowrap}
+.sm-tag.sm-m{border-color:var(--accent);color:var(--accent)}
+.sm-tag.sm-p{opacity:.85}
+.sm p{margin:0 0 7px;font-size:14px;line-height:1.8;color:var(--ink2)}
+.sm-q{padding-left:11px;border-left:2px solid var(--line)}
+.sm-out{color:var(--ink3)}
+.sm-now{margin:16px 0 4px;padding:11px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.sm-now b{font-size:13px}
+.sm-now p{margin:5px 0 0;font-size:13.5px}
+.sm-note{color:var(--ink3);font-size:12.5px}
+.sm-diff{margin:12px 0 0;padding:10px 12px;border-radius:11px;background:var(--bg);font-size:13px;color:var(--ink3)}
+.sm-memo{width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 11px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;line-height:1.7;resize:vertical}
+.sm-btns{display:flex;gap:8px;flex-wrap:wrap}
+.sm-limit{margin:14px 0 0!important;font-size:12.5px!important;color:var(--ink3)!important;line-height:1.75}
+.sm-fold{margin:2px 0 0}
+.sm-fold>summary{cursor:pointer;font-size:13.5px;color:var(--ink3);padding:7px 0}

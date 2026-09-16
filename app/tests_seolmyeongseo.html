@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>설명서 검사</title>
+<meta name="robots" content="noindex">
+<style>body{font:14px/1.7 system-ui;margin:20px;max-width:960px}h2{margin:22px 0 6px}.ok{color:#1a7f37}.no{color:#b42318}pre{background:#f4f4f4;padding:8px;overflow:auto;font-size:12px}table{border-collapse:collapse;font-size:12.5px}td,th{border:1px solid #ddd;padding:4px 8px}</style>
+</head><body>
+<h1>설명서 검사 — 58·59조</h1>
+<p>구별 가능성(아무에게나 붙는 문장인가)과 장면 보류를 고정한다. 조문은 docs/19, 전문은 docs/53.</p>
+<p style="font-size:12px;color:#555">이 검사를 통과해도 명리가 맞는다는 뜻이 아니다. 글이 구체적이라는 뜻이다(docs/53 여섯).</p>
+<div id="out"></div>
+<script src="config.js"></script><script src="lunar.js"></script><script src="astro.js"></script><script src="engine.js"></script>
+<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=1"></script><script src="panjeong.js?t=1"></script><script src="seolmyeongseo.js?t=1"></script>
+<script>
+const E = ChaeksaEngine, SM = ChaeksaSeolmyeong;
+const S = E.STEMS, B = E.BRANCHES;
+const 사주 = (y, m, d, h) => { const p = {}; [['year', y], ['month', m], ['day', d], ['hour', h]].forEach(([k, gz]) => { if (gz) p[k] = { stem: S.indexOf(gz[0]), branch: B.indexOf(gz[1]) }; }); return p; };
+const out = document.getElementById('out');
+let 통과 = 0, 실패 = 0;
+function 검사(이름, fn) {
+  let 문제 = [];
+  try { const r = fn(); if (r) 문제 = [].concat(r); } catch (e) { 문제 = [e.message + '\n' + e.stack]; }
+  const ok = !문제.length; ok ? 통과++ : 실패++;
+  out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + 이름 + '</h2>' + (ok ? '' : '<pre>' + 문제.join('\n') + '</pre>'));
+}
+const 만 = (pl) => SM.만들기({ pillars: pl, dayStem: pl.day.stem }, new Date(2026, 8, 16));
+
+// ── 사장님 명식이 원형이다 (docs/53 여덟) — 받는 것 甲이 살아 있고 내놓는 것은 속에만(월지 辰 상관) → 수문
+const 나 = 사주('壬申', '甲辰', '丁卯', '庚子');
+검사('원형 — 사장님 명식은 「수문이 닫힌 발전소」', () => {
+  const d = 만(나); const 문제 = [];
+  if (!d.장면 || d.장면.키 !== '수문') 문제.push('장면 기대 수문, 실제 ' + (d.장면 && d.장면.키));
+  const 받 = d.사슬.find(x => x.key === '받는'), 내 = d.사슬.find(x => x.key === '내놓는');
+  if (받.상태 !== '있음') 문제.push('받는 것이 있음이어야 함, 실제 ' + 받.상태);
+  if (내.흐름) 문제.push('내놓는 것이 흐르면 안 됨, 실제 ' + 내.상태);
+  return 문제;
+});
+
+// ── 59조 보류 — 태어난 시를 모르면 장면을 안 붙인다
+검사('보류 — 태어난 시를 모르면 장면 없음', () => {
+  const d = 만(사주('壬申', '甲辰', '丁卯', null));
+  if (d.장면) return '시가 없는데 장면이 붙었다: ' + d.장면.이름;
+  if (!d.보류) return '보류 사유가 없다';
+});
+
+// ── 구별 가능성(docs/53 여섯) — 무작위 명식에서 장면이 갈리는가. 한 장면이 전부를 덮으면 실패.
+const GZ = []; for (let i = 0; i < 60; i++) GZ.push({ stem: i % 10, branch: i % 12 });
+let seed = 17; const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+const 분포 = {}, 본문모음 = [];
+for (let t = 0; t < 600; t++) {
+  const g = () => GZ[Math.floor(rnd() * 60)];
+  const pl = { year: { ...g() }, month: { ...g() }, day: { ...g() }, hour: { ...g() } };
+  let d; try { d = 만(pl); } catch (e) { continue; }
+  const k = d.장면 ? d.장면.키 : '보류';
+  분포[k] = (분포[k] || 0) + 1;
+  본문모음.push({ k, 이유: d.이유.join(' ') });
+}
+검사('구별 가능성 — 장면이 한 가지로 쏠리지 않는다', () => {
+  const n = 본문모음.length, 문제 = [];
+  const 큰 = Math.max.apply(null, Object.keys(분포).map(k => 분포[k]));
+  if (큰 / n > 0.8) 문제.push('한 장면이 ' + Math.round(큰 / n * 100) + '% 를 덮는다 — 구조를 못 가르고 있다');
+  if (Object.keys(분포).length < 3) 문제.push('장면 종류가 ' + Object.keys(분포).length + '가지뿐이다');
+  return 문제;
+});
+검사('구별 가능성 — 고른 이유가 명식마다 다르다', () => {
+  const 유일 = {}; 본문모음.forEach(x => { 유일[x.이유] = 1; });
+  const 비율 = Object.keys(유일).length / 본문모음.length;
+  if (비율 < 0.05) return '고른 이유가 ' + Object.keys(유일).length + '가지뿐이다(' + 본문모음.length + '명식). 아무에게나 붙는 문장이다';
+});
+
+// ── 59조 금지 — 장면에서 새 주장을 끌어내지 않는다
+검사('59조 — 장면 글에 새 주장이 없다', () => {
+  const 금지 = /부자|정신력|대박|반드시|틀림없|운명|성공할|적중|확률|%|퍼센트/;
+  const 문제 = [];
+  Object.keys(SM.장면표).forEach(k => {
+    const v = SM.장면표[k];
+    ['그림', '조건', '막힘', '실험', '제외'].concat().forEach(f => {
+      if (금지.test(v[f])) 문제.push(k + '.' + f + ' 에 금지어: ' + v[f]);
+    });
+    (v.질문 || []).forEach(q => { if (금지.test(q)) 문제.push(k + '.질문 에 금지어: ' + q); });
+  });
+  return 문제;
+});
+검사('58조 — 장면마다 일곱 칸이 다 있다', () => {
+  const 문제 = [];
+  Object.keys(SM.장면표).forEach(k => {
+    const v = SM.장면표[k];
+    ['이름', '그림', '조건', '막힘', '실험', '제외'].forEach(f => { if (!v[f]) 문제.push(k + ' 에 ' + f + ' 가 없다'); });
+    if (!(v.질문 || []).length) 문제.push(k + ' 에 질문이 없다');
+  });
+  return 문제;
+});
+검사('28조 — 「~형입니다」 꼴로 사람을 가르지 않는다', () => {
+  const 문제 = [];
+  Object.keys(SM.장면표).forEach(k => { if (/형입니다|형이에요|타입/.test(SM.장면표[k].이름 + SM.장면표[k].그림)) 문제.push(k + ' 이 유형 이름으로 끝난다'); });
+  return 문제;
+});
+
+out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
+{
+  const n = 본문모음.length;
+  let html = '<h2>장면 분포 — 무작위 ' + n + ' 명식</h2><table><tr><th>장면</th><th>수</th><th>%</th></tr>';
+  Object.keys(분포).sort((a, b) => 분포[b] - 분포[a]).forEach(k => {
+    html += '<tr><td>' + k + '</td><td>' + 분포[k] + '</td><td>' + Math.round(분포[k] / n * 100) + '</td></tr>';
+  });
+  html += '</table>';
+  out.insertAdjacentHTML('beforeend', html);
+}
+{
+  // 사장님 명식 설명서 전문 — 눈으로 보는 자리
+  const d = 만(나);
+  let html = '';
+  html += '장면: ' + (d.장면 ? d.장면.이름 : '(보류) ' + d.보류) + '\n';
+  html += '사슬: ' + d.사슬.map(m => m.이름 + '=' + m.상태).join(' · ') + '\n\n';
+  html += '고른 이유\n  ' + d.이유.join('\n  ') + '\n\n';
+  html += '명리 해석\n  ' + d.명리.join('\n  ') + '\n\n';
+  if (d.장면) {
+    html += '잘 도는 조건\n  ' + d.장면.조건 + '\n\n막힐 수 있는 곳\n  ' + d.장면.막힘 + '\n\n';
+    html += '확인할 질문\n  ' + d.장면.질문.join('\n  ') + '\n\n작게 해볼 것\n  ' + d.장면.실험 + '\n\n안 맞는 경우\n  ' + d.장면.제외 + '\n';
+  }
+  if (d.지금) html += '\n지금(' + d.기간 + ' ' + (d.지금.간지 || '') + '): ' + d.지금.범주 + ' — ' + d.지금.근거 + '\n';
+  out.insertAdjacentHTML('beforeend', '<h2>원형 — 壬申 甲辰 丁卯 庚子</h2><pre>' + html.replace(/</g, '&lt;') + '</pre>');
+}
+</script></body></html>
