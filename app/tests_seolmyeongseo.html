@@ -8,7 +8,7 @@
 <p style="font-size:12px;color:#555">이 검사를 통과해도 명리가 맞는다는 뜻이 아니다. 글이 구체적이라는 뜻이다(docs/53 여섯).</p>
 <div id="out"></div>
 <script src="config.js"></script><script src="lunar.js"></script><script src="astro.js"></script><script src="engine.js"></script>
-<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=1"></script><script src="panjeong.js?t=1"></script><script src="seolmyeongseo.js?t=1"></script>
+<script src="gyeokguk.js?t=1"></script><script src="saenggeuk.js?t=1"></script><script src="panjeong.js?t=1"></script><script src="seolmyeongseo.js?t=2"></script>
 <script>
 const E = ChaeksaEngine, SM = ChaeksaSeolmyeong;
 const S = E.STEMS, B = E.BRANCHES;
@@ -73,21 +73,66 @@ for (let t = 0; t < 600; t++) {
   const 문제 = [];
   Object.keys(SM.패턴표).forEach(k => {
     const v = SM.패턴표[k];
-    ['조건', '막힘', '실험', '제외'].forEach(f => { if (금지.test(v[f])) 문제.push(k + '.' + f + ' 에 금지어: ' + v[f]); });
+    ['실험', '제외'].forEach(f => { if (금지.test(v[f])) 문제.push(k + '.' + f + ' 에 금지어: ' + v[f]); });
     (v.질문 || []).forEach(q => { if (금지.test(q)) 문제.push(k + '.질문 에 금지어: ' + q); });
   });
+  Object.keys(SM.조건표).forEach(e => Object.keys(SM.조건표[e]).forEach(k => SM.조건표[e][k].forEach(t2 => { if (금지.test(t2)) 문제.push('조건표 ' + e + '.' + k + ' 에 금지어: ' + t2); })));
   Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
     if (k === '기계') return;
     SM.그림표[e][k].forEach(t2 => { if (금지.test(t2)) 문제.push('그림표 ' + e + '.' + k + ' 에 금지어: ' + t2); });
   }));
   return 문제;
 });
-검사('58조 — 패턴마다 다섯 칸이 다 있다', () => {
+검사('58조 — 패턴마다 제안 세 칸(질문·실험·제외)이 다 있다', () => {
   const 문제 = [];
   Object.keys(SM.패턴표).forEach(k => {
     const v = SM.패턴표[k];
-    ['조건', '막힘', '실험', '제외'].forEach(f => { if (!v[f]) 문제.push(k + ' 에 ' + f + ' 가 없다'); });
+    ['실험', '제외'].forEach(f => { if (!v[f]) 문제.push(k + ' 에 ' + f + ' 가 없다'); });
     if (!(v.질문 || []).length) 문제.push(k + ' 에 질문이 없다');
+  });
+  return 문제;
+});
+// ── 09-17 다시 씀 — 조건·막힘은 기계 다섯 × 패턴 다섯 스물다섯 벌이고, 글자 자리가 실제 글자로 채워진다.
+검사('59조 — 조건·막힘이 기계 다섯 × 패턴 다섯 스물다섯 벌 다 있고 글자 자리가 있다', () => {
+  const 문제 = [];
+  [0, 1, 2, 3, 4].forEach(e => {
+    const 벌 = SM.조건표[e];
+    if (!벌) { 문제.push('오행 ' + e + ' 조건표가 없다'); return; }
+    Object.keys(SM.패턴표).forEach(k => {
+      if (!벌[k] || 벌[k].length !== 2) { 문제.push('오행 ' + e + ' 의 ' + k + ' 조건·막힘이 없거나 두 줄이 아니다'); return; }
+      if (!/\{[A-E]\}/.test(벌[k][0])) 문제.push('오행 ' + e + ' 의 ' + k + ' 조건에 글자 자리가 없다 — 패턴 한 벌로 돌아간 것');
+      if (!/\{[A-E]\}/.test(벌[k][1]) && k !== '바깥일') 문제.push('오행 ' + e + ' 의 ' + k + ' 막힘에 글자 자리가 없다');
+      if (!/\{[A-E]\}/.test(벌[k][1]) && k === '바깥일' && !/겉에 없어/.test(벌[k][1])) 문제.push('오행 ' + e + ' 의 바깥일 막힘이 비어 있다');
+    });
+  });
+  // 같은 기계·같은 패턴이라도 부품 말이 기계마다 다르다
+  Object.keys(SM.패턴표).forEach(k => {
+    const 조건들 = [0, 1, 2, 3, 4].map(e => SM.조건표[e][k][0]);
+    const 유일 = {}; 조건들.forEach(n => { 유일[n] = 1; });
+    if (Object.keys(유일).length !== 5) 문제.push(k + ' 의 조건이 기계마다 안 다르다');
+  });
+  return 문제;
+});
+검사('구별 가능성 — 같은 패턴이라도 글자가 다르면 조건 글이 다르다', () => {
+  // 사장님 명식(丁火·수문)과 같은 패턴·같은 기계인 다른 명식을 찾아 조건 글을 견준다.
+  const 원 = 만(나); if (!원.장면) return '원형이 장면 없음';
+  let 짝 = null;
+  for (let t = 0; t < 2000 && !짝; t++) {
+    const g = () => GZ[Math.floor(rnd() * 60)];
+    const pl = { year: { ...g() }, month: { ...g() }, day: { ...g() }, hour: { ...g() } };
+    if (E.STEM_ELEM[pl.day.stem] !== 1) continue;
+    let d; try { d = 만(pl); } catch (e) { continue; }
+    if (d.장면 && d.장면.키 === 원.장면.키 && d.장면.조건 !== 원.장면.조건) 짝 = d;
+  }
+  if (!짝) return '같은 패턴에서 조건 글이 다른 명식을 못 찾았다 — 글자 자리가 안 채워지고 있다';
+  if (/\{[A-E]\}/.test(원.장면.조건 + 원.장면.막힘 + 짝.장면.조건 + 짝.장면.막힘)) return '채워지지 않은 글자 자리가 남았다';
+});
+검사('09-17 — 지금 메모에 숫자(남은 힘 같은 값)가 안 나간다', () => {
+  const 문제 = [];
+  const 시험 = [나, 사주('甲子', '丙寅', '戊辰', '庚申'), 사주('乙亥', '丁丑', '己卯', '辛未'), 사주('壬午', '癸巳', '庚戌', '甲申')];
+  시험.forEach((pl, i) => {
+    let d; try { d = 만(pl); } catch (e) { return; }
+    if (d.지금 && /\d/.test((d.지금.덧 || '') + (d.지금.근거 || ''))) 문제.push('명식 ' + i + ' 지금 메모에 숫자: ' + d.지금.덧 + ' / ' + d.지금.근거);
   });
   return 문제;
 });
@@ -131,9 +176,10 @@ for (let t = 0; t < 600; t++) {
   const 훑기 = (글, 어디) => { const m = String(글 || '').match(금지); if (m) 문제.push(어디 + ' — 「' + m[0] + '」: ' + String(글).slice(0, 60)); };
   Object.keys(SM.패턴표).forEach(k => {
     const v = SM.패턴표[k];
-    ['조건', '막힘', '실험', '제외'].forEach(f => 훑기(v[f], '패턴표 ' + k + '.' + f));
+    ['실험', '제외'].forEach(f => 훑기(v[f], '패턴표 ' + k + '.' + f));
     (v.질문 || []).forEach((q, i) => 훑기(q, '패턴표 ' + k + '.질문' + i));
   });
+  Object.keys(SM.조건표).forEach(e => Object.keys(SM.조건표[e]).forEach(k => SM.조건표[e][k].forEach((t2, i) => 훑기(t2, '조건표 ' + e + '.' + k + '[' + i + ']'))));
   Object.keys(SM.그림표).forEach(e => Object.keys(SM.그림표[e]).forEach(k => {
     if (k === '기계') return;
     SM.그림표[e][k].forEach((t2, i) => 훑기(t2, '그림표 ' + e + '.' + k + '[' + i + ']'));
