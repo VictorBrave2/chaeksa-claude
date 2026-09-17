@@ -6,7 +6,7 @@
  *   ① 고른 날을 열두 시진의 시계 시각으로 나눈다(진태양시 보정은 엔진이 낸 값 그대로)
  *   ② 시진마다 엔진을 부르고 관점에 읽힌다
  *   ③ 관점이 내준 말을 그린다
- * 점수 · 순위 · 등수를 내지 않는다(60조). 줄은 「세 관점에서 걸리는 것 없음」이라는 조건으로만 거른다. 그 조건은 길하다는 뜻이 아니다(64조).
+ * 점수 · 순위 · 등수를 내지 않는다(60조). 줄은 「세 관점 모두 걸리는 것 없음」이라는 조건으로만 거른다.
  *
  * 왜 지었나: 네이버 택일 글이 「들어와서 확인하라」고 하는데 확인할 화면이 없었다 — 첫 방문 61명에 생년월일을 넣은 사람 넷(09-17 실측).
  * 부모가 보고 싶은 것은 「내가 고른 시각에 낳으면 이 아이를 어떻게 보나」다(사장님 09-17 「시뮬레이션 도구를 만들어 줘야 할 듯」).
@@ -77,7 +77,7 @@
       + '<label>성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
       + '<label>태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
       + '<div class="tk-nav"><button type="button" class="btn ghost small" id="tkPrev">← 앞날</button><b id="tkHead"></b><button type="button" class="btn ghost small" id="tkNext">뒷날 →</button></div>'
-      + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 세 관점에서 걸리는 것 없는 자리만 보기</label>'
+      + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 세 관점 모두 걸리는 것 없는 자리만 보기</label>'
       + '<p class="tk-note" id="tkTop"></p><div id="tkList"></div>'
       + '<p class="tk-note">' + esc(W.출산택일.꼬리) + '</p>'
       + '<a class="btn" href="taekil-apply.html?from=sim" style="display:block;text-align:center;text-decoration:none;margin-top:12px">보고서 신청하기</a>'
@@ -93,7 +93,7 @@
       q('tkHead').textContent = m + '월 ' + d + '일 · ' + (첫 ? 첫.일주 + '일' : '');
       const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length;
       q('tkTop').textContent = W.출산택일.머리 + ' ' + r.곳 + ' 기준 시계 시각이에요(이날은 시계가 해보다 ' + Math.abs(r.밀림) + '분 ' + (r.밀림 >= 0 ? '빨라요' : '늦어요') + '). '
-        + (깨끗 ? '이날은 세 관점에서 걸리는 것 없는 자리가 ' + 깨끗 + '곳 있어요. ' + W.출산택일.없음풀이 : '이날은 세 관점에서 다 안 걸리는 자리가 없어요. 앞뒤 날도 보세요.');
+        + (깨끗 ? '이날은 세 관점 모두 걸리는 것 없는 자리가 ' + 깨끗 + '곳 있어요.' : '이날은 세 관점이 다 걸리는 것 없다고 본 자리가 없어요. 앞뒤 날도 보세요.');
       const 보일 = 거르기 ? r.rows.filter(x => x.본 && x.본.없음) : r.rows;
       q('tkList').innerHTML = 보일.length ? 보일.map(줄).join('') : '<p class="tk-note">이날은 해당하는 자리가 없어요.</p>';
     }
