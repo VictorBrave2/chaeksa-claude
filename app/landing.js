@@ -57,6 +57,8 @@
       if (h3) h3.textContent = 말.h3;
       if (sub) sub.innerHTML = 말.sub;
     }
+    // 택일 글에서 온 사람은 큰 단추가 이미 시뮬레이터로 간다 — 둘째 문(#lpBaby)을 겹쳐 보일 까닭이 없다.
+    if (모드 === '택일' && $('lpBaby')) $('lpBaby').classList.add('hide');
     if (말.name && $('name')) $('name').placeholder = 말.name;
     if (말.year && $('y')) $('y').placeholder = 말.year;
   }
