@@ -469,12 +469,17 @@ footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-h
 .lp-today b{font-family:var(--serif);font-size:20px;font-weight:900;color:var(--accent)}
 .lp-today span:last-child{font-size:12.5px;color:var(--ink2)}
 .lp-cta{max-width:320px;margin:20px auto 0}
-/* 둘째 문 — 태어날 아이(출산택일 시뮬레이터). 첫 단추와 같은 너비, 한 단 낮은 무게 */
-.lp-or{max-width:320px;margin:22px auto 0;padding-top:18px;border-top:1px solid var(--line)}
-.lp-or span{display:block;font-size:12.5px;color:var(--ink3);margin-bottom:10px}
-.lp-cta2{display:block;text-align:center;text-decoration:none;font-weight:700;color:var(--ink)}
-.lp-hero.scene .lp-or{border-top-color:rgba(230,201,138,.25)}
-.lp-hero.scene .lp-or span{color:#c3bcdc}
+/* 랜딩의 문 — 차례는 한살이의 차례다: 아이 → 연애·나(2026-09-18). 첫 문이 크고 둘째 문은 한 단 낮다 */
+.lp-door{margin-top:20px}
+.lp-eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);margin:0 0 8px}
+a.lp-cta{display:block;text-align:center;text-decoration:none}
+.lp-door2{margin-top:30px;padding-top:24px;border-top:1px solid var(--line)}
+.lp-door2 h2{font-family:var(--serif);font-size:19px;line-height:1.5;margin:0;color:var(--ink)}
+.lp-door2 h2::after{display:none}
+.lp-door2 .lp-lead{font-size:13.5px;margin-top:10px}
+.lp-hero.scene .lp-door2{border-top-color:rgba(230,201,138,.25)}
+.lp-hero.scene .lp-door2 h2{color:#f7f3ff}
+.lp-hero.scene .lp-eyebrow{color:#e6c98a}
 /* ───── 장면 히어로 ─────
    첫 화면은 글이 아니라 장면이어야 한다. 삽화(app/art)를 계절에 맞춰 깔고
    그 위에 글을 얹는다. 낮·밤 어느 쪽이든 이 블록만은 밤으로 고정한다 —

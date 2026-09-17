@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=924">
+<link rel="stylesheet" href="style.css?v=925">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -68,21 +68,26 @@
   <section id="landing" class="hide">
     <div class="lp-hero" id="lpHero">
       <div class="lp-seal">策</div>
-      <h1>그 사람 때문에<br>궁금해진 모든 이야기</h1>
-      <p class="lp-lead">두 사람 생년월일을 놓고 날짜로 답해요.<br><b>오늘부터 7일은 무료</b>예요.</p>
       <div class="lp-today">
         <span class="lp-today-label">오늘</span>
         <b id="lpGanji">―</b>
         <span id="lpGanjiKo"></span>
       </div>
-      <button class="btn lp-cta" id="btnStart">내 생년월일 넣기</button>
-      <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 있으면 돼요</p>
-      <!-- 둘째 문(2026-09-17 사장님 「그 사람 어쩌고만 있으니까, 태어날 아이 생년월일시 넣어보기라던지」).
-           유입의 큰 줄기가 출산택일인데 랜딩에는 연애 문 하나뿐이었다. 꼬리표 없이 들어온 임산부에게도 들어갈 문이 보여야 한다. -->
-      <div class="lp-or" id="lpBaby">
-        <span>아이를 기다리고 계신가요</span>
-        <a class="btn ghost lp-cta2" href="taekil-sim.html?from=site-landing">태어날 아이 날짜 넣어 보기</a>
-        <p class="hint" style="text-align:center">출산택일 — 그날 열두 시진을 세 고전이 각자 어떻게 보는지 보여 드려요. 무료예요</p>
+      <!-- 문의 차례는 한살이의 차례다(2026-09-18 사장님 「아이를 맨위로 보내놔야지」) —
+           아이(태·양·장생·목욕) → 연애(관대) → 나(재·관 — 건록·제왕·쇠) → 건강(병·사·묘·절).
+           문은 있는 것만 낸다: 아이 = 출산택일 시뮬레이터, 연애·나 = 내 생년월일(그 사람 이야기 + 내 구조 설명서). 건강은 아직 없어 문을 안 낸다(빈 선반 금지). -->
+      <div class="lp-door" id="lpBaby">
+        <p class="lp-eyebrow">아이</p>
+        <h1>태어날 아이,<br>이 시각에 낳으면</h1>
+        <p class="lp-lead">날짜를 고르면 그날 열두 시진을 세 고전이 각자 어떻게 보는지 보여 드려요.<br><b>회원가입 없이 무료</b>예요.</p>
+        <a class="btn lp-cta" id="btnBaby" href="taekil-sim.html?from=site-landing">태어날 아이 날짜 넣어 보기</a>
+      </div>
+      <div class="lp-door lp-door2" id="lpMe">
+        <p class="lp-eyebrow">연애 · 나</p>
+        <h2 id="lpMeH">그 사람 때문에<br>궁금해진 모든 이야기</h2>
+        <p class="lp-lead" id="lpMeLead">두 사람 생년월일을 놓고 날짜로 답해요.<br><b>오늘부터 7일은 무료</b>예요.</p>
+        <button class="btn ghost lp-cta" id="btnStart">내 생년월일 넣기</button>
+        <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 있으면 돼요</p>
       </div>
     </div>
 
@@ -603,44 +608,44 @@
   </div>
 </div>
 
-<script src="config.js?v=924"></script>
-<script src="track.js?v=924"></script>
-<script src="cloud.js?v=924"></script>
-<script src="usage.js?v=924"></script>
-<script src="places.js?v=924"></script>
-<script src="people.js?v=924"></script>
-<script src="astro.js?v=924"></script>
-<script src="lunar.js?v=924"></script>
-<script src="engine.js?v=924"></script>
-<script src="saenggeuk.js?v=924"></script>
-<script src="panjeong.js?v=924"></script>
-<script src="questions.js?v=924"></script>
-<script src="wongook.js?v=924"></script>
-<script src="seolmyeongseo.js?v=924"></script>
-<script src="chaeyong.js?v=924"></script>
-<script src="brief.js?v=924"></script>
-<script src="chaeksadan.js?v=924"></script>
-<script src="geunamja.js?v=924"></script>
-<script src="maeum.js?v=924"></script>
-<script src="gunghap.js?v=924"></script>
-<script src="sheets.js?v=924"></script>
-<script src="hwakin.js?v=924"></script>
-<script src="mun.js?v=924"></script>
-<script src="mun/all.js?v=924"></script>
-<script src="typecard.js?v=924"></script>
-<script src="gyeokguk.js?v=924"></script>
-<script src="memo.js?v=924"></script>
-<script src="classic.js?v=924"></script>
-<script src="gwanjeom.js?v=924"></script>
-<script src="taekilsim.js?v=924"></script>
-<script src="stories.js?v=924"></script>
-<script src="tongbyeon.js?v=924"></script>
-<script src="rules-wealth-love.js?v=924"></script>
-<script src="rules-health-study-move.js?v=924"></script>
-<script src="share.js?v=924"></script>
-<script src="ai.js?v=924"></script>
-<script src="pay.js?v=924"></script>
-<script src="app.js?v=924"></script>
-<script src="landing.js?v=924"></script>
+<script src="config.js?v=925"></script>
+<script src="track.js?v=925"></script>
+<script src="cloud.js?v=925"></script>
+<script src="usage.js?v=925"></script>
+<script src="places.js?v=925"></script>
+<script src="people.js?v=925"></script>
+<script src="astro.js?v=925"></script>
+<script src="lunar.js?v=925"></script>
+<script src="engine.js?v=925"></script>
+<script src="saenggeuk.js?v=925"></script>
+<script src="panjeong.js?v=925"></script>
+<script src="questions.js?v=925"></script>
+<script src="wongook.js?v=925"></script>
+<script src="seolmyeongseo.js?v=925"></script>
+<script src="chaeyong.js?v=925"></script>
+<script src="brief.js?v=925"></script>
+<script src="chaeksadan.js?v=925"></script>
+<script src="geunamja.js?v=925"></script>
+<script src="maeum.js?v=925"></script>
+<script src="gunghap.js?v=925"></script>
+<script src="sheets.js?v=925"></script>
+<script src="hwakin.js?v=925"></script>
+<script src="mun.js?v=925"></script>
+<script src="mun/all.js?v=925"></script>
+<script src="typecard.js?v=925"></script>
+<script src="gyeokguk.js?v=925"></script>
+<script src="memo.js?v=925"></script>
+<script src="classic.js?v=925"></script>
+<script src="gwanjeom.js?v=925"></script>
+<script src="taekilsim.js?v=925"></script>
+<script src="stories.js?v=925"></script>
+<script src="tongbyeon.js?v=925"></script>
+<script src="rules-wealth-love.js?v=925"></script>
+<script src="rules-health-study-move.js?v=925"></script>
+<script src="share.js?v=925"></script>
+<script src="ai.js?v=925"></script>
+<script src="pay.js?v=925"></script>
+<script src="app.js?v=925"></script>
+<script src="landing.js?v=925"></script>
 </body>
 </html>
