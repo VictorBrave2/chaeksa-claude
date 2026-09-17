@@ -24,8 +24,8 @@
   var 말 = {
     택일: {
       h1: '표에서 고른 날짜,<br>사주로 확인해 보세요',
-      lead: '아기가 태어날 날짜와 시각을 넣으면 네 기둥이 그대로 나와요.<br><b>회원가입 없이 무료</b>예요.',
-      cta: '아기 날짜·시각 넣기', hint: '날짜와 시각만 있으면 돼요',
+      lead: '날짜를 고르면 그날 열두 시진마다 세 고전이 각자 본 것을 보여 드려요.<br><b>회원가입 없이 무료</b>예요.',
+      cta: '날짜 넣어 보기', hint: '날짜만 있으면 돼요',
       eyebrow: '출산택일 확인', h3: '날짜와 시각만 주세요.',
       sub: '글의 표에 나온 날짜·시각을 그대로 넣으세요.<br>같은 사주가 나오는지 바로 보여 드려요.',
       name: '예: 우리 아기', year: '2026', 도착: 'wgMain',
@@ -84,6 +84,14 @@
     });
   }
 
-  function 시작() { 바꾸기(); 도착걸기(); }
+  // 택일 글에서 온 사람은 「내 생년월일」을 넣을 까닭이 없다 — 시뮬레이터로 바로 보낸다(09-17). 사주를 저장하지 않아도 열린다.
+  function 시뮬레이터로() {
+    ['btnStart', 'btnStart2'].forEach(function (id) {
+      var b = $(id); if (!b) return;
+      b.onclick = function () { location.href = 'taekil-sim.html?from=' + encodeURIComponent(tag); };
+    });
+  }
+
+  function 시작() { 바꾸기(); if (모드 === '택일') 시뮬레이터로(); else 도착걸기(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 시작); else 시작();
 })();

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>택일 시뮬레이터 검사</title>
+<meta name="robots" content="noindex">
+<style>body{font:14px/1.7 system-ui;margin:20px;max-width:960px}h2{margin:18px 0 6px;font-size:15px}.ok{color:#1a7f37}.no{color:#b42318}pre{background:#f4f4f4;padding:8px;overflow:auto;font-size:12px}</style>
+</head><body>
+<h1>택일 시뮬레이터 검사 — 60 · 63조</h1>
+<p>판정엔진 + 출산택일 관점 = 화면. 시각이 분 단위로 맞는지, 점수가 안 나가는지, 관점이 엔진 말고 다른 데를 두드리지 않는지를 고정한다.</p>
+<div id="out"></div><div id="tkSim" style="display:none"></div>
+<script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
+<script src="saenggeuk.js?t=61"></script><script src="panjeong.js?t=63"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
+<script src="gwanjeom.js?t=1"></script><script src="taekilsim.js?t=2"></script>
+<script>
+const E = ChaeksaEngine, P = ChaeksaPanjeong, W = ChaeksaGwanjeom, S = ChaeksaTaekilSim;
+const out = document.getElementById('out'); let 통과 = 0, 실패 = 0;
+function 검사(이름, fn) { let 문제 = []; try { const r = fn(); if (r) 문제 = [].concat(r); } catch (e) { 문제 = [e.message + '\n' + e.stack]; }
+  const ok = !문제.length; ok ? 통과++ : 실패++;
+  out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + 이름 + '</h2>' + (ok ? '' : '<pre>' + 문제.join('\n') + '</pre>')); }
+
+const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
+검사('시각 — 2026-12-18 서울 미시·사시의 첫 분이, 엔진을 분 단위로 훑어 찾은 첫 분과 같다(교과서 13:00 이 아니다)', () => {
+  // 기대값을 손으로 적지 않는다 — 같은 경도(서울 126.98)로 엔진을 1분씩 훑어 그 시진이 처음 나오는 분을 찾는다.
+  const 첫분 = (지) => { for (let t = 0; t < 1440; t++) { const R = E.calc({ year: 2026, month: 12, day: 18, hour: Math.floor(t / 60), minute: t % 60, gender: 'M', longitude: 126.98 }); if (R.pillars.hour.branch === 지) return t; } return -1; };
+  const 문제 = []; const 미 = 하루.rows.find(r => r.시진 === '미시'), 사 = 하루.rows.find(r => r.시진 === '사시');
+  if (!미 || 미.시작 !== 첫분(7)) 문제.push('미시 시작 ' + (미 && 미.창) + ' · 엔진 첫 분 ' + 첫분(7));
+  if (!사 || 사.시작 !== 첫분(5)) 문제.push('사시 시작 ' + (사 && 사.창) + ' · 엔진 첫 분 ' + 첫분(5));
+  if (미 && (미.시작 < 13 * 60 + 20 || 미.시작 > 13 * 60 + 40)) 문제.push('미시가 13:20~13:40 밖에서 시작한다: ' + 미.창);
+  if (미 && !/乙未/.test(미.시주)) 문제.push('미시 시주 ' + 미.시주);
+  return 문제;
+});
+검사('시각 — 창의 첫 분과 끝 분을 엔진에 넣으면 그 시진이 나오고, 하루 1440분이 빈틈없이 덮인다', () => {
+  const 문제 = []; let 덮음 = 0;
+  하루.rows.forEach(r => {
+    덮음 += r.끝 - r.시작 + 1;
+    [r.시작, r.끝].forEach(t => { const R = E.calc({ year: 2026, month: 12, day: 18, hour: Math.floor(t / 60), minute: t % 60, gender: 'M', longitude: 126.98 });
+      const 말 = E.BRANCHES_KO[R.pillars.hour.branch] + '시'; if (말 !== r.시진) 문제.push(r.창 + ' 의 ' + t + '분은 ' + 말 + ' 인데 ' + r.시진 + ' 로 적었다'); });
+  });
+  if (덮음 !== 1440) 문제.push('덮은 분 ' + 덮음 + ' / 1440');
+  return 문제;
+});
+검사('시각 — 다른 곳(부산)은 서울보다 이르다', () => {
+  const b = S.하루(2026, 12, 18, 'M', 'KR:부산').rows.find(r => r.시진 === '미시'), s = 하루.rows.find(r => r.시진 === '미시');
+  if (!(b.시작 < s.시작)) return '부산 미시 ' + b.창 + ' · 서울 ' + s.창;
+});
+검사('60조 — 화면에 점수 · 순위 · 등수가 안 나간다', () => {
+  const box = document.getElementById('tkSim'); S.render(box, { date: '2026-12-20' });
+  box.querySelectorAll('details').forEach(d => { d.open = true; });
+  const 글 = box.querySelector('#tkList').textContent + box.querySelector('#tkTop').textContent;
+  const m = 글.match(/\d+\s*점|\d+\s*위|순위|등수|랭킹|TOP/i);
+  if (m) return '점수 말이 나갔다: ' + m[0];
+});
+검사('60조 — 「걸리는 것 없음」은 세 눈이 다 안 걸릴 때만 붙는다', () => {
+  const 문제 = [];
+  [[2026, 12, 18], [2026, 12, 20], [2026, 12, 15], [2027, 3, 30]].forEach(([y, m, d]) => S.하루(y, m, d, 'M', 'KR:서울').rows.forEach(r => {
+    if (!r.본) return; const 걸 = r.본.눈들.filter(n => n.걸림).length;
+    if (r.본.없음 && 걸) 문제.push(m + '/' + d + ' ' + r.시진 + ' 걸림 ' + 걸 + ' 인데 없음');
+    if (!r.본.없음 && !걸 && !r.본.눈들.some(n => n.모름)) 문제.push(m + '/' + d + ' ' + r.시진 + ' 걸림 0 인데 없음이 아님');
+    if (r.본.눈들.length !== 3) 문제.push('눈이 셋이 아니다');
+  }));
+  return 문제;
+});
+검사('63조 — 문 하나: 원국 층에 조후와 성패가 실려 나온다', () => {
+  const R = E.calc({ year: 2026, month: 12, day: 20, hour: 10, minute: 0, gender: 'M' });
+  const 층 = P.판정(R, new Date(2026, 11, 20), { 운들: [] }).층들[0]; const 문제 = [];
+  if (!층.조후 || 층.조후.need == null) 문제.push('조후가 없다');
+  if (!층.성패 || !층.성패.격) 문제.push('성패가 없다');
+  if (!층.표 || !층.표.쌍) 문제.push('생극제화 표가 없다');
+  return 문제;
+});
+(async () => {
+  const 문제 = [];
+  for (const f of ['gwanjeom.js', 'taekilsim.js']) {
+    const t = (await fetch(f + '?x=' + Date.now()).then(r => r.text())).replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`\\])\/\/[^\n]*/g, '$1');
+    const m = t.match(/ChaeksaClassic|ChaeksaTypecard|ChaeksaGyeok|ChaeksaChaeyong|\.strength\b|scoreDay|\.총점/);
+    if (m) 문제.push(f + ' 가 ' + m[0] + ' 를 직접 부른다');
+  }
+  const ok = !문제.length; ok ? 통과++ : 실패++;
+  out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + '63조 — 관점과 화면은 엔진 문 말고 다른 판정기를 직접 두드리지 않는다</h2>' + (ok ? '' : '<pre>' + 문제.join('\n') + '</pre>'));
+  out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
+})();
+</script>
+</body></html>
