@@ -67,8 +67,20 @@
       {
         key: '통관', 고전: '적천수', 묻는것: '아이를 치는 글자와 아이 사이가 이어져 있나',
         읽기(층) {
-          const rows = (층.표.쌍 || []).filter(r => r.관계 === '극' && r.to.일간 && r.from.산다 && !r.from.운 && !r.from.지지);
-          if (!rows.length) return { 걸림: false, 한줄: '아이를 치는 글자가 겉에 없어요', 풀이: ['하늘 글자 가운데 아이를 치는 글자가 없어요. 없다는 것이 좋다 나쁘다는 뜻은 아니에요 — 운에서 오면 그때 봅니다.'] };
+          const 하늘 = (g) => g && !g.운 && !g.지지;
+          const rows = (층.표.쌍 || []).filter(r => r.관계 === '극' && r.to.일간 && r.from.산다 && 하늘(r.from));
+          // 65조 — 걸림은 통관뿐. 나머지는 표에 보이는 대로 적는다(좋다 나쁘다를 안 붙인다).
+          const 둘레 = [];
+          (층.표.쌍 || []).filter(r => r.관계 === '극' && !r.to.일간 && !r.from.일간 && 하늘(r.from) && 하늘(r.to) && r.from.산다 && r.to.산다).forEach(r => {
+            const a = G.이름(r.from.stem), b = G.이름(r.to.stem);
+            if (r.통관) 둘레.push(이가(a) + ' ' + 을를(b) + ' 치는데 ' + 이가(묶어(r.셋째.map(c => G.이름(c.stem)))) + ' 사이를 이어 줘요.');
+            else if (r.제복) 둘레.push(이가(a) + ' ' + 을를(b) + ' 치려 하지만 ' + 이가(묶어(r.잡는.map(c => G.이름(c.stem)))) + ' 잡고 있어요.');
+            else if (r.힘차이) 둘레.push(이가(a) + ' ' + 을를(b) + ' 치려 하지만 힘이 모자라요.');
+            else 둘레.push(이가(a) + ' ' + 을를(b) + ' 막힘 없이 쳐요.');
+          });
+          (층.표.글자 || []).filter(g => 하늘(g) && !g.일간 && g.합거).forEach(g => 둘레.push(은는(G.이름(g.stem)) + ' 옆 글자와 합해서 묶여 있어요.'));
+          const 덧 = 둘레.length ? ['아이 둘레의 하늘 글자끼리는 이래요.'].concat(Array.from(new Set(둘레))) : [];   // 같은 글자가 둘이면 같은 말이 두 번 나온다
+          if (!rows.length) return { 걸림: false, 한줄: '아이를 치는 글자가 겉에 없어요', 풀이: ['하늘 글자 가운데 아이를 치는 글자가 없어요.'].concat(덧) };
           const 뚫린 = rows.filter(r => !r.막힘);
           const 말 = (r) => {
             const 누구 = G.이름(r.from.stem) + ' ' + r.from.십신;
@@ -81,7 +93,7 @@
           return {
             걸림: 뚫린.length > 0,
             한줄: 뚫린.length ? '아이를 치는 글자가 막힘 없이 닿아요' : '아이를 치는 글자가 있지만 사이가 이어져 있어요',
-            풀이: rows.map(말),
+            풀이: rows.map(말).concat(덧),
           };
         },
       },
