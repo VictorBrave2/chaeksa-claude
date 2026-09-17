@@ -774,37 +774,6 @@
   // ───────── Belief Revision ─────────
   const TEMPER = 0.6;   // 우도비 완화 지수
   const P_MIN = 0.15, P_MAX = 0.85;
-  /** answers: { [questionId]: 'y'|'n'|'?' } → 사후확률 재계산 */
-  function revise(fr) {
-    const post = {};
-    fr.hypotheses.forEach(h => { post[h.id] = h.prior; });
-    const changeN = fr.modifiers.filter(m => m.tilt === 'change').length;
-    if (changeN && fr.hypotheses.length > 1) {
-      const secondId = fr.hypotheses.find(h => h.prior === Math.min(...fr.hypotheses.map(x => x.prior))).id;
-      post[secondId] *= 1 + 0.12 * changeN;
-    }
-    for (const q of fr.questions) {
-      const ans = fr.answers[q.id];
-      if (!ans || ans === '?') continue;
-      for (const hid of Object.keys(post)) {
-        const e = q.effects[hid];
-        if (!e) continue;
-        // 완화(tempering): 질문 3개로 확신이 과해지지 않게 지수를 낮춘다
-        post[hid] *= Math.pow(ans === 'y' ? e.y : e.n, TEMPER);
-      }
-    }
-    let sum = Object.values(post).reduce((s, v) => s + v, 0) || 1;
-    // 상한/하한: 어떤 답을 해도 100%나 0%로 가지 않는다. 2순위는 항상 살려 둔다.
-    const ids = Object.keys(post);
-    ids.forEach(k => { post[k] = Math.min(Math.max(post[k] / sum, P_MIN), P_MAX); });
-    sum = Object.values(post).reduce((s, v) => s + v, 0) || 1;
-    const ranked = fr.hypotheses.map(h => ({ ...h, p: post[h.id] / sum })).sort((x, y) => y.p - x.p);
-    const answered = fr.questions.filter(q => fr.answers[q.id] && fr.answers[q.id] !== '?').length;
-    // '모르겠어요'도 응답으로 친다 — 확률은 안 움직이지만 상담은 진행되어야 한다
-    const responded = fr.questions.filter(q => !!fr.answers[q.id]).length;
-    const priorTop = [...fr.hypotheses].sort((x, y) => y.prior - x.prior)[0];
-    return { ranked, answered, responded, total: fr.questions.length, flipped: answered > 0 && ranked[0].id !== priorTop.id, priorTopId: priorTop.id };
-  }
 
 
   // ───────── Decision Lab: 선택지 비교 ─────────
@@ -932,5 +901,5 @@
     };
   }
 
-  global.ChaeksaTongbyeon = { defineRule: R, H, Q, frame, dayFrame, revise, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
+  global.ChaeksaTongbyeon = { defineRule: R, H, Q, frame, dayFrame, decide, kindOf, detectDomain, detectTarget, stack, DOMAINS, GROUP, GROUP_MEAN, RULES };
 })(window);

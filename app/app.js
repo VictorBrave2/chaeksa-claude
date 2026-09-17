@@ -114,7 +114,6 @@
   let editingId = null;      // 수정 중인 사람. null이면 새로 추가
   let pendingPick = null;    // 방금 추가한 사람 — 공범 선택칸에 미리 골라둔다
 
-  function personLabel(p) { return p.isSelf ? p.name : `${p.name} · ${p.relation}`; }
 
   function renderPeopleBtn() {
     const btn = $('btnPerson'); if (!btn || !People()) return;
@@ -730,36 +729,6 @@
     }
   }
 
-  // 통변좌표 — 6층 적층 체용이 내놓는 오늘의 좌표
-  // 오늘의 통변좌표 — 무료 화면에서는 걷어냈다 (2026-08-28).
-  // 「통변좌표」도 「6층 적층」도 일반인이 읽을 말이 아니다.
-  // 함수와 엔진은 그대로 둔다. #coordBox 가 없으면 조용히 빠져나간다.
-  function renderCoord() {
-    const box = $('coordBox'); if (!box) return;
-    if (!window.ChaeksaChaeyong) { box.classList.add('hide'); return; }
-    let cy;
-    try { cy = ChaeksaChaeyong.stack(R, today); }
-    catch (e) { box.classList.add('hide'); return; }
-    const live = cy.layers.filter(l => l.level > 1 && typeof l.value === 'number');
-    if (!live.length) { box.classList.add('hide'); return; }
-    box.classList.remove('hide');
-    const v = Math.round((live.reduce((a, l) => a + l.value, 0) / live.length) * 10) / 10;
-    const sign = v > 0.3 ? '순(順)' : (v < -0.3 ? '역(逆)' : '평(平)');
-    const pct = Math.min(50, Math.abs(v) / 3 * 50);
-    const fill = v >= 0
-      ? `left:50%;width:${pct}%`
-      : `right:50%;width:${pct}%`;
-    const chain = live.map(l => `${l.name} ${l.ganji}`).join(' · ');
-    box.innerHTML = `
-      <div class="c-row">
-        <div class="k">오늘의 통변좌표</div>
-        <div class="v">${v > 0 ? '+' : ''}${v.toFixed(1)}</div>
-        <div class="s">${sign}</div>
-      </div>
-      <div class="gauge"><div class="mid"></div><div class="fill" style="${fill}"></div></div>
-      <div class="scale"><div>역 −3</div><div>순 +3</div></div>
-      <div class="chain">${esc(live.length + 1)}층 적층 · ${esc(chain)}</div>`;
-  }
 
   // loadAiBrief(「좌장에게 오늘을 묻기」 LLM 브리핑)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 히어로는 규칙 문장만 선다.
   function loadAiBrief() { heroFallback(); }
@@ -1641,20 +1610,6 @@
     </div>`;
   }
 
-  // ── 책사의 말 — 유료 화면 끝에 AI 서술을 얹는다 ──
-  // 사실(연표·점수·날짜)은 룰 엔진이 이미 표로 냈다. AI 의 일은 그 사실을
-  // 조리 있게, 위로가 되게, 다음 걸음이 궁금해지게 잇는 것뿐이다.
-  // 숫자는 프롬프트가 막는다(사실 밖 언급 금지) — 지어내면 위의 표와 어긋나 바로 들킨다.
-  // 같은 사주·같은 달엔 캐시를 쓴다: 원가는 상품당 한 번 ~10원.
-  // AI 가 안 되면(비로그인·한도·장애) 조용히 뺀다 — 규칙 화면만으로 완결이다.
-  /** 열두 달을 통째로 보내면 재료가 1만 토큰을 넘어 시간 안에 못 끝난다.
-   *  열리는 달만 온전히 주고, 조용한 달은 한 줄로 줄인다 — 어차피 「줄이는 것」이 이 글의 일이다. */
-  function 달줄이기(달들) {
-    if (!Array.isArray(달들)) return 달들;
-    return 달들.map(m => (m && (m.열림 || m.상태 === 'open'))
-      ? m
-      : { 연: m.연, 월: m.월, 간지: m.간지, 결: m.결 || null, 조용: true });
-  }
 
   // aiNarrate(인연·재물 「책사단이 이어 말합니다」 LLM 한 편)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 유료 화면은 엔진 결론과 열두 달 표로 완결이다.
   async function aiNarrate() {}

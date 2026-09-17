@@ -76,58 +76,6 @@
   function profileKey(r) { return `chaeksa.profile.ai.v3.${r.input.year}${r.input.month}${r.input.day}.${r.input.hour}.${r.input.gender}`; }
   function getProfile(r) { return localStorage.getItem(profileKey(r)); }
 
-  /** 원국 정독 — **유료 상품이다**(products.wongook, migrate-15).
-   *
-   *  **파는 것은 판정이 아니라 번역이다.** 강약·용신·격국·대운은 엔진이 계산해
-   *  무료 카드로 이미 화면에 다 있다(CLAUDE.md 넷 「판정 유료화 폐기」에 안 걸린다).
-   *  돈을 받는 것은 그것을 **알아듣게 엮는 일**이다.
-   *
-   *  그래서 옛 프롬프트는 파는 물건이 못 됐다 — 「丁火가 辰월(습토, 화기 설기)에 나고
-   *  申子辰이 완전한 삼합 수국을 이루어」. 명리 하는 사람한테 쓰는 글이었고
-   *  항목 이름부터 「신강신약·용신·기신·격국」이었다(2026-08-31 화면 제보).
-   *
-   *  조문은 오늘 세운 것을 그대로 받는다 —
-   *    한자 금지 · 존재(~이십니다)가 아니라 위치(~자리에 서 계십니다) · 겁주기 금지 ·
-   *    직업을 정해 주지 않는다 · 규칙을 입 밖에 내지 않는다 (docs/19 · docs/27)
-   */
-  async function buildProfile(r, today) {
-    const cached = getProfile(r); if (cached) return cached;
-    const sys = `당신은 「책사」의 좌장 태윤입니다. 30년을 본 명리학자이지만, 지금 앞에 앉은 분은 명리를 하나도 모르는 20~30대 여성입니다. **아는 것을 자랑하는 자리가 아니라 알아듣게 해 드리는 자리입니다.**
-
-계산은 하지 않습니다. 아래 주어진 값을 그대로 씁니다.
-
-${chartText(r, today)}`;
-    const q = `아래 다섯 마디로 써 주십시오. 각 두세 문장, 전체 700자 안팎.
-
-1. 어떤 기운을 타고나셨나 — 강약을 삶의 말로. 무엇을 할 때 힘이 나고 무엇에 지치는지
-2. 무엇이 나를 채우나 — 용신을 「이런 것이 곁에 있으면 풀린다」로
-3. 무엇이 거슬리나 — 기신을 「이런 것이 겹치면 무거워진다」로. **겁주지 말고 그대로만**
-4. 사회 속에서 어디에 서 계신가 — 격국과 관성을 **자리**로. 지키는 자리인지 여는 자리인지
-5. 지금 십 년 — 현재 대운이 어떤 구간인지
-
-## 넘으면 안 되는 선
-
-- **한자를 쓰지 마십시오.** 간지·오행·십신을 한자로 적지 않습니다.
-  꼭 이름을 불러야 하면 한글로만 쓰고 바로 뜻을 붙입니다 — 「정관(맡은 자리)」처럼.
-  「丁火」「辰월」「申子辰」「삼합 수국」「인수용인」 같은 말은 한 번도 쓰지 않습니다.
-- **명리 용어를 소제목으로 쓰지 마십시오.** 「신강신약」「용신」「기신」「격국」 금지.
-  위 다섯 마디의 물음을 그대로 제목으로 쓰거나 제목 없이 이어 써도 됩니다.
-- **존재가 아니라 위치로 말합니다.** 「~한 사람입니다」보다 「~자리에 서 계십니다」.
-  읽는 분이 「맞다/아니다」를 그 자리에서 가릴 수 있게 씁니다.
-- **직업을 정해 주지 마십시오.** 「이 일을 하세요」 금지. 자리의 성질만 말합니다.
-- **겁주지 마십시오.** 삼재·대흉·「조심하세요」 금지. 나쁜 자리도 그대로 재되 협박하지 않습니다.
-- **좋게 바꿔 적지 마십시오.** 약한 것을 강하다고 하면 그것이 가장 큰 잘못입니다.
-- **규칙을 입 밖에 내지 마십시오.** 「단정하지 않겠습니다」 같은 자기 해설을 쓰지 않습니다.
-- 이모지를 쓰지 않습니다.`;
-    // 유료 상품이므로 **아끼지 않는다** — Opus · effort high(memory 「유료는 아끼지 않는다」).
-    // effort:high 는 생각 토큰이 max_tokens 를 같이 먹으므로 천장을 넉넉히 둔다.
-    // 천장은 목표가 아니라 천장이라 안 쓰면 안 쓴다(465줄 각주).
-    // strict 를 켜 **잘리면 캐시에 안 굳고 던진다** — 프로필은 한 번 굳으면 평생 간다.
-    const text = await call(sys, [{ role: 'user', content: q }],
-      { task: 'profile', maxTokens: 4000, effort: 'high', strict: true, product: 'wongook' });
-    localStorage.setItem(profileKey(r), text);
-    return text;
-  }
 
   function systemPrompt(r, today) {
     const prof = getProfile(r);
@@ -302,29 +250,6 @@ ${prof}` : ''}`;
     return L.join('\n');
   }
 
-  /** 통변엔진이 정한 '오늘의 뼈대'를 프롬프트에 넣는다.
-   *  이렇게 하지 않으면 같은 사주라도 날마다 LLM이 다른 판단을 내놓는다. */
-  /** 오늘 12시진 곡선 — 시각과 사건 라벨은 코드가 확정하고, LLM은 문장만 만든다. */
-  /** 기간 스캔 결과 — 시기와 날짜는 코드가 확정한다. LLM은 이 안에서만 말한다. */
-  function whenText(fr) {
-    const w = fr && fr.when;
-    if (!w || !w.span) return '';
-    const NL = String.fromCharCode(10);
-    const multi = w.years.length > 1;
-    const cells = multi ? w.years : w.months;
-    const nm = c => multi ? c.y + '년' : c.m + '월';
-    const hi = cells.reduce((a, b) => (b.rel > a.rel ? b : a), cells[0]);
-    const lo = cells.reduce((a, b) => (b.rel < a.rel ? b : a), cells[0]);
-    const d = r => `${multi ? r.y + '.' : ''}${r.m}/${r.d}(${r.ganji} ${r.god})`;
-    return [
-      `[기간 기저 좌표] ${w.baseline > 0 ? '+' : ''}${w.baseline} — 기간 전체의 성격`,
-      `[기간 내 편차] ` + cells.map(c => `${nm(c)} ${c.rel > 0 ? '+' : ''}${c.rel}`).join(', '),
-      `[높은 때] ${nm(hi)} / [낮은 때] ${nm(lo)}`,
-      `[골라 쓸 날] ` + w.best.map(d).join(', '),
-      `[피할 날] ` + w.worst.map(d).join(', '),
-      w.turns.length ? `[흐름이 뒤집히는 지점] ` + w.turns.map(t => `${t.from.y}년 ${t.from.m}월 → ${t.to.y}년 ${t.to.m}월`).join(', ') : '',
-    ].filter(Boolean).join(NL);
-  }
 
   function hourCurveText(df) {
     const NL = String.fromCharCode(10);
@@ -376,69 +301,6 @@ ${prof}` : ''}`;
     + '각 책사는 제 축 밖의 것을 말하지 않는다. 최소 두 번은 앞사람 말을 받아라.\n'
     + '읽는 사람을 부르는 말은 쓰지 않는다 — 주어를 지우고 존댓말 어미로만 높인다. 번호는 붙이지 않는다(채점하는 글이 아니다). 소제목·마크다운 금지, 문단 사이 빈 줄.\n';
 
-  // cachePk — 서버에도 굽힌 글을 둔다(프록시 ganmyeong_cache, 사람마다 따로). 기기를 바꾸거나 굽는 중
-  // 새로고침해도 주문의 한 달 횟수를 다시 쓰지 않는다(2026-09-12 검토). 헤더라서 ASCII 만 된다.
-  async function storyTell(kind, facts, cachePk) {
-    // whom(어떤 사람이 나를 사랑하는가)은 연표가 아니라 인물 서술이라 판이 다르다.
-    if (kind === 'whom') {
-      const sys = '너는 「책사단」의 기록자다. 읽는 사람이 값을 치르고 여신 「어떤 사람이 나를 사랑하는가」의 본문이며, 이 대목은 〔인연〕이 맡는다. 화면 위에는 규칙 엔진이 낸 결론(상대의 오행·정과 편의 글자·합·매력·배우자 방 재료)이 표로 떠 있고 [계산된 사실]이 그 전부다.\n'
-      + 책사단형식
-      + '이 자리의 배분: 〔인연〕이 거의 다 말한다. 〔궁위〕는 배우자 방의 재료를 짚을 때 한 번, 〔좌장〕은 맺음 한 문단.\n'
-      + '규칙: 사실 밖의 글자·단정 금지. 전문용어는 처음 한 번 괄호로 풀기. 따뜻하고 단단한 존댓말, 겁주지 않기, 「~하기 쉽습니다」. 전체 800~1,200자로 **짧게**, 문단 사이 빈 줄. 표에 있는 것을 다시 늘어놓지 말고 사람의 그림으로 옮겨라.\n'
-      + '구성: 1) 원국이 정해 둔 상대의 결 — 오행과 결을 일상 언어로. 2) 반듯하게 오는 사람 — 어떤 장면으로 다가오는지 구체적인 장면 하나로. 3) 강렬하게 오는 사람 — 마찬가지로. 4) 합인 글자의 사람 — 왜 서로 한눈에 알아보는지. 5) 그들이 무엇에 걸리는가 — 매력과 도화를 풀어서. 6) 곁에 오래 남는 사람(배우자 방의 재료)과 그 사랑이 도착하는 방식. 맺음 — 「언제 오는가」는 인연이 오는 해 화면에 열려 있다는 한 문장.\n'
-      + '[계산된 사실]\n' + JSON.stringify(facts);
-      // dehanja 금지 — 여기도 글자가 주인공이다. 태우면 庚子(경자)가 경자(경자)로 뭉개진다.
-      return await call(sys, [{ role: 'user', content: '나를 사랑하게 될 사람 이야기를 처음부터 끝까지 써줘.' }],
-        // 천장 4000 — strict 를 켠 이상 잘리면 실패로 던진다. 2600 은 사고 토큰까지
-        // 나눠 쓰기에 800~1,200자를 담기 빠듯했다(형제 가지와 같은 이유).
-        { task: 'story', maxTokens: 4000, effort: 'medium', strict: true, product: 'inyeon', cachePk });
-    }
-    const 주제 = kind === 'wealth' ? '재물' : '인연';
-    const sys = '너는 「책사단」의 기록자다. 지금 이 글은 읽는 사람이 값을 치르고 여신 ' + 주제 + ' 화면의 본문이다. 화면 위쪽에는 규칙 엔진이 계산한 연표(과거 구간·현재·다가오는 열두 달·날·시진)가 표로 떠 있고, 아래 [계산된 사실]이 그 전부다.\n'
-      + 책사단형식
-      + '이 자리의 주인은 〔택일〕다. 무료 의논에서 「달과 날과 시각은 제 몫」이라 예고했으니, 여기서 그 약속을 지킨다.'
-      + ' 평소 말이 짧던 사람이 제 일 앞에서만 길어진다 — 열두 달 대목은 택일이 이끈다.\n'
-      + '[네가 할 수 있는 것 — 2026-08-30 열었다]\n'
-      + '너는 조립공이 아니라 명리를 읽는 사람이다. [원국]에 여덟 글자·일간·지장간·대운이 그대로 있으니 **직접 보고 판단하라.**\n'
-      + '엔진이 낸 [결론]은 네 판단을 대신하는 것이 아니라 **검산표**다. 네 판단이 그것과 어긋나면 네가 틀린 것이니 다시 보라.\n'
-      + '허용되는 판단의 예 — 열두 달을 스스로 훑어 「그해를 통틀어 같은 짝이 겹치는 달은 이 달뿐입니다」라고 짚는 것,\n'
-      + '  여러 축을 동시에 들고 「관을 지켜야 하는 사람이 하필 관을 건드리는 재주로 먹고산다」처럼 꿰는 것,\n'
-      + '  글자의 성질에서 「그래서 이런 자리에서 지치기 쉽습니다」로 옮기는 것.\n'
-      + '[울타리 — 여기는 열지 않았다]\n'
-      + '- 연도·달·날짜·글자·격국 판정은 **엔진이 낸 것만** 쓴다. 네가 새 연도나 새 글자를 만들면 화면 위 표와 어긋나 바로 들킨다.\n'
-      + '- 결과를 단정하지 마라. 「결혼합니다」 「합격합니다」 금지. 축이 움직인다까지다.\n'
-      + '- 충·형은 말하지 마라. 암장을 파서 단정하지 마라. 애매하면 계산하지 않는 것이 이 집의 법이다.\n'
-      + '- 겁주지 마라. 좋지 않은 자리도 어떻게 지나가면 되는지와 함께 말하라.\n'
-      + '절대 규칙:\n'
-      + '- 엔진 [결론]과 어긋나는 말은 금지. 사실에 있는 것 가운데 중요한 것은 빠짐없이 다뤄라.\n'
-      + '- [결론]은 엔진이 이미 이어 놓은 추론 사슬이다(통로·해방·정화·응기와 해의 연결). 서술의 척추로 삼아 결론 하나마다 한 문단씩, 왜 그렇게 이어지는지를 풀어라. 결론과 어긋나는 말은 금지.\n'
-      + '- [자료집]이 이 사람 원국의 전부다: 사주 여덟 글자·일간·강약·오행 분포·격국·조후·대운·세운. 서술의 뼈대를 반드시 여기서 세워라 — 일반론은 한 줄도 쓰지 마라. 이 사람 글자를 짚어라.\n'
-      + '- 자료집과 열두달의 각 항목에는 값 뒤에 풀이가 붙어 있다(— 뒤와 뜻·결 필드). 너의 일은 그 풀이를 다시 열 배로 펼치는 것이다: 항목마다 (1) 그것이 무슨 뜻인지 쉬운 말로, (2) 일상의 비유나 장면 하나로, (3) 「그래서 삶에서는 이렇게 나타나기 쉽습니다」까지. 나열하지 말고 하나의 이야기로 엮어라.\n'
-      + '- 읽는 사람은 명리를 전혀 모르는 일반인이다. 중학생이 읽어도 따라올 문장으로 써라. 명리 용어는 써도 되지만 처음 나올 때 한 번 괄호로 풀어라. 예: 재성(인연으로 오는 글자). 자료집에 없는 용어·글자는 금지.\n'
-      + '- 따뜻하고 단단한 존댓말. 겁주지 않는다. 단정 대신 「~하기 쉽습니다」.\n'
-      + '- 전체 1,200~1,800자. **짧게 써라.** 사실·날짜·표는 화면 위에 이미 다 있다. 그것을 다시 늘어놓으면 이 글은 값이 없다.\n'
-      + '- 너의 일은 산더미를 줄이는 것이다: 열두 달 가운데 어느 달인지, 그 달의 어느 날인지, 왜 그 달인지, 그래서 무엇을 하시면 되는지. 그 넷만 남기고 다 버려라.\n'
-      + '- 조용한 달들은 하나하나 다루지 마라. 한 문단으로 묶어라.\n'
-      + '- 소제목 없이 문단으로만, 문단 사이는 빈 줄.\n'
-      + '화자 배분(각 문단 맨 앞에 〔이름〕):\n'
-      + '1) 〔택일〕 결론부터. 열두 달 가운데 어느 달인지, 그중에서도 어느 날 어느 시각인지. 첫 문단이 답이어야 한다.\n'
-      + '2) 〔' + (kind === 'wealth' ? '재물' : '인연') + '〕 왜 그 달인가. [결론]에서 하나만 골라 풀어라 — 전부 옮기지 마라.\n'
-      + '3) 〔택일〕 그 달에 무엇을 하시면 되는지. 고른 날에 무엇을 하고 무엇을 피하는지.\n'
-      + '4) 〔' + (kind === 'wealth' ? '재물' : '인연') + '〕 조용한 달들을 한 문단으로 묶어라. 「그 사이는 이렇게 지내시면 됩니다」로.\n'
-      + '5) 〔좌장〕 맺음 두세 문장.\n'
-      + '맺음 — 두세 문장. 이 계산이 정답이 아니라 「이 기준으로는 이렇게 나왔다」라는 것, 그리고 다음 걸음('
-      + (kind === 'wealth' ? '달이 바뀌면 이번 달 흐름을 새로 볼 수 있다' : '그 해가 가까워지면 달과 날을 다시 보러 오라')
-      + ') 하나.\n'
-      + 간명법전 + '\n\n'
-      + '[계산된 사실]\n' + JSON.stringify(facts);
-    // dehanja 금지 — 「庚子 달」이 「경자(경자) 달」로 뭉개진다(2026-08-30 실물 제보)
-    // 천장 7000 · strict — effort 는 내리지 않는다(medium 은 「얇다」 판정을 받았다).
-    // 천장을 내리면 시간이 주는 게 아니라 글이 잘린다: 사고 토큰이 같은 천장을 쓴다.
-    // 4500 + effort high 가 바로 그 덫이었다. strict 가 없으면 잘린 2만원짜리 본문이
-    // 그대로 캐시에 굳는다 — 새로고침해도 그 달 내내 같은 자리에서 끊긴다.
-    return await call(sys, [{ role: 'user', content: 주제 + ' 이야기를 처음부터 끝까지 써줘.' }],
-      { task: 'story', maxTokens: 7000, effort: 'high', strict: true, product: kind === 'wealth' ? 'wealth' : 'inyeon', cachePk });
-  }
 
   // ── 「그 사람 한 편」 — 장마다 결제 뒤 LLM 이 쓰는 한 편 (2026-09-12 사장님 결정 「문장표는 무료 · LLM 은 유료」 3단계) ──
   // 판정은 위 표의 답 열 가지로 잠근다. LLM 은 그 답들을 한 사람의 그림으로 엮고 풀기만 한다 — 새 판정·새 해·새 달 금지.
@@ -752,37 +614,7 @@ ${prof}` : ''}`;
       { task: 'story', maxTokens: 7000, effort: 'high', strict: true, cachePk });
   }
 
-  /** 오늘치가 이미 구워져 있는가. 키 모양을 부르는 쪽이 베끼면 반드시 어긋나므로
-   *  여기서만 만든다. 화면은 이것이 있을 때만 공짜로 펼 수 있다. */
-  function briefKey(r, today) {
-    return `chaeksa.brief.${today.toDateString()}.${r.input.year}${r.input.month}${r.input.day}${r.input.hour}`;
-  }
-  function briefCached(r, today) {
-    try { return localStorage.getItem(briefKey(r, today)); } catch (e) { return null; }
-  }
 
-  async function dailyBrief(r, today) {
-    const ck = briefKey(r, today);
-    const cached = localStorage.getItem(ck);
-    if (cached) return cached;
-    // 예전엔 여기서 buildProfile(유료 원국 정독, Opus)을 결제 확인 없이 먼저 구웠다 — 무료 버튼 하나가 1만 원짜리를 굽고 보여 줬다(2026-09-12 걷음).
-    const df = global.ChaeksaTongbyeon ? global.ChaeksaTongbyeon.dayFrame(r, today) : null;
-    const sys = systemPrompt(r, today) + (df ? `
-
-## 오늘의 뼈대 (통변엔진이 확정한 값 — 이 안에서만 쓴다)
-${dayFrameText(df)}
-
-지켜야 할 것
-- 위 [오늘의 결]·[주의]·[권할 행동]의 방향을 벗어나지 않는다. 표현은 자유롭게 다듬되 판단을 바꾸지 않는다.
-- 십신 이름은 위에 적힌 것만 쓴다. 새로 계산하지 않는다.
-- 시간대를 말할 때는 반드시 [오늘 12시진]에 적힌 시각만 쓴다. 시각을 새로 지어내지 않는다.
-- 브리핑 안에 구체적인 시각을 최소 한 번은 넣는다. [오늘의 정점]이 있으면 그 시각을 우선 쓴다.
-- [6차원 적층 체용 좌표]가 있으면 그 판정을 따른다. 특히 부호가 뒤집히는 층이 있으면 그것을 오늘 이야기의 축으로 삼는다.` : '');
-    const raw = await call(sys, [{ role: 'user', content: '오늘 브리핑. 본보기와 같은 길이(250자 이내)·말투. 한자는 첫 문장 괄호 한 곳만. 마지막 줄은 "오늘 할 행동 하나:"로 시작.' }], { task: 'brief', maxTokens: 600 });
-    const text = dehanja(raw);
-    localStorage.setItem(ck, text);
-    return text;
-  }
 
   // 대화
   async function chat(r, today, history, question) {
@@ -797,103 +629,8 @@ ${dayFrameText(df)}
     return dehanja(await call(sys, msgs, { task: 'chat', maxTokens: 800 }));
   }
 
-  // 심층 상담 서술 — 구조(frame)를 벗어나지 못하게 묶는다
-  async function deepNarrate(r, today, fr, rev, prev, dec) {
-    const top = rev.ranked[0], second = rev.ranked[1];
-    const ansText = fr.questions.map(q => `- ${q.q} → ${({y:'예',n:'아니오','?':'모르겠음'})[fr.answers[q.id]] || '무응답'}`).join('\n');
-    const structure = [
-      `[상담 주제] ${fr.domain.label} · ${fr.target.label}`,
-      fr.target.missNote ? `[알림] ${fr.target.missNote} 이 사실을 첫 문장에서 반드시 밝히고 시작한다.` : '',
-      `[질문] ${fr.question}`,
-      `[구조] ` + fr.layers.map(l => `${l.level} ${l.ganji}(${l.note})`).join(' / '),
-      fr.chaeyong ? chaeyongText(fr.chaeyong) : '',
-      `[들어오는 기운] 천간 ${fr.godStem}, 지지 ${fr.godBranch} (${fr.group}) · 일간 ${fr.strength}`,
-      whenText(fr),
-      fr.modifiers.length ? `[관계 보정] ` + fr.modifiers.map(m => m.text).join(' ') : '',
-      `[1순위 가설 ${Math.round(top.p*100)}%] ${top.title}
-  근거: ${top.basis}
-  현실신호: ${top.signs.join(' / ')}`,
-      `[2순위 가설 ${Math.round(second.p*100)}%] ${second.title}
-  근거: ${second.basis}`,
-      `[사용자 답변]
-${ansText}`,
-      fr.toldText ? `[사용자가 직접 쓴 상황]
-${fr.toldText}` : '',
-      rev.flipped ? `[판단 변경] 처음 1순위였던 "${fr.hypotheses.find(h=>h.id===rev.priorTopId).title}"에서 "${top.title}"로 순위를 바꿈` : `[판단 유지] 처음 판단과 같은 방향`,
-      `[실행 과제] ${top.action}`,
-      `[관측 지표] ${top.metric}`,
-      prev ? `[이전 상담] ${prev.createdAt}에 "${prev.topTitle}"를 1순위로 보았음` : '',
-      prev && prev.logs && prev.logs.length ? `[기록된 지표] ${prev.metric}: ` + prev.logs.map(l => `${l.date} ${l.value}`).join(' → ') : '',
-      dec ? `[선택지 비교] ` + dec.options.map((o, i) => `${'ABC'[i]}. ${o.label} (${o.score}점) — 적합: ${o.when} / 위험: ${o.risk}`).join(' | ') + ` · 미확인 ${dec.unknown}개, 변동요인 ${dec.volatility}개${dec.turning ? ', ' + dec.turning : ''}` : '',
-    ].filter(Boolean).join('\n');
 
-    const sys = systemPrompt(r, today) + `
 
-## 지금은 심층 상담 서술 모드입니다
-아래 [구조]는 계산 엔진과 통변 규칙이 이미 확정한 결과입니다. 당신의 역할은 이 구조를 상담하듯 자연스럽게 풀어 쓰는 것입니다.
 
-절대 규칙
-- 주어진 가설 외에 새로운 가설을 만들지 않는다. 순위와 확률도 주어진 것을 따른다.
-- 간지·십신은 [구조]에 있는 것만 쓴다. 새로 계산하거나 추측하지 않는다.
-- 확정적으로 단정하지 않는다. "~할 가능성이 보입니다", "저는 ~쪽에 무게를 두겠습니다" 같은 어조.
-- 사용자의 답변을 반드시 인용해 판단 근거로 삼는다.
-- 판단이 바뀌었다면 왜 바뀌었는지 분명히 말한다. 바뀌지 않았다면 그대로 유지한다고 말한다.
-- 마지막은 실행 과제와 관측 지표로 끝낸다.
-- [선택지 비교]가 주어지면 어느 것을 먼저 검토할지 한 문단으로 말한다. 점수와 순서는 주어진 것을 따르고 임의로 바꾸지 않는다.
-- [기록된 지표]가 있으면 그 숫자의 흐름을 반드시 근거로 인용한다.
-- [사용자가 직접 쓴 상황]이 있으면 그 표현을 한 번은 그대로 인용한다. 사람은 자기 말이 들렸는지로 신뢰를 판단한다.
-- [6차원 적층 체용 좌표]가 주어지면, 順/逆이 뒤집히는 층(변곡점)을 반드시 짚는다. 좌표의 부호와 값을 임의로 바꾸지 않는다.
-- 체용은 "지금 무엇이 體이고 무엇이 用인가"를 말하는 것이다. 층 이름(원국·대운·세운·월운·일운·시운)을 그대로 쓴다.
-- [골라 쓸 날]·[피할 날]이 주어지면 **반드시 구체적인 날짜를 짚는다.** 좋은 날 최소 2개, 피할 날 최소 1개를 월·일로 말한다.
-- 시기와 날짜는 [기간 내 편차]·[높은 때]·[낮은 때]·[골라 쓸 날]·[피할 날]에 적힌 것만 쓴다. **날짜를 새로 지어내지 않는다.**
-- [기간 기저 좌표]와 [기간 내 편차]는 다른 것이다. 편차가 높은 달은 "그 기간 안에서 상대적으로 높다"는 뜻이지 절대적으로 좋다는 뜻이 아니다. 이 구분을 흐리지 않는다.
-
-분량과 형식
-- 700~1000자. 문단 사이는 빈 줄로 구분.
-- 소제목을 2~3개 쓴다. 소제목은 그 자체로 문장이 되게 쓴다.
-- 목록이 필요하면 '·'로 시작하는 짧은 줄로.
-- 한자는 쓰지 않는다.
-
-${structure}`;
-    const raw = await call(sys, [{ role:'user', content:'위 구조를 바탕으로 상담해 주세요. 인사 없이 바로 본론부터.' }], { task: 'consult', maxTokens: 2000, effort: 'medium' });
-    return dehanja(raw);
-  }
-
-  /** 사용자가 자유롭게 쓴 상황 설명을 판별 질문의 답(예/아니오/모르겠음)으로 옮긴다.
-   *  질문에 갇히지 않고 말로 설명할 수 있게 하되, 판단은 여전히 규칙이 한다. */
-  async function mapAnswers(fr, text) {
-    const list = fr.questions.map((q, i) => `${i + 1}. [${q.id}] ${q.q}`).join(String.fromCharCode(10));
-    const sys = `당신은 사람이 자유롭게 쓴 이야기에서, 아래 질문들에 대한 답을 찾아내는 역할입니다.
-
-질문 목록
-${list}
-
-규칙
-- 글에서 그 질문의 답이 분명히 읽히면 "y"(그렇다) 또는 "n"(아니다)
-- 언급이 없거나 애매하면 반드시 "?" — 추측하지 마세요. 잘못 넣는 것보다 모른다고 하는 편이 낫습니다.
-- 오직 JSON만 출력합니다. 설명 금지.
-
-출력 형식
-{"질문id":"y"|"n"|"?", ...}`;
-    const raw = await call(sys, [{ role: 'user', content: text }], { task: 'brief', model: 'claude-haiku-4-5', maxTokens: 300, cache: false });
-    let out = {};
-    try {
-      const m = raw.match(/\{[\s\S]*\}/);
-      out = m ? JSON.parse(m[0]) : {};
-    } catch (e) { out = {}; }
-    const valid = {};
-    fr.questions.forEach(q => {
-      const v = out[q.id];
-      valid[q.id] = (v === 'y' || v === 'n') ? v : '?';
-    });
-    return valid;
-  }
-
-  // 궁합 해설
-  async function compatText(me, you, ruleResult, today) {
-    const sys = systemPrompt(me, today) + `\n\n## 상대방의 사주\n${chartText(you, today)}\n\n## 규칙 엔진이 계산한 관계\n${JSON.stringify({ score: ruleResult.score, 일간관계: ruleResult.stemRel.key, 일지관계: ruleResult.branchRels.map(b => b.key), 상대는내게: ruleResult.god, 메모: ruleResult.notes })}`;
-    return call(sys, [{ role: 'user', content: '이 두 사람의 관계를 읽어주세요. 끌리는 점, 부딪히는 점, 오래 가려면 어떻게 하면 되는지. 5문장 이내.' }], { task: 'compat', maxTokens: 700 });
-  }
-
-  global.ChaeksaAI = { briefCached, dehanja, deepNarrate, storyTell, sheetPiece, pieceGate, pieceParts, ganmyeong, mapAnswers, TIERS, modelFor, settings, saveSettings, ready, dailyBrief, chat, compatText, systemPrompt, chartText, buildProfile, getProfile, profileKey };
+  global.ChaeksaAI = { dehanja, sheetPiece, pieceGate, pieceParts, ganmyeong, TIERS, modelFor, settings, saveSettings, ready, chat, systemPrompt, chartText, getProfile, profileKey };
 })(window);
