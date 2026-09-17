@@ -7,8 +7,8 @@
 <p>판정엔진 + 출산택일 관점 = 화면. 시각이 분 단위로 맞는지, 점수가 안 나가는지, 관점이 엔진 말고 다른 데를 두드리지 않는지를 고정한다.</p>
 <div id="out"></div><div id="tkSim" style="display:none"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js?t=66"></script><script src="gise.js?t=66"></script><script src="panjeong.js?t=66"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
-<script src="gwanjeom.js?t=66"></script><script src="taekilsim.js?t=66"></script>
+<script src="saenggeuk.js?t=68"></script><script src="gise.js?t=68"></script><script src="panjeong.js?t=68"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
+<script src="gwanjeom.js?t=68"></script><script src="taekilsim.js?t=68"></script>
 <script>
 const E = ChaeksaEngine, P = ChaeksaPanjeong, W = ChaeksaGwanjeom, S = ChaeksaTaekilSim;
 const out = document.getElementById('out'); let 통과 = 0, 실패 = 0;
@@ -76,6 +76,15 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
   if (뜬(g) !== '壬癸') 문제.push('戊午 壬戌 丁卯 癸卯 → 뜬 ' + 뜬(g));
   g = ChaeksaGise.기세(mk('癸卯 乙卯 甲寅 乙亥'));       // 衰旺 「六木两水，别无他气」
   if (g.꼴 !== '동심' || 선(g) !== '목수' || g.으뜸.이름 !== '목' || !g.으뜸이당령) 문제.push('癸卯 乙卯 甲寅 乙亥 → ' + g.꼴 + ' ' + 선(g));
+  return 문제;
+});
+검사('67조 — 원류: 적천수 源流 실례 둘에서 멈춘 곳 · 막는 글자가 원문과 같다', () => {
+  const mk = (t) => { const k = ['year', 'month', 'day', 'hour'], p = {}; t.split(' ').forEach((x, i) => { p[k[i]] = { stem: E.STEMS.indexOf(x[0]), branch: E.BRANCHES.indexOf(x[1]) }; }); return { pillars: p }; };
+  const 문제 = [];
+  let w = ChaeksaGise.원류(mk('庚寅 壬午 戊午 丁巳'));     // 「以火为源头 … 月干壬水隔之，不能流至金」
+  if (w.원두.이름 !== '화' || w.멈춤.이름 !== '토' || w.까닭 !== '떨어짐' || w.막는.map(x => E.STEMS[x.stem]).join('') !== '壬') 문제.push('庚寅 壬午 戊午 丁巳 → ' + w.원두.이름 + '…' + w.멈춤.이름 + ' ' + w.까닭);
+  w = ChaeksaGise.원류(mk('辛卯 辛卯 丙子 甲午'));         // 「以木为源头，五行无土，不能流至金」
+  if (w.원두.이름 !== '목' || w.멈춤.이름 !== '화' || w.까닭 !== '없음') 문제.push('辛卯 辛卯 丙子 甲午 → ' + w.원두.이름 + '…' + w.멈춤.이름 + ' ' + w.까닭);
   return 문제;
 });
 (async () => {

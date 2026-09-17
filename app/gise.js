@@ -57,5 +57,39 @@
     };
   }
 
-  global.ChaeksaGise = { 기세 };
+  /* 원류(源流) — 67조. 「何处起根源？流到何方住？」
+   *  원두 = 기세의 으뜸(原注 「只论取最多最旺，而可以为满局之祖宗者，为源头也」 · 사장님 09-18 「1 동의」).
+   *  흐름 = 낳는 차례(목→화→토→금→수)로, **붙은 글자끼리**(자리 차 1 이하, 61조) 간지를 섞어 따라간다(사장님 「간지를 섞어 따라가」).
+   *  멈춤 = 다음 기운이 여덟 글자에 없거나(없음), 있어도 붙어 있지 않다(떨어짐 — 사이에 낀 글자가 막는 글자). 한 바퀴를 다 돌면 다돎. */
+  const 자리번 = { year: 0, month: 1, day: 2, hour: 3 };
+  function 원류(R, g) {
+    const p = R && R.pillars; g = g || 기세(R); if (!p || !g || !g.으뜸) return null;
+    const ds = p.day.stem, 글 = [];
+    g.칸.forEach(c => {
+      c.하늘.concat(c.뜬).forEach(h => 글.push({ 오행: c.오행, 자리: 자리번[h.자리], 궁: h.자리, stem: h.stem, 일간: h.자리 === 'day', 십신: h.자리 === 'day' ? '나' : E.TEN_GODS[E.tenGod(ds, h.stem)] }));
+      c.땅.forEach(b => { const 본 = (E.HIDDEN[b.branch] || [])[0], st = typeof 본 === 'number' ? 본 : 본[0];
+        글.push({ 오행: c.오행, 자리: 자리번[b.자리], 궁: b.자리, branch: b.branch, 지지: true, 십신: E.TEN_GODS[E.tenGod(ds, st)] }); });
+    });
+    const 붙음 = (a, b) => Math.abs(a.자리 - b.자리) <= 1;
+    let 지금 = 글.filter(x => x.오행 === g.으뜸.오행); const 길 = [{ 오행: g.으뜸.오행, 이름: 오행자[g.으뜸.오행], 글자: 지금 }];
+    let 까닭 = '다돎', 막는 = [], 다음기운 = null;
+    for (let i = 0; i < 4; i++) {
+      const 다음 = (길[길.length - 1].오행 + 1) % 5, 후보 = 글.filter(x => x.오행 === 다음);
+      다음기운 = 오행자[다음];
+      if (!후보.length) { 까닭 = '없음'; break; }
+      const 닿은 = 후보.filter(x => 지금.some(y => 붙음(x, y)));
+      if (!닿은.length) {
+        까닭 = '떨어짐'; const 지난 = {}; 길.forEach(s => { 지난[s.오행] = 1; });
+        후보.forEach(x => 지금.forEach(y => { const lo = Math.min(x.자리, y.자리), hi = Math.max(x.자리, y.자리);
+          글.forEach(z => { if (z.자리 > lo && z.자리 < hi && !지난[z.오행] && z.오행 !== 다음 && 막는.indexOf(z) < 0) 막는.push(z); }); }));
+        break;
+      }
+      지금 = 닿은; 길.push({ 오행: 다음, 이름: 오행자[다음], 글자: 닿은 });
+    }
+    const 끝 = 길[길.length - 1];
+    const 궁묶음 = (arr) => { const 위 = arr.some(x => x.자리 <= 1), 아래 = arr.some(x => x.자리 >= 2); return 위 && 아래 ? '섞임' : (위 ? '연월' : '일시'); };
+    return { 원두: 길[0], 길, 멈춤: 끝, 까닭, 다음기운: 까닭 === '다돎' ? null : 다음기운, 막는, 시작궁: 궁묶음(길[0].글자), 멈춘궁: 궁묶음(끝.글자), 한칸: 길.length === 1 };
+  }
+
+  global.ChaeksaGise = { 기세, 원류 };
 })(window);
