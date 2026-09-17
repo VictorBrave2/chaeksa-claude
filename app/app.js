@@ -1,7 +1,7 @@
 /* 책사 앱 UI v1 */
 (function () {
   'use strict';
-  const E = ChaeksaEngine, f = E.fmt, C = ChaeksaCalendar, AI = ChaeksaAI;
+  const E = ChaeksaEngine, f = E.fmt, AI = ChaeksaAI;
   const $ = (id) => document.getElementById(id);
   const KEY = 'chaeksa.profile', PKEY = 'chaeksa.partners';
   const HK = () => 'chaeksa.chat.' + (profile && profile.id ? profile.id : 'solo');
@@ -420,14 +420,7 @@
       } catch (e) {}
     }
     // 시각을 다시 읽는다. 「지금」 표시와 오늘 간지가 로드 시각에 얼어 있었다.
-    if (tab === 'today' || tab === 'cal') {
-      const 전날 = today.toDateString();
-      today = new Date();
-      if (tab === 'today') { try { renderToday(); } catch (e) {} }
-      if (tab === 'cal') { try { renderCal(); } catch (e) {} }
-      // 날이 바뀌었으면 홈도 다시 — 오늘의 책사와 얼빡이 날마다 도는 자리다.
-      if (전날 !== today.toDateString()) { try { renderHome(); } catch (e) {} }
-    }
+    // 달력 탭은 2026-09-17 에 걷었다(사장님 「달력 삭제 — 설득력없음」). 날 점수(calendar.js)도 같이 나갔다.
     if (tab === 'geunamja') renderGeunamja();
     if (tab === 'maeum') renderMaeum();
     if (tab === 'gunghap') renderGunghap();
@@ -473,7 +466,7 @@
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = nim() ? `${nim()}의 책사단` : '나의 책사단';
     renderPeopleBtn();
-    renderToday(); renderMe(); renderCal(); renderPartners(); renderHome();
+    renderToday(); renderMe(); renderPartners(); renderHome();
     try { renderWtHome(); } catch (e) { try { console.warn('홈 목록 실패:', e); } catch (e2) {} }
     go('home');
   }
@@ -966,36 +959,6 @@
   // renderProfileCard(「좌장이 읽는 원국」 Opus 정독)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. wongook 상품은 팔지 않는다.
   async function renderProfileCard() { const c = $('aiProfile'); if (c) c.remove(); }
 
-  // ───── 달력 ─────
-  let calY = today.getFullYear(), calM = today.getMonth() + 1, purpose = 'all', selDay = null;
-  function renderCal() {
-    $('purposes').innerHTML = Object.entries(C.PURPOSES).map(([k, v]) => `<button class="chip ${k === purpose ? 'on' : ''}" data-p="${k}">${v.label}</button>`).join('');
-    $('purposes').querySelectorAll('.chip').forEach(b => b.onclick = () => { purpose = b.dataset.p; renderCal(); });
-    $('calTitle').textContent = `${calY}년 ${calM}월`;
-    const days = C.month(R, calY, calM, purpose);
-    const first = new Date(calY, calM - 1, 1).getDay();
-    const todayN = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-    let html = ['일','월','화','수','목','금','토'].map(d => `<div class="h">${d}</div>`).join('');
-    for (let i = 0; i < first; i++) html += '<div class="cd empty"></div>';
-    for (const s of days) {
-      const n = calY * 10000 + calM * 100 + s.d;
-      html += `<div class="cd g${s.grade} ${n === todayN ? 'today' : ''} ${n < todayN ? 'past' : ''} ${selDay === s.d ? 'sel' : ''}" data-d="${s.d}">${s.d}<i class="g${s.grade}"></i></div>`;
-    }
-    $('calgrid').innerHTML = html;
-    $('calgrid').querySelectorAll('.cd[data-d]').forEach(el => el.onclick = () => { selDay = +el.dataset.d; renderCal(); showDay(days[selDay - 1]); });
-    // 베스트 3
-    const best = days.filter(s => (calY * 10000 + calM * 100 + s.d) >= todayN).sort((a, b) => b.score - a.score).slice(0, 3);
-    if (!selDay) $('dayDetail').innerHTML = `<h2>${C.PURPOSES[purpose].label} · 이달의 추천일</h2><div class="best">${best.map(s => `<div class="b"><b>${s.d}일</b> ${f.pillar(s.tf.day)} · ${s.god}<span>${C.GRADE_LABEL[s.grade]}</span></div>`).join('') || '<p class="hint">남은 날 중 추천일이 없어요. 다음 달을 보세요.</p>'}</div>`;
-  }
-  function showDay(s) {
-    // 감성 표(GOD_TODAY tone·care·act)는 2026-09-04 걷었다 — 그날 글자를 여섯 눈으로
-    let 눈 = ''; try { const k = ChaeksaDan.육안글자(R, today, s.tf.day.stem, s.tf.day.branch, { 궁합: true }); 눈 = k.length ? ChaeksaDan.육안줄(k) : ''; } catch (e) {}
-    $('dayDetail').innerHTML = `<h2>${calM}월 ${s.d}일 · ${f.pillar(s.tf.day)}(${f.pillarKo(s.tf.day)})</h2>
-      <div class="score"><b style="font-size:28px">${C.GRADE_LABEL[s.grade]}</b><span>${C.PURPOSES[purpose].label} 기준 · ${s.reasons.join(', ')}</span></div>
-      <div class="brief"><p>${esc(s.god)}의 글자.</p>${눈 ? `<p style="color:var(--ink2)">${esc(눈)}</p>` : ''}</div>`;
-  }
-  $('calPrev').onclick = () => { calM--; if (calM < 1) { calM = 12; calY--; } selDay = null; renderCal(); };
-  $('calNext').onclick = () => { calM++; if (calM > 12) { calM = 1; calY++; } selDay = null; renderCal(); };
 
   // ───── 이 남자, 나한테 돈을 쓸까요? (docs/31 · 9,900원 첫 장) ─────
   // 물음 열 개. 1·2·6은 미리보기, 나머지는 결제(geunamja) 뒤에. 값은 geunamja.js, 말도 거기.
@@ -1950,7 +1913,6 @@
     ['unro', '운로', 'life', '언제가 두터워지고 언제가 담금질인지 곡선으로 펴 드릴까요.'],
     ['japyung', '자평진전', 'me', '격이 섰는지 무너졌는지, 원국을 펴 보여 드리겠습니다.'],
     ['cheonjik', '천직', 'jikcheop', '스물다섯 결 가운데 어느 쪽인지 아뢰겠습니다.'],
-    ['hyeopgi', '택일', 'cal', '좋은 날을 고르는 일은 제 몫입니다. 달력을 펴 보시겠습니까.'],
     ['gungwi', '궁위', 'dohwa', '곁자리에 앉은 글자가 누구를 가리키는지 보시겠습니까.'],
   ];
   // ── 발언자 표시 — 무료 의논과 유료 본문이 함께 쓴다 ──
