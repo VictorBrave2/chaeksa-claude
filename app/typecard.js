@@ -115,12 +115,6 @@
   // 꼬리가 길어 40%가 SSR을 받는 사고가 있었다 — 등급은 사람 기준이어야 한다.
   const CACHE_KEY = 'chaeksa.typeSample.v9';   // v9: SSR 문턱 되살림 (v8: 천직 유형 분포 동승)
   const N_SAMPLE = 10000;
-  /** 이미 만들어 둔 표본이 있으면 돌려준다. 없으면 null.
-   *  홈에서 새로 만들지 않는다 — 만 명을 돌리는 것이라 느리다. */
-  function cachedSample() {
-    try { const hit = JSON.parse(localStorage.getItem(CACHE_KEY)); return (hit && hit.n) ? hit : null; }
-    catch (e) { return null; }
-  }
 
   function buildSample(onTick, done) {
     try {
@@ -338,60 +332,6 @@
 </svg>`;
   }
 
-  // ── 오늘의 금지령 — 오늘 일진 십신 + 일지 관계(충·복음)로 정한다. 매일 바뀐다 ──
-  function banToday(R, when) {
-    when = when || new Date();
-    const B = global.ChaeksaBrief;
-    const tf = E.dateFortune(when.getFullYear(), when.getMonth() + 1, when.getDate());
-    const god = E.TEN_GODS[E.tenGod(R.analysis.dayStem, tf.day.stem)];
-    const base = B.BANLIST[god] || B.BANLIST['비견'];
-    const 금지 = base.금지.slice();
-    const myBr = R.pillars.day.branch, todayBr = tf.day.branch;
-    let 관계 = null;
-    // 충 판정을 뺀다 — 제23조. 금지령에 충 문구가 없으므로 붙일 것도 없다.
-    if (myBr === todayBr) 관계 = '복음';
-    if (관계) 금지.push(B.BAN_EXTRA[관계]);
-    return { god, 관계, 금지, 허가: base.허가, 일진: E.fmt.pillar(tf.day) };
-  }
-  function drawBan(name, ban, when) {
-    when = when || new Date();
-    const esc3 = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const dateTxt = (when.getMonth() + 1) + '월 ' + when.getDate() + '일 · ' + ban.일진 + '일 (' + ban.god + ')';
-    // x=82에서 오른쪽 여백(320)까지 238px. 13px 글자면 18자.
-    let by = 250;
-    const items = ban.금지.map((t) => {
-      // 두 줄까지만 담기는 칸이다. 넘치면 말줄임을 붙인다 —
-      // 없으면 문장 한가운데서 잘린 카드가 그대로 나가고 아무도 모른다.
-      const 전부 = foldTxt(t, 238, 13);
-      const ls = 전부.slice(0, 2);
-      if (전부.length > 2 && ls.length === 2 && ls[1] && typeof ls[1][0] === 'string') {
-        ls[1] = [ls[1][0].replace(/.$/, '') + '…'].concat(ls[1].slice(1));
-      }
-      const g = '<text x="52" y="' + by + '" font-size="15" fill="#8a3020" font-weight="700">禁</text>'
-        + ls.map((L, j) => '<text x="82" y="' + (by + j * 19) + '" font-size="13" fill="#4a3a28">' + esc3(L[0]) + '</text>').join('');
-      by += (ls.length - 1) * 19 + 40;
-      return g;
-    }).join('');
-    const okY = by + 8;
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
-      + '<defs><linearGradient id="bn" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#f7efdb"/><stop offset="1" stop-color="#eee0c2"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="16" fill="url(#bn)"/>'
-      + '<rect x="12" y="12" width="336" height="536" rx="10" fill="none" stroke="#7a5a28" stroke-width="2.5"/>'
-      + '<text x="180" y="88" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="46" font-weight="900" fill="#5c421c" letter-spacing="16">禁 令</text>'
-      + '<text x="180" y="126" text-anchor="middle" font-size="13" fill="#7a6a48" letter-spacing="3">오늘의 금지령</text>'
-      + '<text x="180" y="172" text-anchor="middle" font-size="14" fill="#5c4c2e">' + esc3(name) + ' 앞 · ' + esc3(dateTxt) + '</text>'
-      + '<line x1="40" y1="200" x2="320" y2="200" stroke="#c9b285" stroke-width="1.5"/>'
-      + items
-      + '<line x1="40" y1="' + okY + '" x2="320" y2="' + okY + '" stroke="#c9b285" stroke-width="1.5" stroke-dasharray="5 4"/>'
-      + '<text x="52" y="' + (okY + 40) + '" font-size="15" fill="#2f6b3a" font-weight="700">許</text>'
-      + foldTxt(ban.허가, 238, 13).slice(0, 2).map((L, j) =>
-          '<text x="82" y="' + (okY + 40 + j * 19) + '" font-size="13" fill="#33502e">' + esc3(L[0]) + '</text>').join('')
-      + '<g transform="translate(276,452)"><rect width="52" height="52" rx="8" fill="#b23a2a" opacity=".92"/>'
-      + '<text x="26" y="34" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="22" font-weight="900" fill="#fdf3e7">策</text></g>'
-      + '<text x="180" y="536" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="2">chaeksa.kr · 오늘 일진으로 계산 · 내일이면 바뀝니다</text>'
-      + '</svg>';
-  }
 
   // ── 인연이 오는 해 ──
   // 2026-08-28 새로 만들었다. 여성향 검색어 1위권인데 지금까지 없었다.
@@ -544,27 +484,6 @@
     return { s: Math.max(0, Math.min(100, s)), 이유 };
   }
 
-  /** 그 달 안에서 두 사람 다 좋은 **날**이 며칠인가.
-   *  날짜는 안 돌려준다 — 개수만 낸다. 날짜와 시각은 사람이 붙어서 보는 자리다.
-   *  「2월에 두 분 다 좋은 날이 4일 있습니다」까지가 무료고, 그 다음이 상담이다. */
-  function bothDays(Rme, Ryou, year, month) {
-    // 예전엔 min(A,B) ≥ 70 을 셌다 — 500쌍×12달 실측에서 달당 6.6일, 12~13일인 달이 17%.
-    // myDays 와 같은 병(덧셈 점수 위의 절대 문턱)이다. 같은 약을 쓴다 — **각자의 최고 띠**(myDays.좋은).
-    //   두분다  두 사람이 각자 최고 띠인 날이 겹친다        평균 0.24일 · 84% 달은 0 — 있으면 보석
-    //   한쪽    한 사람이 최고 띠이고 상대는 빼인 것이 없다  평균 5.1일 · 0인 달 없음
-    // 「≥50」은 monthScoreFor 의 기본선이라 상수가 아니다 — 빼인 항(눌림)이 없다는 뜻이다.
-    // min 의 최고 띠로 잡는 안은 평균 3.9일인데 12일 달이 8% — 둘의 흔한 값(90)에서 뭉쳐 버렸다.
-    const va = myDays(Rme, year, month), vb = myDays(Ryou, year, month);
-    const ga = new Set(va.좋은.map(r => r.일)), gb = new Set(vb.좋은.map(r => r.일));
-    const 안눌림 = (v, d) => { const r = v.rows[d - 1]; return !!r && r.점수 >= 50; };
-    const 두분다 = [...ga].filter(d => gb.has(d)).sort((a, b) => a - b);
-    const 한쪽 = [...ga].filter(d => !gb.has(d) && 안눌림(vb, d))
-      .concat([...gb].filter(d => !ga.has(d) && 안눌림(va, d))).sort((a, b) => a - b);
-    let 최고 = 0;
-    va.rows.forEach((r, k) => { const m = Math.min(r.점수, (vb.rows[k] || {}).점수 || 0); if (m > 최고) 최고 = m; });
-    // 좋은날 은 옛 이름을 지킨다 — 부르는 곳이 있다. 뜻은 「두 분 다」로 좁아졌다.
-    return { 좋은날: 두분다.length, 두분다, 한쪽: 한쪽.length, 한쪽날: 한쪽, 전체: va.rows.length, 최고 };
-  }
 
 
   // ── 유료 해상도 — 결제한 사람에게만 그려지는 계산 ──
@@ -783,46 +702,6 @@
     return { 좋은, 조심, 상대 };
   }
 
-  /** 두 사람 — 그 달의 날짜 전부 + 좋은 날의 시진과 시계 창. bothDays 와 같은 자다.
-   *  lon 을 주면 시진을 그 지역의 시계 시각으로 바꿔 준다 (진태양시 보정). */
-  function coupleDates(Rme, Ryou, year, month, lon) {
-    const last = new Date(year, month, 0).getDate();
-    const rows = [];
-    for (let d = 1; d <= last; d++) {
-      let tf; try { tf = E.dateFortune(year, month, d); } catch (e) { continue; }
-      const day = { month: tf.day };
-      const A = monthScoreFor(Rme, day), B = monthScoreFor(Ryou, day);
-      rows.push({ 일: d, 요일: '일월화수목금토'[new Date(year, month - 1, d).getDay()],
-                  간지: E.fmt.pillar(tf.day), 점수: Math.min(A.s, B.s),
-                  이유: [].concat(A.이유.slice(0, 1), B.이유.slice(0, 1)) });
-    }
-    const 좋은날 = rows.filter(r => r.점수 >= 70);
-    const 피할날 = rows.filter(r => r.점수 <= 32).slice(0, 5);
-
-    // 좋은 날의 시진 — 시두법으로 12시진을 세우고 같은 자로 잰다.
-    // 시계 창: 시진은 진태양시 기준이라, 시계로는 지역 보정만큼 밀린다 (서울 약 32분).
-    const HB_KO = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-    const two = (n) => (n < 10 ? '0' : '') + n;
-    좋은날.slice(0, 6).forEach(r => {
-      let tf; try { tf = E.dateFortune(year, month, r.일); } catch (e) { return; }
-      const dstem = tf.day.stem, best = [];
-      for (let hb = 0; hb < 12; hb++) {
-        const hs = ((dstem % 5) * 2 + hb) % 10;
-        const hp = { month: { stem: hs, branch: hb } };
-        best.push([hb, Math.min(monthScoreFor(Rme, hp).s, monthScoreFor(Ryou, hp).s)]);
-      }
-      best.sort((a, b) => b[1] - a[1]);
-      // 시계 창으로 바꾼다 — solar = clock + offset 이므로 clock = solar − offset
-      const off = lon ? Math.round(-E.solarOffsetMin(year, month, r.일, lon)) : 0;
-      r.시진 = best.slice(0, 2).map(x => {
-        const hb = x[0], s0 = (23 + hb * 2) % 24;
-        const c0 = (s0 * 60 + off + 1440) % 1440, c1 = (c0 + 120) % 1440;
-        const w = two(Math.floor(c0 / 60)) + ':' + two(c0 % 60) + '~' + two(Math.floor(c1 / 60)) + ':' + two(c1 % 60);
-        return HB_KO[hb] + '시 ' + (lon ? '시계 ' + w : '');
-      });
-    });
-    return { rows, 좋은날, 피할날 };
-  }
 
   /** 이번 달 풀이 — 한 사람의 일운 한 달. 달마다 다시 사는 상품이다. */
   function myDays(R, year, month) {
@@ -1483,68 +1362,6 @@
     중화: '치우침이 적다는 뜻. 운이 좋으면 좋은 대로, 눌리면 눌리는 대로 운을 비교적 그대로 탄다. 그래서 달력이 곧 지침이 된다',
   };
 
-  function dossier(R, when) {
-    const p = R.pillars, a = R.analysis || E.strengthOf(p), ds = p.day.stem;
-    const 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
-    const gz = (x) => E.fmt.pillar(x);
-    const d = {};
-    d.사주 = [gz(p.year), gz(p.month), gz(p.day)].concat(p.hour ? [gz(p.hour)] : []).join(' ');
-    d.일간 = E.STEMS[ds] + '(' + E.STEMS_KO[ds] + ') · ' + E.ELEM[E.STEM_ELEM[ds]] + ' 일간 — 이 사람 자신을 나타내는 글자';
-    d.강약 = a.strength + (a.strengthScore != null ? ' ' + a.strengthScore : '')
-      + (a.gotMonth ? ' · 득령(태어난 계절이 나를 돕는다)' : ' · 실령(태어난 계절이 나를 돕지 않아, 힘을 계절 밖에서 얻어야 한다)')
-      + ' — ' + (강약뜻[a.strength] || '');
-    d.오행분포 = E.ELEM.map((e, i) => e + (a.elemCount ? a.elemCount[i] : '?')).join(' ')
-      + ' — 여덟 글자가 어떤 재료로 이루어졌는가';
-    if (a.missing && a.missing.length) d.빈오행 = a.missing.join('·')
-      + ' — 원국에 아예 없는 재료. 평생 얇은 고리라, 이 기운이 운에서 들어오는 때가 유난히 크게 느껴진다';
-    if (a.yongCandidates && a.yongCandidates.length) d.채워야할오행 = a.yongCandidates.join('·')
-      + ' — 이 기운이 오는 때에 힘이 돌고, 이 기운을 가진 사람이 곁에 오면 편해진다';
-    const 노릇 = (st, 자리말) => {
-      const g = 신(st);
-      return g + ' ' + E.STEMS[st] + ' — ' + 자리말 + '. ' + (GOD_MEANING[g] || '');
-    };
-    d.천간의노릇 = {
-      연간: 노릇(p.year.stem, '이른 시기·집안·바깥에서 크게 보이는 자리'),
-      월간: 노릇(p.month.stem, '청년기·사회생활의 자리, 가장 힘있는 자리'),
-    };
-    if (p.hour) d.천간의노릇.시간 = 노릇(p.hour.stem, '말년·내밀한 자리, 그리고 늘 곁에 두는 것');
-    d.배우자자리 = '일지 ' + E.BRANCHES[p.day.branch] + '(' + E.BRANCHES_KO[p.day.branch]
-      + ') — 배우자가 앉는 자리이자 내 속마음의 방. 운의 글자가 이 자리와 합하면 곁이 채워지고, 치면 흔들린다';
-    try {
-      const J = gyeok(R);
-      if (J && J.격) {
-        const L = global.ChaeksaGyeok && global.ChaeksaGyeok.LABEL && global.ChaeksaGyeok.LABEL[J.판정];
-        d.격국 = { 격: J.격, 판정: (L && L.짧게) || J.판정 };
-        if (J.상신) d.격국.상신 = J.상신;
-      }
-    } catch (e) {}
-    try {
-      const g = global.ChaeksaClassic && global.ChaeksaClassic.gungtong(R);
-      if (g && g.need) d.조후 = { 계절의약: g.need + (g.aux ? ' · 보좌 ' + g.aux : ''),
-        형편: g.hasMain ? '주용신이 하늘에 떠 있음 — 계절이 필요로 하는 것을 갖춤'
-             : (g.hasAux ? '보좌만 떠 있음' : '하늘에 없음 — 운에서 채워야 함') };
-    } catch (e) {}
-    try {
-      const du = E.currentDaeun(R, when || new Date());
-      if (du) {
-        const g = 신(du.stem);
-        d.대운 = { 간지: gz(du), 십신: g,
-          구간: (du.startAge != null ? du.startAge + '~' + du.endAge + '세' : ''),
-          뜻: '대운은 10년 단위의 큰 바탕이다. 지금 이 사람은 ' + g + '의 10년 위에 있다 — ' + (GOD_MEANING[g] || '') };
-      }
-    } catch (e) {}
-    try {
-      const y = (when || new Date()).getFullYear();
-      const tf = E.dateFortune(y, 6, 15);
-      const sg = 신(tf.year.stem);
-      d.올해세운 = y + '년 ' + gz(tf.year) + ' — ' + sg + '의 해. ' + (GOD_MEANING[sg] || '');
-    } catch (e) {}
-    try {
-      const 합 = E.natalHap(p);
-      if (합 && Object.keys(합).length) d.합거 = '원국 천간합으로 명령을 잃은 자리 있음(' + Object.keys(합).join('·') + ')';
-    } catch (e) {}
-    return d;
-  }
 
   // ── 어떤 사람이 나를 사랑하는가 — 뒤집기 한 번의 명리 ──
   //
@@ -2216,27 +2033,6 @@
     return { 상태, 이름, 말 };
   }
 
-  /** 두 사람 — 이 조합이 왜 날을 골라야 하는가. 십신 관계와 일지 관계에서 꺼낸다. */
-  function coupleWhy(Rme, Ryou, nameA, nameB) {
-    const dsA = Rme.pillars.day.stem, dsB = Ryou.pillars.day.stem;
-    const dbA = Rme.pillars.day.branch, dbB = Ryou.pillars.day.branch;
-    const GRP = { 비견:'비겁', 겁재:'비겁', 식신:'식상', 상관:'식상', 편재:'재성',
-                  정재:'재성', 편관:'관성', 정관:'관성', 편인:'인성', 정인:'인성' };
-    const g안 = GRP[E.TEN_GODS[E.tenGod(dsA, dsB)]];   // 나에게 상대는
-    const g밖 = GRP[E.TEN_GODS[E.tenGod(dsB, dsA)]];   // 상대에게 나는
-    const 말 = [];
-    const 긴장 = g안 === '관성' || g밖 === '관성';
-    const 소모 = g안 === '비겁' && g밖 === '비겁';
-    if (긴장) 말.push('두 분은 한쪽이 한쪽을 누르는 힘이 섞여 있습니다. 나쁜 조합이 아니라 팽팽한 조합입니다 — 다만 기운이 눌리는 날에 만나면 그 팽팽함이 다툼으로 나옵니다. 그래서 이 조합은 날이 절반입니다.');
-    else if (소모) 말.push('두 분은 같은 것을 놓고 나란히 서는 사이입니다. 편한 대신, 둘 다 지친 날에는 서로 기댈 데가 없어집니다. 둘 다 차 있는 날을 고르는 것이 요령입니다.');
-    else 말.push('두 분은 한쪽이 한쪽을 살리는 힘이 있습니다. 바탕은 순한 조합이라, 좋은 날을 고르면 그 순함이 그대로 삽니다.');
-    const rel = ((dbB - dbA + 12) % 12);
-    const YUKHAP = { 0:1, 1:0, 2:11, 11:2, 3:10, 10:3, 4:9, 9:4, 5:8, 8:5, 6:7, 7:6 };
-    if (YUKHAP[dbA] === dbB) 말.push('배우자 자리끼리는 합입니다 — 바탕이 붙어 있어 웬만한 날은 무난하게 흘러갑니다. 큰 날만 제대로 고르면 됩니다.');
-    // 배우자 자리끼리의 충 서술을 걷었다 — 제23조가 「궁합(relation) 충 서술 전부」를
-    // 이름으로 지목한 자리다. 겁준 자리에서 바로 결제를 권하는 화면이기도 했다.
-    return { 말 };
-  }
 
   /** 이번 달 — 이 사주가 왜 날을 골라야 하는가. 강약과 격국 성패에서 꺼낸다. */
   function monthWhy(R) {
@@ -2319,50 +2115,6 @@
     return { 결, 지금, 강약: a.strength };
   }
 
-  function drawNaepyeon(name, v) {
-    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const wrap = (t, n) => {
-      const out = []; let cur = '';
-      String(t).split(' ').forEach(w => {
-        if ((cur + ' ' + w).trim().length <= (n || 24)) cur = (cur + ' ' + w).trim();
-        else { out.push(cur); cur = w; }
-      });
-      if (cur) out.push(cur);
-      return out.slice(0, 2);
-    };
-    let y = 176, body = '';
-    v.결.forEach((k) => {
-      body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="17" font-weight="700" fill="#3f5a44">'
-        + es(k.이름) + ' <tspan font-size="12" font-weight="400" fill="#7d9484">' + es(k.오행)
-        + ' · ' + es(k.일간독음.map((ko, i) => ko + '(' + (k.일간[i] || '') + ')').join('·')) + '</tspan></text>';
-      y += 22;
-      wrap(k.설명, 27).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>'; y += 18; });
-      body += '<text x="44" y="' + y + '" font-size="12" fill="#7d9484">나에게는 ' + es(k.십신) + ' — ' + es(wrap(k.기울기, 30)[0] || '') + '</text>';
-      y += 30;
-    });
-    const 지 = v.지금 ? wrap(v.지금.말, 27) : [];
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
-      + '<defs><linearGradient id="np" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#f4f8f3"/><stop offset="1" stop-color="#e2ece2"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="16" fill="url(#np)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#c7d8c7" stroke-width="1"/>'
-      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#7d9484" letter-spacing="4">내 편이 되어주는 사람</text>'
-      + '<text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#2f4a36">'
-      + 이름님(name) + '에게 힘이 되는 사람</text>'
-      + '<line x1="44" y1="112" x2="316" y2="112" stroke="#cfdccf"/>'
-      + '<text x="44" y="140" font-size="12" fill="#7d9484">지금 채워야 할 것 — '
-      + es(v.결.map(k => k.오행).join(' · ')) + ' · ' + es(강약말(v.강약)) + '</text>'
-      + body
-      + (지.length
-        ? '<line x1="44" y1="' + Math.max(y, 420) + '" x2="316" y2="' + Math.max(y, 420) + '" stroke="#cfdccf"/>'
-          + '<text x="44" y="' + (Math.max(y, 420) + 26) + '" font-size="11.5" fill="#7d9484">지금 대운(10년) · ' + es(v.지금.십신) + '</text>'
-          + 지.map((l, i) => '<text x="44" y="' + (Math.max(y, 420) + 48 + i * 18) + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>').join('')
-        : '')
-      + '<text x="180" y="516" text-anchor="middle" font-size="11" fill="#7d9484">사람은 오행 하나로 정해지지 않습니다</text>'
-      + '<text x="180" y="532" text-anchor="middle" font-size="11" fill="#7d9484">피할 사람을 고르라는 계산이 아닙니다</text>'
-      + '<text x="180" y="548" text-anchor="middle" font-size="10" fill="#a8bda8" letter-spacing="2">chaeksa.kr</text>'
-      + '</svg>';
-  }
 
   // ── 지칠 때와 채울 때 ──
   // 「나는 왜 이렇게 지칠까」는 여성향에서 크게 읽히는데 우리는 강약·용신·빈오행으로
@@ -2397,50 +2149,6 @@
     return { 강약: a.강약 || a.strength, 깎, 채, 빈 };
   }
 
-  function drawJichim(name, v) {
-    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const wrap = (t, n) => {
-      const out = []; let cur = '';
-      String(t).split(' ').forEach(w => {
-        if ((cur + ' ' + w).trim().length <= (n || 27)) cur = (cur + ' ' + w).trim();
-        else { out.push(cur); cur = w; }
-      });
-      if (cur) out.push(cur);
-      return out.slice(0, 2);
-    };
-    let y = 158, body = '';
-    body += '<text x="44" y="' + y + '" font-size="11.5" fill="#9a8090" letter-spacing="2">이럴 때 지칩니다</text>'; y += 26;
-    v.깎.forEach(d => {
-      body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="15.5" font-weight="700" fill="#5a3a4a">' + es(d[0]) + '</text>'; y += 20;
-      wrap(d[1]).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#6a5460">' + es(l) + '</text>'; y += 17; });
-      y += 10;
-    });
-    y += 8;
-    body += '<line x1="44" y1="' + y + '" x2="316" y2="' + y + '" stroke="#e2d2da"/>'; y += 28;
-    body += '<text x="44" y="' + y + '" font-size="11.5" fill="#7d9484" letter-spacing="2">이것으로 채웁니다</text>'; y += 26;
-    v.채.forEach(k => {
-      body += '<text x="44" y="' + y + '" font-family="Noto Serif KR,serif" font-size="15.5" font-weight="700" fill="#2f4a36">'
-        + es(k.말[0]) + ' <tspan font-size="11.5" font-weight="400" fill="#7d9484">' + es(k.오행) + '</tspan></text>'; y += 20;
-      wrap(k.말[1]).forEach(l => { body += '<text x="44" y="' + y + '" font-size="12.5" fill="#4c5a4e">' + es(l) + '</text>'; y += 17; });
-      y += 10;
-    });
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
-      + '<defs><linearGradient id="jc" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#fbf5f7"/><stop offset="1" stop-color="#eff2ec"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="16" fill="url(#jc)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#dccdd4" stroke-width="1"/>'
-      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#9a8090" letter-spacing="4">지칠 때와 채울 때</text>'
-      + '<text x="180" y="86" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#4a3240">'
-      + 이름님(name) + '</text>'
-      + '<text x="180" y="112" text-anchor="middle" font-size="12" fill="#9a8090">' + es(강약말(v.강약)) + ' · 기운이 도는 때와 새는 때</text>'
-      + body
-      + (v.빈.length
-        ? '<text x="44" y="500" font-size="11.5" fill="#9a8090">평생 얇은 고리 — ' + es(v.빈.map(b => b.오행).join('·'))
-          + ' : ' + es(v.빈.map(b => b.말[0]).join(' · ')) + '</text>' : '')
-      + '<text x="180" y="528" text-anchor="middle" font-size="11" fill="#9a8090">지치는 것은 약해서가 아니라 결이 그렇기 때문입니다</text>'
-      + '<text x="180" y="546" text-anchor="middle" font-size="10" fill="#c0aab4" letter-spacing="2">chaeksa.kr</text>'
-      + '</svg>';
-  }
 
   const REL_WORD = {
     비견: ['나란히 선 사람', '편한데, 같은 것을 원할 때는 겨루게 됩니다'],
@@ -2689,55 +2397,6 @@
     return { 나에게, 그에게, 끌림, 부딪힘, 채움, 온도, 맺음, 지금, 맞물림, 신살, 그사람, nameA, nameB };
   }
 
-  /** 우리 둘 사이 카드. 판결문이 아니라 한 장의 편지처럼 짠다. */
-  function drawRelation(nameA, nameB, v) {
-    const es = (x) => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const wrap = (t, n) => {
-      const out = []; let cur = '';
-      String(t).split(' ').forEach(w => {
-        if ((cur + ' ' + w).trim().length <= (n || 26)) cur = (cur + ' ' + w).trim();
-        else { out.push(cur); cur = w; }
-      });
-      if (cur) out.push(cur);
-      return out.slice(0, 3);
-    };
-    let y = 232, body = '';
-    const 줄 = (mark, col, txt, tcol) => {
-      const ls = wrap(txt);
-      body += '<text x="42" y="' + y + '" font-size="13" fill="' + col + '">' + mark + '</text>';
-      ls.forEach((l, i) => {
-        body += '<text x="66" y="' + (y + i * 19) + '" font-size="12.5" fill="' + (tcol || '#4a3f33') + '">' + es(l) + '</text>';
-      });
-      y += ls.length * 19 + 12;
-    };
-    v.끌림.forEach(t => 줄('♡', '#b0567a', t));
-    v.부딪힘.forEach(t => 줄('沖', '#a06a2a', t));   // 이모지 금지 — 인장 한자를 쓴다
-    if (v.채움) 줄('✦', '#3f7a5a', v.채움.말);
-
-    const 맺 = wrap(v.맺음, 24);
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" style="max-width:100%;display:block">'
-      + '<defs><linearGradient id="rl" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#fbf4ee"/><stop offset="1" stop-color="#f2e4dd"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="16" fill="url(#rl)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="11" fill="none" stroke="#d9c3b8" stroke-width="1"/>'
-      + '<text x="180" y="52" text-anchor="middle" font-size="11.5" fill="#a08878" letter-spacing="4">우리 둘 사이</text>'
-      + '<text x="180" y="84" text-anchor="middle" font-family="Noto Serif KR,serif" font-size="19" font-weight="700" fill="#4a3226">'
-      + es(nameA) + ' <tspan fill="#b0567a">∞</tspan> ' + es(nameB) + '</text>'
-      + '<line x1="42" y1="104" x2="318" y2="104" stroke="#e0cec4"/>'
-      // 서로에게 무엇인가 — 이 카드의 머리
-      + '<text x="42" y="132" font-size="11.5" fill="#a08878">' + es(nameA) + '님에게 ' + es(nameB) + '님은</text>'
-      + '<text x="42" y="156" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#4a3226">'
-      + es(v.나에게.말[0]) + ' <tspan font-size="12" font-weight="400" fill="#9a8474">' + es(v.나에게.십신) + '</tspan></text>'
-      + '<text x="42" y="186" font-size="11.5" fill="#a08878">' + es(nameB) + '님에게 ' + es(nameA) + '님은</text>'
-      + '<text x="42" y="210" font-family="Noto Serif KR,serif" font-size="16" font-weight="700" fill="#4a3226">'
-      + es(v.그에게.말[0]) + ' <tspan font-size="12" font-weight="400" fill="#9a8474">' + es(v.그에게.십신) + '</tspan></text>'
-      + body
-      + '<line x1="42" y1="470" x2="318" y2="470" stroke="#e0cec4"/>'
-      + 맺.map((l, i) => '<text x="180" y="' + (498 + i * 20) + '" text-anchor="middle" font-family="Noto Serif KR,serif"'
-          + ' font-size="13.5" fill="#7a5a48">' + es(l) + '</text>').join('')
-      + '<text x="180" y="544" text-anchor="middle" font-size="10" fill="#bda898" letter-spacing="2">chaeksa.kr</text>'
-      + '</svg>';
-  }
 
   // ── 재물 그릇 — 녹패(祿牌) ──
   // 점수(0~100) = 재성 세력(40) + 식상 통로(14) + 담는 힘(25) + 재고(6) − 군겁쟁재(15) − 재다신약(15).
@@ -3678,57 +3337,6 @@
              peakTxt: 칸(list[hi].d) };
   }
 
-  function drawLifeCurve(name, lc) {
-    const F = 'Noto Serif KR,serif';
-    const X0 = 46, X1 = 314, Y0 = 236, Y1 = 356;      // 그래프 자리
-    const n = lc.list.length;
-    const px = (i) => X0 + (X1 - X0) * (n === 1 ? 0.5 : i / (n - 1));
-    const py = (v) => Y1 - (Y1 - Y0) * (v / 100);
-    const pts = lc.list.map((x, i) => px(i) + ',' + py(x.v)).join(' ');
-    const area = 'M' + px(0) + ',' + Y1 + ' L' + lc.list.map((x, i) => px(i) + ',' + py(x.v)).join(' L') + ' L' + px(n - 1) + ',' + Y1 + ' Z';
-    const dots = lc.list.map((x, i) => {
-      const isCur = i === lc.curIdx, isHi = i === lc.headIdx;
-      return '<circle cx="' + px(i) + '" cy="' + py(x.v) + '" r="' + (isCur ? 5.5 : isHi ? 4.5 : 2.8) + '" '
-        + 'fill="' + (isCur ? '#b23a2a' : isHi ? '#c8a24a' : '#8a7a58') + '"/>';
-    }).join('');
-    const labels = lc.list.map((x, i) => (i % 2 === 0 || i === lc.headIdx)
-      ? '<text x="' + px(i) + '" y="' + (Y1 + 15) + '" text-anchor="middle" font-size="9" fill="#8a7a58">' + x.d.startAge + '</text>' : '').join('');
-    const hiLab = '<text x="' + px(lc.headIdx) + '" y="' + (py(lc.list[lc.headIdx].v) - 11) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8a6a1e">' + '최고' + '</text>';
-    const curLab = lc.curIdx >= 0 ? '<text x="' + px(lc.curIdx) + '" y="' + (py(lc.list[lc.curIdx].v) + 18) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b23a2a">지금</text>' : '';
-    let by = 392, body = '';
-    lc.lines.forEach((l) => {
-      const ls = foldTxt(l, 274, 11.5, 2);
-      ls.forEach((L, j) => {
-        body += '<text x="' + (L[1] ? 42 : 53) + '" y="' + (by + j * 16) + '" font-size="11.5" fill="#4a3a28">'
-          + escF((L[1] ? '· ' : '') + L[0]) + '</text>';
-      });
-      by += (ls.length - 1) * 16 + 21;
-    });
-    return '<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
-      + '<defs><linearGradient id="lcg" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#f8f2e4"/><stop offset="1" stop-color="#ece1c9"/></linearGradient>'
-      + '<linearGradient id="lca" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#c8a24a" stop-opacity=".45"/><stop offset="1" stop-color="#c8a24a" stop-opacity="0"/></linearGradient></defs>'
-      + '<rect width="360" height="560" rx="26" fill="url(#lcg)"/>'
-      + '<rect x="14" y="14" width="332" height="532" rx="18" fill="none" stroke="#a98a52" stroke-width="1.5" opacity=".7"/>'
-      + '<text x="180" y="78" text-anchor="middle" font-size="34" font-weight="900" fill="#5c421c" letter-spacing="12">大運圖</text>'
-      + '<text x="180" y="100" text-anchor="middle" font-size="11.5" fill="#8a7a58" letter-spacing="4">인생 흐름도</text>'
-      + '<text x="180" y="124" text-anchor="middle" font-size="13" fill="#5c4c2e" font-weight="700">' + escF(name) + '</text>'
-      + '<line x1="42" y1="140" x2="318" y2="140" stroke="#a98a52" stroke-width="1" opacity=".55"/>'
-      + '<text x="180" y="170" text-anchor="middle" font-size="30" font-weight="900" fill="#8a6a1e">' + escF(lc.kind + '형') + '</text>'
-      + '<text x="180" y="192" text-anchor="middle" font-size="11.5" fill="#8a7a58">' + escF(lc.kindNote) + '</text>'
-      + '<text x="180" y="214" text-anchor="middle" font-size="12" fill="#5c4c2e" font-weight="700">최고 구간 ' + escF(lc.peakTxt) + '</text>'
-      + '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="#c9b285" stroke-width="1"/>'
-      + '<path d="' + area + '" fill="url(#lca)"/>'
-      + '<polyline points="' + pts + '" fill="none" stroke="#8a6a1e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
-      + dots + labels + hiLab + curLab
-      + '<text x="' + X1 + '" y="' + (Y1 + 15) + '" text-anchor="end" font-size="9" fill="#a08a5f">세</text>'
-      + body
-      + '<g transform="translate(274,462)"><rect width="46" height="46" rx="8" fill="#b23a2a" opacity=".92"/>'
-      + '<text x="23" y="31" text-anchor="middle" font-family="' + F + '" font-size="19" font-weight="900" fill="#fdf3e7">運</text></g>'
-      + '<text x="180" y="534" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="1">chaeksa.kr · 대운 아홉 칸을 같은 잣대로 채점</text>'
-      + '</svg>';
-  }
 
   // ── 열두 달 흐름 — 세운도(歲運圖) ──
   // 시간 축의 구멍을 메운다: 하루(오늘의 흐름) → **한 해** → 십 년(인생 곡선).
@@ -3844,5 +3452,5 @@
 
 
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, cachedSample, gyeok, gyeokName, share, seasonNow, drawSeason, banToday, drawBan, relation, drawRelation, nowOf, bothDays, inyeonMonths, inyeonDays, coupleDates, myDays, 달그림: 달그림, inyeonWhy, coupleWhy, monthWhy, dossier, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, drawNaepyeon, jichim, drawJichim, inyeon, wealth, love, career, lifeCurve, drawLifeCurve, yearFlow, 영역축, 영역해, 자리내력, 자리모양, 관계지도, 조 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, gyeok, gyeokName, share, seasonNow, drawSeason, relation, nowOf, inyeonMonths, inyeonDays, myDays, 달그림: 달그림, inyeonWhy, monthWhy, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, jichim, inyeon, wealth, love, career, lifeCurve, yearFlow, 영역축, 영역해, 자리내력, 자리모양, 관계지도, 조 };
 })(window);

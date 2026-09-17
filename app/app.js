@@ -428,16 +428,11 @@
       // 날이 바뀌었으면 홈도 다시 — 오늘의 책사와 얼빡이 날마다 도는 자리다.
       if (전날 !== today.toDateString()) { try { renderHome(); } catch (e) {} }
     }
-    if (tab === 'nokpae') renderNokpae();
-    if (tab === 'moneystory') renderMoneyStory();
-    if (tab === 'naepyeon') renderNaepyeon();
-    if (tab === 'jichim') renderJichim();
     if (tab === 'geunamja') renderGeunamja();
     if (tab === 'maeum') renderMaeum();
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
     if (tab === 'story') renderStory();
-    if (tab === 'life') renderLife();
     if (tab === 'memo') renderMemo();
     if (tab === 'taekil') wireTaekil();
   }
@@ -778,22 +773,6 @@
   function renderMe() {
     const a = R.analysis, du = E.currentDaeun(R, today);
     // 한입 카드(renderMzDeck)·오행 막대·태그는 2026-09-14 에 뺐다 — 원국은 홈 맨 위(wongook.js)에서 생극제화 표로 읽는다.
-    // 오늘의 금지령 — 탭 열면 바로 그린다 (매일 콘텐츠는 문턱이 없어야 한다)
-    (function renderBan() {
-      const T = window.ChaeksaTypecard; if (!T || !T.banToday) return;
-      const ban = T.banToday(R);
-      $('banSvg').innerHTML = T.drawBan(이름값(), ban);
-      // 서고의 「오늘 조심할 것」 배지·부제를 채우던 두 줄은 걷었다(2026-09-09 서고 삭제).
-      $('btnBanShare').onclick = async () => {
-        const b = $('btnBanShare'); b.disabled = true; b.textContent = '만드는 중…';
-        try {
-          const r = await T.share($('banSvg').innerHTML, `금지령_${ban.일진}`);
-          b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-        } catch (e) { b.textContent = '다시 시도'; }
-        b.disabled = false;
-        setTimeout(() => { b.textContent = '금지령 자랑하기'; }, 2500);
-      };
-    })();
 
     // 유형 카드 뽑기 — 첫 뽑기 때 표본을 만들고(몇 초, 그게 드럼롤이다) 캐시한다
     $('gachaWrap').classList.add('hide'); $('btnGacha').textContent = '카드 뽑기';
@@ -1295,216 +1274,12 @@
   }
 
   // ───── 궁합 ─────
-  function renderPartners() {
-    const P = People(); if (!P || !$('cPick')) return;
-    const me = P.active();
-    if ($('compatMe')) $('compatMe').textContent = (me ? 사람이름(me.name) : '') || '나';
-    const list = P.list().filter(p => !me || p.id !== me.id);
-    $('cPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('')
-      : '<option value="">등록된 사람이 없습니다</option>';
-    if (pendingPick && list.some(p => p.id === pendingPick)) $('cPick').value = pendingPick;
-    pendingPick = null;
-    $('btnCompat').disabled = !list.length;
-  }
-  $('btnCompat').onclick = () => {
-    const P = People(), id = $('cPick').value;
-    if (!id) return;
-    const p = P.get(id); if (!p) return;
-    showCompat(P.toProfile(p));
-  };
-  $('btnCompatAdd').onclick = () => openPersonForm(null);
+  // 「그 사람과 나는」(compat) 화면은 2026-09-17 옛것 치우기로 걷었다. 방금 추가한 사람 표시만 비운다.
+  function renderPartners() { pendingPick = null; }
 
-  // 우리 둘 사이 — 카드 한 장이 결과의 전부다.
-  // 머리는 「서로에게 무엇인가」. 상대 일간에서 나를 보면 십신이 뒤집힌다.
-  function showCompat(you0) {
-    const you = E.calc(you0), T = window.ChaeksaTypecard;
-    const meName = profile.name || '나', youName = you0.name || '상대';
-    const v = T.relation(R, you, meName, youName, today);
-    const box = $('compatResult'); box.classList.remove('hide');
-    // 「돈을 잘 버는지」의 답은 「상위 몇 %」다. 그건 표본이 있어야 나온다.
-    // 없으면 조용히 지어두고 한 번만 다시 그린다 — 화면을 붙잡지 않는다.
-    try {
-      if (T.cachedSample && !T.cachedSample() && !showCompat.표본짓는중) {
-        showCompat.표본짓는중 = true;
-        T.buildSample(null, () => { try { showCompat(you0); } catch (e) {} });
-      }
-    } catch (e) {}
-    // 「이 사람이 그 사람인가」 — 공주님이 생일을 넣는 이유가 정확히 이것이다.
-    // 지위는 단정하지 않는다(사주에 없다). 두 원국이 맞물리는가만 말한다.
-    const m0 = v.맞물림 || {};
-    const 맞물림절 = (!m0.배우자성 && !m0.방글자) ? '' : `
-      <div class="matchbox">
-        <p class="mk">이 사람이 그 사람인가</p>
-        ${m0.배우자성 ? `<p class="mb">${esc(youName)}님의 글자가 ${esc(meName)}님께
-          <b>인연으로 오는 글자(${esc(m0.성이름)})</b>입니다.</p>` : ''}
-        ${m0.방글자 ? `<p class="mb">${esc(meName)}님의 배우자 방에 앉은 글자
-          <b>${esc(m0.방글자표기)}</b>와 같은 결입니다 — 방에 들어올 수 있는 사람입니다.</p>` : ''}
-        <p class="ms">두 분이 어떤 사이인지는 사주에 적혀 있지 않습니다. 맞물리는가만 말씀드립니다.</p>
-      </div>`;
-    // 신살·조후 — 이 화면에서만 맞대어 본다. 엔진의 판정은 건드리지 않는다.
-    const 결들 = (v.신살 || []).slice();
-    if (v.온도) 결들.unshift({ 결: '조후', 말: v.온도.말 });
-    if (v.채움) 결들.push({ 결: '채움', 말: v.채움.말 });
-    // 원문 한 줄 + 해설 — 판정 옆에 조문을 두면 그것이 증거가 된다.
-    // 원문은 뒤로 물러나 있고 읽는 것은 우리 말이다.
-    const 신살절 = !결들.length ? '' : `
-      <div class="signbox">${결들.map(x =>
-        `<p class="sg"><b>${esc(x.결)}</b> ${esc(x.말)}</p>`
-        + (x.원문 ? `<div class="wonmun"><q>${esc(x.원문)}</q>
-            <cite>${esc(x.출전 || '')}</cite></div>` : '')).join('')}</div>`;
-    // 「이 사람 쓸만한가」 — 관계보다 먼저 오는 물음이다.
-    // 판정은 공주님 화면과 똑같은 함수로 냈다. 잣대가 다르면 견줄 수가 없다.
-    const 사람절 = !(v.그사람 && v.그사람.length) ? '' : `
-      <div class="manbox">
-        <p class="mnk">${esc(youName)}님은 어떤 사람인가</p>
-        ${v.그사람.map(x => `<div class="mn">
-          <span class="mn-k">${esc(x.결)}</span>
-          <span class="mn-v">${esc(x.이름)}${x.상위 ? ` · 상위 ${esc(x.상위)}%` : ''}</span>
-          ${x.말 ? `<span class="mn-s">${esc(x.말)}</span>` : ''}
-        </div>`).join('')}
-        <p class="mns">내 화면과 같은 눈으로 본 것입니다 — 그래야 견줄 수 있습니다.</p>
-      </div>`;
-    // 열 사람이 그 사람을 두고 — 칸 제한 없음(2026-09-03). 값이 있는 책사는 전부, 있는 만큼.
-    let 열절 = '';
-    try {
-      const 열 = [];   // 「열 사람이 〇〇님을 두고」는 2026-09-12 걷었다. 아래 조립은 빈 배열이라 안 선다.
-      if (열.length) {
-        const 총 = 열.reduce((s, g) => s + g.본문들.length, 0);
-        열절 = '<div class="tenbox"><p class="mnk">열 사람이 ' + esc(youName) + '님을 두고</p><div class="chorus">'
-          + 열.map((g, i) => {
-              const k = 책사키[g.축];
-              const 파일 = (k && window.CHAEKSA_ART) ? 초상(k, i + 60, false) : '';
-              const 얼 = 파일
-                ? '<img class="ch-face" alt="" src="' + 파일 + '?v=' + window.CHAEKSA_ART + '" onerror="this.outerHTML=\'<span class=ch-seal>' + esc(책사인장[g.축] || '') + '</span>\'">'
-                : '<span class="ch-seal">' + esc(책사인장[g.축] || '') + '</span>';
-              return '<div class="ch-row">' + 얼 + '<div><b>' + esc(이름of(g.축)) + '</b>'
-                + g.본문들.map(t => '<p>' + esc(t) + '</p>').join('') + '</div></div>';
-            }).join('')
-          + '</div></div>';
-      }
-    } catch (e) {}
-    // 그 사람이 지금 지나는 운 — 관계의 뼈대 위에 「지금」을 얹는다
-    const n = v.지금;
-    const 지금절 = !n ? '' : `
-      <div class="nowbox">
-        <p class="nk">${esc(youName)}님은 지금</p>
-        ${n.대운 ? `<p class="nb">${esc(n.대운.말[0])}</p>
-          <p class="ns">${esc(n.대운.말[1])}</p>
-          <p class="nm">${esc(n.대운.나이)} · ${esc(n.대운.간지)} 대운 — ${esc(n.대운.십신)}</p>` : ''}
-        ${n.세운 ? `<p class="nm2">올해는 ${esc(n.세운.간지)} · ${esc(n.세운.십신)} — ${esc(n.세운.말[0])}</p>` : ''}
-      </div>`;
-    // 「두 분 다 좋은 달·날」과 결제 열람(coupleDates)은 좋은 날 배점(monthScoreFor)이 2026-09-04 폐지되어 화면에서 걷었다.
-    // 코드는 남겨 두되 부르지 않는다 — 배점을 새로 정하면 여기서 다시 켠다.
-    let 달절 = '', bmKeep = null;
-    try {
-      const bm = null; bmKeep = bm;
-      if (bm && bm.좋은달.length) 달절 = `
-        <div class="bmbox">
-          <p class="nk">두 분 다 좋은 달 — 앞으로 열두 달 중</p>
-          ${bm.좋은달.map(m => `<div class="bm">
-            <b>${m.연}년 ${m.월}월</b>
-            <span class="gz">${esc(m.간지)}</span>
-            <span class="rs">${esc([...new Set(m.이유)].slice(0,2).join(' · ') || '무난합니다')}</span>
-          </div>`).join('')}
-          ${(() => {
-            // 첫 좋은 달 안에 실제로 며칠이 열리는지 — 개수만 낸다
-            try {
-              const g = bm.좋은달[0];
-              const bd = T.bothDays(R, you, g.연, g.월);
-              // 두 층이다(v532) — 두 분이 각자 최고인 날이 겹치면 그것(보석), 없으면 한 분 최고 + 상대 눌리지 않음.
-              if (bd && bd.좋은날 > 0) return `<p class="bmdays">${g.연}년 ${g.월}월 안에
-                <b>두 분이 각자 가장 좋은 날이 겹치는 날이 ${bd.좋은날}일</b> 있습니다 — 흔치 않습니다. 날짜와 시각은 아래에서</p>`;
-              if (bd && bd.한쪽 > 0) return `<p class="bmdays">${g.연}년 ${g.월}월에 두 분이 같이 최고인 날은 없습니다.
-                <b>한 분이 가장 좋고 다른 분이 눌리지 않는 날이 ${bd.한쪽}일</b> 있습니다 — 날짜와 시각은 아래에서</p>`;
-            } catch (e) {}
-            return '';
-          })()}
-          ${bm.나쁜달 && bm.나쁜달.점수 < 40 ? `<p class="bmno">${bm.나쁜달.연}년 ${bm.나쁜달.월}월은 둘 중 한 분이 눌립니다 — 큰 결정은 피하시는 편이 낫습니다</p>` : ''}
-          <p class="bmft">결혼·상견례·여행처럼 <b>둘이 같이 정하는 날</b>에 쓰세요. 한 사람만 좋은 달은 뺐습니다.</p>
-        </div>`;
-    } catch (e) {}
-    // 맺음이 제목이다 — 「이 사이는 ~한 사이입니다」가 이 화면의 답이다.
-    box.innerHTML = `<h2>${esc(meName)} ∞ ${esc(youName)}</h2>
-      <p class="rel-verdict">${esc(v.맺음)}</p>
-      ${맞물림절}
-      <div class="rel-two">
-        <div><p class="rk">${esc(youName)}님은 ${esc(meName)}님에게</p>
-          <p class="rb">${esc(v.나에게.말[0])}</p>
-          <p class="rs">${esc(v.나에게.말[1])}</p></div>
-      </div>
-      <!-- 「그에게 나는」(내 일간을 그의 십신으로 읽기)은 2026-09-04 사장님 「그의 재성 글자가 나의 일간이면 통째로 삭제해」로 걷음 -->
-      ${사람절}
-      ${열절}
-      ${신살절}
-      ${지금절}
-      ${달절}
-      ${(() => {
-        const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('relation');
-        if (paid && bmKeep && bmKeep.좋은달.length && T.coupleDates) {
-          // 결제 열람 — 달을 재던 그 자로 날과 시진을 잰다. 날마다 왜 좋은지,
-          // 시진은 이 지역 시계로 몇 시인지, 피할 날은 언제인지까지가 2만원이다.
-          const lon = profile.longitude || 127.0;
-          const plname = plNameOf(profile);
-          const cw = T.coupleWhy ? T.coupleWhy(R, you, meName, youName) : null;
-          return '<div class="paidbox"><p class="pb-k">결제 열람 — 날짜와 시각까지</p>'
-            + (cw ? '<div class="nx-diag pbd"><p class="nx-diag-k">왜 두 분께는 날이 중요한가</p>' + cw.말.map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' : '')
-            + '<p class="pb-lede">두 분 <b>각자의 점수 중 낮은 쪽</b>으로 골랐습니다 — 한 분만 좋은 날은 좋은 날이 아니기 때문입니다. 시계 시각은 <b>' + esc(plname) + ' 기준 진태양시 보정</b>을 이미 반영한 값입니다.</p>'
-            + bmKeep.좋은달.map(g => {
-                let cd; try { cd = T.coupleDates(R, you, g.연, g.월, lon); } catch (e) { return ''; }
-                const days = cd.좋은날;
-                return '<p class="pb-h"><b>' + g.연 + '년 ' + g.월 + '월</b> — 두 분 다 좋은 날 ' + days.length + '일'
-                  + (g.이유 && g.이유.length ? ' <span class="pb-god">' + esc([...new Set(g.이유)].slice(0, 2).join(' · ')) + '</span>' : '') + '</p>'
-                  + (days.length
-                     ? days.map(r => '<div class="pb-dd"><b>' + g.월 + '/' + r.일 + ' (' + r.요일 + ') ' + esc(r.간지) + '</b>'
-                         + (r.이유 && r.이유.length ? '<p class="pb-why">◦ ' + esc([...new Set(r.이유)].join(' · ')) + '</p>' : '')
-                         + (r.시진 ? '<p class="pb-why">◦ 그날 중에서도 — ' + esc(r.시진.join(' / ')) + '</p>' : '')
-                         + '</div>').join('')
-                     : '<p class="pb-d">이 달 안에는 두 분 다 좋은 날이 적습니다 — 다른 달을 보세요</p>')
-                  + (cd.피할날.length ? '<p class="pb-avoid">피하실 날 — ' + cd.피할날.map(r => g.월 + '/' + r.일).join(' · ')
-                      + ' <span class="pb-days-why">(' + esc(cd.피할날[0].이유[0] || '한 분이 눌리는 날') + ')</span></p>' : '');
-              }).join('')
-            + '<p class="pb-ft">잣대 공개 — 각자에게 필요한 오행이 오는가, 배우자 자리와 합·충이 되는가, 강약에 맞는 기운인가. 두 분의 점수 중 <b>낮은 쪽</b>이 그날의 점수입니다.</p>'
-            + '<p class="pb-ft">결혼식처럼 되돌릴 수 없는 큰 날은 후보를 여럿 두고 보시는 편이 낫습니다 — 판정이 갈리는 자리가 있으면 원국 탭에 표시해 둡니다.</p></div>';
-        }
-        return '';   // 관계 결제(그 달의 며칠·몇 시)는 좋은 날 배점 폐지로 닫아 둔다 — 배점을 새로 정하면 nextStep 을 되살린다
-      })()}
-      <div id="accWrap" class="cardwrap">
-        <div id="accFlip" class="cardflip"><div id="accSvg" class="cardsvg">${T.drawRelation(meName, youName, v)}</div></div>
-        <button class="btn small" id="btnAccShare">카드 저장·공유</button>
-      </div>`;
-    const fl = $('accFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
-    $('btnAccShare').onclick = async () => {
-      const b = $('btnAccShare'); b.disabled = true; b.textContent = '만드는 중…';
-      try {
-        const r = await T.share($('accSvg').innerHTML, '우리둘사이');
-        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-      } catch (e) { b.textContent = '다시 시도'; }
-      b.disabled = false;
-      setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
-    };
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
 
   // ───── 재물 그릇 — 녹패 ─────
   let nokpaeFor = null;   // 어느 사주로 그렸는지 — 프로필이 바뀌면 다시 그린다
-  function renderNokpae() {
-    const T = window.ChaeksaTypecard; if (!T || !$('nokpaeSvg')) return;
-    if (nokpaeFor === R) return;
-    $('nokpaeWrap').classList.add('hide'); $('nokpaeNote').textContent = '';
-    $('nokpaeProg').classList.remove('hide');
-    $('nokpaeProg').textContent = '호조 장부와 대조하는 중…';
-    // 그릇 산식(점수·등급·백분위·녹패 카드)은 2026-09-04 폐지. 남는 것은 돈의 모양 네 줄 —
-    // 방식(정재·편재·암장·무재) · 통로(식상) · 새는 곳(군겁쟁재·재다신약·재고) · 지금 대운. 전부 십신 배치에서 읽은 것이다.
-    const w = T.wealth(R, today, null);
-    nokpaeFor = R;
-    $('nokpaeProg').classList.add('hide');
-    const 이름표 = ['돈이 오는 방식', '버는 통로', '새는 곳', '지금'];
-    $('nokpaeNote').innerHTML = '<div class="manbox">' + (w.lines || []).map((t, i) => {
-      const k = String(t).split(' — ')[0];   // 꼬리(「크게 들고 크게 도는 돈」)는 감성이라 안 찍는다
-      return '<div class="mn"><span class="mn-k">' + esc(이름표[i] || '') + '</span><span class="mn-v">' + esc(k) + '</span></div>';
-    }).join('') + '<p class="mns">재성·식상·비겁이 어디에 드러나 있는지로만 읽습니다. 그릇의 크기나 등수는 매기지 않습니다.</p></div>';
-  }
 
   // ───── 택일 1:1 상담 문의 ─────
   // 카카오톡 채널. 채팅 주소(pf.kakao.com/_XXX/chat)든 채널 홈 주소(pf.kakao.com/_XXX)든
@@ -1538,81 +1313,9 @@
     }).catch(() => {});
   }
 
-  // ── 계산 원장 로딩 — 로딩 자체가 「기준 공개」다 ──
-  // 추상적인 「…재는 중」이 아니라 실제 중간 결과를 한 줄씩 찍는다.
-  // 노력의 가시화: 같은 결과라도 일하는 과정을 본 사람이 더 신뢰한다(카약의 항공사
-  // 스캔). 우리는 흉내낼 필요가 없다 — 진짜 계산이니 원장을 그대로 보여주면 된다.
-  // 줄도 숫자도 전부 실측이다. 지어낸 줄이 하나라도 섞이면 이 장치 전체가 거짓이 된다.
-  // 달과 달 사이의 이음말 — 낱장 카드를 흐름으로 잇는다.
-  // 명리가는 달을 따로 읽지 않는다: 「앞 달에 정리된 자리가 이 달에 채워진다」로 읽는다.
-  // (이음말 표와 시진 묶기는 판단서(typecard.reading)로 이사했다 — 두 벌 금지)
-  function paidReveal(box, 원장, make, after) {
-    // 원장: { 머리:[문자열...], 달줄:[{말, 표}...], 꼬리:[문자열...], 검토수 }
-    const esc2 = esc;
-    box.innerHTML = '<div class="paidbox"><p class="pb-k">결제 열람 — 계산 중</p>'
-      + '<div class="pb-ledger" aria-live="polite"></div>'
-      + '<div class="pb-lgfoot"><span class="pb-lgcount"></span></div>'
-      + '<div class="pb-loadbar"><i style="width:4%"></i></div></div>';
-    const led = box.querySelector('.pb-ledger'), bar = box.querySelector('.pb-loadbar i');
-    const cnt = box.querySelector('.pb-lgcount');
-    const 줄들 = [];
-    (원장.머리 || []).forEach(t => 줄들.push({ t, cls: 'h', ms: 700 }));
-    (원장.달줄 || []).forEach(m => 줄들.push({ t: m.말, 표: m.표, cls: 'm', ms: 430 }));
-    (원장.꼬리 || []).forEach(t => 줄들.push({ t, cls: 'h', ms: 750 }));
-    const total = 줄들.length;
-    let i = 0, seen = 0;
-    const step = () => {
-      if (i >= total) {
-        bar.style.width = '100%';
-        setTimeout(() => { box.innerHTML = make(); if (after) try { after(box); } catch (e) {} }, 420);
-        return;
-      }
-      const L = 줄들[i];
-      const div = document.createElement('div');
-      div.className = 'pb-lg-line pb-lg-' + L.cls;
-      div.innerHTML = (L.표 ? '<span class="pb-lg-mark">' + L.표 + '</span>' : '') + esc2(L.t);
-      led.appendChild(div);
-      // 원장은 위로 흘러간다 — 최근 여섯 줄만 또렷하게
-      const lines = led.querySelectorAll('.pb-lg-line');
-      if (lines.length > 6) lines[lines.length - 7].classList.add('dim');
-      if (lines.length > 10) lines[lines.length - 11].remove();
-      led.scrollTop = led.scrollHeight;
-      if (L.cls === 'm') { seen++; }
-      if (원장.검토수) cnt.textContent = '대조한 경우 ' + Math.round((i + 1) / total * 원장.검토수).toLocaleString('ko-KR') + '가지';
-      bar.style.width = Math.round(4 + (i + 1) / total * 92) + '%';
-      i++;
-      setTimeout(step, L.ms);
-    };
-    setTimeout(step, 350);
-  }
-
-  function nextStep(제목, 무료로본것, 물음, 문의말, 상품, 진단) {
-    // 팔 물건이 열리기 전에는 「곧 열립니다」를 세우지 않는다(2026-09-04 홈 점검 — 지키지 못한 약속은 값이 아니다).
-    if (!(payReady && 상품)) return '';
-    const q = encodeURIComponent(문의말 || '');
-    // 진단 — 엔진이 이 사람 원국에서 읽은 「왜 나에게는 시기가 중요한가」.
-    // 일반 문구는 아무도 안 산다. 자기 얘기라야 지갑이 열린다.
-    const diag = (진단 && 진단.length)
-      ? `<div class="nx-diag"><p class="nx-diag-k">내 원국에서 읽은 것</p>${진단.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : '';
-    // 다음 걸음은 결제 하나다. 결제가 아직이면 버튼을 안 세우고 「곧 열립니다」로 둔다 —
-    // 눌러도 아무 데도 안 가는 버튼과, 궁정에 어울리지 않는 상담 창구를 둘 다 걷었다.
-    const payBtn = (payReady && 상품)
-      ? `<a class="btn nx-cta" href="pay.html?p=${상품}" style="background:var(--accent);color:#fff;border-color:var(--accent)">
-          결제하고 바로 보기</a>` : '';
-    return `<div class="nextbox">
-      <p class="nx-k">${esc(제목)}</p>
-      <p class="nx-free">여기까지가 무료입니다 — <b>${esc(무료로본것)}</b></p>
-      ${diag}
-      <p class="nx-q">${esc(물음)}</p>
-      ${payBtn}
-      <p class="nx-ft">${payBtn ? '결제하시면 이 자리에서 바로 열립니다 — 달과 날과 시각까지.'
-                                : '달·날·시각은 곧 이 자리에서 열립니다.'}</p>
-    </div>`;
-  }
 
 
-  // aiNarrate(인연·재물 「책사단이 이어 말합니다」 LLM 한 편)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 유료 화면은 엔진 결론과 열두 달 표로 완결이다.
-  async function aiNarrate() {}
+
 
   // ───── 표는 무료, 한 편이 유료 (2026-09-12 사장님 「문장표를 무료콘텐츠로, LLM을 유료 콘텐츠로」) ─────
   // 스위치 하나(config CHAEKSA_SHEET_LLM)가 둘을 같이 뒤집는다. 따로 두면 표만 공짜가 되고 팔 것이 없는 날이 생긴다.
@@ -2179,68 +1882,7 @@
   // ───── 열두 달 흐름 — 세운도 ─────
   let yearPick = today.getFullYear();
 
-  // ───── 인생 곡선 — 대운도 ─────
-  // 표본이 필요 없어 즉시 그린다. 곡선은 원국과 대운만으로 나온다.
-  function renderLife() {
-    const T = window.ChaeksaTypecard; if (!T || !$('lifeSvg')) return;
-    if ($('gu-life')) $('gu-life').classList.toggle('hide', !profile.genderUnknown);
-    const lc = T.lifeCurve(R, today);
-    $('lifeSvg').innerHTML = T.drawLifeCurve(이름값(), lc);
-    const fl = $('lifeFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
-    $('lifeWrap').classList.remove('hide');
-    $('lifeNote').textContent = lc.kind + '형 · 최고 구간 ' + lc.peakTxt + ' · 대운은 열 해마다 바뀌고, 같은 사주는 언제나 같은 곡선입니다';
-    $('btnLifeShare').onclick = async () => {
-      const b = $('btnLifeShare'); b.disabled = true; b.textContent = '만드는 중…';
-      try {
-        const r = await T.share($('lifeSvg').innerHTML, '대운도_' + lc.peak.startAge + '세');
-        b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-      } catch (e) { b.textContent = '다시 시도'; }
-      b.disabled = false;
-      setTimeout(() => { b.textContent = '십 년 그림 자랑하기'; }, 2500);
-    };
-    상태차줄();
-  }
 
-  // ───── 지금과 그때 — 상태차 181칸(sangtae:1)을 인생 곡선 아래에 편다 ─────
-  // 표는 「무엇이 많고 적은가」만 말하고, 대운 관계·크게 벌어진 자리·원국 대조는 M.판칸이 붙인다.
-  function 상태차줄() {
-    const M = window.ChaeksaMun, box = $('lifeDiff'); if (!M || !M.판칸 || !box) return;
-    const y0 = today.getFullYear(), 생 = profile.year;
-    const list = (R.daeun && R.daeun.list) || [];
-    if (!list.length) { box.innerHTML = ''; return; }
-    // 대운마다 대표 해 하나 — 구간 한가운데. 지금 지나는 대운은 올해로 본다.
-    const 줄들 = list.map((d, i) => {
-      const 시작 = 생 + d.startAge, 끝 = 생 + d.endAge;
-      const 지금 = y0 >= 시작 && y0 <= 끝;
-      return { i, 시작, 끝, 나이: d.startAge + '~' + d.endAge + '살', 해: 지금 ? y0 : 시작 + 5, 지금 };
-    }).filter(r => r.해 >= 생 + 1);
-    const 칸들 = 줄들.map(r => Object.assign(r, { q: r.지금 ? null : M.판칸(R, y0, r.해) }));
-    const 줄틀 = 'display:block;width:100%;text-align:left;padding:11px 2px;border:0;border-top:1px solid var(--line2);'
-      + 'background:none;font-family:inherit;cursor:pointer;color:inherit';
-    box.innerHTML = 칸들.map((r, n) =>
-      '<button class="sd-row" data-n="' + n + '" style="' + 줄틀 + '">'
-      + '<span class="hint" style="font-size:11.5px' + (r.지금 ? ';color:var(--accent);font-weight:700' : '') + '">'
-      + esc(r.나이) + (r.지금 ? ' · 지금' : '') + '</span>'
-      + '<span style="display:block;font-size:14px;line-height:1.55;margin-top:3px' + (r.지금 ? ';color:var(--ink3)' : '') + '">'
-      + esc(r.지금 ? '여기가 지금 지나는 십 년이에요' : ((r.q.칸 && r.q.칸.답) || '')) + '</span></button>').join('');
-    const 상세 = $('lifeDiffBox');
-    box.querySelectorAll('.sd-row').forEach(btn => { btn.onclick = () => {
-      const r = 칸들[+btn.dataset.n];
-      box.querySelectorAll('.sd-row').forEach(x => { x.style.background = x === btn ? 'var(--line3, rgba(0,0,0,.04))' : 'none'; });
-      if (r.지금) {
-        상세.innerHTML = '<p class="k">' + esc(r.나이) + ' · 지금</p><p>지금 지나는 십 년이라 견줄 대상이 아니에요. 다른 구간을 누르면 이 십 년과 무엇이 다른지 나옵니다.</p>';
-      } else {
-        const q = r.q;
-        상세.innerHTML = '<p class="k">' + esc(r.나이) + '</p>'
-          + (q.앞말 ? '<p class="hint">' + esc(q.앞말) + '</p>' : '')
-          + '<p><b>' + esc(q.그때) + ' ' + esc((q.칸 && q.칸.답) || '') + '</b></p>'
-          + '<p>' + esc((q.칸 && q.칸.왜) || '') + '</p>'
-          + (q.뒷말 ? '<p class="hint">' + esc(q.뒷말) + '</p>' : '');
-      }
-      상세.classList.remove('hide');
-      상세.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }; });
-  }
 
   // ───── 천직 — 천직첩 ─────
   let jikFor = null;
@@ -2253,55 +1895,9 @@
 
   // ───── 지칠 때와 채울 때 ─────
   let jcFor = null;
-  function renderJichim() {
-    const T = window.ChaeksaTypecard; if (!T || !T.jichim || !$('jcSvg')) return;
-    if (jcFor === R) return;
-    const v = T.jichim(R); jcFor = R;
-    $('jcSvg').innerHTML = T.drawJichim(이름값(), v);
-    const fl = $('jcFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
-    { const nx = $('jcNext'); if (nx) nx.innerHTML = nextStep(
-      '이번 달은 어느 쪽으로 새고 있을까요', '타고난 것까지',
-      '무엇에 지치는지는 원국이 정합니다. 그런데 「지금」은 다릅니다 — 이번 달 어느 쪽으로 기울어 있고 언제 숨이 트이는지는 월운·일운까지 내려가야 보입니다.',
-      (profile.name || '') + '님 상담 — 요즘 왜 이렇게 지치는지, 언제 풀리는지 보고 싶습니다',
-      'month'); }        // 상품이 빠져 있어 벽만 서고 문이 없었다
-    $('jcNote').textContent = '채우는 것은 ' + v.채.map(k => k.오행).join('·')
-      + (v.빈.length ? ' · 평생 얇은 고리는 ' + v.빈.map(b => b.오행).join('·') : '') + '입니다.';
-    $('btnJcShare').onclick = async () => {
-      const b = $('btnJcShare'); b.disabled = true; b.textContent = '만드는 중…';
-      try { const r = await T.share($('jcSvg').innerHTML, '지칠때와채울때');
-        b.textContent = r === 'shared' ? '공유 완료!' : r === 'copied' ? '복사됐어요' : '다운로드 폴더에 저장했어요';
-      } catch (e) { b.textContent = '다시 시도'; }
-      b.disabled = false; setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
-    };
-  }
 
   // ───── 내 편이 되어주는 사람 ─────
   let npFor = null;
-  function renderNaepyeon() {
-    const T = window.ChaeksaTypecard; if (!T || !T.naepyeon || !$('npSvg')) return;
-    if (npFor === R) return;
-    const v = T.naepyeon(R, today);
-    npFor = R;
-    $('npSvg').innerHTML = T.drawNaepyeon(이름값(), v);
-    const fl = $('npFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = 'gflip .9s ease-out';
-    { const nx = $('npNext'); if (nx) nx.innerHTML = nextStep(
-      '지금 곁에 있는 사람은 어떤가요', '어떤 결이 힘이 되는지까지',
-      '결은 원국이 정하지만, 실제로 곁에 있는 사람이 나에게 어떻게 작용하는지는 두 사주를 마주 놓아야 나옵니다. 이번 달 그 사람이 나에게 어느 쪽으로 오는지도요.',
-      (profile.name || '') + '님 상담 — 지금 곁에 있는 사람이 저에게 어떤 사람인지 보고 싶습니다',
-      'relation'); }     // 상품이 빠져 있어 벽만 서고 문이 없었다
-    $('npNote').textContent = '채워야 할 기운은 ' + v.결.map(k => k.오행).join('·')
-      + '입니다. 생일을 아시는 분이라면 태어난 날의 글자가 '
-      + v.결.map(k => k.일간독음.map((ko, i) => ko + '(' + (k.일간[i] || '') + ')').join('·')).join(' 또는 ') + '인지 보시면 됩니다.';
-    $('btnNpShare').onclick = async () => {
-      const b = $('btnNpShare'); b.disabled = true; b.textContent = '만드는 중…';
-      try {
-        const r = await T.share($('npSvg').innerHTML, '내편이되는사람');
-        b.textContent = r === 'shared' ? '공유 완료!' : r === 'copied' ? '복사됐어요' : '다운로드 폴더에 저장했어요';
-      } catch (e) { b.textContent = '다시 시도'; }
-      b.disabled = false;
-      setTimeout(() => { b.textContent = '카드 저장·공유'; }, 2500);
-    };
-  }
 
   // ───── 인연이 오는 해 ─────
   let inyeonFor = null;
@@ -2450,20 +2046,13 @@
   // 인기순·적중순은 없다(안 하기로 한 것). 순서는 시간순이다.
   const 홈목록 = [
     // 칸 이름은 명리 과목이 아니라 공주님의 물음이다(2026-09-04 홈 점검).
-    { tab: 'ban',       묶음: '오늘', 이름: '오늘 조심할 것',       기본: 'hyeopgi',  오늘: true },
     // 올해 나는·인연은 언제 오나·일은 언제 풀리나 — 다음 해를 말하는 칸이라 홈에서 뺌(docs/31 「무료는 다음 주, 유료는 다음 달, 다음 해는 안 판다」). 탭 코드는 남긴다.
     // 곁의 사람들(gwangye)·나는 어떻게 사랑하나(dohwa)는 법 없는 칸 — 홈에서 뺌(2026-09-04 「법 있는 것으로만」). 탭 코드는 남긴다.
     // 인생 곡선(life)은 09-04 에 같은 이유로 뺐다가 되돌렸다(2026-09-09) — 상태차 181칸이 붙어
     // 법이 생겼다. 합계 보존으로 나올 수 있는 칸만 남긴 표라 「법 있는 것으로만」을 통과한다.
     // 그리고 서고를 지우면 이 화면은 주소로만 열리는 화면이 된다.
-    { tab: 'life',      묶음: '나',   이름: '지금과 그때, 나는',    기본: 'unro',    말: '대운마다 지금과 견주어 무엇이 더 많고 적은지' },
     { tab: 'me',        묶음: '나',   이름: '나는 어떤 사람인가',   기본: 'japyung' },
     // 어떤 사람이 오나(lovestory) — 「내 배우자성을 일간으로 타고난 사람」 읽기 전체가 09-04 삭제 대상. 홈에서 뺌.
-    { tab: 'jichim',    묶음: '나',   이름: '나는 언제 지치나',     기본: 'eokbu' },
-    { tab: 'naepyeon',  묶음: '나',   이름: '내 편은 누구인가',       기본: 'japyung' },
-    { tab: 'moneystory',묶음: '나',   이름: '돈은 어디서 오나',     기본: 'jaemul' },
-    { tab: 'nokpae',    묶음: '나',   이름: '돈을 어떻게 쓰나',     기본: 'jaemul' },
-    { tab: 'compat',    묶음: '우리', 이름: '그 사람과 나는',       기본: 'inyeon',  말: '나에게 그 사람은' },
     { tab: 'geunamja',  묶음: '우리', 이름: '이 남자, 나한테 돈을 쓸까요?', 기본: 'jaemul', 말: '그래서 나한테 도움이 되나요?' },
   ];
   // 어느 화면을 언제 봤는지 적어 둔다. 「최근 본」 배지를 짓게 되면 이 값을 쓴다.
@@ -2737,7 +2326,7 @@
     let 접힘 = {}; try { 접힘 = JSON.parse(localStorage.getItem('chaeksa.fold') || '{}'); } catch (e) {}
     const 무료 = 타일.filter(t => t.tab !== 'geunamja');
     h += '<details class="wt-fold"' + (접힘.all ? ' open' : '') + ' data-fold="all"><summary><b>전체 목록</b>'
-      + '<span>이야기 ' + 한글수(이야기.length) + ' · 무료로 보는 것 ' + 한글수(무료.length) + '</span></summary>'
+      + '<span>이야기 ' + 한글수(이야기.length) + (무료.length ? ' · 무료로 보는 것 ' + 한글수(무료.length) + ' 가지' : '') + '</span></summary>'
       + '<ul class="wt-free">'
       + 이야기.map((f, i) => '<li><button data-fi="' + i + '"><b>' + esc(f.제목) + '</b><span>' + esc(f.사이 + ' · ' + f.값) + '</span></button></li>').join('')
       + 무료.map((t) => '<li><button data-i="' + 타일.indexOf(t) + '"><b>' + esc(t.이름) + '</b>' + (t.말 ? '<span>' + esc(t.말) + '</span>' : '') + '</button></li>').join('')
@@ -3071,93 +2660,6 @@
 
   // ── 너의 재물 스토리 — 연애 스토리와 같은 틀, 잣대만 돈 ──
   let msFor = null;
-  function renderMoneyStory() {
-    const T = window.ChaeksaTypecard; if (!T || !T.moneyStory || !$('msBody') || !R || !profile) return;
-    if (msFor === R) return;
-    const v = T.moneyStory(R, today);
-    if (!v) { $('msBody').innerHTML = '<p class="hint">생년을 알아야 연표를 그립니다.</p>'; return; }
-    msFor = R;
-    const nm = 이름값();
-
-    const 과거절 = v.과거.length
-      ? v.과거.map(g => `<div class="ls-item">
-          <div class="pb-scene">${T.달그림 ? T.달그림('wealth', g.달 ? parseInt(g.달.말) || 9 : 9, 'open') : ''}</div>
-          <div class="ls-when"><b>${g.시작 === g.끝 ? g.시작 + '년' : g.시작 + '~' + g.끝 + '년'}</b>
-            <span>${g.시작나이 === g.끝나이 ? '만 ' + g.시작나이 + '살' : '만 ' + g.시작나이 + '~' + g.끝나이 + '살'} 무렵</span></div>
-          <p class="ls-say">${esc(g.말)}</p>
-          ${g.달 ? `<p class="ls-month">그중에서도 <b>${g.달.해}년 ${esc(g.달.말)}</b> 무렵이 짙습니다</p>` : ''}
-          ${g.풀이 ? `<p class="ls-pul">${esc(g.풀이)}</p>` : ''}
-          <p class="ls-why">◦ ${esc(g.이유.join(' · ') || '')}</p>
-        </div>`).join('')
-      : `<div class="ls-item"><p class="ls-say">지나온 해들 중에 크게 벌린 구간이 안 보입니다 —
-         못 버는 사주가 아니라 <b>아직 재성의 파도가 안 온 사주</b>입니다. 이런 원국일수록 올 때 크게 옵니다.</p></div>`;
-    const 샌절 = v.샌해.length
-      ? `<p class="ls-shake">그리고 ${v.샌해.map(h => h.해 + '년(만 ' + h.나이 + '살)').join(' · ')} 무렵은
-         나눠 갖는 손이 온 해 — 지출이 커졌거나 돈이 샜기 쉬운 자리입니다.</p>` : '';
-
-    const 현재상태2 = v.현재.판 === '들어옴' || v.현재.판 === '벌이' ? 'open' : v.현재.판 === '샘' ? 'leak' : 'quiet';
-    const 현재절 = `<div class="ls-now ls-${v.현재.판 === '들어옴' ? 'open' : v.현재.판 === '조용' ? 'quiet' : 'mid'}">
-      <div class="pb-scene">${T.달그림 ? T.달그림('wealth', today.getMonth() + 1, 현재상태2) : ''}</div>
-      <p class="ls-now-k">그래서, 지금은</p>
-      <p class="ls-now-say">${esc(v.현재.말)}</p>
-      ${v.현재.이유.length ? `<p class="ls-why">◦ ${esc(v.현재.이유.join(' · '))}</p>` : ''}
-    </div>`;
-
-    $('msBody').innerHTML = `<p class="ls-lede">${esc(nm)}님의 원국에서 <b>재성(돈의 글자)</b>과
-      <b>겁재(나눠 갖는 손)</b>가 움직인 해를 만 ${v.시작나이}살부터 짚었습니다. 맞는지는 통장이 압니다.</p>
-      ${과거절}${샌절}${현재절}
-      <p class="ls-honest">잣대 공개 — 재성이 하늘에 오는가(뿌리까지), 벌이를 만드는 식상인가, 나눠 가는 겁재인가,
-      대운이 무엇을 데려오는가. 단정이 아니라 「이 기준으로는」입니다. 틀렸다면 알려주세요 — 기준을 공개하는 이유입니다.</p>`;
-
-    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('wealth');
-    const box = $('msNext');
-    if (paid) {
-      const rd = T.reading(R, 'wealth', today);
-      paidReveal(box, rd.원장, () => {
-        const 본문 = rd.달들.map(m => `<div class="pb-dd${m.열림 ? ' pb-open' : ''}${m.상태 === 'leak' ? ' pb-leak' : ''}">
-            <div class="pb-scene">${T.달그림('wealth', m.월, m.상태)}</div>
-            ${m.이음 ? `<p class="pb-link">${esc(m.이음)}</p>` : ''}
-            <b>${m.연}년 ${m.월}월</b> <span class="gz2">${esc(m.간지)}</span> <span class="pb-god">${esc(m.십신 || '')}</span>
-            <div class="pb-bar pb-inbar"><i style="width:${Math.max(m.점수, 6)}%${m.상태 === 'leak' ? ';background:#b4534f' : ''}"></i></div>
-            ${m.이유.length ? m.이유.map(t => `<p class="pb-why">◦ ${esc(t)}</p>`).join('')
-              : `<p class="pb-why">◦ 돈의 글자가 크게 들지 않는 달 — 흐름은 잔잔합니다</p>`}
-            ${m.지침
-              ? `<p class="pb-say">${esc(m.지침)}</p>
-                 ${m.조심날.length ? `<p class="pb-avoid">비켜 갈 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손이 겹치는 날)</span></p>` : ''}`
-              : `<p class="pb-say">${esc(m.결)}</p>
-                 ${m.좋은날.length ? `<p class="pb-days">${m.상대 ? '그래도 이 달 안에서 나은 날 — ' : '날을 고르면 — '}${m.좋은날.map(d2 => `<b>${m.월}/${d2.일}(${d2.요일})</b>`).join(' ')}<br><span class="pb-days-why">계약·오픈·큰 지출처럼 돈이 걸린 일을 두는 날</span></p>` : ''}
-                 ${m.시진무리.length ? `<p class="pb-days">그날 중에서도 — ${m.시진무리.map(g => `<b>${esc(g.시진)}</b>에 ${g.날들.join('·')}`).join(' / ')}</p>` : ''}
-                 ${m.조심날.length ? `<p class="pb-avoid">조심할 날 — ${m.조심날.map(d2 => m.월 + '/' + d2.일).join(' · ')} <span class="pb-days-why">(나눠 갖는 손의 날 — 동업 약속·보증·충동 지출을 피하세요)</span></p>` : ''}`}
-          </div>`).join('');
-        return `<div class="paidbox"><p class="pb-k">결제 열람 — 다가오는 열두 달</p>
-          <div class="pb-ai-slot"></div>
-          ${rd.결론.length ? `<div class="pb-verdict"><p class="pb-k" style="margin-bottom:8px">책사의 판단 — 엔진이 이어 놓은 결론</p>${rd.결론.map(t => `<p class="pb-vd">◆ ${esc(t)}</p>`).join('')}</div>` : ''}
-          <p class="pb-lede">다음 달부터 열두 달, ${rd.검토수.toLocaleString('ko-KR')}가지 경우를 대조했습니다. ${rd.열린수
-            ? `돈이 도는 달이 <b>${rd.열린수}개</b> — 날짜와 시진까지 내렸습니다.`
-            : '크게 벌리는 달이 없는 열두 달입니다 — 그 안의 서열로 보세요.'}${rd.샘달들.length
-            ? ` 붉은 표(${rd.샘달들.map(m => m + '월').join('·')})는 <b>새기 쉬운 달</b> — 동업·보증·큰 지출을 피하세요.` : ''}</p>
-          <details class="fold pb-fold"><summary>열두 달 전부 보기 — 달마다 날짜와 시각까지</summary>${본문}</details>
-          <p class="pb-ft">잣대 공개 — 과거 연표와 같습니다: 재성이 하늘에 오는가, 벌이를 만드는 식상인가, 나눠 가는 겁재인가, 조후까지.${rd.먼해.length ? ` 더 멀리는 <b>${rd.먼해.join('·')}년</b>이 크게 벌리는 해입니다 — 가까워지면 다시 보세요.` : ''} 되돌리기 어려운 계약 날은 후보를 여럿 두고 보세요 — 갈리는 자리는 원국 탭에 적어 두었습니다.</p></div>`;
-      }, (bx) => aiNarrate(bx, 'wealth', {
-        자료집: T.dossier ? T.dossier(R, today) : null,
-        진단: rd.진단,
-        결론: rd.결론,
-        강약: rd.강약,
-        과거: rd.과거.map(g => ({ 구간: g.시작 + (g.끝 !== g.시작 ? '~' + g.끝 : '') + '년', 나이: '만 ' + g.시작나이 + '살무렵', 말: g.말, 절정달: g.달 ? g.달.해 + '년 ' + g.달.말 : null, 풀이: g.풀이 || null })),
-        샌해: (rd.샌해 || []).map(h => h.해 + '년(만 ' + h.나이 + '살)'),
-        현재: rd.현재.말,
-        열두달: rd.열두달AI,
-        지킬해: (rd.지킬해 || []).map(r => r.해 + '년'),
-        먼해: rd.먼해,
-      }));
-    } else {
-      box.innerHTML = nextStep('미래 — 언제 벌리고 언제 지켜야 하는가',
-        '과거의 구간과 지금의 원국까지',
-        '과거를 짚은 그 잣대가 그대로 앞을 잽니다. 앞으로 여섯 해 중 벌리는 해가 언제인지 — 그리고 그만큼 중요한, 새는 해가 언제인지까지.',
-        nm + '님 재물 시기 — 앞으로 언제 벌리는지 보고 싶습니다', 'wealth',
-        T.wealthWhy ? T.wealthWhy(R).말 : null);
-    }
-  }
 
   let dohwaFor = null;
 

@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=920">
+<link rel="stylesheet" href="style.css?v=921">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -174,15 +174,6 @@
            비망록(#memo)·출산택일(#taekil)도 같은 처지다. taekil.html 이 ./#taekil 로 보낸다. -->
     </div>
     <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
-    <div class="tab hide" data-tab="ban">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>夜 · 오늘 조심할 것</h2>
-        <p class="hint" style="margin:0 0 12px">오늘 일진이 내 사주와 만나는 결로 정해집니다. 내일이면 바뀝니다.</p>
-        <div id="banWrap" class="cardwrap"><div id="banFlip" class="cardflip"><div id="banSvg" class="cardsvg"></div></div>
-          <button class="btn small" id="btnBanShare" style="margin-top:12px">금지령 자랑하기</button></div>
-      </section>
-    </div>
 
     <!-- 비망록 -->
     <div class="tab hide" data-tab="memo">
@@ -285,20 +276,6 @@
     <!-- 독립 콘텐츠: 열두 달 흐름 -->
 
     <!-- 독립 콘텐츠: 인생 곡선 -->
-    <div class="tab hide" data-tab="life">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card warn hide" id="gu-life"><b>성별을 아직 모른다고 하셨습니다.</b> 대운은 성별에 따라 순행·역행이 갈립니다. 지금은 남성 기준으로 계산해 보여드리고 있으니, 알게 되시면 프로필에서 고쳐주세요.</section>
-      <section class="card">
-        <h2>運 · 인생 곡선</h2>
-        <p class="hint" style="margin:0 0 12px">대운 아홉 칸을 곡선으로 그립니다. 대운이 내 사주에 필요한 것을 갖고 오는지로 잽니다.</p>
-        <div id="lifeWrap" class="cardwrap hide"><div id="lifeFlip" class="cardflip"><div id="lifeSvg" class="cardsvg"></div></div>
-          <button class="btn small" id="btnLifeShare">십 년 그림 자랑하기</button></div>
-        <p class="hint" id="lifeNote" style="margin-top:10px"></p>
-        <div class="wt-head" style="margin-top:22px"><b>지금과 그때</b><span>열 해마다 무엇이 달라지는지 견줍니다 · 눌러서 펴 보세요</span></div>
-        <div id="lifeDiff"></div>
-        <div id="lifeDiffBox" class="wt-daybox hide"></div>
-      </section>
-    </div>
 
     <!-- 독립 콘텐츠: 천직 감정 -->
 
@@ -306,68 +283,15 @@
 
     <!-- 독립 콘텐츠: 연애·인연 도화첩 -->
     <!-- 독립 콘텐츠: 지칠 때와 채울 때 -->
-    <div class="tab hide" data-tab="jichim">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>養 · 지칠 때와 채울 때</h2>
-        <p class="hint" style="margin:0 0 12px">무엇이 나를 깎는지, 그리고 무엇으로 다시 채우는지 봅니다.
-          <b>지치는 것은 약해서가 아니라 결이 그렇기 때문입니다</b> — 그 결을 알면 미리 덜어낼 수 있습니다.</p>
-        <div id="jcWrap" class="cardwrap"><div id="jcFlip" class="cardflip"><div id="jcSvg" class="cardsvg"></div></div>
-          <button class="btn small" id="btnJcShare" style="margin-top:12px">카드 저장·공유</button></div>
-        <p class="hint" id="jcNote" style="margin-top:10px"></p>
-      </section>
-      <section class="card" style="padding-top:6px">
-        <div id="jcNext"></div>
-      </section>
-    </div>
 
     <!-- 독립 콘텐츠: 내 편이 되어주는 사람 -->
-    <div class="tab hide" data-tab="naepyeon">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>助 · 내 편이 되어주는 사람</h2>
-        <p class="hint" style="margin:0 0 12px">내가 지금 채워야 할 기운을 <b>타고난 사람</b>이 곁에 있으면 그 자리가 메워집니다.
-          어떤 결의 사람인지, 나에게 어떤 사이가 되는지 봅니다.
-          <b>피할 사람을 고르는 자리가 아닙니다</b> — 사람은 오행 하나로 정해지지 않습니다.</p>
-        <div id="npWrap" class="cardwrap"><div id="npFlip" class="cardflip"><div id="npSvg" class="cardsvg"></div></div>
-          <button class="btn small" id="btnNpShare" style="margin-top:12px">카드 저장·공유</button></div>
-        <p class="hint" id="npNote" style="margin-top:10px"></p>
-      </section>
-      <section class="card" style="padding-top:6px">
-        <div id="npNext"></div>
-      </section>
-    </div>
 
     <!-- 독립 콘텐츠: 인연이 오는 해 -->
 
     <!-- 의논 — 번호 발언 통변. 채점은 2026-08-31 에 들어냈다(맥락도 이유도 없었다) -->
 
-    <div class="tab hide" data-tab="moneystory">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>財 · 나의 재물 이야기</h2>
-        <p class="hint" style="margin:0 0 12px">생년월일시만으로 돈이 들어왔던 구간과 샜던 해를 짚어 봅니다.
-          맞는지는 내 통장이 압니다 — 같은 눈으로 앞도 봅니다.</p>
-        <div id="msBody"></div>
-      </section>
-      <section class="card" style="padding-top:6px">
-        <div id="msNext"></div>
-      </section>
-    </div>
 
     <!-- 독립 콘텐츠: 재물 그릇 녹패 -->
-    <div class="tab hide" data-tab="nokpae">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>財 · 돈의 모양</h2>
-        <!-- 그릇 산식(점수·등급·백분위·녹패 카드)은 2026-09-04 폐지. 재성·식상·비겁의 배치로 읽는 네 줄만 남는다. -->
-        <p class="hint" style="margin:0 0 12px">돈이 어떤 모양으로 들어오고, 어느 통로로 벌리고, 어디로 새는지 — 재성·식상·비겁이 드러난 자리로 읽습니다. 크기나 등수는 매기지 않습니다.</p>
-        <p class="hint hide" id="nokpaeProg" style="font-weight:700"></p>
-        <div id="nokpaeWrap" class="hide cardwrap"><div id="nokpaeFlip" class="cardflip"><div id="nokpaeSvg" class="cardsvg"></div></div>
-          <button class="btn small hide" id="btnNokpaeShare" style="margin-top:12px">녹패 자랑하기</button></div>
-        <div id="nokpaeNote" style="margin-top:10px"></div>
-      </section>
-    </div>
 
     <!-- 독립 콘텐츠: 유형 카드 뽑기 -->
     <!-- 유형 카드는 2026-09-04 삭제(사장님 「무슨 말인지도 모르더라」). 요소는 app.js 가 id 를 잡으므로 남기고 hidden 으로 묻는다. go('gacha') 는 홈으로 돌린다. -->
@@ -556,20 +480,6 @@
       <section class="card hide" id="gnResult"></section>
     </div>
 
-    <div class="tab hide" data-tab="compat">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>우리 둘 사이</h2>
-        <p class="hint" style="margin:0 0 14px">그 사람의 생년월일만 있으면 됩니다.
-          <b>그 사람이 나에게 무엇이고, 내가 그 사람에게 무엇인지</b> 마주 놓고 봅니다.
-          어떤 사이인지는 저희가 맞혀 보겠습니다 — 맞는지는 <b id="compatMe"></b>님이 아십니다.</p>
-        <label>누구를 마음에 두고 계신가요</label>
-        <select id="cPick" aria-label="상대 선택"></select>
-        <button class="btn" id="btnCompat">우리 사이 보기</button>
-        <button class="btn ghost" id="btnCompatAdd">그 사람 생년월일 넣기</button>
-      </section>
-      <section class="card hide" id="compatResult"></section>
-    </div>
 
   </div>
 
@@ -695,43 +605,43 @@
   </div>
 </div>
 
-<script src="config.js?v=920"></script>
-<script src="track.js?v=920"></script>
-<script src="cloud.js?v=920"></script>
-<script src="usage.js?v=920"></script>
-<script src="places.js?v=920"></script>
-<script src="people.js?v=920"></script>
-<script src="astro.js?v=920"></script>
-<script src="lunar.js?v=920"></script>
-<script src="engine.js?v=920"></script>
-<script src="saenggeuk.js?v=920"></script>
-<script src="panjeong.js?v=920"></script>
-<script src="questions.js?v=920"></script>
-<script src="wongook.js?v=920"></script>
-<script src="seolmyeongseo.js?v=920"></script>
-<script src="chaeyong.js?v=920"></script>
-<script src="brief.js?v=920"></script>
-<script src="chaeksadan.js?v=920"></script>
-<script src="geunamja.js?v=920"></script>
-<script src="maeum.js?v=920"></script>
-<script src="gunghap.js?v=920"></script>
-<script src="sheets.js?v=920"></script>
-<script src="hwakin.js?v=920"></script>
-<script src="mun.js?v=920"></script>
-<script src="mun/all.js?v=920"></script>
-<script src="typecard.js?v=920"></script>
-<script src="gyeokguk.js?v=920"></script>
-<script src="memo.js?v=920"></script>
-<script src="classic.js?v=920"></script>
-<script src="calendar.js?v=920"></script>
-<script src="stories.js?v=920"></script>
-<script src="tongbyeon.js?v=920"></script>
-<script src="rules-wealth-love.js?v=920"></script>
-<script src="rules-health-study-move.js?v=920"></script>
-<script src="share.js?v=920"></script>
-<script src="ai.js?v=920"></script>
-<script src="pay.js?v=920"></script>
-<script src="app.js?v=920"></script>
-<script src="landing.js?v=920"></script>
+<script src="config.js?v=921"></script>
+<script src="track.js?v=921"></script>
+<script src="cloud.js?v=921"></script>
+<script src="usage.js?v=921"></script>
+<script src="places.js?v=921"></script>
+<script src="people.js?v=921"></script>
+<script src="astro.js?v=921"></script>
+<script src="lunar.js?v=921"></script>
+<script src="engine.js?v=921"></script>
+<script src="saenggeuk.js?v=921"></script>
+<script src="panjeong.js?v=921"></script>
+<script src="questions.js?v=921"></script>
+<script src="wongook.js?v=921"></script>
+<script src="seolmyeongseo.js?v=921"></script>
+<script src="chaeyong.js?v=921"></script>
+<script src="brief.js?v=921"></script>
+<script src="chaeksadan.js?v=921"></script>
+<script src="geunamja.js?v=921"></script>
+<script src="maeum.js?v=921"></script>
+<script src="gunghap.js?v=921"></script>
+<script src="sheets.js?v=921"></script>
+<script src="hwakin.js?v=921"></script>
+<script src="mun.js?v=921"></script>
+<script src="mun/all.js?v=921"></script>
+<script src="typecard.js?v=921"></script>
+<script src="gyeokguk.js?v=921"></script>
+<script src="memo.js?v=921"></script>
+<script src="classic.js?v=921"></script>
+<script src="calendar.js?v=921"></script>
+<script src="stories.js?v=921"></script>
+<script src="tongbyeon.js?v=921"></script>
+<script src="rules-wealth-love.js?v=921"></script>
+<script src="rules-health-study-move.js?v=921"></script>
+<script src="share.js?v=921"></script>
+<script src="ai.js?v=921"></script>
+<script src="pay.js?v=921"></script>
+<script src="app.js?v=921"></script>
+<script src="landing.js?v=921"></script>
 </body>
 </html>
