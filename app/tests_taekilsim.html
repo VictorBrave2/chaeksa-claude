@@ -7,8 +7,8 @@
 <p>판정엔진 + 출산택일 관점 = 화면. 시각이 분 단위로 맞는지, 점수가 안 나가는지, 관점이 엔진 말고 다른 데를 두드리지 않는지를 고정한다.</p>
 <div id="out"></div><div id="tkSim" style="display:none"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js?t=61"></script><script src="panjeong.js?t=63"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
-<script src="gwanjeom.js?t=1"></script><script src="taekilsim.js?t=2"></script>
+<script src="saenggeuk.js?t=66"></script><script src="gise.js?t=66"></script><script src="panjeong.js?t=66"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
+<script src="gwanjeom.js?t=66"></script><script src="taekilsim.js?t=66"></script>
 <script>
 const E = ChaeksaEngine, P = ChaeksaPanjeong, W = ChaeksaGwanjeom, S = ChaeksaTaekilSim;
 const out = document.getElementById('out'); let 통과 = 0, 실패 = 0;
@@ -64,6 +64,18 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
   if (!층.조후 || 층.조후.need == null) 문제.push('조후가 없다');
   if (!층.성패 || !층.성패.격) 문제.push('성패가 없다');
   if (!층.표 || !층.표.쌍) 문제.push('생극제화 표가 없다');
+  return 문제;
+});
+검사('66조 — 기세: 적천수 실례 셋(順逆 · 衆寡 · 衰旺)에서 원문이 말한 것과 같다', () => {
+  const mk = (t) => { const k = ['year', 'month', 'day', 'hour'], p = {}; t.split(' ').forEach((x, i) => { p[k[i]] = { stem: E.STEMS.indexOf(x[0]), branch: E.BRANCHES.indexOf(x[1]) }; }); return { pillars: p }; };
+  const 뜬 = (g) => g.뜬.map(x => E.STEMS[x.stem]).join(''), 선 = (g) => g.선.map(c => c.이름).sort().join('');
+  const 문제 = [];
+  let g = ChaeksaGise.기세(mk('癸酉 甲子 庚辰 甲申'));   // 順逆 「天干枯木无根，置之不论，谓金水二人同心」
+  if (g.꼴 !== '동심' || 선(g) !== '금수' || 뜬(g) !== '甲甲') 문제.push('癸酉 甲子 庚辰 甲申 → ' + g.꼴 + ' ' + 선(g) + ' 뜬 ' + 뜬(g));
+  g = ChaeksaGise.기세(mk('戊午 壬戌 丁卯 癸卯'));       // 衆寡 「官煞虽透无根，势在去官」
+  if (뜬(g) !== '壬癸') 문제.push('戊午 壬戌 丁卯 癸卯 → 뜬 ' + 뜬(g));
+  g = ChaeksaGise.기세(mk('癸卯 乙卯 甲寅 乙亥'));       // 衰旺 「六木两水，别无他气」
+  if (g.꼴 !== '동심' || 선(g) !== '목수' || g.으뜸.이름 !== '목' || !g.으뜸이당령) 문제.push('癸卯 乙卯 甲寅 乙亥 → ' + g.꼴 + ' ' + 선(g));
   return 문제;
 });
 (async () => {

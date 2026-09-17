@@ -116,7 +116,8 @@
       // 문 하나(63조, 09-17) — 조후와 격의 성패도 이 문으로만 나간다. 관점(gwanjeom.js)과 화면은 classic·typecard 를 직접 두드리지 않는다.
       // 값은 새로 재지 않는다 — 있는 재료(궁통보감 120칸 표 · 자평진전 조항표)를 이 층에 실어 줄 뿐이다.
       try { const C = global.ChaeksaClassic; if (C && C.gungtong) 층.조후 = C.gungtong(R); } catch (e) {}
-      try { const T = global.ChaeksaTypecard; if (T && T.gyeok) { const J = T.gyeok(R); 층.성패 = { 격: J.name, 판정: J.판정, 파격: J.판정 === '깨졌다', 상신: J.상신 || null }; } } catch (e) {}
+      try { const GS = global.ChaeksaGise; if (GS && GS.기세) 층.기세 = GS.기세(R); } catch (e) {}   // 66조 원국의 기세
+    try { const T = global.ChaeksaTypecard; if (T && T.gyeok) { const J = T.gyeok(R); 층.성패 = { 격: J.name, 판정: J.판정, 파격: J.판정 === '깨졌다', 상신: J.상신 || null }; } } catch (e) {}
       층.이력 = 원표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));
       층들.push(층); 앞 = 층;
     }
