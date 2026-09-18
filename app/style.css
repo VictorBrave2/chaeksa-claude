@@ -1609,6 +1609,7 @@ details.fold > .tiles { margin-top: 10px; }
 .tk-sum span{font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
 .tk-sum i{font-style:normal;font-size:12px;color:var(--ink3)}
 .tk-badge{display:inline-block;margin:6px 0 0;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--seal-bg);color:var(--seal-ink)}
+.tk-badge.tk-top{background:var(--ink);color:var(--bg,#fff);margin-right:6px}
 .tk-eyes{display:flex;flex-direction:column;gap:3px;margin-top:7px}
 .tk-eye{font-size:12.5px;color:var(--ink2);line-height:1.55}
 .tk-eye em{font-style:normal;display:inline-block;min-width:4.6em;margin-right:6px;color:var(--ink3)}

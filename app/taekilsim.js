@@ -59,6 +59,7 @@
     const 속 = r.본.눈들.map(n => '<div class="tk-why"><b>' + esc(n.고전) + (n.보조 ? ' · 참고' : '') + '</b><span>' + esc(n.묻는것) + '</span>' + n.풀이.map(p => '<p>' + esc(p) + '</p>').join('') + '</div>').join('');
     return '<details class="tk-row' + (r.본.없음 ? ' tk-clean' : '') + '">'
       + '<summary><div class="tk-sum"><b>' + esc(r.시진) + '</b><span>' + esc(r.창) + '</span><i>' + esc(r.일주) + '일 ' + esc(r.시주) + '시' + (r.밤끝 ? ' · 다음 날 일주' : '') + '</i></div>'
+      + (r.본.으뜸 ? '<div class="tk-badge tk-top">' + esc(W.출산택일.으뜸말) + '</div>' : '')
       + (r.본.없음 ? '<div class="tk-badge">' + esc(W.출산택일.없음말) + '</div>' : '')
       + '<div class="tk-eyes">' + 칩 + '</div></summary>' + 속 + '</details>';
   }
@@ -91,9 +92,9 @@
       let r; try { r = 하루(y, m, d, 성별, 곳값); } catch (e) { q('tkList').innerHTML = '<p class="tk-note">이 날짜는 계산하지 못했어요.</p>'; return; }
       const 첫 = r.rows[Math.floor(r.rows.length / 2)];
       q('tkHead').textContent = m + '월 ' + d + '일 · ' + (첫 ? 첫.일주 + '일' : '');
-      const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length;
+      const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length, 으뜸수 = r.rows.filter(x => x.본 && x.본.으뜸 && !x.밤끝).length;
       q('tkTop').textContent = W.출산택일.머리 + ' ' + r.곳 + ' 기준 시계 시각이에요(이날은 시계가 해보다 ' + Math.abs(r.밀림) + '분 ' + (r.밀림 >= 0 ? '빨라요' : '늦어요') + '). '
-        + (깨끗 ? '이날은 궁통보감 · 자평진전 모두 걸리는 것 없는 자리가 ' + 깨끗 + '곳 있어요.' : '이날은 궁통보감 · 자평진전이 다 걸리는 것 없다고 본 자리가 없어요. 앞뒤 날도 보세요.');
+        + (깨끗 ? '이날은 궁통보감 · 자평진전 모두 걸리는 것 없는 자리가 ' + 깨끗 + '곳 있어요.' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '곳은 궁통보감이 찾는 글자가 다 뜬 으뜸 자리예요.' : '') : '이날은 궁통보감 · 자평진전이 다 걸리는 것 없다고 본 자리가 없어요. 앞뒤 날도 보세요.');
       const 보일 = 거르기 ? r.rows.filter(x => x.본 && x.본.없음) : r.rows;
       q('tkList').innerHTML = 보일.length ? 보일.map(줄).join('') : '<p class="tk-note">이날은 해당하는 자리가 없어요.</p>';
     }

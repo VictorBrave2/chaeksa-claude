@@ -7,8 +7,8 @@
 <p>판정엔진 + 출산택일 관점 = 화면. 시각이 분 단위로 맞는지, 점수가 안 나가는지, 관점이 엔진 말고 다른 데를 두드리지 않는지를 고정한다.</p>
 <div id="out"></div><div id="tkSim" style="display:none"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js?t=71"></script><script src="gise.js?t=71"></script><script src="panjeong.js?t=71"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
-<script src="gwanjeom.js?t=71"></script><script src="taekilsim.js?t=71"></script>
+<script src="saenggeuk.js?t=73"></script><script src="gise.js?t=73"></script><script src="panjeong.js?t=73"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
+<script src="gwanjeom.js?t=73"></script><script src="taekilsim.js?t=73"></script>
 <script>
 const E = ChaeksaEngine, P = ChaeksaPanjeong, W = ChaeksaGwanjeom, S = ChaeksaTaekilSim;
 const out = document.getElementById('out'); let 통과 = 0, 실패 = 0;
@@ -57,6 +57,19 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
     if (r.본.눈들.length !== 3) 문제.push('눈이 셋이 아니다');
     if (r.본.눈들[2].걸림 || !r.본.눈들[2].보조) 문제.push(m + '/' + d + ' ' + r.시진 + ' 적천수가 걸림을 매겼다');
   }));
+  return 문제;
+});
+검사('68조 — 으뜸은 걸리는 것 없는 자리 가운데, 궁통보감의 먼저 찾는 글자와 돕는 글자가 하늘에 다 뜬 곳이다', () => {
+  const 문제 = []; let 으뜸수 = 0;
+  for (let d = 1; d <= 31; d++) S.하루(2026, 10, d, 'M', 'KR:서울').rows.forEach(r => {
+    if (!r.본 || !r.본.으뜸) return; 으뜸수++;
+    if (!r.본.없음) 문제.push(d + '일 ' + r.시진 + ' 걸리는데 으뜸');
+    const mid = Math.floor((r.시작 + r.끝) / 2), R = E.calc({ year: 2026, month: 10, day: d, hour: Math.floor(mid / 60), minute: mid % 60, gender: 'M', longitude: 126.98 });
+    const j = P.판정(R, new Date(2026, 9, d), { 운들: [] }).층들[0].조후, 하늘 = ['year', 'month', 'hour'].map(k => E.STEMS[R.pillars[k].stem]).join('');
+    (j.need + (j.aux || '')).split('').forEach(c => { if (하늘.indexOf(c) < 0) 문제.push(d + '일 ' + r.시진 + ' 으뜸인데 ' + c + ' 가 하늘에 없다(' + 하늘 + ')'); });
+    if (!(j.aux || '').length) 문제.push(d + '일 ' + r.시진 + ' 돕는 글자가 없는 칸인데 으뜸');
+  });
+  if (!으뜸수) 문제.push('10월에 으뜸이 한 곳도 없다');
   return 문제;
 });
 검사('63조 — 문 하나: 원국 층에 조후와 성패가 실려 나온다', () => {
