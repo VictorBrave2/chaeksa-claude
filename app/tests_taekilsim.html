@@ -7,8 +7,8 @@
 <p>판정엔진 + 출산택일 관점 = 화면. 시각이 분 단위로 맞는지, 점수가 안 나가는지, 관점이 엔진 말고 다른 데를 두드리지 않는지를 고정한다.</p>
 <div id="out"></div><div id="tkSim" style="display:none"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js?t=68"></script><script src="gise.js?t=68"></script><script src="panjeong.js?t=68"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
-<script src="gwanjeom.js?t=68"></script><script src="taekilsim.js?t=68"></script>
+<script src="saenggeuk.js?t=69"></script><script src="gise.js?t=69"></script><script src="panjeong.js?t=69"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?t=1"></script><script src="classic.js?t=1"></script>
+<script src="gwanjeom.js?t=69"></script><script src="taekilsim.js?t=69"></script>
 <script>
 const E = ChaeksaEngine, P = ChaeksaPanjeong, W = ChaeksaGwanjeom, S = ChaeksaTaekilSim;
 const out = document.getElementById('out'); let 통과 = 0, 실패 = 0;
@@ -48,13 +48,14 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
   const m = 글.match(/\d+\s*점|\d+\s*위|순위|등수|랭킹|TOP/i);
   if (m) return '점수 말이 나갔다: ' + m[0];
 });
-검사('60조 — 「걸리는 것 없음」은 세 관점이 다 안 걸릴 때만 붙는다', () => {
+검사('60 · 65조 — 「걸리는 것 없음」은 거르개 둘(궁통보감 · 자평진전)이 다 안 걸릴 때만 붙고, 적천수는 걸림을 안 매긴다', () => {
   const 문제 = [];
   [[2026, 12, 18], [2026, 12, 20], [2026, 12, 15], [2027, 3, 30]].forEach(([y, m, d]) => S.하루(y, m, d, 'M', 'KR:서울').rows.forEach(r => {
     if (!r.본) return; const 걸 = r.본.눈들.filter(n => n.걸림).length;
     if (r.본.없음 && 걸) 문제.push(m + '/' + d + ' ' + r.시진 + ' 걸림 ' + 걸 + ' 인데 없음');
     if (!r.본.없음 && !걸 && !r.본.눈들.some(n => n.모름)) 문제.push(m + '/' + d + ' ' + r.시진 + ' 걸림 0 인데 없음이 아님');
     if (r.본.눈들.length !== 3) 문제.push('눈이 셋이 아니다');
+    if (r.본.눈들[2].걸림 || !r.본.눈들[2].보조) 문제.push(m + '/' + d + ' ' + r.시진 + ' 적천수가 걸림을 매겼다');
   }));
   return 문제;
 });
