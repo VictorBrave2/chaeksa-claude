@@ -187,6 +187,13 @@ def build():
         summ = summary_lines(body, True)
         desc = f'{y}년 {mo}월 출산택일 — 모든 날 모든 시각을 시진 단위로 전부 계산한 순위. 제왕절개·유도분만 날짜 고를 때 시계 시각 경계와 표가 못 보는 것까지.'
         faq = [(f'{y}년 {mo}월 출산택일, 언제가 제일 좋나요?',' / '.join(summ) + ' (원국만 본 순위이며, 시계 시각은 지역 보정을 거친 값입니다.)')] + GEN_FAQ
+        if '<h2>두 고전에 걸리지 않는 낮 자리</h2>' in body:      # 새 형식(60 · 65조, tools_wolbyeol.py) — 점수 · 순위가 없다
+            m = re.search(r'<h2>이달은 이만큼 남습니다</h2>\s*<blockquote>(.*?)</blockquote>', body, re.S)
+            ls = [strip(x).lstrip('▸ ').strip() for x in re.split(r'<br\s*/?>', m.group(1))] if m else []
+            ls = [l for l in ls if l and l[0].isdigit() is False and '곳' in l]
+            summ = ['점수와 순위를 매기지 않고, 세 고전(궁통보감 · 자평진전 · 적천수)이 각자 본 것을 시간대마다 적었습니다.'] + [f'{y}년 {mo}월, 궁통보감 · 자평진전 ' + l for l in ls if '둘 다' in l][:1] + [l for l in ls if '낮 시간' in l][:1]
+            desc = f'{y}년 {mo}월 출산택일 — 모든 날 모든 시각을 시진 단위로 계산해 궁통보감 · 자평진전 · 적천수가 각자 본 것을 적었습니다. 점수 · 순위 없이, 두 고전에 걸리지 않는 자리와 병원에 말할 시계 시각까지.'
+            faq = [(f'{y}년 {mo}월 출산택일, 어느 자리가 걸리는 것이 없나요?', ' '.join(summ) + ' 자리 목록은 본문에 날짜순으로 있습니다(원국만 본 것이며, 시계 시각은 서울 기준 보정값입니다).')] + GEN_FAQ
         prev = (f'taekil-{items[i-1][0]}-{items[i-1][1]:02d}', f'{items[i-1][0]}년 {items[i-1][1]}월') if i > 0 else None
         nxt = (f'taekil-{items[i+1][0]}-{items[i+1][1]:02d}', f'{items[i+1][0]}년 {items[i+1][1]}월') if i + 1 < len(items) else None
         open(os.path.join(A, slug + '.html'), 'wb').write(page(slug, title, desc, body, summ, faq, (prev, nxt), True, tags).replace('\n', '\r\n').encode('utf-8'))
