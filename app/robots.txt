@@ -27,6 +27,7 @@ Disallow: /cards.html
 Disallow: /tests_panjeong.html
 Disallow: /tests_seolmyeongseo.html
 Disallow: /tests_taekilsim.html
+Disallow: /myeongsik.html
 Disallow: /tools/
 
 # AI 엔진용 안내

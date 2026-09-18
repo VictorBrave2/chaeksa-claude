@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>명식 카드 — 상담 글에 넣을 그림</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* 네이버 글에 넣을 그림이라 늘 밝은 바탕으로 찍는다(화면 갈무리용). 판정은 여기서 안 한다 — 판정엔진 + 출산택일 관점이 낸 말을 그리기만 한다(63조). */
+  :root{--ground:#efebe4;--paper:#fbf9f5;--ink:#1b1916;--ink2:#5d584f;--ink3:#8c8578;--edge:#ddd6c9;--seal:#8c2f23;
+        --mok:#2f6b4f;--hwa:#b23a2b;--to:#8a6a2a;--geum:#6b6f78;--su:#274b7a;color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",sans-serif}
+  .bar{max-width:1180px;margin:0 auto;padding:18px 20px 0;font-size:13px;line-height:1.7;color:var(--ink2)}
+  .bar b{color:var(--ink)} .bar code{background:#fff;padding:1px 5px;border-radius:4px;font-size:12px}
+  .cards{max-width:1180px;margin:0 auto;padding:18px 20px 60px;display:flex;flex-wrap:wrap;gap:22px}
+  .card{width:540px;background:var(--paper);border:1px solid var(--edge);border-radius:12px;padding:30px 30px 26px;box-shadow:0 10px 30px rgba(40,32,20,.10)}
+  .k{font-size:11.5px;letter-spacing:.18em;color:var(--seal);font-weight:500}
+  .when{font-family:"Noto Serif KR",serif;font-size:23px;font-weight:700;line-height:1.35;margin:8px 0 2px;letter-spacing:-.02em}
+  .sub{font-size:13px;color:var(--ink2);margin:0 0 18px}
+  table{width:100%;border-collapse:separate;border-spacing:6px 0;table-layout:fixed;text-align:center}
+  th{font-size:12px;font-weight:500;color:var(--ink3);padding-bottom:6px}
+  td.god{font-size:12.5px;color:var(--ink2);padding:5px 0}
+  td.gan,td.ji{font-family:"Noto Serif KR",serif;font-size:40px;font-weight:700;line-height:1;padding:13px 0 11px;background:#fff;border:1px solid var(--edge)}
+  td.gan{border-radius:10px 10px 0 0;border-bottom:0} td.ji{border-radius:0 0 10px 10px}
+  td.gan small,td.ji small{display:block;font-family:"Noto Sans KR",sans-serif;font-size:11.5px;font-weight:500;margin-top:6px;letter-spacing:0}
+  .e0{color:var(--mok)} .e1{color:var(--hwa)} .e2{color:var(--to)} .e3{color:var(--geum)} .e4{color:var(--su)}
+  td.me{outline:2px solid var(--seal);outline-offset:-2px}
+  .eyes{margin:18px 0 0;padding:14px 0 0;border-top:1px solid var(--edge)}
+  .eye{display:flex;gap:10px;font-size:13.5px;line-height:1.65;margin:0 0 5px}
+  .eye em{font-style:normal;flex:0 0 6.6em;white-space:nowrap;color:var(--ink3);font-size:12.5px;padding-top:1px}
+  .eye.hit span{color:var(--ink3)}
+  .badge{display:inline-block;margin:0 0 10px;padding:4px 10px;border-radius:999px;background:var(--seal);color:#fff;font-size:12px;font-weight:700}
+  .foot{margin-top:14px;font-size:11.5px;color:var(--ink3);display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="cards" id="cards"></div>
+<script src="config.js?v=937"></script><script src="places.js?v=937"></script><script src="astro.js?v=937"></script><script src="lunar.js?v=937"></script><script src="engine.js?v=937"></script>
+<script src="saenggeuk.js?v=937"></script><script src="gise.js?v=937"></script><script src="panjeong.js?v=937"></script><script src="typecard.js?v=937"></script><script src="gyeokguk.js?v=937"></script><script src="classic.js?v=937"></script>
+<script src="gwanjeom.js?v=937"></script><script src="taekilsim.js?v=937"></script>
+<script>
+/* 쓰는 법: myeongsik.html?place=KR:천안&g=M&slots=2026-10-12T16:00,2026-10-12T20:00&labels=낮에 권하는 시각,저녁 7시 18분 이후
+ *  slots 의 시각은 그 시진 안의 아무 분이면 된다 — 카드에는 그 시진의 시계 창(분 단위)이 찍힌다. */
+(function () {
+  const E = ChaeksaEngine, S = ChaeksaTaekilSim, q = new URLSearchParams(location.search);
+  const place = q.get('place') || 'KR:서울', g = q.get('g') === 'F' ? 'F' : 'M';
+  const slots = (q.get('slots') || '').split(',').filter(Boolean), labels = (q.get('labels') || '').split(',');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const 요일 = '일월화수목금토', 오행말 = ['목', '화', '토', '금', '수'];
+  document.getElementById('bar').innerHTML = '<b>명식 카드</b> — 카드 하나씩 화면 갈무리해서 네이버 글에 그림으로 넣으세요(표는 모바일에서 깨져서 그림으로 넣습니다). '
+    + '주소 뒤에 <code>?place=KR:천안&amp;g=M&amp;slots=2026-10-12T16:00,2026-10-12T20:00&amp;labels=낮,저녁</code> 꼴로 바꾸면 다른 상담에도 씁니다.';
+  const box = document.getElementById('cards');
+  if (!slots.length) { box.innerHTML = '<p style="color:#5d584f">주소에 slots 가 없어요.</p>'; return; }
+  slots.forEach((s, i) => {
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{2})$/.exec(s); if (!m) return;
+    const [y, mo, d, hh, mi] = m.slice(1).map(Number), t = hh * 60 + mi;
+    const day = S.하루(y, mo, d, g, place), r = day.rows.find(x => t >= x.시작 && t <= x.끝); if (!r) return;
+    const R = E.calc(Object.assign({ year: y, month: mo, day: d, hour: hh, minute: mi, gender: g }, (() => { const p = ChaeksaPlaces.resolve(place); return { longitude: p.lon, tzOffset: p.tzOffset }; })()));
+    const P = R.pillars, gods = R.analysis && R.analysis.gods || {}, 순 = ['hour', 'day', 'month', 'year'], 머리 = { hour: '시', day: '일', month: '월', year: '연' };
+    const 칸 = (k, 줄) => {
+      const p = P[k];
+      if (줄 === 'top') return '<td class="god">' + (k === 'day' ? '나' : esc((gods[k] || {}).stem || '')) + '</td>';
+      if (줄 === 'gan') return '<td class="gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' me' : '') + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + 오행말[E.STEM_ELEM[p.stem]] + '</small></td>';
+      if (줄 === 'ji') return '<td class="ji e' + E.BRANCH_ELEM[p.branch] + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + 오행말[E.BRANCH_ELEM[p.branch]] + '</small></td>';
+      return '<td class="god">' + esc((gods[k] || {}).branch || '') + '</td>';
+    };
+    const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';
+    const 눈 = r.본 ? r.본.눈들.map(n => '<p class="eye' + (n.걸림 ? ' hit' : '') + '"><em>' + esc(n.고전) + (n.보조 ? ' · 참고' : '') + '</em><span>' + esc(n.한줄) + '</span></p>').join('') : '';
+    const 요 = 요일[new Date(y, mo - 1, d).getDay()];
+    box.insertAdjacentHTML('beforeend', '<div class="card"><div class="k">' + esc(labels[i] || '명식') + '</div>'
+      + '<div class="when">' + mo + '월 ' + d + '일(' + 요 + ') ' + esc(r.창.replace('~', ' ~ ')) + '</div>'
+      + '<p class="sub">' + esc(day.곳) + ' 시계 시각 · ' + esc(r.시진) + ' · ' + (g === 'M' ? '남아' : '여아') + '</p>'
+      + '<table><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table>'
+      + '<div class="eyes">' + (r.본 && r.본.없음 ? '<span class="badge">' + esc(ChaeksaGwanjeom.출산택일.없음말) + '</span>' : '') + 눈 + '</div>'
+      + '<div class="foot"><span>책사 · chaeksa.kr</span><span>세 고전이 각자 본 것 · 점수로 합치지 않습니다</span></div></div>');
+  });
+})();
+</script>
+</body>
+</html>
