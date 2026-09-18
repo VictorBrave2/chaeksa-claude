@@ -40,6 +40,8 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     ('왜오행은다섯', 'why-five-elements', '왜 오행은 다섯인가요, 넷도 여섯도 아니고'),
     ('사주를회사로', 'why-gyeok-is-my-role', '왜 사주는 같은 글자인데 사람마다 읽는 순서가 다른가요 — 격국을 회사로 읽으면'),
     ('세고전을AI가보면', 'why-ai-three-classics', 'AI에게 사주 고전 세 권을 맡기면 어떻게 되나요'),
+    # 궁통보감 관점 월별 글(tools_gungtong.py) — 여섯 갈래 가운데 첫째(09-19). 달이 늘면 여기에 줄을 더한다.
+    ('10월궁통보감', 'taekil-2026-10-gungtong', '왜 10월에 태어나는 아이에겐 이 글자가 필요한가요 — 궁통보감으로 본 2026년 10월'),
 ]
 
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
