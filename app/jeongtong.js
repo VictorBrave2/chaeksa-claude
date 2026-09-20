@@ -47,7 +47,9 @@
     // 목차는 열세 장이다(사장님 09-20 「왜 1~13까지 펼치지 않는 것인지」). 아직 못 지은 장도 자리를 펴 두고, 무엇으로 지을지를 적는다.
     const 준비 = (말) => '<p class="jt-yet">' + esc(말) + '</p>';
     const 기 = 층.기세, 적 = 눈['적천수'];
-    const 오행줄 = 기 && 기.칸 ? '<div class="jt-oh">' + 기.칸.map(k => '<span class="e' + k.오행 + '"><b>' + 오행말[k.오행] + '</b>' + k.무리 + '자</span>').join('') + '</div>' : '';
+    // 눈에 보이는 여덟 글자를 그대로 센다(하늘 넷 + 땅 넷). 기세의 「무리」는 뿌리 없는 천간을 빼서 합이 여덟이 안 된다.
+    const 센 = [0, 0, 0, 0, 0]; ['year', 'month', 'day', 'hour'].forEach(k => { 센[E.STEM_ELEM[R.pillars[k].stem]]++; 센[E.BRANCH_ELEM[R.pillars[k].branch]]++; });
+    const 오행줄 = '<div class="jt-oh">' + 센.map((n, o) => '<span class="e' + o + '"><b>' + 오행말[o] + '</b>' + n + '자</span>').join('') + '</div>';
 
     // 1장 — 사주팔자 · 오행 · 흐름(적천수)
     out.push(장(1, '나의 사주팔자', '여덟 글자와 오행, 기운이 흐르는 길',
