@@ -27,7 +27,13 @@
     return '<table class="jt-table"><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table>';
   }
 
-  const 장 = (번호, 제목, 부제, 속) => '<section class="card jt-ch"><div class="jt-no">제 ' + 번호 + '장</div><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + 속 + '</section>';
+  // 장은 접이식이다 — 목차에서 누르면 그 장이 열리며 내려간다. 1장만 처음부터 열어 둔다.
+  const 장목록 = [];
+  const 장 = (번호, 제목, 부제, 속) => {
+    장목록.push([번호, 제목]);
+    return '<details class="card jt-ch" id="jtCh' + 번호 + '"' + (번호 === 1 ? ' open' : '') + '><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
+  };
+  const 목차 = () => '<nav class="card jt-toc"><div class="jt-no">목차</div>' + 장목록.map(([n, t]) => '<a href="#jtCh' + n + '" data-ch="' + n + '"><b>' + n + '</b>' + esc(t) + '</a>').join('') + '</nav>';
   const 문단 = (arr) => arr.map(t => '<p>' + esc(t) + '</p>').join('');
 
   function 그리기(box, input) {
@@ -36,7 +42,7 @@
     const 눈 = {}; 본.눈들.forEach(n => { 눈[n.고전] = n; });
     const WM = global.ChaeksaGungtongWonmun || { 구절: {}, 계절: {} };
     const 일간 = E.STEMS[R.pillars.day.stem], 월지 = E.BRANCHES[R.pillars.month.branch];
-    const out = [];
+    const out = []; 장목록.length = 0;
 
     // 1장 — 여덟 글자
     out.push(장(1, '나의 여덟 글자', '태어난 해 · 달 · 날 · 시각이 글자 둘씩, 모두 여덟 글자가 돼요.',
@@ -65,7 +71,8 @@
     out.push(장(5, '열 해씩 오는 운', '대운 — 열 해마다 하늘과 땅에 글자가 하나씩 와요. 하늘로 오면 생각이, 땅으로 오면 몸이 움직여요.',
       대.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + d.시작나이 + ' ~ ' + d.끝나이 + '세</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 문단(d.줄) + '</div>').join('')));
 
-    box.innerHTML = out.join('');
+    box.innerHTML = 목차() + out.join('');
+    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#jtCh' + a.dataset.ch); if (d) d.open = true; }));
     try { const S = global.ChaeksaSeolmyeong, b = box.querySelector('#jtSeol'); if (S && b) S.render(R, today, b, {}); } catch (e) {}
   }
 

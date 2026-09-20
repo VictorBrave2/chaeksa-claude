@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=944">
+<link rel="stylesheet" href="style.css?v=945">
 <style>
   .doc{max-width:660px;margin:0 auto;padding:22px 16px 80px}
   .back{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -19,6 +19,15 @@
   .jt-form label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink3)}
   .jt-form input,.jt-form select{font:inherit;font-size:15px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
   .jt-ch{margin-top:16px}
+  .jt-ch summary{cursor:pointer;list-style:none;position:relative;padding-right:28px}
+  .jt-ch summary::-webkit-details-marker{display:none}
+  .jt-ch summary::after{content:'＋';position:absolute;right:0;top:4px;font-size:18px;color:var(--ink3)}
+  .jt-ch[open] summary::after{content:'－'}
+  .jt-ch:not([open]) .jt-sub{margin-bottom:0}
+  .jt-toc{margin-top:16px;display:flex;flex-direction:column;gap:2px}
+  .jt-toc a{display:flex;gap:12px;padding:9px 2px;font-size:15px;color:var(--ink);text-decoration:none;border-top:1px solid var(--line)}
+  .jt-toc a:first-of-type{border-top:0}
+  .jt-toc a b{font-family:var(--serif);color:var(--ink3);min-width:1.4em}
   .jt-no{font-size:11.5px;letter-spacing:.18em;color:var(--ink3)}
   .jt-ch h2{font-family:var(--serif);font-size:20px;margin:6px 0 4px}
   .jt-sub{font-size:13px;color:var(--ink3);margin:0 0 14px}
@@ -62,20 +71,20 @@
 <script>
 (function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})()
 </script>
-<script src="config.js?v=944"></script>
-<script src="places.js?v=944"></script>
-<script src="astro.js?v=944"></script>
-<script src="lunar.js?v=944"></script>
-<script src="engine.js?v=944"></script>
-<script src="saenggeuk.js?v=944"></script><script src="gise.js?v=944"></script>
-<script src="panjeong.js?v=944"></script>
-<script src="typecard.js?v=944"></script>
-<script src="gyeokguk.js?v=944"></script>
-<script src="classic.js?v=944"></script>
-<script src="questions.js?v=944"></script>
-<script src="seolmyeongseo.js?v=944"></script>
-<script src="gungtong-wonmun.js?v=944"></script>
-<script src="gwanjeom.js?v=944"></script>
-<script src="jeongtong.js?v=944"></script>
+<script src="config.js?v=945"></script>
+<script src="places.js?v=945"></script>
+<script src="astro.js?v=945"></script>
+<script src="lunar.js?v=945"></script>
+<script src="engine.js?v=945"></script>
+<script src="saenggeuk.js?v=945"></script><script src="gise.js?v=945"></script>
+<script src="panjeong.js?v=945"></script>
+<script src="typecard.js?v=945"></script>
+<script src="gyeokguk.js?v=945"></script>
+<script src="classic.js?v=945"></script>
+<script src="questions.js?v=945"></script>
+<script src="seolmyeongseo.js?v=945"></script>
+<script src="gungtong-wonmun.js?v=945"></script>
+<script src="gwanjeom.js?v=945"></script>
+<script src="jeongtong.js?v=945"></script>
 </body>
 </html>
