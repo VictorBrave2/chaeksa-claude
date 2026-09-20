@@ -77,7 +77,7 @@
 
     // 3장 — 십성 · 격(자평진전)
     const s = 층.성패 || {}, 뜻 = 성패뜻[s.판정], gods = (R.analysis && R.analysis.gods) || {}, 자리말 = { year: '연', month: '월', day: '일', hour: '시' };
-    const 십줄 = []; ['year', 'month', 'day', 'hour'].forEach(k => { const g = gods[k] || {}; if (k !== 'day' && g.stem) 십줄.push(자리말[k] + ' 하늘 — ' + g.stem + (W.십신뜻[g.stem] ? '(' + W.십신뜻[g.stem] + ')' : '')); if (g.branch) 십줄.push(자리말[k] + ' 땅 — ' + g.branch + (W.십신뜻[g.branch] ? '(' + W.십신뜻[g.branch] + ')' : '')); });
+    const 십줄 = []; ['year', 'month', 'day', 'hour'].forEach(k => { const g = gods[k] || {}; if (k !== 'day' && g.stem) 십줄.push(자리말[k] + '간 — ' + g.stem + (W.십신뜻[g.stem] ? '(' + W.십신뜻[g.stem] + ')' : '')); if (g.branch) 십줄.push(자리말[k] + '지 — ' + g.branch + (W.십신뜻[g.branch] ? '(' + W.십신뜻[g.branch] + ')' : '')); });
     out.push(장(3, '십성 — 나를 둘러싼 일곱 글자', '나머지 일곱 글자가 나에게 무엇인가, 그리고 그 짜임(자평진전)',
       '<ul class="jt-li">' + 십줄.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>'
       + '<h3>나의 격, 나의 역할 — 자평진전</h3>'
@@ -91,7 +91,7 @@
     if (SM) {
       const 운 = SM.십이운성(R);
       out.push(장(4, '십이운성', '내가 네 자리에서 각각 얼마나 힘이 있나',
-        문단(['내 글자는 ' + G.이름(R.pillars.day.stem) + '예요. 이 글자를 땅의 네 글자에 하나씩 대 보면, 자리마다 사람의 한살이 열두 단계 가운데 하나가 나와요. 삼명통회는 만물이 도는 것이 사람이 나고 죽는 것과 닮았다고 했어요.'])
+        문단(['내 글자는 ' + G.이름(R.pillars.day.stem) + '예요. 이 글자를 지지 네 글자에 하나씩 대 보면, 자리마다 사람의 한살이 열두 단계 가운데 하나가 나와요. 삼명통회는 만물이 도는 것이 사람이 나고 죽는 것과 닮았다고 했어요.'])
         + 운.map(u => '<div class="jt-du"><div class="jt-du-h"><b>' + esc(u.자리 + ' ' + u.지지) + '</b><span>' + esc(u.단계 + '(' + u.한자 + ')') + '</span></div>' + 문단([u.뜻]) + '</div>').join('')
         + 원문칸('卷二 論五行旺相休囚死並寄生十二宫', SM.운성맺음[0]) + 문단([SM.운성맺음[1]])));
       const 살 = SM.신살(R), 귀 = SM.귀인(R);
@@ -117,11 +117,11 @@
     const 접어 = (줄, 편) => 줄.length <= 3 || 편 ? 문단(줄) : 문단(줄.slice(0, 3)) + '<details class="jt-more"><summary>이 열 해에 만나는 글자 ' + (줄.length - 3) + '줄 더 보기</summary>' + 문단(줄.slice(3)) + '</details>';
     // 11장 — 대운
     const 올해 = today.getFullYear(), 대 = W.대운(R, input.gender === 'F' ? 'F' : 'M'); 대.forEach((d, i) => { d.지금 = 올해 >= d.시작해 && (!대[i + 1] || 올해 < 대[i + 1].시작해); });
-    out.push(장(11, '열 해씩 오는 운 — 대운', '열 해마다 하늘과 땅에 글자가 하나씩 와요. 하늘로 오면 생각이, 땅으로 오면 몸이 움직여요.',
+    out.push(장(11, '열 해씩 오는 운 — 대운', '열 해마다 천간과 지지에 글자가 하나씩 와요. 천간으로 오면 생각이, 지지로 오면 몸이 움직여요.',
       대.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + d.시작나이 + ' ~ ' + d.끝나이 + '세</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 접어(d.줄, d.지금) + '</div>').join('')));
 
     const 세 = W.세운 ? W.세운(R, 올해, 5, input.gender === 'F' ? 'F' : 'M') : [];
-    out.push(장(12, '앞으로 다섯 해', '해마다 하늘과 땅에 글자가 하나씩 와요. 그해의 대운 위에 얹어서 읽었어요.',
+    out.push(장(12, '앞으로 다섯 해', '해마다 천간과 지지에 글자가 하나씩 와요. 그해의 대운 위에 얹어서 읽었어요.',
       세.map((d, i) => '<div class="jt-du' + (i === 0 ? ' now' : '') + '"><div class="jt-du-h"><b>' + d.해 + '년</b><span>' + esc(d.간지) + (d.대운 ? ' · ' + esc(d.대운) + ' 대운 안' : '') + '</span>' + (i === 0 ? '<i>올해</i>' : '') + '</div>' + 문단(d.줄) + '</div>').join('')));
     out.push(장(13, '질문과 답', '', 준비('준비하고 있어요.')));
 
