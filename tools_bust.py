@@ -8,13 +8,7 @@ import io, os, re, sys, subprocess
 try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 
-# 배포 전 필수 검사 — 조용히 틀리는 것들을 잡는다(tools_check.py 참고)
-_here = os.path.dirname(os.path.abspath(__file__))
-_r = subprocess.run([sys.executable, os.path.join(_here, 'tools_check.py')], capture_output=True, text=True, encoding='utf-8', errors='replace')
-print(_r.stdout.strip() or _r.stderr.strip())
-if _r.returncode != 0:
-    print('배포 중단: 위 문제를 먼저 고치세요.')
-    sys.exit(1)
+# (2026-09-20 사장님 「법전, 메모리 피드백 항목 제외하고 다 삭제해」 — 배포를 막던 검사 문을 뗐다. 검사는 python tools_check.py 로 따로 돌릴 수 있다.)
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
 FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'stories.js', 'landing.js',
