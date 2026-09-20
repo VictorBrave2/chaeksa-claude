@@ -176,7 +176,30 @@
     '구제 약화': '막아 주던 글자가 묶이고, 다른 글자가 대신 막아요.', '손상 재발': '막아 주던 글자가 묶여서 격을 이루는 글자가 다시 눌려요.', '재구제': '눌렸던 격을 다시 막아 주는 글자가 와요.',
     '규칙 보완 필요': '이 열 해에는 격을 잡을 글자가 비어요.', '인 무거움': '근거가 든든하게 버텨요.', '인 균형': '근거를 돈이 깎지만 버텨요.', '인 박살': '근거가 돈에 눌려 무너지는 열 해예요.',
   };
-  function 대운(R) {
+  // 운의 글자가 내 여덟 글자의 누구와 만나나 — 어느 궁이 움직이나를 말한다(삼명통회 卷七 「以年為祖業月為父母兄弟門户日為妻妾已身時為子息」).
+  // 새 판정이 아니다. 합 · 충을 눈에 보이는 대로 읽고, 앞 장(5 · 6 · 7 · 8장)에서 센 것을 운의 글자에 한 번 더 댄다. 길흉을 매기지 않는다.
+  const 궁말 = { year: '조상 · 집안 자리(연)', month: '부모 · 형제 · 일터 자리(월)', day: '나와 배우자 자리(일)', hour: '자식 · 앞날 자리(시)' };
+  const 육합짝 = [1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+  function 운줄(R, st, br, 성별, 때) {
+    const P = R.pillars, ds = P.day.stem, out = [], 자리들 = ['year', 'month', 'day', 'hour'];
+    const 지한 = (b) => E.BRANCHES_KO[b] + '(' + E.BRANCHES[b] + ')', 간한 = (x) => E.STEMS_KO[x] + '(' + E.STEMS[x] + ')';
+    자리들.forEach(k => { if ((P[k].branch - br + 12) % 12 === 6) out.push(때 + '의 ' + 지한(br) + (받침(E.BRANCHES_KO[br]) ? '이' : '가') + ' 내 ' + 지한(P[k].branch) + (받침(E.BRANCHES_KO[P[k].branch]) ? '과' : '와') + ' 마주 부딪혀요(충). ' + 궁말[k] + '가 흔들리고 움직이는 때예요.'); });
+    자리들.forEach(k => { if (육합짝[br] === P[k].branch) out.push(때 + '의 ' + 지한(br) + (받침(E.BRANCHES_KO[br]) ? '이' : '가') + ' 내 ' + 지한(P[k].branch) + (받침(E.BRANCHES_KO[P[k].branch]) ? '과' : '와') + ' 짝을 지어요(합). ' + 궁말[k] + '에 묶이는 일이 생기는 때예요.'); });
+    자리들.forEach(k => { if (Math.abs(P[k].stem - st) === 5) out.push(때 + '의 ' + 간한(st) + (받침(E.STEMS_KO[st]) ? '이' : '가') + (k === 'day' ? ' 나 ' : ' 내 ' + { year: '연간 ', month: '월간 ', hour: '시간 ' }[k]) + 간한(P[k].stem) + (받침(E.STEMS_KO[P[k].stem]) ? '과' : '와') + ' 짝을 지어요(합).'); });
+    // 배우자별 · 없던 재성이 오는 때
+    const 본기 = (E.HIDDEN[br] || [])[0], 본 = typeof 본기 === 'number' ? 본기 : 본기[0], 온 = [E.TEN_GODS[E.tenGod(ds, st)], E.TEN_GODS[E.tenGod(ds, 본)]];
+    const 짝별 = 성별 === 'F' ? ['정관', '편관'] : ['정재', '편재'], 짝온 = 온.filter(x => 짝별.indexOf(x) >= 0);
+    if (짝온.length) out.push(때 + '에 ' + (성별 === 'F' ? '남편별' : '아내별') + '(' + 짝온.filter((x, i, a) => a.indexOf(x) === i).join(' · ') + ')이 와요. 8장에서 본 인연의 글자예요.');
+    const YY = global.ChaeksaYeongyeok;
+    if (YY && 성별 === 'F' && 온.some(x => x === '정재' || x === '편재') && !YY.일곱(R).some(x => x.신 === '정재' || x.신 === '편재')) out.push(때 + '에 원국에 드러나지 않았던 재성이 와요.');
+    // 귀인 · 신살 글자가 오는 때, 십이운성
+    const SM = global.ChaeksaSamyeong;
+    if (SM && SM.운글자) { const 이름 = SM.운글자(R, br); if (이름.length) out.push('땅에 온 ' + 지한(br) + (받침(E.BRANCHES_KO[br]) ? '은' : '는') + ' 나에게 ' + 이름.join(' · ') + '의 글자예요. 뜻은 5장 · 6장에 적었어요.'); }
+    if (SM && SM.운성뜻 && 때 === '이 대운') { const u = SM.운성뜻(ds, br); out.push('이 글자 위에서 나는 ' + u.단계 + '(' + u.한자 + ')' + (받침(u.단계) ? '이에요. ' : '예요. ') + u.뜻 + (['쇠', '병', '사', '묘', '절'].indexOf(u.단계) >= 0 ? ' 삼명통회는 힘없는 단계를 보았다고 곧 나쁘다 하지 않는다고 했어요.' : '')); }
+    return out;
+  }
+
+  function 대운(R, 성별) {
     const P = global.ChaeksaPanjeong, list = (R.daeun && R.daeun.list) || [], ds = R.pillars.day.stem;
     if (!P || !list.length) return [];
     return list.map(d => {
@@ -197,12 +220,13 @@
         if (층.범주 === '구조 전환' && 층.격 && 층.격.지금격) 줄.push('이 열 해에는 격이 ' + 층.격.지금격 + '격으로 바뀌어요.');
         else if (범주말[층.범주]) 줄.push(범주말[층.범주]);
       }
+      운줄(R, d.stem, d.branch, 성별, '이 대운').forEach(t => 줄.push(t));
       return { 간지: E.STEMS_KO[d.stem] + E.BRANCHES_KO[d.branch] + '(' + E.STEMS[d.stem] + E.BRANCHES[d.branch] + ')', 시작나이: d.startAge, 끝나이: d.endAge, 시작해: d.startYear, 줄 };
     });
   }
 
   // 세운 — 그해의 대운 위에 그해 글자를 한 층 더 얹는다(원국 → 대운 → 세운). 말 짓는 법은 대운과 같다.
-  function 세운(R, 첫해, 몇해) {
+  function 세운(R, 첫해, 몇해, 성별) {
     const P = global.ChaeksaPanjeong, list = (R.daeun && R.daeun.list) || [], ds = R.pillars.day.stem, out = [];
     if (!P) return out;
     for (let y = 첫해; y < 첫해 + 몇해; y++) {
@@ -225,6 +249,8 @@
         if (층.범주 === '구조 전환' && 층.격 && 층.격.지금격) 줄.push('이 해에는 격이 ' + 층.격.지금격 + '격으로 바뀌어요.');
         else if (범주말[층.범주]) 줄.push(범주말[층.범주].replace('열 해', '한 해'));
       }
+      운줄(R, st, br, 성별, '이 해').forEach(t => 줄.push(t));
+      if (대 && 대.startYear === y) 줄.unshift('이 해에 대운이 ' + E.STEMS_KO[대.stem] + E.BRANCHES_KO[대.branch] + ' 대운으로 바뀌어요. 열 해의 바탕이 바뀌는 해예요.');
       out.push({ 해: y, 간지: E.STEMS_KO[st] + E.BRANCHES_KO[br] + '(' + E.STEMS[st] + E.BRANCHES[br] + ')', 대운: 대 ? E.STEMS_KO[대.stem] + E.BRANCHES_KO[대.branch] : '', 줄 });
     }
     return out;

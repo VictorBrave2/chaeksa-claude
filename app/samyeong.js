@@ -131,5 +131,16 @@
     return out;
   }
 
-  global.ChaeksaSamyeong = { 십이운성, 운성맺음, 신살, 귀인, 공망지, 납음 };
+  // 운으로 오는 지지가 나에게 무슨 이름인가 — 5 · 6장과 같은 표를 운의 글자에 한 번 더 대 본다(11 · 12장).
+  function 운글자(R, br) {
+    const P = R.pillars, ds = P.day.stem, 무리 = 삼합(P.year.branch), out = [];
+    if (천을표[E.STEMS[ds]].split('').map(B).indexOf(br) >= 0) out.push('천을귀인');
+    if (B(록표[ds]) === br) out.push('록');
+    ['역마', '함지', '화개'].forEach(n => { if (B(해기준[n][무리]) === br) out.push(n); });
+    const 인 = { 0: '卯', 2: '午', 4: '午', 6: '酉', 8: '子' }[ds]; if (인 && B(인) === br) out.push('양인');
+    return out;
+  }
+  const 운성뜻 = (st, br) => { const u = E.unseong(st, br), w = 운성[u]; return { 단계: u, 한자: w[0], 뜻: w[2] }; };
+
+  global.ChaeksaSamyeong = { 십이운성, 운성맺음, 신살, 귀인, 공망지, 납음, 운글자, 운성뜻 };
 })(window);
