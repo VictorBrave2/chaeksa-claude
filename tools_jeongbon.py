@@ -201,7 +201,7 @@ def build():
                 us = [strip(x).lstrip('▸ ').strip() for x in re.split(r'<br\s*/?>', mu.group(1))]
                 us = [u for u in us if u]
                 낮먼저 = [u for u in us if '밤/새벽' not in u and '저녁' not in u] + [u for u in us if '저녁' in u] + [u for u in us if '밤/새벽' in u]
-                summ = [f'{y}년 {mo}월의 으뜸 자리는 {len(us)}곳입니다 — 궁통보감 · 자평진전에 걸리는 것이 없고, 궁통보감이 적어 둔 글자가 하늘에 다 뜬 시각(서울 시계 기준).'] + 낮먼저[:2]
+                summ = [f'{y}년 {mo}월의 으뜸 자리는 {len(us)}곳입니다 — 궁통보감 · 자평진전에 걸리는 것이 없고, 궁통보감이 적어 둔 글자가 천간에 다 뜬 시각(서울 시계 기준).'] + 낮먼저[:2]
             desc = f'{y}년 {mo}월 출산택일 — 모든 날 모든 시각을 시진 단위로 계산해 궁통보감 · 자평진전 · 적천수가 각자 본 것을 적었습니다. 점수 · 순위 없이, 두 고전에 걸리지 않는 자리와 병원에 말할 시계 시각까지.'
             faq = [(f'{y}년 {mo}월 출산택일, 어느 자리가 걸리는 것이 없나요?', ' '.join(summ) + ' 자리 목록은 본문에 날짜순으로 있습니다(원국만 본 것이며, 시계 시각은 서울 기준 보정값입니다).')] + GEN_FAQ
         prev = (f'taekil-{items[i-1][0]}-{items[i-1][1]:02d}', f'{items[i-1][0]}년 {items[i-1][1]}월') if i > 0 else None
