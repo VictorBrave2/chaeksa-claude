@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>정통사주 — 세 고전으로 읽는 나의 여덟 글자 · 책사</title>
+<meta name="description" content="생년월일시를 넣으면 궁통보감 · 자평진전 · 적천수가 각자 본 것과 열 해씩 오는 대운을 장마다 풀어 드립니다. 점수로 합치지 않습니다.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=944">
+<style>
+  .doc{max-width:660px;margin:0 auto;padding:22px 16px 80px}
+  .back{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--ink3);text-decoration:none}
+  .doc h1{font-family:var(--serif);font-size:24px;line-height:1.45;margin:0 0 8px}
+  .doc .lead{font-size:14.5px;line-height:1.85;color:var(--ink2);margin:0 0 18px}
+  .jt-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+  .jt-form label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink3)}
+  .jt-form input,.jt-form select{font:inherit;font-size:15px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+  .jt-ch{margin-top:16px}
+  .jt-no{font-size:11.5px;letter-spacing:.18em;color:var(--ink3)}
+  .jt-ch h2{font-family:var(--serif);font-size:20px;margin:6px 0 4px}
+  .jt-sub{font-size:13px;color:var(--ink3);margin:0 0 14px}
+  .jt-ch p{font-size:15px;line-height:1.9;margin:0 0 10px;color:var(--ink)}
+  .jt-table{width:100%;border-collapse:separate;border-spacing:6px 0;table-layout:fixed;text-align:center;margin:4px 0 16px}
+  .jt-table th{font-size:12px;font-weight:500;color:var(--ink3);padding-bottom:6px}
+  .jt-god{font-size:12.5px;color:var(--ink2);padding:5px 0}
+  .jt-gan,.jt-ji{font-family:var(--serif);font-size:36px;font-weight:700;line-height:1;padding:12px 0 10px;background:var(--card2,#fff);border:1px solid var(--line)}
+  .jt-gan{border-radius:10px 10px 0 0;border-bottom:0}.jt-ji{border-radius:0 0 10px 10px}
+  .jt-gan small,.jt-ji small{display:block;font-family:var(--sans,inherit);font-size:11.5px;font-weight:500;margin-top:6px}
+  .jt-table .e0{color:#2f6b4f}.jt-table .e1{color:#b23a2b}.jt-table .e2{color:#8a6a2a}.jt-table .e3{color:#6b6f78}.jt-table .e4{color:#274b7a}
+  :root[data-theme="night"] .jt-table .e0{color:#7fc7a2}:root[data-theme="night"] .jt-table .e1{color:#f08a7c}:root[data-theme="night"] .jt-table .e2{color:#d9b56a}:root[data-theme="night"] .jt-table .e3{color:#b9bfca}:root[data-theme="night"] .jt-table .e4{color:#8fb4ee}
+  .jt-table .jt-me{outline:2px solid var(--seal-bg,#8c2f23);outline-offset:-2px}
+  .jt-q{margin:4px 0 14px;padding:12px 14px;border-left:3px solid var(--line);background:var(--bg2)}
+  .jt-q p{font-size:14px;margin:0 0 4px;color:var(--ink2)}
+  .jt-du{padding:13px 0;border-top:1px solid var(--line)}
+  .jt-du:first-of-type{border-top:0}
+  .jt-du-h{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .jt-du-h b{font-size:15.5px}.jt-du-h span{font-size:13px;color:var(--ink3)}
+  .jt-du-h i{font-style:normal;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--seal-bg);color:var(--seal-ink)}
+  .jt-du p{font-size:14.5px;margin:0 0 5px}
+  .jt-du.now{background:var(--bg2);margin:0 -12px;padding:13px 12px;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="doc">
+  <a class="back" href="./">← 책사 홈</a>
+  <h1>정통사주<br>세 고전으로 읽는 나의 여덟 글자</h1>
+  <p class="lead">궁통보감은 계절을, 자평진전은 짜임을, 적천수는 흐름을 봅니다. 셋이 각자 본 것을 장마다 따로 적어 드려요. 점수로 합치지 않습니다. 회원가입 없이 무료예요.</p>
+  <form id="jtForm" class="card">
+    <div class="jt-form">
+      <label>생년월일<input type="date" id="jtDate" required></label>
+      <label>태어난 시각<input type="time" id="jtTime" value="12:00"></label>
+      <label>성별<select id="jtG"><option value="F">여</option><option value="M">남</option></select></label>
+      <label>태어난 곳<select id="jtPlace"><option value="KR:서울">서울</option></select></label>
+    </div>
+    <button type="submit" class="btn" style="width:100%">풀어 보기</button>
+  </form>
+  <div id="jtOut"></div>
+</div>
+<script>
+(function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})()
+</script>
+<script src="config.js?v=944"></script>
+<script src="places.js?v=944"></script>
+<script src="astro.js?v=944"></script>
+<script src="lunar.js?v=944"></script>
+<script src="engine.js?v=944"></script>
+<script src="saenggeuk.js?v=944"></script><script src="gise.js?v=944"></script>
+<script src="panjeong.js?v=944"></script>
+<script src="typecard.js?v=944"></script>
+<script src="gyeokguk.js?v=944"></script>
+<script src="classic.js?v=944"></script>
+<script src="questions.js?v=944"></script>
+<script src="seolmyeongseo.js?v=944"></script>
+<script src="gungtong-wonmun.js?v=944"></script>
+<script src="gwanjeom.js?v=944"></script>
+<script src="jeongtong.js?v=944"></script>
+</body>
+</html>
