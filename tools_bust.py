@@ -11,7 +11,7 @@ except Exception: pass
 # (2026-09-20 사장님 「법전, 메모리 피드백 항목 제외하고 다 삭제해」 — 배포를 막던 검사 문을 뗐다. 검사는 python tools_check.py 로 따로 돌릴 수 있다.)
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
-FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'gungtong-wonmun.js', 'samyeong.js', 'jeongtong.js', 'stories.js', 'landing.js',
+FILES = ['style.css', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'gungtong-wonmun.js', 'samyeong.js', 'ilju.js', 'jeongtong.js', 'stories.js', 'landing.js',
          'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js',
          'gyeokguk.js', 'chaeksadan.js', 'geunamja.js', 'maeum.js', 'gunghap.js', 'sheets.js', 'hwakin.js', 'mun.js', 'mun/all.js', 'pay.js', 'app.js']
 
