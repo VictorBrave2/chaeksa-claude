@@ -178,14 +178,24 @@
   };
   // 운의 글자가 내 여덟 글자의 누구와 만나나 — 어느 궁이 움직이나를 말한다(삼명통회 卷七 「以年為祖業月為父母兄弟門户日為妻妾已身時為子息」).
   // 새 판정이 아니다. 합 · 충을 눈에 보이는 대로 읽고, 앞 장(5 · 6 · 7 · 8장)에서 센 것을 운의 글자에 한 번 더 댄다. 길흉을 매기지 않는다.
-  const 궁말 = { year: '조상 · 집안 자리(연)', month: '부모 · 형제 · 일터 자리(월)', day: '나와 배우자 자리(일)', hour: '자식 · 앞날 자리(시)' };
+  const 궁말 = { year: '연지는 조상 자리', month: '월지는 부모 · 형제 자리', day: '일지는 나와 배우자 자리', hour: '시지는 자식 자리' };
   const 육합짝 = [1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
   function 운줄(R, st, br, 성별, 때) {
     const P = R.pillars, ds = P.day.stem, out = [], 자리들 = ['year', 'month', 'day', 'hour'];
     const 지한 = (b) => E.BRANCHES_KO[b] + '(' + E.BRANCHES[b] + ')', 간한 = (x) => E.STEMS_KO[x] + '(' + E.STEMS[x] + ')';
-    자리들.forEach(k => { if ((P[k].branch - br + 12) % 12 === 6) out.push(때 + '의 ' + 지한(br) + (받침(E.BRANCHES_KO[br]) ? '이' : '가') + ' 내 ' + 지한(P[k].branch) + (받침(E.BRANCHES_KO[P[k].branch]) ? '과' : '와') + ' 마주 부딪혀요(충). ' + 궁말[k] + '가 흔들리고 움직이는 때예요.'); });
-    자리들.forEach(k => { if (육합짝[br] === P[k].branch) out.push(때 + '의 ' + 지한(br) + (받침(E.BRANCHES_KO[br]) ? '이' : '가') + ' 내 ' + 지한(P[k].branch) + (받침(E.BRANCHES_KO[P[k].branch]) ? '과' : '와') + ' 짝을 지어요(합). ' + 궁말[k] + '에 묶이는 일이 생기는 때예요.'); });
-    자리들.forEach(k => { if (Math.abs(P[k].stem - st) === 5) out.push(때 + '의 ' + 간한(st) + (받침(E.STEMS_KO[st]) ? '이' : '가') + (k === 'day' ? ' 나 ' : ' 내 ' + { year: '연간 ', month: '월간 ', hour: '시간 ' }[k]) + 간한(P[k].stem) + (받침(E.STEMS_KO[P[k].stem]) ? '과' : '와') + ' 짝을 지어요(합).'); });
+    // 충 · 합의 말은 사장님 09-21 그대로다. 지지는 충 · 육합 · 삼합까지만 본다(형 · 파 · 해는 말하지 않는다).
+    const 충말 = '충은 글자의 십성이 발현되거나 있던 것이 깨질 수 있어요.', 합말 = '합은 글자의 십성이 묶여서 기능을 잃거나 합생할 수 있어요.';
+    const 땅신 = (b2) => { const h = (E.HIDDEN[b2] || [])[0]; return E.TEN_GODS[E.tenGod(ds, typeof h === 'number' ? h : h[0])]; };
+    const 내지 = (k) => '내 ' + { year: '연지 ', month: '월지 ', day: '일지 ', hour: '시지 ' }[k] + 지한(P[k].branch) + ' ' + 땅신(P[k].branch);
+    const 내간 = (k) => k === 'day' ? '나 ' + 간한(P[k].stem) : '내 ' + { year: '연간 ', month: '월간 ', hour: '시간 ' }[k] + 간한(P[k].stem) + ' ' + E.TEN_GODS[E.tenGod(ds, P[k].stem)];
+    const 이 = (ko) => 받침(ko) ? '이' : '가', 과 = (w) => 받침(w) ? '과' : '와';
+    // 같은 글자가 여러 자리에 있으면 한 줄로 모은다.
+    const 모아 = (ks, 동사, 말) => { if (!ks.length) return; const 끝 = 땅신(P[ks[ks.length - 1]].branch); out.push(때 + '의 ' + 지한(br) + 이(E.BRANCHES_KO[br]) + ' ' + ks.map(내지).join(' · ') + 과(끝) + ' ' + 동사 + ' ' + ks.map(k => 궁말[k]).join(', ') + '예요. ' + 말); };
+    모아(자리들.filter(k => (P[k].branch - br + 12) % 12 === 6), '부딪혀요(충).', 충말);
+    모아(자리들.filter(k => 육합짝[br] === P[k].branch), '짝을 지어요(합).', 합말);
+    const 국들 = [[8, 0, 4, '물(수)'], [2, 6, 10, '불(화)'], [5, 9, 1, '쇠(금)'], [11, 3, 7, '나무(목)']], 국 = 국들.find(g => g.indexOf(br) >= 0 && g.indexOf(br) < 3);
+    if (국) { const 남 = 국.slice(0, 3).filter(x => x !== br), 있 = 남.map(x => 자리들.find(k => P[k].branch === x)); if (있[0] && 있[1]) out.push(때 + '의 ' + 지한(br) + 이(E.BRANCHES_KO[br]) + ' ' + 내지(있[0]) + ' · ' + 내지(있[1]) + 과(땅신(P[있[1]].branch)) + ' 셋이 모여 삼합을 이뤄요. ' + 국[3] + ' 기운으로 모여요. ' + 합말); }
+    자리들.forEach(k => { if (Math.abs(P[k].stem - st) === 5) out.push(때 + '의 ' + 간한(st) + 이(E.STEMS_KO[st]) + ' ' + 내간(k) + 과(k === 'day' ? E.STEMS_KO[P[k].stem] : E.TEN_GODS[E.tenGod(ds, P[k].stem)]) + ' 짝을 지어요(합). ' + 합말); });
     // 배우자별 · 없던 재성이 오는 때
     const 본기 = (E.HIDDEN[br] || [])[0], 본 = typeof 본기 === 'number' ? 본기 : 본기[0], 온 = [E.TEN_GODS[E.tenGod(ds, st)], E.TEN_GODS[E.tenGod(ds, 본)]];
     const 짝별 = 성별 === 'F' ? ['정관', '편관'] : ['정재', '편재'], 짝온 = 온.filter(x => 짝별.indexOf(x) >= 0);

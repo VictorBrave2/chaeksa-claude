@@ -113,10 +113,12 @@
       out.push(장(10, '건강운', '옛 책이 글자와 몸을 짝지은 법', YY.건강(R).map(영칸).join('')));
     }
 
+    // 대운 한 칸이 길다 — 앞 세 줄만 보이고 나머지는 접는다. 지금 대운은 펴 둔다.
+    const 접어 = (줄, 편) => 줄.length <= 3 || 편 ? 문단(줄) : 문단(줄.slice(0, 3)) + '<details class="jt-more"><summary>이 열 해에 만나는 글자 ' + (줄.length - 3) + '줄 더 보기</summary>' + 문단(줄.slice(3)) + '</details>';
     // 11장 — 대운
     const 올해 = today.getFullYear(), 대 = W.대운(R, input.gender === 'F' ? 'F' : 'M'); 대.forEach((d, i) => { d.지금 = 올해 >= d.시작해 && (!대[i + 1] || 올해 < 대[i + 1].시작해); });
     out.push(장(11, '열 해씩 오는 운 — 대운', '열 해마다 하늘과 땅에 글자가 하나씩 와요. 하늘로 오면 생각이, 땅으로 오면 몸이 움직여요.',
-      대.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + d.시작나이 + ' ~ ' + d.끝나이 + '세</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 문단(d.줄) + '</div>').join('')));
+      대.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + d.시작나이 + ' ~ ' + d.끝나이 + '세</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 접어(d.줄, d.지금) + '</div>').join('')));
 
     const 세 = W.세운 ? W.세운(R, 올해, 5, input.gender === 'F' ? 'F' : 'M') : [];
     out.push(장(12, '앞으로 다섯 해', '해마다 하늘과 땅에 글자가 하나씩 와요. 그해의 대운 위에 얹어서 읽었어요.',
