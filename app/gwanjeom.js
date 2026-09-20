@@ -201,5 +201,34 @@
     });
   }
 
-  global.ChaeksaGwanjeom = { 출산택일, 평생, 읽기: 읽기나, 대운, 십신뜻 };
+  // 세운 — 그해의 대운 위에 그해 글자를 한 층 더 얹는다(원국 → 대운 → 세운). 말 짓는 법은 대운과 같다.
+  function 세운(R, 첫해, 몇해) {
+    const P = global.ChaeksaPanjeong, list = (R.daeun && R.daeun.list) || [], ds = R.pillars.day.stem, out = [];
+    if (!P) return out;
+    for (let y = 첫해; y < 첫해 + 몇해; y++) {
+      const st = ((y - 4) % 10 + 10) % 10, br = ((y - 4) % 12 + 12) % 12;
+      const 대 = list.filter(d => d.startYear <= y).pop(), 운들 = (대 ? [{ name: '대운', stem: 대.stem, branch: 대.branch }] : []).concat([{ name: '세운', stem: st, branch: br }]);
+      let 층 = null, 조후 = null;
+      try { const 판 = P.판정(R, new Date(y, 6, 1), { 운들 }); 층 = 판.층들[판.층들.length - 1]; 조후 = 판.층들[0].조후; } catch (e) {}
+      const 본기 = (E.HIDDEN[br] || [])[0], 본 = typeof 본기 === 'number' ? 본기 : 본기[0];
+      const 하늘신 = E.TEN_GODS[E.tenGod(ds, st)], 땅신 = E.TEN_GODS[E.tenGod(ds, 본)];
+      const 줄 = [
+        '하늘에 ' + G.이름(st) + ' ' + 하늘신 + '(' + 십신뜻[하늘신] + ')' + (받침(하늘신) ? '이' : '가') + ' 와요.',
+        '땅에 ' + G.지이름(br) + ' ' + 땅신 + '(' + 십신뜻[땅신] + ')' + (받침(땅신) ? '이' : '가') + ' 와요.',
+      ];
+      if (조후) {
+        const c = E.STEMS[st];
+        if (c === 조후.need) 줄.push('계절이 나에게 먼저 찾던 ' + 이가(한자간(c)) + ' 이 해에 하늘로 와요.');
+        else if ((조후.aux || '').indexOf(c) >= 0) 줄.push('계절이 나에게 찾던 돕는 글자 ' + 이가(한자간(c)) + ' 이 해에 하늘로 와요.');
+      }
+      if (층) {
+        if (층.범주 === '구조 전환' && 층.격 && 층.격.지금격) 줄.push('이 해에는 격이 ' + 층.격.지금격 + '격으로 바뀌어요.');
+        else if (범주말[층.범주]) 줄.push(범주말[층.범주].replace('열 해', '한 해'));
+      }
+      out.push({ 해: y, 간지: E.STEMS_KO[st] + E.BRANCHES_KO[br] + '(' + E.STEMS[st] + E.BRANCHES[br] + ')', 대운: 대 ? E.STEMS_KO[대.stem] + E.BRANCHES_KO[대.branch] : '', 줄 });
+    }
+    return out;
+  }
+
+  global.ChaeksaGwanjeom = { 출산택일, 평생, 읽기: 읽기나, 대운, 세운, 십신뜻 };
 })(window);
