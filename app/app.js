@@ -423,6 +423,7 @@
     // 달력 탭은 2026-09-17 에 걷었다(사장님 「달력 삭제 — 설득력없음」). 날 점수(calendar.js)도 같이 나갔다.
     if (tab === 'geunamja') renderGeunamja();
     if (tab === 'maeum') renderMaeum();
+    if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
     if (tab === 'story') renderStory();
