@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.path.join(ROOT, 'app', 'myeongsik.html')
 BROWSERS = [r"C:\Program Files\Google\Chrome\Application\chrome.exe", r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"]
 
-def 찍기(out_dir, place, slots, labels, g=None):
+def 찍기(out_dir, place, slots, labels, g=None, 이름들=None):
     os.makedirs(out_dir, exist_ok=True)
     exe = next(b for b in BROWSERS if os.path.exists(b))
     made = []
@@ -22,7 +22,7 @@ def 찍기(out_dir, place, slots, labels, g=None):
         q = {'place': place, 'slots': ','.join(slots), 'labels': ','.join(labels), 'only': str(i), 'shot': '1'}
         if g: q['g'] = g
         url = 'file:///' + PAGE.replace(os.sep, '/').replace(' ', '%20') + '?' + urllib.parse.urlencode(q, quote_via=urllib.parse.quote)
-        name = '%02d-%s.png' % (i + 1, re.sub(r'[^0-9A-Za-z가-힣]+', '_', (labels[i] if i < len(labels) else slot)).strip('_')[:40])
+        name = (이름들[i] + '.png') if 이름들 else ('%02d-%s.png' % (i + 1, re.sub(r'[^0-9A-Za-z가-힣]+', '_', (labels[i] if i < len(labels) else slot)).strip('_')[:40]))
         path = os.path.join(os.path.abspath(out_dir), name)
         # 크롬은 상대 경로 · 한글 경로에 그림을 못 쓸 때가 있다 — 임시 폴더의 영문 이름으로 찍고 옮긴다.
         import tempfile, shutil

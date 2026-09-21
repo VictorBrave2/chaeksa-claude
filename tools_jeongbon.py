@@ -54,7 +54,7 @@ def transform(body, slug):
     b = body
     h2 = re.search(r'<h2>(.*?)</h2>', b, re.S); title = strip(h2.group(1)) if h2 else slug
     b = re.sub(r'<h2>.*?</h2>', '', b, count=1, flags=re.S)
-    b = re.sub(r'<p class="alt">.*?</p>', '', b, count=1, flags=re.S)          # 제목 대안은 안 낸다
+    b = re.sub(r'<p class="alt">.*?</p>', '', b, flags=re.S)                   # 제목 대안 · 그림 안내(붙여넣는 사람에게 하는 말)는 안 낸다
     tags = re.findall(r'#([^\s#<]+)', ''.join(re.findall(r'<p class="tag">(.*?)</p>', b, re.S)))
     b = re.sub(r'<p class="tag">.*?</p>', '', b, flags=re.S)
     b = b.replace('<h3>', '<h2>').replace('</h3>', '</h2>')

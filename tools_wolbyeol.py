@@ -41,6 +41,22 @@ def 옛단락(옛, 제목):
     m = re.search(r'<h3>' + re.escape(제목) + r'</h3>(.*?)(?=<hr>|<h3>)', 옛, re.S)
     return m.group(1).strip() if m else ''
 
+def 카드넣기(P, y, mo, 자리들, 으뜸인가):
+    """답 세 줄의 자리를 명식 카드 PNG 로 뽑아 글에 끼운다(사장님 09-21 「처음부터 글+카드까지 생성하면 되는 일 아닌가」「으뜸 낮 세 자리가 적절하네」).
+       그림은 app/cards/YYYY-MM/ 에 둔다 — 정본(app/taekil-*.html)이 그대로 쓰고, 네이버에는 그 파일을 끌어다 놓는다. LLM 을 안 쓴다."""
+    if not 자리들 or '--no-cards' in sys.argv: return
+    import tools_card
+    폴더 = os.path.join(ROOT, 'app', 'cards', f'{y}-{mo:02d}')
+    slots, labels = [], []
+    for d, r in 자리들:
+        h, m = map(int, r['창'].split('~')[0].split(':')); t = h * 60 + m + 30      # 그 시진 안의 아무 분
+        slots.append(f'{y}-{mo:02d}-{d["d"]:02d}T{t // 60:02d}:{t % 60:02d}')
+        labels.append(('이달의 으뜸 자리' if 으뜸인가 else '두 고전에 걸리지 않는 자리'))
+    made = tools_card.찍기(폴더, 'KR:서울', slots, labels, None, 이름들=[f'{i + 1:02d}' for i in range(len(slots))])
+    for i, ((d, r), path) in enumerate(zip(자리들, made)):
+        P.append(f'<p class="card-img"><img src="https://chaeksa.kr/cards/{y}-{mo:02d}/{os.path.basename(path)}" alt="{y}년 {mo}월 {d["d"]}일 {r["창"]} 명식 — {r["일주"]}일 {r["시주"]}시" style="max-width:100%;height:auto"></p>')
+    P.append(f'<p class="alt">그림 {len(made)}장 — 네이버에 그림이 안 따라오면 app/cards/{y}-{mo:02d}/ 폴더의 파일을 이 자리에 순서대로 끌어다 놓으세요.</p>')
+
 def main(path, y, mo):
     D = json.load(io.open(path, encoding='utf-8'))
     src = os.path.join(ROOT, 'marketing', f'붙여넣기-{mo}월출산택일.html')
@@ -79,6 +95,7 @@ def main(path, y, mo):
     else:
         p('<p><b>답부터 드리면, 이달에는 궁통보감이 찾는 글자가 다 뜨는 시각이 없습니다.</b></p>')
         p(f'<p>대신 궁통보감 · 자평진전 두 고전에 걸리지 않는 낮 시각이 <b>{len(낮통과)}곳</b> 있습니다. 왜 그곳들인지 아래에 적었습니다.</p>')
+    카드넣기(P, y, mo, (으뜸낮 or 으뜸0 or 낮통과)[:3], bool(으뜸0))
     p('<hr>')
     p(f'<p>이달 <b>{전체}개 시간대를 전부</b> 계산했습니다.</p>')
     p('<p>점수와 순위는 매기지 않았습니다.</p>')
