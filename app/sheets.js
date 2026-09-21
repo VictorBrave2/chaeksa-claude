@@ -447,7 +447,10 @@
     const 자리이름 = { year: '연지', month: '월지', day: '일지', hour: '시지' };
     // 뜨거움 ①② 도화(咸池 — 연지·일지 삼합국의 목욕지) · 홍염
     const 도화지 = [DOHWA[p.year.branch], DOHWA[db]];
-    const 도화 = 자리들.filter(k => 도화지.includes(p[k].branch)).map(k => ({ k, b: p[k].branch, 운성: e.unseong(ds, p[k].branch) }));
+    // 09-21 삼명통회 주대로 좁힘(docs/23:37) — 지지만 맞아선 안 되고 그 기둥 납음 오행이 기준 지지의 삼합 오행과 같아야 한다
+    const 납 = global.ChaeksaSamyeong && global.ChaeksaSamyeong.납음, 국오 = (b) => [4, 3, 1, 0][b % 4];
+    const 도화맞 = (k) => [p.year.branch, db].some(b0 => DOHWA[b0] === p[k].branch && (!납 || 납(p[k].stem, p[k].branch) === 국오(b0)));
+    const 도화 = 자리들.filter(도화맞).map(k => ({ k, b: p[k].branch, 운성: e.unseong(ds, p[k].branch) }));
     const 도화일시 = 도화.some(x => x.k === 'day' || x.k === 'hour');                       // 「咸池忌日時」
     const 도화생왕 = 도화.some(x => 켜짐운.includes(x.운성)), 도화사절 = 도화.length > 0 && 도화.every(x => 꺼짐운.includes(x.운성));
     const 홍염지 = (ds === 0 || ds === 1) ? [HONGYEOM[ds], 8] : [HONGYEOM[ds]];
