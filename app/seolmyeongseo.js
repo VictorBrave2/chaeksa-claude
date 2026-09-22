@@ -260,8 +260,8 @@
 
     // 보류 사유 — 격을 못 잡음 · 종격 의심 · 태어난 시 모름 (59조)
     let 보류 = null;
-    if (!R.pillars.hour) 보류 = '태어난 시를 몰라 넷째 글자가 없어요. 시에 기대는 설명은 뺐습니다.';
-    if (!원표.격 || !원표.격.이름) 보류 = '이 여덟 글자로는 짜임을 하나로 잡기 어려워요. 그럴 때는 장면을 붙이지 않습니다.';
+    if (!R.pillars.hour) 보류 = '태어난 시간을 몰라 시주 두 글자가 없어요. 시에 기대는 설명은 뺐습니다.';
+    if (!원표.격 || !원표.격.이름) 보류 = '이 ' + (R.pillars.hour ? '여덟' : '여섯') + ' 글자로는 짜임을 하나로 잡기 어려워요. 그럴 때는 장면을 붙이지 않습니다.';
     try {
       const 뿌리터 = ['year', 'month', 'day', 'hour'].filter(k => R.pillars[k]).map(k => [R.pillars[k].branch, E.NATAL_WEIGHT[k + 'Branch']]);
       if (E.stemPower(R.pillars.day.stem, 뿌리터) < 0.5 && (E.samhapOf(뿌리터) || []).length) 보류 = '이 사주는 판이 통째로 다르게 설 수 있어요. 기계로 장면을 고르지 않고 사람이 봅니다.';

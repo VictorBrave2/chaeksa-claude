@@ -62,6 +62,11 @@
       });
       if (!res.ok) { clearSession(); return null; }
       const j = await res.json();
+      // 새 토큰에도 「이 기기 것은 올리지 않음」 표시를 옮겨 적는다 — 로그아웃 때까지 가야 한다(아래 hold).
+      const cur = session();
+      // 갱신을 기다리는 사이 로그아웃했거나 다른 로그인으로 바뀌었으면 옛 세션을 되살리지 않는다 — 되살리면 hold 없이 살아나 이 기기 것이 올라간다.
+      if (!cur || cur.refresh_token !== s.refresh_token) return cur;
+      if (cur.hold && j && j.access_token) j.hold = cur.hold;
       saveSession(j);
       return j;
     } catch (e) { return s; }
@@ -73,6 +78,13 @@
   // 받는 순간 이 기기의 사주와 사람 목록이 그 사람 계정으로 올라간다. 그래서 로그인하러 떠날 때 무작위 값과 시각을
   // 적어 두고, 돌아온 토큰은 그 표시가 있을 때만 받는다. Supabase 의 옛 방식(implicit)은 우리 값을 되돌려 주지 않아서
   // 값끼리 맞춰 보지는 못한다 — 표시가 있는가 + 시간 안인가로 본다. 카카오는 10분, 메일 링크는 링크 수명(1시간)까지.
+  //
+  // 고침(2026-09-22 둘째 묶음): 표시가 없다고 버리면 메일 링크를 메일 앱 안 브라우저에서 연 사람은 늘 로그인이 안 됐다.
+  // 이제 토큰은 받되, 세션에 hold 를 적는다:
+  //   hold 'ask' — 처음 동기화 전에 앱이 「이 기기에 있는 사주를 이 계정에 올릴까요?」를 묻는다. 그동안 pull·push 둘 다 안 한다.
+  //   hold 'no'  — 「아니요」를 눌렀다. 서버 것은 받아(pull) 보여 주되, 이 기기 것은 올리지 않는다(push·지운 사람 반영 모두).
+  //   hold 없음  — 이 기기에서 시작한 로그인이거나 「올리기」를 눌렀다. 예전처럼 바로 동기화.
+  // hold 는 세션(chaeksa.auth) 안에 있어서 로그아웃하면 같이 사라진다. 이 기기에 올릴 것이 없으면 묻지 않고 푼다(mustAskUpload).
   const LOGIN = 'chaeksa.login';
   const 로그인한도 = { oauth: 10 * 60 * 1000, email: 60 * 60 * 1000 };
   function 로그인표시(kind) {
@@ -82,7 +94,7 @@
       jset(LOGIN, { n, at: Date.now(), kind });
     } catch (e) {}
   }
-  let 로그인거절 = false;   // 표시 없이 온 토큰을 버렸다 — 앱이 「다시 로그인해 주세요」를 띄운다
+  let 로그인거절 = false;   // 주소에 토큰 자리는 있는데 값이 비어 버렸다 — 앱이 「다시 로그인해 주세요」를 띄운다
   async function sendMagicLink(addr) {
     if (!enabled()) throw new Error('서버 동기화가 아직 설정되지 않았습니다.');
     로그인표시('email');
@@ -134,7 +146,8 @@
   }
 
   /** 로그인(카카오·매직링크)에서 돌아왔을 때 주소에 붙은 토큰을 받아 저장.
-   *  이 기기에서 시작한 로그인일 때만 받는다(위 로그인표시). 아니면 토큰을 버리고 주소만 치운다. */
+   *  이 기기에서 시작한 로그인(위 로그인표시, 시간 안)이면 바로 쓴다. 아니면 받되 hold 'ask' 를 달아
+   *  이 기기의 사주를 묻기 전에는 올리지 않는다(위 설명). */
   function captureRedirect() {
     if (!location.hash || location.hash.indexOf('access_token=') < 0) return false;
     const p = new URLSearchParams(location.hash.slice(1));
@@ -142,20 +155,55 @@
     try { localStorage.removeItem(LOGIN); } catch (_) {}
     // 받든 버리든 토큰은 주소에 남기지 않는다(뒤로 가기·공유·방문 기록에 실려 나간다).
     history.replaceState(null, '', location.pathname + location.search);
+    const at = p.get('access_token');
+    if (!at) { 로그인거절 = true; return false; }
     const 한도 = 로그인한도[(표시 && 표시.kind) || 'oauth'] || 로그인한도.oauth;
     const 지남 = 표시 && typeof 표시.at === 'number' ? Date.now() - 표시.at : NaN;
-    if (!(지남 > -60 * 1000 && 지남 < 한도)) { 로그인거절 = true; return false; }
+    const 내로그인 = 지남 > -60 * 1000 && 지남 < 한도;
     const s = {
-      access_token: p.get('access_token'),
+      access_token: at,
       refresh_token: p.get('refresh_token'),
       expires_in: parseInt(p.get('expires_in') || '3600', 10),
       token_type: p.get('token_type'),
     };
+    if (!내로그인) s.hold = 'ask';
     saveSession(s);
     return true;
   }
-  /** 방금 captureRedirect 가 표시 없는 토큰을 버렸는가 */
+  /** 방금 captureRedirect 가 토큰을 받지 못했는가(토큰 값이 비어 있었다) */
   const refusedLogin = () => 로그인거절;
+
+  // ───────── 이 기기 것을 올려도 되나(hold) ─────────
+  /** 'ask' | 'no' | null — 로그인해 있을 때만 뜻이 있다 */
+  function uploadHold() {
+    const s = session();
+    return s && s.access_token && (s.hold === 'ask' || s.hold === 'no') ? s.hold : null;
+  }
+  function 보류적기(v) {
+    const s = session(); if (!s || !s.access_token) return;
+    if (v) s.hold = v; else delete s.hold;
+    jset(AKEY, s);
+  }
+  /** 이 기기에 올릴 것 — 원국 있음 · 등록한 사람 수 · 이름들(묻는 창에 보여 준다) */
+  function localStuff() {
+    let 원국 = false, 원국이름 = '', 사람 = 0, 이름 = [];
+    try { const b = jget(PKEY, null); 원국 = !!(b && typeof b === 'object' && b.year); 원국이름 = (원국 && b.name) || ''; } catch (e) {}
+    try {
+      const ps = jget(PEOPLE, []);
+      if (Array.isArray(ps)) { 사람 = ps.length; 이름 = ps.map((x) => (x && x.name) || '').filter(Boolean); }
+    } catch (e) {}
+    return { 원국, 원국이름, 사람, 이름 };
+  }
+  /** 처음 동기화 전에 물어야 하나. hold 'ask' 인데 이 기기에 올릴 것이 없으면 묻지 않고 푼다. */
+  function mustAskUpload() {
+    if (uploadHold() !== 'ask') return false;
+    const l = localStuff();
+    if (l.원국 || l.사람) return true;
+    보류적기(null);
+    return false;
+  }
+  /** 물음의 답. true = 올리기(hold 풂) · false = 아니요(로그아웃 때까지 이 기기 것은 안 올림) */
+  function answerUpload(yes) { if (signedIn()) 보류적기(yes ? null : 'no'); }
 
   async function me() {
     const j = await api('/auth/v1/user');
@@ -167,6 +215,7 @@
   /** 서버 → 로컬. 서버가 더 최신이면 로컬을 덮어쓴다. */
   async function pull() {
     if (!enabled() || !signedIn()) return { changed: false };
+    if (uploadHold() === 'ask') return { changed: false, ask: true };   // 묻기 전에는 받지도 않는다
     let changed = false;
 
     const rows = await api('/rest/v1/profiles?select=*');
@@ -226,6 +275,7 @@
   /** 로컬 → 서버 */
   async function push() {
     if (!enabled() || !signedIn()) return false;
+    if (uploadHold()) return false;   // 묻는 중이거나 「아니요」— 이 기기 것은 올리지 않는다
     const s = await freshSession();
     const uid = s && s.user && s.user.id ? s.user.id : (await me()).id;
 
@@ -281,6 +331,8 @@
   // 이 기기에 id 를 적어 두고(GONE) 다음 동기화 때 다시 지운다. 그 사이 pull 은 그 사람을 되살리지 않는다.
   async function flushGone() {
     if (!enabled() || !signedIn()) return false;
+    // hold 중에는 이 기기의 지운 목록을 이 계정에 반영하지 않는다 — 목록은 남겨 두고, pull 은 그 사람을 되살리지 않는다.
+    if (uploadHold()) return false;
     const gone = jget(GONE, []);
     if (!Array.isArray(gone) || !gone.length) return true;
     const left = [];
@@ -319,7 +371,7 @@
 
   let timer = null;
   function pushSoon() {                       // 저장이 잦으므로 묶어서 보낸다
-    if (!signedIn()) return;
+    if (!signedIn() || uploadHold()) return;
     clearTimeout(timer);
     timer = setTimeout(() => push().catch(() => {}), 1500);
   }
@@ -333,5 +385,6 @@
   global.ChaeksaCloud = {
     enabled, signedIn, email, sendMagicLink, signInWithPassword, signInWith, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
     pull, push, pushSoon, removePerson, session, token,
+    uploadHold, localStuff, mustAskUpload, answerUpload,
   };
 })(window);

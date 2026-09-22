@@ -835,7 +835,10 @@
     $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
     const plName = profile.placeName || '서울';
     const bornNote = $('bornNote');
-    if (bornNote) bornNote.innerHTML = `${plName}에서 태어난 걸로 봐요. 진태양시 보정은 ${profile.solarCorrection === false ? '안 넣었어요' : '넣었어요'}. 실제 태양시로는 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>이에요.`;
+    // 시간 모름이면 엔진이 낮 12시로 셈해 날짜만 쓴다 — 그 12시를 「실제 태양시」로 내보내면 없는 시각을 지어낸 셈이다(2026-09-22 점검).
+    if (bornNote) bornNote.innerHTML = !R.pillars.hour
+      ? '태어난 시간을 몰라 시주는 비워 뒀어요. 나머지 여섯 글자로 봐요.'
+      : `${plName}에서 태어난 걸로 봐요. 진태양시 보정은 ${profile.solarCorrection === false ? '안 넣었어요' : '넣었어요'}. 실제 태양시로는 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>이에요.`;
     renderSolarCompare(profile);
     $('daeunHint').textContent = `${R.daeun.startAge}살부터 10년마다 바뀌어요.` + (du ? ` 지금은 ${f.pillarKo(du)}(${f.pillar(du)}) 대운이에요. 이 대운이 내 글자를 어떻게 건드리는지는 위 「지금 오는 글자」에 있어요.` : '');
     // 「올해와 내년」「앞으로 12개월」은 걷었다(2026-09-14) — 옛 십신 흐름말(GOD_FLOW)이었다. 올해·이달은 wongook 의 「지금 오는 글자」가 표로 읽는다.
@@ -2856,17 +2859,65 @@
       } catch (e) {}
       $('cloudWho').textContent = (C.email() || '로그인됨') + grade;
       const at = localStorage.getItem('chaeksa.sync');
-      $('cloudWhen').textContent = at ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '';
+      const 안올림 = C.uploadHold && C.uploadHold() === 'no';
+      $('cloudWhen').textContent = (at ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '')
+        + (안올림 ? ' · 이 기기 사주는 이 계정에 올리지 않아요(로그아웃하면 풀려요)' : '');
     }
+  }
+  // ── 이 기기 사주를 이 계정에 올릴까 (2026-09-22 둘째 묶음) ──
+  // 이 기기에서 시작하지 않은 로그인(메일 링크를 메일 앱 안 브라우저에서 연 경우 등)은 cloud.js 가 토큰은 받되 hold 'ask' 를 단다.
+  // 처음 동기화 전에 여기서 묻는다. 올리기 → 예전처럼 동기화. 아니요 → 서버 것만 받아 보여 주고 이 기기 것은 로그아웃 때까지 안 올린다.
+  // 이 기기에 올릴 것이 없으면 cloud.js(mustAskUpload)가 묻지 않고 푼다.
+  function 올릴지묻기(showMsg) {
+    const C = Cloud(); if (!C) return;
+    let m = $('uploadAsk');
+    if (!m) {
+      m = document.createElement('div');
+      m.className = 'modal'; m.id = 'uploadAsk';
+      m.style.zIndex = '12';
+      m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'uaTitle');
+      m.innerHTML = `<div class="sheet">
+        <h3 id="uaTitle">이 기기에 있는 사주를 이 계정에 올릴까요?</h3>
+        <p class="hint" style="margin:0 0 8px" id="uaWhat"></p>
+        <p class="hint" style="margin:0 0 8px">로그인한 계정 — <b id="uaWho">확인하는 중…</b></p>
+        <p class="hint" style="margin:0 0 14px">다른 곳에서 연 로그인 링크라서 한 번 물어봐요. 내 계정이 맞으면 올리세요. 다른 기기에서도 이어서 볼 수 있어요.
+          아니요를 누르면 이 계정에 있는 것만 받아 오고, 이 기기 것은 로그아웃할 때까지 올리지 않아요.</p>
+        <button class="btn" id="uaYes">올리기</button>
+        <button class="btn ghost" id="uaNo">아니요</button>
+      </div>`;
+      document.body.appendChild(m);
+    }
+    // 이 기기에 있는 사람 이름을 보여 준다 — 내 것인지 알아보게. 다섯까지만 적고 나머지는 「외 N명」.
+    const l = C.localStuff ? C.localStuff() : { 이름: [], 사람: 0 };
+    const 이름 = (l.이름 && l.이름.length) ? l.이름 : [l.원국이름 || (l.원국 ? '내 원국' : '')].filter(Boolean);
+    const 남은 = Math.max(0, Math.max(l.사람 || 0, 이름.length) - 5);
+    $('uaWhat').innerHTML = '이 기기에 있는 사주 — <b>' + esc(이름.slice(0, 5).join(' · ') || '사주') + '</b>' + (남은 ? ' 외 ' + 남은 + '명' : '');
+    const 누구 = () => { $('uaWho').textContent = C.email() || '이메일이 없는 계정(카카오 등)'; };
+    if (C.email()) 누구();
+    else C.me().then(누구).catch(() => { $('uaWho').textContent = '확인하지 못했어요'; });
+    const 답 = (yes) => {
+      C.answerUpload(yes);
+      m.classList.add('hide');
+      cloudSync(!!showMsg);   // 설정의 「지금 동기화」에서 왔으면 끝난 뒤 한 줄을 띄운다
+    };
+    $('uaYes').onclick = () => 답(true);
+    $('uaNo').onclick = () => 답(false);
+    m.classList.remove('hide');
   }
   async function cloudSync(showMsg) {
     const C = Cloud(); if (!C || !C.signedIn()) return;
+    // 묻기 전에는 받지도 올리지도 않는다. 답을 받으면 여기로 다시 온다(복귀대기는 그때 쓴다).
+    if (C.mustAskUpload && C.mustAskUpload()) {
+      if (showMsg) cloudMsg('');
+      올릴지묻기(showMsg);
+      return;
+    }
     try {
       if (showMsg) cloudMsg('동기화 중…');
       const r = await C.pull();   // 서버 것과 병합 (더 최신인 쪽이 남는다)
-      await C.push();             // 병합 결과를 다시 올린다
+      await C.push();             // 병합 결과를 다시 올린다 — 「아니요」를 누른 계정이면 cloud.js 가 안 올린다
       renderCloud();
-      if (showMsg) cloudMsg('동기화했습니다.', true);
+      if (showMsg) cloudMsg(C.uploadHold && C.uploadHold() === 'no' ? '이 계정의 사주를 받아 왔어요. 이 기기 것은 올리지 않았어요.' : '동기화했습니다.', true);
       if (r.changed) {
         const saved = localStorage.getItem(KEY);
         if (saved) { try { start(JSON.parse(saved)); } catch (e) {} }
@@ -2950,11 +3001,28 @@
     }
   }
   wireCloud();
-  // 이 기기에서 시작하지 않은 로그인 토큰을 버렸으면 조용히 두지 않는다 — 로그인 창을 열고 까닭을 적는다(2026-09-22 점검).
+  // 로그인이 안 됐으면 조용히 두지 않는다 — 로그인 창을 열고 까닭을 적는다(2026-09-22 점검).
+  //  · 토큰 값이 비어 받지 못했을 때(cloud.js refusedLogin). 이 기기에서 시작하지 않은 로그인은 이제 받는다 — 올릴지는 따로 묻는다(올릴지묻기).
+  //  · Supabase 가 #error=…&error_code=… 을 붙여 돌려보냈을 때 — 메일 링크가 만료됐거나 이미 쓴 링크, 카카오에서 취소 등.
   try {
-    if (window.ChaeksaCloud && ChaeksaCloud.refusedLogin && ChaeksaCloud.refusedLogin()) {
+    const 오류 = (function () {
+      const 있나 = (s) => /(^|&)error(_code)?=/.test(s);
+      const h = (location.hash || '').replace(/^#/, ''), s = (location.search || '').replace(/^\?/, '');
+      const 곳 = 있나(h) ? h : 있나(s) ? s : null;
+      if (곳 == null) return null;
+      const q = new URLSearchParams(곳);
+      return { code: q.get('error_code') || '', err: q.get('error') || '', 해시: 곳 === h };
+    })();
+    if (오류) {
+      // 오류 꼬리는 주소에서 치운다 — 해시면 아래 goHash 가 탭 이름으로 읽지 않게
+      history.replaceState(null, '', location.pathname + (오류.해시 ? location.search : location.hash));
       openSettings();
-      cloudMsg('로그인을 마치지 못했어요. 이 기기에서 시작한 로그인이 아니거나 시간이 너무 지났어요. 여기서 다시 로그인해 주세요.');
+      cloudMsg(오류.code === 'otp_expired'
+        ? '메일 로그인 링크가 만료됐거나 이미 쓴 링크예요. 여기서 링크를 다시 받아 주세요.'
+        : '로그인을 마치지 못했어요. 여기서 다시 로그인해 주세요.');
+    } else if (window.ChaeksaCloud && ChaeksaCloud.refusedLogin && ChaeksaCloud.refusedLogin()) {
+      openSettings();
+      cloudMsg('로그인을 마치지 못했어요. 여기서 다시 로그인해 주세요.');
     }
   } catch (e) {}
 

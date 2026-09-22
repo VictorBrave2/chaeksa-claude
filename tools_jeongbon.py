@@ -394,6 +394,18 @@ def _add(txt, head, line):
     if not m: return txt.replace('## 계산기', head + '\n\n' + line + '\n\n## 계산기', 1)
     return txt[:m.end()] + '\n' + line + txt[m.end():]
 
+def _llms_요약(summ):
+    """빠진 글에 붙일 한 줄 요약 — 답 상자 줄을 잇되 「▸」 목록을 문장처럼 이어 붙이지 않는다
+    (09-22: 「… 사흘 빠릅니다. 달력의 음력 12월 1일 — 2027년 1월 8일 사주의 12월(丑월) 시작 — …」처럼 깨졌다).
+    목록만 있는 줄은 글 줄이 있으면 뺀다(대개 앞 문장을 한 번 더 적은 것이다). 글 줄이 없으면 첫 목록의 항목을 「 · 」로 잇는다."""
+    def 풀기(s):
+        머리, *항목 = [x.strip() for x in s.split('▸')]
+        항목 = [x for x in 항목 if x]
+        if not 항목: return 머리
+        return (머리 + ' ' if 머리 else '') + ' · '.join(항목)
+    글 = [s for s in summ if not s.lstrip().startswith('▸')] or summ[:1]
+    return re.sub(r'^답부터 드리면, ', '', ' '.join(x for x in map(풀기, 글) if x))
+
 def llms(pages):
     p = os.path.join(A, 'llms.txt')
     if not os.path.exists(p): return
@@ -410,8 +422,7 @@ def llms(pages):
         if month_of(pg[0]): continue
         url = f'{SITE}{pg[0]}.html'
         if url in txt: continue
-        요약 = re.sub(r'^답부터 드리면, ', '', ' '.join(pg[4])).replace('▸ ', '')
-        txt = _add(txt, LLMS_TQ if pg[0].startswith('taekil-') else LLMS_WHY, f'- [{pg[1]}]({url}): {짧게(요약)}')
+        txt = _add(txt, LLMS_TQ if pg[0].startswith('taekil-') else LLMS_WHY, f'- [{pg[1]}]({url}): {짧게(_llms_요약(pg[4]))}')
     if txt != t0:
         open(p, 'wb').write((txt.replace('\n', '\r\n') if crlf else txt).encode('utf-8'))
 

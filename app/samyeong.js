@@ -6,12 +6,14 @@
  *   · 괴강 — 庚辰 · 壬辰 · 戊戌 · 庚戌 네 날뿐.
  *   · 문창 — 뜻을 말한 대목이 책에 없어 싣지 않는다. 백호대살 — 책에 없다.
  * 길흉을 매기지 않는다. 책이 한 말을 옮겨 줄 뿐이다.
+ * 태어난 시간을 모르면 R.pillars.hour 가 null 이다. 시지는 찾지 않고 있는 세 기둥에서만 찾는다(시지 칸은 화면이 비운다).
  */
 (function (global) {
   'use strict';
   const E = global.ChaeksaEngine; if (!E) return;
   const B = (한자) => E.BRANCHES.indexOf(한자), S = (한자) => E.STEMS.indexOf(한자);
   const 자리말 = { year: '연', month: '월', day: '일', hour: '시' }, 자리들 = ['year', 'month', 'day', 'hour'];
+  const 있는 = (P, ks) => (ks || 자리들).filter(k => P[k]);   // 시를 모르면 hour 가 null — 빼고 본다
   // 한자 뒤에 조사를 바로 붙이면 틀린다(寅가) — 한글 읽기를 앞에 두고 받침으로 고른다.
   const 받침 = (ko) => (ko.charCodeAt(ko.length - 1) - 0xAC00) % 28 > 0;
   const 지 = (b, 조) => { const ko = E.BRANCHES_KO[b]; return ko + '(' + E.BRANCHES[b] + ')' + (조 ? (받침(ko) ? 조[0] : 조[1]) : ''); };
@@ -36,7 +38,7 @@
   };
   function 십이운성(R) {
     const ds = R.pillars.day.stem;
-    return 자리들.map(k => { const b = R.pillars[k].branch, u = E.unseong(ds, b), w = 운성[u]; return { 자리: 자리말[k] + '지', 지지: E.BRANCHES[b], 단계: u, 한자: w[0], 원문: w[1], 뜻: w[2] }; });
+    return 있는(R.pillars).map(k => { const b = R.pillars[k].branch, u = E.unseong(ds, b), w = 운성[u]; return { 자리: 자리말[k] + '지', 지지: E.BRANCHES[b], 단계: u, 한자: w[0], 원문: w[1], 뜻: w[2] }; });
   }
   const 운성맺음 = ['凡推造化見生旺者未必便作吉論見休囚死絶未必便作凶言如生旺太過宜乎制伏死絶不及宜乎生扶妙在識其通變', '책은 이렇게 맺어요 — 힘 있는 단계를 보았다고 곧 좋다 하지 않고, 힘없는 단계를 보았다고 곧 나쁘다 하지 않는다. 지나치면 눌러야 하고 모자라면 도와야 한다.'];
 
@@ -74,7 +76,7 @@
   function 신살(R) {
     const P = R.pillars, 무리 = 삼합(P.year.branch), out = [];
     Object.keys(해기준).forEach(이름 => {
-      const 찾 = B(해기준[이름][무리]), 곳 = ['month', 'day', 'hour'].filter(k => P[k].branch === 찾);
+      const 찾 = B(해기준[이름][무리]), 곳 = 있는(P, ['month', 'day', 'hour']).filter(k => P[k].branch === 찾);
       if (!곳.length) return;
       const 줄 = ['태어난 해가 ' + 지(P.year.branch, ['이라서', '라서']) + '(' + 무리 + ' 무리) ' + 지(찾, 가) + ' ' + 이름 + (받침(이름) ? '이에요. ' : '예요. ') + 곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요.'];
       if (이름 === '함지') {
@@ -84,10 +86,10 @@
       out.push({ 이름, 글: 신살글[이름], 줄 });
     });
     const ds = P.day.stem, 인 = { 0: '卯', 2: '午', 4: '午', 6: '酉', 8: '子' }[ds];
-    if (인) { const 곳 = 자리들.filter(k => P[k].branch === B(인)); if (곳.length) out.push({ 이름: '양인', 글: 신살글.양인, 줄: ['나 ' + 간(ds) + '의 양인은 ' + 지(B(인), 예요) + '. ' + 곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요. 양인은 양간에만 있어요.'] }); }
+    if (인) { const 곳 = 있는(P).filter(k => P[k].branch === B(인)); if (곳.length) out.push({ 이름: '양인', 글: 신살글.양인, 줄: ['나 ' + 간(ds) + '의 양인은 ' + 지(B(인), 예요) + '. ' + 곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요. 양인은 양간에만 있어요.'] }); }
     const 일주 = E.STEMS[ds] + E.BRANCHES[P.day.branch];
     if (['庚辰', '壬辰', '戊戌', '庚戌'].indexOf(일주) >= 0) out.push({ 이름: '괴강', 글: 신살글.괴강, 줄: ['태어난 날이 ' + 일주 + '일이에요. 책이 꼽은 괴강 네 날(庚辰 · 壬辰 · 戊戌 · 庚戌) 가운데 하나예요.'] });
-    const 빈 = 공망지(P.day.stem, P.day.branch), 곳 = ['year', 'month', 'hour'].filter(k => 빈.indexOf(P[k].branch) >= 0);
+    const 빈 = 공망지(P.day.stem, P.day.branch), 곳 = 있는(P, ['year', 'month', 'hour']).filter(k => 빈.indexOf(P[k].branch) >= 0);
     if (곳.length) out.push({ 이름: '공망', 글: 신살글.공망, 줄: ['태어난 날 ' + 일주 + '에서 짝 없이 남는 지지는 ' + 빈.map(b => 지(b)).join(' · ') + '예요. ' + 곳.map(k => 자리말[k] + '지').join(' · ') + '가 거기에 들어요.'] });
     return out;
   }
@@ -113,7 +115,7 @@
       '록은 벼슬해서 받는 몫이에요. 내가 제힘을 얻어 누리는 자리예요. 책은 록이 있으면 몸이 실하고 평생 편안하며 돈이 넉넉하다고 했어요. 록은 충을 맞는 것과 공망에 드는 것을 가장 꺼려요. 그리고 록이 있다고 다 좋다고 기댈 수는 없다고도 했어요.'],
   };
   function 귀인(R) {
-    const P = R.pillars, ds = P.day.stem, out = [], 빈 = 공망지(ds, P.day.branch);
+    const P = R.pillars, ds = P.day.stem, out = [], 빈 = 공망지(ds, P.day.branch), 자리들 = 있는(P);
     const 공망주 = (곳) => { const 든 = 곳.filter(k => k !== 'day' && 빈.indexOf(P[k].branch) >= 0); return 든.length ? ' 그런데 ' + 든.map(k => 자리말[k] + '지').join(' · ') + '는 공망에 들어 있어요. 책은 귀인이 공망에 들면 안 된다고 했어요.' : ''; };
     const 천 = 천을표[E.STEMS[ds]].split('').map(B), 천곳 = 자리들.filter(k => 천.indexOf(P[k].branch) >= 0);
     if (천곳.length) out.push({ 이름: '천을귀인', 글: 귀인글.천을귀인, 줄: ['나 ' + 간(ds) + '의 천을귀인은 ' + 지(천[0]) + ' · ' + 지(천[1], 예요) + '. ' + 천곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요.' + 공망주(천곳)] });
@@ -122,7 +124,7 @@
     if (덕곳.length) out.push({ 이름: '천덕', 글: 귀인글.천덕, 줄: [월말 + '월에 난 사람의 천덕은 ' + (덕이간 ? 간(S(덕), 예요) : 지(B(덕), 예요)) + '. ' + 덕곳.map(k => 자리말[k] + (덕이간 ? '간' : '지')).join(' · ') + '에 있어요.' + (덕이간 && 덕곳.indexOf('day') >= 0 ? ' 책은 태어난 날에 있는 것을 으뜸으로 쳤어요.' : '')] });
     const 월덕 = 월덕표[삼합(P.month.branch)], 월덕곳 = 자리들.filter(k => P[k].stem === S(월덕));
     if (월덕곳.length) out.push({ 이름: '월덕', 글: 귀인글.월덕, 줄: [월말 + '월에 난 사람의 월덕은 ' + 간(S(월덕), 예요) + '. ' + 월덕곳.map(k => 자리말[k] + '간').join(' · ') + '에 있어요.'] });
-    const 장생지 = E.BRANCHES.findIndex((x, b) => E.unseong(ds, b) === '장생'), 학곳 = ['month', 'hour'].filter(k => P[k].branch === 장생지);
+    const 장생지 = E.BRANCHES.findIndex((x, b) => E.unseong(ds, b) === '장생'), 학곳 = 있는(P, ['month', 'hour']).filter(k => P[k].branch === 장생지);
     if (학곳.length) out.push({ 이름: '학당', 글: 귀인글.학당, 줄: ['나 ' + 간(ds, 가) + ' 막 돋아나는 자리는 ' + 지(장생지, 예요) + '. ' + 학곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요.' + 공망주(학곳)] });
     const 록 = B(록표[ds]), 록곳 = 자리들.filter(k => P[k].branch === 록);
     if (록곳.length) out.push({ 이름: '록', 글: 귀인글.록, 줄: ['나 ' + 간(ds) + '의 록은 ' + 지(록, 예요) + '. ' + 록곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요.' + (록곳.indexOf('month') >= 0 ? ' 태어난 달에 있는 록을 건록이라고 해요. 책은 건록이면 물려받는 것은 적고 돈이 잘 안 모이지만, 병이 적고 오래 산다고 했어요.' : '') + 공망주(록곳)] });
