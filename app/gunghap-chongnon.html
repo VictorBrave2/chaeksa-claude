@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>정통사주 — 세 고전으로 읽는 나의 여덟 글자 · 책사</title>
-<meta name="description" content="생년월일시를 넣으면 궁통보감 · 자평진전 · 적천수가 각자 본 것과 열 해씩 오는 대운을 장마다 풀어 드립니다. 점수로 합치지 않습니다.">
+<title>궁합총론 — 두 분의 여덟 글자를 나란히 · 책사</title>
+<meta name="description" content="두 분의 생년월일시를 넣으면 고전이 한 사람 안에서 짝을 읽는 법을 두 분에게 각각 재서 장마다 나란히 놓아 드립니다. 점수로 합치지 않습니다.">
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,19 +23,28 @@
 <body>
 <div class="doc">
   <a class="back" href="./">← 책사 홈</a>
-  <h1>정통사주<br>세 고전으로 읽는 나의 여덟 글자</h1>
-  <p class="lead">궁통보감은 계절을, 자평진전은 짜임을, 적천수는 흐름을 봅니다. 셋이 각자 본 것을 장마다 따로 적어 드려요. 점수로 합치지 않습니다. 회원가입 없이 무료예요.</p>
-  <form id="jtForm" class="card">
+  <h1>궁합총론<br>두 분의 여덟 글자를 나란히</h1>
+  <p class="lead">고전은 두 사람 사주를 맞대는 법을 따로 두지 않았습니다. 한 사람 안에서 짝을 읽는 법만 남겼어요. 그 법을 두 분에게 각각 재서 장마다 나란히 놓아 드려요. 점수로 합치지 않습니다. 회원가입 없이 무료예요.</p>
+  <form id="gcForm" class="card">
+    <div class="gc-head">나</div>
     <div class="jt-form">
-      <label>생년월일<input type="date" id="jtDate" required></label>
-      <label>태어난 시각<input type="time" id="jtTime" value="12:00"></label>
-      <label class="jt-notime"><input type="checkbox" id="jtNoTime">시간을 몰라요</label>
-      <label>성별<select id="jtG"><option value="F">여</option><option value="M">남</option></select></label>
-      <label>태어난 곳<select id="jtPlace"><option value="KR:서울">서울</option></select></label>
+      <label>생년월일<input type="date" id="gcDateA" required></label>
+      <label>태어난 시각<input type="time" id="gcTimeA" value="12:00"></label>
+      <label class="jt-notime"><input type="checkbox" id="gcNoTimeA">시간을 몰라요</label>
+      <label>성별<select id="gcGA"><option value="F">여</option><option value="M">남</option><option value="">모름</option></select></label>
+      <label>태어난 곳<select id="gcPlaceA"><option value="KR:서울">서울</option></select></label>
     </div>
-    <button type="submit" class="btn" style="width:100%">풀어 보기</button>
+    <div class="gc-head">그 사람</div>
+    <div class="jt-form">
+      <label>생년월일<input type="date" id="gcDateB" required></label>
+      <label>태어난 시각<input type="time" id="gcTimeB" value="12:00"></label>
+      <label class="jt-notime"><input type="checkbox" id="gcNoTimeB">시간을 몰라요</label>
+      <label>성별<select id="gcGB"><option value="M">남</option><option value="F">여</option><option value="">모름</option></select></label>
+      <label>태어난 곳<select id="gcPlaceB"><option value="KR:서울">서울</option></select></label>
+    </div>
+    <button type="submit" class="btn" style="width:100%">나란히 놓아 보기</button>
   </form>
-  <div id="jtOut"></div>
+  <div id="gcOut"></div>
 </div>
 <script>
 (function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})()
@@ -50,13 +59,13 @@
 <script src="typecard.js?v=967"></script>
 <script src="gyeokguk.js?v=967"></script>
 <script src="classic.js?v=967"></script>
-<script src="questions.js?v=967"></script>
-<script src="seolmyeongseo.js?v=967"></script>
 <script src="gungtong-wonmun.js?v=967"></script>
-<script src="ilju.js?v=967"></script>
 <script src="yeongyeok.js?v=967"></script>
 <script src="samyeong.js?v=967"></script>
 <script src="gwanjeom.js?v=967"></script>
-<script src="jeongtong.js?v=967"></script>
+<script src="maeum.js?v=967"></script>
+<script src="geunamja.js?v=967"></script>
+<script src="gunghap-gwanjeom.js?v=967"></script>
+<script src="gunghap-chongnon.js?v=967"></script>
 </body>
 </html>

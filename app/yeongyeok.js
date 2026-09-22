@@ -98,7 +98,7 @@
     // 일지 충
     const 충 = 있는(R, ['year', 'month', 'hour']).filter(k => (P[k].branch - P.day.branch + 12) % 12 === 6);
     if (!P.hour) out[0].줄.push('태어난 시간을 몰라서 시지(자식 자리)는 비워 뒀어요. 일지와 시지가 부딪히는지도 볼 수 없어요.');
-    if (충.length) out.push({ 제목: '배우자 자리가 부딪혀요', 줄: ['일지 ' + E.BRANCHES_KO[P.day.branch] + '(' + E.BRANCHES[P.day.branch] + ')와 ' + 충.map(k => 자리말[k] + '지 ' + E.BRANCHES_KO[P[k].branch] + '(' + E.BRANCHES[P[k].branch] + ')').join(' · ') + '가 마주 보고 부딪히는 글자(충)예요. 충은 글자의 십성이 발현되거나 있던 것이 깨질 수 있어요.', '삼명통회는 일과 시가 서로 충 하면 헤어짐이 있다고 했어요. 남녀가 같다고 했어요.', '요즘 명리가들은 둘로 말해요. 부부가 부딪히고 헤어질 소지가 커진다는 말이 많고, 그렇다고 이혼이 정해진 것은 아니며 사는 방식을 다시 짜라는 신호라는 말도 그만큼 많아요.'] });
+    if (충.length) out.push({ 제목: '배우자 자리가 부딪혀요', 줄: ['일지 ' + E.BRANCHES_KO[P.day.branch] + '(' + E.BRANCHES[P.day.branch] + ')' + (받침(E.BRANCHES_KO[P.day.branch]) ? '과 ' : '와 ') + 충.map(k => 자리말[k] + '지 ' + E.BRANCHES_KO[P[k].branch] + '(' + E.BRANCHES[P[k].branch] + ')').join(' · ') + (받침(E.BRANCHES_KO[P[충[충.length - 1]].branch]) ? '이' : '가') + ' 마주 보고 부딪히는 글자(충)예요. 충은 글자의 십성이 발현되거나 있던 것이 깨질 수 있어요.', '삼명통회는 일과 시가 서로 충 하면 헤어짐이 있다고 했어요. 남녀가 같다고 했어요.', '요즘 명리가들은 둘로 말해요. 부부가 부딪히고 헤어질 소지가 커진다는 말이 많고, 그렇다고 이혼이 정해진 것은 아니며 사는 방식을 다시 짜라는 신호라는 말도 그만큼 많아요.'] });
     return out;
   }
 
