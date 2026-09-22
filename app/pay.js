@@ -222,6 +222,15 @@
       꼬리.className = 'hint pay-say';
       btn.insertAdjacentElement('afterend', 꼬리);
     }
+    // 청약철회 제한 동의(2026-09-22 점검 critic-2). 약관 9조는 「결제 화면에서 미리 안내하고 동의를 받는다」고 적었다.
+    // 앱 결제 상자(app.js 결제상자)가 단추 위에 [필수] 칸을 두고 체크 전에는 단추를 잠근다 — 여기서 한 번 더 막는다.
+    // 칸이 없는 화면에서 이 단추를 부르면 결제를 열지 않는다(동의 없이 결제되는 길을 남기지 않는다).
+    const 동의칸 = document.querySelector('input[data-pay-agree="' + btn.id + '"]');
+    if (!(동의칸 && 동의칸.checked)) {
+      꼬리.textContent = '위 [필수] 칸에 체크해 주셔야 결제할 수 있어요.';
+      if (동의칸) { try { 동의칸.focus(); } catch (e) {} }
+      return { ok: false, reason: 'agree' };
+    }
     const C = global.ChaeksaCloud;
     if (!(C && C.signedIn && C.signedIn())) {
       꼬리.innerHTML = '결제하시려면 먼저 로그인해 주세요 — 결제한 것을 그 계정에 매어 두어야 다른 기기에서도 열립니다. '

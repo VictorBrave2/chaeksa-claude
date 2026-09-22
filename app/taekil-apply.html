@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=963">
+<link rel="stylesheet" href="style.css?v=964">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -94,9 +94,10 @@
   </div>
 </div>
 
-<script src="config.js?v=963"></script>
-<script src="cloud.js?v=963"></script>
-<script src="pay.js?v=963"></script>
+<script src="config.js?v=964"></script>
+<script src="track.js?v=964"></script>
+<script src="cloud.js?v=964"></script>
+<script src="pay.js?v=964"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -109,6 +110,8 @@
   var form = document.getElementById('intake'), send = document.getElementById('i_send');
   var msg = document.getElementById('i_msg'), agree = document.getElementById('agree');
   var agreeData = document.getElementById('agreeData');
+  // 계기판 사건(track.js) — 네이버폼·메일 단추, 결제 단추. track.js 가 없거나 막혀도 신청은 그대로 된다.
+  function 사건(n) { try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event(n); } catch (e) {} }
   function say(t, bad) {
     var 판 = window.ChaeksaPay && ChaeksaPay.판;
     msg.textContent = t ? t + (bad && 판 ? ' (화면 ' + 판 + ')' : '') : '';
@@ -123,6 +126,9 @@
     alt.hidden = false;
     document.getElementById('intakeAltGo').href = window.CHAEKSA_TAEKIL_INTAKE_URL;
     document.getElementById('intakeAltMail').href = 'mailto:' + F.문의메일 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청');
+    // 지금 돈이 들어오는 길은 이 단추 둘뿐이다 — 몇 명이 눌렀는지 센다(2026-09-22).
+    document.getElementById('intakeAltGo').addEventListener('click', function () { 사건('naverform'); });
+    document.getElementById('intakeAltMail').addEventListener('click', function () { 사건('applymail'); });
     form.hidden = true;
     ChaeksaPay.state().then(function (st) {
       var p = (st.products || []).filter(function (x) { return x.code === 'taekil'; })[0];
@@ -227,6 +233,7 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (busy || !열림) return;
+    사건('pay');   // 깔때기 ④ 결제 단추 누름 — 앱 안 단추(pay.js 누르면)와 같은 사건. 여기는 buy() 를 바로 불러서 따로 센다.
     var d = F.값(form), 빈 = F.빈칸(d);
     if (빈.length) { say('비어 있거나 틀린 칸이 있습니다 — ' + 빈.join(' · '), true); return; }
     if (!agreeData.checked || !agree.checked) { say('동의 두 가지에 체크해 주셔야 결제할 수 있습니다.', true); return; }

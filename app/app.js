@@ -242,8 +242,12 @@
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
     try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
       ['gnPick', 'mmPick', 'ghPick', 'shPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
+    } catch (e) {}
+    try {
       // 이야기 화면에서 「+ 추가」로 넣은 사람은 곧 그 질문의 그 사람이다 — 방금 넣고 또 고르게 하지 않는다.
-      if (새 && $('stWho') && document.querySelector('.tab[data-tab="story"]:not(.hide)')) { window.현재그사람 = 새; renderStory(); }
+      // 첫 사람일 때는 고르는 칸(stWho)이 아직 없고 「그 사람 추가」 단추만 있다. 예전엔 stWho 를 조건으로 봐서
+      // 첫 사람을 넣어도 화면이 그대로였다(2026-09-22 점검). 두 경우 다 있는 단추(btnStAdd)로 본다 — 혼자 보는 이야기에는 없다.
+      if (새 && $('btnStAdd') && document.querySelector('.tab[data-tab="story"]:not(.hide)')) { window.현재그사람 = 새; renderStory(); }
     } catch (e) {}
   }
 
@@ -258,9 +262,14 @@
       const P = People(), p = P.get(editingId);
       if (!p) return;
       if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다. 계속할까요?`)) return;
+      const 지운사람 = p.id;
       P.remove(editingId);
       $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
-      if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+      // 로그인돼 있으면 서버에서도 지운다 — 안 그러면 다음에 앱을 열 때 되살아난다(2026-09-22 점검). 실패해도 앱은 그대로 간다.
+      if (window.ChaeksaCloud) {
+        try { if (ChaeksaCloud.removePerson) ChaeksaCloud.removePerson(지운사람).catch(() => {}); } catch (e) {}
+        ChaeksaCloud.pushSoon();
+      }
       start(P.toProfile(P.active()));
     };
     $('pfCalSeg').querySelectorAll('button').forEach(b => b.onclick = () => setPfCal(b.dataset.cal));
@@ -1033,8 +1042,30 @@
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  /** 결제 버튼에서 로그인이 필요할 때. 앱의 다른 로그인 자리와 같은 꼴(카카오 → 안 되면 설정 창). */
-  function 결제로그인() { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } }
+  /** 결제 버튼에서 로그인이 필요할 때. 앱의 다른 로그인 자리와 같은 꼴(카카오 → 안 되면 설정 창).
+   *  로그인하고 돌아오면 이 장과 고른 사람으로 다시 온다(2026-09-22 점검 — 예전엔 홈에 떨어져서 사려던 장을 다시 찾아야 했다).
+   *  돌아오는 쪽은 파일 끝 「시작」이 chaeksa.return 을 읽는다. */
+  const 고르는칸 = { geunamja: 'gnPick', maeum: 'mmPick', gunghap: 'ghPick', sheet: 'shPick' };
+  let 복귀고름 = null;    // 로그인하러 떠나기 전에 골라 둔 사람 [칸 id, 사람 id] — 탭을 그린 뒤 다시 고른다
+  let 복귀대기 = false;   // 첫 동기화가 start() 로 홈에 돌려놓으면 한 번 더 그 장으로 간다
+  function 복귀고르기() {
+    if (!복귀고름) return;
+    try {
+      const [칸, 사람] = 복귀고름;
+      const e = Object.values(고르는칸).indexOf(칸) >= 0 ? $(칸) : null;
+      if (e && [...e.options].some(o => o.value === 사람)) { e.value = 사람; if (e.onchange) e.onchange(); }
+    } catch (e) {}
+  }
+  function 결제로그인() {
+    try {
+      const t = 열린탭();
+      const 해시 = t === 'sheet' ? '#sheet-' + (window.현재장 || 'gyeolhon') : (t && t !== 'home' ? '#' + t : '');
+      const 칸 = 고르는칸[t], 사람 = 칸 && $(칸) ? $(칸).value : '';
+      localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: 해시, pick: 사람 ? [칸, 사람] : null, at: Date.now() }));
+    } catch (e) {}
+    try { ChaeksaCloud.signInWith('kakao'); }
+    catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} openSettings(); }
+  }
 
   // ───── 그 사람, 나한테 마음이 있을까요? (둘째 장 · maeum.js) ─────
   function renderMaeum() {
@@ -1263,6 +1294,8 @@
     ChaeksaPay.state().then(s => {
       const 전 = payReady; payReady = !!(s && s.ready);
       if (payReady !== 전) { try { renderMyMonth(); } catch (e) {} }
+      // 결제 상자의 [필수] 칸을 이 답보다 먼저 체크했으면 단추가 잠긴 채 남는다 — 지금 상태로 맞춘다(2026-09-22 검토).
+      try { document.querySelectorAll('input[data-pay-agree]').forEach(c => { const b = document.getElementById(c.getAttribute('data-pay-agree')); if (b && !b.dataset.busy) b.disabled = !(payReady && c.checked); }); } catch (e) {}
     }).catch(() => {});
     // 결제 이력도 미리 받아 둔다 — 무료 카드가 그려질 때 동기로 물을 수 있게.
     // 뒤늦게 도착하면 캐시를 풀어 다음 탭 방문 때 유료 화면으로 다시 그려진다.
@@ -1298,12 +1331,29 @@
     const 꼬리 = payReady
       ? (무료 ? '결제하시면 이 자리에서 바로 청하실 수 있어요.' : '결제하면 바로 열립니다.')
       : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.';
+    // 청약철회 안내와 [필수] 동의(2026-09-22 점검). 약관 9조(terms.html#refund)와 같은 말이다 —
+    // 콘텐츠는 열람이 시작되면 제공이 시작된 것이고, 그 뒤에는 청약철회가 제한될 수 있다. 체크 전에는 단추가 잠긴다
+    // (아래 결제동의 · pay.js 누르면 이 한 번 더 막는다).
+    const 동의 = '<div class="pb-refund" style="margin:14px 0 10px;text-align:left">'
+      + '<p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
+      + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
+      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer">'
+      + '<input type="checkbox" data-pay-agree="' + id + '" style="margin-top:4px;flex:none">'
+      + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span>'
+      + '</label></div>';
     return '<div class="paidbox"><p class="pb-k">' + 머리 + '</p>'
       + '<p>' + 몸 + '</p>'
-      + '<button class="btn nx-cta" id="' + id + '" type="button"' + (payReady ? '' : ' disabled')
+      + 동의
+      + '<button class="btn nx-cta" id="' + id + '" type="button" disabled'
       + ' style="background:var(--accent);color:#fff;border-color:var(--accent)">' + 단추 + '</button>'
       + '<p class="nx-ft">' + 꼬리 + '</p></div>';
   }
+  // 결제 상자의 [필수] 동의 칸 — 체크해야 단추가 풀린다. 상자는 장마다 새로 그려지므로 문서 한 곳에서 받는다.
+  document.addEventListener('change', (e) => {
+    const c = e.target; if (!c || !c.matches || !c.matches('input[data-pay-agree]')) return;
+    const b = document.getElementById(c.getAttribute('data-pay-agree'));
+    if (b && !b.dataset.busy) b.disabled = !(payReady && c.checked);
+  });
 
   // ───── 「그 사람 한 편」 — 장마다 결제 뒤 LLM 이 쓰는 한 편 (2026-09-12 사장님 결정 3단계) ─────
   // 산 사람에게만(paidForKey), 그리고 스위치(config CHAEKSA_SHEET_LLM)가 꺼져 있으면 super 계정만 본다(시험).
@@ -1512,7 +1562,7 @@
         return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
           <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span>${표 ? `<span style="display:block;font-size:9px;color:var(--accent)">${표}</span>` : ''}</div>`;
       }).join('') + `</div>
-      <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 천간에 온 것이 <b>돈</b>인지 <b>자리</b>인지 <b>인연</b>인지. 홈의 오늘 한마디와 같은 잣대입니다.</p>
+      <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 천간에 온 것이 <b>돈</b>인지 <b>자리</b>인지 <b>인연</b>인지. 홈의 오늘 한마디와 같은 기준입니다.</p>
       ${주절}${좋은절}${조심절}
       <p class="pb-ft">잣대 공개 — 그날 천간에 온 글자가 나에게 무슨 십신인가, 그것뿐입니다. 좋은 날·조심할 날의 점수는 매기지 않습니다(2026-09-04). 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 12시진 곡선으로 그려드립니다.</p>
       ${예고}`;
@@ -1784,7 +1834,7 @@
     // 결과 버튼·삭제 배선
     $('memoDue').querySelectorAll('button[data-r]').forEach(b => b.onclick = async () => {
       const note = await 한줄받기('그때 어떠셨는지 한 줄로 남기시겠습니까?',
-                                 '남겨 두시면 이 잣대가 맞았는지 함께 볼 수 있습니다.');
+                                 '남겨 두시면 이 기준이 맞았는지 함께 볼 수 있습니다.');
       if (note === null) return;          // 그냥 두기 — 기록하지 않는다
       M.setOutcome(b.dataset.id, b.dataset.r, note);
       renderMemo(); renderHome(); renderToday();
@@ -1912,7 +1962,7 @@
     ['jaemul', '재물', 'nokpae', '돈이 어떤 모양으로 들어오는지, 어디로 새는지 짚어 드릴까요.'],
     ['eokbu', '억부', 'jichim', '무엇이 깎고 무엇이 채우는지 짚어 드리겠습니다.'],
     ['unro', '운로', 'life', '언제가 두터워지고 언제가 담금질인지 곡선으로 펴 드릴까요.'],
-    ['japyung', '자평진전', 'me', '격이 섰는지 무너졌는지, 원국을 펴 보여 드리겠습니다.'],
+    ['japyung', '자평진전', 'me', '격이 성격인지 파격인지, 원국을 펴 보여 드리겠습니다.'],
     ['cheonjik', '천직', 'jikcheop', '스물다섯 결 가운데 어느 쪽인지 아뢰겠습니다.'],
     ['gungwi', '궁위', 'dohwa', '곁자리에 앉은 글자가 누구를 가리키는지 보시겠습니까.'],
   ];
@@ -2139,7 +2189,9 @@
       + '<b>' + (머리말 || (오늘 ? '오늘' : x.요일)) + '<small>' + x.날 + '일</small></b>'
       + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
     // 바뀐 날만 말한다(09-14 사장님 「1 ㄱㄱ」) — 결과가 같은 날은 한 줄로 묶는다. 조문대로면 이레 중 바뀌는 날은 하루 이틀이고, 같은 문장을 닷새 되풀이하면 대충 만든 것으로 읽힌다.
-    const 같다 = (a, b) => a.결과 === b.결과 && a.그결과 === b.그결과 && a.등급 === b.등급 && a.이유 === b.이유;
+    // 이유 글은 오늘 줄만 「오늘」, 다른 줄은 「그날」로 읽는다(stories.js 하루). 그 말만 다른 날까지 갈라 세면 첫날이 늘 따로 떨어진다 — 빼고 견준다(09-22 검토).
+    const 날말뺌 = (t) => String(t || '').replace(/오늘|그날/g, '');
+    const 같다 = (a, b) => a.결과 === b.결과 && a.그결과 === b.그결과 && a.등급 === b.등급 && 날말뺌(a.이유) === 날말뺌(b.이유);
     const 묶음들 = []; 주.forEach(x => { const l = 묶음들[묶음들.length - 1]; if (l && 같다(l.첫, x)) l.날들.push(x); else 묶음들.push({ 첫: x, 날들: [x] }); });
     const 이레줄 = 묶음들.map((m, mi) => {
       const 첫 = m.첫, 끝 = m.날들[m.날들.length - 1], 오늘 = mi === 0;
@@ -2683,15 +2735,17 @@
   function 회의장면(고르면) {
     if (!window.CHAEKSA_ART) return;
     const s0 = 계절이름(), v = window.CHAEKSA_ART;
-    // 계절마다 몇 벌인지는 config.js 가 안다. 없는 벌을 부르면 헛걸음이라 그만큼만 돈다.
-    const n = (window.CHAEKSA_COUNCIL_VAR && window.CHAEKSA_COUNCIL_VAR[s0]) || 1;
+    // 계절마다 몇 벌인지는 config.js 가 안다. 적힌 게 없으면 그 계절 그림은 없는 것이다 — 부르지 않는다
+    // (2026-09-22 — 지운 그림을 「없으면 1벌」로 쳐서 첫 화면마다 404 가 났다).
+    const n = (window.CHAEKSA_COUNCIL_VAR && window.CHAEKSA_COUNCIL_VAR[s0]) || 0;
+    if (!n) return;
     const i = 날번호() % n;
     const 벌 = i ? '-' + (i + 1) : '';
     // 예전엔 마지막 후보가 love-open 이었다. 그건 **원국이 바뀌기 전** 그림이라
     // (서양 고딕 저택·낯선 남자 얼굴) 첫 화면에 스치기만 해도 세계가 어긋난다.
     // 회의 장면이 없으면 아무것도 안 건다 — 없는 것보다 어긋난 것이 나쁘다.
-    const 후보 = ['art/council-' + s0 + 벌 + '.webp?v=' + v,
-                  'art/council-' + s0 + '.webp?v=' + v];
+    const 후보 = ['art/council-' + s0 + 벌 + '.webp?v=' + v];
+    if (벌) 후보.push('art/council-' + s0 + '.webp?v=' + v);
     (function 다음(i) {
       if (i >= 후보.length) return;
       const im = new Image();
@@ -2708,15 +2762,11 @@
     $('lpGanjiKo').textContent = f.pillarKo(tf.day) + ' · ' + f.stemElem(tf.day.stem) + '의 날';
     // 첫 화면은 글이 아니라 장면이다 — 오늘의 계절에 맞는 삽화를 깐다.
     // 그림이 없으면 class 를 안 붙여 옛 글자 히어로로 돌아간다(안전한 되돌림).
+    // 2026-09-22 — 예전엔 그림이 있는지 보기 전에 scene 부터 붙여서, 그림을 지운 뒤로 첫 화면이 그림 빠진 남색 상자였다.
+    // 이제 그림을 **실제로 받은 뒤에만** 장면을 깐다. 그 전까지는 글자 첫 화면이다.
     const hero = $('lpHero');
     if (hero && window.CHAEKSA_ART) {
-      const s0 = 계절이름(), v = window.CHAEKSA_ART;
-      // 첫 화면은 회의 장면이다. 예전엔 love-open 을 깔았다가 회의 장면으로 바꿔 끼웠는데,
-      // 그 한 순간 원국이 바뀌기 전 그림(서양 고딕 저택)이 스쳤다.
-      hero.style.setProperty('--hero-art', 'url("art/council-' + s0 + '.webp?v=' + v + '")');
-      hero.classList.add('scene');
-      // 오늘의 회의 장면이 있으면 그쪽으로 바꾼다. 없으면 위 그림 그대로.
-      회의장면(u => hero.style.setProperty('--hero-art', 'url("' + u + '")'));
+      회의장면(u => { hero.style.setProperty('--hero-art', 'url("' + u + '")'); hero.classList.add('scene'); });
     }
     // 랜딩의 열 사람 도열(#lpCorps)은 2026-09-12 걷었다.
     $('formCard').classList.add('hide');
@@ -2820,8 +2870,11 @@
       if (r.changed) {
         const saved = localStorage.getItem(KEY);
         if (saved) { try { start(JSON.parse(saved)); } catch (e) {} }
+        // start() 는 홈으로 간다 — 결제하려다 로그인하고 막 돌아온 손님은 그 장으로 한 번 더 보낸다.
+        if (복귀대기) { try { goHash(true); 복귀고르기(); } catch (e) {} }
       }
     } catch (e) { if (showMsg) cloudMsg('동기화 실패: ' + e.message); }
+    복귀대기 = false;
   }
   function wireCloud() {
     const C = Cloud(); if (!C || !C.enabled()) { renderCloud(); return; }
@@ -2850,7 +2903,7 @@
     if (bo) bo.onclick = () => { C.signOut(); renderCloud(); cloudMsg('로그아웃했습니다.'); };
     const bp = $('btnPurge');
     if (bp) bp.onclick = async () => {
-      if (!confirm('서버에 저장된 원국·상담 기록과 계정을 모두 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
+      if (!confirm('서버에 저장된 원국·등록하신 사람들 정보와 계정을 모두 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
       if (!confirm('정말 삭제하시겠습니까? 마지막 확인입니다.')) return;
       cloudMsg('삭제 중…');
       try {
@@ -2878,17 +2931,32 @@
     // Supabase 는 허용 목록에 없는 복귀 주소를 받으면 사이트 첫 주소로 보낸다 — 그러면 신청하던 사람이
     // 앱 첫 화면에서 길을 잃는다(2026-09-11). 같은 사이트의 짧은 .html 경로만, 10분 안의 것만 따른다
     // (오래 남은 표시가 나중의 딴 로그인을 끌고 가지 않게 — 신청 페이지는 열릴 때마다 표시를 지운다).
+    // 9,900원 장의 결제 단추에서 로그인하러 떠난 손님은 해시(#sheet-ibyeol · #maeum 꼴)를 남긴다 — 그 장으로 돌려보낸다
+    // (2026-09-22 점검). 해시는 앱의 탭 이름 꼴만 따른다.
     if (came) {
       try {
         const 돌아갈 = JSON.parse(localStorage.getItem('chaeksa.return') || 'null');
         localStorage.removeItem('chaeksa.return');
-        if (돌아갈 && /^\/[\w.-]+\.html$/.test(돌아갈.path || '') && Date.now() - (돌아갈.at || 0) < 10 * 60 * 1000) {
-          location.replace(돌아갈.path);
+        const 새것 = !!돌아갈 && Date.now() - (돌아갈.at || 0) < 10 * 60 * 1000;
+        const 해시 = 새것 && /^#[a-z][\w-]*$/.test(돌아갈.hash || '') ? 돌아갈.hash : '';
+        if (새것 && /^\/[\w.-]+\.html$/.test(돌아갈.path || '') && 돌아갈.path !== location.pathname) {
+          location.replace(돌아갈.path + 해시);
+        } else if (해시) {
+          history.replaceState(null, '', location.pathname + location.search + 해시);   // 아래 goHash 가 이 장을 연다
+          if (Array.isArray(돌아갈.pick)) 복귀고름 = 돌아갈.pick;
+          복귀대기 = true;
         }
       } catch (e) {}
     }
   }
   wireCloud();
+  // 이 기기에서 시작하지 않은 로그인 토큰을 버렸으면 조용히 두지 않는다 — 로그인 창을 열고 까닭을 적는다(2026-09-22 점검).
+  try {
+    if (window.ChaeksaCloud && ChaeksaCloud.refusedLogin && ChaeksaCloud.refusedLogin()) {
+      openSettings();
+      cloudMsg('로그인을 마치지 못했어요. 이 기기에서 시작한 로그인이 아니거나 시간이 너무 지났어요. 여기서 다시 로그인해 주세요.');
+    }
+  } catch (e) {}
 
   initPlace();
   wirePeople();
@@ -2911,6 +2979,7 @@
     }
   }
   goHash(booted);         // #탭이름 으로 들어온 경우 그 탭을 연다
+  복귀고르기();           // 결제하려다 로그인하러 떠났으면 그때 고른 사람을 다시 고른다
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
 })();

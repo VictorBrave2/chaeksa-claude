@@ -107,10 +107,13 @@
     그리기();
   }
 
-  /** 글에서 온 사람이면 그 달로 연다 — 꼬리표 blog-m12 → 2026-12, blog-m3 → 2027-03(월별 글은 2026-09 ~ 2027-08). */
+  /** 글에서 온 사람이면 그 달로 연다 — 주소에 d=YYYY-MM-DD 가 있으면 그 날(사이트 정본은 이것을 단다).
+      없으면 꼬리표로 — blog-m12 · site-gt12 → 2026-12, blog-m3 → 2027-03(월별 글은 2026-09 ~ 2027-08). gt = 궁통보감 글. */
   function 첫날() {
-    let tag = ''; try { tag = new URLSearchParams(location.search).get('from') || sessionStorage.getItem('chaeksa.from') || ''; } catch (e) {}
-    const mm = /-m(\d{1,2})$/.exec(tag); if (!mm) return null;
+    let tag = '', d = '';
+    try { const q = new URLSearchParams(location.search); d = q.get('d') || ''; tag = q.get('from') || sessionStorage.getItem('chaeksa.from') || ''; } catch (e) {}
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+    const mm = /-(?:m|gt)(\d{1,2})$/.exec(tag); if (!mm) return null;
     const m = +mm[1]; if (m < 1 || m > 12) return null;
     return (m >= 9 ? 2026 : 2027) + '-' + 두(m) + '-15';
   }

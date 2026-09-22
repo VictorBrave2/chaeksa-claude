@@ -1,3 +1,7 @@
+/* 옛것 — 쓰지 않음 (2026-09-22). 점수 · 순위 · 강약(중화) 방식이라 법전 60조와 부딪힌다.
+ * 새 절차는 택일자료/SKILL.md — 판정엔진 + 출산택일 관점(ChaeksaTaekilSim.하루). 파일은 기록으로만 남긴다. */
+throw new Error('옛것 — 쓰지 않음: 택일자료 스킬의 새 절차(ChaeksaTaekilSim.하루)를 쓴다');
+
 /* 택일 스캔 — chaeksa.kr 에서 javascript_tool 로 실행한다.
  *
  * 맨 아래 CONFIG 만 바꾸면 된다.

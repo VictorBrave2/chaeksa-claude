@@ -55,10 +55,17 @@
     } catch (e) { return false; }
   }
 
+  /** 추적을 원하지 않는다고 브라우저가 밝혔는가(Do Not Track). 방문도 사건도 이것 하나로 거른다 — 개인정보처리방침 1-1. */
+  function dntOn() {
+    try {
+      var dnt = global.doNotTrack || (global.navigator && (navigator.doNotTrack || navigator.msDoNotTrack));
+      return dnt === '1' || dnt === 'yes';
+    } catch (e) { return false; }
+  }
+
   function hit() {
     // 추적을 원하지 않는다고 브라우저가 밝히면 세지 않는다
-    var dnt = global.doNotTrack || (global.navigator && (navigator.doNotTrack || navigator.msDoNotTrack));
-    if (dnt === '1' || dnt === 'yes') return;
+    if (dntOn()) return;
     if (!CFG.url || !CFG.anonKey) return;
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
     // 내(클로드) 캡처·검사 방문은 세지 않는다 — 주소에 cap= 또는 scan= 이 붙는다(2026-09-15 헤드리스 캡처가 첫 방문 열 건으로 찍혔다).
@@ -114,10 +121,12 @@
   else start();
 
   /** 깔때기 사건(2026-09-15 사장님 「계기판을 어떻게 살리지」) — 같은 visits 표에 path='ev:이름' 으로 한 줄.
-   *  profile(생년월일 넣음) · sheet(유료 장 엶) · pay(결제 단추 누름). 한 브라우저에서 하루 한 번만.
+   *  profile(생년월일 넣음) · sheet(유료 장 엶) · pay(결제 단추 누름) · naverform·applymail(출산택일 신청 페이지의
+ *  네이버폼·메일 단추, 2026-09-22). 한 브라우저에서 하루 한 번만.
    *  집계는 funnel_stats(migrate-30) 가 vid 로 사람을 가른다. 스위치가 꺼져 있으면 vid 없이 보내 사건 수만 남는다. */
   function event(name) {
     try {
+      if (dntOn()) return;   // 방문과 같다 — Do Not Track 이면 사건도 안 남긴다(2026-09-22, 방침과 어긋나 있었다)
       if (!CFG.url || !CFG.anonKey) return;
       if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
       var k = 'chaeksa.ev.' + name, today = new Date().toISOString().slice(0, 10);

@@ -28,6 +28,51 @@ class Bal(HTMLParser):
 
 def strip(h): return re.sub(r'<[^>]+>','',h)
 
+# ── 명식 카드 (2026-09-21) — 월별 글 첫머리에 끼우는 그림 한 장.
+# <p class="card-img"><img src=… alt=… style="max-width:100%;height:auto"></p> 는 생성기가 내는 정해진 꼴이다.
+# 네이버가 class·style 을 버려도 그림(절대 주소)은 남는다. 이 꼴 그대로면 통과, 다른 class·style 은 그대로 막는다.
+CARD = re.compile(r'<p class="card-img">(\s*<img\b[^>]*>\s*)</p>')
+CARD_STYLE = re.compile(r'\s+style="\s*max-width:\s*100%\s*;\s*height:\s*auto\s*;?\s*"')
+
+def without_cards(doc):
+    """class·style 검사용 — 명식 카드의 정해진 class·style 만 걷어 낸 본문."""
+    return CARD.sub(lambda m: CARD_STYLE.sub('', m.group(1), count=1), doc)
+
+# ── 화면·글 금지말 — tools_check.py 도 이 표를 쓴다(앱 화면 글 검사).
+# 격 성패 말: feedback-four-verdict-terms (섰다·띠었다·깨졌다·무너짐 → 성격·기신 있음·구응·파격)
+# 투출 바꿔 부르기: 「떠 있어요」 → 「겉에 있어요」(사장님 09-16 「떠있어요 이런말 쓰지말자니까」)
+# 내 말투: 이레·잣대 (feedback-my-dialect-is-the-problem)
+# 점수·순위: 종합 점수·순위·TOP N 을 만들지 않는다(feedback-no-composite-score).
+#   「점수와 순위는 매기지 않았습니다」「순위가 아닙니다」처럼 아니라고 밝히는 문장은 통과 — 뒤에 오는 말을 본다.
+#   보통 한국말은 뺀다 — 「들떠 있다 · 마음이 떠 있다 · 창이 떴다 · 리듬이 무너졌다 · 우선순위 · 1순위(먼저 챙길 것)」.
+#   「무너졌」은 앞 열두 글자 안에 「격」이 있을 때만 본다.
+금지말 = [
+    ('격 성패 말', re.compile(r'격이 서 있|서 있는 사주|격이 섰|안 섰다|띠었|온전한 격|흠 하나|깨졌|격[^.\n]{0,12}?(?P<w>무너졌|무너짐)'),
+     '성격·기신 있음·구응·파격 넷으로만 쓴다'),
+    ('투출 바꿔 부르기', re.compile(r'(?<!들)(?<!마음 )(?<!마음이 )떠\s?있|떴(?:어요|습니다|는데|고)'),
+     '「천간에 있어요 · 겉에 있어요 · 안쪽에만 있어요」로 쓴다'),
+    ('내 말투', re.compile(r'(?<![가-힣])이레|잣대'),
+     '이레 → 7일, 잣대 → 기준'),
+    ('점수·순위', re.compile(r'(?<!우선)(?<![앞뒷뒤\d])순위|[Tt][Oo][Pp]\s?\d+|(?<![\d.:])\d{1,3}위(?!치|원|험|반|기|협)|몇\s?점|몇\s?위'),
+     '점수·순위를 매기지 않는다. 고전마다 본 것을 나란히 적고, 줄은 조건으로 거른다'),
+]
+# 뒤에 이 말이 오면 「안 매긴다」는 문장이다.
+_아님 = re.compile(r'않|아닙|아니|말고|대신|안\s?(?:매|세|내|붙|만들|씁|써|합|해|줍|드)')
+_곧없음 = re.compile(r'^[^.!?\n]{0,5}없')
+
+def 금지말찾기(text, 표=None):
+    """text 에서 금지말을 찾아 [(갈래, 찾은 말, 위치, 고칠 말)] 로 낸다. 점수·순위는 부정문이면 뺀다."""
+    out = []
+    for 갈래, rx, 고칠말 in (표 or 금지말):
+        for m in rx.finditer(text):
+            if 갈래 == '점수·순위':
+                뒤 = re.split(r'[.!?。\n]', text[m.end():m.end() + 40], 1)[0]
+                if _아님.search(뒤) or _곧없음.search(뒤):
+                    continue
+            w = m.group('w') if 'w' in rx.groupindex and m.group('w') else None
+            out.append((갈래, w or m.group(0), m.start('w') if w else m.start(), 고칠말))
+    return out
+
 def plain_first(doc):
     """제목·부제 다음에 오는 본문 <p> 들(첫 <hr> 뒤부터). 답 첫 줄 검사용."""
     m = re.search(r'<p class="alt">.*?</p>', doc, re.S)
@@ -44,9 +89,10 @@ def check_blog(name, s):
 
     if '<table' in doc:
         bad.append('본문에 <table>이 있다. 네이버 모바일에서 본문이 통째로 밀린다. blockquote + ▸ 로 바꿔라')
-    if re.search(r'style\s*=', doc):
+    doc_cs = without_cards(doc)      # 명식 카드의 정해진 class·style 은 통과
+    if re.search(r'style\s*=', doc_cs):
         bad.append('본문에 inline style이 있다. 네이버가 대부분 버린다')
-    cls = set(re.findall(r'class="([^"]+)"', doc)) - {'alt','tag'}
+    cls = set(re.findall(r'class="([^"]+)"', doc_cs)) - {'alt','tag'}
     if cls:
         bad.append('본문에 class가 남아 있다(%s). 네이버는 class를 버리므로 스타일이 안 따라간다' % ', '.join(sorted(cls)))
     if 'id="copy"' not in s:
@@ -60,9 +106,17 @@ def check_blog(name, s):
 
     # 격 성패 말 — 성격·기신 있음·구응·파격 넷만(feedback-four-verdict-terms). 「섰다·서 있다·띠었다·온전·흠 하나」는 사주쟁이도 안 쓰는 내 말이다.
     # 2026-09-15 사장님 「쓰지 말자 했잖아」 — 새 글 여덟 곳에서 또 나왔다. 검사기가 막는다.
-    bann = re.findall(r'(격이 서 있|서 있는 사주|격이 섰|안 섰다|띠었다|온전한 격|흠 하나)', strip(doc))
-    if bann:
-        bad.append('격 성패 말 — 「%s」. 성격·기신 있음·구응·파격 넷으로만 쓴다' % '」「'.join(sorted(set(bann))))
+    # 2026-09-22 깨졌·무너졌·떠 있·이레·잣대·순위·TOP·N위·몇 점 을 더했다(금지말 표).
+    # 점수·순위는 「고침」 상자(옛날에 순위를 냈다고 밝히는 곳) 밖에서만 본다.
+    줄글 = lambda h: strip(re.sub(r'<br\s*/?>|</p>|</li>|</h\d>|</blockquote>', '\n', h))
+    고침밖 = re.sub(r'<blockquote>(?:(?!</blockquote>).)*?고침(?:(?!</blockquote>).)*?</blockquote>', '', doc, flags=re.S)
+    hits = [h for h in 금지말찾기(줄글(doc)) if h[0] != '점수·순위'] \
+         + [h for h in 금지말찾기(줄글(고침밖)) if h[0] == '점수·순위']
+    for 갈래, _, 고칠말 in 금지말:
+        words = sorted(set(re.sub(r'^\d+위$', 'N위', h[1]) for h in hits if h[0] == 갈래))
+        if words:
+            more = ' 외 %d개' % (len(words) - 8) if len(words) > 8 else ''
+            bad.append('%s — 「%s」%s. %s' % (갈래, '」「'.join(words[:8]), more, 고칠말))
 
     # 내부 말 — 「규칙 6조」「법전」「41조」는 저와 사장님 사이 말이다. 독자는 모른다(2026-09-16 사장님). 「저희는 이렇게 봅니다」로.
     inner = re.findall(r'(규칙 \d+조|\d+조[는가이에]|법전|판정 모듈|판정키|조립기)', strip(doc))
@@ -163,13 +217,25 @@ def main():
     if not rows:
         print('검사할 파일이 없다. 붙여넣기-*.html 또는 보고서*.html'); return 0
     fail = 0
+    # 막힌 까닭을 갈래로 센다 — 말 때문에 막힌 글이 많아도 형식·값 문제가 묻히지 않게.
+    말갈래 = tuple(g for g, _, _ in 금지말) + ('내부 말', '상담 들먹임')
+    def 갈래of(x):
+        if x.startswith(말갈래): return '말'
+        if x.startswith('값'): return '값'
+        if x.startswith('GEO'): return 'GEO'
+        return '형식'
+    tally = {}
     for kind, name, bad, warn in rows:
         mark = 'X' if bad else ('!' if warn else 'O')
         print('%s  [%s] %s' % (mark, kind, name))
-        for x in bad:  print('     막힘  ' + x); 
+        for x in bad:  print('     막힘  ' + x);
         for x in warn: print('     확인  ' + x)
         if bad: fail += 1
+        for g in set(갈래of(x) for x in bad):
+            tally[g] = tally.get(g, 0) + 1
     print('\n%d개 검사 · 막힘 %d개' % (len(rows), fail))
+    if tally:
+        print('막힌 까닭(글 수, 겹침 있음): ' + ' · '.join('%s %d' % (g, tally[g]) for g in ('형식', '값', 'GEO', '말') if g in tally))
     return 1 if fail else 0
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=963">
+<link rel="stylesheet" href="style.css?v=964">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -35,9 +35,9 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=963"></script>
-<script src="cloud.js?v=963"></script>
-<script src="pay.js?v=963"></script>
+<script src="config.js?v=964"></script>
+<script src="cloud.js?v=964"></script>
+<script src="pay.js?v=964"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -156,14 +156,11 @@
       if (!r || !r.ok) { fail(r && r.message || '승인에 실패했습니다.', r && r.code); return; }
       // 무엇을 샀는지는 주문번호가 안다: ck_<상품>_...
       var code = (String(orderId).match(/^ck_([a-z]+)_/) || [])[1];
-      var back = { inyeon: '인연이 오는 해 화면에 그 해 열두 달이',
-                   relation: '우리 둘 사이 화면에 날짜와 시진이',
-                   month: '오늘 탭에 이번 달 일운 달력이',
-                   wealth: '재물 스토리 화면에 앞으로 여섯 해가' }[code];
-      // 「돌아가서 보기」가 홈으로만 가서, 산 화면을 못 찾았다 — 특히 인연 시기는 홈에 들어가는 길이 없다
-      // (2026-09-11 검토). 앱은 주소 뒤 #탭이름 으로 그 탭을 바로 연다(app.js goHash).
-      var 갈곳 = { inyeon: './#inyeon', relation: './#compat', month: './#today', wealth: './#moneystory',
-                  maeum: './#maeum', gunghap: './#gunghap', geunamja: './#geunamja' }[code] || './';
+      // 「돌아가서 보기」가 홈으로만 가서, 산 화면을 못 찾았다(2026-09-11 검토). 앱은 주소 뒤 #탭이름 으로
+      // 그 탭을 바로 연다(app.js goHash). 목록은 pay.html 의 장길과 같다 — 지금 파는 9,900원 장 여덟(2026-09-22).
+      var 갈곳 = { maeum: './#maeum', gunghap: './#gunghap', geunamja: './#geunamja',
+                  gyeolhon: './#sheet-gyeolhon', ibyeol: './#sheet-ibyeol', jigeum: './#sheet-jigeum',
+                  jjak: './#sheet-jjak', sok: './#sheet-sok' }[code] || './';
       draw('<div class="mark">成</div>'
         + '<h1>결제가 끝났습니다</h1>'
         + '<p>' + (r.already ? '이미 처리된 주문입니다.' : '고맙습니다. 곧 시작하겠습니다.') + '</p>'
@@ -174,7 +171,7 @@
         + '</div>'
         + (code === 'taekil'
             ? '<p>출산택일은 <b>사람이 직접 계산</b>합니다.</p><div id="taekil-slot"></div>'
-            : '<p>' + (back ? back + ' <b>바로 열렸습니다.</b>' : '결제하신 내용이 앱에서 열렸습니다.')
+            : '<p>결제하신 내용이 앱에서 열렸습니다.'
               + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
         + '<p><a class="btn sub" href="./">책사로 돌아가기</a></p>'
