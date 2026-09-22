@@ -1041,7 +1041,7 @@
     box.classList.remove('hide');
     한편붙이기(box, 'geunamja', { 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 이 사람이 나한테 도움이 되는 사람인지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnGnBuy');
-    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'geunamja', 열쇠, 결제로그인);
+    if (bb) bb.onclick = () => 결제누름(bb, 'geunamja', 열쇠);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1068,6 +1068,20 @@
     } catch (e) {}
     try { ChaeksaCloud.signInWith('kakao'); }
     catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} openSettings(); }
+  }
+  /** 앱 안 결제 단추. 이 기기에서 시작하지 않은 로그인(cloud.js hold)이면 결제 전에 어느 계정인지 한 번 묻는다(2026-09-22) —
+   *  남이 보낸 링크로 로그인된 채 결제하면 산 것이 그 계정에 매인다. 동의 칸·로그인 확인은 pay.js 누르면() 이 그대로 한다
+   *  (동의 전이면 누르면() 이 먼저 막으니 그때는 묻지 않는다). 값·상품·결제수단은 건드리지 않는다. */
+  function 결제누름(bb, code, 열쇠) {
+    try {
+      const C = window.ChaeksaCloud;
+      const 동의 = document.querySelector('input[data-pay-agree="' + bb.id + '"]');
+      if (C && C.signedIn() && C.uploadHold && C.uploadHold() && 동의 && 동의.checked && !bb.dataset.busy) {
+        const em = C.email();
+        if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 결제한 것은 이 계정에서 열려요.')) return null;
+      }
+    } catch (e) {}
+    return ChaeksaPay.누르면(bb, code, 열쇠, 결제로그인);
   }
 
   // ───── 그 사람, 나한테 마음이 있을까요? (둘째 장 · maeum.js) ─────
@@ -1119,7 +1133,7 @@
     box.classList.remove('hide');
     한편붙이기(box, 'maeum', { 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 이 사람이 나한테 좋은 사람인지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnMmBuy');
-    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'maeum', 열쇠, 결제로그인);
+    if (bb) bb.onclick = () => 결제누름(bb, 'maeum', 열쇠);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1203,7 +1217,7 @@
     box.classList.remove('hide');
     한편붙이기(box, 'gunghap', { 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되는지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnGhBuy');
-    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 'gunghap', 열쇠, 결제로그인);
+    if (bb) bb.onclick = () => 결제누름(bb, 'gunghap', 열쇠);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1267,7 +1281,7 @@
     box.classList.remove('hide');
     한편붙이기(box, 장.code, 장, f, met, 장.둘 && you0 ? you0.관찰 : null, 열쇠, 장.둘 ? youName : '올 사람');
     const bb = box.querySelector('#btnShBuy');
-    if (bb) bb.onclick = () => ChaeksaPay.누르면(bb, 장.code, 열쇠, 결제로그인);
+    if (bb) bb.onclick = () => 결제누름(bb, 장.code, 열쇠);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -2830,6 +2844,8 @@
 
   // ───── 서버 동기화 ─────
   const Cloud = () => window.ChaeksaCloud;
+  // 「아니요」를 누른 로그인(cloud.js hold 'no')을 설정 창과 묻는 창에서 같은 말로 적는다.
+  const 안주고받음 = '이 계정과 이 기기는 서로 주고받지 않아요(로그아웃하면 풀려요).';
   function cloudMsg(t, ok) {
     const el = $('cloudMsg'); if (!el) return;
     el.classList.toggle('hide', !t); el.innerHTML = t || '';
@@ -2859,15 +2875,16 @@
       } catch (e) {}
       $('cloudWho').textContent = (C.email() || '로그인됨') + grade;
       const at = localStorage.getItem('chaeksa.sync');
-      const 안올림 = C.uploadHold && C.uploadHold() === 'no';
-      $('cloudWhen').textContent = (at ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '')
-        + (안올림 ? ' · 이 기기 사주는 이 계정에 올리지 않아요(로그아웃하면 풀려요)' : '');
+      const 보류 = C.uploadHold ? C.uploadHold() : null;
+      $('cloudWhen').textContent = (at && !보류 ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '')
+        + (보류 === 'no' ? ' · ' + 안주고받음 : 보류 === 'ask' ? ' · 이 계정에 저장할지 아직 안 골랐어요. 「지금 동기화」를 누르면 다시 여쭤봐요.' : '');
     }
   }
-  // ── 이 기기 사주를 이 계정에 올릴까 (2026-09-22 둘째 묶음) ──
+  // ── 이 기기 사주를 이 계정에 저장할까 (2026-09-22 둘째 묶음 · 셋째에 고침) ──
   // 이 기기에서 시작하지 않은 로그인(메일 링크를 메일 앱 안 브라우저에서 연 경우 등)은 cloud.js 가 토큰은 받되 hold 'ask' 를 단다.
-  // 처음 동기화 전에 여기서 묻는다. 올리기 → 예전처럼 동기화. 아니요 → 서버 것만 받아 보여 주고 이 기기 것은 로그아웃 때까지 안 올린다.
-  // 이 기기에 올릴 것이 없으면 cloud.js(mustAskUpload)가 묻지 않고 푼다.
+  // 동기화 전에 여기서 묻는다 — 이 기기가 비어 있어도 묻는다(비어 있다고 풀면 뒤에 넣는 생년월일이 그 계정으로 올라간다).
+  // 저장하기 → 예전처럼 동기화(받고 올림). 아니요 → 로그인만 남기고 이 계정과 이 기기는 서로 주고받지 않는다(받지도 올리지도 않음).
+  // 묻기 전에 원국·사람을 저장하면 cloud.js pushSoon 이 이 창을 부른다(onAskUpload).
   function 올릴지묻기(showMsg) {
     const C = Cloud(); if (!C) return;
     let m = $('uploadAsk');
@@ -2877,12 +2894,13 @@
       m.style.zIndex = '12';
       m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'uaTitle');
       m.innerHTML = `<div class="sheet">
-        <h3 id="uaTitle">이 기기에 있는 사주를 이 계정에 올릴까요?</h3>
-        <p class="hint" style="margin:0 0 8px" id="uaWhat"></p>
+        <h3 id="uaTitle">이 계정에 저장할까요?</h3>
         <p class="hint" style="margin:0 0 8px">로그인한 계정 — <b id="uaWho">확인하는 중…</b></p>
-        <p class="hint" style="margin:0 0 14px">다른 곳에서 연 로그인 링크라서 한 번 물어봐요. 내 계정이 맞으면 올리세요. 다른 기기에서도 이어서 볼 수 있어요.
-          아니요를 누르면 이 계정에 있는 것만 받아 오고, 이 기기 것은 로그아웃할 때까지 올리지 않아요.</p>
-        <button class="btn" id="uaYes">올리기</button>
+        <p class="hint" style="margin:0 0 8px" id="uaWhat"></p>
+        <p class="hint" style="margin:0 0 8px">이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 내 계정이 맞으면 저장하세요.
+          이 계정에 있던 사주도 이 기기로 받아 와요.</p>
+        <p class="hint" style="margin:0 0 14px">내 계정이 아니면 「아니요」를 누르세요. 로그인은 그대로 두지만, ${안주고받음}</p>
+        <button class="btn" id="uaYes">저장하기</button>
         <button class="btn ghost" id="uaNo">아니요</button>
       </div>`;
       document.body.appendChild(m);
@@ -2891,14 +2909,24 @@
     const l = C.localStuff ? C.localStuff() : { 이름: [], 사람: 0 };
     const 이름 = (l.이름 && l.이름.length) ? l.이름 : [l.원국이름 || (l.원국 ? '내 원국' : '')].filter(Boolean);
     const 남은 = Math.max(0, Math.max(l.사람 || 0, 이름.length) - 5);
-    $('uaWhat').innerHTML = '이 기기에 있는 사주 — <b>' + esc(이름.slice(0, 5).join(' · ') || '사주') + '</b>' + (남은 ? ' 외 ' + 남은 + '명' : '');
-    const 누구 = () => { $('uaWho').textContent = C.email() || '이메일이 없는 계정(카카오 등)'; };
+    $('uaWhat').innerHTML = (l.원국 || l.사람)
+      ? '이 기기에 있는 사주 — <b>' + esc(이름.slice(0, 5).join(' · ') || '사주') + '</b>' + (남은 ? ' 외 ' + 남은 + '명' : '') + '. 저장하면 이 계정에 올라가요.'
+      : '이 기기에는 아직 넣은 사주가 없어요. 저장하면 앞으로 넣는 사주가 이 계정에 저장돼요.';
+    const 누구 = () => {
+      const em = C.email();
+      $('uaWho').textContent = em || '이메일이 없는 계정(카카오 등)';
+      $('uaTitle').textContent = em ? em + ' 계정에 저장할까요?' : '이 계정에 저장할까요?';
+    };
     if (C.email()) 누구();
     else C.me().then(누구).catch(() => { $('uaWho').textContent = '확인하지 못했어요'; });
     const 답 = (yes) => {
       C.answerUpload(yes);
       m.classList.add('hide');
-      cloudSync(!!showMsg);   // 설정의 「지금 동기화」에서 왔으면 끝난 뒤 한 줄을 띄운다
+      if (yes) { cloudSync(!!showMsg); return; }   // 설정의 「지금 동기화」에서 왔으면 끝난 뒤 한 줄을 띄운다
+      // 아니요 — 받지도 올리지도 않는다. 여기서 cloudSync 를 다시 부르면 「지금 동기화」 길에서 이 창이 또 뜬다.
+      복귀대기 = false;
+      renderCloud();
+      if (showMsg) cloudMsg(안주고받음, true);
     };
     $('uaYes').onclick = () => 답(true);
     $('uaNo').onclick = () => 답(false);
@@ -2906,18 +2934,21 @@
   }
   async function cloudSync(showMsg) {
     const C = Cloud(); if (!C || !C.signedIn()) return;
-    // 묻기 전에는 받지도 올리지도 않는다. 답을 받으면 여기로 다시 온다(복귀대기는 그때 쓴다).
-    if (C.mustAskUpload && C.mustAskUpload()) {
+    // 묻기 전에는 받지도 올리지도 않는다. 「저장하기」를 받으면 여기로 다시 온다(복귀대기는 그때 쓴다).
+    // 「아니요」를 누른 계정 — 앱을 열 때는 조용히 넘어가고, 설정의 「지금 동기화」를 누르면 다시 물어 마음을 바꿀 수 있게 한다.
+    const 보류 = C.uploadHold ? C.uploadHold() : null;
+    if ((C.mustAskUpload && C.mustAskUpload()) || (보류 === 'no' && showMsg)) {
       if (showMsg) cloudMsg('');
       올릴지묻기(showMsg);
       return;
     }
+    if (보류) { 복귀대기 = false; renderCloud(); return; }
     try {
       if (showMsg) cloudMsg('동기화 중…');
       const r = await C.pull();   // 서버 것과 병합 (더 최신인 쪽이 남는다)
-      await C.push();             // 병합 결과를 다시 올린다 — 「아니요」를 누른 계정이면 cloud.js 가 안 올린다
+      await C.push();             // 병합 결과를 다시 올린다
       renderCloud();
-      if (showMsg) cloudMsg(C.uploadHold && C.uploadHold() === 'no' ? '이 계정의 사주를 받아 왔어요. 이 기기 것은 올리지 않았어요.' : '동기화했습니다.', true);
+      if (showMsg) cloudMsg('동기화했습니다.', true);
       if (r.changed) {
         const saved = localStorage.getItem(KEY);
         if (saved) { try { start(JSON.parse(saved)); } catch (e) {} }
@@ -2929,6 +2960,8 @@
   }
   function wireCloud() {
     const C = Cloud(); if (!C || !C.enabled()) { renderCloud(); return; }
+    // 이 기기에서 시작하지 않은 로그인인데 아직 안 물었으면, 원국·사람을 처음 저장하는 순간(pushSoon) 묻는다.
+    if (C.onAskUpload) C.onAskUpload(() => 올릴지묻기(false));
     const bk = $('btnKakao'), bg = null /* 구글 로그인 삭제(2026-09-15 사장님) */, bm = $('btnMail'),
           bs = $('btnSyncNow'), bo = $('btnLogout');
     if (bk) bk.onclick = () => { try { C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };
@@ -2957,8 +2990,11 @@
       if (!confirm('서버에 저장된 원국·등록하신 사람들 정보와 계정을 모두 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
       if (!confirm('정말 삭제하시겠습니까? 마지막 확인입니다.')) return;
       cloudMsg('삭제 중…');
+      // 09-22 이 기기에서 시작하지 않은 로그인(hold)이면 이 기기 사주는 그 계정에 올라간 적이 없다 — 계정만 지우고 기기 것은 둔다
+      const 보류중 = C.uploadHold ? C.uploadHold() : null;
       try {
         await C.deleteAccount();
+        if (보류중) { C.signOut(); alert('그 계정을 지웠습니다. 이 기기에 넣어 둔 사주는 그대로 두었습니다.'); location.href = location.pathname; return; }
         [KEY, PKEY, 'chaeksa.consults'].forEach(k => localStorage.removeItem(k));
         Object.keys(localStorage).filter(k => k.startsWith('chaeksa.')).forEach(k => localStorage.removeItem(k));
         alert('모두 삭제했습니다.');

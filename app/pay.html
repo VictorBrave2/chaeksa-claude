@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=965">
+<link rel="stylesheet" href="style.css?v=966">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -94,10 +94,10 @@
   </div>
 </div>
 
-<script src="config.js?v=965"></script>
-<script src="track.js?v=965"></script>
-<script src="cloud.js?v=965"></script>
-<script src="pay.js?v=965"></script>
+<script src="config.js?v=966"></script>
+<script src="track.js?v=966"></script>
+<script src="cloud.js?v=966"></script>
+<script src="pay.js?v=966"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -201,8 +201,19 @@
   // 결제창에서 뒤로 가기로 돌아와 페이지가 되살아나면 단추가 「여는 중」에 멈춘다 — 풀어 준다(2026-09-11 검토).
   window.addEventListener('pageshow', function (e) { if (e.persisted) { busy = false; refresh(); } });
 
+  // 이 기기에서 시작하지 않은 로그인(cloud.js hold — 남이 보낸 링크일 수 있다)이면 결제 전에 어느 계정인지 한 번 묻는다(2026-09-22).
+  // 값·상품·결제수단은 그대로다. 묻는 말에 메일을 적으려고 계정 정보만 받아 둔다.
+  var 남의로그인 = function () {
+    try { return !!(ChaeksaCloud.signedIn() && ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold()); } catch (e) { return false; }
+  };
+  if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
+
   cta.addEventListener('click', function () {
     if (!picked || busy) return;
+    if (남의로그인()) {
+      var em = ChaeksaCloud.email();
+      if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 결제한 것은 이 계정에서 열려요.')) return;
+    }
     busy = true; say(''); refresh();
     ChaeksaPay.buy(picked.code, null).then(function (r) {
       busy = false; refresh();

@@ -81,10 +81,16 @@
   //
   // 고침(2026-09-22 둘째 묶음): 표시가 없다고 버리면 메일 링크를 메일 앱 안 브라우저에서 연 사람은 늘 로그인이 안 됐다.
   // 이제 토큰은 받되, 세션에 hold 를 적는다:
-  //   hold 'ask' — 처음 동기화 전에 앱이 「이 기기에 있는 사주를 이 계정에 올릴까요?」를 묻는다. 그동안 pull·push 둘 다 안 한다.
-  //   hold 'no'  — 「아니요」를 눌렀다. 서버 것은 받아(pull) 보여 주되, 이 기기 것은 올리지 않는다(push·지운 사람 반영 모두).
-  //   hold 없음  — 이 기기에서 시작한 로그인이거나 「올리기」를 눌렀다. 예전처럼 바로 동기화.
-  // hold 는 세션(chaeksa.auth) 안에 있어서 로그아웃하면 같이 사라진다. 이 기기에 올릴 것이 없으면 묻지 않고 푼다(mustAskUpload).
+  //   hold 'ask' — 앱이 「이 계정에 저장할까요?」를 먼저 묻는다. 답하기 전에는 pull·push 둘 다 안 한다.
+  //   hold 'no'  — 「아니요」를 눌렀다. 로그인만 남긴다(결제·산 것 열기에 쓴다). pull·push·지운 사람 반영 모두 안 한다.
+  //   hold 없음  — 이 기기에서 시작한 로그인이거나 「저장하기」를 눌렀다. 예전처럼 바로 동기화.
+  // hold 는 세션(chaeksa.auth) 안에 있어서 로그아웃하면 같이 사라진다.
+  //
+  // 고침(2026-09-22 셋째): 둘째 묶음에 구멍이 둘 있었다.
+  //  · 「아니요」 뒤에도 pull 이 「최근 것이 이김」으로 이 기기 원국(chaeksa.profile · profileAt)을 그 계정 것으로 덮고 사람 목록을 섞었다.
+  //    로그아웃해도 기기에 남아 나중에 내 계정으로 올라갈 수 있었다 → 'no' 면 pull 도 안 한다.
+  //  · 이 기기가 비어 있으면 묻지 않고 hold 를 풀었다 → 빈 기기에서 남의 링크를 연 뒤 생년월일을 넣으면 그 계정으로 올라갔다.
+  //    → 기기가 비어 있어도 hold 를 두고 늘 먼저 묻는다. 묻기 전에 저장이 일어나면(pushSoon) 앱의 묻는 창을 부른다(onAskUpload).
   const LOGIN = 'chaeksa.login';
   const 로그인한도 = { oauth: 10 * 60 * 1000, email: 60 * 60 * 1000 };
   function 로그인표시(kind) {
@@ -190,20 +196,24 @@
     try { const b = jget(PKEY, null); 원국 = !!(b && typeof b === 'object' && b.year); 원국이름 = (원국 && b.name) || ''; } catch (e) {}
     try {
       const ps = jget(PEOPLE, []);
-      if (Array.isArray(ps)) { 사람 = ps.length; 이름 = ps.map((x) => (x && x.name) || '').filter(Boolean); }
+      // 이름을 비워 둔 사람은 people.js 가 「이름 없음」으로 적는다 — 묻는 창에는 「내 사주」·관계로 보여 준다.
+      if (Array.isArray(ps)) {
+        사람 = ps.length;
+        이름 = ps.map((x) => {
+          const n = (x && x.name) || '';
+          return n && n !== '이름 없음' ? n : x && x.isSelf ? '내 사주' : (x && x.relation) || n;
+        }).filter(Boolean);
+      }
     } catch (e) {}
     return { 원국, 원국이름, 사람, 이름 };
   }
-  /** 처음 동기화 전에 물어야 하나. hold 'ask' 인데 이 기기에 올릴 것이 없으면 묻지 않고 푼다. */
-  function mustAskUpload() {
-    if (uploadHold() !== 'ask') return false;
-    const l = localStuff();
-    if (l.원국 || l.사람) return true;
-    보류적기(null);
-    return false;
-  }
-  /** 물음의 답. true = 올리기(hold 풂) · false = 아니요(로그아웃 때까지 이 기기 것은 안 올림) */
+  /** 동기화 전에 물어야 하나 — hold 'ask' 면 이 기기가 비어 있어도 묻는다(비어 있다고 풀면 뒤에 넣는 사주가 그 계정으로 올라간다). */
+  function mustAskUpload() { return uploadHold() === 'ask'; }
+  /** 물음의 답. true = 저장하기(hold 풂) · false = 아니요(로그아웃 때까지 이 계정과 주고받지 않음) */
   function answerUpload(yes) { if (signedIn()) 보류적기(yes ? null : 'no'); }
+  // 묻기 전에 저장이 일어나면(pushSoon) 앱이 묻는 창을 띄우게 부른다. 앱(app.js)이 한 번 걸어 둔다.
+  let 묻기부름 = null;
+  function onAskUpload(fn) { 묻기부름 = typeof fn === 'function' ? fn : null; }
 
   async function me() {
     const j = await api('/auth/v1/user');
@@ -215,7 +225,9 @@
   /** 서버 → 로컬. 서버가 더 최신이면 로컬을 덮어쓴다. */
   async function pull() {
     if (!enabled() || !signedIn()) return { changed: false };
-    if (uploadHold() === 'ask') return { changed: false, ask: true };   // 묻기 전에는 받지도 않는다
+    // 묻기 전이거나 「아니요」면 받지도 않는다 — 받으면 그 계정 원국·사람이 이 기기에 섞여 로그아웃 뒤에도 남는다.
+    const 보류 = uploadHold();
+    if (보류) return { changed: false, hold: 보류 };
     let changed = false;
 
     const rows = await api('/rest/v1/profiles?select=*');
@@ -371,7 +383,13 @@
 
   let timer = null;
   function pushSoon() {                       // 저장이 잦으므로 묶어서 보낸다
-    if (!signedIn() || uploadHold()) return;
+    if (!signedIn()) return;
+    const 보류 = uploadHold();
+    if (보류) {
+      // 아직 안 물었으면 지금 묻는다(처음 저장하는 순간). 「아니요」면 조용히 안 올린다.
+      if (보류 === 'ask' && 묻기부름) { try { 묻기부름(); } catch (e) {} }
+      return;
+    }
     clearTimeout(timer);
     timer = setTimeout(() => push().catch(() => {}), 1500);
   }
@@ -385,6 +403,6 @@
   global.ChaeksaCloud = {
     enabled, signedIn, email, sendMagicLink, signInWithPassword, signInWith, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
     pull, push, pushSoon, removePerson, session, token,
-    uploadHold, localStuff, mustAskUpload, answerUpload,
+    uploadHold, localStuff, mustAskUpload, answerUpload, onAskUpload,
   };
 })(window);

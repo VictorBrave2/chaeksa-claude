@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=965">
+<link rel="stylesheet" href="style.css?v=966">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -98,10 +98,10 @@
   </div>
 </div>
 
-<script src="config.js?v=965"></script>
-<script src="track.js?v=965"></script>
-<script src="cloud.js?v=965"></script>
-<script src="pay.js?v=965"></script>
+<script src="config.js?v=966"></script>
+<script src="track.js?v=966"></script>
+<script src="cloud.js?v=966"></script>
+<script src="pay.js?v=966"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -197,6 +197,13 @@
 
   var 금액 = '', busy = false, 열림 = true;
   var 로그인됨 = function () { return !!(window.ChaeksaCloud && ChaeksaCloud.signedIn && ChaeksaCloud.signedIn()); };
+  // 이 기기에서 시작하지 않은 로그인(cloud.js hold — 남이 보낸 링크일 수 있다)인가(2026-09-22).
+  // 그러면 그 계정의 주문을 보여 주지 않고(이미산것), 결제 전에 어느 계정인지 한 번 묻는다(아래 submit).
+  var 남의로그인 = function () {
+    try { return 로그인됨() && !!(ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold()); } catch (e) { return false; }
+  };
+  // 묻는 말에 계정 메일을 적으려고 계정 정보만 받아 둔다 — 메일 칸은 채우지 않는다(위 막로그인).
+  if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
   function 단추() {
     send.disabled = busy || !열림;
     send.textContent = busy ? '결제창을 여는 중…'
@@ -220,8 +227,9 @@
   }).catch(function () {});
 
   // 결제는 됐는데 신청서가 그 주문에 못 붙은 채 떠난 분이 다시 오면, 새로 결제하게 두지 않고 그 주문에 붙이게 한다.
+  // 이 기기에서 시작하지 않은 로그인이면 그 계정의 주문(주문번호)도, 그 주문에 신청서를 붙이는 길도 내지 않는다.
   function 이미산것() {
-    if (!로그인됨() || !ChaeksaPay.mine) return;
+    if (!로그인됨() || 남의로그인() || !ChaeksaPay.mine) return;
     ChaeksaPay.mine().then(function (rows) {
       if (!Array.isArray(rows)) return;
       var 두주 = Date.now() - 14 * 24 * 3600 * 1000, 보냄 = F.최근보냄();
@@ -268,6 +276,10 @@
       try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, at: Date.now() })); } catch (x) {}
       try { ChaeksaCloud.signInWith('kakao'); } catch (err) { say(String((err && err.message) || err), true); }
       return;
+    }
+    if (남의로그인()) {
+      var em = ChaeksaCloud.email();
+      if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 주문은 이 계정에 남아요.')) return;
     }
     busy = true; 단추(); say('');
     // 결제창에서 결제하면 결제 뒤 화면으로 넘어가고, 거기서 이 신청서가 그 주문에 붙는다.

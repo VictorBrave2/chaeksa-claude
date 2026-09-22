@@ -127,11 +127,18 @@ def transform(body, slug):
     return title, tags, b
 
 def summary_lines(body):
-    """「이 글의 답 세 줄」 — 「답부터 드리면」 줄부터 셋. 그 줄이 없으면 첫 문단 셋."""
-    ps = [strip(p) for p in re.findall(r'<p>(.*?)</p>', body, re.S)]
-    ps = [p for p in ps if 12 < len(p) < 120]
-    i = next((k for k, p in enumerate(ps) if p.startswith('답부터')), 0)
-    return ps[i:i + 3]
+    """「이 글의 답 세 줄」 — 「답부터 드리면」 줄부터 셋. 그 줄이 없으면 첫 문단 셋.
+    「▸」 목록 문단(<br> 로 나눈 항목)은 한 줄로 붙이지 않는다 — 항목을 줄로 나눈다(09-22: lunar-december 셋째 줄이
+    「▸ … ▸ … ▸ …」로 붙었다). 목록은 대개 앞 문장을 한 번 더 적은 것이라 글 줄로 셋을 채우고, 모자랄 때만 항목을 쓴다."""
+    ps = []
+    for p in re.findall(r'<p>(.*?)</p>', body, re.S):
+        항목 = [x for x in (strip(x) for x in re.split(r'<br\s*/?>', p)) if x]
+        if len(항목) > 1 and all(x.startswith('▸') for x in 항목): ps += [(True, x) for x in 항목]
+        else: ps.append((False, strip(p)))
+    ps = [(목록, p) for 목록, p in ps if 12 < len(p) < 120]
+    i = next((k for k, (_, p) in enumerate(ps) if p.startswith('답부터')), 0)
+    글 = [p for 목록, p in ps[i:] if not 목록]
+    return 글[:3] if len(글) >= 3 else [p for _, p in ps[i:i + 3]]
 
 def monthly_summary(body, y, mo):
     """월별 종합 글(tools_wolbyeol.py) — 으뜸이 있으면 그것이 답이다(68조). 점수 · 순위는 없다(60 · 65조)."""
