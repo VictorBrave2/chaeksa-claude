@@ -875,9 +875,11 @@
   function renderGyeok() {
     const box = $('gyeokBox'); if (!box) return;
     const card = box.closest('.card');
-    const T = window.ChaeksaTypecard, Gk = window.ChaeksaGyeok;
-    if (!T || !Gk) { if (card) card.classList.add('hide'); return; }
-    let J; try { J = T.gyeok(R); } catch (e) { if (card) card.classList.add('hide'); return; }
+    // 격은 판정엔진 원국 층의 성패(층.성패)에서 읽는다(63조 문 하나 · 09-23 「층격이 나의 관점이긴해」) — typecard 를 직접 부르지 않는다.
+    // (#gyeokBox 는 지금 어느 화면에도 없다. 되살릴 때 정통사주 3장 · 원국 탭과 같은 격이 나오게 둔다.)
+    const P = window.ChaeksaPanjeong, Gk = window.ChaeksaGyeok;
+    if (!P || !Gk) { if (card) card.classList.add('hide'); return; }
+    let J; try { const s = P.판정(R, today, { 운들: [] }).층들[0].성패; J = s ? { name: s.격, 판정: s.판정, 상신: s.상신, 근거: s.근거 || {}, 잰것: {} } : null; } catch (e) { if (card) card.classList.add('hide'); return; }
     if (!J || !J.판정) { if (card) card.classList.add('hide'); return; }
     if (card) card.classList.remove('hide');
 

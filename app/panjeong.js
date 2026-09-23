@@ -117,7 +117,26 @@
       // 값은 새로 재지 않는다 — 있는 재료(궁통보감 120칸 표 · 자평진전 조항표)를 이 층에 실어 줄 뿐이다.
       try { const C = global.ChaeksaClassic; if (C && C.gungtong) 층.조후 = C.gungtong(R); } catch (e) {}
       try { const GS = global.ChaeksaGise; if (GS && GS.기세) { 층.기세 = GS.기세(R); 층.원류 = GS.원류(R, 층.기세); } } catch (e) {}   // 66조 원국의 기세
-    try { const T = global.ChaeksaTypecard; if (T && T.gyeok) { const J = T.gyeok(R); 층.성패 = { 격: J.name, 판정: J.판정, 파격: J.판정 === '깨졌다', 상신: J.상신 || null }; } } catch (e) {}
+      // 격의 출처는 층격 하나다(09-23 사장님 「층격이 나의 관점이긴해」 · 법전 37~39조 취격). 전에는 여기만 자평진전 조항표(typecard)의 격 이름을 실어서
+      // 같은 사람 격이 둘로 나왔다(09-23 계산으로 지은 300명: 이름 97명 · 같은 이름인데 성패 80명이 달랐다). 이름 · 성패 · 상신 모두 위 층.격(층격)이 낸 것 그대로다.
+      // 층격이 격을 못 잡을 때(월령 본기가 일간과 같은 오행이고 중기 · 여기도 안 뜬 자리 — 건록 · 양인)만 조항표 이름으로 메우고, 출처를 남긴다.
+      if (격 && 격.지금격) {
+        const j = 격.성패 || {};
+        층.성패 = { 격: 격.지금격, 판정: j.판정 || '미상', 파격: j.판정 === '깨졌다', 상신: j.상신 || null, 근거: j.근거 || null, 출처: '층격' };
+      } else {
+        // 메우는 이름은 건록 · 양인 둘뿐이다 — 39조 ⑤(아무것도 안 떴으면 본기)에서 본기가 일간과 같은 오행이면 비견 · 겁재 자리, 곧 록겁이다.
+        // 이름 가르기는 격표(typecard.gyeokName)의 비겁 규칙 그대로: 양간이 왕지(子午卯酉) 겁재월에 났으면 양인, 아니면 건록. 성패는 격표(gyeokguk.judge)가 낸다.
+        // typecard.gyeok 을 그대로 부르면 월지가 낀 삼합국이 투출 없이 서 있을 때 국 천간으로 지장간을 갈아 끼워서 — 庚 일간 申월 申子辰 · 甲 일간 寅월 寅午戌 은 상관격,
+        // 丙 일간 午월 寅午戌 은 양인 자리가 건록으로 — 39조 ①(국은 그 오행이 투출해야 격)과 어긋났다(09-23 반박 실측: 2026-09 ~ 2027-08 택일 칸 5곳 · 명식 넷). 출처 표지는 화면들이 읽는 그대로 'typecard' 로 둔다.
+        try {
+          const Gk = global.ChaeksaGyeok, mb = R.pillars.month.branch, ds = R.pillars.day.stem, h0 = (E.HIDDEN[mb] || [])[0], 본 = typeof h0 === 'number' ? h0 : (h0 ? h0[0] : null);
+          if (Gk && Gk.judge && 본 != null && E.STEM_ELEM[본] === E.STEM_ELEM[ds]) {
+            const 이름 = (E.TEN_GODS[E.tenGod(ds, 본)] === '겁재' && E.STEM_YANG[ds] === 1 && [0, 3, 6, 9].indexOf(mb) >= 0) ? '양인' : '건록';
+            const J = Gk.judge(R, 이름);
+            층.성패 = { 격: 이름, 판정: J.판정, 파격: J.판정 === '깨졌다', 상신: J.상신 || null, 근거: J.근거 || null, 출처: 'typecard' };
+          }
+        } catch (e) {}
+      }
       층.이력 = 원표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));
       층들.push(층); 앞 = 층;
     }

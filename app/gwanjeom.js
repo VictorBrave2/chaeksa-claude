@@ -212,12 +212,16 @@
     return out;
   }
 
+  // 원국 격을 층격이 못 잡아 엔진이 격표 이름(건록 · 양인)으로 메운 사람(층.성패.출처)은 운 층마다 「규칙 보완 필요」가 된다 — 운의 말이 아니라 원국의 말이다.
+  // 3장이 이미 그 격을 말했으니 열 해 · 한 해마다 「격을 잡을 글자가 비어요」를 되풀이하지 않는다(09-23 격 출처를 층격 하나로 합칠 때).
+  const 원국격메움 = (판) => { const s = 판 && 판.층들 && 판.층들[0] && 판.층들[0].성패; return !!(s && s.출처 === 'typecard'); };
+
   function 대운(R, 성별) {
     const P = global.ChaeksaPanjeong, list = (R.daeun && R.daeun.list) || [], ds = R.pillars.day.stem;
     if (!P || !list.length) return [];
     return list.map(d => {
-      let 층 = null, 조후 = null;
-      try { const 판 = P.판정(R, new Date(d.startYear, 6, 1), { 운들: [{ name: '대운', stem: d.stem, branch: d.branch }] }); 층 = 판.층들[1]; 조후 = 판.층들[0].조후; } catch (e) {}
+      let 층 = null, 조후 = null, 메움 = false;
+      try { const 판 = P.판정(R, new Date(d.startYear, 6, 1), { 운들: [{ name: '대운', stem: d.stem, branch: d.branch }] }); 층 = 판.층들[1]; 조후 = 판.층들[0].조후; 메움 = 원국격메움(판); } catch (e) {}
       const 본기 = (E.HIDDEN[d.branch] || [])[0], 본 = typeof 본기 === 'number' ? 본기 : 본기[0];
       const 하늘신 = E.TEN_GODS[E.tenGod(ds, d.stem)], 땅신 = E.TEN_GODS[E.tenGod(ds, 본)];
       const 줄 = [
@@ -231,7 +235,7 @@
       }
       if (층) {
         if (층.범주 === '구조 전환' && 층.격 && 층.격.지금격) 줄.push('이 열 해에는 격이 ' + 층.격.지금격 + '격으로 바뀌어요.');
-        else if (범주말[층.범주]) 줄.push(범주말[층.범주]);
+        else if (범주말[층.범주] && !(메움 && 층.범주 === '규칙 보완 필요')) 줄.push(범주말[층.범주]);
       }
       운줄(R, d.stem, d.branch, 성별, '이 대운').forEach(t => 줄.push(t));
       return { 간지: E.STEMS_KO[d.stem] + E.BRANCHES_KO[d.branch] + '(' + E.STEMS[d.stem] + E.BRANCHES[d.branch] + ')', 시작나이: d.startAge, 끝나이: d.endAge, 시작해: d.startYear, 줄 };
@@ -245,8 +249,8 @@
     for (let y = 첫해; y < 첫해 + 몇해; y++) {
       const st = ((y - 4) % 10 + 10) % 10, br = ((y - 4) % 12 + 12) % 12;
       const 대 = list.filter(d => d.startYear <= y).pop(), 운들 = (대 ? [{ name: '대운', stem: 대.stem, branch: 대.branch }] : []).concat([{ name: '세운', stem: st, branch: br }]);
-      let 층 = null, 조후 = null;
-      try { const 판 = P.판정(R, new Date(y, 6, 1), { 운들 }); 층 = 판.층들[판.층들.length - 1]; 조후 = 판.층들[0].조후; } catch (e) {}
+      let 층 = null, 조후 = null, 메움 = false;
+      try { const 판 = P.판정(R, new Date(y, 6, 1), { 운들 }); 층 = 판.층들[판.층들.length - 1]; 조후 = 판.층들[0].조후; 메움 = 원국격메움(판); } catch (e) {}
       const 본기 = (E.HIDDEN[br] || [])[0], 본 = typeof 본기 === 'number' ? 본기 : 본기[0];
       const 하늘신 = E.TEN_GODS[E.tenGod(ds, st)], 땅신 = E.TEN_GODS[E.tenGod(ds, 본)];
       const 줄 = [
@@ -260,7 +264,7 @@
       }
       if (층) {
         if (층.범주 === '구조 전환' && 층.격 && 층.격.지금격) 줄.push('이 해에는 격이 ' + 층.격.지금격 + '격으로 바뀌어요.');
-        else if (범주말[층.범주]) 줄.push(범주말[층.범주].replace('열 해', '한 해'));
+        else if (범주말[층.범주] && !(메움 && 층.범주 === '규칙 보완 필요')) 줄.push(범주말[층.범주].replace('열 해', '한 해'));
       }
       운줄(R, st, br, 성별, '이 해').forEach(t => 줄.push(t));
       if (대 && 대.startYear === y) 줄.unshift('이 해에 대운이 ' + E.STEMS_KO[대.stem] + E.BRANCHES_KO[대.branch] + ' 대운으로 바뀌어요. 열 해의 바탕이 바뀌는 해예요.');
