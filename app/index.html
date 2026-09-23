@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=985">
+<link rel="stylesheet" href="style.css?v=986">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -355,6 +355,19 @@
       <div id="gcTabOut" data-plain="1"></div>
     </div>
 
+    <!-- 연애궁합(09-24) — 법전 72조. 명리는 ssom-gwanjeom.js, 원고는 ssom-wongo.js, 그리기는 ssom.js. 그 사람은 궁합총론과 같이 고른다. -->
+    <div class="tab hide" data-tab="ssom">
+      <section class="card"><h2>연애궁합</h2><p class="hint" style="margin:0 0 14px">일지는 어떤 사람을 바라는지를, 식상은 상대를 어떻게 대하는지를 보여 줘요. 두 방향을 따로 읽어 지금 단계의 여섯 질문에 답해요. 지금은 막 썸을 시작한 두 사람부터예요.</p>
+        <div id="ssPickWrap" class="hide">
+          <label for="ssPick">그 사람</label>
+          <select id="ssPick"></select>
+        </div>
+        <p class="hint hide" id="ssNone" style="margin:0 0 4px"></p>
+        <button class="btn ghost" id="btnSsAdd" type="button">그 사람 생년월일 넣기</button>
+      </section>
+      <div id="ssTabOut" data-plain="1"></div>
+    </div>
+
     <!-- 나 -->
     <div class="tab hide" data-tab="me">
       <!-- 원국 탭 = 홈 밴드의 펼친 판(2026-09-14 사장님 「원국 탭도 말투랑 다 바꿔줘 옛날식이네」). wongook.js 가 그린다.
@@ -523,7 +536,9 @@
   <!-- 2026-09-21 사장님 「원국 탭과 택일 탭 사이에 정통사주」「그냥 넣어~」 — 세 고전으로 푼 열세 장(jeongtong.js). 조립기라 원가 0, 무료다. -->
   <button data-go="jeongtong"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg><span>정통사주</span></button>
   <!-- 2026-09-23 사장님 「아래탭에 넣어」 — 궁합총론(두 분의 여덟 글자를 장마다 나란히). 조립기라 원가 0, 무료다. 9,900원 궁합 장(gunghap)과 다른 탭(chongnon). -->
-  <button data-go="chongnon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>궁합</span></button>
+  <button data-go="chongnon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>궁합총론</span></button>
+  <!-- 2026-09-24 사장님 「궁합이랑 택일 사이에 넣고」 — 연애궁합(법전 72조 일지 × 식상 두 방향, 미리 쓴 원고). 지금은 전체 무료, 토스 심사 뒤 유료. -->
+  <button data-go="ssom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>연애궁합</span></button>
   <!-- 2026-09-11 사장님 「출산택일 탭을 만들던지 — 출산택일을 하러 가는 게 너무 어렵다」 -->
   <button data-go="taekil"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 1.8"/><path d="M9.5 3h5"/></svg><span>택일</span></button>
 </nav>
@@ -633,45 +648,45 @@
   </div>
 </div>
 
-<script src="config.js?v=985"></script>
-<script src="track.js?v=985"></script>
-<script src="cloud.js?v=985"></script>
-<script src="usage.js?v=985"></script>
-<script src="places.js?v=985"></script>
-<script src="people.js?v=985"></script>
-<script src="astro.js?v=985"></script>
-<script src="lunar.js?v=985"></script>
-<script src="engine.js?v=985"></script>
-<script src="saenggeuk.js?v=985"></script><script src="gise.js?v=985"></script>
-<script src="panjeong.js?v=985"></script>
-<script src="questions.js?v=985"></script>
-<script src="wongook.js?v=985"></script>
-<script src="seolmyeongseo.js?v=985"></script>
-<script src="chaeyong.js?v=985"></script>
-<script src="brief.js?v=985"></script>
-<script src="chaeksadan.js?v=985"></script>
-<script src="geunamja.js?v=985"></script>
-<script src="maeum.js?v=985"></script>
-<script src="gunghap.js?v=985"></script>
-<script src="sheets.js?v=985"></script>
-<script src="hwakin.js?v=985"></script>
-<script src="mun.js?v=985"></script>
-<script src="mun/all.js?v=985"></script>
-<script src="typecard.js?v=985"></script>
-<script src="gyeokguk.js?v=985"></script>
-<script src="memo.js?v=985"></script>
-<script src="classic.js?v=985"></script>
-<script src="gungtong-wonmun.js?v=985"></script><script src="ilju.js?v=985"></script><script src="yeongyeok.js?v=985"></script><script src="samyeong.js?v=985"></script><script src="gwanjeom.js?v=985"></script><script src="jeongtong.js?v=985"></script>
-<script src="gunghap-gwanjeom.js?v=985"></script><script src="gunghap-chongnon.js?v=985"></script>
-<script src="taekilsim.js?v=985"></script>
-<script src="stories.js?v=985"></script>
-<script src="tongbyeon.js?v=985"></script>
-<script src="rules-wealth-love.js?v=985"></script>
-<script src="rules-health-study-move.js?v=985"></script>
-<script src="share.js?v=985"></script>
-<script src="ai.js?v=985"></script>
-<script src="pay.js?v=985"></script>
-<script src="app.js?v=985"></script>
-<script src="landing.js?v=985"></script>
+<script src="config.js?v=986"></script>
+<script src="track.js?v=986"></script>
+<script src="cloud.js?v=986"></script>
+<script src="usage.js?v=986"></script>
+<script src="places.js?v=986"></script>
+<script src="people.js?v=986"></script>
+<script src="astro.js?v=986"></script>
+<script src="lunar.js?v=986"></script>
+<script src="engine.js?v=986"></script>
+<script src="saenggeuk.js?v=986"></script><script src="gise.js?v=986"></script>
+<script src="panjeong.js?v=986"></script>
+<script src="questions.js?v=986"></script>
+<script src="wongook.js?v=986"></script>
+<script src="seolmyeongseo.js?v=986"></script>
+<script src="chaeyong.js?v=986"></script>
+<script src="brief.js?v=986"></script>
+<script src="chaeksadan.js?v=986"></script>
+<script src="geunamja.js?v=986"></script>
+<script src="maeum.js?v=986"></script>
+<script src="gunghap.js?v=986"></script>
+<script src="sheets.js?v=986"></script>
+<script src="hwakin.js?v=986"></script>
+<script src="mun.js?v=986"></script>
+<script src="mun/all.js?v=986"></script>
+<script src="typecard.js?v=986"></script>
+<script src="gyeokguk.js?v=986"></script>
+<script src="memo.js?v=986"></script>
+<script src="classic.js?v=986"></script>
+<script src="gungtong-wonmun.js?v=986"></script><script src="ilju.js?v=986"></script><script src="yeongyeok.js?v=986"></script><script src="samyeong.js?v=986"></script><script src="gwanjeom.js?v=986"></script><script src="jeongtong.js?v=986"></script>
+<script src="gunghap-gwanjeom.js?v=986"></script><script src="ssom-gwanjeom.js?v=986"></script><script src="ssom-wongo.js?v=986"></script><script src="ssom.js?v=986"></script><script src="gunghap-chongnon.js?v=986"></script>
+<script src="taekilsim.js?v=986"></script>
+<script src="stories.js?v=986"></script>
+<script src="tongbyeon.js?v=986"></script>
+<script src="rules-wealth-love.js?v=986"></script>
+<script src="rules-health-study-move.js?v=986"></script>
+<script src="share.js?v=986"></script>
+<script src="ai.js?v=986"></script>
+<script src="pay.js?v=986"></script>
+<script src="app.js?v=986"></script>
+<script src="landing.js?v=986"></script>
 </body>
 </html>

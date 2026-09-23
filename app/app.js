@@ -252,6 +252,7 @@
     try {
       // 궁합총론 탭에서 넣은 사람은 곧 그 사람이다 — 첫 사람이어도 바로 그린다. 고친 사람이면 새 생년월일로 다시 그린다.
       if (document.querySelector('.tab[data-tab="chongnon"]:not(.hide)')) { if (새) 궁합고르기(새); renderChongnon(); }
+      if (document.querySelector('.tab[data-tab="ssom"]:not(.hide)')) { if (새) 궁합고르기(새); renderSsom(); }
     } catch (e) {}
   }
 
@@ -443,6 +444,7 @@
     if (tab === 'geunamja') renderGeunamja();
     if (tab === 'maeum') renderMaeum();
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
+    if (tab === 'ssom') { try { renderSsom(); } catch (e) { try { console.warn('연애궁합 탭:', e); } catch (x) {} } }
     if (tab === 'chongnon') { try { renderChongnon(); } catch (e) { try { console.warn('궁합총론 탭:', e); } catch (x) {} } }
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
@@ -1210,6 +1212,31 @@
       const 해시 = h.slice(i);
       if (location.hash === 해시) goHash(true); else location.hash = 해시;
     }));
+  }
+
+  // ───── 연애궁합 탭 (2026-09-24, 법전 72조) ─────
+  // 그 사람 고르기는 궁합총론과 같은 기억(궁합그사람)을 쓴다 — 두 탭에서 같은 사람을 보게.
+  function renderSsom() {
+    const P = People(), SP = window.ChaeksaSsomPage;
+    const out = $('ssTabOut'), sel = $('ssPick'), wrap = $('ssPickWrap'), none = $('ssNone'), add = $('btnSsAdd');
+    if (!out || !sel) return;
+    const 안내 = (말, 단추, 누르면) => {
+      wrap.classList.add('hide'); none.textContent = 말; none.classList.remove('hide');
+      add.textContent = 단추; add.classList.remove('ghost'); add.onclick = 누르면; out.innerHTML = '';
+    };
+    if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
+    if (!P || !SP) { 안내('지금은 연애궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
+    const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
+    if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
+    none.classList.add('hide'); wrap.classList.remove('hide');
+    add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
+    const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
+    sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
+      + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
+    sel.value = 고름;
+    sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
+    if (!고름) { out.innerHTML = ''; return; }
+    SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))));
   }
 
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────
