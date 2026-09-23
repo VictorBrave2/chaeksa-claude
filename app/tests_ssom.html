@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>썸 궁합 시험</title>
+<meta name="robots" content="noindex">
+</head><body><div id="out"></div>
+<script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
+<script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script>
+<script>
+// 법전 72조 — 사장님 사례: 남 1992-04-21 00:20 서울 · 여 1999-12-20 20:00 서울. 남이 「나」.
+const E = ChaeksaEngine, S = ChaeksaSsom, out = document.getElementById('out');
+const 남 = E.calc({ year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 });
+const 여 = E.calc({ year: 1999, month: 12, day: 20, hour: 20, minute: 0, gender: 'F', longitude: 126.98 });
+const 시험 = [
+  ['남 丁 일간 — 식상은 戊 상관만(申 · 辰 지장간)', S.식상(남).키, '戊상관'],
+  ['여 丙 일간 — 戊 식신 · 己 상관 둘 다', S.식상(여).키, '戊식신+己상관'],
+  ['남 일지 卯 · 여 일지 午', S.일지(남) + S.일지(여), '卯午'],
+  ['짝 열쇠(남이 나)', S.짝(남, 여).키, '卯×戊식신+己상관 / 午×戊상관'],
+  ['첫 원고가 그 열쇠에 붙어 있고 질문 여섯', (ChaeksaSsomWongo[S.짝(남, 여).키] || []).length, 6],
+];
+let 통과 = 0, 실패 = 0;
+시험.forEach(([이름, 실제, 기대]) => { const ok = 실제 === 기대; ok ? 통과++ : 실패++; out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + 이름 + (ok ? '' : ' — 기대 ' + 기대 + ' 실제 ' + 실제) + '</h2>'); });
+out.insertAdjacentHTML('afterbegin', '<p>' + 통과 + ' 통과 · ' + 실패 + ' 실패</p>');
+</script></body></html>

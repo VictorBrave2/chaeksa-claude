@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>궁합총론 — 두 분의 여덟 글자를 나란히 · 책사</title>
-<meta name="description" content="두 분의 생년월일시를 넣으면 고전이 한 사람 안에서 짝을 읽는 법을 두 분에게 각각 재서 장마다 나란히 놓아 드립니다. 점수로 합치지 않습니다.">
+<title>썸 궁합 — 막 시작한 두 사람의 여섯 질문 · 책사</title>
+<meta name="description" content="두 분의 일지와 식상으로, 내가 바라는 것을 상대가 어떻게 주는지 · 상대가 바라는 것을 내가 어떻게 주는지 양쪽을 따로 읽어 썸의 여섯 질문에 답합니다.">
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,14 +18,14 @@
   .jt-form .jt-notime{grid-column:1/-1;flex-direction:row;align-items:center;gap:8px;font-size:14px;color:var(--ink2);margin-top:-2px}
   .jt-form .jt-notime input{width:18px;height:18px;margin:0;padding:0}
   .jt-form input:disabled{opacity:.45}
+  .ss-q{margin:14px 0}.ss-q summary{font-weight:700;cursor:pointer;padding:10px 0}.ss-q p{line-height:1.85;margin:0 0 10px}.ss-say{border-left:3px solid var(--line,#ccc);padding:6px 12px;margin:0 0 10px;color:var(--ink2)}.ss-why{font-size:13px;color:var(--ink3);line-height:1.7}
 </style>
 </head>
 <body>
 <div class="doc">
   <a class="back" href="./">← 책사 홈</a>
-  <h1>궁합총론<br>두 분의 여덟 글자를 나란히</h1>
-  <p class="lead">고전은 두 사람 사주를 맞대는 법을 따로 두지 않았습니다. 한 사람 안에서 짝을 읽는 법만 남겼어요. 그 법을 두 분에게 각각 재서 장마다 나란히 놓아 드려요. 점수로 합치지 않습니다. 회원가입 없이 무료예요.</p>
-  <p class="lead"><a href="ssom.html">막 썸을 시작했다면 — 썸 궁합 여섯 질문 →</a></p>
+  <h1>썸 궁합<br>막 시작한 두 사람의 여섯 질문</h1>
+  <p class="lead">일지는 어떤 사람을 바라는지를, 식상은 상대를 어떻게 대하는지를 보여 줘요. 내가 바라는 것을 상대가 어떻게 주는지, 상대가 바라는 것을 내가 어떻게 주는지 두 방향을 따로 읽어요. 점수로 합치지 않습니다. 지금은 무료예요.</p>
   <form id="gcForm" class="card">
     <div class="gc-head">나</div>
     <div class="jt-form">
@@ -43,7 +43,8 @@
       <label>성별<select id="gcGB"><option value="M">남</option><option value="F">여</option><option value="">모름</option></select></label>
       <label>태어난 곳<select id="gcPlaceB"><option value="KR:서울">서울</option></select></label>
     </div>
-    <button type="submit" class="btn" style="width:100%">나란히 놓아 보기</button>
+    <div class="jt-form"><label>지금 두 사람은<select id="gcStage"><option value="ssom">막 썸을 시작했어요</option><option disabled>사귀는 중 (준비 중)</option><option disabled>오래 만났어요 (준비 중)</option></select></label></div>
+    <button type="submit" class="btn" style="width:100%">여섯 질문 보기</button>
   </form>
   <div id="gcOut"></div>
 </div>
@@ -57,16 +58,8 @@
 <script src="engine.js?v=985"></script>
 <script src="saenggeuk.js?v=985"></script><script src="gise.js?v=985"></script>
 <script src="panjeong.js?v=985"></script>
-<script src="typecard.js?v=985"></script>
-<script src="gyeokguk.js?v=985"></script>
-<script src="classic.js?v=985"></script>
-<script src="gungtong-wonmun.js?v=985"></script>
-<script src="yeongyeok.js?v=985"></script>
-<script src="samyeong.js?v=985"></script>
-<script src="gwanjeom.js?v=985"></script>
-<script src="maeum.js?v=985"></script>
-<script src="geunamja.js?v=985"></script>
-<script src="gunghap-gwanjeom.js?v=985"></script>
-<script src="gunghap-chongnon.js?v=985"></script>
+<script src="ssom-gwanjeom.js?v=985"></script>
+<script src="ssom-wongo.js?v=985"></script>
+<script src="ssom.js?v=985"></script>
 </body>
 </html>
