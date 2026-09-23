@@ -18,7 +18,12 @@
       box.innerHTML = 근거 + '<div class="card"><p>두 분 조합의 글은 아직 쓰고 있어요. 조합마다 사람이 쓰고 검수한 글만 내놓아서, 다 채우기까지 시간이 걸려요.</p><p class="ss-why">조합 ' + esc(z.키) + '</p></div>';
       return;
     }
-    box.innerHTML = 근거 + S.질문.map((q, i) => '<details class="ss-q card"' + (i === 0 ? ' open' : '') + '><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + (원고[i] || []).map(줄).join('') + '</details>').join('');
+    // 첫 줄(굵은 요약)과 끝 줄(굵은 맺음)은 따로 꾸민다 — 문장이 한 덩어리로 보이던 것(09-24)
+    const 칸 = (글) => 글.map((t, j) => { let h = 줄(t);
+      if (j === 0 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-lead">');
+      else if (j === 글.length - 1 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-end">');
+      return h; }).join('');
+    box.innerHTML = 근거 + S.질문.map((q, i) => '<details class="ss-q card"' + (i === 0 ? ' open' : '') + '><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + 칸(원고[i] || []) + '</details>').join('');
   }
 
   function 세우기() {

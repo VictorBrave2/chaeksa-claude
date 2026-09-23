@@ -1686,3 +1686,13 @@ details.fold > .tiles { margin-top: 10px; }
 .gc-links a{display:block;padding:11px 2px;font-size:15px;color:var(--ink);text-decoration:none;border-top:1px solid var(--line)}
 .gc-links a:first-child{border-top:0}
 @media (max-width:560px){.gc-two{grid-template-columns:1fr;gap:10px}}
+
+/* 연애궁합(ssom.js) — 문단마다 띄우고, 대사는 상자로, 굵은 첫 줄은 요약으로 (사장님 09-24 「문장을 구분하기가 어렵네」) */
+.ss-q{margin:14px 0}
+.ss-q summary{font-weight:700;cursor:pointer;padding:4px 0 12px;font-size:16px;line-height:1.6}
+.ss-q p{line-height:1.9;margin:0 0 16px}
+.ss-q p:last-child{margin-bottom:0}
+.ss-q p.ss-lead{font-size:16.5px;padding:12px 14px;border-radius:12px;background:var(--bg2,rgba(127,127,127,.08))}
+.ss-q p.ss-say{margin:-4px 0 18px;padding:10px 14px;border-left:3px solid var(--accent,#b23a48);background:rgba(127,127,127,.07);border-radius:0 10px 10px 0;color:var(--ink2)}
+.ss-q p.ss-end{margin-top:22px;padding-top:14px;border-top:1px dashed rgba(127,127,127,.35)}
+.ss-why{font-size:13px;color:var(--ink3);line-height:1.8}
