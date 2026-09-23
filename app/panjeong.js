@@ -340,7 +340,10 @@
       case '인 균형': return '격신 ' + G.을를(N(g)) + ' 재가 알맞게 깎는 날이에요. 생각과 활동이 맞아 올라가요. ' + (근 ? 근 + '.' : '');
       case '인 박살': return '격신 ' + G.을를(N(g)) + ' 재가 부수는 날이에요. 근거 없이 돈만 좇게 돼요. ' + (근 ? 근 + '.' : '');
       case '식상 풀림': return G.이가(N(r.인성)) + ' ' + G.을를(N(g)) + ' 누르고 있었는데, ' + G.이가(N(r.상대)) + ' ' + G.을를(N(r.인성)) + ' 쳐서 눌림이 풀리는 날이에요. 몸이 움직이고 일이 늘어요. 돈은 그 뒤에 와요.';
-      case '구조 전환': return '격이 바뀐 날이에요. ' + (근 ? 근 + '. ' : '') + '판이 흔들리니 크게 걸지 않아요.';
+      case '구조 전환': {   // 71조 발동이면 「천간의 갑목(甲)이 묶여 월령 속 을목(乙)이 대신 나서요. 정관격으로 봐요.」
+        const 발 = G.발동말 && 층.격 ? G.발동말(층.격) : null;
+        return '격이 바뀐 날이에요. ' + (발 ? 발 + ' ' : (근 ? 근 + '. ' : '')) + '판이 흔들리니 크게 걸지 않아요.';
+      }
       default: return '규칙 보완 필요 — 이 경우를 보는 규칙이 아직 없어요.';
     }
   }
@@ -358,6 +361,9 @@
       const 격신B = pB.오늘.격 && pB.오늘.격.주인 && !pB.오늘.격.주인.운 ? 글B.find(g => g.key === pB.오늘.격.주인.key) : null;
       if (opts && opts.전부) return 글B.filter(g => !g.운 && g.산다 && !g.일간).map(g => ({ stem: g.stem, branch: null, name: '그 사람', 힘: g.힘 }));
       if (격신B && 격신B.산다) return [{ stem: 격신B.stem, branch: null, name: '그 사람', 힘: 격신B.힘 }];
+      // 71조 — 그 사람의 격을 월령 지장간의 발동 글자가 잡고 있으면 그 글자가 그 사람이다(힘은 지장간 힘 그대로, 46조).
+      const 주B = pB.오늘.격 && pB.오늘.격.주인;
+      if (주B && 주B.발동) return [{ stem: 주B.stem, branch: null, name: '그 사람', 힘: 주B.힘 }];
       if (pB.오늘.격 && pB.오늘.격.지금격) { const 본기 = (E.HIDDEN[B.pillars.month.branch] || [])[0]; const st = typeof 본기 === 'number' ? 본기 : 본기[0]; return [{ stem: st, branch: null, name: '그 사람', 힘: E.NATAL_WEIGHT.monthBranch }]; }
       return [];
     };
