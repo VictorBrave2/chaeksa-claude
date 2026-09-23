@@ -249,6 +249,10 @@
       // 첫 사람을 넣어도 화면이 그대로였다(2026-09-22 점검). 두 경우 다 있는 단추(btnStAdd)로 본다 — 혼자 보는 이야기에는 없다.
       if (새 && $('btnStAdd') && document.querySelector('.tab[data-tab="story"]:not(.hide)')) { window.현재그사람 = 새; renderStory(); }
     } catch (e) {}
+    try {
+      // 궁합총론 탭에서 넣은 사람은 곧 그 사람이다 — 첫 사람이어도 바로 그린다. 고친 사람이면 새 생년월일로 다시 그린다.
+      if (document.querySelector('.tab[data-tab="chongnon"]:not(.hide)')) { if (새) 궁합고르기(새); renderChongnon(); }
+    } catch (e) {}
   }
 
   function wirePeople() {
@@ -384,6 +388,12 @@
   // 결제 이력을 한 번이라도 제대로 받았는가. 못 받았으면 탭을 옮길 때마다 다시 묻는다.
   let 결제이력받음 = false;
 
+  // 궁합총론 탭(chongnon) — 고른 그 사람 · 마지막으로 그린 두 사람 · 13장 링크로 건너갈 때 넘길 그 사람.
+  // go() 가 읽으니 go() 보다 위에 둔다(아래에 두면 부팅 때 TDZ 로 죽는다).
+  const 궁합고름키 = 'chaeksa.chongnonWho';
+  let 궁합그사람 = (() => { try { return localStorage.getItem(궁합고름키) || null; } catch (e) { return null; } })();
+  let 궁합그린것 = '', 궁합넘김 = null;
+
   // 홈은 보던 자리를 기억한다 (2026-09-12 사장님 「콘텐츠 들어갔다가 뒤로가면 스크롤 다시
   // 내려야하는게 너무 불편해」). 표지를 눌러 들어갔다 「← 홈」 으로 돌아오면 그 표지 앞에 선다.
   // **홈 하나만** 기억한다 — 다른 화면은 사람이나 장이 바뀌면 길이도 바뀌어서 옛 자리가 엉뚱한 데다.
@@ -433,11 +443,17 @@
     if (tab === 'geunamja') renderGeunamja();
     if (tab === 'maeum') renderMaeum();
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
+    if (tab === 'chongnon') { try { renderChongnon(); } catch (e) { try { console.warn('궁합총론 탭:', e); } catch (x) {} } }
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
     if (tab === 'story') renderStory();
     if (tab === 'memo') renderMemo();
     if (tab === 'taekil') wireTaekil();
+    // 궁합총론 13장 링크로 건너왔으면 거기서 보던 그 사람을 이 장에서도 골라 둔다 — 첫 사람으로 바뀌어 있으면 엉뚱한 사람을 보게 된다.
+    if (궁합넘김) {
+      const id = 궁합넘김; 궁합넘김 = null;
+      try { const e = 고르는칸[tab] ? $(고르는칸[tab]) : null; if (e && [...e.options].some(o => o.value === id)) { e.value = id; if (e.onchange) e.onchange(); } } catch (e) {}
+    }
   }
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
 
@@ -1135,6 +1151,63 @@
     const bb = box.querySelector('#btnMmBuy');
     if (bb) bb.onclick = () => 결제누름(bb, 'maeum', 열쇠);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ───── 궁합총론 탭 (2026-09-23 사장님 「아래탭에 넣어」) ─────
+  // 나는 지금 보는 원국(profile), 그 사람은 넣어 둔 사람 가운데 고른다. 명리는 gunghap-gwanjeom.js, 그리기는 gunghap-chongnon.js.
+  // 그 사람은 손님이 고른다 — 목록 첫 사람으로 멋대로 열지 않는다(09-13 이야기 탭과 같은 규칙). 한 번 고르면 기억한다.
+  // 방금 넣은 사람은 곧 그 사람이다 — savePerson 이 골라 두고 여기를 다시 부른다
+  // (이야기 탭이 첫 사람을 넣어도 화면이 그대로였던 실수를 되풀이하지 않는다, 2026-09-22 점검).
+  /** 앱에 넣어 둔 사람 → 궁합총론 입력 꼴(gunghap-chongnon.html 폼이 넘기는 꼴). 시간 모름은 hour null, 성별 모름은 gender null.
+   *  보정(solarCorrection)·경도는 그대로 넘긴다 — 원국 탭과 같은 여덟 글자가 나와야 한다. */
+  function 궁합입력(p) {
+    const 모름 = !!p.noTime || p.hour == null || p.hour === '';
+    return {
+      year: +p.year, month: +p.month, day: +p.day,
+      hour: 모름 ? null : +p.hour, minute: 모름 ? 0 : +(p.minute || 0),
+      gender: p.genderUnknown ? null : (p.gender === 'F' || p.gender === 'M' ? p.gender : null),
+      longitude: p.longitude, tzOffset: p.tzOffset, solarCorrection: p.solarCorrection,
+    };
+  }
+  function 궁합고르기(id) {
+    궁합그사람 = id || null;
+    try { if (궁합그사람) localStorage.setItem(궁합고름키, 궁합그사람); else localStorage.removeItem(궁합고름키); } catch (e) {}
+  }
+  function renderChongnon() {
+    const P = People(), GC = window.ChaeksaGunghapChongnon;
+    const out = $('gcTabOut'), sel = $('gcPick'), wrap = $('gcPickWrap'), none = $('gcNone'), add = $('btnGcAdd');
+    if (!out || !sel) return;
+    const 비우기 = () => { out.innerHTML = ''; 궁합그린것 = ''; };
+    const 안내 = (말, 단추, 누르면) => {
+      wrap.classList.add('hide'); none.textContent = 말; none.classList.remove('hide');
+      add.textContent = 단추; add.classList.remove('ghost'); add.onclick = 누르면; 비우기();
+    };
+    // 내 원국이 없으면 두 분을 놓을 수 없다. (원국이 없으면 아래 탭이 안 보이지만, 주소로 들어오는 길을 막아 둔다.)
+    if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요. 내 원국이 있어야 두 분을 나란히 놓아요.', '내 생년월일 넣기', () => go('home')); return; }
+    if (!P || !GC) { 안내('지금은 궁합총론을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
+    const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
+    if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요. 넣으면 바로 두 분을 나란히 놓아요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
+    none.classList.add('hide'); wrap.classList.remove('hide');
+    add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
+    const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
+    sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
+      + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
+    sel.value = 고름;
+    sel.onchange = () => { 궁합고르기(sel.value); renderChongnon(); };
+    if (!고름) { 비우기(); return; }
+    const 그 = P.get(고름), 나입력 = 궁합입력(profile), 그입력 = 궁합입력(P.toProfile(그));
+    // 같은 두 사람을 이미 그려 뒀으면 그대로 둔다 — 탭을 오갈 때마다 다시 그리면 펼쳐 둔 장이 닫힌다.
+    const 열쇠 = JSON.stringify([나입력, 고름, 그입력]);
+    if (열쇠 === 궁합그린것 && out.firstChild) return;
+    GC.그리기(out, 나입력, 그입력);
+    궁합그린것 = 열쇠;
+    // 13장 — 다른 장으로 건너갈 때 보던 그 사람을 넘긴다. 주소가 index.html 이어도 쪽을 다시 읽지 않게 해시만 바꾼다.
+    out.querySelectorAll('.gc-links a').forEach(a => a.addEventListener('click', (e) => {
+      const h = a.getAttribute('href') || '', i = h.indexOf('#'); if (i < 0) return;
+      e.preventDefault(); 궁합넘김 = 고름;
+      const 해시 = h.slice(i);
+      if (location.hash === 해시) goHash(true); else location.hash = 해시;
+    }));
   }
 
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────

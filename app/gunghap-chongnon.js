@@ -84,7 +84,9 @@
     안전(10, '돈과 활동', '활동 글자와 돈 글자를 나란히', () => 칸그리기(Q.장10(C)));
     안전(11, '열 해씩 오는 운', '두 분의 열 해를 나란히', () => {
       const v = Q.장11(C);
-      const 벌 = (list) => list ? list.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + esc(d.나이) + '</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 문단(d.줄) + '</div>').join('') : '<p class="jt-yet">성별을 넣으면 보여요.</p>';
+      // 정통사주 11장처럼 — 지금 대운은 다 펴고, 나머지는 앞 세 줄만 보이고 뒤는 접는다
+      const 접어 = (d) => (d.지금 || d.줄.length <= 3) ? 문단(d.줄) : 문단(d.줄.slice(0, 3)) + '<details class="jt-more"><summary>이 열 해에 만나는 글자 ' + (d.줄.length - 3) + '줄 더 보기</summary>' + 문단(d.줄.slice(3)) + '</details>';
+      const 벌 = (list) => list ? list.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + esc(d.나이) + '</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 접어(d) + '</div>').join('') : '<p class="jt-yet">성별을 넣으면 보여요.</p>';
       return 칸그리기(v, 벌(v.대운.나), 벌(v.대운.그));
     });
     안전(12, '앞으로 다섯 해', '같은 해에 두 분에게 오는 것', () => {
