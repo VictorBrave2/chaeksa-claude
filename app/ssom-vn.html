@@ -61,9 +61,9 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1039"></script><script src="astro.js?v=1039"></script><script src="lunar.js?v=1039"></script><script src="engine.js?v=1039"></script>
-<script src="saenggeuk.js?v=1039"></script><script src="gise.js?v=1039"></script><script src="panjeong.js?v=1039"></script><script src="typecard.js?v=1039"></script><script src="gyeokguk.js?v=1039"></script>
-<script src="ssom-gwanjeom.js?v=1039"></script><script src="ssom-baram.js?v=1039"></script><script src="ssom-daehwa.js?v=1039"></script><script src="ssom-wongo.js?v=1039"></script><script src="ssom-dangye.js?v=1039"></script><script src="ssom.js?v=1039"></script>
+<script src="config.js?v=1041"></script><script src="astro.js?v=1041"></script><script src="lunar.js?v=1041"></script><script src="engine.js?v=1041"></script>
+<script src="saenggeuk.js?v=1041"></script><script src="gise.js?v=1041"></script><script src="panjeong.js?v=1041"></script><script src="typecard.js?v=1041"></script><script src="gyeokguk.js?v=1041"></script>
+<script src="ssom-gwanjeom.js?v=1041"></script><script src="ssom-baram.js?v=1041"></script><script src="ssom-daehwa.js?v=1041"></script><script src="ssom-wongo.js?v=1041"></script><script src="ssom-dangye.js?v=1041"></script><script src="ssom.js?v=1041"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -117,7 +117,7 @@
   function 목차() {
     // 두 사람 이야기(1~5) · 지금 단계의 질문(6~)으로 나눈 목차 판(09-25 사장님 「목차를 적절하게 수정해」)
     const 항 = (c, i) => '<button type="button" class="toc-i' + (i === 장 ? ' now' : '') + '" data-i="' + i + '"><span>' + (i + 1) + '</span>' + c.제목.replace(/\*\*/g, '') + '</button>';
-    $('tocBody').innerHTML = '<div class="toc-g">두 사람 이야기</div>' + 장들.slice(0, 총론).map((c, i) => 항(c, i)).join('')
+    $('tocBody').innerHTML = (총론 ? '<div class="toc-g">두 사람 이야기</div>' : '') + 장들.slice(0, 총론).map((c, i) => 항(c, i)).join('')
       + (장들.length > 총론 ? '<div class="toc-g">지금 단계의 질문 · ' + String(대.단계 || '').split(' — ')[0] + '</div>' + 장들.slice(총론).map((c, i) => 항(c, i + 총론)).join('') : '');
     $('tocBody').querySelectorAll('.toc-i').forEach(b => b.onclick = (e) => { e.stopPropagation(); $('tocPanel').classList.remove('on'); 표지(+b.dataset.i); });
     $('tocPanel').classList.add('on');

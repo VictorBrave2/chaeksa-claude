@@ -1721,6 +1721,18 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-tbl li{margin:0 0 4px;line-height:1.5}
 .ss-talk{margin:0 0 10px!important;line-height:1.75}
 .ss-talk b[class^="t-"]{display:inline-block;min-width:38px;margin-right:8px;padding:1px 8px;border-radius:999px;color:#fff;font-size:12px;text-align:center}
+.ss-sel-hidden{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.ss-pick{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:8px 0 16px;width:100%}
+@media (min-width:640px){.ss-pick{grid-template-columns:repeat(4,1fr)}}
+.ss-pk{position:relative;display:block;padding:0;border:1.5px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;background:#1c1a3a;color:#fff;text-align:left;cursor:pointer;font-family:inherit;aspect-ratio:4/5;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .15s,border-color .15s}
+.ss-pk img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;opacity:.8}
+.ss-pk::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,8,30,0) 35%,rgba(10,8,30,.92) 88%)}
+.ss-pk b,.ss-pk small{position:relative;z-index:1;display:block;padding:0 11px}
+.ss-pk b{font-size:15px}
+.ss-pk small{margin:3px 0 10px;font-size:12px;opacity:.78;line-height:1.35}
+.ss-pk.on{border-color:#e8b75a;box-shadow:0 0 0 2px rgba(232,183,90,.35);transform:translateY(-2px)}
+.ss-pk.on img{opacity:1}
+.ss-pk.on::before{content:"✓";position:absolute;top:8px;right:8px;z-index:2;width:22px;height:22px;border-radius:50%;background:#e8b75a;color:#1c1a3a;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .ss-cut{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:50% 22%;border-radius:10px;margin:8px 0 12px}
 .ss-scene{margin:14px 0 10px!important;font-style:italic;opacity:.8;line-height:1.75}
 .ss-dan{margin:12px 0!important;padding:10px 12px;border-left:3px solid #7a5bb5;background:rgba(122,91,181,.08);font-size:14px;line-height:1.7}

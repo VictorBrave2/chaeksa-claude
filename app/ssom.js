@@ -163,6 +163,9 @@
   /* 09-25 개인화 웹툰(작업판 19): 글 보기도 화마다 컷(그림)을 머리에 달고, 모든 화를 펼쳐 세로로 잇는다. 접기는 「근거 보기」 · 「더 읽기」에만. */
   const 총론그림 = ['ss-me', 'ss-her', 'ss-give', 'ss-then-now', 'ss-hold'];
   function 컷넣기(box, 단계) {
+    // '둘'이면 단계 부분을, 단계면 1~5를 뺀다
+    box.querySelectorAll('details.ss-q').forEach(d => { const 앞 = /^[1-5]\. /.test((d.querySelector('summary') || {}).textContent || ''); if (단계 === '둘' ? !앞 : 앞) d.remove(); });
+    if (단계 === '둘') box.querySelectorAll('h3.ss-part, #ssVn, #ssVnStage, .ss-log').forEach(x => x.remove());
     let k = 0; const 곳 = 곳그림[단계] || [];
     box.querySelectorAll('details.ss-q').forEach(d => {
       const sm = d.querySelector('summary'); if (!sm) return;
@@ -177,6 +180,7 @@
     if (!box || !f) return;
     const q = (id) => document.getElementById(id);
     ['gcPlaceA', 'gcPlaceB'].forEach(id => { if (PL && q(id)) q(id).innerHTML = PL.options(); });
+    if (q('gcStage')) { 단계카드(q('gcStage')); q('gcStage').value = '둘'; q('gcStage')._그리(); q('gcStage').addEventListener('change', () => { if (box.innerHTML) f.requestSubmit ? f.requestSubmit() : f.onsubmit(new Event('submit')); }); }
     let p = null; try { p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); } catch (e) {}
     if (p && p.year) {
       q('gcDateA').value = p.year + '-' + String(p.month).padStart(2, '0') + '-' + String(p.day).padStart(2, '0');
@@ -260,7 +264,27 @@
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
       칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경[단계] && 곳배경[단계][i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
     if (단계 === '시작전') 장들.splice(3, 1);   // 시작 전엔 4장(만난 때) 빼기
-    return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들, 총론수: 단계 === '시작전' ? 4 : 5 };
+    // 09-25 사장님 「1~5를 따로 빼서 선택칸에」: '둘' = 두 사람 이야기(1~5)만, 단계를 고르면 그 단계 이야기만
+    const 앞수 = 단계 === '시작전' ? 4 : 5;
+    if (단계 === '둘') return { 키: z.키, 단계: '두 사람 이야기', 장들: 장들.slice(0, 앞수), 총론수: 앞수 };
+    return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들: 장들.slice(앞수), 총론수: 0 };
   }
-  global.ChaeksaSsomPage = { 그리기, 대본 };
+  /* 09-25 사장님 「콘텐츠 선택칸 디자인 수정」: 기본 select 는 숨기고 그림 카드로 고른다. select 값 · change 는 그대로 쓴다. */
+  const 고름칸 = [
+    ['둘', '두 사람 이야기', '우리는 어떤 두 사람일까', 'ss-give'], ['시작전', '시작 전', '첫인상 · 만나는 곳 여섯', 'ss-meet-blind'],
+    ['썸', '썸', '막 알아 가는 중', 'ss-sseom-5'], ['초반', '연애 초반', '사귄 지 6개월까지', 'ss-early-1'],
+    ['안정기', '안정기', '6개월에서 2년', 'ss-steady-4'], ['결혼', '결혼', '결혼을 생각할 때', 'ss-marry-1'],
+    ['흔들림', '흔들릴 때', '권태 · 이별 고민', 'ss-shake-3'], ['재회', '재회', '헤어진 뒤', 'ss-again-3']];
+  function 단계카드(sel) {
+    if (!sel) return;
+    sel.innerHTML = 고름칸.map(([v, 이름, 말]) => '<option value="' + v + '">' + 이름 + ' — ' + 말 + '</option>').join('');
+    sel.classList.add('ss-sel-hidden');
+    let box = (sel.closest('label') || sel).parentNode.querySelector('.ss-pick');
+    if (!box) { box = document.createElement('div'); box.className = 'ss-pick'; box.setAttribute('role', 'radiogroup'); (sel.closest('label') || sel).insertAdjacentElement('afterend', box); }
+    const 그리 = () => { box.innerHTML = 고름칸.map(([v, 이름, 말, 그림]) => '<button type="button" role="radio" aria-checked="' + (sel.value === v) + '" class="ss-pk' + (sel.value === v ? ' on' : '') + '" data-v="' + v + '"><img src="art/' + 그림 + '-s.webp" alt="" loading="lazy"><b>' + 이름 + '</b><small>' + 말 + '</small></button>').join('');
+      box.querySelectorAll('.ss-pk').forEach(b => b.onclick = () => { if (sel.value === b.dataset.v) return; sel.value = b.dataset.v; 그리(); sel.dispatchEvent(new Event('change', { bubbles: true })); }); };
+    그리(); sel.addEventListener('change', 그리); sel._그리 = 그리;
+  }
+
+  global.ChaeksaSsomPage = { 그리기, 대본, 단계카드 };
 })(window);
