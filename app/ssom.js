@@ -117,10 +117,10 @@
       : '<p class="ss-why">두 분 조합의 글은 쓰고 있어요.</p>') + '</details>';
     // 지금 단계의 질문 여섯
     const 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {};
-    const 반응칸 = (i) => !S.반응틀[i] ? '' : '<div class="ss-act"><p class="ss-ask">' + esc(S.반응물음[i]) + '</p><div class="ss-btns">'
-      + S.반응틀[i].map(r => '<button type="button" class="ss-r" data-q="' + i + '" data-r="' + esc(r) + '">' + esc(r) + '</button>').join('') + '</div><div class="ss-next"></div></div>';
+    // 09-25 사장님 「우리 포지션은 두 사람에 대한 소설을 써 주는 것 — 반응 글은 삭제」: 반응 묻기 · 기록 칸을 끔
+    const 반응칸 = () => '';
     const 기록 = S.기록(z.키), 끝기록 = 기록[기록.length - 1];
-    const 이어 = 끝기록 ? '<div class="card ss-log"><p>지난번 기록 — ' + esc(끝기록.때) + ' · 「' + esc(S.질문[끝기록.장]) + '」에 <b>' + esc(끝기록.반응) + '</b></p><p class="ss-why">기록은 이 기기에만 남아요.</p></div>' : '';
+    const 이어 = '';
     const 단계표 = (global.ChaeksaSsomDangye || {}), 단계 = opts.단계 || '썸', 단계칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     if (단계 !== '썸' && 단계칸) {
       const 글들 = ((단계표.원고 || {})[z.키] || {})[단계];
@@ -146,7 +146,7 @@
       if (적) S.적기(z.키, i, r);
     };
     box.querySelectorAll('.ss-r').forEach(b => b.onclick = () => 보이기(+b.dataset.q, b.dataset.r, true));
-    if (끝기록 && 원고) 보이기(끝기록.장, 끝기록.반응, false);
+
     const vn = box.querySelector('#ssVn');
     const 장면열기 = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html'; };
     if (vn) vn.onclick = 장면열기;
@@ -236,7 +236,7 @@
     const 곳배경 = { 시작전: [['ss-meet-blind'], ['ss-meet-app'], ['ss-meet-party'], ['ss-meet-office'], ['ss-meet-run'], ['ss-meet-club']], 썸: [['ss-sseom-1'], ['ss-sseom-2'], ['ss-sseom-3'], ['ss-sseom-4'], ['ss-sseom-5'], ['ss-sseom-6']], 초반: [['ss-early-1'], ['ss-early-2'], ['ss-early-3'], ['ss-early-4'], ['ss-early-5']], 안정기: [['ss-steady-1'], ['ss-steady-2'], ['ss-steady-3'], ['ss-steady-4']], 결혼: [['ss-marry-1'], ['ss-marry-2'], ['ss-marry-3'], ['ss-marry-4']], 흔들림: [['ss-shake-1'], ['ss-shake-2'], ['ss-shake-3']], 재회: [['ss-again-1'], ['ss-again-2'], ['ss-again-3']] };   // 09-25 연애궁합 전용 삽화 36장(docs/74)
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };
     const 배경 = 단계배경[단계] || ['story-still'];
-    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경.썸 && 곳배경.썸[i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: S.반응틀[i] ? { 장: i, 틀: S.반응틀[i], 물음: S.반응물음[i], 글: (대화 && 대화.반응 && 대화.반응[i]) || 반응원고[i] || {} } : null }));
+    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경.썸 && 곳배경.썸[i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: null }));
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
       칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경[단계] && 곳배경[단계][i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
     return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들 };
