@@ -21,7 +21,7 @@
   .top a{color:#fff;text-decoration:none}
   .box{position:absolute;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));min-height:170px;padding:26px 18px 18px;border-radius:18px;background:var(--box);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
   .who{position:absolute;top:-15px;left:16px;padding:5px 14px;border-radius:999px;background:var(--accent);font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-  .who.you{background:#5a6fd6}.who.them{background:#d08a3c}
+  .who.you{background:#5a6fd6}.who.them{background:#d08a3c}.who.ex{background:#6b6b8a}
   .txt{word-break:keep-all;font-family:'Gowun Batang',serif;font-size:17px;line-height:1.85;min-height:92px;white-space:pre-wrap}
   .txt b{color:#ffd6de}
   .txt.say{font-size:18px}
@@ -30,7 +30,7 @@
   .copy{display:none;margin-top:10px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.1);color:#fff;font-size:13px}
   .copy.on{display:inline-block}
   .choices{position:absolute;left:18px;right:18px;bottom:calc(210px + env(safe-area-inset-bottom));display:none;flex-direction:column;gap:10px}
-  .choices.on{display:flex;animation:up .4s ease}
+  .choices.on{display:flex;animation:up .4s ease;max-height:55vh;overflow-y:auto}
   @keyframes up{from{opacity:0;transform:translateY(12px)}}
   .choices button{padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:15px;text-align:left;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
   .choices button:active{background:rgba(232,121,139,.5)}
@@ -44,46 +44,45 @@
   <div class="bg" id="bgA"></div><div class="bg" id="bgB"></div>
   <div class="shade"></div>
   <div id="petals"></div>
-  <div class="top"><a href="ssom.html" id="back">← 글로 보기</a><span id="prog"></span></div>
+  <div class="top"><a href="ssom.html" id="back">← 글로 보기</a><span id="prog"></span><a href="#" id="toc">목차</a></div>
   <div class="choices" id="choices"></div>
   <div class="box" id="box"><div class="who" id="who">책사</div><div class="txt" id="txt"></div><div class="next" id="nx">▼ 눌러서 계속</div></div>
   <div class="chap" id="chap"></div>
 </div>
-<script src="ssom-gwanjeom.js?v=1014"></script>
-<script src="ssom-wongo.js?v=1014"></script>
+<script src="config.js?v=1016"></script><script src="astro.js?v=1016"></script><script src="lunar.js?v=1016"></script><script src="engine.js?v=1016"></script>
+<script src="saenggeuk.js?v=1016"></script><script src="gise.js?v=1016"></script><script src="panjeong.js?v=1016"></script><script src="typecard.js?v=1016"></script><script src="gyeokguk.js?v=1016"></script>
+<script src="ssom-gwanjeom.js?v=1016"></script><script src="ssom-baram.js?v=1016"></script><script src="ssom-wongo.js?v=1016"></script><script src="ssom-dangye.js?v=1016"></script><script src="ssom.js?v=1016"></script>
 <script>
-// 연애궁합 장면 보기(09-24) — 원고는 ssom-wongo.js 그대로 읽는다(글을 새로 쓰지 않는다). 두 사람 열쇠는 글 보기에서 sessionStorage 로 넘겨받는다(생일은 안 넘긴다).
-// 책사 = 풀이, 「당신」 · 「상대」 대사 = 이름표. 행동이 들어가는 장은 끝에 반응을 묻고, 고른 반응의 다음 수를 이어 보여 준 뒤 다음 장으로 간다.
+// 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
+// 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
 (function () {
-  const S = window.ChaeksaSsom;
-  let 키 = '丁卯×戊식신+己상관 / 丙午×戊상관';
-  try { const v = JSON.parse(sessionStorage.getItem('chaeksa.ssomVn') || 'null'); if (v && v.키) 키 = v.키; } catch (e) {}
-  const 원고 = (window.ChaeksaSsomWongo || {})[키], 반응원고 = (window.ChaeksaSsomBanung || {})[키] || {};
-  const 장배경 = [['story-he-likes', 'story-contact'], ['story-maeum', 'story-still'], ['story-contact', 'story-reply'], ['story-reply', 'story-sns'], ['story-first-date', 'story-trip'], ['story-hurt', 'story-hold']];
+  const S = window.ChaeksaSsom, P = window.ChaeksaSsomPage;
+  let v = null; try { v = JSON.parse(sessionStorage.getItem('chaeksa.ssomVn') || 'null'); } catch (e) {}
+  if (!v || !v.a) v = { a: { year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 }, b: { year: 1999, month: 12, day: 20, hour: 20, minute: 0, gender: 'F', longitude: 126.98 }, opts: { 만난: { y: 2026, m: 8 }, 단계: '썸' }, 견본: true };
+  let 대; try { 대 = P.대본(v.a, v.b, v.opts || {}); } catch (e) { 대 = null; }
   const $ = (id) => document.getElementById(id);
   const bgs = [$('bgA'), $('bgB')]; let 앞 = 0, 지금배경 = '';
   const 배경바꾸기 = (u) => { if (!u || u === 지금배경) return; 지금배경 = u; 앞 ^= 1; bgs[앞].style.backgroundImage = 'url(art/' + u + '.webp)'; bgs[앞].classList.add('on'); bgs[앞 ^ 1].classList.remove('on'); };
   for (let i = 0; i < 14; i++) { const p = document.createElement('i'); p.className = 'petal'; p.style.left = Math.random() * 110 + '%'; p.style.animationDuration = 7 + Math.random() * 8 + 's'; p.style.animationDelay = -Math.random() * 12 + 's'; p.style.opacity = .4 + Math.random() * .5; $('petals').appendChild(p); }
   const 굵 = (x) => x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  const 장면으로 = (글, 배경들) => 글.map((t, i) => {
-    let 누가 = '책사', 말 = t, 대사 = false;
-    if (t.indexOf('> ') === 0) { 대사 = true; 말 = t.slice(2); 누가 = '당신'; const m = 말.match(/^(당신|상대):\s*/); if (m) { 누가 = m[1]; 말 = 말.slice(m[0].length); } }
-    return { 누가, 말, 대사, 배경: 배경들[Math.min(배경들.length - 1, Math.floor(i * 배경들.length / 글.length))] };
-  });
-  let 장 = 0, 줄들 = [], n = -1, 치는중 = null, 다침 = true, 멈춤 = false, 다음할일 = null;
+  function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = 'ssom.html'; }
+  $('back').onclick = (e) => { e.preventDefault(); e.stopPropagation(); 돌아가기(); };
+  if (!대 || !대.장들.length) { $('chap').innerHTML = '<h1>장면을 만들지 못했어요</h1><p><a href="ssom.html" style="color:#fff">글로 보기로 돌아가기</a></p>'; return; }
+  const 장들 = 대.장들;
+  let 장 = 0, 줄들 = [], n = -1, 치는중 = null, 다침 = true, 멈춤 = false, 표지중 = false, 반응중 = false;
   function 표지(i) {
-    멈춤 = true; $('choices').classList.remove('on');
-    $('chap').innerHTML = '<small>제 ' + (i + 1) + ' 장</small><h1>' + S.질문[i] + '</h1><p>눌러서 시작</p>';
-    $('chap').classList.remove('off'); 배경바꾸기(장배경[i][0]);
-    다음할일 = () => { $('chap').classList.add('off'); 멈춤 = false; 줄들 = 장면으로(원고[i] || [], 장배경[i]); n = 0; 보이기(); };
+    장 = i; 멈춤 = true; 표지중 = true; 반응중 = false; $('choices').classList.remove('on');
+    $('chap').innerHTML = '<small>' + (i + 1) + ' / ' + 장들.length + '</small><h1>' + 굵(장들[i].제목) + '</h1><p>' + (v.견본 && i === 0 ? '견본 — 사장님 쌍(丁卯 × 丙午, 26년 8월에 만남)<br>' : '') + '눌러서 시작</p>';
+    $('chap').classList.remove('off'); 배경바꾸기(장들[i].배경[0]);
   }
+  function 시작() { $('chap').classList.add('off'); 표지중 = false; 멈춤 = false; 줄들 = 장들[장].줄.map((x, j, a) => Object.assign({ 배경: 장들[장].배경[Math.min(장들[장].배경.length - 1, Math.floor(j * 장들[장].배경.length / a.length))] }, x)); n = 0; 보이기(); }
   function 보이기() {
     const s = 줄들[n]; 배경바꾸기(s.배경);
-    $('who').textContent = s.누가; $('who').className = 'who' + (s.누가 === '당신' ? ' you' : s.누가 === '상대' ? ' them' : '');
-    $('txt').className = 'txt' + (s.대사 ? ' say' : '');
-    $('nx').style.display = ''; $('prog').textContent = (장 + 1) + '장 · ' + (n + 1) + ' / ' + 줄들.length;
+    $('who').textContent = s.누가; $('who').className = 'who' + (s.누가 === '당신' ? ' you' : s.누가 === '상대' ? ' them' : s.누가 === '예시' ? ' ex' : '');
+    $('txt').className = 'txt' + (s.누가 !== '책사' ? ' say' : ''); $('nx').style.display = '';
+    $('prog').textContent = (장 + 1) + '장 · ' + (n + 1) + ' / ' + 줄들.length;
     const 순 = s.말.replace(/\*\*/g, ''); let k = 0; 다침 = false; clearInterval(치는중);
-    치는중 = setInterval(() => { k++; $('txt').textContent = 순.slice(0, k); if (k >= 순.length) { clearInterval(치는중); $('txt').innerHTML = 굵(s.말); 다침 = true; } }, 30);
+    치는중 = setInterval(() => { k++; $('txt').textContent = 순.slice(0, k); if (k >= 순.length) { clearInterval(치는중); $('txt').innerHTML = 굵(s.말); 다침 = true; } }, 28);
   }
   function 책사말(말) { $('who').textContent = '책사'; $('who').className = 'who'; $('txt').className = 'txt'; $('txt').innerHTML = 굵(말); $('nx').style.display = 'none'; }
   function 선택(목록, 누르면) {
@@ -92,35 +91,31 @@
     $('choices').querySelectorAll('button').forEach((b, j) => b.onclick = (e) => { e.stopPropagation(); $('choices').classList.remove('on'); 누르면(목록[j]); });
   }
   function 장끝() {
-    멈춤 = true;
-    const 틀 = S.반응틀[장];
-    if (틀) { 책사말(S.반응물음[장]); 선택(틀, (r) => { S.적기(키, 장, r); const 글 = (반응원고[장] || {})[r];
-      if (!글) { 책사말('「' + r + '」 — 이 반응에 이어지는 글은 쓰고 있어요.'); return 다음장단추(); }
-      줄들 = 장면으로(글, [지금배경.replace(/^.*art\//, '')]); n = 0; 멈춤 = false; 반응중 = true; 보이기(); }); return; }
-    다음장단추();
+    멈춤 = true; const r = 장들[장].반응;
+    if (r && !반응중) { 책사말(r.물음); return 선택(r.틀, (답) => { try { S.적기(대.키, r.장, 답); } catch (e) {}
+      const 글 = r.글[답]; if (!글) { 책사말('「' + 답 + '」 — 이어지는 글은 쓰고 있어요.'); return 다음단추(); }
+      줄들 = 글.map(t => t.indexOf('> ') === 0 ? { 누가: '예시', 말: t.slice(2), 배경: 지금배경 } : { 누가: '책사', 말: t, 배경: 지금배경 }); n = 0; 멈춤 = false; 반응중 = true; 보이기(); }); }
+    다음단추();
   }
-  let 반응중 = false;
-  function 다음장단추() {
+  function 다음단추() {
     멈춤 = true;
-    if (장 + 1 >= S.질문.length) { 책사말('여섯 장을 다 보셨어요. 해 본 것과 상대 반응은 이 기기에 적어 두었어요. 다음에 들어오시면 거기서부터 이어 드려요.'); return 선택(['처음부터 다시 보기', '글로 보기'], (t) => { if (t === '글로 보기') 돌아가기(); else { 장 = 0; 표지(0); } }); }
-    if (!$('choices').classList.contains('on')) 선택(['다음 장 — ' + S.질문[장 + 1], '글로 보기'], (t) => { if (t === '글로 보기') 돌아가기(); else { 장++; 표지(장); } });
+    if (장 + 1 >= 장들.length) { 책사말('끝까지 보셨어요. 두 분의 이야기는 여기까지예요.'); return 선택(['처음부터 다시', '목차', '글로 보기'], (t) => t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(0)); }
+    선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
+  function 목차() {
+    멈춤 = true; 책사말('어디로 갈까요?');
+    선택(장들.map((c, i) => (i + 1) + '. ' + c.제목.replace(/\*\*/g, '')), (t) => 표지(parseInt(t, 10) - 1));
+  }
+  $('toc').onclick = (e) => { e.stopPropagation(); if (표지중) $('chap').classList.add('off'); 목차(); };
   $('stage').onclick = () => {
-    if (다음할일 && !$('chap').classList.contains('off')) { const f = 다음할일; 다음할일 = null; return f(); }
+    if (표지중) return 시작();
     if (멈춤) return;
     if (!다침) { clearInterval(치는중); $('txt').innerHTML = 굵(줄들[n].말); 다침 = true; return; }
     if (n + 1 < 줄들.length) { n++; return 보이기(); }
-    if (반응중) { 반응중 = false; return 다음장단추(); }
+    if (반응중) { 반응중 = false; return 다음단추(); }
     장끝();
   };
-  // 앱 탭에서 왔으면 앱으로, 아니면 글 보기로 돌아간다
-  function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = 'ssom.html'; }
-  $('back').onclick = (e) => { e.preventDefault(); e.stopPropagation(); 돌아가기(); };
-  if (!원고) { $('chap').innerHTML = '<h1>이 두 분의 장면은 아직 쓰고 있어요</h1><p><a href="ssom.html" style="color:#fff">글로 보기로 돌아가기</a></p>'; return; }
-  // 지난번 기록이 있으면 그 장부터
-  const 기록 = S.기록(키), 끝 = 기록[기록.length - 1];
-  장 = 끝 && 끝.장 + 1 < S.질문.length ? 끝.장 + 1 : 0;
-  표지(장);
+  표지(0);
 })();
 </script>
 </body>
