@@ -37,7 +37,11 @@
     + '<div class="gc-col"><div class="gc-who">나</div>' + (속나 || '') + 문단(나) + '</div>'
     + '<div class="gc-col"><div class="gc-who">그 사람</div>' + (속그 || '') + 문단(그) + '</div></div>';
 
-  function 칸그리기(v, 속나, 속그) {
+  // 09-24 사장님 「통설로 콘텐츠를 만들면 재미없지」 — 웹 통설 줄과 통설 칸을 걷는다. 원문 · 계산 줄만 낸다.
+  const 통설말 = /고들 해요|는 말이 많아요|말도 있어요|따라다녀요|요즘 명리가들|두루 하는 말|통설/;
+  const 거름 = (줄) => Array.isArray(줄) ? 줄.filter(t => typeof t !== 'string' || !통설말.test(t)) : 줄;
+  function 칸그리기(v0, 속나, 속그) {
+    const v = Object.assign({}, v0, { 머리: 거름(v0.머리), 나: 거름(v0.나), 그: 거름(v0.그), 사이: 거름(v0.사이), 갈림: 거름(v0.갈림), 비움: 거름(v0.비움), 통설: [] });
     const out = [];
     if (v.머리 && v.머리.length) out.push(문단(v.머리));
     if (v.원문 && v.원문.length) out.push(v.원문.map(원문칸).join(''));
