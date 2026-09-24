@@ -3,7 +3,7 @@
 <meta name="robots" content="noindex">
 </head><body><div id="out"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script><script src="ssom-dangye.js"></script><script src="ssom-daehwa.js"></script><script src="ssom-webtoon.js"></script>
+<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script><script src="ssom-dangye.js"></script><script src="ssom-daehwa.js"></script><script src="ssom-webtoon.js"></script><script src="ssom-webtoon-2.js"></script>
 <script>
 // 법전 72조 — 사장님 사례: 남 1992-04-21 00:20 서울 · 여 1999-12-20 20:00 서울. 남이 「나」.
 const E = ChaeksaEngine, S = ChaeksaSsom, out = document.getElementById('out');
@@ -33,6 +33,9 @@ const 시험 = [
   ['웹툰 조립 — 뒤집은 쌍(丙午 여가 당신)도 썸 여섯 회에 빈 조각이 없다', ChaeksaSsomWebtoon.조립(여, 남, '썸').flat().some(x => /쓰고 있어요/.test(x[1])) ? '있음' : '없음', '없음'],
   ['웹툰 조립 — 썸 끝 「사귈래요?」는 언행이 드러난 쪽(丙午)이 한다', ChaeksaSsomWebtoon.조립(남, 여, '썸')[5].find(x => /사귈래요/.test(x[1]))[0] + '/' + ChaeksaSsomWebtoon.조립(여, 남, '썸')[5].find(x => /사귈래요/.test(x[1]))[0], '상대/당신'],
   ['웹툰 조립 — 장면으로 보기엔 단서가 없다', ChaeksaSsomWebtoon.조립(남, 여, '썸', true).flat().some(x => x[0] === '단서') ? '있음' : '없음', '없음'],
+  ['웹툰 조립 — 초반 · 안정기 · 결혼 · 흔들림 · 재회, 두 방향 모두 빈 조각 없음', ['초반', '안정기', '결혼', '흔들림', '재회'].map(k => [ChaeksaSsomWebtoon.조립(남, 여, k), ChaeksaSsomWebtoon.조립(여, 남, k)].map(w => w.flat().filter(x => /쓰고 있어요/.test(x[1])).map(x => k + ':' + x[1]).join(' ')).join(' ')).join(' ').trim() || '없음', '없음'],
+  ['웹툰 조립 — 안정기 3회 변질: 丁卯 卯가 戌에 묶여 乙 편인 → 甲 정인', /戌이 오면 배우자궁 卯가 묶여요. 그러면 乙 편인 대신 甲 정인/.test(ChaeksaSsomWebtoon.조립(남, 여, '안정기')[2].map(x => x[1]).join(' ')) ? '맞음' : ChaeksaSsomWebtoon.조립(남, 여, '안정기')[2].filter(x => x[0] === '단서').map(x => x[1]).join(' '), '맞음'],
+  ['웹툰 조립 — 흔들림 1회 변질: 丙午 戊 식신이 癸에 묶여 己 상관', /癸가 오면 戊 식신이 묶여요/.test(ChaeksaSsomWebtoon.조립(남, 여, '흔들림')[0].map(x => x[1]).join(' ')) ? '맞음' : ChaeksaSsomWebtoon.조립(남, 여, '흔들림')[0].filter(x => x[0] === '단서').map(x => x[1]).join(' '), '맞음'],
 ];
 let 통과 = 0, 실패 = 0;
 시험.forEach(([이름, 실제, 기대]) => { const ok = 실제 === 기대; ok ? 통과++ : 실패++; out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + 이름 + (ok ? '' : ' — 기대 ' + 기대 + ' 실제 ' + 실제) + '</h2>'); });
