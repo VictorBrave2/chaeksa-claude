@@ -43,6 +43,9 @@
     const 근거 = '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">장면으로 보기 — 처음부터 끝까지</button>'
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     const 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
+    // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
+    const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸') : null; } catch (e) { return null; } })();
+    const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
     const 대화칸 = (번, 머리, arr, 열림) => '<details class="ss-q card ss-baram"' + (열림 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>'
       + arr.map(([누가, 말]) => '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>').join('') + '</details>';
     // 대화 원고([[화자, 말] …])면 이름표 달린 대화로, 예전 원고(줄 배열)면 칸()으로 — 작업판 1(09-25)
@@ -139,7 +142,7 @@
     }
     const 질문들 = (원고 || (대화 && 대화.썸))
       ? '<h3 class="ss-part">지금 단계의 질문 — 막 썸을 시작했어요</h3>' + 이어 + '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>'
-        + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸2((대화 && 대화.썸 && 대화.썸[i]) || 원고[i] || []) + 반응칸(i) + '</details>').join('')
+        + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸2(썸글(i) || 원고[i] || []) + 반응칸(i) + '</details>').join('')
       : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>두 분 조합의 질문 글은 아직 쓰고 있어요.</p></div>';
     box.innerHTML = 대화 ? 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 때 + 대화칸(5, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 질문들
       : 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 때 + 끝 + 질문들;
@@ -217,6 +220,7 @@
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 생 = global.ChaeksaSsomSaengsaek || {};
     const 원고 = (global.ChaeksaSsomWongo || {})[z.키], 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
     const 단계표 = global.ChaeksaSsomDangye || {};
+    const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸') : null; } catch (e) { return null; } })();
     const 바꿔 = (t, 표) => Object.keys(표).reduce((x, k) => x.split(k).join(표[k]), t);
     const 줄로 = (글, 표) => (글 || []).map(t0 => { const t = 바꿔(t0, 표 || {});
       if (t.indexOf('> ') !== 0) return { 누가: '책사', 말: t };
@@ -230,7 +234,7 @@
       if (!언.length) 줄로(생.없음, { '{주}': 주 }).forEach(x => 줄들.push(x));
       else { 조각.forEach(c => 줄로(c.줄, { '{주}': 주 }).forEach(x => 줄들.push(x))); 줄로(언.some(x => x.드러남) ? 생.드러남 : 생.숨음, { '{주}': 주 }).forEach(x => 줄들.push(x)); }
       return 줄들; };
-    const 장들 = [], 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];
+    const 장들 = [], 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
     // 책사 개인 이름(인연 · 좌장 · 택일 …)은 화면에 안 낸다(09-25 사장님 「혼란을 줄 수 있다고 쓰지 말자고 했는데」) — 모두 「책사」, 색으로만 번갈아
     const 대화줄 = (arr) => arr.map(([누가, 말]) => 누가 === '장면' ? { 누가: '장면', 말 } : 누가 === '당신' || 누가 === '상대' ? { 누가, 말 } : 누가 === '단서' ? { 누가: '추론의 단서', 말 } : { 누가: '책사', 말, 쪽: 누가 === '인연' ? 0 : 1 });
     장들.push({ 제목: '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['ss-me'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
@@ -260,7 +264,7 @@
     const 곳배경 = 곳그림;
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };
     const 배경 = 단계배경[단계] || ['story-still'];
-    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경.썸 && 곳배경.썸[i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: null }));
+    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경.썸 && 곳배경.썸[i]) || [배경[i % 배경.length]], 줄: 썸글(i) ? 대화줄(썸글(i)) : 줄로(원고[i]), 반응: null }));
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
       칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경[단계] && 곳배경[단계][i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
     if (단계 === '시작전') 장들.splice(3, 1);   // 시작 전엔 4장(만난 때) 빼기
