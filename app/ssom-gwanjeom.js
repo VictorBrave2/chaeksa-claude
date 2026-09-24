@@ -57,5 +57,36 @@
   function 적기(열쇠, 장, 반응) {
     try { const all = JSON.parse(localStorage.getItem(일지키) || '{}'); (all[열쇠] = all[열쇠] || []).push({ 장, 반응, 때: new Date().toISOString().slice(0, 10) }); all[열쇠] = all[열쇠].slice(-30); localStorage.setItem(일지키, JSON.stringify(all)); } catch (e) {}
   }
-  global.ChaeksaSsom = { 식상, 일지: 일지지, 일주, 일지십신, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
+  /* 4. 때(09-24 사장님 「26년 8월에 소개팅 → 그 달과 지금 두 사람의 일지 · 식상 상태」). 원국 → 대운 → 세운 → 월운.
+   *  사실만 낸다: 식상 구성(운의 천간 · 지지 속 글자까지) · 식상 천간이 묶였나 · 일지가 운의 충을 받나 · 육합으로 묶이나.
+   *  그 변화가 연애에서 무엇으로 드러나는지는 사장님 조문 대기(법전 72조 역학) — 뜻 문장은 여기서 안 만든다. */
+  function 때상태(R, y, m) {
+    const P = global.ChaeksaPanjeong, list = (R.daeun && R.daeun.list) || [];
+    const 대 = list.filter(d => d.startYear <= y).pop();
+    let 달 = null; try { 달 = E.calc({ year: y, month: m, day: 15, hour: 12, minute: 0, gender: 'M', longitude: 126.98 }).pillars.month; } catch (e) {}
+    const 운들 = (대 ? [{ name: '대운', stem: 대.stem, branch: 대.branch }] : [])
+      .concat([{ name: '세운', stem: ((y - 4) % 10 + 10) % 10, branch: ((y - 4) % 12 + 12) % 12 }])
+      .concat(달 ? [{ name: '월운', stem: 달.stem, branch: 달.branch }] : []);
+    const ds = R.pillars.day.stem, 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
+    const 원 = 식상(R);
+    // 운이 들여온 식상 글자 — 어느 층에서 왔나
+    const 온 = [];
+    운들.forEach(u => {
+      if (/식신|상관/.test(신(u.stem))) 온.push({ 층: u.name, 글자: E.STEMS[u.stem], 십신: 신(u.stem), 어디: '천간' });
+      (E.HIDDEN[u.branch] || []).forEach(h => { const st = typeof h === 'number' ? h : h[0]; if (/식신|상관/.test(신(st))) 온.push({ 층: u.name, 글자: E.STEMS[st], 십신: 신(st), 어디: E.BRANCHES[u.branch] + ' 속' }); });
+    });
+    const 식있 = !!원.식신 || 온.some(x => x.십신 === '식신'), 상있 = !!원.상관 || 온.some(x => x.십신 === '상관');
+    const 구성 = !식있 && !상있 ? '없음' : 식있 && 상있 ? '둘 다' : 식있 ? '식신만' : '상관만';
+    let 층 = null; try { const L = P.판정(R, new Date(y, m - 1, 15), { 운들 }).층들; 층 = L[L.length - 1]; } catch (e) {}
+    const 묶임 = 층 ? 층.표.글자.filter(g => !g.일간 && /식신|상관/.test(g.십신 || '') && g.합거).map(g => ({ 글자: g.글자, 십신: g.십신, 누가: g.합거 })) : [];
+    const 일지 = E.BRANCHES[R.pillars.day.branch];
+    const 충 = 층 ? (층.표.운충 || []).filter(v => v.자리 === '일지').map(v => ({ 층: v.운, 운지: v.운지, 흔들림: v.흔들림 })) : [];
+    const 육합 = { 0: 1, 1: 0, 2: 11, 11: 2, 3: 10, 10: 3, 4: 9, 9: 4, 5: 8, 8: 5, 6: 7, 7: 6 };
+    const 합 = 운들.filter(u => 육합[u.branch] === R.pillars.day.branch).map(u => ({ 층: u.name, 운지: E.BRANCHES[u.branch] }));
+    return { 해: y, 달: m, 운들: 운들.map(u => u.name + ' ' + E.STEMS[u.stem] + E.BRANCHES[u.branch]), 원구성: 원.키 === '없음' ? '없음' : 원.식신 && 원.상관 ? '둘 다' : 원.식신 ? '식신만' : '상관만', 구성, 온, 묶임, 일지, 충, 합 };
+  }
+  // 닿음(3. 주고받음)의 열쇠 — 받는 쪽 일지 십신 × 주는 쪽 식상 구성
+  const 구성말 = (x) => x.키 === '없음' ? '없음' : x.식신 && x.상관 ? '둘 다' : x.식신 ? '식신만' : '상관만';
+  function 닿음키(받는R, 주는R) { return 일지십신(받는R) + '|' + 구성말(식상(주는R)); }
+  global.ChaeksaSsom = { 때상태, 닿음키, 구성말, 식상, 일지: 일지지, 일주, 일지십신, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
 })(window);

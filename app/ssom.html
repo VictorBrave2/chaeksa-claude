@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=996">
+<link rel="stylesheet" href="style.css?v=999">
 <style>
   .doc{max-width:660px;margin:0 auto;padding:22px 16px 80px}
   .back{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -42,7 +42,7 @@
       <label>성별<select id="gcGB"><option value="M">남</option><option value="F">여</option><option value="">모름</option></select></label>
       <label>태어난 곳<select id="gcPlaceB"><option value="KR:서울">서울</option></select></label>
     </div>
-    <div class="jt-form"><label>지금 두 사람은<select id="gcStage"><option value="ssom">막 썸을 시작했어요</option><option disabled>사귀는 중 (준비 중)</option><option disabled>오래 만났어요 (준비 중)</option></select></label></div>
+    <div class="jt-form"><label>지금 두 사람은<select id="gcStage"><option disabled>시작 전 — 짝사랑 · 소개팅 (준비 중)</option><option value="ssom" selected>썸 — 막 알아 가는 중</option><option disabled>연애 초반 — 사귄 지 6개월까지 (준비 중)</option><option disabled>안정기 — 6개월에서 2년 (준비 중)</option><option disabled>결혼을 생각할 때 (준비 중)</option><option disabled>흔들릴 때 — 권태 · 이별 고민 (준비 중)</option><option disabled>헤어진 뒤 — 재회 (준비 중)</option></select></label><label>처음 만난 달 (소개팅 · 첫 연락 · 사귄 달)<input type="month" id="gcMet"></label></div>
     <button type="submit" class="btn" style="width:100%">여섯 질문 보기</button>
   </form>
   <div id="gcOut"></div>
@@ -50,16 +50,16 @@
 <script>
 (function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})()
 </script>
-<script src="config.js?v=996"></script>
-<script src="places.js?v=996"></script>
-<script src="astro.js?v=996"></script>
-<script src="lunar.js?v=996"></script>
-<script src="engine.js?v=996"></script>
-<script src="saenggeuk.js?v=996"></script><script src="gise.js?v=996"></script>
-<script src="panjeong.js?v=996"></script>
-<script src="ssom-gwanjeom.js?v=996"></script>
-<script src="ssom-baram.js?v=996"></script>
-<script src="ssom-wongo.js?v=996"></script>
-<script src="ssom.js?v=996"></script>
+<script src="config.js?v=999"></script>
+<script src="places.js?v=999"></script>
+<script src="astro.js?v=999"></script>
+<script src="lunar.js?v=999"></script>
+<script src="engine.js?v=999"></script>
+<script src="saenggeuk.js?v=999"></script><script src="gise.js?v=999"></script>
+<script src="panjeong.js?v=999"></script>
+<script src="ssom-gwanjeom.js?v=999"></script>
+<script src="ssom-baram.js?v=999"></script>
+<script src="ssom-wongo.js?v=999"></script>
+<script src="ssom.js?v=999"></script>
 </body>
 </html>

@@ -9,49 +9,83 @@
   const 식상말 = (x) => x.키 === '없음' ? '식신 · 상관이 둘 다 없어요' : [x.식신 && E.STEMS_KO[E.STEMS.indexOf(x.식신)] + '(' + x.식신 + ') 식신', x.상관 && E.STEMS_KO[E.STEMS.indexOf(x.상관)] + '(' + x.상관 + ') 상관'].filter(Boolean).join(' · ') + (x.식신 && x.상관 ? '이 함께 있어요' : '만 있어요');
   const 지말 = (b) => E.BRANCHES_KO[E.BRANCHES.indexOf(b)] + '(' + b + ')';
 
-  function 그리기(box, a, b) {
+  // 흐름(09-24 사장님 전략): 1 나를 알고 · 2 그 사람을 알고 · 3 우리 둘의 주고받음 · 4 때 · 5 안고 갈 것, 맞춰 갈 것.
+  // opts.만난 = { y, m } — 언제 만났나(소개팅 · 첫 연락 · 사귄 달). 없으면 4 칸은 넣는 법만 알려 준다.
+  const G이름 = (g) => E.STEMS_KO[E.STEMS.indexOf(g)] + '(' + g + ')';
+  function 그리기(box, a, b, opts) {
+    opts = opts || {};
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
     const z = S.짝(나R, 그R), 원고 = W[z.키];
-    const 근거 = '<div class="card"><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
-      + '일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 글 속 장면과 대사는 이해를 돕는 예시예요.</p></div>';
-    // 1 나를 알고 · 2 그 사람을 알고 — 「내가 바라는 사랑」(ssom-baram.js, 일주 60). 원고 한 벌을 {주} 만 바꿔 두 번 쓴다.
-    const 바람 = global.ChaeksaSsomBaram || {};
-    const 바람칸 = (번, 일주, 주, 머리) => { const b = 바람[일주];
-      const 속 = b ? '<p class="ss-lead">' + esc(b.제목) + '</p>' + b.줄.map(t => 줄(t.split('{주}').join(주))).join('')
-        : '<p class="ss-why">' + esc(일주) + ' 일주의 글은 쓰고 있어요.</p>';
-      return '<details class="ss-q card ss-baram"' + (번 === 1 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>' + 속 + '</details>'; };
-    const 알기 = 바람칸(1, z.나쪽.일주, '당신', '나를 알고 — 내가 바라는 사랑') + 바람칸(2, z.그쪽.일주, '그 사람', '그 사람을 알고 — 그 사람이 바라는 사랑')
-      + '<h3 class="ss-part">3. 우리 둘의 주고받음</h3>';
-    if (!원고) {
-      box.innerHTML = 근거 + 알기 + '<div class="card"><p>두 분 조합의 글은 아직 쓰고 있어요. 조합마다 사람이 쓰고 검수한 글만 내놓아서, 다 채우기까지 시간이 걸려요.</p><p class="ss-why">조합 ' + esc(z.키) + '</p></div>';
-      return;
-    }
-    // 첫 줄(굵은 요약)과 끝 줄(굵은 맺음)은 따로 꾸민다 — 문장이 한 덩어리로 보이던 것(09-24)
+    const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
     const 칸 = (글) => 글.map((t, j) => { let h = 줄(t);
       if (j === 0 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-lead">');
       else if (j === 글.length - 1 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-end">');
       return h; }).join('');
+    const 바꿔 = (글, 표) => 글.map(t => Object.keys(표).reduce((x, k) => x.split(k).join(표[k]), t));
+    const 근거 = '<div class="card"><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
+      + '일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 글은 두 분 일주와 식상을 바탕으로 풀어 쓴 해석이고, 장면과 대사는 이해를 돕는 예시예요.</p></div>';
+    // 1 · 2 — 바라는 사랑(일주) + 주는 사랑(식상)
+    const 알기칸 = (번, R, 주, 머리) => {
+      const 일주 = S.일주(R), 식 = S.식상(R), 바 = 바람[일주], 주는 = 줌[식.키], 누가 = 주 === '당신' ? '내가' : '그 사람이';
+      const 속 = '<h4 class="ss-sub">' + 누가 + ' 바라는 사랑</h4>' + (바 ? '<p class="ss-lead">' + esc(바.제목) + '</p>' + 칸(바꿔(바.줄, { '{주}': 주 })) : '<p class="ss-why">' + esc(일주) + ' 일주의 글은 쓰고 있어요.</p>')
+        + '<h4 class="ss-sub">' + 누가 + ' 주는 사랑</h4>' + (주는 ? '<p class="ss-lead">' + esc(주는.제목) + '</p>' + 칸(바꿔(주는.줄, { '{주}': 주 })) : '<p class="ss-why">이 식상 구성의 글은 쓰고 있어요.</p>');
+      return '<details class="ss-q card ss-baram"' + (번 === 1 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>' + 속 + '</details>';
+    };
+    // 3 — 주고받음: 두 방향 닿음
+    const 닿칸 = (받R, 줌R, 받, 주는이) => { const k = S.닿음키(받R, 줌R), d = 닿[k];
+      const 머리 = (받 === '당신' ? '내가 바라는 것' : '그 사람이 바라는 것') + ' ← ' + (주는이 === '당신' ? '내가 주는 것' : '그 사람이 주는 것');
+      return '<div class="ss-daeum"><p class="ss-ask">' + esc(머리) + (d ? ' — <b>' + esc(d.말) + '</b>' : '') + '</p>' + (d ? 칸(바꿔(d.줄, { '{받}': 받, '{줌}': 주는이 })) : '<p class="ss-why">이 짝(' + esc(k) + ')의 글은 쓰고 있어요.</p>') + '</div>'; };
+    const 주고받음 = '<details class="ss-q card"><summary>3. 우리 둘의 주고받음</summary>' + 닿칸(나R, 그R, '당신', '그 사람') + 닿칸(그R, 나R, '그 사람', '당신') + '</details>';
+    // 4 — 때: 만난 달과 지금. 사실만 — 뜻은 사장님 조문 대기
+    const 지금 = new Date();
+    const 상태말 = (t, 주) => {
+      const 온 = t.온.filter((x, i, arr) => arr.findIndex(y => y.글자 === x.글자 && y.층 === x.층) === i);
+      const 있말 = { '없음': '식신도 상관도 없어요', '식신만': '식신만 있어요', '상관만': '상관만 있어요', '둘 다': '식신과 상관이 둘 다 있어요' };
+      const 식줄 = t.원구성 === t.구성 ? '식상은 타고난 그대로 ' + 있말[t.구성] + '.'
+        : '식상은 타고나기로 ' + 있말[t.원구성].replace(/어요$/, '는데') + ', 이때는 ' + 온.map(x => x.층 + '의 ' + G이름(x.글자) + ' ' + x.십신).join(' · ') + '이 들어와 ' + 있말[t.구성] + '.';
+      const 묶줄 = t.묶임.length ? ' 천간의 ' + t.묶임.map(x => G이름(x.글자) + ' ' + x.십신).join(' · ') + '이 운에 묶여 제 노릇을 못 해요.' : '';
+      const 지줄 = t.충.length ? '일지 ' + 지말(t.일지) + '는 ' + t.충.map(x => x.층 + ' ' + 지말(x.운지)).join(' · ') + '와 부딪혀 흔들리는 때예요.'
+        : t.합.length ? '일지 ' + 지말(t.일지) + '는 ' + t.합.map(x => x.층 + ' ' + 지말(x.운지)).join(' · ') + '와 합으로 묶이는 때예요.' : '일지 ' + 지말(t.일지) + '는 운에 흔들리지 않아요.';
+      return '<p><b>' + esc(주) + '</b> — ' + esc(식줄 + 묶줄 + ' ' + 지줄) + '</p>'; };
+    let 때칸;
+    if (opts.만난 && opts.만난.y && opts.만난.m) {
+      const 그때 = [S.때상태(나R, opts.만난.y, opts.만난.m), S.때상태(그R, opts.만난.y, opts.만난.m)];
+      const 이제 = [S.때상태(나R, 지금.getFullYear(), 지금.getMonth() + 1), S.때상태(그R, 지금.getFullYear(), 지금.getMonth() + 1)];
+      const 같음 = (x, y) => x.구성 === y.구성 && x.충.length === y.충.length && x.합.length === y.합.length && x.묶임.length === y.묶임.length;
+      때칸 = '<h4 class="ss-sub">만난 때 — ' + opts.만난.y + '년 ' + opts.만난.m + '월</h4>' + 상태말(그때[0], '당신') + 상태말(그때[1], '그 사람')
+        + '<h4 class="ss-sub">지금 — ' + 지금.getFullYear() + '년 ' + (지금.getMonth() + 1) + '월</h4>' + 상태말(이제[0], '당신') + 상태말(이제[1], '그 사람')
+        + '<p class="ss-why">' + [['당신', 0], ['그 사람', 1]].map(([n, i]) => n + '은 만난 때와 지금이 ' + (같음(그때[i], 이제[i]) ? '같아요' : '달라요')).join(' · ') + '. 달라진 것이 연애에서 무엇으로 드러나는지는 책사가 정리하고 있어요.</p>';
+    } else 때칸 = '<p class="ss-why">두 분이 처음 만난 달을 넣으면, 그때와 지금 두 분의 식상과 일지가 어떻게 달라졌는지 보여 드려요.</p>';
+    const 때 = '<details class="ss-q card"' + (opts.만난 ? ' open' : '') + '><summary>4. 때 — 만난 달과 지금</summary>' + 때칸 + '</details>';
+    // 5 — 안고 갈 것, 맞춰 갈 것
+    const 끝 = '<details class="ss-q card"><summary>5. 안고 갈 것, 맞춰 갈 것</summary>' + (맞
+      ? '<h4 class="ss-sub">안고 갈 것 — 쉽게 안 바뀌어요</h4>' + 맞.안고.map(t => '<p>' + esc(t) + '</p>').join('') + '<h4 class="ss-sub">맞춰 갈 것 — 말 한마디, 방식 하나로 달라져요</h4>' + 맞.맞춰.map(t => '<p>' + esc(t) + '</p>').join('') + '<p class="ss-why">안고 갈지, 못 안고 갈지는 두 분이 정해요.</p>'
+      : '<p class="ss-why">두 분 조합의 글은 쓰고 있어요.</p>') + '</details>';
+    // 지금 단계의 질문 여섯
     const 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {};
     const 반응칸 = (i) => !S.반응틀[i] ? '' : '<div class="ss-act"><p class="ss-ask">' + esc(S.반응물음[i]) + '</p><div class="ss-btns">'
       + S.반응틀[i].map(r => '<button type="button" class="ss-r" data-q="' + i + '" data-r="' + esc(r) + '">' + esc(r) + '</button>').join('') + '</div><div class="ss-next"></div></div>';
     const 기록 = S.기록(z.키), 끝기록 = 기록[기록.length - 1];
-    const 이어 = 끝기록 ? '<div class="card ss-log"><p>지난번 기록 — ' + esc(끝기록.때) + ' · ' + (끝기록.장 + 1) + '장 「' + esc(S.질문[끝기록.장]) + '」에 <b>' + esc(끝기록.반응) + '</b></p><p class="ss-why">그다음 수는 그 장 아래에 다시 적어 두었어요. 기록은 이 기기에만 남아요.</p></div>' : '';
-    const 장면단추 = '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>';
-    box.innerHTML = 근거 + 알기 + 이어 + 장면단추 + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('');
-    // 대사 상자마다 복사 단추 — 카톡에 바로 붙여 넣게
-    box.querySelectorAll('.ss-say').forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
+    const 이어 = 끝기록 ? '<div class="card ss-log"><p>지난번 기록 — ' + esc(끝기록.때) + ' · 「' + esc(S.질문[끝기록.장]) + '」에 <b>' + esc(끝기록.반응) + '</b></p><p class="ss-why">기록은 이 기기에만 남아요.</p></div>' : '';
+    const 질문들 = 원고
+      ? '<h3 class="ss-part">지금 단계의 질문 — 막 썸을 시작했어요</h3>' + 이어 + '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>'
+        + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('')
+      : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>두 분 조합의 질문 글은 아직 쓰고 있어요.</p></div>';
+    box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 질문들;
+    // 대사 상자마다 복사 단추
+    const 복사단추 = (root) => root.querySelectorAll('.ss-say').forEach(p => { if (p.querySelector('.ss-copy')) return; const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
       b.onclick = () => { const t = p.textContent.replace(/^(당신|상대):\s*/, '').replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim(); try { navigator.clipboard.writeText(t); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
+    복사단추(box);
     const 보이기 = (i, r, 적) => {
       const d = box.querySelector('details[data-i="' + i + '"]'); if (!d) return;
       d.querySelectorAll('.ss-r').forEach(x => x.classList.toggle('on', x.dataset.r === r));
       const 글 = (반응원고[i] || {})[r];
       d.querySelector('.ss-next').innerHTML = 글 ? 칸(글) : '<p class="ss-why">이 반응에 이어지는 글은 쓰고 있어요.</p>';
-      d.querySelectorAll('.ss-next .ss-say').forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
-        b.onclick = () => { try { navigator.clipboard.writeText(p.textContent.replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim()); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
+      복사단추(d);
       if (적) S.적기(z.키, i, r);
     };
     box.querySelectorAll('.ss-r').forEach(b => b.onclick = () => 보이기(+b.dataset.q, b.dataset.r, true));
-    if (끝기록) 보이기(끝기록.장, 끝기록.반응, false);
+    if (끝기록 && 원고) 보이기(끝기록.장, 끝기록.반응, false);
     const vn = box.querySelector('#ssVn');
     if (vn) vn.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ 키: z.키 })); } catch (e) {} location.href = 'ssom-vn.html'; };
   }
@@ -81,7 +115,8 @@
       e.preventDefault();
       const a = 읽기('A'), b = 읽기('B');
       if (!a || !b) return;
-      그리기(box, a, b);
+      const mv = (q('gcMet') && q('gcMet').value || '').split('-').map(Number);
+      그리기(box, a, b, { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null });
       box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
   }

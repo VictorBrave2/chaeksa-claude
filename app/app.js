@@ -1235,8 +1235,14 @@
       + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
-    if (!고름) { out.innerHTML = ''; return; }
-    SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))));
+    const more = $('ssMore'), met = $('ssMet');
+    if (!고름) { out.innerHTML = ''; if (more) more.classList.add('hide'); return; }
+    // 처음 만난 달 — 그 사람마다 이 기기에 기억한다(연 · 월만, 서버로 안 보낸다)
+    const 만난키 = 'chaeksa.ssomMet.' + 고름;
+    if (more) more.classList.remove('hide');
+    if (met) { try { met.value = localStorage.getItem(만난키) || ''; } catch (e) {} met.onchange = () => { try { localStorage.setItem(만난키, met.value || ''); } catch (e) {} renderSsom(); }; }
+    const mv = ((met && met.value) || '').split('-').map(Number);
+    SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))), { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null });
   }
 
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────

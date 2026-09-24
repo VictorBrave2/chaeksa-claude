@@ -3,7 +3,7 @@
 <meta name="robots" content="noindex">
 </head><body><div id="out"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script>
+<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script>
 <script>
 // 법전 72조 — 사장님 사례: 남 1992-04-21 00:20 서울 · 여 1999-12-20 20:00 서울. 남이 「나」.
 const E = ChaeksaEngine, S = ChaeksaSsom, out = document.getElementById('out');
@@ -15,6 +15,9 @@ const 시험 = [
   ['남 일지 卯 · 여 일지 午', S.일지(남) + S.일지(여), '卯午'],
   ['짝 열쇠(남이 나)', S.짝(남, 여).키, '丁卯×戊식신+己상관 / 丙午×戊상관'],
   ['남 丁卯 — 일지 卯는 丁에게 편인 · 여 丙午 — 午는 丙에게 겁재', S.일지십신(남) + S.일지십신(여), '편인겁재'],
+  ['때 — 남 26년 8월: 원국 상관만 → 운(대운 未 · 세운 午 속 己 식신)으로 둘 다', S.때상태(남, 2026, 8).원구성 + '→' + S.때상태(남, 2026, 8).구성, '상관만→둘 다'],
+  ['때 — 남 26년 9월: 일지 卯가 월운 酉에 충(흔들림)', S.때상태(남, 2026, 9).충.map(x => x.층 + x.운지).join(','), '월운酉'],
+  ['닿음 열쇠 — 남이 받을 때 편인|둘 다 · 여가 받을 때 겁재|상관만', S.닿음키(남, 여) + ' / ' + S.닿음키(여, 남), '편인|둘 다 / 겁재|상관만'],
   ['첫 원고가 그 열쇠에 붙어 있고 질문 여섯', (ChaeksaSsomWongo[S.짝(남, 여).키] || []).length, 6],
 ];
 let 통과 = 0, 실패 = 0;
