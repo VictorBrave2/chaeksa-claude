@@ -12,7 +12,7 @@
   function 그리기(box, a, b) {
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
     const z = S.짝(나R, 그R), 원고 = W[z.키];
-    const 근거 = '<div class="card"><p class="ss-why">나는 일지 ' + 지말(z.나쪽.일지) + ', 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 일지 ' + 지말(z.그쪽.일지) + ', 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
+    const 근거 = '<div class="card"><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
       + '일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 글 속 장면과 대사는 이해를 돕는 예시예요.</p></div>';
     if (!원고) {
       box.innerHTML = 근거 + '<div class="card"><p>두 분 조합의 글은 아직 쓰고 있어요. 조합마다 사람이 쓰고 검수한 글만 내놓아서, 다 채우기까지 시간이 걸려요.</p><p class="ss-why">조합 ' + esc(z.키) + '</p></div>';

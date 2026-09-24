@@ -29,8 +29,11 @@
     return { 키, 식신: 식 ? S[식신] : null, 상관: 상 ? S[상관] : null };
   }
   function 일지지(R) { return E.BRANCHES[R.pillars.day.branch]; }
+  // 72조 ⑤(09-24) 일지는 일간이 그 글자를 무엇으로 보느냐로 읽는다 — 일주 60. 丁에게 卯는 편인, 丙에게 午는 겁재.
+  function 일주(R) { return E.STEMS[R.pillars.day.stem] + E.BRANCHES[R.pillars.day.branch]; }
+  function 일지십신(R) { const h = (E.HIDDEN[R.pillars.day.branch] || [])[0], st = typeof h === 'number' ? h : h[0]; return E.TEN_GODS[E.tenGod(R.pillars.day.stem, st)]; }
   // 방향 = 받는 쪽의 일지 × 주는 쪽의 식상
-  function 방향(받는R, 주는R) { const 식 = 식상(주는R); return { 일지: 일지지(받는R), 식상: 식.키, 키: 일지지(받는R) + '×' + 식.키 }; }
+  function 방향(받는R, 주는R) { const 식 = 식상(주는R); return { 일지: 일지지(받는R), 일주: 일주(받는R), 일지십신: 일지십신(받는R), 식상: 식.키, 키: 일주(받는R) + '×' + 식.키 }; }
   // 당신 = 나. 원고 열쇠 = 「내 일지 × 상대 식상 / 상대 일지 × 내 식상」
   function 짝(나R, 그R) {
     const 나쪽 = 방향(나R, 그R), 그쪽 = 방향(그R, 나R);
@@ -54,5 +57,5 @@
   function 적기(열쇠, 장, 반응) {
     try { const all = JSON.parse(localStorage.getItem(일지키) || '{}'); (all[열쇠] = all[열쇠] || []).push({ 장, 반응, 때: new Date().toISOString().slice(0, 10) }); all[열쇠] = all[열쇠].slice(-30); localStorage.setItem(일지키, JSON.stringify(all)); } catch (e) {}
   }
-  global.ChaeksaSsom = { 식상, 일지: 일지지, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
+  global.ChaeksaSsom = { 식상, 일지: 일지지, 일주, 일지십신, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
 })(window);
