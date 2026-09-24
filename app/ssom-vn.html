@@ -21,7 +21,7 @@
   .top a{color:#fff;text-decoration:none}
   .box{position:absolute;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));min-height:170px;padding:26px 18px 18px;border-radius:18px;background:var(--box);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
   .who{position:absolute;top:-15px;left:16px;padding:5px 14px;border-radius:999px;background:var(--accent);font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-  .who.you{background:#5a6fd6}.who.them{background:#d08a3c}.who.ex{background:#6b6b8a}
+  .who.you{background:#5a6fd6}.who.them{background:#d08a3c}.who.ex{background:#6b6b8a}.who.jw{background:#7a5bb5}.who.tk{background:#3f8f76}
   .txt{word-break:keep-all;font-family:'Gowun Batang',serif;font-size:17px;line-height:1.85;min-height:92px;white-space:pre-wrap}
   .txt b{color:#ffd6de}
   .txt.say{font-size:18px}
@@ -49,9 +49,9 @@
   <div class="box" id="box"><div class="who" id="who">책사</div><div class="txt" id="txt"></div><div class="next" id="nx">▼ 눌러서 계속</div></div>
   <div class="chap" id="chap"></div>
 </div>
-<script src="config.js?v=1016"></script><script src="astro.js?v=1016"></script><script src="lunar.js?v=1016"></script><script src="engine.js?v=1016"></script>
-<script src="saenggeuk.js?v=1016"></script><script src="gise.js?v=1016"></script><script src="panjeong.js?v=1016"></script><script src="typecard.js?v=1016"></script><script src="gyeokguk.js?v=1016"></script>
-<script src="ssom-gwanjeom.js?v=1016"></script><script src="ssom-baram.js?v=1016"></script><script src="ssom-wongo.js?v=1016"></script><script src="ssom-dangye.js?v=1016"></script><script src="ssom.js?v=1016"></script>
+<script src="config.js?v=1017"></script><script src="astro.js?v=1017"></script><script src="lunar.js?v=1017"></script><script src="engine.js?v=1017"></script>
+<script src="saenggeuk.js?v=1017"></script><script src="gise.js?v=1017"></script><script src="panjeong.js?v=1017"></script><script src="typecard.js?v=1017"></script><script src="gyeokguk.js?v=1017"></script>
+<script src="ssom-gwanjeom.js?v=1017"></script><script src="ssom-baram.js?v=1017"></script><script src="ssom-daehwa.js?v=1017"></script><script src="ssom-wongo.js?v=1017"></script><script src="ssom-dangye.js?v=1017"></script><script src="ssom.js?v=1017"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -78,8 +78,8 @@
   function 시작() { $('chap').classList.add('off'); 표지중 = false; 멈춤 = false; 줄들 = 장들[장].줄.map((x, j, a) => Object.assign({ 배경: 장들[장].배경[Math.min(장들[장].배경.length - 1, Math.floor(j * 장들[장].배경.length / a.length))] }, x)); n = 0; 보이기(); }
   function 보이기() {
     const s = 줄들[n]; 배경바꾸기(s.배경);
-    $('who').textContent = s.누가; $('who').className = 'who' + (s.누가 === '당신' ? ' you' : s.누가 === '상대' ? ' them' : s.누가 === '예시' ? ' ex' : '');
-    $('txt').className = 'txt' + (s.누가 !== '책사' ? ' say' : ''); $('nx').style.display = '';
+    $('who').textContent = s.누가; $('who').className = 'who' + (s.누가 === '당신' ? ' you' : s.누가 === '상대' ? ' them' : s.누가 === '예시' ? ' ex' : s.누가 === '좌장' ? ' jw' : s.누가 === '택일' ? ' tk' : '');
+    $('txt').className = 'txt' + (/당신|상대|예시/.test(s.누가) ? ' say' : ''); $('nx').style.display = '';
     $('prog').textContent = (장 + 1) + '장 · ' + (n + 1) + ' / ' + 줄들.length;
     const 순 = s.말.replace(/\*\*/g, ''); let k = 0; 다침 = false; clearInterval(치는중);
     치는중 = setInterval(() => { k++; $('txt').textContent = 순.slice(0, k); if (k >= 순.length) { clearInterval(치는중); $('txt').innerHTML = 굵(s.말); 다침 = true; } }, 28);

@@ -41,6 +41,9 @@
     const 소개 = (누, 제) => '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
     const 근거 = '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">장면으로 보기 — 처음부터 끝까지</button>'
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
+    const 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
+    const 대화칸 = (번, 머리, arr, 열림) => '<details class="ss-q card ss-baram"' + (열림 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>'
+      + arr.map(([누가, 말]) => '<p class="ss-talk"><b class="t-' + (누가 === '좌장' ? 'jw' : 누가 === '택일' ? 'tk' : 'iy') + '">' + esc(누가) + '</b>' + esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>').join('') + '</details>';
     // 1 · 2 — 바라는 사랑(일주) + 주는 사랑(식상)
     const 알기칸 = (번, R, 주, 머리) => {
       const 일주 = S.일주(R), 언 = S.언행(R), 바 = 바람[일주], 누가 = 주 === '당신' ? '내가' : '그 사람이';
@@ -116,6 +119,7 @@
         ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸(글들[i] || ['이 질문의 글은 쓰고 있어요.']) + '</details>').join('')
         : '<div class="card"><p>이 단계에서 두 분 조합의 글은 아직 쓰고 있어요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');
       box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 단질;
+      if (대화) box.innerHTML = 근거 + 대화칸(1, '나를 알고', 대화.나알기, true) + 대화칸(2, '그 사람을 알고', 대화.그알기) + 대화칸(3, '우리 둘의 주고받음', 대화.주고받음) + 때 + 대화칸(5, '안고 갈 것, 맞춰 갈 것', 대화.맞춤) + 단질;
       const vt = box.querySelector('#ssVnTop'); if (vt) vt.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html'; };
       return;
     }
@@ -123,7 +127,8 @@
       ? '<h3 class="ss-part">지금 단계의 질문 — 막 썸을 시작했어요</h3>' + 이어 + '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>'
         + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('')
       : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>두 분 조합의 질문 글은 아직 쓰고 있어요.</p></div>';
-    box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 질문들;
+    box.innerHTML = 대화 ? 근거 + 대화칸(1, '나를 알고', 대화.나알기, true) + 대화칸(2, '그 사람을 알고', 대화.그알기) + 대화칸(3, '우리 둘의 주고받음', 대화.주고받음) + 때 + 대화칸(5, '안고 갈 것, 맞춰 갈 것', 대화.맞춤) + 질문들
+      : 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 질문들;
     const 보이기 = (i, r, 적) => {
       const d = box.querySelector('details[data-i="' + i + '"]'); if (!d) return;
       d.querySelectorAll('.ss-r').forEach(x => x.classList.toggle('on', x.dataset.r === r));
@@ -191,26 +196,29 @@
       if (!언.length) 줄로(생.없음, { '{주}': 주 }).forEach(x => 줄들.push(x));
       else { 조각.forEach(c => 줄로(c.줄, { '{주}': 주 }).forEach(x => 줄들.push(x))); 줄로(언.some(x => x.드러남) ? 생.드러남 : 생.숨음, { '{주}': 주 }).forEach(x => 줄들.push(x)); }
       return 줄들; };
-    const 장들 = [];
-    장들.push({ 제목: '나를 알고', 배경: ['story-maeum', 'story-still'], 줄: 알기(나R, '당신') });
-    장들.push({ 제목: '그 사람을 알고', 배경: ['story-he-likes', 'story-sns'], 줄: 알기(그R, '그 사람') });
+    const 장들 = [], 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];
+    const 대화줄 = (arr) => arr.map(([누가, 말]) => ({ 누가, 말 }));
+    장들.push({ 제목: '나를 알고', 배경: ['story-maeum', 'story-still'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
+    장들.push({ 제목: '그 사람을 알고', 배경: ['story-he-likes', 'story-sns'], 줄: 대화 ? 대화줄(대화.그알기) : 알기(그R, '그 사람') });
     const 닿줄 = []; [[나R, 그R, '당신', '그 사람', '당신이 바라는 것과 그 사람이 주는 것'], [그R, 나R, '그 사람', '당신', '그 사람이 바라는 것과 당신이 주는 것']].forEach(([받R, 줌R, 받, 주는이, 머리]) => {
       const d = 닿[S.닿음키(받R, 줌R)];
       닿줄.push({ 누가: '책사', 말: 머리 + (d ? '은 — **' + d.말 + '**.' : '은 아직 쓰고 있어요.') });
       if (d) 줄로(d.줄, { '{받}': 받, '{줌}': 주는이 }).forEach(x => 닿줄.push(x)); });
-    장들.push({ 제목: '우리 둘의 주고받음', 배경: ['story-reply', 'story-contact'], 줄: 닿줄 });
+    장들.push({ 제목: '우리 둘의 주고받음', 배경: ['story-reply', 'story-contact'], 줄: 대화 ? 대화줄(대화.주고받음) : 닿줄 });
     const 때줄 = [];
     if (opts.만난 && opts.만난.y) {
       const 지 = new Date(), 그때 = [S.때풀이(나R, opts.만난.y, opts.만난.m), S.때풀이(그R, opts.만난.y, opts.만난.m)], 이제 = [S.때풀이(나R, 지.getFullYear(), 지.getMonth() + 1), S.때풀이(그R, 지.getFullYear(), 지.getMonth() + 1)];
-      때줄.push({ 누가: '책사', 말: '두 분이 처음 만난 ' + opts.만난.y + '년 ' + opts.만난.m + '월과 지금을 견줘 볼게요.' });
-      [['당신', 0, 나R], ['그 사람', 1, 그R]].forEach(([n, i, R]) => { 때줄.push({ 누가: '책사', 말: '**' + n + '**이에요.' });
-        이제[i].바람.forEach(t => 때줄.push({ 누가: '책사', 말: t }));
-        S.때견줌(R, 그때[i], 이제[i]).forEach(t => 때줄.push({ 누가: '책사', 말: t })); });
+      const 말꾼 = 대화 ? '택일' : '책사';
+      if (대화) 대화줄(대화.때여는말).forEach(x => 때줄.push(x));
+      때줄.push({ 누가: 말꾼, 말: opts.만난.y + '년 ' + opts.만난.m + '월. 지금이랑 견줘 볼게요.' });
+      [[대화 ? '이 분' : '당신', 0, 나R], [대화 ? '상대분' : '그 사람', 1, 그R]].forEach(([n, i, R]) => { 때줄.push({ 누가: 말꾼, 말: '**' + n + '**은요.' });
+        이제[i].바람.forEach(t => 때줄.push({ 누가: 말꾼, 말: t }));
+        S.때견줌(R, 그때[i], 이제[i]).forEach(t => 때줄.push({ 누가: 말꾼, 말: t })); });
     } else 때줄.push({ 누가: '책사', 말: '두 분이 처음 만난 달을 넣으면, 그때와 지금이 어떻게 달라졌는지 들려 드려요.' });
     장들.push({ 제목: '때 — 만난 달과 지금', 배경: ['story-long-distance', 'story-jigeum'], 줄: 때줄 });
     const 맞줄 = 맞 ? [{ 누가: '책사', 말: '**안고 갈 것**이에요. 쉽게 안 바뀌어요.' }].concat(맞.안고.map(t => ({ 누가: '책사', 말: t })), [{ 누가: '책사', 말: '**맞춰 갈 것**이에요. 말 한마디로 달라져요.' }], 맞.맞춰.map(t => ({ 누가: '책사', 말: t })), [{ 누가: '책사', 말: '안고 갈지, 못 안고 갈지는 두 분이 정해요.' }])
       : [{ 누가: '책사', 말: '두 분 조합의 글은 쓰고 있어요.' }];
-    장들.push({ 제목: '안고 갈 것, 맞춰 갈 것', 배경: ['story-hold', 'story-still'], 줄: 맞줄 });
+    장들.push({ 제목: '안고 갈 것, 맞춰 갈 것', 배경: ['story-hold', 'story-still'], 줄: 대화 ? 대화줄(대화.맞춤) : 맞줄 });
     // 지금 단계의 질문
     const 단계 = opts.단계 || '썸', 칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };

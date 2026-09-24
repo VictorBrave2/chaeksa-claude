@@ -1719,3 +1719,6 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-tbl small{font-weight:400;opacity:.7}
 .ss-tbl ul{margin:0;padding-left:16px}
 .ss-tbl li{margin:0 0 4px;line-height:1.5}
+.ss-talk{margin:0 0 10px!important;line-height:1.75}
+.ss-talk b[class^="t-"]{display:inline-block;min-width:38px;margin-right:8px;padding:1px 8px;border-radius:999px;color:#fff;font-size:12px;text-align:center}
+.t-iy{background:#e8798b}.t-jw{background:#7a5bb5}.t-tk{background:#3f8f76}
