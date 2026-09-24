@@ -53,12 +53,14 @@
       return '<p><b>' + esc(주) + '</b> — ' + esc(식줄 + 묶줄 + ' ' + 지줄) + '</p>'; };
     let 때칸;
     if (opts.만난 && opts.만난.y && opts.만난.m) {
-      const 그때 = [S.때상태(나R, opts.만난.y, opts.만난.m), S.때상태(그R, opts.만난.y, opts.만난.m)];
-      const 이제 = [S.때상태(나R, 지금.getFullYear(), 지금.getMonth() + 1), S.때상태(그R, 지금.getFullYear(), 지금.getMonth() + 1)];
-      const 같음 = (x, y) => x.구성 === y.구성 && x.충.length === y.충.length && x.합.length === y.합.length && x.묶임.length === y.묶임.length;
-      때칸 = '<h4 class="ss-sub">만난 때 — ' + opts.만난.y + '년 ' + opts.만난.m + '월</h4>' + 상태말(그때[0], '당신') + 상태말(그때[1], '그 사람')
-        + '<h4 class="ss-sub">지금 — ' + 지금.getFullYear() + '년 ' + (지금.getMonth() + 1) + '월</h4>' + 상태말(이제[0], '당신') + 상태말(이제[1], '그 사람')
-        + '<p class="ss-why">' + [['당신', 0], ['그 사람', 1]].map(([n, i]) => n + '은 만난 때와 지금이 ' + (같음(그때[i], 이제[i]) ? '같아요' : '달라요')).join(' · ') + '. 달라진 것이 연애에서 무엇으로 드러나는지는 책사가 정리하고 있어요.</p>';
+      // 층별 풀이(대운 = 바탕 · 세운 = 모양 · 월운 = 밀려남, 언행은 드러남/속으로) — ssom-gwanjeom 때풀이 · 때견줌
+      const 풀 = (R, y, m) => S.때풀이(R, y, m), 지y = 지금.getFullYear(), 지m = 지금.getMonth() + 1;
+      const 사람칸 = (x, 주) => '<p><b>' + esc(주) + '</b></p>' + (x.바람.length ? x.바람 : ['바라는 마음은 운에 흔들리지 않고 타고난 그대로예요.']).map(t => '<p>' + esc(t) + '</p>').join('')
+        + (x.언.length ? x.언.map(v => '<p>' + esc(v.말) + '</p>').join('') : '<p>언행은 타고난 그대로예요.</p>');
+      const 그때 = [풀(나R, opts.만난.y, opts.만난.m), 풀(그R, opts.만난.y, opts.만난.m)], 이제 = [풀(나R, 지y, 지m), 풀(그R, 지y, 지m)];
+      때칸 = '<h4 class="ss-sub">만난 때 — ' + opts.만난.y + '년 ' + opts.만난.m + '월</h4>' + 사람칸(그때[0], '당신') + 사람칸(그때[1], '그 사람')
+        + '<h4 class="ss-sub">지금 — ' + 지y + '년 ' + 지m + '월</h4>' + 사람칸(이제[0], '당신') + 사람칸(이제[1], '그 사람')
+        + '<h4 class="ss-sub">그때와 지금</h4>' + [['당신', 0, 나R], ['그 사람', 1, 그R]].map(([n, i, R]) => '<p><b>' + n + '</b> — ' + esc(S.때견줌(R, 그때[i], 이제[i]).join(' ')) + '</p>').join('');
     } else 때칸 = '<p class="ss-why">두 분이 처음 만난 달을 넣으면, 그때와 지금 두 분의 식상과 일지가 어떻게 달라졌는지 보여 드려요.</p>';
     const 때 = '<details class="ss-q card"' + (opts.만난 ? ' open' : '') + '><summary>4. 때 — 만난 달과 지금</summary>' + 때칸 + '</details>';
     // 5 — 안고 갈 것, 맞춰 갈 것
