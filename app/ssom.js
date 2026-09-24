@@ -80,8 +80,6 @@
         ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸(글들[i] || ['이 질문의 글은 쓰고 있어요.']) + '</details>').join('')
         : '<div class="card"><p>이 단계에서 두 분 조합의 글은 아직 쓰고 있어요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');
       box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 단질;
-      box.querySelectorAll('.ss-say').forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
-        b.onclick = () => { try { navigator.clipboard.writeText(p.textContent.replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim()); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
       return;
     }
     const 질문들 = 원고
@@ -89,16 +87,11 @@
         + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('')
       : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>두 분 조합의 질문 글은 아직 쓰고 있어요.</p></div>';
     box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 질문들;
-    // 대사 상자마다 복사 단추
-    const 복사단추 = (root) => root.querySelectorAll('.ss-say').forEach(p => { if (p.querySelector('.ss-copy')) return; const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
-      b.onclick = () => { const t = p.textContent.replace(/^(당신|상대):\s*/, '').replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim(); try { navigator.clipboard.writeText(t); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
-    복사단추(box);
     const 보이기 = (i, r, 적) => {
       const d = box.querySelector('details[data-i="' + i + '"]'); if (!d) return;
       d.querySelectorAll('.ss-r').forEach(x => x.classList.toggle('on', x.dataset.r === r));
       const 글 = (반응원고[i] || {})[r];
       d.querySelector('.ss-next').innerHTML = 글 ? 칸(글) : '<p class="ss-why">이 반응에 이어지는 글은 쓰고 있어요.</p>';
-      복사단추(d);
       if (적) S.적기(z.키, i, r);
     };
     box.querySelectorAll('.ss-r').forEach(b => b.onclick = () => 보이기(+b.dataset.q, b.dataset.r, true));

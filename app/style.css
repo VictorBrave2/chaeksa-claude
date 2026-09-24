@@ -1697,8 +1697,7 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-q p.ss-end{margin-top:22px;padding-top:14px;border-top:1px dashed rgba(127,127,127,.35)}
 .ss-why{font-size:13px;color:var(--ink3);line-height:1.8}
 
-.ss-say{position:relative;padding-right:64px!important}
-.ss-copy{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:5px 10px;border-radius:999px;border:1px solid var(--accent-line);background:var(--card);color:var(--accent);font-size:12px}
+
 .ss-act{margin-top:20px;padding:14px;border-radius:12px;background:var(--accent-soft)}
 .ss-ask{font-weight:700;margin:0 0 10px!important}
 .ss-btns{display:flex;flex-wrap:wrap;gap:8px}
