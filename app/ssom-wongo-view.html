@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>연애궁합 원고 보기 · 검수용</title>
+<style>
+:root{color-scheme:light}body{margin:0;background:#f6f5fb;font-family:"Malgun Gothic",-apple-system,sans-serif;color:#222}
+.w{max-width:680px;margin:0 auto;padding:18px 16px 80px}h1{font-size:20px;margin:6px 0 4px}.sub{color:#777;font-size:13px;margin:0 0 14px;line-height:1.6}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.tabs button{border:1px solid #d9d4ee;background:#fff;border-radius:99px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}.tabs button.on{background:#5b3fa0;color:#fff;border-color:#5b3fa0}
+h2{font-size:17px;margin:34px 0 4px;color:#5b3fa0;border-bottom:2px solid #e3def5;padding-bottom:6px}h3{font-size:15px;margin:22px 0 8px}
+p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}.g{margin:14px 0 6px;padding-top:10px;border-top:1px dashed #ccc;font-size:12px;font-weight:700;color:#888}
+.b{display:inline-block;min-width:42px;font-size:12px;border-radius:99px;padding:1px 8px;color:#fff;margin-right:6px;text-align:center;font-style:normal}.y{background:#5a6fd6}.t{background:#d08a3c}.c{background:#7a5bb5}
+.d{background:#f0edf8;border-left:3px solid #7a5bb5;padding:8px 10px;font-size:14px;border-radius:0 8px 8px 0}.d b{font-size:12px;color:#7a5bb5;display:block}
+.e{color:#999;font-size:13px}
+</style></head><body><div class="w">
+<h1>연애궁합 원고 — 조립기가 만든 그대로</h1>
+<p class="sub">두 사람 명식으로 뼈대 + 조각을 조립한 결과입니다. 글 보기 기준이라 추론의 단서가 들어 있습니다(장면으로 보기에서는 빠집니다). 「처음 만났을 때와 지금」(두 사람 이야기 4)은 만난 달에 따라 엔진이 그리는 칸이라 여기선 뺐습니다.</p>
+<div class="tabs" id="who"></div><div id="out"></div></div>
+<script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
+<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script>
+<script src="ssom-gwanjeom.js"></script><script src="ssom-dangye.js"></script><script src="ssom-webtoon.js"></script><script src="ssom-webtoon-2.js"></script><script src="ssom-webtoon-3.js"></script>
+<script>
+(function () {
+  const E = ChaeksaEngine, W = ChaeksaSsomWebtoon, S = ChaeksaSsom, D = ChaeksaSsomDangye || {};
+  const 남 = E.calc({ year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 });
+  const 여 = E.calc({ year: 1999, month: 12, day: 20, hour: 20, minute: 0, gender: 'F', longitude: 126.98 });
+  const 쌍 = [['丁卯 남이 「당신」', 남, 여], ['丙午 여가 「당신」', 여, 남]];
+  const esc = (s) => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const 제목 = { 둘: ['나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', '우리는 서로 원하는 걸 주고 있을까요?', '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?'], 썸: S.질문 };
+  (D.단계 || []).forEach(d => { if (d.질문) 제목[d.키] = d.질문; });
+  const 이름 = { 둘: '두 사람 이야기', 시작전: '시작 전 — 첫인상', 썸: '썸', 초반: '연애 초반', 안정기: '안정기', 결혼: '결혼을 생각할 때', 흔들림: '흔들릴 때', 재회: '헤어진 뒤 — 재회' };
+  function 그림(a, b) {
+    return Object.keys(이름).map(k => { const w = W.조립(a, b, k); if (!w) return '';
+      return '<h2>' + 이름[k] + '</h2>' + w.map((회, i) => { let 단 = false;
+        return '<h3>' + (i + 1) + '. ' + esc((제목[k] || [])[i] || '') + '</h3>' + 회.map(([누, 말], j) => {
+          if (누 === '장면') return '<p class="s' + (/쓰고 있어요/.test(말) ? ' e' : '') + '">' + esc(말) + '</p>';
+          if (누 === '근거') return '<p class="g">왜 이렇게 흘러갔을까</p>';
+          if (누 === '단서') { const 앞 = 단; 단 = 회[j + 1] && 회[j + 1][0] === '단서'; return (앞 ? '' : '<p class="d"><b>추론의 단서</b>') + esc(말) + (단 ? '<br>' : '</p>'); }
+          const c = 누 === '당신' ? 'y' : 누 === '상대' ? 't' : 'c', t = 누 === '당신' ? '당신' : 누 === '상대' ? '그 사람' : '책사';
+          return '<p><span class="b ' + c + '">' + t + '</span>' + esc(말) + '</p>'; }).join(''); }).join(''); }).join('');
+  }
+  const whoBox = document.getElementById('who'), out = document.getElementById('out');
+  쌍.forEach(([t, a, b], i) => { const bt = document.createElement('button'); bt.textContent = t; bt.onclick = () => { whoBox.querySelectorAll('button').forEach(x => x.classList.remove('on')); bt.classList.add('on'); out.innerHTML = 그림(a, b); }; whoBox.appendChild(bt); if (!i) bt.click(); });
+})();
+</script></body></html>

@@ -13,6 +13,11 @@
   // opts.만난 = { y, m } — 언제 만났나(소개팅 · 첫 연락 · 사귄 달). 없으면 4 칸은 넣는 법만 알려 준다.
   const G이름 = (g) => E.STEMS_KO[E.STEMS.indexOf(g)] + '(' + g + ')';
   const 곳그림 = { 시작전: [['ss-meet-blind'], ['ss-meet-app'], ['ss-meet-party'], ['ss-meet-office'], ['ss-meet-run'], ['ss-meet-club']], 썸: [['ss-sseom-1'], ['ss-sseom-2'], ['ss-sseom-3'], ['ss-sseom-4'], ['ss-sseom-5'], ['ss-sseom-6']], 초반: [['ss-early-1'], ['ss-early-2'], ['ss-early-3'], ['ss-early-4'], ['ss-early-5']], 안정기: [['ss-steady-1'], ['ss-steady-2'], ['ss-steady-3'], ['ss-steady-4']], 결혼: [['ss-marry-1'], ['ss-marry-2'], ['ss-marry-3'], ['ss-marry-4']], 흔들림: [['ss-shake-1'], ['ss-shake-2'], ['ss-shake-3']], 재회: [['ss-again-1'], ['ss-again-2'], ['ss-again-3']] };   // 09-25 연애궁합 전용 삽화 36장(docs/74)
+  // 09-25 작업판 21 — 두 사람 이야기 1 · 2 · 3 · 5도 뼈대 + 조각 조립(ssom-webtoon-3.js)이 있으면 그걸로
+  function 둘로(대화, 나R, 그R) {
+    let 둘 = null; try { 둘 = global.ChaeksaSsomWebtoon && global.ChaeksaSsomWebtoon.뼈대.둘 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '둘') : null; } catch (e) {}
+    return 둘 ? Object.assign({}, 대화 || {}, { 나알기: 둘[0], 그알기: 둘[1], 주고받음: 둘[2], 맞춤: 둘[3], 때여는말: (대화 && 대화.때여는말) || [] }) : 대화;
+  }
   function 그리기(box, a, b, opts) {
     opts = opts || {};
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
@@ -42,12 +47,12 @@
     const 소개 = (누, 제) => '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
     const 근거 = '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">장면으로 보기 — 처음부터 끝까지</button>'
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
-    const 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
+    let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
     const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸') : null; } catch (e) { return null; } })();
     const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
     const 대화칸 = (번, 머리, arr, 열림) => '<details class="ss-q card ss-baram"' + (열림 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>'
-      + arr.map(([누가, 말]) => '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>').join('') + '</details>';
+      + 대화html(arr) + '</details>';
     // 대화 원고([[화자, 말] …])면 이름표 달린 대화로, 예전 원고(줄 배열)면 칸()으로 — 작업판 1(09-25)
     // 09-25 스토리 줄(작업판 17): '장면' = 지문 · '당신' · '상대' = 두 사람 대사 · '단서' = 추론의 단서
     const 대화html = (arr) => arr.map(([누가, 말], i) => { const m = esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
@@ -236,7 +241,7 @@
       if (!언.length) 줄로(생.없음, { '{주}': 주 }).forEach(x => 줄들.push(x));
       else { 조각.forEach(c => 줄로(c.줄, { '{주}': 주 }).forEach(x => 줄들.push(x))); 줄로(언.some(x => x.드러남) ? 생.드러남 : 생.숨음, { '{주}': 주 }).forEach(x => 줄들.push(x)); }
       return 줄들; };
-    const 장들 = [], 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; const 웹단계 = (() => { try { return global.ChaeksaSsomWebtoon && opts.단계 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, opts.단계, true) : null; } catch (e) { return null; } })(); const 단조 = (i) => (웹단계 && 웹단계[i]) || (대화 && 대화.단계 && 대화.단계[opts.단계] && 대화.단계[opts.단계][i]); const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
+    const 장들 = []; let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R); const 웹단계 = (() => { try { return global.ChaeksaSsomWebtoon && opts.단계 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, opts.단계, true) : null; } catch (e) { return null; } })(); const 단조 = (i) => (웹단계 && 웹단계[i]) || (대화 && 대화.단계 && 대화.단계[opts.단계] && 대화.단계[opts.단계][i]); const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
     // 책사 개인 이름(인연 · 좌장 · 택일 …)은 화면에 안 낸다(09-25 사장님 「혼란을 줄 수 있다고 쓰지 말자고 했는데」) — 모두 「책사」, 색으로만 번갈아
     const 대화줄 = (arr) => arr.filter(x => x[0] !== '단서' && x[0] !== '근거').map(([누가, 말]) => 누가 === '장면' ? { 누가: '장면', 말 } : 누가 === '당신' || 누가 === '상대' ? { 누가, 말 } : 누가 === '단서' ? { 누가: '추론의 단서', 말 } : { 누가: '책사', 말, 쪽: 누가 === '인연' ? 0 : 1 });
     장들.push({ 제목: '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['ss-me'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
