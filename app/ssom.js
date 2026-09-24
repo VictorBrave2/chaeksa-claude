@@ -209,13 +209,13 @@
     const 장들 = [], 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];
     // 책사 개인 이름(인연 · 좌장 · 택일 …)은 화면에 안 낸다(09-25 사장님 「혼란을 줄 수 있다고 쓰지 말자고 했는데」) — 모두 「책사」, 색으로만 번갈아
     const 대화줄 = (arr) => arr.map(([누가, 말]) => 누가 === '장면' ? { 누가: '장면', 말 } : 누가 === '당신' || 누가 === '상대' ? { 누가, 말 } : 누가 === '단서' ? { 누가: '추론의 단서', 말 } : { 누가: '책사', 말, 쪽: 누가 === '인연' ? 0 : 1 });
-    장들.push({ 제목: '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['story-maeum', 'story-still'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
-    장들.push({ 제목: '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['story-he-likes', 'story-sns'], 줄: 대화 ? 대화줄(대화.그알기) : 알기(그R, '그 사람') });
+    장들.push({ 제목: '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['ss-me'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
+    장들.push({ 제목: '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['ss-her'], 줄: 대화 ? 대화줄(대화.그알기) : 알기(그R, '그 사람') });
     const 닿줄 = []; [[나R, 그R, '당신', '그 사람', '당신이 바라는 것과 그 사람이 주는 것'], [그R, 나R, '그 사람', '당신', '그 사람이 바라는 것과 당신이 주는 것']].forEach(([받R, 줌R, 받, 주는이, 머리]) => {
       const d = 닿[S.닿음키(받R, 줌R)];
       닿줄.push({ 누가: '책사', 말: 머리 + (d ? '은 — **' + d.말 + '**.' : '은 아직 쓰고 있어요.') });
       if (d) 줄로(d.줄, { '{받}': 받, '{줌}': 주는이 }).forEach(x => 닿줄.push(x)); });
-    장들.push({ 제목: '우리는 서로 원하는 걸 주고 있을까요?', 배경: ['story-reply', 'story-contact'], 줄: 대화 ? 대화줄(대화.주고받음) : 닿줄 });
+    장들.push({ 제목: '우리는 서로 원하는 걸 주고 있을까요?', 배경: ['ss-give'], 줄: 대화 ? 대화줄(대화.주고받음) : 닿줄 });
     const 때줄 = [];
     if (opts.만난 && opts.만난.y) {
       const 지 = new Date(), 그때 = [S.때풀이(나R, opts.만난.y, opts.만난.m), S.때풀이(그R, opts.만난.y, opts.만난.m)], 이제 = [S.때풀이(나R, 지.getFullYear(), 지.getMonth() + 1), S.때풀이(그R, 지.getFullYear(), 지.getMonth() + 1)];
@@ -226,17 +226,17 @@
         이제[i].바람.forEach(t => 때줄.push({ 누가: 말꾼, 말: t }));
         S.때견줌(R, 그때[i], 이제[i]).forEach(t => 때줄.push({ 누가: 말꾼, 말: t })); });
     } else 때줄.push({ 누가: '책사', 말: '두 분이 처음 만난 달을 넣으면, 그때와 지금이 어떻게 달라졌는지 들려 드려요.' });
-    장들.push({ 제목: '처음 만났을 때와 지금, 뭐가 달라졌을까요?', 배경: ['story-long-distance', 'story-jigeum'], 줄: 때줄 });
+    장들.push({ 제목: '처음 만났을 때와 지금, 뭐가 달라졌을까요?', 배경: ['ss-then-now'], 줄: 때줄 });
     const 맞줄 = 맞 ? [{ 누가: '책사', 말: '**안고 갈 것**이에요. 쉽게 안 바뀌어요.' }].concat(맞.안고.map(t => ({ 누가: '책사', 말: t })), [{ 누가: '책사', 말: '**맞춰 갈 것**이에요. 말 한마디로 달라져요.' }], 맞.맞춰.map(t => ({ 누가: '책사', 말: t })), [{ 누가: '책사', 말: '안고 갈지, 못 안고 갈지는 두 분이 정해요.' }])
       : [{ 누가: '책사', 말: '두 분 조합의 글은 쓰고 있어요.' }];
-    장들.push({ 제목: '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 배경: ['story-hold', 'story-still'], 줄: 대화 ? 대화줄(대화.맞춤) : 맞줄 });
+    장들.push({ 제목: '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 배경: ['ss-hold'], 줄: 대화 ? 대화줄(대화.맞춤) : 맞줄 });
     // 지금 단계의 질문
     const 단계 = opts.단계 || '썸', 칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     // 시작 전은 곳마다 배경(09-25): 소개팅 · 앱 · 친구 모임 · 회사 · 취미 · 대외활동
-    const 곳배경 = { 시작전: [['story-blind-date', 'story-first-date'], ['story-contact', 'story-reply'], ['story-meet-friends', 'story-his-friends'], ['story-boss-idea', 'story-office-crush'], ['story-friend-to-lover', 'story-still'], ['story-biz-partner', 'story-friend-to-lover']] };
+    const 곳배경 = { 시작전: [['ss-meet-blind'], ['ss-meet-app'], ['ss-meet-party'], ['ss-meet-office'], ['ss-meet-run'], ['ss-meet-club']], 썸: [['ss-sseom-1'], ['ss-sseom-2'], ['ss-sseom-3'], ['ss-sseom-4'], ['ss-sseom-5'], ['ss-sseom-6']], 초반: [['ss-early-1'], ['ss-early-2'], ['ss-early-3'], ['ss-early-4'], ['ss-early-5']], 안정기: [['ss-steady-1'], ['ss-steady-2'], ['ss-steady-3'], ['ss-steady-4']], 결혼: [['ss-marry-1'], ['ss-marry-2'], ['ss-marry-3'], ['ss-marry-4']], 흔들림: [['ss-shake-1'], ['ss-shake-2'], ['ss-shake-3']], 재회: [['ss-again-1'], ['ss-again-2'], ['ss-again-3']] };   // 09-25 연애궁합 전용 삽화 36장(docs/74)
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };
     const 배경 = 단계배경[단계] || ['story-still'];
-    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: S.반응틀[i] ? { 장: i, 틀: S.반응틀[i], 물음: S.반응물음[i], 글: (대화 && 대화.반응 && 대화.반응[i]) || 반응원고[i] || {} } : null }));
+    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경.썸 && 곳배경.썸[i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: S.반응틀[i] ? { 장: i, 틀: S.반응틀[i], 물음: S.반응물음[i], 글: (대화 && 대화.반응 && 대화.반응[i]) || 반응원고[i] || {} } : null }));
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
       칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경[단계] && 곳배경[단계][i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
     return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들 };
