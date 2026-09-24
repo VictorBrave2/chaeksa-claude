@@ -3,7 +3,7 @@
 <meta name="robots" content="noindex">
 </head><body><div id="out"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script><script src="ssom-dangye.js"></script>
+<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script><script src="ssom-dangye.js"></script><script src="ssom-daehwa.js"></script>
 <script>
 // 법전 72조 — 사장님 사례: 남 1992-04-21 00:20 서울 · 여 1999-12-20 20:00 서울. 남이 「나」.
 const E = ChaeksaEngine, S = ChaeksaSsom, out = document.getElementById('out');
@@ -20,7 +20,7 @@ const 시험 = [
   ['닿음 열쇠 — 남이 받을 때 편인|둘 다 · 여가 받을 때 겁재|상관만', S.닿음키(남, 여) + ' / ' + S.닿음키(여, 남), '편인|둘 다 / 겁재|상관만'],
   ['72조 ⑥ 언행 — 남 丁: 戊 상관 숨음(申 · 辰 속)', S.언행(남).map(x => x.키 + (x.드러남 ? '드러남' : '숨음')).join(','), '戊상관숨음'],
   ['72조 ⑥ ⑧ 언행 — 여 丙: 己 상관 드러남(연간) 먼저 · 戊 식신 드러남(시간) 후순위', S.언행(여).map(x => x.키 + (x.드러남 ? '드러남' : '숨음')).join(','), '己상관드러남,戊식신드러남'],
-  ['단계 일곱 — 사장님 쌍은 썸 밖 여섯 단계의 질문마다 원고가 있다', (ChaeksaSsomDangye.단계.filter(d => d.질문).every(d => ((ChaeksaSsomDangye.원고[S.짝(남, 여).키] || {})[d.키] || []).length === d.질문.length)) ? '모두' : '빠짐', '모두'],
+  ['단계 일곱 — 사장님 쌍은 썸 밖 여섯 단계의 질문마다 원고가 있다', (ChaeksaSsomDangye.단계.filter(d => d.질문).every(d => Math.max(((ChaeksaSsomDangye.원고[S.짝(남, 여).키] || {})[d.키] || []).length, (((window.ChaeksaSsomDaehwa || {})[S.짝(남, 여).키] || {}).단계 || {})[d.키] ? ChaeksaSsomDaehwa[S.짝(남, 여).키].단계[d.키].length : 0) === d.질문.length)) ? '모두' : '빠짐', '모두'],
   ['때 풀이 — 남 9월: 酉가 일지를 쳐서 현실 일과 돈에 밀려남, 대운 합이 붙듦', /일과 돈 문제에 마음이 밀려요/.test(S.때풀이(남, 2026, 9).바람.join(' ')) && /크게 흔들리진 않아요/.test(S.때풀이(남, 2026, 9).바람.join(' ')) ? '맞음' : S.때풀이(남, 2026, 9).바람.join(' / '), '맞음'],
   ['때 견줌 — 남 8월 → 9월: 월운 戊 상관이 빠져도 원국에 있으니 「평소만큼」', /평소만큼/.test(S.때견줌(남, S.때풀이(남, 2026, 8), S.때풀이(남, 2026, 9)).join(' ')) ? '맞음' : '틀림', '맞음'],
   ['72조 ⑦ 일지 변질 — 남 丁卯: 26년 10월(戌) 卯가 묶여 乙 편인 → 甲 정인', /따뜻하게 받아 주는 사람/.test(S.때풀이(남, 2026, 10).바람.join(' ')) ? '맞음' : '틀림', '맞음'],
