@@ -17,10 +17,21 @@
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
     const z = S.짝(나R, 그R), 원고 = W[z.키];
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
-    const 칸 = (글) => 글.map((t, j) => { let h = 줄(t);
+    // 09-25 사장님 「텍스트는 좋은데 안 읽어진다」 — 굵은 첫 줄 · 첫 대사 · 굵은 끝 줄만 먼저 보이고 나머지는 「더 읽기」로 접는다.
+    const 한줄 = (t, j, n) => { let h = 줄(t);
       if (j === 0 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-lead">');
-      else if (j === 글.length - 1 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-end">');
-      return h; }).join('');
+      else if (j === n - 1 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-end">');
+      return h; };
+    const 칸 = (글) => {
+      if (글.length <= 3) return 글.map((t, j) => 한줄(t, j, 글.length)).join('');
+      const 보임 = new Set();
+      if (/^\*\*/.test(글[0])) 보임.add(0);
+      const 대 = 글.findIndex(t => t.indexOf('> ') === 0); if (대 >= 0) 보임.add(대);
+      if (/^\*\*/.test(글[글.length - 1])) 보임.add(글.length - 1);
+      const 앞 = 글.map((t, j) => 보임.has(j) ? 한줄(t, j, 글.length) : '').join('');
+      const 뒤 = 글.map((t, j) => 보임.has(j) ? '' : 한줄(t, j, 글.length)).join('');
+      return 앞 + (뒤 ? '<details class="ss-more"><summary>더 읽기</summary>' + 뒤 + '</details>' : '');
+    };
     const 바꿔 = (글, 표) => 글.map(t => Object.keys(표).reduce((x, k) => x.split(k).join(표[k]), t));
     const 근거 = '<div class="card"><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
       + '일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 글은 두 분 일주와 식상을 바탕으로 풀어 쓴 해석이고, 장면과 대사는 이해를 돕는 예시예요.</p></div>';
@@ -58,9 +69,27 @@
       const 사람칸 = (x, 주) => '<p><b>' + esc(주) + '</b></p>' + (x.바람.length ? x.바람 : ['바라는 마음은 운에 흔들리지 않고 타고난 그대로예요.']).map(t => '<p>' + esc(t) + '</p>').join('')
         + (x.언.length ? x.언.map(v => '<p>' + esc(v.말) + '</p>').join('') : '<p>언행은 타고난 그대로예요.</p>');
       const 그때 = [풀(나R, opts.만난.y, opts.만난.m), 풀(그R, opts.만난.y, opts.만난.m)], 이제 = [풀(나R, 지y, 지m), 풀(그R, 지y, 지m)];
-      때칸 = '<h4 class="ss-sub">만난 때 — ' + opts.만난.y + '년 ' + opts.만난.m + '월</h4>' + 사람칸(그때[0], '당신') + 사람칸(그때[1], '그 사람')
-        + '<h4 class="ss-sub">지금 — ' + 지y + '년 ' + 지m + '월</h4>' + 사람칸(이제[0], '당신') + 사람칸(이제[1], '그 사람')
-        + '<h4 class="ss-sub">그때와 지금</h4>' + [['당신', 0, 나R], ['그 사람', 1, 그R]].map(([n, i, R]) => '<p><b>' + n + '</b> — ' + esc(S.때견줌(R, 그때[i], 이제[i]).join(' ')) + '</p>').join('');
+      // 표 먼저(그때 / 지금 짧은 말), 풀이는 「자세히」로 접는다(09-25 「안 읽어진다」)
+      const 짧게 = (x) => {
+        const 말 = [];
+        x.바람.forEach(t => { const 대상 = (t.match(/마음이 (.+?)에 밀려/) || [])[1];
+          const m = 대상 ? 대상 + '에 밀린 마음' : /커져/.test(t) ? '바라는 마음이 커진 때' : /붙들어/.test(t) ? '바라는 마음이 붙들린 때' : /스스로 힘/.test(t) ? '스스로 서서 덜 기대는 해' : /흔들/.test(t) ? '흔들리는 마음' : /또렷/.test(t) ? '또렷해진 마음' : null; if (m) 말.push(m); });
+        x.언.forEach(v => 말.push((v.드러남 ? '겉으로 ' : '속으로 ') + (v.십신 === '식신' ? '챙기는 모습' : '방법을 내놓는 모습')));
+        const 한번 = 말.filter((m, i) => 말.indexOf(m) === i); 말.length = 0; 한번.forEach(m => 말.push(m));
+        return 말.length ? 말.map(m => '<li>' + esc(m) + '</li>').join('') : '<li>타고난 그대로</li>';
+      };
+      const 표 = '<table class="ss-tbl"><tr><th></th><th>만난 때<br><small>' + opts.만난.y + '.' + opts.만난.m + '</small></th><th>지금<br><small>' + 지y + '.' + 지m + '</small></th></tr>'
+        + [['당신', 0], ['그 사람', 1]].map(([n, i]) => '<tr><th>' + n + '</th><td><ul>' + 짧게(그때[i]) + '</ul></td><td><ul>' + 짧게(이제[i]) + '</ul></td></tr>').join('') + '</table>';
+      // 한 줄 견줌 — 표의 짧은 말에서 빠진 것 · 생긴 것만
+      const 목록 = (x) => (짧게(x).match(/<li>(.*?)<\/li>/g) || []).map(t => t.replace(/<\/?li>/g, ''));
+      const 한견줌 = (a, b) => { const 빠 = 목록(a).filter(t => 목록(b).indexOf(t) < 0), 생 = 목록(b).filter(t => 목록(a).indexOf(t) < 0);
+        if (!빠.length && !생.length) return '그때와 지금이 같아요.';
+        return [빠.length ? '줄어든 것: ' + 빠.join(', ') : '', 생.length ? '새로 생긴 것: ' + 생.join(', ') : ''].filter(Boolean).join('<br>'); };
+      const 견줌 = [['당신', 0], ['그 사람', 1]].map(([n, i]) => '<p class="ss-lead"><b>' + n + '</b><br>' + 한견줌(그때[i], 이제[i]) + '</p>').join('');
+      const 긴견줌 = [['당신', 0, 나R], ['그 사람', 1, 그R]].map(([n, i, R]) => '<p><b>' + n + '</b> — ' + esc(S.때견줌(R, 그때[i], 이제[i]).join(' ')) + '</p>').join('');
+      때칸 = 견줌 + 표 + '<details class="ss-more"><summary>자세히</summary>' + '<h4 class="ss-sub">그때와 지금</h4>' + 긴견줌
+        + '<h4 class="ss-sub">만난 때 — ' + opts.만난.y + '년 ' + opts.만난.m + '월</h4>' + 사람칸(그때[0], '당신') + 사람칸(그때[1], '그 사람')
+        + '<h4 class="ss-sub">지금 — ' + 지y + '년 ' + 지m + '월</h4>' + 사람칸(이제[0], '당신') + 사람칸(이제[1], '그 사람') + '</details>';
     } else 때칸 = '<p class="ss-why">두 분이 처음 만난 달을 넣으면, 그때와 지금 두 분의 식상과 일지가 어떻게 달라졌는지 보여 드려요.</p>';
     const 때 = '<details class="ss-q card"' + (opts.만난 ? ' open' : '') + '><summary>4. 때 — 만난 달과 지금</summary>' + 때칸 + '</details>';
     // 5 — 안고 갈 것, 맞춰 갈 것

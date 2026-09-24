@@ -1709,3 +1709,13 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-sub{font-size:14px;color:var(--accent);margin:18px 0 8px;letter-spacing:.02em}
 .ss-daeum{margin:6px 0 18px}
 #ssMore select,#ssMore input{width:100%;margin:4px 0 12px}
+.ss-more{margin-top:6px}
+.ss-more>summary{display:inline-block;padding:6px 14px;border-radius:999px;border:1px solid var(--accent-line);color:var(--accent);font-size:13px;cursor:pointer;list-style:none;margin:2px 0 10px}
+.ss-more>summary::-webkit-details-marker{display:none}
+.ss-more[open]>summary{opacity:.6}
+.ss-tbl{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:13.5px}
+.ss-tbl th,.ss-tbl td{border-top:1px solid var(--accent-line);padding:8px 6px;vertical-align:top;text-align:left}
+.ss-tbl th{white-space:nowrap;font-weight:700}
+.ss-tbl small{font-weight:400;opacity:.7}
+.ss-tbl ul{margin:0;padding-left:16px}
+.ss-tbl li{margin:0 0 4px;line-height:1.5}
