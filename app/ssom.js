@@ -124,7 +124,7 @@
     const 단계표 = (global.ChaeksaSsomDangye || {}), 단계 = opts.단계 || '썸', 단계칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     if (단계 !== '썸' && 단계칸) {
       const 글들 = ((단계표.원고 || {})[z.키] || {})[단계];
-      const 단질 = '<h3 class="ss-part">지금 단계의 질문 — ' + esc(단계칸.이름) + '</h3>' + ((글들 || 대단(단계, 0))
+      const 단질 = '<h3 class="ss-part">지금 단계의 질문 — ' + esc(단계칸.이름) + '</h3><button type="button" class="btn" id="ssVnStage" style="width:100%;margin:0 0 10px">이 단계를 장면으로 보기</button>' + ((글들 || 대단(단계, 0))
         ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸2(대단(단계, i) || 글들[i] || ['이 질문의 글은 쓰고 있어요.']) + '</details>').join('')
         : '<div class="card"><p>이 단계에서 두 분 조합의 글은 아직 쓰고 있어요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');
       box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 때 + 끝 + 단질;
@@ -151,6 +151,7 @@
     const 장면열기 = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html'; };
     if (vn) vn.onclick = 장면열기;
     const vn2 = box.querySelector('#ssVnTop'); if (vn2) vn2.onclick = 장면열기;
+    const vn3 = box.querySelector('#ssVnStage'); if (vn3) vn3.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html?at=stage'; };
   }
 
   function 세우기() {
@@ -207,7 +208,7 @@
       return 줄들; };
     const 장들 = [], 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];
     // 책사 개인 이름(인연 · 좌장 · 택일 …)은 화면에 안 낸다(09-25 사장님 「혼란을 줄 수 있다고 쓰지 말자고 했는데」) — 모두 「책사」, 색으로만 번갈아
-    const 대화줄 = (arr) => arr.map(([누가, 말]) => 누가 === '장면' ? { 누가: '예시', 말 } : 누가 === '당신' || 누가 === '상대' ? { 누가, 말 } : 누가 === '단서' ? { 누가: '책사', 말: '추론의 단서 — ' + 말, 쪽: 1 } : { 누가: '책사', 말, 쪽: 누가 === '인연' ? 0 : 1 });
+    const 대화줄 = (arr) => arr.map(([누가, 말]) => 누가 === '장면' ? { 누가: '장면', 말 } : 누가 === '당신' || 누가 === '상대' ? { 누가, 말 } : 누가 === '단서' ? { 누가: '추론의 단서', 말 } : { 누가: '책사', 말, 쪽: 누가 === '인연' ? 0 : 1 });
     장들.push({ 제목: '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['story-maeum', 'story-still'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
     장들.push({ 제목: '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['story-he-likes', 'story-sns'], 줄: 대화 ? 대화줄(대화.그알기) : 알기(그R, '그 사람') });
     const 닿줄 = []; [[나R, 그R, '당신', '그 사람', '당신이 바라는 것과 그 사람이 주는 것'], [그R, 나R, '그 사람', '당신', '그 사람이 바라는 것과 당신이 주는 것']].forEach(([받R, 줌R, 받, 주는이, 머리]) => {
@@ -231,11 +232,13 @@
     장들.push({ 제목: '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 배경: ['story-hold', 'story-still'], 줄: 대화 ? 대화줄(대화.맞춤) : 맞줄 });
     // 지금 단계의 질문
     const 단계 = opts.단계 || '썸', 칸 = (단계표.단계 || []).find(x => x.키 === 단계);
+    // 시작 전은 곳마다 배경(09-25): 소개팅 · 앱 · 친구 모임 · 회사 · 취미 · 대외활동
+    const 곳배경 = { 시작전: [['story-blind-date', 'story-first-date'], ['story-contact', 'story-reply'], ['story-meet-friends', 'story-his-friends'], ['story-boss-idea', 'story-office-crush'], ['story-friend-to-lover', 'story-still'], ['story-biz-partner', 'story-friend-to-lover']] };
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };
     const 배경 = 단계배경[단계] || ['story-still'];
     if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: S.반응틀[i] ? { 장: i, 틀: S.반응틀[i], 물음: S.반응물음[i], 글: (대화 && 대화.반응 && 대화.반응[i]) || 반응원고[i] || {} } : null }));
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
-      칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
+      칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경[단계] && 곳배경[단계][i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
     return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들 };
   }
   global.ChaeksaSsomPage = { 그리기, 대본 };
