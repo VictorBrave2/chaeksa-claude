@@ -1721,6 +1721,7 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-tbl li{margin:0 0 4px;line-height:1.5}
 .ss-talk{margin:0 0 10px!important;line-height:1.75}
 .ss-talk b[class^="t-"]{display:inline-block;min-width:38px;margin-right:8px;padding:1px 8px;border-radius:999px;color:#fff;font-size:12px;text-align:center}
+.ss-cut{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:50% 22%;border-radius:10px;margin:8px 0 12px}
 .ss-scene{margin:14px 0 10px!important;font-style:italic;opacity:.8;line-height:1.75}
 .ss-dan{margin:12px 0!important;padding:10px 12px;border-left:3px solid #7a5bb5;background:rgba(122,91,181,.08);font-size:14px;line-height:1.7}
 .t-you{background:#5a6fd6}.t-them{background:#d08a3c}

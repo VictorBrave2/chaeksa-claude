@@ -12,6 +12,7 @@
   // 흐름(09-24 사장님 전략): 1 나를 알고 · 2 그 사람을 알고 · 3 우리 둘의 주고받음 · 4 때 · 5 안고 갈 것, 맞춰 갈 것.
   // opts.만난 = { y, m } — 언제 만났나(소개팅 · 첫 연락 · 사귄 달). 없으면 4 칸은 넣는 법만 알려 준다.
   const G이름 = (g) => E.STEMS_KO[E.STEMS.indexOf(g)] + '(' + g + ')';
+  const 곳그림 = { 시작전: [['ss-meet-blind'], ['ss-meet-app'], ['ss-meet-party'], ['ss-meet-office'], ['ss-meet-run'], ['ss-meet-club']], 썸: [['ss-sseom-1'], ['ss-sseom-2'], ['ss-sseom-3'], ['ss-sseom-4'], ['ss-sseom-5'], ['ss-sseom-6']], 초반: [['ss-early-1'], ['ss-early-2'], ['ss-early-3'], ['ss-early-4'], ['ss-early-5']], 안정기: [['ss-steady-1'], ['ss-steady-2'], ['ss-steady-3'], ['ss-steady-4']], 결혼: [['ss-marry-1'], ['ss-marry-2'], ['ss-marry-3'], ['ss-marry-4']], 흔들림: [['ss-shake-1'], ['ss-shake-2'], ['ss-shake-3']], 재회: [['ss-again-1'], ['ss-again-2'], ['ss-again-3']] };   // 09-25 연애궁합 전용 삽화 36장(docs/74)
   function 그리기(box, a, b, opts) {
     opts = opts || {};
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
@@ -46,9 +47,10 @@
       + arr.map(([누가, 말]) => '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>').join('') + '</details>';
     // 대화 원고([[화자, 말] …])면 이름표 달린 대화로, 예전 원고(줄 배열)면 칸()으로 — 작업판 1(09-25)
     // 09-25 스토리 줄(작업판 17): '장면' = 지문 · '당신' · '상대' = 두 사람 대사 · '단서' = 추론의 단서
-    const 대화html = (arr) => arr.map(([누가, 말]) => { const m = esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+    const 대화html = (arr) => arr.map(([누가, 말], i) => { const m = esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
       if (누가 === '장면') return '<p class="ss-scene">' + m + '</p>';
-      if (누가 === '단서') return '<p class="ss-dan"><b>추론의 단서</b><br>' + m + '</p>';
+      if (누가 === '단서') { const 앞 = i > 0 && arr[i - 1][0] === '단서', 뒤 = i + 1 < arr.length && arr[i + 1][0] === '단서';   // 이어진 단서 줄은 한 상자로
+        return (앞 ? '' : '<p class="ss-dan"><b>추론의 단서</b>') + '<br>' + m + (뒤 ? '' : '</p>'); }
       if (누가 === '당신' || 누가 === '상대') return '<p class="ss-talk"><b class="t-' + (누가 === '당신' ? 'you' : 'them') + '">' + 누가 + '</b>' + m + '</p>';
       return '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + m + '</p>'; }).join('');
     const 칸2 = (x) => Array.isArray(x) && Array.isArray(x[0]) ? 대화html(x) : 칸(x || []);
@@ -110,7 +112,7 @@
         + '<h4 class="ss-sub">만난 때 — ' + opts.만난.y + '년 ' + opts.만난.m + '월</h4>' + 사람칸(그때[0], '당신') + 사람칸(그때[1], '그 사람')
         + '<h4 class="ss-sub">지금 — ' + 지y + '년 ' + 지m + '월</h4>' + 사람칸(이제[0], '당신') + 사람칸(이제[1], '그 사람') + '</details>';
     } else 때칸 = '<p class="ss-why">두 분이 처음 만난 달을 넣으면, 그때와 지금 두 분의 식상과 일지가 어떻게 달라졌는지 보여 드려요.</p>';
-    const 때 = '<details class="ss-q card"' + (opts.만난 ? ' open' : '') + '><summary>4. 처음 만났을 때와 지금, 뭐가 달라졌을까요?</summary>' + 때칸 + '</details>';
+    let 때 = '<details class="ss-q card"' + (opts.만난 ? ' open' : '') + '><summary>4. 처음 만났을 때와 지금, 뭐가 달라졌을까요?</summary>' + 때칸 + '</details>';
     // 5 — 안고 갈 것, 맞춰 갈 것
     const 끝 = '<details class="ss-q card"><summary>5. 그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?</summary>' + (맞
       ? '<h4 class="ss-sub">안고 갈 것 — 쉽게 안 바뀌어요</h4>' + 맞.안고.map(t => '<p>' + esc(t) + '</p>').join('') + '<h4 class="ss-sub">맞춰 갈 것 — 말 한마디, 방식 하나로 달라져요</h4>' + 맞.맞춰.map(t => '<p>' + esc(t) + '</p>').join('') + '<p class="ss-why">안고 갈지, 못 안고 갈지는 두 분이 정해요.</p>'
@@ -127,9 +129,12 @@
       const 단질 = '<h3 class="ss-part">지금 단계의 질문 — ' + esc(단계칸.이름) + '</h3><button type="button" class="btn" id="ssVnStage" style="width:100%;margin:0 0 10px">이 단계를 장면으로 보기</button>' + ((글들 || 대단(단계, 0))
         ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸2(대단(단계, i) || 글들[i] || ['이 질문의 글은 쓰고 있어요.']) + '</details>').join('')
         : '<div class="card"><p>이 단계에서 두 분 조합의 글은 아직 쓰고 있어요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');
+      if (단계 === '시작전') 때 = '';   // 아직 안 만났으니 「처음 만났을 때와 지금」은 없다
       box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 때 + 끝 + 단질;
       if (대화) box.innerHTML = 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 때 + 대화칸(5, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 단질;
       const vt = box.querySelector('#ssVnTop'); if (vt) vt.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html'; };
+      const vs = box.querySelector('#ssVnStage'); if (vs) vs.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html?at=stage'; };
+      컷넣기(box, 단계);
       return;
     }
     const 질문들 = (원고 || (대화 && 대화.썸))
@@ -152,6 +157,19 @@
     if (vn) vn.onclick = 장면열기;
     const vn2 = box.querySelector('#ssVnTop'); if (vn2) vn2.onclick = 장면열기;
     const vn3 = box.querySelector('#ssVnStage'); if (vn3) vn3.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html?at=stage'; };
+    컷넣기(box, 단계);
+  }
+
+  /* 09-25 개인화 웹툰(작업판 19): 글 보기도 화마다 컷(그림)을 머리에 달고, 모든 화를 펼쳐 세로로 잇는다. 접기는 「근거 보기」 · 「더 읽기」에만. */
+  const 총론그림 = ['ss-me', 'ss-her', 'ss-give', 'ss-then-now', 'ss-hold'];
+  function 컷넣기(box, 단계) {
+    let k = 0; const 곳 = 곳그림[단계] || [];
+    box.querySelectorAll('details.ss-q').forEach(d => {
+      const sm = d.querySelector('summary'); if (!sm) return;
+      const 번 = /^([1-5])\. /.exec(sm.textContent), 그림 = 번 ? 총론그림[+번[1] - 1] : (곳[k++] || [])[0];
+      if (그림 && !d.querySelector('.ss-cut')) sm.insertAdjacentHTML('afterend', '<img class="ss-cut" src="art/' + 그림 + '-s.webp" alt="" loading="lazy">');
+      d.open = true;
+    });
   }
 
   function 세우기() {
@@ -183,6 +201,8 @@
       그리기(box, a, b, { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null, 단계: (q('gcStage') && q('gcStage').value) || '썸' });
       box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
+    // 장면 보기에서 돌아오면(뒤로 가기 포함) 이 탭에서 보던 두 사람을 다시 그린다 — 같은 탭 sessionStorage만, 주소엔 안 실음
+    try { const v = JSON.parse(sessionStorage.getItem('chaeksa.ssomVn') || 'null'); if (v && v.a && v.b) { 그리기(box, v.a, v.b, v.opts || {}); if (v.opts && v.opts.단계 && q('gcStage')) q('gcStage').value = v.opts.단계; } } catch (e) {}
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 세우기); else 세우기();
   /* 장면 보기(미연시)용 대본 — 글 보기와 같은 원고 · 같은 풀이를 장(章) 목록으로 낸다(09-25 사장님 「미연시로 변환」).
@@ -233,13 +253,14 @@
     // 지금 단계의 질문
     const 단계 = opts.단계 || '썸', 칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     // 시작 전은 곳마다 배경(09-25): 소개팅 · 앱 · 친구 모임 · 회사 · 취미 · 대외활동
-    const 곳배경 = { 시작전: [['ss-meet-blind'], ['ss-meet-app'], ['ss-meet-party'], ['ss-meet-office'], ['ss-meet-run'], ['ss-meet-club']], 썸: [['ss-sseom-1'], ['ss-sseom-2'], ['ss-sseom-3'], ['ss-sseom-4'], ['ss-sseom-5'], ['ss-sseom-6']], 초반: [['ss-early-1'], ['ss-early-2'], ['ss-early-3'], ['ss-early-4'], ['ss-early-5']], 안정기: [['ss-steady-1'], ['ss-steady-2'], ['ss-steady-3'], ['ss-steady-4']], 결혼: [['ss-marry-1'], ['ss-marry-2'], ['ss-marry-3'], ['ss-marry-4']], 흔들림: [['ss-shake-1'], ['ss-shake-2'], ['ss-shake-3']], 재회: [['ss-again-1'], ['ss-again-2'], ['ss-again-3']] };   // 09-25 연애궁합 전용 삽화 36장(docs/74)
+    const 곳배경 = 곳그림;
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };
     const 배경 = 단계배경[단계] || ['story-still'];
     if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경.썸 && 곳배경.썸[i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: null }));
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
       칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: (곳배경[단계] && 곳배경[단계][i]) || [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
-    return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들 };
+    if (단계 === '시작전') 장들.splice(3, 1);   // 시작 전엔 4장(만난 때) 빼기
+    return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들, 총론수: 단계 === '시작전' ? 4 : 5 };
   }
   global.ChaeksaSsomPage = { 그리기, 대본 };
 })(window);

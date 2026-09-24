@@ -61,9 +61,9 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1036"></script><script src="astro.js?v=1036"></script><script src="lunar.js?v=1036"></script><script src="engine.js?v=1036"></script>
-<script src="saenggeuk.js?v=1036"></script><script src="gise.js?v=1036"></script><script src="panjeong.js?v=1036"></script><script src="typecard.js?v=1036"></script><script src="gyeokguk.js?v=1036"></script>
-<script src="ssom-gwanjeom.js?v=1036"></script><script src="ssom-baram.js?v=1036"></script><script src="ssom-daehwa.js?v=1036"></script><script src="ssom-wongo.js?v=1036"></script><script src="ssom-dangye.js?v=1036"></script><script src="ssom.js?v=1036"></script>
+<script src="config.js?v=1039"></script><script src="astro.js?v=1039"></script><script src="lunar.js?v=1039"></script><script src="engine.js?v=1039"></script>
+<script src="saenggeuk.js?v=1039"></script><script src="gise.js?v=1039"></script><script src="panjeong.js?v=1039"></script><script src="typecard.js?v=1039"></script><script src="gyeokguk.js?v=1039"></script>
+<script src="ssom-gwanjeom.js?v=1039"></script><script src="ssom-baram.js?v=1039"></script><script src="ssom-daehwa.js?v=1039"></script><script src="ssom-wongo.js?v=1039"></script><script src="ssom-dangye.js?v=1039"></script><script src="ssom.js?v=1039"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -80,7 +80,7 @@
   function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = 'ssom.html'; }
   $('back').onclick = (e) => { e.preventDefault(); e.stopPropagation(); 돌아가기(); };
   if (!대 || !대.장들.length) { $('chap').innerHTML = '<h1>장면을 만들지 못했어요</h1><p><a href="ssom.html" style="color:#fff">글로 보기로 돌아가기</a></p>'; return; }
-  const 장들 = 대.장들;
+  const 장들 = 대.장들, 총론 = 대.총론수 || 5, 첫장 = /[?&]at=stage/.test(location.search) && 장들.length > 총론 ? 총론 : 0;   // 「이 단계를 장면으로 보기」는 단계 첫 장부터
   let 장 = 0, 줄들 = [], n = -1, 치는중 = null, 다침 = true, 멈춤 = false, 표지중 = false, 반응중 = false;
   function 표지(i) {
     장 = i; 멈춤 = true; 표지중 = true; 반응중 = false; $('choices').classList.remove('on');
@@ -92,7 +92,7 @@
     const s = 줄들[n]; 배경바꾸기(s.배경);
     $('who').textContent = s.누가; $('who').className = 'who' + (s.누가 === '당신' ? ' you' : s.누가 === '상대' ? ' them' : s.누가 === '예시' ? ' ex' : s.누가 === '장면' ? ' scene' : s.누가 === '추론의 단서' ? ' dan' : s.쪽 === 1 ? ' jw' : '');
     $('txt').className = 'txt' + (s.누가 === '장면' ? ' scene' : s.누가 === '추론의 단서' ? ' dan' : /당신|상대|예시/.test(s.누가) ? ' say' : ''); $('nx').style.display = '';
-    $('prog').textContent = (장 + 1) + '장 · ' + (n + 1) + ' / ' + 줄들.length;
+    $('prog').textContent = (장 + 1) + '화 — ' + (n + 1) + '/' + 줄들.length;
     const 순 = s.말.replace(/\*\*/g, ''); let k = 0; 다침 = false; clearInterval(치는중);
     치는중 = setInterval(() => { k++; $('txt').textContent = 순.slice(0, k); if (k >= 순.length) { clearInterval(치는중); $('txt').innerHTML = 굵(s.말); 다침 = true; } }, 28);
   }
@@ -111,14 +111,14 @@
   }
   function 다음단추() {
     멈춤 = true;
-    if (장 + 1 >= 장들.length) { 책사말('끝까지 보셨어요. 두 분의 이야기는 여기까지예요.'); return 선택(['처음부터 다시', '목차', '글로 보기'], (t) => t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(0)); }
+    if (장 + 1 >= 장들.length) { 책사말('끝까지 보셨어요. 두 분의 이야기는 여기까지예요.'); return 선택(['처음부터 다시', '목차', '글로 보기'], (t) => t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
     선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
   function 목차() {
     // 두 사람 이야기(1~5) · 지금 단계의 질문(6~)으로 나눈 목차 판(09-25 사장님 「목차를 적절하게 수정해」)
     const 항 = (c, i) => '<button type="button" class="toc-i' + (i === 장 ? ' now' : '') + '" data-i="' + i + '"><span>' + (i + 1) + '</span>' + c.제목.replace(/\*\*/g, '') + '</button>';
-    $('tocBody').innerHTML = '<div class="toc-g">두 사람 이야기</div>' + 장들.slice(0, 5).map((c, i) => 항(c, i)).join('')
-      + (장들.length > 5 ? '<div class="toc-g">지금 단계의 질문 · ' + String(대.단계 || '').split(' — ')[0] + '</div>' + 장들.slice(5).map((c, i) => 항(c, i + 5)).join('') : '');
+    $('tocBody').innerHTML = '<div class="toc-g">두 사람 이야기</div>' + 장들.slice(0, 총론).map((c, i) => 항(c, i)).join('')
+      + (장들.length > 총론 ? '<div class="toc-g">지금 단계의 질문 · ' + String(대.단계 || '').split(' — ')[0] + '</div>' + 장들.slice(총론).map((c, i) => 항(c, i + 총론)).join('') : '');
     $('tocBody').querySelectorAll('.toc-i').forEach(b => b.onclick = (e) => { e.stopPropagation(); $('tocPanel').classList.remove('on'); 표지(+b.dataset.i); });
     $('tocPanel').classList.add('on');
   }
@@ -133,7 +133,7 @@
     if (반응중) { 반응중 = false; return 다음단추(); }
     장끝();
   };
-  표지(/[?&]at=stage/.test(location.search) && 장들.length > 5 ? 5 : 0);   // 「이 단계를 장면으로 보기」는 단계 첫 장부터
+  표지(첫장);   // 「이 단계를 장면으로 보기」는 단계 첫 장부터
 })();
 </script>
 </body>
