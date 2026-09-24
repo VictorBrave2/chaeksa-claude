@@ -37,6 +37,15 @@
   .chap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(8,6,24,.9);transition:opacity .8s;z-index:5;text-align:center;padding:24px}
   .chap.off{opacity:0;pointer-events:none}
   .chap small{letter-spacing:.3em;opacity:.7}.chap h1{word-break:keep-all;font-family:'Gowun Batang',serif;font-size:26px;margin:12px 0 6px}.chap p{opacity:.75;font-size:14px}
+.toc{position:absolute;inset:0;z-index:8;background:rgba(10,8,26,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 20px 24px}
+  .toc.on{display:flex;animation:up .3s ease}
+  .toc-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.toc-h b{font-family:'Gowun Batang',serif;font-size:20px}
+  .toc-x{background:none;border:0;color:#fff;font-size:22px;padding:4px 8px;cursor:pointer}
+  .toc-body{overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+  .toc-body::-webkit-scrollbar{width:4px}.toc-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:4px}
+  .toc-g{font-size:12px;letter-spacing:.08em;opacity:.6;margin:16px 0 6px}
+  .toc-i{display:flex;gap:12px;align-items:baseline;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.08);color:#fff;padding:11px 2px;font-size:15px;cursor:pointer}
+  .toc-i span{opacity:.5;font-size:12px;min-width:18px}.toc-i.now{color:#ffb3c1}.toc-i.now span{opacity:1}
 </style>
 </head>
 <body>
@@ -48,10 +57,11 @@
   <div class="choices" id="choices"></div>
   <div class="box" id="box"><div class="who" id="who">책사</div><div class="txt" id="txt"></div><div class="next" id="nx">▼ 눌러서 계속</div></div>
   <div class="chap" id="chap"></div>
+  <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1021"></script><script src="astro.js?v=1021"></script><script src="lunar.js?v=1021"></script><script src="engine.js?v=1021"></script>
-<script src="saenggeuk.js?v=1021"></script><script src="gise.js?v=1021"></script><script src="panjeong.js?v=1021"></script><script src="typecard.js?v=1021"></script><script src="gyeokguk.js?v=1021"></script>
-<script src="ssom-gwanjeom.js?v=1021"></script><script src="ssom-baram.js?v=1021"></script><script src="ssom-daehwa.js?v=1021"></script><script src="ssom-wongo.js?v=1021"></script><script src="ssom-dangye.js?v=1021"></script><script src="ssom.js?v=1021"></script>
+<script src="config.js?v=1023"></script><script src="astro.js?v=1023"></script><script src="lunar.js?v=1023"></script><script src="engine.js?v=1023"></script>
+<script src="saenggeuk.js?v=1023"></script><script src="gise.js?v=1023"></script><script src="panjeong.js?v=1023"></script><script src="typecard.js?v=1023"></script><script src="gyeokguk.js?v=1023"></script>
+<script src="ssom-gwanjeom.js?v=1023"></script><script src="ssom-baram.js?v=1023"></script><script src="ssom-daehwa.js?v=1023"></script><script src="ssom-wongo.js?v=1023"></script><script src="ssom-dangye.js?v=1023"></script><script src="ssom.js?v=1023"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -103,10 +113,16 @@
     선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
   function 목차() {
-    멈춤 = true; 책사말('어디로 갈까요?');
-    선택(장들.map((c, i) => (i + 1) + '. ' + c.제목.replace(/\*\*/g, '')), (t) => 표지(parseInt(t, 10) - 1));
+    // 두 사람 이야기(1~5) · 지금 단계의 질문(6~)으로 나눈 목차 판(09-25 사장님 「목차를 적절하게 수정해」)
+    const 항 = (c, i) => '<button type="button" class="toc-i' + (i === 장 ? ' now' : '') + '" data-i="' + i + '"><span>' + (i + 1) + '</span>' + c.제목.replace(/\*\*/g, '') + '</button>';
+    $('tocBody').innerHTML = '<div class="toc-g">두 사람 이야기</div>' + 장들.slice(0, 5).map((c, i) => 항(c, i)).join('')
+      + (장들.length > 5 ? '<div class="toc-g">지금 단계의 질문 · ' + String(대.단계 || '').split(' — ')[0] + '</div>' + 장들.slice(5).map((c, i) => 항(c, i + 5)).join('') : '');
+    $('tocBody').querySelectorAll('.toc-i').forEach(b => b.onclick = (e) => { e.stopPropagation(); $('tocPanel').classList.remove('on'); 표지(+b.dataset.i); });
+    $('tocPanel').classList.add('on');
   }
-  $('toc').onclick = (e) => { e.stopPropagation(); if (표지중) $('chap').classList.add('off'); 목차(); };
+  $('tocX').onclick = (e) => { e.stopPropagation(); $('tocPanel').classList.remove('on'); };
+  $('tocPanel').onclick = (e) => e.stopPropagation();
+  $('toc').onclick = (e) => { e.preventDefault(); e.stopPropagation(); 목차(); };
   $('stage').onclick = () => {
     if (표지중) return 시작();
     if (멈춤) return;
