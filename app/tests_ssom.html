@@ -3,7 +3,7 @@
 <meta name="robots" content="noindex">
 </head><body><div id="out"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
-<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script>
+<script src="saenggeuk.js"></script><script src="gise.js"></script><script src="panjeong.js"></script><script src="typecard.js"></script><script src="gyeokguk.js"></script><script src="ssom-gwanjeom.js"></script><script src="ssom-wongo.js"></script><script src="ssom-dangye.js"></script>
 <script>
 // 법전 72조 — 사장님 사례: 남 1992-04-21 00:20 서울 · 여 1999-12-20 20:00 서울. 남이 「나」.
 const E = ChaeksaEngine, S = ChaeksaSsom, out = document.getElementById('out');
@@ -20,6 +20,7 @@ const 시험 = [
   ['닿음 열쇠 — 남이 받을 때 편인|둘 다 · 여가 받을 때 겁재|상관만', S.닿음키(남, 여) + ' / ' + S.닿음키(여, 남), '편인|둘 다 / 겁재|상관만'],
   ['72조 ⑥ 언행 — 남 丁: 戊 상관 숨음(申 · 辰 속)', S.언행(남).map(x => x.키 + (x.드러남 ? '드러남' : '숨음')).join(','), '戊상관숨음'],
   ['72조 ⑥ 언행 — 여 丙: 戊 식신 드러남(시간) · 己 상관 드러남(연간)', S.언행(여).map(x => x.키 + (x.드러남 ? '드러남' : '숨음')).join(','), '戊식신드러남,己상관드러남'],
+  ['단계 일곱 — 사장님 쌍은 썸 밖 여섯 단계의 질문마다 원고가 있다', (ChaeksaSsomDangye.단계.filter(d => d.질문).every(d => ((ChaeksaSsomDangye.원고[S.짝(남, 여).키] || {})[d.키] || []).length === d.질문.length)) ? '모두' : '빠짐', '모두'],
   ['첫 원고가 그 열쇠에 붙어 있고 질문 여섯', (ChaeksaSsomWongo[S.짝(남, 여).키] || []).length, 6],
 ];
 let 통과 = 0, 실패 = 0;

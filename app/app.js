@@ -1242,7 +1242,9 @@
     if (more) more.classList.remove('hide');
     if (met) { try { met.value = localStorage.getItem(만난키) || ''; } catch (e) {} met.onchange = () => { try { localStorage.setItem(만난키, met.value || ''); } catch (e) {} renderSsom(); }; }
     const mv = ((met && met.value) || '').split('-').map(Number);
-    SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))), { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null });
+    const st = $('ssStage');
+    if (st) { try { st.value = localStorage.getItem('chaeksa.ssomStage.' + 고름) || '썸'; } catch (e) {} st.onchange = () => { try { localStorage.setItem('chaeksa.ssomStage.' + 고름, st.value); } catch (e) {} renderSsom(); }; }
+    SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))), { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null, 단계: (st && st.value) || '썸' });
   }
 
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────
