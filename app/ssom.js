@@ -14,6 +14,8 @@
   const G이름 = (g) => E.STEMS_KO[E.STEMS.indexOf(g)] + '(' + g + ')';
   const 곳그림 = { 시작전: [['ss-meet-blind'], ['ss-meet-app'], ['ss-meet-party'], ['ss-meet-office'], ['ss-meet-run'], ['ss-meet-club']], 썸: [['ss-sseom-1'], ['ss-sseom-2'], ['ss-sseom-3'], ['ss-sseom-4'], ['ss-sseom-5'], ['ss-sseom-6']], 초반: [['ss-early-1'], ['ss-early-2'], ['ss-early-3'], ['ss-early-4'], ['ss-early-5']], 안정기: [['ss-steady-1'], ['ss-steady-2'], ['ss-steady-3'], ['ss-steady-4']], 결혼: [['ss-marry-1'], ['ss-marry-2'], ['ss-marry-3'], ['ss-marry-4']], 흔들림: [['ss-shake-1'], ['ss-shake-2'], ['ss-shake-3']], 재회: [['ss-again-1'], ['ss-again-2'], ['ss-again-3']] };   // 09-25 연애궁합 전용 삽화 36장(docs/74)
   // 09-25 작업판 21 — 두 사람 이야기 1 · 2 · 3 · 5도 뼈대 + 조각 조립(ssom-webtoon-3.js)이 있으면 그걸로
+  // 09-25 사장님 「실제 달력은 아직 쓰지 말자」: 단계 이야기에는 만난 달을 넘기지 않는다(날짜가 안 붙음). 조립기의 달력 코드는 남겨 둠.
+  const 달력끔 = (opts) => Object.assign({}, opts || {}, { 만난: null });
   function 둘로(대화, 나R, 그R, opts) {
     let 둘 = null; try { 둘 = global.ChaeksaSsomWebtoon && global.ChaeksaSsomWebtoon.뼈대.둘 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '둘', false, opts) : null; } catch (e) {}
     return 둘 ? Object.assign({}, 대화 || {}, { 나알기: 둘[0], 그알기: 둘[1], 주고받음: 둘[2], 때회: 둘[3], 맞춤: 둘[4], 때여는말: (대화 && 대화.때여는말) || [] }) : 대화;
@@ -49,7 +51,7 @@
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
-    const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸', false, opts) : null; } catch (e) { return null; } })();
+    const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸', false, 달력끔(opts)) : null; } catch (e) { return null; } })();
     const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
     const 대화칸 = (번, 머리, arr, 열림) => '<details class="ss-q card ss-baram"' + (열림 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>'
       + 대화html(arr) + '</details>';
@@ -63,7 +65,7 @@
       if (누가 === '당신' || 누가 === '상대') return '<p class="ss-talk"><b class="t-' + (누가 === '당신' ? 'you' : 'them') + '">' + 누가 + '</b>' + m + '</p>';
       return '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + m + '</p>'; }).join('');
     const 칸2 = (x) => Array.isArray(x) && Array.isArray(x[0]) ? 대화html(x) : 칸(x || []);
-    const 웹단 = {}, 웹칸 = (단) => { if (!(단 in 웹단)) { try { 웹단[단] = global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, 단, false, opts) : null; } catch (e) { 웹단[단] = null; } } return 웹단[단]; };
+    const 웹단 = {}, 웹칸 = (단) => { if (!(단 in 웹단)) { try { 웹단[단] = global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, 단, false, 달력끔(opts)) : null; } catch (e) { 웹단[단] = null; } } return 웹단[단]; };
     const 대단 = (단, i) => (웹칸(단) && 웹칸(단)[i]) || (대화 && 대화.단계 && 대화.단계[단] && 대화.단계[단][i]);   // 작업판 21 — 조립 원고가 먼저
     // 1 · 2 — 바라는 사랑(일주) + 주는 사랑(식상)
     const 알기칸 = (번, R, 주, 머리) => {
@@ -228,7 +230,7 @@
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 생 = global.ChaeksaSsomSaengsaek || {};
     const 원고 = (global.ChaeksaSsomWongo || {})[z.키], 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
     const 단계표 = global.ChaeksaSsomDangye || {};
-    const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸', false, opts) : null; } catch (e) { return null; } })();
+    const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸', false, 달력끔(opts)) : null; } catch (e) { return null; } })();
     const 바꿔 = (t, 표) => Object.keys(표).reduce((x, k) => x.split(k).join(표[k]), t);
     const 줄로 = (글, 표) => (글 || []).map(t0 => { const t = 바꿔(t0, 표 || {});
       if (t.indexOf('> ') !== 0) return { 누가: '책사', 말: t };
@@ -242,7 +244,7 @@
       if (!언.length) 줄로(생.없음, { '{주}': 주 }).forEach(x => 줄들.push(x));
       else { 조각.forEach(c => 줄로(c.줄, { '{주}': 주 }).forEach(x => 줄들.push(x))); 줄로(언.some(x => x.드러남) ? 생.드러남 : 생.숨음, { '{주}': 주 }).forEach(x => 줄들.push(x)); }
       return 줄들; };
-    const 장들 = []; let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts); const 웹단계 = (() => { try { return global.ChaeksaSsomWebtoon && opts.단계 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, opts.단계, true, opts) : null; } catch (e) { return null; } })(); const 단조 = (i) => (웹단계 && 웹단계[i]) || (대화 && 대화.단계 && 대화.단계[opts.단계] && 대화.단계[opts.단계][i]); const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
+    const 장들 = []; let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts); const 웹단계 = (() => { try { return global.ChaeksaSsomWebtoon && opts.단계 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, opts.단계, true, 달력끔(opts)) : null; } catch (e) { return null; } })(); const 단조 = (i) => (웹단계 && 웹단계[i]) || (대화 && 대화.단계 && 대화.단계[opts.단계] && 대화.단계[opts.단계][i]); const 썸글 = (i) => (웹 && 웹[i]) || (대화 && 대화.썸 && 대화.썸[i]);
     // 책사 개인 이름(인연 · 좌장 · 택일 …)은 화면에 안 낸다(09-25 사장님 「혼란을 줄 수 있다고 쓰지 말자고 했는데」) — 모두 「책사」, 색으로만 번갈아
     const 대화줄 = (arr) => arr.filter(x => x[0] !== '단서' && x[0] !== '근거').map(([누가, 말]) => 누가 === '장면' ? { 누가: '장면', 말 } : 누가 === '당신' || 누가 === '상대' ? { 누가, 말 } : 누가 === '단서' ? { 누가: '추론의 단서', 말 } : { 누가: '책사', 말, 쪽: 누가 === '인연' ? 0 : 1 });
     장들.push({ 제목: '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 배경: ['ss-me'], 줄: 대화 ? 대화줄(대화.나알기) : 알기(나R, '당신') });
