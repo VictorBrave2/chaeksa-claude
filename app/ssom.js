@@ -44,6 +44,10 @@
     const 대화 = (global.ChaeksaSsomDaehwa || {})[z.키];   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     const 대화칸 = (번, 머리, arr, 열림) => '<details class="ss-q card ss-baram"' + (열림 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>'
       + arr.map(([누가, 말]) => '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>').join('') + '</details>';
+    // 대화 원고([[화자, 말] …])면 이름표 달린 대화로, 예전 원고(줄 배열)면 칸()으로 — 작업판 1(09-25)
+    const 대화html = (arr) => arr.map(([누가, 말]) => '<p class="ss-talk"><b class="t-' + (누가 === '인연' ? 'iy' : 'jw') + '">책사</b>' + esc(말).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>').join('');
+    const 칸2 = (x) => Array.isArray(x) && Array.isArray(x[0]) ? 대화html(x) : 칸(x || []);
+    const 대단 = (단, i) => 대화 && 대화.단계 && 대화.단계[단] && 대화.단계[단][i];
     // 1 · 2 — 바라는 사랑(일주) + 주는 사랑(식상)
     const 알기칸 = (번, R, 주, 머리) => {
       const 일주 = S.일주(R), 언 = S.언행(R), 바 = 바람[일주], 누가 = 주 === '당신' ? '내가' : '그 사람이';
@@ -115,25 +119,25 @@
     const 단계표 = (global.ChaeksaSsomDangye || {}), 단계 = opts.단계 || '썸', 단계칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     if (단계 !== '썸' && 단계칸) {
       const 글들 = ((단계표.원고 || {})[z.키] || {})[단계];
-      const 단질 = '<h3 class="ss-part">지금 단계의 질문 — ' + esc(단계칸.이름) + '</h3>' + (글들
-        ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸(글들[i] || ['이 질문의 글은 쓰고 있어요.']) + '</details>').join('')
+      const 단질 = '<h3 class="ss-part">지금 단계의 질문 — ' + esc(단계칸.이름) + '</h3>' + ((글들 || 대단(단계, 0))
+        ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸2(대단(단계, i) || 글들[i] || ['이 질문의 글은 쓰고 있어요.']) + '</details>').join('')
         : '<div class="card"><p>이 단계에서 두 분 조합의 글은 아직 쓰고 있어요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');
       box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 단질;
       if (대화) box.innerHTML = 근거 + 대화칸(1, '나를 알고', 대화.나알기, true) + 대화칸(2, '그 사람을 알고', 대화.그알기) + 대화칸(3, '우리 둘의 주고받음', 대화.주고받음) + 때 + 대화칸(5, '안고 갈 것, 맞춰 갈 것', 대화.맞춤) + 단질;
       const vt = box.querySelector('#ssVnTop'); if (vt) vt.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html'; };
       return;
     }
-    const 질문들 = 원고
+    const 질문들 = (원고 || (대화 && 대화.썸))
       ? '<h3 class="ss-part">지금 단계의 질문 — 막 썸을 시작했어요</h3>' + 이어 + '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>'
-        + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('')
+        + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸2((대화 && 대화.썸 && 대화.썸[i]) || 원고[i] || []) + 반응칸(i) + '</details>').join('')
       : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>두 분 조합의 질문 글은 아직 쓰고 있어요.</p></div>';
     box.innerHTML = 대화 ? 근거 + 대화칸(1, '나를 알고', 대화.나알기, true) + 대화칸(2, '그 사람을 알고', 대화.그알기) + 대화칸(3, '우리 둘의 주고받음', 대화.주고받음) + 때 + 대화칸(5, '안고 갈 것, 맞춰 갈 것', 대화.맞춤) + 질문들
       : 근거 + 알기칸(1, 나R, '당신', '나를 알고') + 알기칸(2, 그R, '그 사람', '그 사람을 알고') + 주고받음 + 때 + 끝 + 질문들;
     const 보이기 = (i, r, 적) => {
       const d = box.querySelector('details[data-i="' + i + '"]'); if (!d) return;
       d.querySelectorAll('.ss-r').forEach(x => x.classList.toggle('on', x.dataset.r === r));
-      const 글 = (반응원고[i] || {})[r];
-      d.querySelector('.ss-next').innerHTML = 글 ? 칸(글) : '<p class="ss-why">이 반응에 이어지는 글은 쓰고 있어요.</p>';
+      const 글 = ((대화 && 대화.반응 && 대화.반응[i]) || 반응원고[i] || {})[r];
+      d.querySelector('.ss-next').innerHTML = 글 ? 칸2(글) : '<p class="ss-why">이 반응에 이어지는 글은 쓰고 있어요.</p>';
       if (적) S.적기(z.키, i, r);
     };
     box.querySelectorAll('.ss-r').forEach(b => b.onclick = () => 보이기(+b.dataset.q, b.dataset.r, true));
@@ -224,9 +228,9 @@
     const 단계 = opts.단계 || '썸', 칸 = (단계표.단계 || []).find(x => x.키 === 단계);
     const 단계배경 = { 시작전: ['story-blind-date', 'story-first-date'], 썸: ['story-he-likes', 'story-contact', 'story-reply', 'story-first-date'], 초반: ['story-second-meet', 'story-say-love'], 안정기: ['story-anniversary', 'story-trip'], 결혼: ['story-marry-talk', 'story-propose'], 흔들림: ['story-fight', 'story-cold'], 재회: ['story-ex-contact', 'story-get-back'] };
     const 배경 = 단계배경[단계] || ['story-still'];
-    if (단계 === '썸') (원고 ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: 줄로(원고[i]), 반응: S.반응틀[i] ? { 장: i, 틀: S.반응틀[i], 물음: S.반응물음[i], 글: 반응원고[i] || {} } : null }));
+    if (단계 === '썸') ((원고 || (대화 && 대화.썸)) ? S.질문 : []).forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: (대화 && 대화.썸 && 대화.썸[i]) ? 대화줄(대화.썸[i]) : 줄로(원고[i]), 반응: S.반응틀[i] ? { 장: i, 틀: S.반응틀[i], 물음: S.반응물음[i], 글: (대화 && 대화.반응 && 대화.반응[i]) || 반응원고[i] || {} } : null }));
     else if (칸) { const 글들 = ((단계표.원고 || {})[z.키] || {})[단계] || [];
-      칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
+      칸.질문.forEach((q, i) => 장들.push({ 제목: q, 배경: [배경[i % 배경.length]], 줄: (대화 && 대화.단계 && 대화.단계[단계] && 대화.단계[단계][i]) ? 대화줄(대화.단계[단계][i]) : 글들[i] ? 줄로(글들[i]) : [{ 누가: '책사', 말: '이 질문의 글은 쓰고 있어요.' }] })); }
     return { 키: z.키, 단계: 칸 ? 칸.이름 : 단계, 장들 };
   }
   global.ChaeksaSsomPage = { 그리기, 대본 };
