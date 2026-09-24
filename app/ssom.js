@@ -23,7 +23,29 @@
       if (j === 0 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-lead">');
       else if (j === 글.length - 1 && /^\*\*/.test(t)) h = h.replace('<p>', '<p class="ss-end">');
       return h; }).join('');
-    box.innerHTML = 근거 + S.질문.map((q, i) => '<details class="ss-q card"' + (i === 0 ? ' open' : '') + '><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + 칸(원고[i] || []) + '</details>').join('');
+    const 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {};
+    const 반응칸 = (i) => !S.반응틀[i] ? '' : '<div class="ss-act"><p class="ss-ask">' + esc(S.반응물음[i]) + '</p><div class="ss-btns">'
+      + S.반응틀[i].map(r => '<button type="button" class="ss-r" data-q="' + i + '" data-r="' + esc(r) + '">' + esc(r) + '</button>').join('') + '</div><div class="ss-next"></div></div>';
+    const 기록 = S.기록(z.키), 끝기록 = 기록[기록.length - 1];
+    const 이어 = 끝기록 ? '<div class="card ss-log"><p>지난번 기록 — ' + esc(끝기록.때) + ' · ' + (끝기록.장 + 1) + '장 「' + esc(S.질문[끝기록.장]) + '」에 <b>' + esc(끝기록.반응) + '</b></p><p class="ss-why">그다음 수는 그 장 아래에 다시 적어 두었어요. 기록은 이 기기에만 남아요.</p></div>' : '';
+    const 장면단추 = '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>';
+    box.innerHTML = 근거 + 이어 + 장면단추 + S.질문.map((q, i) => '<details class="ss-q card"' + (i === 0 || (끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('');
+    // 대사 상자마다 복사 단추 — 카톡에 바로 붙여 넣게
+    box.querySelectorAll('.ss-say').forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
+      b.onclick = () => { const t = p.textContent.replace(/^(당신|상대):\s*/, '').replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim(); try { navigator.clipboard.writeText(t); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
+    const 보이기 = (i, r, 적) => {
+      const d = box.querySelector('details[data-i="' + i + '"]'); if (!d) return;
+      d.querySelectorAll('.ss-r').forEach(x => x.classList.toggle('on', x.dataset.r === r));
+      const 글 = (반응원고[i] || {})[r];
+      d.querySelector('.ss-next').innerHTML = 글 ? 칸(글) : '<p class="ss-why">이 반응에 이어지는 글은 쓰고 있어요.</p>';
+      d.querySelectorAll('.ss-next .ss-say').forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
+        b.onclick = () => { try { navigator.clipboard.writeText(p.textContent.replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim()); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
+      if (적) S.적기(z.키, i, r);
+    };
+    box.querySelectorAll('.ss-r').forEach(b => b.onclick = () => 보이기(+b.dataset.q, b.dataset.r, true));
+    if (끝기록) 보이기(끝기록.장, 끝기록.반응, false);
+    const vn = box.querySelector('#ssVn');
+    if (vn) vn.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ 키: z.키 })); } catch (e) {} location.href = 'ssom-vn.html'; };
   }
 
   function 세우기() {

@@ -28,9 +28,9 @@
     const 키 = !식 && !상 ? '없음' : 식 && 상 ? S[식신] + '식신+' + S[상관] + '상관' : 식 ? S[식신] + '식신' : S[상관] + '상관';
     return { 키, 식신: 식 ? S[식신] : null, 상관: 상 ? S[상관] : null };
   }
-  function 일지(R) { return E.BRANCHES[R.pillars.day.branch]; }
+  function 일지지(R) { return E.BRANCHES[R.pillars.day.branch]; }
   // 방향 = 받는 쪽의 일지 × 주는 쪽의 식상
-  function 방향(받는R, 주는R) { const 식 = 식상(주는R); return { 일지: 일지(받는R), 식상: 식.키, 키: 일지(받는R) + '×' + 식.키 }; }
+  function 방향(받는R, 주는R) { const 식 = 식상(주는R); return { 일지: 일지지(받는R), 식상: 식.키, 키: 일지지(받는R) + '×' + 식.키 }; }
   // 당신 = 나. 원고 열쇠 = 「내 일지 × 상대 식상 / 상대 일지 × 내 식상」
   function 짝(나R, 그R) {
     const 나쪽 = 방향(나R, 그R), 그쪽 = 방향(그R, 나R);
@@ -44,5 +44,15 @@
     '첫 데이트는 어떻게 준비할까요?',
     '가까워질수록 무엇을 맞춰야 할까요?',
   ];
-  global.ChaeksaSsom = { 식상, 일지, 방향, 짝, 질문 };
+  // 행동이 들어가는 장만 반응을 묻는다(0 끌림 · 2 먼저 다가가기 · 3 연락 · 4 첫 데이트). 1 · 5 는 읽고 넘어간다.
+  const 반응틀 = { 0: ['반가워했어요', '미지근했어요', '아직 답이 없어요', '아직 안 보냈어요'], 2: ['반가워했어요', '미지근했어요', '아직 답이 없어요', '아직 안 보냈어요'],
+    3: ['반가워했어요', '미지근했어요', '아직 답이 없어요', '아직 안 보냈어요'], 4: ['좋았어요', '어색했어요', '아직 안 만났어요'] };
+  const 반응물음 = { 0: '이 말을 건네 보셨나요? 상대 반응은 어땠어요?', 2: '먼저 다가가 보셨나요? 상대 반응은 어땠어요?', 3: '연락해 보셨나요? 상대 반응은 어땠어요?', 4: '만나 보셨나요? 어땠어요?' };
+  // 연애 일지 — 이 기기에만 남긴다(서버로 안 보낸다). 열쇠는 두 방향 열쇠라 생일이 들어가지 않는다.
+  const 일지키 = 'chaeksa.ssomLog';
+  function 일지(열쇠) { try { return (JSON.parse(localStorage.getItem(일지키) || '{}')[열쇠]) || []; } catch (e) { return []; } }
+  function 적기(열쇠, 장, 반응) {
+    try { const all = JSON.parse(localStorage.getItem(일지키) || '{}'); (all[열쇠] = all[열쇠] || []).push({ 장, 반응, 때: new Date().toISOString().slice(0, 10) }); all[열쇠] = all[열쇠].slice(-30); localStorage.setItem(일지키, JSON.stringify(all)); } catch (e) {}
+  }
+  global.ChaeksaSsom = { 식상, 일지: 일지지, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
 })(window);
