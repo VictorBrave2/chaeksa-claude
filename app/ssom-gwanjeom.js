@@ -85,8 +85,21 @@
     const 합 = 운들.filter(u => 육합[u.branch] === R.pillars.day.branch).map(u => ({ 층: u.name, 운지: E.BRANCHES[u.branch] }));
     return { 해: y, 달: m, 운들: 운들.map(u => u.name + ' ' + E.STEMS[u.stem] + E.BRANCHES[u.branch]), 원구성: 원.키 === '없음' ? '없음' : 원.식신 && 원.상관 ? '둘 다' : 원.식신 ? '식신만' : '상관만', 구성, 온, 묶임, 일지, 충, 합 };
   }
+  /* 72조 ⑥(09-25) 식상 = 나의 언행. 조각 = 식상 글자 × 식신/상관(20가지). 천간에 드러났으면 생색냄, 지장간에만 있으면 생색 안 냄.
+   *  원국에서 합으로 묶인 식상 천간은 숨음으로 친다(E.natalHap). 돌려주는 것: [{ 글자, 십신, 드러남, 키: '戊상관' }] — 식신 먼저. */
+  function 언행(R) {
+    const p = R.pillars, ds = p.day.stem, 묶 = (() => { try { return E.natalHap(p) || {}; } catch (e) { return {}; } })();
+    const 있 = 있는천간(R), out = [];
+    for (let s = 0; s < 10; s++) {
+      const g = E.TEN_GODS[E.tenGod(ds, s)];
+      if ((g !== '식신' && g !== '상관') || !있.has(s)) continue;
+      const 드러남 = 자리.some(k => k !== 'day' && p[k] && p[k].stem === s && !묶[k]);
+      out.push({ 글자: E.STEMS[s], 십신: g, 드러남, 키: E.STEMS[s] + g });
+    }
+    return out.sort((a, b) => (a.십신 === '식신' ? 0 : 1) - (b.십신 === '식신' ? 0 : 1));
+  }
   // 닿음(3. 주고받음)의 열쇠 — 받는 쪽 일지 십신 × 주는 쪽 식상 구성
   const 구성말 = (x) => x.키 === '없음' ? '없음' : x.식신 && x.상관 ? '둘 다' : x.식신 ? '식신만' : '상관만';
   function 닿음키(받는R, 주는R) { return 일지십신(받는R) + '|' + 구성말(식상(주는R)); }
-  global.ChaeksaSsom = { 때상태, 닿음키, 구성말, 식상, 일지: 일지지, 일주, 일지십신, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
+  global.ChaeksaSsom = { 언행, 때상태, 닿음키, 구성말, 식상, 일지: 일지지, 일주, 일지십신, 방향, 짝, 질문, 반응틀, 반응물음, 기록: 일지, 적기 };
 })(window);
