@@ -1734,6 +1734,7 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-pk.on img{opacity:1}
 .ss-pk.on::before{content:"✓";position:absolute;top:8px;right:8px;z-index:2;width:22px;height:22px;border-radius:50%;background:#e8b75a;color:#1c1a3a;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .ss-cut{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:50% 22%;border-radius:10px;margin:8px 0 12px}
+.ss-geungeo{margin:18px 0 8px!important;padding-top:12px;border-top:1px dashed rgba(255,255,255,.18);font-size:13px;font-weight:700;letter-spacing:.02em;opacity:.75}
 .ss-scene{margin:14px 0 10px!important;font-style:italic;opacity:.8;line-height:1.75}
 .ss-dan{margin:12px 0!important;padding:10px 12px;border-left:3px solid #7a5bb5;background:rgba(122,91,181,.08);font-size:14px;line-height:1.7}
 .t-you{background:#5a6fd6}.t-them{background:#d08a3c}
