@@ -1706,3 +1706,4 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-r.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .ss-next:not(:empty){margin-top:16px}
 .ss-log p{margin:0 0 6px}
+.ss-part{font-family:var(--serif);font-size:17px;margin:22px 4px 4px}

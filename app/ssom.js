@@ -14,8 +14,16 @@
     const z = S.짝(나R, 그R), 원고 = W[z.키];
     const 근거 = '<div class="card"><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
       + '일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 글 속 장면과 대사는 이해를 돕는 예시예요.</p></div>';
+    // 1 나를 알고 · 2 그 사람을 알고 — 「내가 바라는 사랑」(ssom-baram.js, 일주 60). 원고 한 벌을 {주} 만 바꿔 두 번 쓴다.
+    const 바람 = global.ChaeksaSsomBaram || {};
+    const 바람칸 = (번, 일주, 주, 머리) => { const b = 바람[일주];
+      const 속 = b ? '<p class="ss-lead">' + esc(b.제목) + '</p>' + b.줄.map(t => 줄(t.split('{주}').join(주))).join('')
+        : '<p class="ss-why">' + esc(일주) + ' 일주의 글은 쓰고 있어요.</p>';
+      return '<details class="ss-q card ss-baram"' + (번 === 1 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>' + 속 + '</details>'; };
+    const 알기 = 바람칸(1, z.나쪽.일주, '당신', '나를 알고 — 내가 바라는 사랑') + 바람칸(2, z.그쪽.일주, '그 사람', '그 사람을 알고 — 그 사람이 바라는 사랑')
+      + '<h3 class="ss-part">3. 우리 둘의 주고받음</h3>';
     if (!원고) {
-      box.innerHTML = 근거 + '<div class="card"><p>두 분 조합의 글은 아직 쓰고 있어요. 조합마다 사람이 쓰고 검수한 글만 내놓아서, 다 채우기까지 시간이 걸려요.</p><p class="ss-why">조합 ' + esc(z.키) + '</p></div>';
+      box.innerHTML = 근거 + 알기 + '<div class="card"><p>두 분 조합의 글은 아직 쓰고 있어요. 조합마다 사람이 쓰고 검수한 글만 내놓아서, 다 채우기까지 시간이 걸려요.</p><p class="ss-why">조합 ' + esc(z.키) + '</p></div>';
       return;
     }
     // 첫 줄(굵은 요약)과 끝 줄(굵은 맺음)은 따로 꾸민다 — 문장이 한 덩어리로 보이던 것(09-24)
@@ -29,7 +37,7 @@
     const 기록 = S.기록(z.키), 끝기록 = 기록[기록.length - 1];
     const 이어 = 끝기록 ? '<div class="card ss-log"><p>지난번 기록 — ' + esc(끝기록.때) + ' · ' + (끝기록.장 + 1) + '장 「' + esc(S.질문[끝기록.장]) + '」에 <b>' + esc(끝기록.반응) + '</b></p><p class="ss-why">그다음 수는 그 장 아래에 다시 적어 두었어요. 기록은 이 기기에만 남아요.</p></div>' : '';
     const 장면단추 = '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>';
-    box.innerHTML = 근거 + 이어 + 장면단추 + S.질문.map((q, i) => '<details class="ss-q card"' + (i === 0 || (끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('');
+    box.innerHTML = 근거 + 알기 + 이어 + 장면단추 + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + (i + 1) + '. ' + esc(q) + '</summary>' + 칸(원고[i] || []) + 반응칸(i) + '</details>').join('');
     // 대사 상자마다 복사 단추 — 카톡에 바로 붙여 넣게
     box.querySelectorAll('.ss-say').forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ss-copy'; b.textContent = '복사';
       b.onclick = () => { const t = p.textContent.replace(/^(당신|상대):\s*/, '').replace(/복사(했어요)?$/, '').replace(/[“”]/g, '').trim(); try { navigator.clipboard.writeText(t); b.textContent = '복사했어요'; } catch (e) {} }; p.appendChild(b); });
