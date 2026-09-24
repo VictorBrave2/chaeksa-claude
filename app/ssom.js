@@ -25,7 +25,7 @@
     const 칸 = (글) => {
       if (글.length <= 3) return 글.map((t, j) => 한줄(t, j, 글.length)).join('');
       const 보임 = new Set();
-      if (/^\*\*/.test(글[0])) 보임.add(0);
+      보임.add(0);   // 첫 줄은 늘 보인다(굵지 않아도)
       const 대 = 글.findIndex(t => t.indexOf('> ') === 0); if (대 >= 0) 보임.add(대);
       if (/^\*\*/.test(글[글.length - 1])) 보임.add(글.length - 1);
       const 앞 = 글.map((t, j) => 보임.has(j) ? 한줄(t, j, 글.length) : '').join('');
@@ -33,8 +33,14 @@
       return 앞 + (뒤 ? '<details class="ss-more"><summary>더 읽기</summary>' + 뒤 + '</details>' : '');
     };
     const 바꿔 = (글, 표) => 글.map(t => Object.keys(표).reduce((x, k) => x.split(k).join(표[k]), t));
-    const 근거 = '<div class="card"><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>'
-      + '일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 글은 두 분 일주와 식상을 바탕으로 풀어 쓴 해석이고, 장면과 대사는 이해를 돕는 예시예요.</p></div>';
+    // 맨 위 — 쉬운 두 줄 먼저, 사주 말은 「근거 보기」 안으로(09-25 「표현이 어렵다」)
+    const 제목of = (R) => { const b = 바람[S.일주(R)], 말들 = S.언행(R).map(x => 줌[x.키] && 줌[x.키].사람말).filter(Boolean);
+      const 하는 = 말들.length > 1 ? 말들.slice(0, -1).map(t => t.replace(/는$/, '고')).join(' ') + ' ' + 말들[말들.length - 1] : 말들[0] || '';
+      return [b ? b.제목 : '', 하는]; };
+    const 나제 = 제목of(나R), 그제 = 제목of(그R);
+    const 소개 = (누, 제) => '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
+    const 근거 = '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제)
+      + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     // 1 · 2 — 바라는 사랑(일주) + 주는 사랑(식상)
     const 알기칸 = (번, R, 주, 머리) => {
       const 일주 = S.일주(R), 언 = S.언행(R), 바 = 바람[일주], 누가 = 주 === '당신' ? '내가' : '그 사람이';
@@ -42,8 +48,8 @@
       const 생 = global.ChaeksaSsomSaengsaek || {}, 조각 = 언.map(x => 줌[x.키]);
       const 주는 = !언.length ? { 제목: '언행으로는 단서가 적어요', 줄: 생.없음 || [] }
         : 조각.every(Boolean) ? { 제목: 조각.map(x => x.제목).join(' · '), 줄: [].concat(...조각.map(x => x.줄), (언.some(x => x.드러남) ? 생.드러남 : 생.숨음) || []) } : null;
-      const 속 = '<h4 class="ss-sub">' + 누가 + ' 바라는 사랑</h4>' + (바 ? '<p class="ss-lead">' + esc(바.제목) + '</p>' + 칸(바꿔(바.줄, { '{주}': 주 })) : '<p class="ss-why">' + esc(일주) + ' 일주의 글은 쓰고 있어요.</p>')
-        + '<h4 class="ss-sub">' + 누가 + ' 주는 사랑</h4>' + (주는 ? '<p class="ss-lead">' + esc(주는.제목) + '</p>' + 칸(바꿔(주는.줄, { '{주}': 주 })) : '<p class="ss-why">이 식상 구성의 글은 쓰고 있어요.</p>');
+      const 속 = '<h4 class="ss-sub">' + 누가 + ' 바라는 사람</h4>' + (바 ? '<p class="ss-lead">' + esc(바.제목) + '</p>' + 칸(바꿔(바.줄, { '{주}': 주 })) : '<p class="ss-why">' + esc(일주) + ' 일주의 글은 쓰고 있어요.</p>')
+        + '<h4 class="ss-sub">' + 누가 + ' 마음을 보이는 법</h4>' + (주는 ? '<p class="ss-lead">' + esc(주는.제목) + '</p>' + 칸(바꿔(주는.줄, { '{주}': 주 })) : '<p class="ss-why">이 식상 구성의 글은 쓰고 있어요.</p>');
       return '<details class="ss-q card ss-baram"' + (번 === 1 ? ' open' : '') + '><summary>' + 번 + '. ' + 머리 + '</summary>' + 속 + '</details>';
     };
     // 3 — 주고받음: 두 방향 닿음
@@ -73,8 +79,9 @@
       const 짧게 = (x) => {
         const 말 = [];
         x.바람.forEach(t => { const 대상 = (t.match(/마음이 (.+?)에 밀려/) || [])[1];
-          const m = 대상 ? 대상 + '에 밀린 마음' : /커져/.test(t) ? '바라는 마음이 커진 때' : /붙들어/.test(t) ? '바라는 마음이 붙들린 때' : /스스로 힘/.test(t) ? '스스로 서서 덜 기대는 해' : /흔들/.test(t) ? '흔들리는 마음' : /또렷/.test(t) ? '또렷해진 마음' : null; if (m) 말.push(m); });
-        x.언.forEach(v => 말.push((v.드러남 ? '겉으로 ' : '속으로 ') + (v.십신 === '식신' ? '챙기는 모습' : '방법을 내놓는 모습')));
+          const 바쁜 = (t.match(/(?:달은|그달은) (.+?)에 마음이 밀려요/) || [])[1];
+          const m = 바쁜 ? 바쁜 + '로 바쁨' : /바라는 게 많아/.test(t) ? '바라는 게 많은 때' : /잘 안 흔들/.test(t) ? '마음이 한결같은 때' : /혼자서도/.test(t) ? '혼자서도 잘 버팀' : /바뀌기|흔들/.test(t) ? '마음이 흔들림' : /또렷|많아져/.test(t) ? '연애 생각 많음' : null; if (m) 말.push(m); });
+        x.언.forEach(v => 말.push(v.십신 === '식신' ? '챙겨 주는 모습' : '먼저 나서는 모습'));
         const 한번 = 말.filter((m, i) => 말.indexOf(m) === i); 말.length = 0; 한번.forEach(m => 말.push(m));
         return 말.length ? 말.map(m => '<li>' + esc(m) + '</li>').join('') : '<li>타고난 그대로</li>';
       };
