@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>출산택일 — 태어날 아이, 이 시각에 낳으면 · 책사</title>
+<title>책사 — 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일</title>
 <meta name="description" content="태어날 아이, 이 시각에 낳으면 — 날짜를 고르면 그날 열두 시진을 궁통보감 · 자평진전 · 적천수가 각자 어떻게 보는지 보여 드려요. 점수로 합치지 않아요. 회원가입 없이 무료. 그 사람 이야기는 두 사람 생년월일로 날짜마다 답해요.">
 <link rel="canonical" href="https://chaeksa.kr/">
 <!-- 네이버 웹마스터도구 소유확인. 지우면 확인이 풀린다 — 등록 뒤에도 두어야 한다. -->
@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1114">
+<link rel="stylesheet" href="style.css?v=1121">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -66,37 +66,19 @@
 
   <!-- 랜딩 -->
   <section id="landing" class="hide">
+    <!-- 09-25 사장님 「첫 화면을 링크 미리보기처럼 컷씬 합치기로 — 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일」 · 「오늘 ○○일 삭제」 · 「로그인 없이 생년월일로 궁합 시작하기 / 출산택일 생년월일시 확인하기」.
+         값 안내(7일 무료 · 9,900원)는 맨 아래로(「여쭐 것: 맨 아래로 보내」). 내 생년월일을 먼저 받는 「첫 만남」은 아래 문으로 물렸다. -->
     <div class="lp-hero" id="lpHero">
       <div class="lp-seal">策</div>
-      <div class="lp-today">
-        <span class="lp-today-label">오늘</span>
-        <b id="lpGanji">―</b>
-        <span id="lpGanjiKo"></span>
+      <div class="lp-cuts">
+        <a class="lp-cut" href="jeongtong.html?from=site-landing"><img src="art/story-jigeum-s.webp" alt=""><b>정통사주</b><span>옛 책으로 읽는 내 여덟 글자</span></a>
+        <a class="lp-cut" href="gunghap-chongnon.html?from=site-landing"><img src="art/story-gunghap-s.webp" alt=""><b>정통궁합</b><span>두 사람 원국을 나란히</span></a>
+        <a class="lp-cut" href="ssom.html?from=site-landing"><img src="art/ss-then-now-s.webp" alt=""><b>웹툰궁합</b><span>우리 둘 이야기를 웹툰으로</span></a>
+        <a class="lp-cut lp-cut-wide" href="taekil-sim.html?from=site-landing"><img src="og.jpg" alt=""><b>출산택일</b><span>이 시각에 낳으면</span></a>
       </div>
-      <!-- 문의 차례는 한살이의 차례다(2026-09-18 사장님 「아이를 맨위로 보내놔야지」) —
-           아이(태·양·장생·목욕) → 연애(관대) → 나(재·관 — 건록·제왕·쇠) → 건강(병·사·묘·절).
-           문은 있는 것만 낸다: 아이 = 출산택일 시뮬레이터, 연애·나 = 내 생년월일(그 사람 이야기 + 내 구조 설명서). 건강은 아직 없어 문을 안 낸다(빈 선반 금지). -->
-      <div class="lp-door" id="lpBaby">
-        <p class="lp-eyebrow">아이</p>
-        <h1>태어날 아이,<br>이 시각에 낳으면</h1>
-        <p class="lp-lead">날짜를 고르면 그날 열두 시진을 세 고전이 각자 어떻게 보는지 보여 드려요.<br><b>회원가입 없이 무료</b>예요.</p>
-        <a class="btn lp-cta" id="btnBaby" href="taekil-sim.html?from=site-landing">태어날 아이 날짜 넣어 보기</a>
-      </div>
-      <div class="lp-door lp-door2" id="lpMe">
-        <p class="lp-eyebrow">연애 · 나</p>
-        <h2 id="lpMeH">그 사람 때문에<br>궁금해진 모든 이야기</h2>
-        <p class="lp-lead" id="lpMeLead">두 사람 생년월일을 놓고 날짜로 답해요.<br><b>오늘부터 7일은 무료</b>예요.</p>
-        <button class="btn ghost lp-cta" id="btnStart">내 생년월일 넣기</button>
-        <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 있으면 돼요</p>
-      </div>
+      <a class="btn lp-cta" id="btnGunghap" href="ssom.html?from=site-landing">로그인 없이 생년월일로 궁합 시작하기</a>
+      <a class="btn ghost lp-cta" id="btnBaby" href="taekil-sim.html?from=site-landing">출산택일 생년월일시 확인하기</a>
     </div>
-
-    <section class="card">
-      <h2>이렇게 봐요</h2>
-      <div class="lp-feat"><i>問</i><div><b>질문 하나에 답 하나</b><p>「이번 주 먼저 연락해도 될까요?」 같은 질문을 고르면, 두 사람 사주를 놓고 날마다 ○△✕로 답해요. 이유도 한 줄로.</p></div></div>
-      <div class="lp-feat"><i>日</i><div><b>7일은 무료, 그 사람 이야기는 한 장 9,900원</b><p>오늘부터 7일은 그냥 봐요. 그 사람에 대해 깊이 보는 여덟 가지 이야기는 한 장에 9,900원이에요.</p></div></div>
-    </section>
-
 
     <section class="card">
       <h2>그 뒤로 함께 보게 될 것들</h2>
@@ -114,7 +96,22 @@
         <p><b>행동 하나로 끝냅니다.</b> 읽어 드리고 마는 것이 아니라, 그래서 오늘 무엇을 하시면 되는지까지 말씀드립니다.</p>
         <p><b>정하는 것은 언제나 본인입니다.</b> 저희는 흐름을 읽어 드릴 뿐, 대신 정하지 않습니다.</p>
       </div>
-      <button class="btn" id="btnStart2">제 이야기로 의논해 주세요</button>
+      
+    </section>
+
+    <section class="card lp-door" id="lpMe">
+      <p class="lp-eyebrow">나</p>
+      <h2 id="lpMeH">내 생년월일을 저장해 두고 보기</h2>
+      <p class="lp-lead" id="lpMeLead">한 번 넣어 두면 다음부터 다시 묻지 않아요.</p>
+      <button class="btn ghost lp-cta" id="btnStart">내 생년월일 넣기</button>
+      <button class="btn ghost lp-cta hide" id="btnStart2">제 이야기로 의논해 주세요</button>
+      <p class="hint" style="text-align:center" id="lpStartHint">생년월일시만 있으면 돼요</p>
+    </section>
+
+    <section class="card">
+      <h2>이렇게 봐요</h2>
+      <div class="lp-feat"><i>問</i><div><b>질문 하나에 답 하나</b><p>「이번 주 먼저 연락해도 될까요?」 같은 질문을 고르면, 두 사람 사주를 놓고 날마다 ○△✕로 답해요. 이유도 한 줄로.</p></div></div>
+      <div class="lp-feat"><i>日</i><div><b>7일은 무료, 그 사람 이야기는 한 장 9,900원</b><p>오늘부터 7일은 그냥 봐요. 그 사람에 대해 깊이 보는 여덟 가지 이야기는 한 장에 9,900원이에요.</p></div></div>
     </section>
   </section>
 
@@ -363,7 +360,7 @@
           <select id="ssPick"></select>
         </div>
         <p class="hint hide" id="ssNone" style="margin:0 0 4px"></p>
-        <div id="ssMore" class="hide"><label for="ssStage">지금 두 사람은</label><select id="ssStage"><option value="시작전">시작 전 — 짝사랑 · 소개팅</option><option value="썸" selected>썸 — 막 알아 가는 중</option><option value="초반">연애 초반 — 사귄 지 6개월까지</option><option value="안정기">안정기 — 6개월에서 2년</option><option value="결혼">결혼을 생각할 때</option><option value="흔들림">흔들릴 때 — 권태 · 이별 고민</option><option value="재회">헤어진 뒤 — 재회</option></select><label for="ssMet" class="hide">처음 만난 달</label><input type="month" id="ssMet" class="hide"></div>
+        <div id="ssMore" class="hide"><label for="ssStage" class="hide">지금 두 사람은</label><select id="ssStage" class="hide"><option value="시작전">시작 전 — 짝사랑 · 소개팅</option><option value="썸" selected>썸 — 막 알아 가는 중</option><option value="초반">연애 초반 — 사귄 지 6개월까지</option><option value="안정기">안정기 — 6개월에서 2년</option><option value="결혼">결혼을 생각할 때</option><option value="흔들림">흔들릴 때 — 권태 · 이별 고민</option><option value="재회">헤어진 뒤 — 재회</option></select><label for="ssMet" class="hide">처음 만난 달</label><input type="month" id="ssMet" class="hide"></div>
         <button class="btn ghost" id="btnSsAdd" type="button">그 사람 생년월일 넣기</button>
       </section>
       <div id="ssTabOut" data-plain="1"></div>
@@ -649,45 +646,45 @@
   </div>
 </div>
 
-<script src="config.js?v=1114"></script>
-<script src="track.js?v=1114"></script>
-<script src="cloud.js?v=1114"></script>
-<script src="usage.js?v=1114"></script>
-<script src="places.js?v=1114"></script>
-<script src="people.js?v=1114"></script>
-<script src="astro.js?v=1114"></script>
-<script src="lunar.js?v=1114"></script>
-<script src="engine.js?v=1114"></script>
-<script src="saenggeuk.js?v=1114"></script><script src="gise.js?v=1114"></script>
-<script src="panjeong.js?v=1114"></script>
-<script src="questions.js?v=1114"></script>
-<script src="wongook.js?v=1114"></script>
-<script src="seolmyeongseo.js?v=1114"></script>
-<script src="chaeyong.js?v=1114"></script>
-<script src="brief.js?v=1114"></script>
-<script src="chaeksadan.js?v=1114"></script>
-<script src="geunamja.js?v=1114"></script>
-<script src="maeum.js?v=1114"></script>
-<script src="gunghap.js?v=1114"></script>
-<script src="sheets.js?v=1114"></script>
-<script src="hwakin.js?v=1114"></script>
-<script src="mun.js?v=1114"></script>
-<script src="mun/all.js?v=1114"></script>
-<script src="typecard.js?v=1114"></script>
-<script src="gyeokguk.js?v=1114"></script>
-<script src="memo.js?v=1114"></script>
-<script src="classic.js?v=1114"></script>
-<script src="gungtong-wonmun.js?v=1114"></script><script src="ilju.js?v=1114"></script><script src="yeongyeok.js?v=1114"></script><script src="samyeong.js?v=1114"></script><script src="gwanjeom.js?v=1114"></script><script src="jeongtong.js?v=1114"></script>
-<script src="gunghap-gwanjeom.js?v=1114"></script><script src="ssom-gwanjeom.js?v=1114"></script><script src="ssom-baram.js?v=1114"></script><script src="ssom-dangye.js?v=1114"></script><script src="ssom-daehwa.js?v=1114"></script><script src="ssom-webtoon.js?v=1114"></script><script src="ssom-webtoon-2.js?v=1114"></script><script src="ssom-webtoon-3.js?v=1114"></script><script src="ssom-wongo.js?v=1114"></script><script src="ssom-score.js?v=1114"></script><script src="ssom-score-mal.js?v=1114"></script><script src="ssom.js?v=1114"></script><script src="gunghap-chongnon.js?v=1114"></script>
-<script src="taekilsim.js?v=1114"></script>
-<script src="stories.js?v=1114"></script>
-<script src="tongbyeon.js?v=1114"></script>
-<script src="rules-wealth-love.js?v=1114"></script>
-<script src="rules-health-study-move.js?v=1114"></script>
-<script src="share.js?v=1114"></script>
-<script src="ai.js?v=1114"></script>
-<script src="pay.js?v=1114"></script>
-<script src="app.js?v=1114"></script>
-<script src="landing.js?v=1114"></script>
+<script src="config.js?v=1121"></script>
+<script src="track.js?v=1121"></script>
+<script src="cloud.js?v=1121"></script>
+<script src="usage.js?v=1121"></script>
+<script src="places.js?v=1121"></script>
+<script src="people.js?v=1121"></script>
+<script src="astro.js?v=1121"></script>
+<script src="lunar.js?v=1121"></script>
+<script src="engine.js?v=1121"></script>
+<script src="saenggeuk.js?v=1121"></script><script src="gise.js?v=1121"></script>
+<script src="panjeong.js?v=1121"></script>
+<script src="questions.js?v=1121"></script>
+<script src="wongook.js?v=1121"></script>
+<script src="seolmyeongseo.js?v=1121"></script>
+<script src="chaeyong.js?v=1121"></script>
+<script src="brief.js?v=1121"></script>
+<script src="chaeksadan.js?v=1121"></script>
+<script src="geunamja.js?v=1121"></script>
+<script src="maeum.js?v=1121"></script>
+<script src="gunghap.js?v=1121"></script>
+<script src="sheets.js?v=1121"></script>
+<script src="hwakin.js?v=1121"></script>
+<script src="mun.js?v=1121"></script>
+<script src="mun/all.js?v=1121"></script>
+<script src="typecard.js?v=1121"></script>
+<script src="gyeokguk.js?v=1121"></script>
+<script src="memo.js?v=1121"></script>
+<script src="classic.js?v=1121"></script>
+<script src="gungtong-wonmun.js?v=1121"></script><script src="ilju.js?v=1121"></script><script src="yeongyeok.js?v=1121"></script><script src="samyeong.js?v=1121"></script><script src="gwanjeom.js?v=1121"></script><script src="jeongtong.js?v=1121"></script>
+<script src="gunghap-gwanjeom.js?v=1121"></script><script src="ssom-gwanjeom.js?v=1121"></script><script src="ssom-baram.js?v=1121"></script><script src="ssom-dangye.js?v=1121"></script><script src="ssom-daehwa.js?v=1121"></script><script src="ssom-webtoon.js?v=1121"></script><script src="ssom-webtoon-2.js?v=1121"></script><script src="ssom-webtoon-3.js?v=1121"></script><script src="ssom-wongo.js?v=1121"></script><script src="ssom-score.js?v=1121"></script><script src="ssom-score-mal.js?v=1121"></script><script src="ssom.js?v=1121"></script><script src="gunghap-chongnon.js?v=1121"></script>
+<script src="taekilsim.js?v=1121"></script>
+<script src="stories.js?v=1121"></script>
+<script src="tongbyeon.js?v=1121"></script>
+<script src="rules-wealth-love.js?v=1121"></script>
+<script src="rules-health-study-move.js?v=1121"></script>
+<script src="share.js?v=1121"></script>
+<script src="ai.js?v=1121"></script>
+<script src="pay.js?v=1121"></script>
+<script src="app.js?v=1121"></script>
+<script src="landing.js?v=1121"></script>
 </body>
 </html>

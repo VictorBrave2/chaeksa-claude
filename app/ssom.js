@@ -49,7 +49,7 @@
       const 하는 = 말들.length > 1 ? 말들.slice(0, -1).map(t => t.replace(/는$/, '고')).join(' ') + ' ' + 말들[말들.length - 1] : 말들[0] || '';
       return [b ? b.제목 : '', 하는]; };
     const 나제 = 제목of(나R), 그제 = 제목of(그R);
-    const 소개 = (누, 제) => '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
+    const 소개 = (누, 제) => !제[0] && !제[1] ? '' : '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
     const 근거 = '<div class="card">'   /* 09-25 3초 결과 카드는 화면에서 내림(사장님 「순위 정하다가 산으로 가버렸어」) — 엔진 ssom-score.js 는 남겨 둠 */ + '' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">장면으로 보기 — 처음부터 끝까지</button>'
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
@@ -205,6 +205,8 @@
     }
     const 잠금 = (n) => { const c = q('gcNoTime' + n); if (c) q('gcTime' + n).disabled = c.checked; };
     ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n); if (c) { c.addEventListener('change', () => 잠금(n)); 잠금(n); } });
+    // 09-25 첫 화면은 생년월일 · 성별만 — 시각은 「모름」이 기본. 「태어난 시각 · 곳」을 펼치면 시각을 넣는 것으로 본다.
+    ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n), d = c && c.closest('details'); if (d) d.addEventListener('toggle', () => { if (d.open && c.checked) { c.checked = false; 잠금(n); } }); });
     const 읽기 = (n) => {
       const [y, m, d] = (q('gcDate' + n).value || '').split('-').map(Number);
       const [hh, mi] = (q('gcTime' + n).value || '12:00').split(':').map(Number);

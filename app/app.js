@@ -2886,14 +2886,14 @@
   // ───── 랜딩 ─────
   function showLanding() {
     const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    $('lpGanji').textContent = f.pillar(tf.day) + '일';
-    $('lpGanjiKo').textContent = f.pillarKo(tf.day) + ' · ' + f.stemElem(tf.day.stem) + '의 날';
+    if ($('lpGanji')) $('lpGanji').textContent = f.pillar(tf.day) + '일';   // 09-25 오늘 간지 칸은 첫 화면에서 걷음
+    if ($('lpGanjiKo')) $('lpGanjiKo').textContent = f.pillarKo(tf.day) + ' · ' + f.stemElem(tf.day.stem) + '의 날';
     // 첫 화면은 글이 아니라 장면이다 — 오늘의 계절에 맞는 삽화를 깐다.
     // 그림이 없으면 class 를 안 붙여 옛 글자 히어로로 돌아간다(안전한 되돌림).
     // 2026-09-22 — 예전엔 그림이 있는지 보기 전에 scene 부터 붙여서, 그림을 지운 뒤로 첫 화면이 그림 빠진 남색 상자였다.
     // 이제 그림을 **실제로 받은 뒤에만** 장면을 깐다. 그 전까지는 글자 첫 화면이다.
     const hero = $('lpHero');
-    if (hero && window.CHAEKSA_ART) {
+    if (hero && window.CHAEKSA_ART && !hero.querySelector('.lp-cuts')) {
       회의장면(u => { hero.style.setProperty('--hero-art', 'url("' + u + '")'); hero.classList.add('scene'); });
     }
     // 랜딩의 열 사람 도열(#lpCorps)은 2026-09-12 걷었다.

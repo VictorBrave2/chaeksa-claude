@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>연애궁합 — 막 시작한 두 사람의 여섯 질문 · 책사</title>
+<title>웹툰궁합 — 우리 둘 이야기를 웹툰으로 · 책사</title>
 <meta name="description" content="두 분의 일지와 식상으로, 내가 바라는 것을 상대가 어떻게 주는지 · 상대가 바라는 것을 내가 어떻게 주는지 양쪽을 따로 읽어 썸의 여섯 질문에 답합니다.">
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1114">
+<link rel="stylesheet" href="style.css?v=1121">
 <style>
   .doc{max-width:660px;margin:0 auto;padding:22px 16px 80px}
   .back{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -18,49 +18,54 @@
   .jt-form .jt-notime{grid-column:1/-1;flex-direction:row;align-items:center;gap:8px;font-size:14px;color:var(--ink2);margin-top:-2px}
   .jt-form .jt-notime input{width:18px;height:18px;margin:0;padding:0}
   .jt-form input:disabled{opacity:.45}
+  .jt-more{grid-column:1/-1}.jt-more summary{cursor:pointer;opacity:.8;font-size:14px}.jt-more[open]{display:grid;grid-template-columns:inherit;gap:inherit}
 </style>
 </head>
 <body>
 <div class="doc">
   <a class="back" href="./">← 책사 홈</a>
-  <h1>연애궁합<br>막 시작한 두 사람의 여섯 질문</h1>
-  <p class="lead">일지는 어떤 사람을 바라는지를, 식상은 상대를 어떻게 대하는지를 보여 줘요. 내가 바라는 것을 상대가 어떻게 주는지, 상대가 바라는 것을 내가 어떻게 주는지 두 방향을 따로 읽어요. 점수로 합치지 않습니다. 지금은 무료예요.</p>
+  <h1>웹툰궁합</h1>
+  <p class="lead">두 사람 생년월일만 넣으면 우리 둘 이야기를 웹툰으로 그려 드려요. 로그인 없이 무료예요.</p>
   <form id="gcForm" class="card">
     <div class="gc-head">나</div>
     <div class="jt-form">
       <label>생년월일<input type="date" id="gcDateA" required></label>
-      <label>태어난 시각<input type="time" id="gcTimeA" value="12:00"></label>
-      <label class="jt-notime"><input type="checkbox" id="gcNoTimeA">시간을 몰라요</label>
       <label>성별<select id="gcGA"><option value="F">여</option><option value="M">남</option><option value="">모름</option></select></label>
+      <details class="jt-more"><summary>태어난 시각 · 곳 (알면 더 정확해요)</summary>
+      <label>태어난 시각<input type="time" id="gcTimeA" value="12:00"></label>
+      <label class="jt-notime"><input type="checkbox" id="gcNoTimeA" checked>시간을 몰라요</label>
       <label>태어난 곳<select id="gcPlaceA"><option value="KR:서울">서울</option></select></label>
+      </details>
     </div>
     <div class="gc-head">그 사람</div>
     <div class="jt-form">
       <label>생년월일<input type="date" id="gcDateB" required></label>
-      <label>태어난 시각<input type="time" id="gcTimeB" value="12:00"></label>
-      <label class="jt-notime"><input type="checkbox" id="gcNoTimeB">시간을 몰라요</label>
       <label>성별<select id="gcGB"><option value="M">남</option><option value="F">여</option><option value="">모름</option></select></label>
+      <details class="jt-more"><summary>태어난 시각 · 곳 (알면 더 정확해요)</summary>
+      <label>태어난 시각<input type="time" id="gcTimeB" value="12:00"></label>
+      <label class="jt-notime"><input type="checkbox" id="gcNoTimeB" checked>시간을 몰라요</label>
       <label>태어난 곳<select id="gcPlaceB"><option value="KR:서울">서울</option></select></label>
+      </details>
     </div>
-    <div class="jt-form"><label>지금 두 사람은<select id="gcStage"><option value="시작전">시작 전 — 짝사랑 · 소개팅</option><option value="썸" selected>썸 — 막 알아 가는 중</option><option value="초반">연애 초반 — 사귄 지 6개월까지</option><option value="안정기">안정기 — 6개월에서 2년</option><option value="결혼">결혼을 생각할 때</option><option value="흔들림">흔들릴 때 — 권태 · 이별 고민</option><option value="재회">헤어진 뒤 — 재회</option></select></label><label class="hide">처음 만난 달<input type="month" id="gcMet"></label></div>
-    <button type="submit" class="btn" style="width:100%">여섯 질문 보기</button>
+    <div class="jt-form hide"><label>지금 두 사람은<select id="gcStage"><option value="시작전">시작 전 — 짝사랑 · 소개팅</option><option value="썸" selected>썸 — 막 알아 가는 중</option><option value="초반">연애 초반 — 사귄 지 6개월까지</option><option value="안정기">안정기 — 6개월에서 2년</option><option value="결혼">결혼을 생각할 때</option><option value="흔들림">흔들릴 때 — 권태 · 이별 고민</option><option value="재회">헤어진 뒤 — 재회</option></select></label><label class="hide">처음 만난 달<input type="month" id="gcMet"></label></div>
+    <button type="submit" class="btn" style="width:100%">우리 둘 이야기 보기</button>
   </form>
   <div id="gcOut"></div>
 </div>
 <script>
 (function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})()
 </script>
-<script src="config.js?v=1114"></script>
-<script src="places.js?v=1114"></script>
-<script src="astro.js?v=1114"></script>
-<script src="lunar.js?v=1114"></script>
-<script src="engine.js?v=1114"></script>
-<script src="saenggeuk.js?v=1114"></script><script src="gise.js?v=1114"></script>
-<script src="panjeong.js?v=1114"></script>
-<script src="ssom-gwanjeom.js?v=1114"></script>
-<script src="ssom-baram.js?v=1114"></script>
-<script src="ssom-dangye.js?v=1114"></script>
-<script src="ssom-daehwa.js?v=1114"></script><script src="ssom-webtoon.js?v=1114"></script><script src="ssom-webtoon-2.js?v=1114"></script><script src="ssom-webtoon-3.js?v=1114"></script><script src="ssom-wongo.js?v=1114"></script>
-<script src="typecard.js?v=1114"></script><script src="gyeokguk.js?v=1114"></script><script src="classic.js?v=1114"></script><script src="ssom-score.js?v=1114"></script><script src="ssom-score-mal.js?v=1114"></script><script src="ssom.js?v=1114"></script>
+<script src="config.js?v=1121"></script>
+<script src="places.js?v=1121"></script>
+<script src="astro.js?v=1121"></script>
+<script src="lunar.js?v=1121"></script>
+<script src="engine.js?v=1121"></script>
+<script src="saenggeuk.js?v=1121"></script><script src="gise.js?v=1121"></script>
+<script src="panjeong.js?v=1121"></script>
+<script src="ssom-gwanjeom.js?v=1121"></script>
+<script src="ssom-baram.js?v=1121"></script>
+<script src="ssom-dangye.js?v=1121"></script>
+<script src="ssom-daehwa.js?v=1121"></script><script src="ssom-webtoon.js?v=1121"></script><script src="ssom-webtoon-2.js?v=1121"></script><script src="ssom-webtoon-3.js?v=1121"></script><script src="ssom-wongo.js?v=1121"></script>
+<script src="typecard.js?v=1121"></script><script src="gyeokguk.js?v=1121"></script><script src="classic.js?v=1121"></script><script src="ssom-score.js?v=1121"></script><script src="ssom-score-mal.js?v=1121"></script><script src="ssom.js?v=1121"></script>
 </body>
 </html>
