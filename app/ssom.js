@@ -204,8 +204,10 @@
       q('gcGA').value = p.gender === 'M' ? 'M' : 'F';
     }
     // 09-25 「입력부터 웹툰식으로」 — 성별을 고르면 컷 그림이 그 사람으로 바뀐다(당신 컷은 당신 성별, 그 사람 컷은 그 사람 성별)
-    const 컷바꾸기 = () => ['A', 'B'].forEach(n => { const g = q('gcG' + n), c = q('gcCut' + n); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (g.value === 'M' ? 'ss-me' : 'ss-her') + '-s.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } });
-    ['A', 'B'].forEach(n => { const g = q('gcG' + n); if (g) g.addEventListener('change', 컷바꾸기); }); 컷바꾸기();
+    // 09-25 사장님 「같은 사진이 들어가면 섭섭한데」 — 자리마다 다른 컷(나 남 ss-me · 나 여 ss-her · 그 사람 남 story-jigeum · 그 사람 여 story-sns), 한쪽 성별을 고르면 맞은편은 반대로
+    const 컷그림 = { A: { M: 'ss-me', F: 'ss-her' }, B: { M: 'story-jigeum', F: 'story-sns' } };
+    const 컷바꾸기 = () => ['A', 'B'].forEach(n => { const g = q('gcG' + n), c = q('gcCut' + n); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (컷그림[n][g.value] || 컷그림[n].F) + '-s.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } });
+    ['A', 'B'].forEach(n => { const g = q('gcG' + n); if (g) g.addEventListener('change', () => { const o = q('gcG' + (n === 'A' ? 'B' : 'A')); if (o && g.value && o.value === g.value) o.value = g.value === 'M' ? 'F' : 'M'; 컷바꾸기(); }); }); 컷바꾸기();
     const 잠금 = (n) => { const c = q('gcNoTime' + n); if (c) q('gcTime' + n).disabled = c.checked; };
     ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n); if (c) { c.addEventListener('change', () => 잠금(n)); 잠금(n); } });
     // 09-25 첫 화면은 생년월일 · 성별만 — 시각은 「모름」이 기본. 「태어난 시각 · 곳」을 펼치면 시각을 넣는 것으로 본다.
