@@ -203,6 +203,9 @@
       if (!p.noTime && p.hour != null && p.hour !== '') q('gcTimeA').value = String(p.hour).padStart(2, '0') + ':' + String(p.minute || 0).padStart(2, '0');
       q('gcGA').value = p.gender === 'M' ? 'M' : 'F';
     }
+    // 09-25 「입력부터 웹툰식으로」 — 성별을 고르면 컷 그림이 그 사람으로 바뀐다(당신 컷은 당신 성별, 그 사람 컷은 그 사람 성별)
+    const 컷바꾸기 = () => ['A', 'B'].forEach(n => { const g = q('gcG' + n), c = q('gcCut' + n); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (g.value === 'M' ? 'ss-me' : 'ss-her') + '-s.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } });
+    ['A', 'B'].forEach(n => { const g = q('gcG' + n); if (g) g.addEventListener('change', 컷바꾸기); }); 컷바꾸기();
     const 잠금 = (n) => { const c = q('gcNoTime' + n); if (c) q('gcTime' + n).disabled = c.checked; };
     ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n); if (c) { c.addEventListener('change', () => 잠금(n)); 잠금(n); } });
     // 09-25 첫 화면은 생년월일 · 성별만 — 시각은 「모름」이 기본. 「태어난 시각 · 곳」을 펼치면 시각을 넣는 것으로 본다.
