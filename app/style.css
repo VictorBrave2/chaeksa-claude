@@ -1771,3 +1771,6 @@ details.fold > .tiles { margin-top: 10px; }
 .gc-bubble::before{content:'';position:absolute;left:28px;top:-9px;border:10px solid transparent;border-top:0;border-bottom-color:rgba(255,255,255,.94)}
 .gc-bubble b{display:block;font-size:11.5px;letter-spacing:.08em;color:#8a6d2f;font-family:var(--sans);margin-bottom:2px}
 .sheet .gc-cut{margin:-20px -20px 14px;border-radius:16px 16px 0 0}
+/* 09-25 뼈대 교통정리(docs/78) — 홈은 컷 넷 + 내 원국만. 이야기 목록 · 어떤 사이 · 오늘의 질문은 감춤 */
+.tab[data-tab=home] #wtTop,.tab[data-tab=home] #wgMain,.tab[data-tab=home] #wtHome,.tab[data-tab=home] #qToday{display:none!important}
+.home-scene{margin:4px auto 18px}
