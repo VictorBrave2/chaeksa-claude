@@ -125,7 +125,10 @@
     const ds = R.pillars.day.stem, br = R.pillars.day.branch, 속 = (E.HIDDEN[br] || []).map(h => typeof h === 'number' ? h : h[0]);
     const 본 = 속[0], 나서는 = 속.slice(1).find(h => E.STEM_ELEM[h] === E.STEM_ELEM[본] && E.STEM_YANG[h] !== E.STEM_YANG[본]);
     const 신 = (st) => E.TEN_GODS[E.tenGod(ds, st)];
-    return 나서는 == null ? null : { 전: 신(본), 후: 신(나서는), 전글자: E.STEMS[본], 후글자: E.STEMS[나서는] };
+    // 09-25 사장님: 子午卯酉는 같은 기운의 짝이 나선다 — 이상형이 일정하다. 나머지 여덟(丑寅辰巳未申戌亥)은 짝이 없어 중기가 나서고 기운이 바뀐다 —
+    //   변질됐다 돌아왔다 하는 만남 · 이별 · 재회(법전 72조 ⑨). 전엔 여기서 null 이라 여덟 지지의 변질을 재지 않았다.
+    const 후 = 나서는 != null ? 나서는 : 속[1];
+    return 후 == null ? null : { 전: 신(본), 후: 신(후), 전글자: E.STEMS[본], 후글자: E.STEMS[후], 기운바뀜: E.STEM_ELEM[후] !== E.STEM_ELEM[본] };
   }
   function 때풀이(R, y, m) {
     const t = 때상태(R, y, m), ds = R.pillars.day.stem, 일지 = R.pillars.day.branch;
