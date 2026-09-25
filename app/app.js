@@ -132,9 +132,12 @@
           <span>${esc(p.relation)}${p.isSelf ? '' : ''} · ${p.birth.year}.${p.birth.month}.${p.birth.day}${p.birth.hour == null ? ' (시간 모름)' : ''}</span>
         </button>
         <button class="btn-ghost" data-id="${p.id}" data-a="edit" aria-label="수정">고치기</button>
+        ${P.list().length > 1 ? `<button class="btn-ghost pr-del" data-id="${p.id}" data-a="del" aria-label="지우기">지우기</button>` : ''}
       </div>`).join('') || '<p class="hint">아직 등록된 사람이 없습니다.</p>';
+    // 09-25 사장님 「프로필 선택에 고치기도 좋지만 삭제도 필요함」 — 줄마다 지우기. 마지막 한 사람은 못 지운다(고치기 폼과 같은 규칙).
     $('peopleList').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.a === 'pick') { P.setActive(b.dataset.id); $('peopleSheet').classList.add('hide'); start(P.toProfile(P.active())); }
+      else if (b.dataset.a === 'del') 사람지우기(b.dataset.id);
       else openPersonForm(b.dataset.id);
     });
     $('peopleSheet').classList.remove('hide');
@@ -264,12 +267,13 @@
     $('btnAddPerson').onclick = () => openPersonForm(null);
     $('pfCancel').onclick = () => $('personForm').classList.add('hide');
     $('pfSave').onclick = savePerson;
-    $('pfDelete').onclick = () => {
-      const P = People(), p = P.get(editingId);
+    $('pfDelete').onclick = () => 사람지우기(editingId);
+    function 사람지우기(id) {
+      const P = People(), p = P.get(id);
       if (!p) return;
       if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다. 계속할까요?`)) return;
       const 지운사람 = p.id;
-      P.remove(editingId);
+      P.remove(id);
       $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
       // 로그인돼 있으면 서버에서도 지운다 — 안 그러면 다음에 앱을 열 때 되살아난다(2026-09-22 점검). 실패해도 앱은 그대로 간다.
       if (window.ChaeksaCloud) {
@@ -277,7 +281,7 @@
         ChaeksaCloud.pushSoon();
       }
       start(P.toProfile(P.active()));
-    };
+    }
     $('pfCalSeg').querySelectorAll('button').forEach(b => b.onclick = () => setPfCal(b.dataset.cal));
     ['pfY', 'pfM', 'pfD'].forEach(id => $(id).addEventListener('input', updatePfConv));
     $('pfLeap').addEventListener('change', updatePfConv);

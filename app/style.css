@@ -1780,3 +1780,6 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-wh b{font-size:15px}.ss-wh small{font-size:11.5px;opacity:.65}
 .ss-wh.on{border-color:var(--gold,#e6c98a);background:rgba(230,201,138,.14);box-shadow:0 0 0 1px var(--gold,#e6c98a) inset}
 .ss-wh-add{justify-content:center;opacity:.75;font-size:14px}
+/* 09-25 사람 고르기 — 줄마다 지우기 */
+.pr .pr-del{color:var(--ink3);border-color:transparent;opacity:.75}
+.pr .pr-del:hover{color:#e07070;border-color:#e07070;opacity:1}
