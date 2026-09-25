@@ -807,84 +807,7 @@
 
 
 
-  function renderMe() {
-    const a = R.analysis, du = E.currentDaeun(R, today);
-    // 한입 카드(renderMzDeck)·오행 막대·태그는 2026-09-14 에 뺐다 — 원국은 홈 맨 위(wongook.js)에서 생극제화 표로 읽는다.
-
-    // 유형 카드 뽑기 — 첫 뽑기 때 표본을 만들고(몇 초, 그게 드럼롤이다) 캐시한다
-    $('gachaWrap').classList.add('hide'); $('btnGacha').textContent = '카드 뽑기';
-    if ($('btnGacha')) $('btnGacha').onclick = () => {
-      const T = window.ChaeksaTypecard; if (!T) return;
-      $('btnGacha').disabled = true;
-      $('gachaProg').classList.remove('hide');
-      $('gachaProg').textContent = '사주 만 개를 지어 견주는 중…';
-      T.buildSample(
-        (r) => { $('gachaProg').textContent = `사주 만 개를 지어 견주는 중… ${Math.round(r * 100)}%`; },
-        (sample) => {
-          const c = T.mine(R, sample);
-          $('gachaProg').classList.add('hide');
-          $('gachaSvg').innerHTML = c.svg;
-          // 애니메이션 재시작
-          const fl = $('gachaFlip'); fl.style.animation = 'none'; void fl.offsetWidth; fl.style.animation = '';
-          $('gachaWrap').classList.remove('hide');
-          $('gachaNote').textContent = c.rar && c.rar.unique
-            ? `지어낸 사주 ${c.rar.n.toLocaleString()}개 가운데 이 유형은 나뿐입니다 · ${c.tier}`
-            : `등급 ${c.tier} · 같은 사주는 언제나 이 카드입니다`;
-          $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
-          // 두 번째 카드 — 지금 대운이 이 사주에 필요한 걸 갖고 왔는가
-          $('seasonWrap').classList.add('hide'); $('btnSeason').classList.remove('hide');
-          if ($('btnSeason')) $('btnSeason').onclick = () => {
-            const sn = window.ChaeksaTypecard.seasonNow(R);
-            $('seasonSvg').innerHTML = window.ChaeksaTypecard.drawSeason(이름값(), R, sn);
-            const fl2 = $('seasonFlip'); fl2.style.animation = 'none'; void fl2.offsetWidth; fl2.style.animation = '';
-            $('seasonWrap').classList.remove('hide');
-            $('btnSeason').classList.add('hide');
-            const 조합 = (c.tier === 'SSR' || c.tier === 'SR') && (sn.grade.name === '만개' || sn.grade.name === '순풍')
-              ? ' — 희귀 유형에 시즌까지 왔습니다. 지금이 그 때입니다'
-              : sn.grade.name === '만개' ? ' — 유형과 무관하게, 시즌은 지금이 최고입니다' : '';
-            $('seasonNote').textContent = `타고난 카드 ${c.tier} × 지금 시즌 ${sn.grade.name}${조합}`;
-            if ($('btnSeasonShare')) $('btnSeasonShare').onclick = async () => {
-              const b = $('btnSeasonShare'); b.disabled = true; b.textContent = '만드는 중…';
-              try {
-                const r = await window.ChaeksaTypecard.share($('seasonSvg').innerHTML, `시즌_${sn.grade.name}`);
-                b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-              } catch (e) { b.textContent = '다시 시도'; }
-              b.disabled = false;
-              setTimeout(() => { b.textContent = '시즌 자랑하기'; }, 2500);
-            };
-          };
-          if ($('btnGachaShare')) $('btnGachaShare').onclick = async () => {
-            const b = $('btnGachaShare'); b.disabled = true; b.textContent = '만드는 중…';
-            try {
-              const r = await window.ChaeksaTypecard.share(c.svg, `${c.gyeok.name}격_${c.tier || ''}`);
-              b.textContent = r === 'shared' ? '자랑 완료!' : r === 'copied' ? '복사됐어요 — Ctrl+V로 붙여넣기' : '다운로드 폴더에 저장했어요';
-            } catch (e) { b.textContent = '다시 시도'; }
-            b.disabled = false;
-            setTimeout(() => { b.textContent = '카드 자랑하기'; }, 2500);
-          };
-        });
-    };
-    // 명식 카드·일간 감성문은 wongook.js(#wgFull)로 옮겼다(2026-09-14).
-    const max = Math.max(...a.elemCount, 1), colors = ['var(--wood)','var(--fire)','var(--earth)','var(--metal)','var(--water)'];
-    $('daeun').innerHTML = R.daeun.list.map(d => `<div class="du ${du && du.startAge === d.startAge ? 'now' : ''}"><div class="age">${d.startAge}세</div><div class="han ${elemClass(d.stem, true)}">${f.stem(d.stem)}</div><div class="han ${elemClass(d.branch, false)}">${f.branch(d.branch)}</div><div class="yr">${d.startYear}~</div></div>`).join('');
-    const plName = profile.placeName || '서울';
-    const bornNote = $('bornNote');
-    // 시간 모름이면 엔진이 낮 12시로 셈해 날짜만 쓴다 — 그 12시를 「실제 태양시」로 내보내면 없는 시각을 지어낸 셈이다(2026-09-22 점검).
-    if (bornNote) bornNote.innerHTML = !R.pillars.hour
-      ? '태어난 시간을 몰라 시주는 비워 뒀어요. 나머지 여섯 글자로 봐요.'
-      : `${plName}에서 태어난 걸로 봐요. 진태양시 보정은 ${profile.solarCorrection === false ? '안 넣었어요' : '넣었어요'}. 실제 태양시로는 <b>${R.corrected.y}.${R.corrected.m}.${R.corrected.d} ${String(R.corrected.hh).padStart(2,'0')}:${String(R.corrected.mm).padStart(2,'0')}</b>이에요.`;
-    renderSolarCompare(profile);
-    $('daeunHint').textContent = `${R.daeun.startAge}살부터 10년마다 바뀌어요.` + (du ? ` 지금은 ${f.pillarKo(du)}(${f.pillar(du)}) 대운이에요. 이 대운이 내 글자를 어떻게 건드리는지는 위 「지금 오는 글자」에 있어요.` : '');
-    // 「올해와 내년」「앞으로 12개월」은 걷었다(2026-09-14) — 옛 십신 흐름말(GOD_FLOW)이었다. 올해·이달은 wongook 의 「지금 오는 글자」가 표로 읽는다.
-    try { if (window.ChaeksaWongook) ChaeksaWongook.render(R, today, $('wgFull'), { full: true }); } catch (e) { try { console.warn('원국 탭 실패:', e); } catch (e2) {} }
-    // 설명서(58·59조) — 원국 아래에 펼친 판으로. 사람마다 따로 기록하므로 pid 를 준다.
-    try { if (window.ChaeksaSeolmyeong) ChaeksaSeolmyeong.render(R, today, $('smFull'), { full: true, pid: (function(){ try { const q = People(); return (q && q.activeId()) || 'me'; } catch (e) { return 'me'; } })() }); } catch (e) { try { console.warn('설명서 탭 실패:', e); } catch (e2) {} }
-    renderProfileCard();
-    renderShareCard();
-    renderGyeok();
-    mountSuper();
-    renderChaeyong();
-  }
+  function renderMe() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
 
   // ───── 격국 성패 · 형충회합 · 갈림 (2026-08-28) ─────
   // 엔진이 내는 것을 무료 화면에 그대로 뿌린다.
@@ -1011,26 +934,7 @@
 
   // ───── 이 남자, 나한테 돈을 쓸까요? (docs/31 · 9,900원 첫 장) ─────
   // 물음 열 개. 1·2·6은 미리보기, 나머지는 결제(geunamja) 뒤에. 값은 geunamja.js, 말도 거기.
-  function renderGeunamja() {
-    const P = People(); const G = window.ChaeksaGeunamja; if (!P || !G || !$('gnPick')) return;
-    const me = P.active();
-    const list = P.list().filter(p => !me || p.id !== me.id);
-    $('gnPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('')
-      : '<option value="">등록된 사람이 없습니다</option>';
-    $('btnGn').disabled = !list.length;
-    if ($('btnGnAdd')) $('btnGnAdd').onclick = () => openPersonForm(null);
-    // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
-    const 채움 = () => { const p = P.get($('gnPick').value); if ($('gnSeen')) $('gnSeen').value = (p && p.관찰) || ''; };
-    if ($('gnPick')) $('gnPick').onchange = 채움; 채움();
-    if ($('btnGn')) $('btnGn').onclick = () => {
-      const p0 = P.get($('gnPick').value); if (!p0) return;
-      if ($('gnSeen')) P.update(p0.id, { 관찰: $('gnSeen').value });
-      const p = P.get(p0.id);
-      const met = parseInt($('gnMet').value, 10) || null;
-      showGeunamja(P.toProfile(p), p.name, met);
-    };
-  }
+  function renderGeunamja() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
   // ───── 카드 줄 (2026-09-04 밤 사장님 「나에 대한 건 카드식, 그에 대한 건 섬세하게 문장+카드로」) ─────
   // 그 사람 장: 위에 카드 한 줄(한눈에) + 아래 문장. 나 장: 카드만, 문장은 접어 둔다.
   function 카드줄(Q, 미리, 다열림, 접기) {
@@ -1121,26 +1025,7 @@
   }
 
   // ───── 그 사람, 나한테 마음이 있을까요? (둘째 장 · maeum.js) ─────
-  function renderMaeum() {
-    const P = People(); const G = window.ChaeksaMaeum; if (!P || !G || !$('mmPick')) return;
-    const me = P.active();
-    const list = P.list().filter(p => !me || p.id !== me.id);
-    $('mmPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('')
-      : '<option value="">등록된 사람이 없습니다</option>';
-    $('btnMm').disabled = !list.length;
-    if ($('btnMmAdd')) $('btnMmAdd').onclick = () => openPersonForm(null);
-    // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
-    const 채움 = () => { const p = P.get($('mmPick').value); if ($('mmSeen')) $('mmSeen').value = (p && p.관찰) || ''; };
-    if ($('mmPick')) $('mmPick').onchange = 채움; 채움();
-    if ($('btnMm')) $('btnMm').onclick = () => {
-      const p0 = P.get($('mmPick').value); if (!p0) return;
-      if ($('mmSeen')) P.update(p0.id, { 관찰: $('mmSeen').value });
-      const p = P.get(p0.id);
-      const met = parseInt($('mmMet').value, 10) || null;
-      showMaeum(P.toProfile(p), p.name, met);
-    };
-  }
+  function renderMaeum() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
   function showMaeum(you0, youName, met) {
     const G = window.ChaeksaMaeum; const box = $('mmResult'); if (!box) return;
     let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
@@ -1924,90 +1809,7 @@
     });
   }
 
-  function renderMemo() {
-    const M = window.ChaeksaMemo; if (!M || !$('memoQ')) return;
-    const pid = memoPersonId();
-    // 종류 고르기 — 무엇을 묻는지가 달라진다
-    $('memoKind').querySelectorAll('button').forEach(b => {
-      b.classList.toggle('on', b.dataset.kind === memoKind);
-      b.onclick = () => { memoKind = b.dataset.kind; renderMemo(); };
-    });
-    const 계속 = memoKind === 'track';
-    $('memoQLabel').textContent = 계속 ? '무엇이 계속 마음에 걸립니까' : '무엇을 하려 하십니까';
-    $('memoQ').placeholder = 계속 ? '예) 허리 통증 / 가게 매출 / 아이 성적 / 잠 못 드는 것'
-                                  : '예) 이직 / 계약 / 이사 / 시험';
-    $('memoWhen').classList.toggle('hide', 계속);
-    $('memoKindNote').textContent = 계속
-      ? '달마다 어땠는지 눌러 두시면, 어떤 달에 힘든지 제가 찾아 말씀드립니다.'
-      : '그 달이 왔을 때 먼저 꺼내 드립니다.';
-    $('btnMemoAdd').textContent = 계속 ? '이 일을 지켜본다' : '이 판단을 남긴다';
-
-    // 계속되는 일 목록
-    const tks = M.tracks(pid);
-    $('memoTrackCard').classList.toggle('hide', !tks.length);
-    $('memoTracks').innerHTML = tks.map(memoTrackRow).join('');
-    $('memoTracks').querySelectorAll('button[data-tid]').forEach(b => b.onclick = async () => {
-      const note = await 한줄받기('그때 어떠셨는지 한 줄로 남기시겠습니까?',
-                                 '나중에 이 달이 다시 왔을 때 그대로 꺼내 드립니다.');
-      if (note === null) return;          // 그냥 두기 — 기록하지 않는다
-      M.log(b.dataset.tid, today.getFullYear(), today.getMonth() + 1, b.dataset.r, note, R);
-      renderMemo(); renderHome(); renderToday();
-    });
-    $('memoTracks').querySelectorAll('button[data-del]').forEach(b => b.onclick = () => {
-      if (!confirm('이 기록을 지웁니다. 계속할까요?')) return;
-      M.remove(b.dataset.del); renderMemo(); renderHome(); renderToday();
-    });
-    // 연·월 고르기 — 이번 달부터 24개월
-    if (!$('memoY').options.length) {
-      const ys = [today.getFullYear(), today.getFullYear() + 1, today.getFullYear() + 2];
-      $('memoY').innerHTML = ys.map(y => `<option value="${y}">${y}년</option>`).join('');
-      $('memoM').innerHTML = Array.from({ length: 12 }, (_, i) =>
-        `<option value="${i + 1}"${i + 1 === today.getMonth() + 1 ? ' selected' : ''}>${i + 1}월</option>`).join('');
-    }
-    const peek = () => {
-      const j = M.judge(R, +$('memoY').value, +$('memoM').value);
-      $('memoPeek').innerHTML = j
-        ? `그 달은 <b>${esc(j.pillar)}월 · ${esc(j.grade)}</b> (${j.score}점) — ${esc(j.line)}`
-        : '';
-    };
-    if ($('memoY')) $('memoY').onchange = peek; $('memoM').onchange = peek; peek();
-
-    const due = M.due(pid, today), next = M.upcoming(pid, today);
-    $('memoDueCard').classList.toggle('hide', !due.length);
-    $('memoNextCard').classList.toggle('hide', !next.length);
-    $('memoDue').innerHTML = due.map(it => memoRow(it, { ask: true })).join('');
-    $('memoNext').innerHTML = next.map(it => memoRow(it, {})).join('');
-
-    // 지난 것 중 결과가 적힌 것
-    const done = M.list(pid).filter(x => x.outcome);
-    if (done.length) {
-      $('memoDueCard').classList.remove('hide');
-      $('memoDue').innerHTML += `<div class="mm-sep">기록된 것</div>` + done.map(it => memoRow(it, {})).join('');
-    }
-
-    // 결과 버튼·삭제 배선
-    $('memoDue').querySelectorAll('button[data-r]').forEach(b => b.onclick = async () => {
-      const note = await 한줄받기('그때 어떠셨는지 한 줄로 남기시겠습니까?',
-                                 '남겨 두시면 이 기준이 맞았는지 함께 볼 수 있습니다.');
-      if (note === null) return;          // 그냥 두기 — 기록하지 않는다
-      M.setOutcome(b.dataset.id, b.dataset.r, note);
-      renderMemo(); renderHome(); renderToday();
-    });
-    [$('memoDue'), $('memoNext')].forEach(box => box.querySelectorAll('button[data-del]').forEach(b => b.onclick = () => {
-      if (!confirm('이 기록을 지웁니다. 계속할까요?')) return;
-      M.remove(b.dataset.del); renderMemo(); renderHome(); renderToday();
-    }));
-
-    // 적중률
-    const st = M.stats(pid);
-    $('memoStatCard').classList.toggle('hide', st.total < 3);
-    if (st.total >= 3) {
-      const 줄 = [];
-      if (st.좋다한것.n) 줄.push(`<p>엔진이 <b>좋다</b>고 한 ${st.좋다한것.n}건 중 <b>${st.좋다한것.맞음}건</b>이 실제로 좋았습니다.</p>`);
-      if (st.아니라한것.n) 줄.push(`<p>엔진이 <b>아니라</b>고 한 ${st.아니라한것.n}건 중 <b>${st.아니라한것.맞음}건</b>이 실제로 그랬습니다.</p>`);
-      $('memoStat').innerHTML = 줄.join('') || '<p>아직 판단이 갈릴 만한 기록이 없습니다.</p>';
-    }
-  }
+  function renderMemo() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
 
   if ($('btnMemoAdd')) $('btnMemoAdd').onclick = () => {
     const M = window.ChaeksaMemo;
@@ -2247,126 +2049,9 @@
   // ───── 이야기 화면 — 질문 하나, 답은 날짜로 (2026-09-12 사장님 「1컨텐츠+1질문+1삽화, 무료 7일 유료 30일」) ─────
   // 7일은 무료. 30일은 「이번 달 30일」 상품(month) 하나로 모든 이야기가 열린다 — 이야기마다 따로 팔지 않는다.
   // 말투는 사장님 말투(짧게 · A = B · 존댓말). 십신 이름은 그대로 부른다(법전 27조) — 이 탭은 data-plain 이다.
-  function renderStory() {
-    const S = window.ChaeksaStories, box = $('stResult'), P = People(); if (!S || !box || !R || !P) return;
-    // 갈래로 열었으면(홈 갈래 카드) 그 갈래의 이야기들이 상황 칩이다 — 판정은 같고 말만 다르니 한 화면에서 고른다(docs/37).
-    const Q = window.ChaeksaQuestions;
-    const 갈래 = window.현재갈래 && Q && Q.갈래들.find(g => g.키 === window.현재갈래);
-    const 질문 = window.현재질문;   // 격자 질문 콘텐츠(docs/41) — 제목은 격자 문장, 답은 판정, 결론·할 것은 갈래 × 칸
-    let subs = 갈래 && S.갈래of ? S.목록.filter(x => S.갈래of(x) === 갈래.키) : [];
-    let st, 썸, 칩 = '', 오늘답 = '';
-    if (질문 && 갈래) {
-      const 뜻 = { 합거: '그 글자가 이름만 있고 뿌리가 없다', 무근: '그 글자가 이름만 있고 뿌리가 없다', 극닿음: '치는 글자가 바로 닿는다', 극통관: '치는 글자가 있는데 사이 글자가 받아 넘겨 안 다친다', 극제복: '치는 글자를 다른 글자가 잡아 준다', 극힘차이: '치는 글자가 두 배 넘게 약해 못 친다', 생받음: '운 글자가 그 글자를 생한다', 극없음: '아무도 건드리지 않는다', 궁충: '그 자리가 원국에서 충이다', '기신 제복': '격신을 치는 글자가 잡혔다', '기신 방치': '격신을 치는 글자를 아무도 안 잡는다' };
-      const 첫편 = subs[0];
-      st = { id: 'q-' + 갈래.키 + '-' + (질문.결과 || 'day'), 질문: 질문.질문, 갈래: 갈래.키, k: (첫편 && 첫편.k) || 'inyeon', 사이: (첫편 && 첫편.사이) || 갈래.이름,
-             소개: 질문.결과 ? (뜻[질문.결과] || 질문.결과) + ' — 그런 날인지를 날마다 봐요.' : '이 자리를 맡은 글자가 오늘 어떤지로 날을 골라요.',
-             혼자: !갈래.짝, 결론: 갈래.결론, 할것: 갈래.할것, 마무리: '', 묶음: { 좋음: '좋은 날', 조심: '조심할 날', 짝: null } };
-      썸 = 첫편 ? 'art/story-' + 첫편.id + '.webp' : '';
-      const qs = Q.격자().filter(q => q.갈래 === 갈래.키);
-      칩 = '<div class="wt-chips st-sit">' + qs.map(q => '<button type="button" data-q="' + escP(q.결과 || '') + '"' + ((q.결과 || '') === (질문.결과 || '') ? ' class="on"' : '') + '>' + escP(q.질문.replace(/\?$/, '')) + '</button>').join('') + '</div>';
-      // 오늘 이 질문의 답 — 상태 묻기면 오늘 결과가 이 칸인가
-      if (질문.결과) { try { const P = window.ChaeksaPanjeong; const r = P.이야기결과(R, 갈래.키, today, { 여자: ((profile && profile.gender) || 'M') !== 'M' });
-        const 예 = r.결과.키 === 질문.결과;
-        오늘답 = '<div class="qa-today s' + (예 ? (r.칸 === '좋음' ? 2 : r.칸 === '조심' ? 0 : 1) : 1) + '"><b>' + (예 ? '오늘은 그래요.' : '오늘은 아니에요.') + '</b><span>' + escP(r.이유) + '</span></div>'; } catch (e) {} }
-      subs = [];
-    } else {
-      st = S.찾기(window.현재이야기) || S.목록[0]; if (!st) return;
-      if (subs.length && subs.indexOf(st) < 0) { st = subs[0]; window.현재이야기 = st.id; }
-      썸 = 'art/story-' + st.id + '.webp';
-      칩 = subs.length > 1 ? '<div class="wt-chips st-sit">' + subs.map(x => '<button type="button" data-st="' + x.id + '"' + (x.id === st.id ? ' class="on"' : '') + '>' + escP(x.질문.replace(/\?$/, '')) + '</button>').join('') + '</div>' : '';
-    }
-    const 머리 = '<div class="st-cover">' + (썸 ? '<img alt="" src="' + 썸 + '?v=' + (window.CHAEKSA_ART || 1) + '" onerror="this.remove()">' : '') + '<b>' + escP(질문 ? 질문.질문 : (갈래 ? 갈래.날고르기 : st.질문)) + '</b></div>'
-      + (갈래 ? '<p class="hint" style="margin:8px 0 6px">' + (질문 ? '같은 갈래의 다른 질문' : '어떤 상황이에요? 판정은 같고, 말이 달라요.') + '</p>' + 칩 : '')
-      + 오늘답
-      + '<p class="hint" style="margin:8px 0 12px">' + escP(st.소개) + '</p>';
-    if (!box.dataset.sit) { box.dataset.sit = '1'; box.addEventListener('click', (e) => {
-      const b = e.target.closest('.st-sit button'); if (!b) return;
-      if (b.dataset.q != null) { const Q2 = window.ChaeksaQuestions; const q = Q2.격자().find(x => x.갈래 === window.현재갈래 && (x.결과 || '') === b.dataset.q); if (q) window.현재질문 = { 갈래: q.갈래, 결과: q.결과, 질문: q.질문 }; }
-      else { window.현재질문 = null; window.현재이야기 = b.dataset.st; }
-      renderStory(); }); }
-    // 혼자 보는 이야기(st.혼자) — 그 사람이 없다. 그래도 「열어야 열린다」(09-13 사장님 「이미 열려 있으니 신뢰도가 떨어지네」): 단추 하나.
-    if (st.혼자) {
-      if (window.현재그사람 !== '나') {
-        box.innerHTML = 머리 + '<div class="st-pick"><p>내 사주만으로 봐요. 그 사람은 필요 없어요.</p><button class="btn ghost small" id="btnStOpen" type="button">7일 열기</button></div>';
-        if ($('btnStOpen')) $('btnStOpen').onclick = () => { window.현재그사람 = '나'; renderStory(); };
-        return;
-      }
-      renderStoryBody(box, 머리, st, null, '');
-      return;
-    }
-    // 그 사람 고르기 — 두 사람 사주를 다 봐야 답이 된다. 기존 장(shPick)과 같은 목록이다.
-    const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
-    if (!list.length) {
-      box.innerHTML = 머리 + '<div class="st-pick"><p>그 사람 생년월일을 먼저 넣어 주세요. 그래야 두 사람을 놓고 봐요.</p><button class="btn" id="btnStAdd" type="button">그 사람 추가</button></div>';
-      if ($('btnStAdd')) $('btnStAdd').onclick = () => openPersonForm(null);
-      return;
-    }
-    // 그 사람은 손님이 고른다 — 목록 첫 사람으로 멋대로 열지 않는다(09-13 사장님 「그 사람이 정해지지 않았는데 답변이 열려 있다」).
-    // 안 골랐으면 고르는 칸만 서고 7일은 닫혀 있다.
-    const 고름 = !!(window.현재그사람 && list.some(q => q.id === window.현재그사람));
-    // 네이티브 select 는 브라우저가 네모로 그린다(09-13 사장님 「너무 네모네모하게 나오는데」) — 목록을 직접 그린다.
-    const 이름표 = (q) => esc(사람이름(q.name) || '그 사람') + '<small>' + esc(q.relation || '') + '</small>';
-    const 고르기 = (p) => '<div class="st-pick"><label>그 사람</label>'
-      + '<div class="st-who"><button type="button" class="st-who-b' + (p ? '' : ' empty') + '" id="stWho" aria-haspopup="listbox" aria-expanded="false">'
-      + (p ? 이름표(p) : '누구 얘기예요?') + '<i class="chev"></i></button>'
-      + '<div class="st-menu hide" id="stMenu" role="listbox">'
-      + list.map(q => '<button type="button" role="option" data-id="' + q.id + '"' + (p && q.id === p.id ? ' class="on"' : '') + '>' + 이름표(q) + '</button>').join('')
-      + '</div></div>'
-      + '<button class="btn ghost small" id="btnStAdd" type="button">+ 추가</button></div>';
-    const 고르기연결 = () => {
-      const b = $('stWho'), m = $('stMenu'); if (!b || !m) return;
-      const 닫기 = () => { m.classList.add('hide'); b.setAttribute('aria-expanded', 'false'); document.removeEventListener('click', 바깥); };
-      const 바깥 = (e) => { if (!m.contains(e.target) && e.target !== b && !b.contains(e.target)) 닫기(); };
-      b.onclick = () => { const 열림 = !m.classList.contains('hide'); if (열림) return 닫기(); m.classList.remove('hide'); b.setAttribute('aria-expanded', 'true'); setTimeout(() => document.addEventListener('click', 바깥), 0); };
-      m.querySelectorAll('button').forEach(x => x.onclick = () => { window.현재그사람 = x.dataset.id; renderStory(); });
-    };
-    if (!고름) {
-      box.innerHTML = 머리 + 고르기(null) + '<p class="hint" style="margin:0 0 18px">그 사람을 고르면 오늘부터 7일이 바로 열려요. 목록에 없으면 「+ 추가」로 생년월일을 넣어 주세요.</p>';
-      고르기연결();
-      if ($('btnStAdd')) $('btnStAdd').onclick = () => openPersonForm(null);
-      return;
-    }
-    const p = P.get(window.현재그사람);
-    let Rm; try { Rm = E.calc(P.toProfile(p)); } catch (e) { box.innerHTML = 머리 + '<p class="hint">그 사람 사주를 계산하지 못했어요.</p>'; return; }
-    renderStoryBody(box, 머리, st, Rm, 고르기(p));
-    고르기연결();
-    if ($('btnStAdd')) $('btnStAdd').onclick = () => openPersonForm(null);
-  }
+  function renderStory() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
   /** 이야기 본문 — 7일(무료) + 30일(이번 달 결제). 두 사람이면 Rm, 혼자면 null. 고르기칸은 위에 붙일 HTML. */
-  function renderStoryBody(box, 머리, st, Rm, 고르기칸) {
-    const S = window.ChaeksaStories;
-    const 주 = S.일주일(R, Rm, st, today);
-    const paid = !!(window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month'));
-    // 하루 한 줄 = 결론 / 그 사람 쪽 + 내 쪽 / 할 것
-    // 등급 이름은 s0~s3 — g0~g3 은 달력이 칸 전체를 초록·카키로 칠하는 이름이라 줄에 새어 들어왔다(2026-09-12 사장님 「색상분배 이거 맞아??」).
-    const 줄 = (x, 오늘, 머리말) => '<li class="st-day s' + x.등급 + (오늘 ? ' today' : '') + '">'
-      + '<b>' + (머리말 || (오늘 ? '오늘' : x.요일)) + '<small>' + x.날 + '일</small></b>'
-      + '<i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em><br><span class="why">' + escP(x.이유) + '</span><br><span class="do">' + escP(x.할것) + '</span></span></li>';
-    // 바뀐 날만 말한다(09-14 사장님 「1 ㄱㄱ」) — 결과가 같은 날은 한 줄로 묶는다. 조문대로면 이레 중 바뀌는 날은 하루 이틀이고, 같은 문장을 닷새 되풀이하면 대충 만든 것으로 읽힌다.
-    // 이유 글은 오늘 줄만 「오늘」, 다른 줄은 「그날」로 읽는다(stories.js 하루). 그 말만 다른 날까지 갈라 세면 첫날이 늘 따로 떨어진다 — 빼고 견준다(09-22 검토).
-    const 날말뺌 = (t) => String(t || '').replace(/오늘|그날/g, '');
-    const 같다 = (a, b) => a.결과 === b.결과 && a.그결과 === b.그결과 && a.등급 === b.등급 && 날말뺌(a.이유) === 날말뺌(b.이유);
-    const 묶음들 = []; 주.forEach(x => { const l = 묶음들[묶음들.length - 1]; if (l && 같다(l.첫, x)) l.날들.push(x); else 묶음들.push({ 첫: x, 날들: [x] }); });
-    const 이레줄 = 묶음들.map((m, mi) => {
-      const 첫 = m.첫, 끝 = m.날들[m.날들.length - 1], 오늘 = mi === 0;
-      if (m.날들.length === 1) return 줄(첫, 오늘);
-      const 머리말 = (오늘 ? '오늘' : 첫.요일) + '~' + 끝.요일;
-      return 줄(Object.assign({}, 첫, { 날: 첫.날 + '~' + 끝.날 }), 오늘, 머리말).replace('</em><br>', '</em> <small class="same">' + m.날들.length + '일 같아요</small><br>');
-    }).join('');
-    let h = 머리 + 고르기칸
-      + '<p class="mnk">오늘부터 7일 · 무료' + (묶음들.length < 주.length ? ' · 바뀌는 날 ' + (묶음들.length - 1) + '번' : '') + '</p><ul class="st-days">' + 이레줄 + '</ul>'
-      + '<p class="st-best">' + escP(S.그래서(st, 주)) + '</p>';
-    if (paid) {
-      const 달 = S.이번달(R, Rm, st, today);
-      const g = S.묶음(st, 달);
-      const 묶 = (제목, arr) => arr.length ? '<p class="mnk" style="margin-top:16px">' + escP(제목) + '</p><ul class="st-days">' + arr.map(x => 줄(x, false)).join('') + '</ul>' : '';
-      h += '<p class="mnk" style="margin-top:22px">이번 달 30일</p>'
-        + '<ul class="st-days mini">' + 달.map(x => '<li class="st-day s' + x.등급 + '"><b>' + x.요일 + '<small>' + x.날 + '일</small></b><i>' + x.표 + '</i><span><em>' + escP(x.결론) + '</em></span></li>').join('') + '</ul>'
-        + 묶(st.묶음.좋음 + ' 셋', g.좋음) + 묶(st.묶음.조심 + ' 셋', g.조심) + (st.묶음.짝 ? 묶(st.묶음.짝, g.짝) : '');
-    }
-    // 30일 결제 권유는 2026-09-14 상품 삭제와 함께 걷었다 — 이야기는 오늘부터 7일 무료가 전부다.
-    box.innerHTML = h;
-  }
+  function renderStoryBody(box, 머리, st, Rm, 고르기칸) {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
 
   function renderWtHome() {
     const box = $('wtHome'); if (!box || !R) return;
