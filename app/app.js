@@ -1237,6 +1237,14 @@
       + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
+    // 09-25 사장님 「상대 프로필 선택이 너무 98년도 윈도우 같아」 — select 는 숨기고 사람 칩으로 고른다
+    sel.classList.add('ss-sel-hidden');
+    let 칩 = wrap.querySelector('.ss-who'); if (!칩) { 칩 = document.createElement('div'); 칩.className = 'ss-who'; 칩.setAttribute('role', 'radiogroup'); wrap.appendChild(칩); }
+    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(사람이름(p.name) || '그 사람') + '</b><small>' + esc(p.relation) + '</small></button>').join('')
+      + '<button type="button" class="ss-wh ss-wh-add" id="ssWhoAdd">＋ 다른 사람</button>';
+    칩.querySelectorAll('.ss-wh[data-id]').forEach(b => b.onclick = () => { if (sel.value === b.dataset.id) return; sel.value = b.dataset.id; sel.onchange(); });
+    const 더 = 칩.querySelector('#ssWhoAdd'); if (더) 더.onclick = () => openPersonForm(null);
+    add.classList.add('hide');   // 아래 「그 사람 생년월일 넣기」는 칩의 「＋ 다른 사람」이 대신한다
     const more = $('ssMore'), met = $('ssMet');
     if (!고름) { out.innerHTML = ''; if (more) more.classList.add('hide'); return; }
     // 처음 만난 달 — 그 사람마다 이 기기에 기억한다(연 · 월만, 서버로 안 보낸다)
@@ -1248,6 +1256,8 @@
     if (st && SP.단계카드 && !st.dataset.cards) { SP.단계카드(st); st.dataset.cards = '1'; }
     if (st) { try { st.value = localStorage.getItem('chaeksa.ssomStage.' + 고름) || '둘'; if (!st.value) st.value = '둘'; if (st._그리) st._그리(); } catch (e) {} st.onchange = () => { try { localStorage.setItem('chaeksa.ssomStage.' + 고름, st.value); } catch (e) {} renderSsom(); }; }
     SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))), { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null, 단계: (st && st.value) || '썸' });
+    // 09-25 사장님 「웹툰궁합 시작하기로 수정하고 위로 올려줘」 — 시작 단추를 사람 칩 바로 아래(단계 카드 위)로
+    try { const vt = out.querySelector('#ssVnTop'); if (vt) { let 자리 = $('ssStart'); if (!자리) { 자리 = document.createElement('div'); 자리.id = 'ssStart'; wrap.insertAdjacentElement('afterend', 자리); } 자리.innerHTML = ''; 자리.appendChild(vt); vt.style.margin = '4px 0 14px'; } } catch (e) {}
   }
 
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────
