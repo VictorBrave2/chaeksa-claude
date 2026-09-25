@@ -28,7 +28,7 @@ p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}.g
   (D.단계 || []).forEach(d => { if (d.질문) 제목[d.키] = d.질문; });
   const 이름 = { 둘: '두 사람 이야기', 시작전: '시작 전 — 첫인상', 썸: '썸', 초반: '연애 초반', 안정기: '안정기', 결혼: '결혼을 생각할 때', 흔들림: '흔들릴 때', 재회: '헤어진 뒤 — 재회' };
   function 그림(a, b) {
-    return Object.keys(이름).map(k => { const w = W.조립(a, b, k); if (!w) return '';
+    return Object.keys(이름).map(k => { const w = W.조립(a, b, k, false, { 검수: true }); if (!w) return '';
       return '<h2>' + 이름[k] + '</h2>' + w.map((회, i) => { let 단 = false;
         return '<h3>' + (i + 1) + '. ' + esc((제목[k] || [])[i] || '') + '</h3>' + 회.map(([누, 말], j) => {
           if (누 === '장면') return '<p class="s' + (/쓰고 있어요/.test(말) ? ' e' : '') + '">' + esc(말) + '</p>';
