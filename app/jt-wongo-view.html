@@ -10,11 +10,13 @@ p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}
 .d{background:#f0edf8;border-left:3px solid #7a5bb5;padding:8px 10px;font-size:14px;border-radius:0 8px 8px 0;margin:8px 0}.d b{font-size:12px;color:#7a5bb5;display:block}
 .toc{font-size:13px;color:#666;line-height:1.9;margin:0 0 10px}.toc a{color:#5b3fa0;text-decoration:none;margin-right:10px}
 .e{color:#c33;font-size:13px}
+.a{font-size:16.5px;font-weight:700;background:#fff;border:1px solid #e3def5;border-radius:12px;padding:10px 12px}
+.why{margin:8px 0 0}.why summary{cursor:pointer;font-size:13px;color:#7a5bb5}
 </style></head><body><div class="w">
 <h1>정통사주 웹툰 원고 — 시제품(丁卯 남)</h1>
-<p class="sub">뼈대 v1(docs/81) 25회를 사장님 명식 한 벌로 쓴 시제품입니다. 사장님 검수용(09-26 「내가 검수부터」). 이름표: 나 = 파랑 · 책사 = 보라 · 단서 = 상자.</p>
+<p class="sub">뼈대 v2(docs/81_v2) 20회 — 한 회 = 컷 셋 · 한 컷 한 줄, 「왜 그럴까」는 접힘 — 를 사장님 명식 한 벌로 쓴 시제품입니다. 사장님 검수용(09-26 「내가 검수부터」). 이름표: 나 = 파랑 · 책사 = 보라 · 단서 = 상자.</p>
 <div class="toc" id="toc"></div><div id="out"></div></div>
-<script src="jt-webtoon-proto.js?v=1149"></script>
+<script src="jt-webtoon-proto.js?v=1150"></script>
 <script>
 (function () {
   const P = window.ChaeksaJtProto, out = document.getElementById('out'), toc = document.getElementById('toc');
@@ -22,9 +24,12 @@ p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}
   if (!P || !P.회) { out.innerHTML = '<p class="e">jt-webtoon-proto.js 가 아직 없어요.</p>'; return; }
   toc.innerHTML = P.회.map(h => '<a href="#h' + h.번호 + '">' + h.번호 + '</a>').join('') + ' · 명식 ' + esc(P.명식) + ' · ' + P.회.length + '회';
   out.innerHTML = P.회.map(h => '<h2 id="h' + h.번호 + '">' + h.번호 + '. ' + esc(h.물음) + '<small>' + esc(h.묶음) + '</small></h2>'
-    + (h.줄 || []).map(([누, 말]) => 누 === '장면' ? '<p class="s"><span class="b y">나</span>' + esc(말) + '</p>'
-      : 누 === '나' ? '<p><span class="b y">나</span>' + esc(말) + '</p>'
-      : 누 === '단서' ? '<div class="d"><b>추론의 단서</b>' + esc(말) + '</div>'
-      : '<p><span class="b c">책사</span>' + esc(말) + '</p>').join('')).join('');
+    + (() => { const 줄 = h.줄 || [], 앞 = 줄.filter(x => x[0] !== '해설' && x[0] !== '단서'), 뒤 = 줄.filter(x => x[0] === '해설' || x[0] === '단서');
+      const 한 = ([누, 말]) => 누 === '장면' ? '<p class="s"><span class="b y">나</span>' + esc(말) + '</p>'
+        : 누 === '나' ? '<p><span class="b y">나</span>' + esc(말) + '</p>'
+        : 누 === '답' ? '<p class="a"><span class="b c">책사</span>' + esc(말) + '</p>'
+        : 누 === '단서' ? '<div class="d"><b>추론의 단서</b>' + esc(말) + '</div>'
+        : '<p><span class="b c">책사</span>' + esc(말) + '</p>';
+      return 앞.map(한).join('') + (뒤.length ? '<details class="why"><summary>왜 그럴까</summary>' + 뒤.map(한).join('') + '</details>' : ''); })()).join('');
 })();
 </script></body></html>
