@@ -12,7 +12,7 @@
 <meta name="google-site-verification" content="Ghn7lZUA45bSc5tEbUrtJpKzTrHdSWYi5rYZC-NE_gs">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
-<meta property="og:title" content="책사 — 정통사주 · 궁합총론 · 연애궁합 · 출산택일">
+<meta property="og:title" content="책사 — 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일">
 <meta property="og:description" content="세 고전으로 읽는 나의 사주, 두 사람을 나란히 놓는 궁합, 썸부터 결혼까지 연애궁합, 태어날 아이의 때를 고르는 출산택일. 점수로 합치지 않아요. 회원가입 없이 무료.">
 <meta property="og:url" content="https://chaeksa.kr/">
 <meta property="og:image" content="https://chaeksa.kr/og-home-2.jpg">
@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1131">
+<link rel="stylesheet" href="style.css?v=1134">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -69,7 +69,7 @@
   <section id="landing" class="hide">
     <div class="lp-hero lp-min" id="lpHero">
       <div class="lp-scene">
-        <img src="landing-cuts.webp?v=1131" alt="정통사주 · 정통궁합 · 웹툰궁합 · 출산택일" width="1210" height="1450">
+        <img src="landing-cuts.webp?v=1134" alt="정통사주 · 정통궁합 · 웹툰궁합 · 출산택일" width="1210" height="1450">
         <a href="#" data-go="jeongtong" aria-label="정통사주"></a><a href="#" data-go="chongnon" aria-label="정통궁합"></a><a href="#" data-go="ssom" aria-label="웹툰궁합"></a><a href="taekil-sim.html?from=site-landing" aria-label="출산택일"></a>
       </div>
       <button class="btn lp-cta" id="btnGunghap" type="button">로그인 없이 생년월일로 궁합 시작하기</button>
@@ -150,50 +150,6 @@
     <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
 
     <!-- 비망록 -->
-    <div class="tab hide" data-tab="memo">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>記 · 비망록</h2>
-        <p class="hint" style="margin:0 0 14px">묻고 끝내면 점집이고, 남겨두면 비서입니다. 적어두면 <b>그때의 판단을 함께 박제</b>해 뒀다가 그 달이 왔을 때 꺼내 드립니다.</p>
-        <div id="memoKind" class="seg" style="margin-bottom:14px">
-          <button data-kind="track" class="on">계속되는 일</button>
-          <button data-kind="event">한 번의 결정</button>
-        </div>
-        <label for="memoQ" id="memoQLabel">무엇이 계속 마음에 걸립니까</label>
-        <input id="memoQ" type="text" maxlength="60" placeholder="예) 허리 통증 / 가게 매출 / 아이 성적 / 잠 못 드는 것">
-        <div id="memoWhen" class="hide">
-          <label for="memoY" style="margin-top:12px">언제로 보고 계십니까</label>
-          <div style="display:flex;gap:8px">
-            <select id="memoY" aria-label="연"></select>
-            <select id="memoM" aria-label="월"></select>
-          </div>
-          <p class="hint" id="memoPeek" style="margin-top:10px"></p>
-        </div>
-        <p class="hint" id="memoKindNote" style="margin-top:10px"></p>
-        <button class="btn" id="btnMemoAdd">이 판단을 남긴다</button>
-      </section>
-
-      <section class="card hide" id="memoTrackCard">
-        <h2>계속되는 일</h2>
-        <div id="memoTracks"></div>
-      </section>
-
-      <section class="card hide" id="memoDueCard">
-        <h2>지금 꺼낼 것</h2>
-        <div id="memoDue"></div>
-      </section>
-
-      <section class="card hide" id="memoNextCard">
-        <h2>앞으로</h2>
-        <div id="memoNext"></div>
-      </section>
-
-      <section class="card hide" id="memoStatCard">
-        <h2>저희가 맞았습니까</h2>
-        <div id="memoStat" class="doc"></div>
-        <p class="hint">남기신 것으로만 셉니다. 열 건쯤 쌓이면 볼 만해집니다.</p>
-      </section>
-    </div>
 
     <!-- 1:1 택일 상담 안내 -->
     <div class="tab hide" data-tab="taekil">
@@ -272,30 +228,9 @@
 
     <!-- 독립 콘텐츠: 유형 카드 뽑기 -->
     <!-- 유형 카드는 2026-09-04 삭제(사장님 「무슨 말인지도 모르더라」). 요소는 app.js 가 id 를 잡으므로 남기고 hidden 으로 묻는다. go('gacha') 는 홈으로 돌린다. -->
-    <div class="tab hide" data-tab="gacha" hidden>
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card" id="gachaCard">
-        <h2>牌 · 나의 유형 카드</h2>
-        <p class="hint" style="margin:0 0 12px">격국 × 성패 × 강약 × 조후칸 — 세 고전 축으로 789개 유형 중 내 카드 한 장. 같은 사주는 언제나 같은 카드가 나옵니다.</p>
-        <button class="btn" id="btnGacha">내 카드 펼치기</button>
-        <div class="hint hide" id="gachaProg"></div>
-        <div id="gachaWrap" class="hide cardwrap"><div id="gachaFlip" class="cardflip"><div id="gachaSvg" class="cardsvg"></div></div>
-          <button class="btn small" id="btnGachaShare" style="margin-top:12px">카드 간직하기 · 보내기</button>
-          <p class="hint" style="text-align:center;margin-top:8px" id="gachaNote"></p>
-          <button class="btn" id="btnSeason" style="margin-top:16px">두 번째 카드 — 지금 시즌 확인</button>
-          <div id="seasonWrap" class="hide cardwrap"><div id="seasonFlip" class="cardflip"><div id="seasonSvg" class="cardsvg"></div></div>
-            <button class="btn small" id="btnSeasonShare" style="margin-top:12px">시즌 카드 보내기</button>
-            <p class="hint" style="text-align:center;margin-top:8px" id="seasonNote"></p></div>
-        </div>
-      </section>
-    </div>
 
     <!-- 오늘 -->
     <!-- 이야기 — 질문 하나 + 썸네일 하나, 답은 날짜로. 7일 무료 (30일 상품은 2026-09-14 삭제). app.js renderStory 가 그린다. -->
-    <div class="tab hide" data-tab="story" data-plain="1">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card" id="stResult"></section>
-    </div>
 
     <!-- 정통사주 — 판정엔진 + 평생 관점 = 장마다 카드(63조). jeongtong.js 가 그린다. -->
     <div class="tab hide" data-tab="jeongtong">
@@ -306,7 +241,7 @@
     <!-- 궁합총론 — 판정엔진 + 궁합 관점 = 두 분을 장마다 나란히(63조). gunghap-chongnon.js 가 그리고, 고르는 칸은 app.js renderChongnon.
          나는 지금 보는 원국, 그 사람은 넣어 둔 사람 가운데 고른다. 9,900원 궁합 장(data-tab="gunghap")과 다른 탭이다. -->
     <div class="tab hide" data-tab="chongnon">
-      <section class="card"><h2>궁합총론</h2><p class="hint" style="margin:0 0 14px">두 분의 여덟 글자를 장마다 나란히 놓아 드려요. 좋다 · 나쁘다로 합치지 않아요.</p>
+      <section class="card"><h2>정통궁합</h2><p class="hint" style="margin:0 0 14px">두 분의 여덟 글자를 장마다 나란히 놓아 드려요. 좋다 · 나쁘다로 합치지 않아요.</p>
         <div id="gcPickWrap" class="hide">
           <label for="gcPick">그 사람</label>
           <select id="gcPick"></select>
@@ -332,34 +267,6 @@
     </div>
 
     <!-- 나 -->
-    <div class="tab hide" data-tab="me">
-      <!-- 원국 탭 = 홈 밴드의 펼친 판(2026-09-14 사장님 「원국 탭도 말투랑 다 바꿔줘 옛날식이네」). wongook.js 가 그린다.
-           옛 카드(첫 마디·일간 감성문·짜임 카드·올해와 내년·앞으로 12개월)는 걷었다 — 감성 표는 버린 것(법전), 강약 위에 선 것은 29조. -->
-      <div id="wgFull" data-plain="1"></div>
-      <!-- 내 구조를 이해하는 설명서(58·59조, docs/53) — 원국 아래. 조립기라 원가 0, 무료다. -->
-      <div id="smFull" class="hide" data-plain="1"></div>
-      <section class="card">
-        <h2>태어난 시각</h2>
-        <p class="hint" id="bornNote"></p>
-        <div class="solar-cmp hide" id="solarCmp"></div>
-      </section>
-      <section class="card">
-        <h2>대운 — 10년마다 바뀌는 큰 흐름</h2>
-        <div class="daeun" id="daeun"></div>
-        <p class="hint" id="daeunHint"></p>
-      </section>
-      <section class="card">
-        <h2>카드로 공유하기</h2>
-        <p class="hint" style="margin:0 0 4px">내 원국을 그림 한 장으로. 카톡·인스타에 그대로 올려요.</p>
-        <div class="share-wrap">
-          <canvas id="shareCanvas" width="1080" height="1350"></canvas>
-          <div class="share-btns">
-            <button class="btn" id="btnShare">공유하기</button>
-            <button class="btn ghost" id="btnSaveImg">이미지 저장</button>
-          </div>
-        </div>
-      </section>
-    </div>
 
     <!-- 궁합 -->
     <div class="tab hide" data-tab="sheet">
@@ -431,55 +338,7 @@
       <section class="card hide" id="ghResult"></section>
     </div>
 
-    <div class="tab hide" data-tab="maeum">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>그 사람, 나한테 마음이 있을까요?</h2>
-        <p class="hint" style="margin:0 0 14px">그 사람의 생년월일시와 두 분이 만난 해만 있으면 됩니다.
-          그 사람의 비밀 열 가지를 엽니다 — <b>그래서 나한테 좋은 사람인지</b>까지.</p>
-        <label>누구인가요</label>
-        <select id="mmPick" aria-label="그 사람 선택"></select>
-        <label>만난 해 (모르면 비워 두세요)</label>
-        <input id="mmMet" type="number" placeholder="예: 2024" min="1950" max="2030">
-        <label>요즘 그 사람에게서 먼저 달라진 것 (모르면 비워 두세요)</label>
-        <select id="mmSeen" aria-label="먼저 달라진 것">
-          <option value="">아직 안 봤어요</option>
-          <option value="여자">나한테 다가와요</option>
-          <option value="돈">돈 씀씀이가 달라졌어요</option>
-          <option value="말">말이 늘고 표현이 생겼어요</option>
-          <option value="자리">일이나 자리가 바뀌었어요</option>
-          <option value="없음">달라진 게 없어요</option>
-        </select>
-        <button class="btn" id="btnMm">비밀 열기</button>
-        <button class="btn ghost" id="btnMmAdd">그 사람 생년월일 넣기</button>
-      </section>
-      <section class="card hide" id="mmResult"></section>
-    </div>
 
-    <div class="tab hide" data-tab="geunamja">
-      <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card">
-        <h2>이 남자, 나한테 돈을 쓸까요?</h2>
-        <p class="hint" style="margin:0 0 14px">그 남자의 생년월일시와 두 분이 만난 해만 있으면 됩니다.
-          이 남자의 비밀 열 가지를 엽니다 — <b>그래서 나한테 도움이 되는 사람인지</b>까지.</p>
-        <label>누구인가요</label>
-        <select id="gnPick" aria-label="남자 선택"></select>
-        <label>만난 해 (모르면 비워 두세요)</label>
-        <input id="gnMet" type="number" placeholder="예: 2020" min="1950" max="2030">
-        <label>요즘 그 사람에게서 먼저 달라진 것 (모르면 비워 두세요)</label>
-        <select id="gnSeen" aria-label="먼저 달라진 것">
-          <option value="">아직 안 봤어요</option>
-          <option value="여자">나한테 다가와요</option>
-          <option value="돈">돈 씀씀이가 달라졌어요</option>
-          <option value="말">말이 늘고 표현이 생겼어요</option>
-          <option value="자리">일이나 자리가 바뀌었어요</option>
-          <option value="없음">달라진 게 없어요</option>
-        </select>
-        <button class="btn" id="btnGn">비밀 열기</button>
-        <button class="btn ghost" id="btnGnAdd">그 남자 생년월일 넣기</button>
-      </section>
-      <section class="card hide" id="gnResult"></section>
-    </div>
 
 
   </div>
@@ -492,17 +351,15 @@
   대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</footer>
 </div>
 
+<!-- 09-25 사장님 「뼈대 교통정리 · 전부 ㄱㄱ」(docs/78) — 아래 줄 단추 넷: 홈 · 정통사주 · 정통궁합 · 웹툰궁합. 원국은 홈 안, 택일은 바깥 허브(taekil.html). 숨은 탭 memo · gacha · story · me · maeum · geunamja 는 코드째 걷음. sheet · gunghap(9,900 장)은 결제 심사와 묶여 남김. -->
 <nav id="nav" class="hide">
   <button data-go="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg><span>홈</span></button>
-  <button data-go="me"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="4" height="16" rx="1"/><rect x="9.7" y="4" width="4" height="16" rx="1"/><rect x="15.9" y="4" width="4" height="16" rx="1"/></svg><span>원국</span></button>
   <!-- 2026-09-21 사장님 「원국 탭과 택일 탭 사이에 정통사주」「그냥 넣어~」 — 세 고전으로 푼 열세 장(jeongtong.js). 조립기라 원가 0, 무료다. -->
   <button data-go="jeongtong"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg><span>정통사주</span></button>
   <!-- 2026-09-23 사장님 「아래탭에 넣어」 — 궁합총론(두 분의 여덟 글자를 장마다 나란히). 조립기라 원가 0, 무료다. 9,900원 궁합 장(gunghap)과 다른 탭(chongnon). -->
-  <button data-go="chongnon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>궁합총론</span></button>
+  <button data-go="chongnon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>정통궁합</span></button>
   <!-- 2026-09-24 사장님 「궁합이랑 택일 사이에 넣고」 — 연애궁합(법전 72조 일지 × 식상 두 방향, 미리 쓴 원고). 지금은 전체 무료, 토스 심사 뒤 유료. -->
-  <button data-go="ssom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>연애궁합</span></button>
-  <!-- 2026-09-11 사장님 「출산택일 탭을 만들던지 — 출산택일을 하러 가는 게 너무 어렵다」 -->
-  <button data-go="taekil"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 1.8"/><path d="M9.5 3h5"/></svg><span>택일</span></button>
+  <button data-go="ssom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>웹툰궁합</span></button>
 </nav>
 
 
@@ -609,45 +466,45 @@
   </div>
 </div>
 
-<script src="config.js?v=1131"></script>
-<script src="track.js?v=1131"></script>
-<script src="cloud.js?v=1131"></script>
-<script src="usage.js?v=1131"></script>
-<script src="places.js?v=1131"></script>
-<script src="people.js?v=1131"></script>
-<script src="astro.js?v=1131"></script>
-<script src="lunar.js?v=1131"></script>
-<script src="engine.js?v=1131"></script>
-<script src="saenggeuk.js?v=1131"></script><script src="gise.js?v=1131"></script>
-<script src="panjeong.js?v=1131"></script>
-<script src="questions.js?v=1131"></script>
-<script src="wongook.js?v=1131"></script>
-<script src="seolmyeongseo.js?v=1131"></script>
-<script src="chaeyong.js?v=1131"></script>
-<script src="brief.js?v=1131"></script>
-<script src="chaeksadan.js?v=1131"></script>
-<script src="geunamja.js?v=1131"></script>
-<script src="maeum.js?v=1131"></script>
-<script src="gunghap.js?v=1131"></script>
-<script src="sheets.js?v=1131"></script>
-<script src="hwakin.js?v=1131"></script>
-<script src="mun.js?v=1131"></script>
-<script src="mun/all.js?v=1131"></script>
-<script src="typecard.js?v=1131"></script>
-<script src="gyeokguk.js?v=1131"></script>
-<script src="memo.js?v=1131"></script>
-<script src="classic.js?v=1131"></script>
-<script src="gungtong-wonmun.js?v=1131"></script><script src="ilju.js?v=1131"></script><script src="yeongyeok.js?v=1131"></script><script src="samyeong.js?v=1131"></script><script src="gwanjeom.js?v=1131"></script><script src="jeongtong.js?v=1131"></script>
-<script src="gunghap-gwanjeom.js?v=1131"></script><script src="ssom-gwanjeom.js?v=1131"></script><script src="ssom-baram.js?v=1131"></script><script src="ssom-dangye.js?v=1131"></script><script src="ssom-daehwa.js?v=1131"></script><script src="ssom-webtoon.js?v=1131"></script><script src="ssom-webtoon-2.js?v=1131"></script><script src="ssom-webtoon-3.js?v=1131"></script><script src="ssom-wongo.js?v=1131"></script><script src="ssom-score.js?v=1131"></script><script src="ssom-score-mal.js?v=1131"></script><script src="ssom.js?v=1131"></script><script src="gunghap-chongnon.js?v=1131"></script>
-<script src="taekilsim.js?v=1131"></script>
-<script src="stories.js?v=1131"></script>
-<script src="tongbyeon.js?v=1131"></script>
-<script src="rules-wealth-love.js?v=1131"></script>
-<script src="rules-health-study-move.js?v=1131"></script>
-<script src="share.js?v=1131"></script>
-<script src="ai.js?v=1131"></script>
-<script src="pay.js?v=1131"></script>
-<script src="app.js?v=1131"></script>
-<script src="landing.js?v=1131"></script>
+<script src="config.js?v=1134"></script>
+<script src="track.js?v=1134"></script>
+<script src="cloud.js?v=1134"></script>
+<script src="usage.js?v=1134"></script>
+<script src="places.js?v=1134"></script>
+<script src="people.js?v=1134"></script>
+<script src="astro.js?v=1134"></script>
+<script src="lunar.js?v=1134"></script>
+<script src="engine.js?v=1134"></script>
+<script src="saenggeuk.js?v=1134"></script><script src="gise.js?v=1134"></script>
+<script src="panjeong.js?v=1134"></script>
+<script src="questions.js?v=1134"></script>
+<script src="wongook.js?v=1134"></script>
+<script src="seolmyeongseo.js?v=1134"></script>
+<script src="chaeyong.js?v=1134"></script>
+<script src="brief.js?v=1134"></script>
+<script src="chaeksadan.js?v=1134"></script>
+<script src="geunamja.js?v=1134"></script>
+<script src="maeum.js?v=1134"></script>
+<script src="gunghap.js?v=1134"></script>
+<script src="sheets.js?v=1134"></script>
+<script src="hwakin.js?v=1134"></script>
+<script src="mun.js?v=1134"></script>
+<script src="mun/all.js?v=1134"></script>
+<script src="typecard.js?v=1134"></script>
+<script src="gyeokguk.js?v=1134"></script>
+<script src="memo.js?v=1134"></script>
+<script src="classic.js?v=1134"></script>
+<script src="gungtong-wonmun.js?v=1134"></script><script src="ilju.js?v=1134"></script><script src="yeongyeok.js?v=1134"></script><script src="samyeong.js?v=1134"></script><script src="gwanjeom.js?v=1134"></script><script src="jeongtong.js?v=1134"></script>
+<script src="gunghap-gwanjeom.js?v=1134"></script><script src="ssom-gwanjeom.js?v=1134"></script><script src="ssom-baram.js?v=1134"></script><script src="ssom-dangye.js?v=1134"></script><script src="ssom-daehwa.js?v=1134"></script><script src="ssom-webtoon.js?v=1134"></script><script src="ssom-webtoon-2.js?v=1134"></script><script src="ssom-webtoon-3.js?v=1134"></script><script src="ssom-wongo.js?v=1134"></script><script src="ssom-score.js?v=1134"></script><script src="ssom-score-mal.js?v=1134"></script><script src="ssom.js?v=1134"></script><script src="gunghap-chongnon.js?v=1134"></script>
+<script src="taekilsim.js?v=1134"></script>
+<script src="stories.js?v=1134"></script>
+<script src="tongbyeon.js?v=1134"></script>
+<script src="rules-wealth-love.js?v=1134"></script>
+<script src="rules-health-study-move.js?v=1134"></script>
+<script src="share.js?v=1134"></script>
+<script src="ai.js?v=1134"></script>
+<script src="pay.js?v=1134"></script>
+<script src="app.js?v=1134"></script>
+<script src="landing.js?v=1134"></script>
 </body>
 </html>

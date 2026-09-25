@@ -496,7 +496,7 @@
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
     $('subtitle').textContent = nim() ? `${nim()}의 책사단` : '나의 책사단';
     renderPeopleBtn();
-    renderToday(); renderMe(); renderPartners(); renderHome();
+    renderToday(); try { renderMe(); } catch (e) {} renderPartners(); renderHome();   // 09-25 원국 탭(me) 걷음 — 홈 안의 원국만
     try { renderWtHome(); } catch (e) { try { console.warn('홈 목록 실패:', e); } catch (e2) {} }
     go('home');
   }
@@ -799,7 +799,7 @@
 
     // 유형 카드 뽑기 — 첫 뽑기 때 표본을 만들고(몇 초, 그게 드럼롤이다) 캐시한다
     $('gachaWrap').classList.add('hide'); $('btnGacha').textContent = '카드 뽑기';
-    $('btnGacha').onclick = () => {
+    if ($('btnGacha')) $('btnGacha').onclick = () => {
       const T = window.ChaeksaTypecard; if (!T) return;
       $('btnGacha').disabled = true;
       $('gachaProg').classList.remove('hide');
@@ -819,7 +819,7 @@
           $('btnGacha').disabled = false; $('btnGacha').textContent = '다시 뽑아도 이 카드';
           // 두 번째 카드 — 지금 대운이 이 사주에 필요한 걸 갖고 왔는가
           $('seasonWrap').classList.add('hide'); $('btnSeason').classList.remove('hide');
-          $('btnSeason').onclick = () => {
+          if ($('btnSeason')) $('btnSeason').onclick = () => {
             const sn = window.ChaeksaTypecard.seasonNow(R);
             $('seasonSvg').innerHTML = window.ChaeksaTypecard.drawSeason(이름값(), R, sn);
             const fl2 = $('seasonFlip'); fl2.style.animation = 'none'; void fl2.offsetWidth; fl2.style.animation = '';
@@ -829,7 +829,7 @@
               ? ' — 희귀 유형에 시즌까지 왔습니다. 지금이 그 때입니다'
               : sn.grade.name === '만개' ? ' — 유형과 무관하게, 시즌은 지금이 최고입니다' : '';
             $('seasonNote').textContent = `타고난 카드 ${c.tier} × 지금 시즌 ${sn.grade.name}${조합}`;
-            $('btnSeasonShare').onclick = async () => {
+            if ($('btnSeasonShare')) $('btnSeasonShare').onclick = async () => {
               const b = $('btnSeasonShare'); b.disabled = true; b.textContent = '만드는 중…';
               try {
                 const r = await window.ChaeksaTypecard.share($('seasonSvg').innerHTML, `시즌_${sn.grade.name}`);
@@ -839,7 +839,7 @@
               setTimeout(() => { b.textContent = '시즌 자랑하기'; }, 2500);
             };
           };
-          $('btnGachaShare').onclick = async () => {
+          if ($('btnGachaShare')) $('btnGachaShare').onclick = async () => {
             const b = $('btnGachaShare'); b.disabled = true; b.textContent = '만드는 중…';
             try {
               const r = await window.ChaeksaTypecard.share(c.svg, `${c.gyeok.name}격_${c.tier || ''}`);
@@ -983,11 +983,11 @@
     try { await ChaeksaShare.draw($('shareCanvas'), R, nim()); shareReady = true; }
     catch (e) { $('shareCanvas').closest('.card').classList.add('hide'); }
   }
-  $('btnShare').onclick = async () => {
+  if ($('btnShare')) $('btnShare').onclick = async () => {
     await renderShareCard();
     try { await ChaeksaShare.share($('shareCanvas'), profile.name); } catch (e) {}
   };
-  $('btnSaveImg').onclick = async () => {
+  if ($('btnSaveImg')) $('btnSaveImg').onclick = async () => {
     await renderShareCard();
     ChaeksaShare.save($('shareCanvas'), profile.name);
   };
@@ -1005,11 +1005,11 @@
       ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGn').disabled = !list.length;
-    $('btnGnAdd').onclick = () => openPersonForm(null);
+    if ($('btnGnAdd')) $('btnGnAdd').onclick = () => openPersonForm(null);
     // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
     const 채움 = () => { const p = P.get($('gnPick').value); if ($('gnSeen')) $('gnSeen').value = (p && p.관찰) || ''; };
-    $('gnPick').onchange = 채움; 채움();
-    $('btnGn').onclick = () => {
+    if ($('gnPick')) $('gnPick').onchange = 채움; 채움();
+    if ($('btnGn')) $('btnGn').onclick = () => {
       const p0 = P.get($('gnPick').value); if (!p0) return;
       if ($('gnSeen')) P.update(p0.id, { 관찰: $('gnSeen').value });
       const p = P.get(p0.id);
@@ -1115,11 +1115,11 @@
       ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnMm').disabled = !list.length;
-    $('btnMmAdd').onclick = () => openPersonForm(null);
+    if ($('btnMmAdd')) $('btnMmAdd').onclick = () => openPersonForm(null);
     // 역산(32조) — 「먼저 달라진 것」은 사람마다 기억한다
     const 채움 = () => { const p = P.get($('mmPick').value); if ($('mmSeen')) $('mmSeen').value = (p && p.관찰) || ''; };
-    $('mmPick').onchange = 채움; 채움();
-    $('btnMm').onclick = () => {
+    if ($('mmPick')) $('mmPick').onchange = 채움; 채움();
+    if ($('btnMm')) $('btnMm').onclick = () => {
       const p0 = P.get($('mmPick').value); if (!p0) return;
       if ($('mmSeen')) P.update(p0.id, { 관찰: $('mmSeen').value });
       const p = P.get(p0.id);
@@ -1946,7 +1946,7 @@
         ? `그 달은 <b>${esc(j.pillar)}월 · ${esc(j.grade)}</b> (${j.score}점) — ${esc(j.line)}`
         : '';
     };
-    $('memoY').onchange = peek; $('memoM').onchange = peek; peek();
+    if ($('memoY')) $('memoY').onchange = peek; $('memoM').onchange = peek; peek();
 
     const due = M.due(pid, today), next = M.upcoming(pid, today);
     $('memoDueCard').classList.toggle('hide', !due.length);
@@ -1985,7 +1985,7 @@
     }
   }
 
-  $('btnMemoAdd').onclick = () => {
+  if ($('btnMemoAdd')) $('btnMemoAdd').onclick = () => {
     const M = window.ChaeksaMemo;
     const q = $('memoQ').value.trim();
     if (!q) { $('memoQ').focus(); return; }
@@ -2010,7 +2010,7 @@
         <div class="brief" style="font-size:15px"><p><b>${esc(t0.q)}</b> — 이번 달은 어떻습니까?</p>
         <p style="color:var(--ink2)">${(t0.logs || []).length}달치가 쌓여 있습니다${미기록.length > 1 ? ` (외 ${미기록.length - 1}건)` : ''}.</p></div>
         <button class="btn ghost small" id="btnTodayMemoGo" style="margin-top:10px">비망록 열기</button>`;
-      $('btnTodayMemoGo').onclick = () => go('memo');
+      if ($('btnTodayMemoGo')) $('btnTodayMemoGo').onclick = () => go('memo');
       return;
     }
     const it = due[0];
@@ -2264,7 +2264,7 @@
     if (st.혼자) {
       if (window.현재그사람 !== '나') {
         box.innerHTML = 머리 + '<div class="st-pick"><p>내 사주만으로 봐요. 그 사람은 필요 없어요.</p><button class="btn ghost small" id="btnStOpen" type="button">7일 열기</button></div>';
-        $('btnStOpen').onclick = () => { window.현재그사람 = '나'; renderStory(); };
+        if ($('btnStOpen')) $('btnStOpen').onclick = () => { window.현재그사람 = '나'; renderStory(); };
         return;
       }
       renderStoryBody(box, 머리, st, null, '');
@@ -2274,7 +2274,7 @@
     const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) {
       box.innerHTML = 머리 + '<div class="st-pick"><p>그 사람 생년월일을 먼저 넣어 주세요. 그래야 두 사람을 놓고 봐요.</p><button class="btn" id="btnStAdd" type="button">그 사람 추가</button></div>';
-      $('btnStAdd').onclick = () => openPersonForm(null);
+      if ($('btnStAdd')) $('btnStAdd').onclick = () => openPersonForm(null);
       return;
     }
     // 그 사람은 손님이 고른다 — 목록 첫 사람으로 멋대로 열지 않는다(09-13 사장님 「그 사람이 정해지지 않았는데 답변이 열려 있다」).
@@ -2299,14 +2299,14 @@
     if (!고름) {
       box.innerHTML = 머리 + 고르기(null) + '<p class="hint" style="margin:0 0 18px">그 사람을 고르면 오늘부터 7일이 바로 열려요. 목록에 없으면 「+ 추가」로 생년월일을 넣어 주세요.</p>';
       고르기연결();
-      $('btnStAdd').onclick = () => openPersonForm(null);
+      if ($('btnStAdd')) $('btnStAdd').onclick = () => openPersonForm(null);
       return;
     }
     const p = P.get(window.현재그사람);
     let Rm; try { Rm = E.calc(P.toProfile(p)); } catch (e) { box.innerHTML = 머리 + '<p class="hint">그 사람 사주를 계산하지 못했어요.</p>'; return; }
     renderStoryBody(box, 머리, st, Rm, 고르기(p));
     고르기연결();
-    $('btnStAdd').onclick = () => openPersonForm(null);
+    if ($('btnStAdd')) $('btnStAdd').onclick = () => openPersonForm(null);
   }
   /** 이야기 본문 — 7일(무료) + 30일(이번 달 결제). 두 사람이면 Rm, 혼자면 null. 고르기칸은 위에 붙일 HTML. */
   function renderStoryBody(box, 머리, st, Rm, 고르기칸) {
@@ -3065,8 +3065,8 @@
       renderCloud();
       if (showMsg) cloudMsg(안주고받음, true);
     };
-    $('uaYes').onclick = () => 답(true);
-    $('uaNo').onclick = () => 답(false);
+    if ($('uaYes')) $('uaYes').onclick = () => 답(true);
+    if ($('uaNo')) $('uaNo').onclick = () => 답(false);
     m.classList.remove('hide');
   }
   async function cloudSync(showMsg) {
