@@ -1078,6 +1078,16 @@
     궁합그사람 = id || null;
     try { if (궁합그사람) localStorage.setItem(궁합고름키, 궁합그사람); else localStorage.removeItem(궁합고름키); } catch (e) {}
   }
+  // 09-25 사장님 「상대 프로필 선택이 너무 98년도 윈도우 같아」 · 09-26 「규격으로 맞추기」(docs/79 4절) — 그 사람 고르기는 select 를 숨기고 사람 칩으로. 웹툰궁합 · 정통궁합이 같이 쓴다.
+  function 사람칩(wrap, sel, list, 고름, add) {
+    sel.classList.add('ss-sel-hidden');
+    let 칩 = wrap.querySelector('.ss-who'); if (!칩) { 칩 = document.createElement('div'); 칩.className = 'ss-who'; 칩.setAttribute('role', 'radiogroup'); wrap.appendChild(칩); }
+    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(사람이름(p.name) || '그 사람') + '</b><small>' + esc(p.relation) + '</small></button>').join('')
+      + '<button type="button" class="ss-wh ss-wh-add">＋ 다른 사람</button>';
+    칩.querySelectorAll('.ss-wh[data-id]').forEach(b => b.onclick = () => { if (sel.value === b.dataset.id) return; sel.value = b.dataset.id; sel.onchange(); });
+    칩.querySelector('.ss-wh-add').onclick = () => openPersonForm(null);
+    if (add) add.classList.add('hide');   // 아래 「그 사람 생년월일 넣기」는 칩의 「＋ 다른 사람」이 대신한다
+  }
   function renderChongnon() {
     const P = People(), GC = window.ChaeksaGunghapChongnon;
     const out = $('gcTabOut'), sel = $('gcPick'), wrap = $('gcPickWrap'), none = $('gcNone'), add = $('btnGcAdd');
@@ -1099,6 +1109,8 @@
       + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderChongnon(); };
+    사람칩(wrap, sel, list, 고름, add);
+    const 시작 = $('gcStart'); if (시작) { 시작.classList.toggle('hide', !고름); 시작.onclick = () => { const t = out.querySelector('h2, h3, details, .card') || out; try { t.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { t.scrollIntoView(); } }; }
     if (!고름) { 비우기(); return; }
     const 그 = P.get(고름), 나입력 = 궁합입력(profile), 그입력 = 궁합입력(P.toProfile(그));
     // 같은 두 사람을 이미 그려 뒀으면 그대로 둔다 — 탭을 오갈 때마다 다시 그리면 펼쳐 둔 장이 닫힌다.
@@ -1136,14 +1148,7 @@
       + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
-    // 09-25 사장님 「상대 프로필 선택이 너무 98년도 윈도우 같아」 — select 는 숨기고 사람 칩으로 고른다
-    sel.classList.add('ss-sel-hidden');
-    let 칩 = wrap.querySelector('.ss-who'); if (!칩) { 칩 = document.createElement('div'); 칩.className = 'ss-who'; 칩.setAttribute('role', 'radiogroup'); wrap.appendChild(칩); }
-    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(사람이름(p.name) || '그 사람') + '</b><small>' + esc(p.relation) + '</small></button>').join('')
-      + '<button type="button" class="ss-wh ss-wh-add" id="ssWhoAdd">＋ 다른 사람</button>';
-    칩.querySelectorAll('.ss-wh[data-id]').forEach(b => b.onclick = () => { if (sel.value === b.dataset.id) return; sel.value = b.dataset.id; sel.onchange(); });
-    const 더 = 칩.querySelector('#ssWhoAdd'); if (더) 더.onclick = () => openPersonForm(null);
-    add.classList.add('hide');   // 아래 「그 사람 생년월일 넣기」는 칩의 「＋ 다른 사람」이 대신한다
+    사람칩(wrap, sel, list, 고름, add);
     const more = $('ssMore'), met = $('ssMet');
     if (!고름) { out.innerHTML = ''; if (more) more.classList.add('hide'); return; }
     // 처음 만난 달 — 그 사람마다 이 기기에 기억한다(연 · 월만, 서버로 안 보낸다)
