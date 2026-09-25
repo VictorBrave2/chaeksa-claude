@@ -84,9 +84,9 @@
   const 있나 = (P, g) => ['year', 'month', 'day', 'hour'].some(k => P[k] && (P[k].stem === g || (E.HIDDEN[P[k].branch] || []).some(h => (typeof h === 'number' ? h : h[0]) === g)));
   function 변질말(종류, p, 분) {
     if (종류 === '일지') { const 변 = S.일지변질 && S.일지변질(p.R);
-      const 합 = 육합[p.일지], 합ko = E.BRANCHES_KO[E.BRANCHES.indexOf(합)], 일ko = E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)];
-      return 변 ? p.일간 + '의 운에서 ' + 합 + 이가(합ko) + ' 오면 배우자궁 ' + p.일지 + 이가(일ko) + ' 묶여요. 그동안은 ' + 변.전글자 + ' ' + 변.전 + ' 대신 ' + 변.후글자 + ' ' + 변.후 + 이가(변.후) + ' 나서서, 「' + (S.바라는사람 || {})[변.전] + '」보다 「' + (S.바라는사람 || {})[변.후] + '」한테 더 끌려요. 그 운이 지나면 돌아와요.'
-        : p.일간 + '의 배우자궁 ' + p.일지 + 는(일ko) + ' ' + 합 + 이가(합ko) + ' 오면 묶여요. 다만 속에 대신 나설 글자가 없어서, 바라는 사람은 그대로예요.'; }
+      const 합 = 변 ? 변.짝 : 육합[p.일지], 합ko = E.BRANCHES_KO[E.BRANCHES.indexOf(합)], 일ko = E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)];
+      return 변 ? p.일간 + '의 운에서 ' + 합 + 이가(합ko) + ' 오면 배우자궁 ' + p.일지 + 이가(일ko) + ' 그 기운 쪽으로 끌려가요. 그동안은 ' + 변.전글자 + ' ' + 변.전 + ' 대신 ' + 변.후글자 + ' ' + 변.후 + 이가(변.후) + ' 나서서, 「' + (S.바라는사람 || {})[변.전] + '」보다 「' + (S.바라는사람 || {})[변.후] + '」한테 더 끌려요. 그 운이 지나면 돌아와요.'
+        : p.일간 + '의 배우자궁 ' + p.일지 + 는(일ko) + ' 삼합의 한가운데 글자라, 운이 와도 끌려가지 않아요. 그래서 바라는 사람이 늘 같아요.'; }
     const P = p.R.pillars, ds = P.day.stem, 신 = (g) => E.TEN_GODS[E.tenGod(ds, g)];
     const 천 = ['year', 'month', 'hour'].map(k => P[k] && P[k].stem).filter(g => g != null && (신(g) === '식신' || 신(g) === '상관'));
     const g = 천.find(x => 신(x) === '식신'); const 고 = g != null ? g : 천[0];
@@ -114,8 +114,8 @@
     const 속 = (E.HIDDEN[P.day.branch] || []).map(h => typeof h === 'number' ? h : h[0]);
     if (속.length > 1) 목.바람.push(['궁속', p.일간 + '의 배우자궁 ' + p.일지 + ' 속에는 ' + 속.map(h => E.STEMS[h] + ' ' + 신(h)).join(' · ') + 이가(신(속[속.length - 1])) + ' 같이 있어요. 평소 바라는 건 ' + E.STEMS[속[0]] + ' ' + 신(속[0]) + ' 쪽이고, 나머지는 때에 따라 섞여 나와요.']);
     const 변 = S.일지변질 && S.일지변질(p.R);
-    if (변) { const 합 = 육합[p.일지], 합ko = E.BRANCHES_KO[E.BRANCHES.indexOf(합)];
-      목.바람.push(['흔들림', p.일간 + '의 배우자궁 ' + p.일지 + 는(E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)]) + ' ' + 합 + 이가(합ko) + ' 오는 해 · 달에 묶여요. 그때는 ' + 변.전글자 + ' ' + 변.전 + ' 대신 ' + 변.후글자 + ' ' + 변.후 + 이가(변.후) + ' 나서서, ' + ((S.바라는사람 || {})[변.후] || '다른 사람') + '한테 마음이 더 가요. 그 운이 지나면 돌아와요.']); }
+    if (변) { const 합 = 변.짝, 합ko = E.BRANCHES_KO[E.BRANCHES.indexOf(합)];
+      목.바람.push(['흔들림', p.일간 + '의 배우자궁 ' + p.일지 + 는(E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)]) + ' ' + 합 + 이가(합ko) + ' 오는 해 · 달에 그 기운 쪽으로 끌려가요. 그때는 ' + 변.전글자 + ' ' + 변.전 + ' 대신 ' + 변.후글자 + ' ' + 변.후 + 이가(변.후) + ' 나서서, ' + ((S.바라는사람 || {})[변.후] || '다른 사람') + '한테 마음이 더 가요. 그 운이 지나면 돌아와요.']); }
     목.언행.push(['언행', 단서('언행', p)]);
     if (p.언) { const g = E.STEMS.indexOf(p.언.글자), 천 = ['year', 'month', 'hour'].filter(k => P[k] && P[k].stem === g);
       const 지 = ['year', 'month', 'day', 'hour'].filter(k => P[k] && (E.HIDDEN[P[k].branch] || []).some(h => (typeof h === 'number' ? h : h[0]) === g)).map(k => E.BRANCHES[P[k].branch]).filter((x, j, a) => a.indexOf(x) === j);   // 같은 지지 두 번 안 쓰기(09-25 검수)
@@ -427,7 +427,7 @@
   const 달더하기 = (y, m, n) => { const t = y * 12 + (m - 1) + n; return { y: Math.floor(t / 12), m: t % 12 + 1 }; };
   const 월기둥 = (y, m) => { try { const R = E.calc({ year: y, month: m, day: 15, hour: 12, minute: 0, gender: 'M', longitude: 126.98 }); return R.pillars; } catch (e) { return null; } };
   function 사건달(사, 만난, 종류) {
-    if (종류 === '일지변질') { const p = 사.당신, 합 = 육합[p.일지];   // 당신의 배우자궁이 묶이는 첫 달(만난 지 20달 ~ 44달 — 안정기 1 · 2 뒤)
+    if (종류 === '일지변질') { const p = 사.당신, 변 = S.일지변질(p.R), 합 = 변 ? 변.짝 : null;   // 당신의 배우자궁이 묶이는 첫 달(만난 지 20달 ~ 44달 — 안정기 1 · 2 뒤)
       for (let n = 20; n <= 44; n++) { const d = 달더하기(만난.y, 만난.m, n), P = 월기둥(d.y, d.m); if (P && E.BRANCHES[P.month.branch] === 합) return d; }
       return 달더하기(만난.y, 만난.m, 22); }
     // 식상변질: 식상이 천간에 있는 쪽(그 사람 먼저)의 식상이 묶이는 해(결혼 뒤 1 ~ 6년 사이)
