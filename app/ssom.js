@@ -16,12 +16,15 @@
   // 09-25 작업판 21 — 두 사람 이야기 1 · 2 · 3 · 5도 뼈대 + 조각 조립(ssom-webtoon-3.js)이 있으면 그걸로
   // 09-25 사장님 「실제 달력은 아직 쓰지 말자」: 단계 이야기에는 만난 달을 넘기지 않는다(날짜가 안 붙음). 조립기의 달력 코드는 남겨 둠.
   const 달력끔 = (opts) => Object.assign({}, opts || {}, { 만난: null });
+  const 같은성별 = (a, b) => !!(a && b && a.gender && b.gender && a.gender === b.gender);
   function 둘로(대화, 나R, 그R, opts) {
     let 둘 = null; try { 둘 = global.ChaeksaSsomWebtoon && global.ChaeksaSsomWebtoon.뼈대.둘 ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '둘', false, opts) : null; } catch (e) {}
     return 둘 ? Object.assign({}, 대화 || {}, { 나알기: 둘[0], 그알기: 둘[1], 주고받음: 둘[2], 맞춤: 둘[3], 때여는말: (대화 && 대화.때여는말) || [] }) : 대화;
   }
   function 그리기(box, a, b, opts) {
     opts = opts || {};
+    // 09-25 사장님 「입력도 막아줘」: 연애궁합 웹툰은 남녀 두 사람 이야기로만 만든다 — 같은 성별이면 그리지 않는다
+    if (같은성별(a, b)) { box.innerHTML = '<div class="card"><p>연애궁합은 남녀 두 사람의 이야기로 만들어져 있어요. 성별을 다시 확인해 주세요.</p></div>'; return; }
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
     const z = S.짝(나R, 그R), 원고 = W[z.키];
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
@@ -226,6 +229,7 @@
    *  장 = { 제목, 배경: [art 이름 …], 줄: [{ 누가, 말 }], 반응: { 장, 틀, 물음 } | null }. 누가 = 책사 · 당신 · 상대 · 예시. */
   function 대본(a, b, opts) {
     opts = opts || {};
+    if (같은성별(a, b)) return { 키: '', 단계: '', 장들: [], 총론수: 0 };
     const 나R = E.calc(a), 그R = E.calc(b), z = S.짝(나R, 그R);
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 생 = global.ChaeksaSsomSaengsaek || {};
     const 원고 = (global.ChaeksaSsomWongo || {})[z.키], 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
