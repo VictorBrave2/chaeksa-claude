@@ -1739,3 +1739,9 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-dan{margin:12px 0!important;padding:10px 12px;border-left:3px solid #7a5bb5;background:rgba(122,91,181,.08);font-size:14px;line-height:1.7}
 .t-you{background:#5a6fd6}.t-them{background:#d08a3c}
 .t-iy{background:#e8798b}.t-jw{background:#7a5bb5}.t-tk{background:#3f8f76}
+.ss-score{text-align:center}
+.ss-score .ss-score-n{font-size:15px;margin:4px 0}
+.ss-score .ss-score-n b{font-size:44px;line-height:1.1}
+.ss-score p.ss-lead{font-size:16.5px;font-weight:600}
+.ss-score p{text-align:left}
+.ss-score p.ss-score-n,.ss-score p.ss-lead{text-align:center}

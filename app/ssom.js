@@ -50,7 +50,7 @@
       return [b ? b.제목 : '', 하는]; };
     const 나제 = 제목of(나R), 그제 = 제목of(그R);
     const 소개 = (누, 제) => '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
-    const 근거 = '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">장면으로 보기 — 처음부터 끝까지</button>'
+    const 근거 = ((global.ChaeksaSsomScore && global.ChaeksaSsomScore.카드(나R, 그R)) || '') + '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">장면으로 보기 — 처음부터 끝까지</button>'
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">나는 ' + esc(z.나쪽.일주) + ' 일주, 일지 ' + 지말(z.나쪽.일지) + '는 나에게 ' + esc(z.나쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.나식상)) + '.<br>그 사람은 ' + esc(z.그쪽.일주) + ' 일주, 일지 ' + 지말(z.그쪽.일지) + '는 그 사람에게 ' + esc(z.그쪽.일지십신) + '이고, 식상은 ' + esc(식상말(z.그식상)) + '.<br>일지는 어떤 사람을 바라는지, 식상은 상대를 어떻게 대하는지예요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
