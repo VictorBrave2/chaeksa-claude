@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1125">
+<link rel="stylesheet" href="style.css?v=1127">
 <style>
   .doc{max-width:660px;margin:0 auto;padding:22px 16px 80px}
   .back{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -18,7 +18,14 @@
   .jt-form .jt-notime{grid-column:1/-1;flex-direction:row;align-items:center;gap:8px;font-size:14px;color:var(--ink2);margin-top:-2px}
   .jt-form .jt-notime input{width:18px;height:18px;margin:0;padding:0}
   .jt-form input:disabled{opacity:.45}
-  .jt-more{grid-column:1/-1}.jt-more summary{cursor:pointer;opacity:.8;font-size:14px}.jt-more[open]{display:grid;grid-template-columns:inherit;gap:inherit}
+  .jt-more{grid-column:1/-1;margin-top:2px}
+  .jt-more summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px dashed var(--line2,rgba(230,201,138,.45));border-radius:12px;font-size:14.5px;color:var(--ink,#f7f3ff);background:rgba(230,201,138,.06)}
+  .jt-more summary::-webkit-details-marker{display:none}
+  .jt-more summary::after{content:'＋ 펼치기';font-size:13px;color:var(--gold,#e6c98a);white-space:nowrap;margin-left:10px}
+  .jt-more[open] summary::after{content:'－ 접기'}
+  .jt-more[open] summary{border-style:solid;margin-bottom:10px}
+  .jt-more[open]{display:grid;grid-template-columns:inherit;gap:inherit}
+  .jt-more[open] summary{grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -31,7 +38,7 @@
     <div class="jt-form">
       <label>생년월일<input type="date" id="gcDateA" required></label>
       <label>성별<select id="gcGA"><option value="F">여</option><option value="M">남</option><option value="">모름</option></select></label>
-      <details class="jt-more"><summary>태어난 시각 · 곳 (알면 더 정확해요)</summary>
+      <details class="jt-more"><summary><span>태어난 시각 · 곳 <small style="opacity:.7;white-space:nowrap">(알면 더 정확해요)</small></span></summary>
       <label>태어난 시각<input type="time" id="gcTimeA" value="12:00"></label>
       <label class="jt-notime"><input type="checkbox" id="gcNoTimeA" checked>시간을 몰라요</label>
       <label>태어난 곳<select id="gcPlaceA"><option value="KR:서울">서울</option></select></label>
@@ -41,7 +48,7 @@
     <div class="jt-form">
       <label>생년월일<input type="date" id="gcDateB" required></label>
       <label>성별<select id="gcGB"><option value="M">남</option><option value="F">여</option><option value="">모름</option></select></label>
-      <details class="jt-more"><summary>태어난 시각 · 곳 (알면 더 정확해요)</summary>
+      <details class="jt-more"><summary><span>태어난 시각 · 곳 <small style="opacity:.7;white-space:nowrap">(알면 더 정확해요)</small></span></summary>
       <label>태어난 시각<input type="time" id="gcTimeB" value="12:00"></label>
       <label class="jt-notime"><input type="checkbox" id="gcNoTimeB" checked>시간을 몰라요</label>
       <label>태어난 곳<select id="gcPlaceB"><option value="KR:서울">서울</option></select></label>
@@ -55,17 +62,17 @@
 <script>
 (function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})()
 </script>
-<script src="config.js?v=1125"></script>
-<script src="places.js?v=1125"></script>
-<script src="astro.js?v=1125"></script>
-<script src="lunar.js?v=1125"></script>
-<script src="engine.js?v=1125"></script>
-<script src="saenggeuk.js?v=1125"></script><script src="gise.js?v=1125"></script>
-<script src="panjeong.js?v=1125"></script>
-<script src="ssom-gwanjeom.js?v=1125"></script>
-<script src="ssom-baram.js?v=1125"></script>
-<script src="ssom-dangye.js?v=1125"></script>
-<script src="ssom-daehwa.js?v=1125"></script><script src="ssom-webtoon.js?v=1125"></script><script src="ssom-webtoon-2.js?v=1125"></script><script src="ssom-webtoon-3.js?v=1125"></script><script src="ssom-wongo.js?v=1125"></script>
-<script src="typecard.js?v=1125"></script><script src="gyeokguk.js?v=1125"></script><script src="classic.js?v=1125"></script><script src="ssom-score.js?v=1125"></script><script src="ssom-score-mal.js?v=1125"></script><script src="ssom.js?v=1125"></script>
+<script src="config.js?v=1127"></script>
+<script src="places.js?v=1127"></script>
+<script src="astro.js?v=1127"></script>
+<script src="lunar.js?v=1127"></script>
+<script src="engine.js?v=1127"></script>
+<script src="saenggeuk.js?v=1127"></script><script src="gise.js?v=1127"></script>
+<script src="panjeong.js?v=1127"></script>
+<script src="ssom-gwanjeom.js?v=1127"></script>
+<script src="ssom-baram.js?v=1127"></script>
+<script src="ssom-dangye.js?v=1127"></script>
+<script src="ssom-daehwa.js?v=1127"></script><script src="ssom-webtoon.js?v=1127"></script><script src="ssom-webtoon-2.js?v=1127"></script><script src="ssom-webtoon-3.js?v=1127"></script><script src="ssom-wongo.js?v=1127"></script>
+<script src="typecard.js?v=1127"></script><script src="gyeokguk.js?v=1127"></script><script src="classic.js?v=1127"></script><script src="ssom-score.js?v=1127"></script><script src="ssom-score-mal.js?v=1127"></script><script src="ssom.js?v=1127"></script>
 </body>
 </html>
