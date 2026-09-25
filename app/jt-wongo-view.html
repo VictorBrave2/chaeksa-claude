@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>정통사주 웹툰 원고 보기 · 검수용</title>
+<style>
+:root{color-scheme:light}body{margin:0;background:#f6f5fb;font-family:"Malgun Gothic",-apple-system,sans-serif;color:#222}
+.w{max-width:680px;margin:0 auto;padding:18px 16px 80px}h1{font-size:20px;margin:6px 0 4px}.sub{color:#777;font-size:13px;margin:0 0 14px;line-height:1.6}
+h2{font-size:17px;margin:34px 0 4px;color:#5b3fa0;border-bottom:2px solid #e3def5;padding-bottom:6px}h2 small{font-weight:400;color:#999;font-size:12px;margin-left:8px}
+p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}
+.b{display:inline-block;min-width:42px;font-size:12px;border-radius:99px;padding:1px 8px;color:#fff;margin-right:6px;text-align:center;font-style:normal}.y{background:#5a6fd6}.c{background:#7a5bb5}
+.d{background:#f0edf8;border-left:3px solid #7a5bb5;padding:8px 10px;font-size:14px;border-radius:0 8px 8px 0;margin:8px 0}.d b{font-size:12px;color:#7a5bb5;display:block}
+.toc{font-size:13px;color:#666;line-height:1.9;margin:0 0 10px}.toc a{color:#5b3fa0;text-decoration:none;margin-right:10px}
+.e{color:#c33;font-size:13px}
+</style></head><body><div class="w">
+<h1>정통사주 웹툰 원고 — 시제품(丁卯 남)</h1>
+<p class="sub">뼈대 v1(docs/81) 25회를 사장님 명식 한 벌로 쓴 시제품입니다. 사장님 검수용(09-26 「내가 검수부터」). 이름표: 나 = 파랑 · 책사 = 보라 · 단서 = 상자.</p>
+<div class="toc" id="toc"></div><div id="out"></div></div>
+<script src="jt-webtoon-proto.js?v=1149"></script>
+<script>
+(function () {
+  const P = window.ChaeksaJtProto, out = document.getElementById('out'), toc = document.getElementById('toc');
+  const esc = (t) => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+  if (!P || !P.회) { out.innerHTML = '<p class="e">jt-webtoon-proto.js 가 아직 없어요.</p>'; return; }
+  toc.innerHTML = P.회.map(h => '<a href="#h' + h.번호 + '">' + h.번호 + '</a>').join('') + ' · 명식 ' + esc(P.명식) + ' · ' + P.회.length + '회';
+  out.innerHTML = P.회.map(h => '<h2 id="h' + h.번호 + '">' + h.번호 + '. ' + esc(h.물음) + '<small>' + esc(h.묶음) + '</small></h2>'
+    + (h.줄 || []).map(([누, 말]) => 누 === '장면' ? '<p class="s"><span class="b y">나</span>' + esc(말) + '</p>'
+      : 누 === '나' ? '<p><span class="b y">나</span>' + esc(말) + '</p>'
+      : 누 === '단서' ? '<div class="d"><b>추론의 단서</b>' + esc(말) + '</div>'
+      : '<p><span class="b c">책사</span>' + esc(말) + '</p>').join('')).join('');
+})();
+</script></body></html>
