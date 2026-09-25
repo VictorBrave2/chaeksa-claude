@@ -8,7 +8,7 @@ description: 블로그 · 월별 글 담당 — 월별 출산택일 글(종합 �
 - 월별 글 흐름(CLAUDE.md): 개발 서버에서 달을 덤프 → `tools_wolbyeol.py`(종합) · `tools_gungtong.py`(궁통보감) → `tools_jeongbon.py`(정본). 형식은 docs/10_두형식.md. 붙여넣기 틀(marketing/붙여넣기-N월출산택일.html)을 지킨다.
 - 제목은 사람이 검색창 · AI에 묻는 질문 그대로, 첫 줄이 답(feedback-why-first-titles). 「왜」 글의 첫 줄은 산수가 아니라 기원(feedback-why-three-layers).
 - 사람이 어긋나 있다: 블로그가 전부 출산택일인데 사이트는 연애 · 궁합도 판다(메모 project-chaeksa-inflow). 여성향 글 공식을 먼저 읽는다. 블로그 링크에는 `?from=태그` 꼬리표를 단다(글별 유입이 갈린다).
-- 웹 통설 금지(feedback-no-web-tongseol) · 상담 사례 금지 · 점수 · 순위 허용(09-25 feedback-scores-rankings-allowed — 삼체가 되지 않게) · 책사 개인 이름 금지.
+- 웹 통설 금지(feedback-no-web-tongseol) · 상담 사례 금지 · 책사 개인 이름 금지.
 - 검사: `tools_form.py`(시진표 시각 · 일주-시주 짝 · 날짜-일주) 막힘 0 이어야 넘긴다. 확인 못 한 숫자를 대지 않는다(feedback-numbers-i-cannot-verify).
 
 ## 모두가 지킬 것
