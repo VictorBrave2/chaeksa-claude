@@ -72,13 +72,14 @@
       case '운성': return 사.일지운성; case '운성뜻': return 사.일지운성뜻;
       case '신살': return 사.신살.map(x => x.이름).join(' · ') || '없음'; case '신살뜻': return (사.신살[0] || {}).뜻 || '';
       case '귀인': return 사.귀인.map(x => x.이름).join(' · ') || '없음'; case '귀인뜻': return (사.귀인[0] || {}).뜻 || '';
-      case '재성자리': return 사.재성자리.join('과 ') || '드러난 데 없음'; case '재성종류': return 사.재성종류 === '정재' ? '꼬박꼬박' : 사.재성종류 === '편재' ? '한꺼번에' : '';
+      case '재성자리': return 사.재성자리.map((x, i, a) => i === a.length - 1 ? x : x + (/[가-힣]$/.test(x) && (x.charCodeAt(x.length - 1) - 0xAC00) % 28 ? '과 ' : '와 ')).join('') || '드러난 데 없음'; case '재성종류': return 사.재성종류 === '정재' ? '꼬박꼬박' : 사.재성종류 === '편재' ? '한꺼번에' : '';
       case '비겁': return 사.비겁있음 ? '있어요' : '없어요'; case '관성': return 사.관성있음 ? '있어요' : '없어요';
       case '지금시작': return 사.지금대운 ? 사.지금대운.시작 : ''; case '지금끝': return 사.지금대운 ? 사.지금대운.끝 : '';
       case '지금격': return 사.지금대운 ? 사.지금대운.격 : 사.격; case '지금성패': return 사.지금대운 ? 사.지금대운.성패 : 사.성패;
       case '바뀐해': return 사.바뀜.length ? 사.바뀜[0].시작 : ''; case '돌아오는해': return 사.돌아옴 ? 사.돌아옴.시작 : '';
       case '다음시작': return 사.다음대운 ? 사.다음대운.시작 : ''; case '올해': return 사.올해;
-      case '격': return 사.격; case '성패': return 사.성패; case '바람': return (global.ChaeksaSsom && global.ChaeksaSsom.바라는사람 || {})[사.바람] || '';
+      case '격': return 사.격; case '성패': return 사.성패;
+      case '언행': return ({ 식신드러남: '챙기는 게 바로 보이는 사람', 식신숨음: '말없이 챙겨 놓는 사람', 상관드러남: '할 말이 먼저 나오는 사람', 상관숨음: '할 말을 속에 두는 사람', 없음: '겉으로는 티가 잘 안 나는 사람' })[사.언행키] || ''; case '바람': return (global.ChaeksaSsom && global.ChaeksaSsom.바라는사람 || {})[사.바람] || '';
       default: return null;
     }
   }
