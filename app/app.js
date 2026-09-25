@@ -409,12 +409,21 @@
   const 지금자리 = () => window.scrollY || document.documentElement.scrollTop || 0;
   const 열린탭 = () => { const el = document.querySelector('.tab:not(.hide)'); return el ? el.dataset.tab : ''; };
 
+  // 09-25 사장님 「콘텐츠 들어가면 홈으로 빠져나갈 길이 위아래 있어야」 — 화면 규격: 홈이 아닌 탭은 맨 위 · 맨 아래에 「← 홈」. 코드가 보장한다(탭마다 손으로 안 넣는다).
+  function 홈길(tab) {
+    if (tab === 'home') return;
+    const el = document.querySelector('.tab[data-tab="' + tab + '"]'); if (!el) return;
+    const 만들기 = (pos) => { const b = document.createElement('button'); b.className = 'btn ghost small backhome backhome-' + pos; b.dataset.open = 'home'; b.textContent = '← 홈'; b.onclick = () => go('home'); return b; };
+    if (!el.querySelector(':scope > .backhome-top')) { const t = el.querySelector(':scope > .backhome'); if (t) t.classList.add('backhome-top'); else el.insertAdjacentElement('afterbegin', 만들기('top')); }
+    if (!el.querySelector(':scope > .backhome-bottom')) el.insertAdjacentElement('beforeend', 만들기('bottom'));
+  }
   function go(tab) {
     // 떠나기 전에 자리를 적어 둔다. 그리기 전에 해야 한다 — 그린 뒤엔 이미 0 으로 튕겨 있다.
     // 홈에서 아래 「홈」을 다시 누르는 것은 「맨 위로」라는 뜻이다. 그때만 자리를 잊는다.
     if (열린탭() === 'home') 홈자리 = (tab === 'home') ? 0 : 지금자리();
     // 유형 카드(789 유형·SSR 등급·시즌 카드)는 2026-09-04 삭제 — 「무슨 말인지도 모르더라」. 옛 링크는 홈으로.
     if (tab === 'gacha' || tab === 'today') tab = 'home';   // 오늘 탭은 2026-09-13 에 걷었다 — 옛 링크는 홈으로
+    홈길(tab);
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
