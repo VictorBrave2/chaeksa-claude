@@ -20,10 +20,15 @@
     const 층들 = 판.층들 || [], 원 = 층들[0] || {}, 원격 = (원.격 && 원.격.성패) || T.gyeok(R);
     const 격 = 격정리(원격.격 || 원격.name), 성패 = 성패키[원격.판정] || '성격';
     const 잰 = 원격.잰것 || {}, 있는힘 = Object.keys(무리말).filter(k => (잰[k] || 0) > 0).map(k => 무리말[k]), 없는힘 = Object.keys(무리말).filter(k => !(잰[k] || 0)).map(k => 무리말[k]);
-    const 기신 = (원.격 && 원.격.기신글자) || '', 구응 = /구응|구제/.test(원격.판정) || (원격.근거 && 원격.근거.구제 && 원격.근거.구제.length > 0);
+    // 09-26 검수: 기신은 판정 근거 문장에서 십신 낱말을 뽑는다(엔진이 글자를 따로 안 넘김). 구응은 판정이 구응일 때만. 상신이 비면 격표 상신.
+    const 근거글 = ((원격.근거 || {}).깨졌다 || []).concat((원격.근거 || {}).띠었다 || []).join(' ');
+    const 기신십신 = (근거글.match(/비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|관살|재성|인성|식상|비겁/) || [])[0] || '';
+    const 기신 = 기신십신, 구응 = 성패 === '구응';
+    const 상신원 = 원격.상신 || (T.gyeok(R) || {}).상신 || '';
     // 대운마다 격 · 성패(실제 연도) — 격이 바뀌는 해 · 돌아오는 해
     const 대운 = ((R.daeun && R.daeun.list) || []).map(d => { let g = 격, s = 성패; try { const j = P.판정(R, new Date(d.startYear + 1, 6, 1)); const l = (j.층들 || []).find(x => x.name === '대운' || x.이름 === '대운') || (j.층들 || [])[1]; if (l && l.격 && l.격.성패) { g = 격정리(l.격.성패.격); s = 성패키[l.격.성패.판정] || s; } } catch (e) {} return { 시작: d.startYear, 끝: d.startYear + 9, 간지: E.STEMS[d.stem] + E.BRANCHES[d.branch], 격: g, 성패: s }; });
     const 올해 = (today || new Date()).getFullYear(), 지금대운 = 대운.find(d => 올해 >= d.시작 && 올해 <= d.끝) || null, 지금i = 대운.indexOf(지금대운);
+    const 펴짐 = (성패 === '파격' || 성패 === '기신') ? (대운.slice(Math.max(0, 지금i)).find(d => d.성패 === '성격' || d.성패 === '구응') || null) : null;   // 원국이 접힌 사람이 펴지는 첫 열 해
     const 바뀜 = 대운.filter(d => d.격 !== 격), 돌아옴 = 지금대운 && 지금대운.격 !== 격 ? (대운.slice(지금i + 1).find(d => d.격 === 격) || null) : null;
     const 운성 = (S.십이운성(R) || []), 일지운성 = (운성.find(x => x.자리 === '일지') || {});
     const 신살 = (S.신살(R) || []).map(x => ({ 이름: x.이름, 뜻: (x.글 || [])[3] || '', 줄: (x.줄 || [])[0] || '' })), 귀인 = (S.귀인(R) || []).map(x => ({ 이름: x.이름, 뜻: (x.글 || [])[3] || '', 줄: (x.줄 || [])[0] || '' }));
@@ -35,7 +40,7 @@
     return {
       R, 일간: E.STEMS[ds], 일간오행: 오행ko[E.STEM_ELEM[ds]], 일간크기: E.STEM_YANG[ds] ? '큰' : '작은', 계절: 계절of(p.month.branch), 월지: E.BRANCHES[p.month.branch],
       찾는글자: 조후 ? 조후.need : '', 찾는글자있음: !!(조후 && 조후.hasMain), 돕는글자있음: !!(조후 && 조후.hasAux),
-      격, 성패, 상신: 원격.상신 || '', 상신말: 상신말(원격.상신), 있는힘, 없는힘, 기신, 기신말: 기신 ? (십신말[E.TEN_GODS[E.tenGod(ds, E.STEMS.indexOf(기신))]] || '') : '', 구응: !!구응,
+      격, 성패, 상신: 상신원, 상신말: 상신말(상신원), 있는힘, 없는힘, 기신, 기신말: 기신 ? (십신말[기신] || 무리말[기신] || 상신말(기신)) : '', 구응: !!구응, 펴짐: 펴짐,
       대운, 지금대운, 다음대운: 대운[지금i + 1] || null, 바뀜, 돌아옴, 올해,
       일지운성: 일지운성.단계 || '', 일지운성뜻: 일지운성.뜻 || '', 신살, 귀인,
       재성종류, 재성자리, 비겁있음, 관성있음, 바람, 언행키,
@@ -57,28 +62,49 @@
   ].map(([번호, 묶음, 물음]) => ({ 번호, 묶음, 물음, 줄: [['책사', 물음], ['@장면', 번호], ['@나', 번호], ['@답', 번호], ['@해설', 번호], ['@단서', 번호]] }));
 
   // 답 틀의 {변수}를 사람 값으로. 없는 변수는 빈 글자(검수 때 드러나게 opts.검수면 {이름} 그대로).
+  // 09-26 검수 뒤: {이름} · {이름|조사}(과 · 이라 · 은 · 이 · 을 · 로 — 받침 따라) · {?이름:있을 때 글|없을 때 글}(있을 때 글 안의 {이름}도 채움). 검수 모드면 빈 값을 {이름}으로 남긴다.
+  const 받침 = (t) => { const c = String(t).charCodeAt(String(t).length - 1) - 0xAC00; return c >= 0 && c < 11172 ? (c % 28) !== 0 : /[0-9]/.test(String(t).slice(-1)) ? /[013678]/.test(String(t).slice(-1)) : false; };
+  const 조사 = { 과: ['과', '와'], 이라: ['이라', '라'], 은: ['은', '는'], 이: ['이', '가'], 을: ['을', '를'], 로: ['으로', '로'], 이에요: ['이에요', '예요'] };
   function 채우기(틀, 사, opts) {
-    return String(틀 || '').replace(/\{([^}]+)\}/g, (m, k) => {
-      const v = 값(k, 사); if (v == null || v === '') return opts && opts.검수 ? m : '';
+    let t = String(틀 || '');
+    // {?이름:A|B} — A · B 안에 {이름}이 들어 있어도 되게 중괄호를 세며 짝을 찾는다
+    for (let guard = 0; guard < 50; guard++) {
+      const i = t.indexOf('{?'); if (i < 0) break;
+      let depth = 0, j = i, bar = -1;
+      for (; j < t.length; j++) { const c = t[j]; if (c === '{') depth++; else if (c === '}') { depth--; if (depth === 0) break; } else if (c === '|' && depth === 1 && bar < 0) bar = j; }
+      if (j >= t.length) break;
+      const colon = t.indexOf(':', i), k = t.slice(i + 2, colon), A = bar < 0 ? t.slice(colon + 1, j) : t.slice(colon + 1, bar), B = bar < 0 ? '' : t.slice(bar + 1, j);
+      const v = 값(k, 사); t = t.slice(0, i) + ((v == null || v === '') ? B : A) + t.slice(j + 1);
+    }
+    return t.replace(/\{([^}|]+)(?:\|([^}]+))?\}/g, (m, k, j) => {
+      const v = 값(k, 사); if (v == null || v === '') return opts && opts.검수 ? '{' + k + '}' : '';
+      if (j && 조사[j]) { const pair = 조사[j]; return String(v) + (받침(v) ? pair[0] : pair[1]); }
       return String(v);
     });
   }
+
   function 값(k, 사) {
     switch (k) {
       case '계절': return 사.계절; case '오행': return 사.일간오행; case '크기': return 사.일간크기; case '월지': return 사.월지;
-      case '찾는글자있음': return 사.찾는글자있음 ? '있어요' : '없어요';
+      case '찾는글자있음': return 사.찾는글자있음 ? '있어요' : '';
       case '있는힘': return 사.있는힘.join(' · '); case '없는힘': return 사.없는힘.join(' · ');
-      case '상신말': return 사.상신말; case '기신말': return 사.기신말; case '구응': return 사.구응 ? '있어요' : '없어요';
+      case '상신말': return 사.상신말; case '기신말': return 사.기신말; case '구응': return 사.구응 ? '있어요' : '';
       case '운성': return 사.일지운성; case '운성뜻': return 사.일지운성뜻;
       case '신살': return 사.신살.map(x => x.이름).join(' · ') || '없음'; case '신살뜻': return (사.신살[0] || {}).뜻 || '';
       case '귀인': return 사.귀인.map(x => x.이름).join(' · ') || '없음'; case '귀인뜻': return (사.귀인[0] || {}).뜻 || '';
-      case '재성자리': return 사.재성자리.map((x, i, a) => i === a.length - 1 ? x : x + (/[가-힣]$/.test(x) && (x.charCodeAt(x.length - 1) - 0xAC00) % 28 ? '과 ' : '와 ')).join('') || '드러난 데 없음'; case '재성종류': return 사.재성종류 === '정재' ? '꼬박꼬박' : 사.재성종류 === '편재' ? '한꺼번에' : '';
-      case '비겁': return 사.비겁있음 ? '있어요' : '없어요'; case '관성': return 사.관성있음 ? '있어요' : '없어요';
+      case '재성자리': return 사.재성자리.map((x, i, a) => i === a.length - 1 ? x : x + (/[가-힣]$/.test(x) && (x.charCodeAt(x.length - 1) - 0xAC00) % 28 ? '과 ' : '와 ')).join(''); case '재성종류': return 사.재성종류 === '정재' ? '꼬박꼬박' : 사.재성종류 === '편재' ? '한꺼번에' : '';
+      case '비겁': return 사.비겁있음 ? '있어요' : ''; case '관성': return 사.관성있음 ? '있어요' : '';   // 없으면 빈 값 — {?이름:…|…} 갈래용
       case '지금시작': return 사.지금대운 ? 사.지금대운.시작 : ''; case '지금끝': return 사.지금대운 ? 사.지금대운.끝 : '';
       case '지금격': return 사.지금대운 ? 사.지금대운.격 : 사.격; case '지금성패': return 사.지금대운 ? 사.지금대운.성패 : 사.성패;
       case '바뀐해': return 사.바뀜.length ? 사.바뀜[0].시작 : ''; case '돌아오는해': return 사.돌아옴 ? 사.돌아옴.시작 : '';
       case '다음시작': return 사.다음대운 ? 사.다음대운.시작 : ''; case '올해': return 사.올해;
       case '격': return 사.격; case '성패': return 사.성패;
+      case '비겁있음': return 사.비겁있음 ? '있음' : ''; case '관성있음': return 사.관성있음 ? '있음' : ''; case '재성있음': return 사.재성자리.length ? '있음' : '';
+      case '펴지는해': return 사.펴짐 ? 사.펴짐.시작 : ''; case '같은격': return 사.지금대운 && 사.지금대운.격 === 사.격 ? '같음' : (사.지금대운 ? '' : '같음');
+      case '찾는글자': return 사.찾는글자; case '지금간지': return 사.지금대운 ? 사.지금대운.간지 : '';
+      case '운성말': return ((global.ChaeksaJtJogak || {}).운성말 || {})[사.일지운성] || '';
+      case '신살말': return 사.신살.map(x => ((global.ChaeksaJtJogak || {}).신살말 || {})[x.이름]).filter(Boolean).join(', ') || '';
+      case '귀인말': return 사.귀인.map(x => ((global.ChaeksaJtJogak || {}).귀인말 || {})[x.이름]).filter(Boolean).join(', ') || '';
       case '언행': return ({ 식신드러남: '챙기는 게 바로 보이는 사람', 식신숨음: '말없이 챙겨 놓는 사람', 상관드러남: '할 말이 먼저 나오는 사람', 상관숨음: '할 말을 속에 두는 사람', 없음: '겉으로는 티가 잘 안 나는 사람' })[사.언행키] || ''; case '바람': return (global.ChaeksaSsom && global.ChaeksaSsom.바라는사람 || {})[사.바람] || '';
       default: return null;
     }
