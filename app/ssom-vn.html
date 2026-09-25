@@ -62,9 +62,9 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1161"></script><script src="astro.js?v=1161"></script><script src="lunar.js?v=1161"></script><script src="engine.js?v=1161"></script>
-<script src="saenggeuk.js?v=1161"></script><script src="gise.js?v=1161"></script><script src="panjeong.js?v=1161"></script><script src="typecard.js?v=1161"></script><script src="gyeokguk.js?v=1161"></script>
-<script src="ssom-gwanjeom.js?v=1161"></script><script src="ssom-baram.js?v=1161"></script><script src="ssom-daehwa.js?v=1161"></script><script src="ssom-webtoon.js?v=1161"></script><script src="ssom-webtoon-2.js?v=1161"></script><script src="ssom-webtoon-3.js?v=1161"></script><script src="ssom-wongo.js?v=1161"></script><script src="ssom-dangye.js?v=1161"></script><script src="ssom.js?v=1161"></script>
+<script src="config.js?v=1163"></script><script src="astro.js?v=1163"></script><script src="lunar.js?v=1163"></script><script src="engine.js?v=1163"></script>
+<script src="saenggeuk.js?v=1163"></script><script src="gise.js?v=1163"></script><script src="panjeong.js?v=1163"></script><script src="typecard.js?v=1163"></script><script src="gyeokguk.js?v=1163"></script>
+<script src="classic.js?v=1163"></script><script src="samyeong.js?v=1163"></script><script src="jt-webtoon.js?v=1163"></script><script src="jt-webtoon-2.js?v=1163"></script><script src="ssom-gwanjeom.js?v=1163"></script><script src="ssom-baram.js?v=1163"></script><script src="ssom-daehwa.js?v=1163"></script><script src="ssom-webtoon.js?v=1163"></script><script src="ssom-webtoon-2.js?v=1163"></script><script src="ssom-webtoon-3.js?v=1163"></script><script src="ssom-wongo.js?v=1163"></script><script src="ssom-dangye.js?v=1163"></script><script src="ssom.js?v=1163"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -72,20 +72,33 @@
   const S = window.ChaeksaSsom, P = window.ChaeksaSsomPage;
   let v = null; try { v = JSON.parse(sessionStorage.getItem('chaeksa.ssomVn') || 'null'); } catch (e) {}
   if (!v || !v.a) v = { a: { year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 }, b: { year: 1999, month: 12, day: 20, hour: 20, minute: 0, gender: 'F', longitude: 126.98 }, opts: { 만난: { y: 2026, m: 8 }, 단계: '썸' }, 견본: true };
-  let 대; try { 대 = P.대본(v.a, v.b, v.opts || {}); } catch (e) { 대 = null; }
+  // 09-26 정통사주 웹툰(한 사람) — sessionStorage chaeksa.jtVn {a} 가 있으면 그 대본으로. 회 = 장, 컷 = 줄. 접힘(해설 · 단서)은 장면 보기에서 뺀다(글 보기 「왜 그럴까」에서).
+  let jt = null; try { jt = JSON.parse(sessionStorage.getItem('chaeksa.jtVn') || 'null'); } catch (e) {}
+  if (/[?&]jt=1/.test(location.search) && !jt) jt = { a: { year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 }, 견본: true };
+  const 컷이름 = { 1: '01-born', 2: '02-push', 3: '03-seat', 4: '04-good-bad', 5: '05-who', 6: '06-steady', 7: '07-shake', 8: '08-power', 9: '09-shadow', 10: '10-money-in', 11: '11-money-stay', 12: '12-money-year', 13: '13-heart', 14: '14-in-love', 15: '15-work', 16: '16-alone-together', 17: '17-work-year', 18: '18-ten-years', 19: '19-return', 20: '20-where' };
+  const 격컷 = { 정관: 'jeonggwan', 편관: 'pyeongwan', 정재: 'jeongjae', 편재: 'pyeonjae', 정인: 'jeongin', 편인: 'pyeonin', 식신: 'siksin', 상관: 'sanggwan', 비견: 'bigyeon', 겁재: 'geopjae' };
+  function 정통대본(a) {
+    const J = window.ChaeksaJtWebtoon; if (!J) return null;
+    const R = ChaeksaEngine.calc(a), 사 = J.사람(R), g = a.gender === 'M' ? 'm' : 'f';
+    const 장들 = J.조립(R, {}).map(h => ({ 제목: h.물음, 배경: ['jt-' + ((h.번호 === 3 || h.번호 === 4 || h.번호 === 15) && 격컷[사.격] ? 'g-' + 격컷[사.격] : 컷이름[h.번호]) + '-' + g],
+      줄: h.줄.filter(([k]) => k !== '해설' && k !== '단서').map(([k, 말]) => k === '장면' ? { 누가: '장면', 말, 주인: '당신' } : k === '나' ? { 누가: '당신', 말 } : { 누가: '책사', 말, 쪽: k === '답' ? 0 : 1 }) }));
+    return { 장들, 총론수: 0, 키: 'jt' };
+  }
+  let 대; try { 대 = jt && jt.a ? 정통대본(jt.a) : P.대본(v.a, v.b, v.opts || {}); } catch (e) { 대 = null; }
+  if (jt && jt.a) { v = { a: jt.a, 견본: !!jt.견본 }; document.title = '정통사주 — 장면으로 보기 · 책사'; }
   const $ = (id) => document.getElementById(id);
   const bgs = [$('bgA'), $('bgB')]; let 앞 = 0, 지금배경 = '';
   const 배경바꾸기 = (u) => { if (!u || u === 지금배경) return; 지금배경 = u; 앞 ^= 1; bgs[앞].style.backgroundImage = 'url(art/' + u + '.webp)'; bgs[앞].classList.add('on'); bgs[앞 ^ 1].classList.remove('on'); };
   for (let i = 0; i < 14; i++) { const p = document.createElement('i'); p.className = 'petal'; p.style.left = Math.random() * 110 + '%'; p.style.animationDuration = 7 + Math.random() * 8 + 's'; p.style.animationDelay = -Math.random() * 12 + 's'; p.style.opacity = .4 + Math.random() * .5; $('petals').appendChild(p); }
   const 굵 = (x) => x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = 'ssom.html'; }
+  function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = jt && jt.a ? './?go=jeongtong' : 'ssom.html'; }
   $('back').onclick = (e) => { e.preventDefault(); e.stopPropagation(); 돌아가기(); };
   if (!대 || !대.장들.length) { $('chap').innerHTML = '<h1>장면을 만들지 못했어요</h1><p><a href="ssom.html" style="color:#fff">글로 보기로 돌아가기</a></p>'; return; }
   const 장들 = 대.장들, 총론 = 대.총론수 || 5, 첫장 = /[?&]at=stage/.test(location.search) && 장들.length > 총론 ? 총론 : 0;   // 「이 단계를 장면으로 보기」는 단계 첫 장부터
   let 장 = 0, 줄들 = [], n = -1, 치는중 = null, 다침 = true, 멈춤 = false, 표지중 = false, 반응중 = false;
   function 표지(i) {
     장 = i; 멈춤 = true; 표지중 = true; 반응중 = false; $('choices').classList.remove('on');
-    $('chap').innerHTML = '<small>' + (i + 1) + ' / ' + 장들.length + '</small><h1>' + 굵(장들[i].제목) + '</h1><p>' + (v.견본 && i === 0 ? '견본 — 사장님 쌍(丁卯 × 丙午, 26년 8월에 만남)<br>' : '') + '눌러서 시작</p>';
+    $('chap').innerHTML = '<small>' + (i + 1) + ' / ' + 장들.length + '</small><h1>' + 굵(장들[i].제목) + '</h1><p>' + (v.견본 && i === 0 ? (jt ? '견본 — 사장님 명식(丁卯)<br>' : '견본 — 사장님 쌍(丁卯 × 丙午, 26년 8월에 만남)<br>') : '') + '눌러서 시작</p>';
     $('chap').classList.remove('off'); 배경바꾸기(장들[i].배경[0]);
   }
   function 시작() { $('chap').classList.add('off'); 표지중 = false; 멈춤 = false; 줄들 = 장들[장].줄.map((x, j, a) => Object.assign({ 배경: 장들[장].배경[Math.min(장들[장].배경.length - 1, Math.floor(j * 장들[장].배경.length / a.length))] }, x)); n = 0; 보이기(); }
@@ -116,7 +129,7 @@
   }
   function 다음단추() {
     멈춤 = true;
-    if (장 + 1 >= 장들.length) { 책사말('끝까지 보셨어요. 두 분의 이야기는 여기까지예요.'); return 선택(['처음부터 다시', '목차', '글로 보기'], (t) => t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
+    if (장 + 1 >= 장들.length) { 책사말(jt ? '끝까지 보셨어요. 당신 이야기는 여기까지예요.' : '끝까지 보셨어요. 두 분의 이야기는 여기까지예요.'); return 선택(['처음부터 다시', '목차', '글로 보기'], (t) => t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
     선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
   function 목차() {
