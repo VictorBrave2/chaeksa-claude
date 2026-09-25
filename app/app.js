@@ -122,6 +122,21 @@
     if (p) $('personName').textContent = 사람이름(p.name) || '나';
   }
 
+  // 09-25 사람 고르기 · 고치기 폼이 같이 쓴다(wirePeople 안에 두면 openPeople 이 못 본다)
+  function 사람지우기(id) {
+    const P = People(), p = P.get(id);
+    if (!p) return;
+    if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다. 계속할까요?`)) return;
+    const 지운사람 = p.id;
+    P.remove(id);
+    $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
+    // 로그인돼 있으면 서버에서도 지운다 — 안 그러면 다음에 앱을 열 때 되살아난다(2026-09-22 점검). 실패해도 앱은 그대로 간다.
+    if (window.ChaeksaCloud) {
+      try { if (ChaeksaCloud.removePerson) ChaeksaCloud.removePerson(지운사람).catch(() => {}); } catch (e) {}
+      ChaeksaCloud.pushSoon();
+    }
+    start(P.toProfile(P.active()));
+  }
   function openPeople() {
     const P = People(); if (!P) return;
     const cur = P.activeId();
@@ -268,20 +283,6 @@
     $('pfCancel').onclick = () => $('personForm').classList.add('hide');
     $('pfSave').onclick = savePerson;
     $('pfDelete').onclick = () => 사람지우기(editingId);
-    function 사람지우기(id) {
-      const P = People(), p = P.get(id);
-      if (!p) return;
-      if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다. 계속할까요?`)) return;
-      const 지운사람 = p.id;
-      P.remove(id);
-      $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
-      // 로그인돼 있으면 서버에서도 지운다 — 안 그러면 다음에 앱을 열 때 되살아난다(2026-09-22 점검). 실패해도 앱은 그대로 간다.
-      if (window.ChaeksaCloud) {
-        try { if (ChaeksaCloud.removePerson) ChaeksaCloud.removePerson(지운사람).catch(() => {}); } catch (e) {}
-        ChaeksaCloud.pushSoon();
-      }
-      start(P.toProfile(P.active()));
-    }
     $('pfCalSeg').querySelectorAll('button').forEach(b => b.onclick = () => setPfCal(b.dataset.cal));
     ['pfY', 'pfM', 'pfD'].forEach(id => $(id).addEventListener('input', updatePfConv));
     $('pfLeap').addEventListener('change', updatePfConv);
