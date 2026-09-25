@@ -33,7 +33,7 @@
     const 운성 = (S.십이운성(R) || []), 일지운성 = (운성.find(x => x.자리 === '일지') || {});
     const 신살 = (S.신살(R) || []).map(x => ({ 이름: x.이름, 뜻: (x.글 || [])[3] || '', 줄: (x.줄 || [])[0] || '' })), 귀인 = (S.귀인(R) || []).map(x => ({ 이름: x.이름, 뜻: (x.글 || [])[3] || '', 줄: (x.줄 || [])[0] || '' }));
     const 십 = (k) => E.TEN_GODS[E.tenGod(ds, p[k].stem)], 자리 = ['year', 'month', 'hour'].filter(k => p[k]);
-    const 재성자리 = 자리.filter(k => /재/.test(십(k))).map(k => ({ year: '태어난 해', month: '태어난 달', hour: '태어난 시' })[k]), 재성종류 = 자리.map(십).find(x => /재/.test(x)) || '';
+    const 재성자리 = 자리.filter(k => /정재|편재/.test(십(k))).map(k => ({ year: '태어난 해', month: '태어난 달', hour: '태어난 시' })[k]), 재성종류 = 자리.map(십).find(x => /정재|편재/.test(x)) || '';   // 09-26 작가: /재/ 는 겁재도 잡았다
     const 비겁있음 = 자리.some(k => /비견|겁재/.test(십(k))), 관성있음 = 자리.some(k => /관/.test(십(k)));
     const SS = global.ChaeksaSsom, 바람 = SS ? SS.일지십신(R) : '', 언 = SS ? (SS.언행(R) || [])[0] : null, 언행키 = 언 ? 언.십신 + (언.드러남 ? '드러남' : '숨음') : '없음';
     let 조후 = null; try { 조후 = global.ChaeksaClassic.gungtong(R); } catch (e) {}
@@ -103,8 +103,8 @@
       case '펴지는해': return 사.펴짐 ? 사.펴짐.시작 : ''; case '같은격': return 사.지금대운 && 사.지금대운.격 === 사.격 ? '같음' : (사.지금대운 ? '' : '같음');
       case '찾는글자': return 사.찾는글자; case '지금간지': return 사.지금대운 ? 사.지금대운.간지 : '';
       case '운성말': return ((global.ChaeksaJtJogak || {}).운성말 || {})[사.일지운성] || '';
-      case '신살말': return 사.신살.map(x => ((global.ChaeksaJtJogak || {}).신살말 || {})[x.이름]).filter(Boolean).join(', ') || '';
-      case '귀인말': return 사.귀인.map(x => ((global.ChaeksaJtJogak || {}).귀인말 || {})[x.이름]).filter(Boolean).join(', ') || '';
+      case '신살말': return 사.신살.map(x => ((global.ChaeksaJtJogak || {}).신살말 || {})[x.이름]).filter(Boolean).slice(0, 2).join(', ') || '';   // 답 20자 — 둘까지(나머지는 단서 {신살})
+      case '귀인말': return 사.귀인.map(x => ((global.ChaeksaJtJogak || {}).귀인말 || {})[x.이름]).filter(Boolean).slice(0, 2).join(', ') || '';
       case '언행': return ({ 식신드러남: '챙기는 게 바로 보이는 사람', 식신숨음: '말없이 챙겨 놓는 사람', 상관드러남: '할 말이 먼저 나오는 사람', 상관숨음: '할 말을 속에 두는 사람', 없음: '겉으로는 티가 잘 안 나는 사람' })[사.언행키] || ''; case '바람': return (global.ChaeksaSsom && global.ChaeksaSsom.바라는사람 || {})[사.바람] || '';
       default: return null;
     }
