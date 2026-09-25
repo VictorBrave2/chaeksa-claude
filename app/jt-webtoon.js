@@ -19,21 +19,29 @@
     const p = R.pillars, ds = p.day.stem, 판 = P.판정(R, today || new Date());
     const 층들 = 판.층들 || [], 원 = 층들[0] || {}, 원격 = (원.격 && 원.격.성패) || T.gyeok(R);
     const 격 = 격정리(원격.격 || 원격.name), 성패 = 성패키[원격.판정] || '성격';
-    const 잰 = 원격.잰것 || {}, 있는힘 = Object.keys(무리말).filter(k => (잰[k] || 0) > 0).map(k => 무리말[k]), 없는힘 = Object.keys(무리말).filter(k => !(잰[k] || 0)).map(k => 무리말[k]);
+    const 잰 = Object.assign({}, 원격.잰것 || {});
+    { const 격무리 = ({ 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상', 편재: '재성', 정재: '재성', 편관: '관성', 정관: '관성', 편인: '인성', 정인: '인성' })[격]; if (격무리 && !(잰[격무리] || 0)) 잰[격무리] = 0.01; }   // 격 자체(월지)는 있는 힘(검수 2바퀴)
+    const 있는힘 = Object.keys(무리말).filter(k => (잰[k] || 0) > 0).map(k => 무리말[k]), 없는힘 = Object.keys(무리말).filter(k => !(잰[k] || 0)).map(k => 무리말[k]);
     // 09-26 검수: 기신은 판정 근거 문장에서 십신 낱말을 뽑는다(엔진이 글자를 따로 안 넘김). 구응은 판정이 구응일 때만. 상신이 비면 격표 상신.
-    const 근거글 = ((원격.근거 || {}).깨졌다 || []).concat((원격.근거 || {}).띠었다 || []).join(' ');
+    const 근거글 = ((원격.근거 || {}).깨졌다 || []).concat((원격.근거 || {}).띠었다 || []).filter(x => !/없어|없다|없고/.test(x)).join(' ');   // 「관살이 없어 …」는 기신이 아니라 빈자리(검수 2바퀴)
     const 기신십신 = (근거글.match(/비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|관살|재성|인성|식상|비겁/) || [])[0] || '';
     const 기신 = 기신십신, 구응 = 성패 === '구응';
-    const 상신원 = 원격.상신 || (T.gyeok(R) || {}).상신 || '';
+    // 상신: 엔진이 비면 격표 상신을 쓰되, 그 무리가 원국에 없으면(잰것 0) 비운다 — 「앉힌 손이 없다」 갈래로(검수 2바퀴)
+    const 무리키 = (t) => /재/.test(t) ? '재성' : /인/.test(t) ? '인성' : /식|상/.test(t) ? '식상' : /관|살/.test(t) ? '관성' : /비|겁/.test(t) ? '비겁' : '';
+    const 격표상신 = (T.gyeok(R) || {}).상신 || '';
+    const 상신원 = 원격.상신 || (격표상신 && String(격표상신).split(/과|와|·/).map(x => x.trim()).filter(Boolean).every(x => (잰[무리키(x)] || 0) > 0) ? 격표상신 : '');
     // 대운마다 격 · 성패(실제 연도) — 격이 바뀌는 해 · 돌아오는 해
     const 대운 = ((R.daeun && R.daeun.list) || []).map(d => { let g = 격, s = 성패; try { const j = P.판정(R, new Date(d.startYear + 1, 6, 1)); const l = (j.층들 || []).find(x => x.name === '대운' || x.이름 === '대운') || (j.층들 || [])[1]; if (l && l.격 && l.격.성패) { g = 격정리(l.격.성패.격); s = 성패키[l.격.성패.판정] || s; } } catch (e) {} return { 시작: d.startYear, 끝: d.startYear + 9, 간지: E.STEMS[d.stem] + E.BRANCHES[d.branch], 격: g, 성패: s }; });
     const 올해 = (today || new Date()).getFullYear(), 지금대운 = 대운.find(d => 올해 >= d.시작 && 올해 <= d.끝) || null, 지금i = 대운.indexOf(지금대운);
-    const 펴짐 = (성패 === '파격' || 성패 === '기신') ? (대운.slice(Math.max(0, 지금i)).find(d => d.성패 === '성격' || d.성패 === '구응') || null) : null;   // 원국이 접힌 사람이 펴지는 첫 열 해
-    const 바뀜 = 대운.filter(d => d.격 !== 격), 돌아옴 = 지금대운 && 지금대운.격 !== 격 ? (대운.slice(지금i + 1).find(d => d.격 === 격) || null) : null;
+    const 태어난해 = R.pillars && R.input ? R.input.year : (R.birth && R.birth.year) || (대운[0] ? 대운[0].시작 - (R.daeun.list[0].startAge || 0) : 0);
+    const 너무늦음 = (d) => !!(d && 태어난해 && d.시작 - 태어난해 > 70);   // 70세 넘어 오는 해는 「없음」으로(검수 2바퀴 — 「잠깐 접힌」 뒤에 60년이 붙던 것)
+    대운.forEach(d => { d.늦음 = 너무늦음(d); });
+    const 펴짐0 = (성패 === '파격' || 성패 === '기신') ? (대운.slice(Math.max(0, 지금i)).find(d => d.성패 === '성격' || d.성패 === '구응') || null) : null, 펴짐 = 펴짐0 && !펴짐0.늦음 ? 펴짐0 : null;   // 원국이 접힌 사람이 펴지는 첫 열 해
+    const 바뀜 = 대운.filter(d => d.격 !== 격 && !d.늦음), 돌아옴0 = 지금대운 && 지금대운.격 !== 격 ? (대운.slice(지금i + 1).find(d => d.격 === 격) || null) : null, 돌아옴 = 돌아옴0 && !돌아옴0.늦음 ? 돌아옴0 : null;
     const 운성 = (S.십이운성(R) || []), 일지운성 = (운성.find(x => x.자리 === '일지') || {});
     const 신살 = (S.신살(R) || []).map(x => ({ 이름: x.이름, 뜻: (x.글 || [])[3] || '', 줄: (x.줄 || [])[0] || '' })), 귀인 = (S.귀인(R) || []).map(x => ({ 이름: x.이름, 뜻: (x.글 || [])[3] || '', 줄: (x.줄 || [])[0] || '' }));
     const 십 = (k) => E.TEN_GODS[E.tenGod(ds, p[k].stem)], 자리 = ['year', 'month', 'hour'].filter(k => p[k]);
-    const 재성자리 = 자리.filter(k => /정재|편재/.test(십(k))).map(k => ({ year: '태어난 해', month: '태어난 달', hour: '태어난 시' })[k]), 재성종류 = 자리.map(십).find(x => /정재|편재/.test(x)) || '';   // 09-26 작가: /재/ 는 겁재도 잡았다
+    const 재성자리 = 자리.filter(k => /정재|편재/.test(십(k))).map(k => ({ year: '태어난 해', month: '태어난 달', hour: '태어난 시' })[k]).concat(/정재|편재/.test(격) ? ['태어난 달'] : []).filter((x, i, arr) => arr.indexOf(x) === i), 재성종류 = 자리.map(십).find(x => /정재|편재/.test(x)) || (/정재|편재/.test(격) ? 격 : '');   // 09-26 작가: /재/ 는 겁재도 잡았다
     const 비겁있음 = 자리.some(k => /비견|겁재/.test(십(k))), 관성있음 = 자리.some(k => /관/.test(십(k)));
     const SS = global.ChaeksaSsom, 바람 = SS ? SS.일지십신(R) : '', 언 = SS ? (SS.언행(R) || [])[0] : null, 언행키 = 언 ? 언.십신 + (언.드러남 ? '드러남' : '숨음') : '없음';
     let 조후 = null; try { 조후 = global.ChaeksaClassic.gungtong(R); } catch (e) {}
