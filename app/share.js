@@ -242,6 +242,22 @@
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
   // 카톡은 파일이 붙은 공유에서 글 · 링크를 버리고 그림만 받는다(09-26 사장님 폰 실측). 그래서 링크(url)는 공유 전에 클립보드에도 넣어 둔다 — 붙여 넣으면 같이 간다.
+  // 카카오 링크 공유(09-26) — 그림 + 한 줄 + 단추가 카톡 대화창에 한 장으로 간다. 그림은 https 정적 jpg(art/kakao/), 글만 개인화(카카오 한도 200자).
+  let kakaoLoading = null;
+  function kakaoReady() {
+    const key = global.CHAEKSA_KAKAO_JS_KEY; if (!key) return Promise.resolve(false);
+    if (global.Kakao && global.Kakao.isInitialized && global.Kakao.isInitialized()) return Promise.resolve(true);
+    if (!kakaoLoading) kakaoLoading = new Promise(res => { const s = document.createElement('script'); s.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js'; s.crossOrigin = 'anonymous'; s.onload = () => { try { global.Kakao.init(key); res(true); } catch (e) { res(false); } }; s.onerror = () => res(false); document.head.appendChild(s); });
+    return kakaoLoading;
+  }
+  // o = { title, text, image(https), url, button }
+  async function kakaoShare(o) {
+    if (!(await kakaoReady())) return false;
+    try {
+      global.Kakao.Share.sendDefault({ objectType: 'feed', content: { title: o.title, description: (o.text || '').slice(0, 200), imageUrl: o.image, imageWidth: 800, imageHeight: 1000, link: { mobileWebUrl: o.url, webUrl: o.url } }, buttons: [{ title: o.button || '내 것도 보기', link: { mobileWebUrl: o.url, webUrl: o.url } }] });
+      return true;
+    } catch (e) { return false; }
+  }
   async function copyLink(url) { try { if (url && navigator.clipboard) { await navigator.clipboard.writeText(url); return true; } } catch (e) {} return false; }
   async function share(canvas, name, label, text, url) {
     const blob = await toBlob(canvas);
@@ -257,5 +273,5 @@
     return false;
   }
 
-  global.ChaeksaShare = { draw, drawSay, save, share, copyLink, canShareFile: () => !!(navigator.canShare && navigator.share) };
+  global.ChaeksaShare = { draw, drawSay, save, share, copyLink, kakaoShare, kakaoReady, canShareFile: () => !!(navigator.canShare && navigator.share) };
 })(window);
