@@ -2,8 +2,8 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>정통사주 웹툰 시험</title>
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px}h2{font-size:15px;margin:10px 0 4px}.ok{color:#2a7}.no{color:#c33}pre{background:#f4f4f4;padding:8px;font-size:12px;white-space:pre-wrap}</style></head>
 <body><div id="out"></div>
-<script src="config.js?v=1187"></script><script src="places.js?v=1187"></script><script src="astro.js?v=1187"></script><script src="lunar.js?v=1187"></script><script src="engine.js?v=1187"></script>
-<script src="saenggeuk.js?v=1187"></script><script src="gise.js?v=1187"></script><script src="panjeong.js?v=1187"></script><script src="typecard.js?v=1187"></script><script src="gyeokguk.js?v=1187"></script><script src="classic.js?v=1187"></script><script src="samyeong.js?v=1187"></script><script src="ssom-gwanjeom.js?v=1187"></script><script src="jt-webtoon.js?v=1187"></script><script src="jt-webtoon-2.js?v=1187"></script><script src="jt-webtoon-check.js?v=1187"></script>
+<script src="config.js?v=1188"></script><script src="places.js?v=1188"></script><script src="astro.js?v=1188"></script><script src="lunar.js?v=1188"></script><script src="engine.js?v=1188"></script>
+<script src="saenggeuk.js?v=1188"></script><script src="gise.js?v=1188"></script><script src="panjeong.js?v=1188"></script><script src="typecard.js?v=1188"></script><script src="gyeokguk.js?v=1188"></script><script src="classic.js?v=1188"></script><script src="samyeong.js?v=1188"></script><script src="ssom-gwanjeom.js?v=1188"></script><script src="jt-webtoon.js?v=1188"></script><script src="jt-webtoon-2.js?v=1188"></script><script src="jt-webtoon-check.js?v=1188"></script>
 <script>
 // 정통사주 웹툰 시험(09-26, 5단계) — 뼈대 동결 지문 · 빈칸 0 · 원고 검사기 · 명리 사실(사장님 명식).
 const E = ChaeksaEngine, J = ChaeksaJtWebtoon, out = document.getElementById('out');
@@ -14,7 +14,7 @@ const 금지 = /자리|잣대|표지|이레|공략|사주는|원국|지시 |자�
 const 사주말 = /(식신|상관|편인|정인|겁재|비견|편재|정재|편관|정관)(격|이|은|을)|십신|대운|세운|장생|목욕|관대|건록|제왕|천을|화개|역마/;
 const 검사 = (R) => { const 걸 = []; J.조립(R, {}).forEach(h => h.줄.forEach(([k, 말]) => { if (/\{|\}|쓰고 있어요|undefined|  /.test(말)) 걸.push(h.번호 + ' 빈칸 ' + 말); if (k === '답' || k === '장면' || k === '나') { if (금지.test(말) && !(/회사 자리/.test(말) && (h.번호 === 3 || h.번호 === 4 || h.번호 === 6))) 걸.push(h.번호 + ' 금지 ' + 말); if (사주말.test(말)) 걸.push(h.번호 + ' 사주말 ' + 말); } })); return 걸; };
 const 시험 = [
-  ['뼈대 동결 v2 — 구조 지문(20회 · 줄 딱지 여섯)', 지문, '3273393378 555'],
+  ['뼈대 동결 v2.1 — 구조 지문(20회 · 줄 딱지 여섯 · 열 해 → 10년)', 지문, '3733569419 555'],
   ['갈림 — 격 회 2 · 3 · 4 · 5 · 7 · 11 · 15 · 20, 성패 회 6 · 20(docs/82, 09-26 2 · 5 · 7 추가)', J.격회.join(',') + '/' + J.성패회.join(','), '2,3,4,5,7,11,15,20/6,20'],
   ['조각 칸 — 격 80(회 2 · 3 · 4 · 5 · 7 · 11 · 15 · 20) · 성패 8 · 공통 14 · 단서틀 20', (() => { const G = ChaeksaJtJogak; return [Object.values(G.격).reduce((a, r) => a + Object.keys(r).length, 0), Object.values(G.성패).reduce((a, r) => a + Object.keys(r).length, 0), Object.keys(G.공통).length, Object.keys(G.단서틀).length].join(' '); })(), '80 8 14 20'],
   ['사장님 명식 丁卯 — 정관격 성격 · 상신 돈과 배움 · 2017 정인 파격 · 2027 회복', (() => { const s = J.사람(남); return [s.격, s.성패, s.상신말, s.바뀜[0] && s.바뀜[0].시작, s.바뀜[0] && s.바뀜[0].격, s.돌아옴 && s.돌아옴.시작].join(' '); })(), '정관 성격 돈과 배움 2017 정인 2027'],
