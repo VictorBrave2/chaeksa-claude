@@ -28,13 +28,13 @@
   // 방향 줄 뒤에 맞음/다름 꼬리(검수 09-26: 「그래서 맞다는 거야?」). 그림 카드는 받은 사람이 「당신」을 자기로 읽으니 보낸 사람 이름(나)을 넣는다
   function 문장(r, 나) {
     const M = global.ChaeksaSsomCardMal || {}; if (!M.사이) return null;
-    const 그 = M.상대 || '그 사람', 꼬 = (d) => ' ' + (d === '글자' ? M.맞음 : d === '기운' ? (M.비슷 || M.다름) : M.다름);
+    // 09-27 사장님 「하려던 말」: 갈래 셋마다 틀이 따로(결론 먼저) — 방향맞음 · 방향비슷 · 방향다름
+    const 그 = M.상대 || '그 사람', 틀 = (d) => d === '글자' ? M.방향맞음 : d === '기운' ? M.방향비슷 : M.방향다름;
     // 「당신」 자리에 이름을 넣을 땐 뒤 조사(은 · 이 · 을)를 받침에 맞춘다(원고 틀은 「당신」 받침 기준으로 고정돼 있다)
     const 이름넣기 = (t) => !나 ? t : t.replace(/당신(은|이|을)?/g, (m, j) => 나 + (j ? ({ 은: ['은', '는'], 이: ['이', '가'], 을: ['을', '를'] })[j][받침(나) ? 0 : 1] : ''));
     return { 사이: 이름넣기(M.사이[r.사이] || ''),
-      당신줄: 이름넣기(채우기(M.방향, { 받분: '당신', 주분: 그, 바람: r.당신바람, 언행: r.그언행 })) + 꼬(r.당신닿음),
-      그줄: 이름넣기(채우기(M.방향, { 받분: 그, 주분: '당신', 바람: r.그바람, 언행: r.당신언행 })) + 꼬(r.그닿음),
-      비슷풀이: (r.당신닿음 === '기운' || r.그닿음 === '기운') ? (M.비슷풀이 || '') : '',
+      당신줄: 이름넣기(채우기(틀(r.당신닿음), { 받분: '당신', 주분: 그, 바람: r.당신바람, 언행: r.그언행 })),
+      그줄: 이름넣기(채우기(틀(r.그닿음), { 받분: 그, 주분: '당신', 바람: r.그바람, 언행: r.당신언행 })),
       단추: M.단추 || {}, 꼬리: M.꼬리 || '책사 · chaeksa.kr' };
   }
   // 화면 카드(html)
@@ -76,7 +76,7 @@
   }
   // 정통사주 한 줄 카드(docs/87 4절): 「당신은 {격말}이에요.」 + 격 컷. 받은 사람 링크 ?go=jeongtong&from=card-jt
   const 격컷 = { 정관: 'jeonggwan', 편관: 'pyeongwan', 정재: 'jeongjae', 편재: 'pyeonjae', 정인: 'jeongin', 편인: 'pyeonin', 식신: 'siksin', 상관: 'sanggwan', 비견: 'bigyeon', 겁재: 'geopjae', 건록: 'bigyeon', 양인: 'geopjae' };
-  function 정통재기(R) { const J = global.ChaeksaJtWebtoon; if (!J || !J.사람) return null; const s = J.사람(R), 말 = (J.격말 || {})[s.격] || ''; const M = global.ChaeksaSsomCardMal || {}; if (!M.정통 || !말) return null; return { 격: s.격, 격말: 말, 컷: 'jt-g-' + (격컷[s.격] || 'jeonggwan') + '-' + (R.input && R.input.gender === 'F' ? 'f' : 'm'), 한줄: 채우기(M.정통, { 격말: 말 }), 단추: M.단추 || {}, 꼬리: M.꼬리 || '' }; }
+  function 정통재기(R) { const J = global.ChaeksaJtWebtoon; if (!J || !J.사람) return null; const s = J.사람(R), 말 = (J.격말 || {})[s.격] || ''; const M = global.ChaeksaSsomCardMal || {}; const 한줄 = (M.정통격 || {})[s.격] || ''; if (!한줄) return null; return { 격: s.격, 격말: 말, 컷: 'jt-g-' + (격컷[s.격] || 'jeonggwan') + '-' + (R.input && R.input.gender === 'F' ? 'f' : 'm'), 한줄, 단추: M.단추 || {}, 꼬리: M.꼬리 || '' }; }
   function 정통카드(R) {
     const r = 정통재기(R); if (!r) return '';
     return '<div class="card ss-card" id="jtCard"><img class="ss-card-cut" src="art/' + r.컷 + '-s.webp" alt=""><p class="ss-card-lead">' + esc(r.한줄) + '</p>'
