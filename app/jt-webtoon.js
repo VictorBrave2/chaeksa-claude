@@ -20,8 +20,8 @@
     const P = global.ChaeksaPanjeong, T = global.ChaeksaTypecard, S = global.ChaeksaSamyeong;
     const p = R.pillars, ds = p.day.stem, 판 = P.판정(R, today || new Date());
     const 층들 = 판.층들 || [], 원 = 층들[0] || {};
-    // 건록 · 양인은 판정엔진이 격 층을 안 내고 층.성패(typecard)만 낸다 — 그걸 쓰고, 대운마다의 격 · 성패는 못 재니 표시한다(docs/83 5절)
-    const 원격 = (원.격 && 원.격.성패) || 원.성패 || T.gyeok(R), 대운잼 = !!(원.격 && 원.격.지금격);
+    // 건록 · 양인은 판정엔진이 격 층을 안 내고 층.성패(typecard)만 낸다 — 09-26부터 운 층마다도 성패를 내니(panjeong) 대운도 잰다. 격표도 못 낸 원국만 못 잼
+    const 원격 = (원.격 && 원.격.성패) || 원.성패 || T.gyeok(R), 대운잼 = !!((원.격 && 원.격.지금격) || 원.성패);
     const 격 = 격정리(원격.격 || 원격.name), 성패 = 성패키[원격.판정] || '성격';
     const 잰 = Object.assign({}, 원격.잰것 || {});
     { const 격무리 = ({ 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상', 편재: '재성', 정재: '재성', 편관: '관성', 정관: '관성', 편인: '인성', 정인: '인성' })[격]; if (격무리 && !(잰[격무리] || 0)) 잰[격무리] = 0.01; }   // 격 자체(월지)는 있는 힘(검수 2바퀴)
@@ -36,7 +36,7 @@
     const 격표상신 = (T.gyeok(R) || {}).상신 || '';
     const 상신원 = 원격.상신 || (격표상신 && String(격표상신).split(/과|와|·/).map(x => x.trim()).filter(Boolean).every(x => (잰[무리키(x)] || 0) > 0) ? 격표상신 : '');
     // 대운마다 격 · 성패(실제 연도) — 격이 바뀌는 해 · 돌아오는 해
-    const 대운 = ((R.daeun && R.daeun.list) || []).map(d => { let g = 격, s = 성패; try { const j = P.판정(R, new Date(d.startYear + 1, 6, 1)); const l = (j.층들 || []).find(x => x.name === '대운' || x.이름 === '대운') || (j.층들 || [])[1]; if (l && l.격 && l.격.성패) { g = 격정리(l.격.성패.격); s = 성패키[l.격.성패.판정] || s; } } catch (e) {} return { 시작: d.startYear, 끝: d.startYear + 9, 간지: E.STEMS[d.stem] + E.BRANCHES[d.branch], 격: g, 성패: s }; });
+    const 대운 = ((R.daeun && R.daeun.list) || []).map(d => { let g = 격, s = 성패; try { const j = P.판정(R, new Date(d.startYear + 1, 6, 1)); const l = (j.층들 || []).find(x => x.name === '대운' || x.이름 === '대운') || (j.층들 || [])[1]; const sp = (l && l.격 && l.격.성패) || (l && l.성패); if (sp) { g = 격정리(sp.격); s = 성패키[sp.판정] || s; } } catch (e) {} return { 시작: d.startYear, 끝: d.startYear + 9, 간지: E.STEMS[d.stem] + E.BRANCHES[d.branch], 격: g, 성패: s }; });
     const 올해 = (today || new Date()).getFullYear(), 지금대운 = 대운.find(d => 올해 >= d.시작 && 올해 <= d.끝) || null, 지금i = 대운.indexOf(지금대운);
     const 태어난해 = R.pillars && R.input ? R.input.year : (R.birth && R.birth.year) || (대운[0] ? 대운[0].시작 - (R.daeun.list[0].startAge || 0) : 0);
     const 너무늦음 = (d) => !!(d && 태어난해 && d.시작 - 태어난해 > 70);   // 70세 넘어 오는 해는 「없음」으로(검수 2바퀴 — 「잠깐 접힌」 뒤에 60년이 붙던 것)

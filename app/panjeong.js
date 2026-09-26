@@ -146,6 +146,17 @@
       const 격 = 원격이름 ? G.층격(R.pillars, 앞운들.concat([u]), 원격이름, R, 계절) : null;
       const 층 = { 이름: u.name, 간지: E.STEMS[u.stem] + (u.branch != null ? E.BRANCHES[u.branch] : ''), 운: u, 앞운들, 표, 격 };
       Object.assign(층, 범주(앞, 층));
+      // 건록 · 양인(층격이 격을 못 잡는 원국)도 운 층마다 성패를 낸다(09-26, docs/83 5절 한계 닫음). 격 이름은 월령이라 안 바뀌고(자평진전 8장 建祿月劫 — 부억의 신을 따로 취해 용으로),
+      // 성패만 이 층의 표(운 글자 · 합거 포함)를 격표(gyeokguk.judge)에 넘겨 잰다 — 층격이 격표에 넘기는 꼴 그대로.
+      if (!원격이름 && 층들[0].성패 && 층들[0].성패.출처 === 'typecard') {
+        try {
+          const Gk = global.ChaeksaGyeok, 이름 = 층들[0].성패.격, 층j = { 합거: {}, 운: [], 글자: 표.글자 };
+          표.글자.forEach(g => { if (!g.운 && !g.일간 && g.합거) 층j.합거[g.key] = true; });
+          표.글자.filter(g => g.운).forEach((g, i) => { if (g.산다) 층j.운.push({ stem: g.stem, branch: 앞운들.concat([u])[i] ? 앞운들.concat([u])[i].branch : null, name: g.이름 }); });
+          const J = Gk.judge(R, 이름, 층j);
+          층.성패 = { 격: 이름, 판정: J.판정, 파격: J.판정 === '깨졌다', 상신: J.상신 || null, 근거: J.근거 || null, 출처: 'typecard' };
+        } catch (e) {}
+      }
       층.이력 = 표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));
       층들.push(층); 앞 = 층; 앞운.push(u);
     }

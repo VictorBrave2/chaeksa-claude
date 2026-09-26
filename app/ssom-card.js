@@ -58,10 +58,12 @@
     ctx.font = '400 28px ' + SANS; ctx.fillStyle = '#9a95b8'; ctx.fillText(m.꼬리, W / 2, H - 70);
     return r;
   }
+  // 카톡은 그림만 받으니 링크는 클립보드에 — 카드 밑에 한 줄 띄운다
+  const 링크띠 = (el) => { let t = el.querySelector('.ss-card-tip'); if (!t) { t = document.createElement('p'); t.className = 'ss-card-tip'; el.appendChild(t); } t.textContent = '링크도 복사해 뒀어요 — 카톡 글칸에 붙여 넣으면 그림이랑 같이 가요.'; };
   function 붙이기(box, 나R, 그R, 이름) {
     const el = box.querySelector('#ssCard'); if (!el) return;
     const c = document.createElement('canvas');
-    const go = async (mode) => { try { await 그리기(c, 나R, 그R, 이름 && 이름 !== '우리' ? 이름 : ''); const SH = global.ChaeksaShare; if (!SH) return; if (mode === 'share') await SH.share(c, 이름 || '우리', '웹툰궁합', '우리 둘 사이 · chaeksa.kr/?go=ssom&from=card-ssom'); else await SH.save(c, 이름 || '우리', '웹툰궁합'); } catch (e) {} };
+    const go = async (mode) => { try { await 그리기(c, 나R, 그R, 이름 && 이름 !== '우리' ? 이름 : ''); const SH = global.ChaeksaShare; if (!SH) return; if (mode === 'share') { await SH.share(c, 이름 || '우리', '웹툰궁합', '우리 둘 사이 · 책사', 'https://chaeksa.kr/?go=ssom&from=card-ssom'); 링크띠(el); } else await SH.save(c, 이름 || '우리', '웹툰궁합'); } catch (e) {} };
     const b1 = el.querySelector('#ssCardShare'), b2 = el.querySelector('#ssCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile()) b1.textContent = '카톡으로 보내기(저장해서 보내요)';
@@ -89,7 +91,7 @@
   function 정통붙이기(box, R, 이름) {
     const el = box.querySelector('#jtCard'); if (!el) return;
     const c = document.createElement('canvas'), nm = 이름 && 이름 !== '우리' ? 이름 : '';
-    const go = async (mode) => { try { await 정통그리기(c, R, nm); const SH = global.ChaeksaShare; if (!SH) return; if (mode === 'share') await SH.share(c, nm || '나', '정통사주', '내 타고난 기운 · chaeksa.kr/?go=jeongtong&from=card-jt'); else await SH.save(c, nm || '나', '정통사주'); } catch (e) {} };
+    const go = async (mode) => { try { await 정통그리기(c, R, nm); const SH = global.ChaeksaShare; if (!SH) return; if (mode === 'share') { await SH.share(c, nm || '나', '정통사주', '내 타고난 기운 · 책사', 'https://chaeksa.kr/?go=jeongtong&from=card-jt'); 링크띠(el); } else await SH.save(c, nm || '나', '정통사주'); } catch (e) {} };
     const b1 = el.querySelector('#jtCardShare'), b2 = el.querySelector('#jtCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile()) b1.textContent = '카톡으로 보내기(저장해서 보내요)';

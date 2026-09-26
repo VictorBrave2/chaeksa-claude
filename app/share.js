@@ -241,18 +241,21 @@
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  async function share(canvas, name, label, text) {
+  // 카톡은 파일이 붙은 공유에서 글 · 링크를 버리고 그림만 받는다(09-26 사장님 폰 실측). 그래서 링크(url)는 공유 전에 클립보드에도 넣어 둔다 — 붙여 넣으면 같이 간다.
+  async function copyLink(url) { try { if (url && navigator.clipboard) { await navigator.clipboard.writeText(url); return true; } } catch (e) {} return false; }
+  async function share(canvas, name, label, text, url) {
     const blob = await toBlob(canvas);
     const file = new File([blob], `책사_${name}_${label || '원국'}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file],
-        title: label ? '책사 · ' + label : '내 사주 원국',
-        text: text || `${name}의 사주 원국 · chaeksa.kr` });
+      await copyLink(url);
+      const data = { files: [file], title: label ? '책사 · ' + label : '내 사주 원국', text: (text || `${name}의 사주 원국`) + (url ? ' ' + url : '') };
+      if (url) data.url = url;
+      try { await navigator.share(data); } catch (e) { if (e && e.name === 'AbortError') return true; delete data.url; await navigator.share(data); }
       return true;
     }
     await save(canvas, name, label);
     return false;
   }
 
-  global.ChaeksaShare = { draw, drawSay, save, share, canShareFile: () => !!(navigator.canShare && navigator.share) };
+  global.ChaeksaShare = { draw, drawSay, save, share, copyLink, canShareFile: () => !!(navigator.canShare && navigator.share) };
 })(window);
