@@ -30,7 +30,7 @@ window.CHAEKSA_ART = '20260913d';   // 09-12 밤 이야기 표지 11장 도착 �
 window.CHAEKSA_TAEKIL_INTAKE_URL = 'https://naver.me/FdqTMrhq';
 // 카카오 링크 공유(09-26 사장님 「사진이랑 링크를 같이」) — 카카오 디벨로퍼스 > 앱 > 앱 키 > **JavaScript 키**(공개돼도 되는 키, 도메인으로 막힌다).
 // 플랫폼 > Web 에 https://chaeksa.kr 이 등록돼 있어야 한다. 비어 있으면 브라우저 공유(그림만 + 링크 클립보드)로 돌아간다.
-window.CHAEKSA_KAKAO_JS_KEY = '';
+window.CHAEKSA_KAKAO_JS_KEY = 'a31b2496dcc8d26fb0ea9f5fe0e8ff0a';
 window.CHAEKSA_TRACK_VID = 1;   // migrate-16 이 돌아 vid 열이 있다(visits_stats 가 people 을 낸다). 0 이면 돌아온 사람·깔때기가 전부 0 으로 찍힌다(2026-09-15).
 // 유료 LLM 「한 편」(2026-09-12 사장님 결정 「문장표는 무료 · LLM 은 유료」 3단계 — app.js 한편붙이기).
 // 0 이면 super 계정만 본다(시험). 1 이면 그 장을 산 사람 모두에게 「한 편 청하기」가 선다.
