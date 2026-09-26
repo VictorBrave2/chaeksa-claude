@@ -9,14 +9,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1199">
+<link rel="stylesheet" href="style.css?v=1200">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
   .doc h1{font-family:var(--serif);font-size:25px;line-height:1.35;margin:0 0 8px}
   .lede{font-size:14.5px;line-height:1.85;color:var(--ink2);margin:0 0 18px}
   /* 신청의 전부가 세 걸음이다 — 지금 어디쯤인지 보이게(2026-09-11 사장님 「너무 빡세고 어지러워」) */
-  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;list-style:none}
+  .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;list-style:none}
   .steps li{padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);
             text-align:center;font-size:12.5px;line-height:1.5;color:var(--ink3)}
   .steps b{display:block;font-family:var(--serif);font-size:15px;color:var(--ink);margin-bottom:3px}
@@ -41,10 +41,11 @@
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>출산택일 보고서 신청</h1>
-  <p class="lede">신청서 한 장 적고 결제하시면 끝입니다. 사람이 직접 계산해 메일로 보내 드립니다.</p>
+  <p class="lede">신청서를 보내 주시면 접수 메일로 결제 방법을 안내드리고, 사람이 직접 계산해 보고서를 메일로 보내 드립니다.</p>
 
   <ol class="steps">
-    <li><b>신청서</b>아래 칸을 적고</li>
+    <li><b>신청서</b>후보 기간·가족 생년월일시</li>
+    <li><b>접수 확인</b>답장 메일</li>
     <li><b>결제</b><span data-price="taekil">99,000원</span></li>
     <li><b>메일로 받기</b>보통 2~3일</li>
   </ol>
@@ -60,9 +61,10 @@
     의사의 판단을 뒤집는 용도로 쓰시면 안 됩니다.</p>
   <div class="already" id="already" hidden></div>
   <div class="already" id="intakeAlt" hidden>
-    <p style="margin:0 0 8px"><b>지금은 신청서를 네이버폼으로 받고 있습니다.</b></p>
-    <p style="margin:0 0 12px">온라인 결제창을 준비하는 동안의 창구입니다. 후보 기간·지역·가족 생년월일시를 적어 주시면
-      보고서 값(<span data-price="taekil">99,000원</span>)과 받는 방법을 답장 메일로 안내드립니다.</p>
+    <p style="margin:0 0 8px"><b>신청은 네이버폼으로 받습니다.</b></p>
+    <p style="margin:0 0 12px">네이버폼에 후보 기간·지역·가족 생년월일시를 적어 보내 주세요.
+      접수되면 답장 메일을 드리고, 그 메일에서 값(<span data-price="taekil">99,000원</span>)과 결제 방법을 안내합니다.
+      결제가 확인되면 계산을 시작하고, 보고서는 메일로 보내 드립니다. 계산을 시작하기 전에는 언제든 전액 돌려드립니다.</p>
     <a class="send" id="intakeAltGo" href="#" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">네이버폼으로 신청하기 →</a>
     <p style="margin:10px 0 0;font-size:13px">폼이 안 열리면 메일로 보내 주셔도 됩니다 — <a id="intakeAltMail" href="#">b01099991263@gmail.com</a></p>
   </div>
@@ -98,10 +100,10 @@
   </div>
 </div>
 
-<script src="config.js?v=1199"></script>
-<script src="track.js?v=1199"></script>
-<script src="cloud.js?v=1199"></script>
-<script src="pay.js?v=1199"></script>
+<script src="config.js?v=1200"></script>
+<script src="track.js?v=1200"></script>
+<script src="cloud.js?v=1200"></script>
+<script src="pay.js?v=1200"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';

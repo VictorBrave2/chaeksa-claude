@@ -62,9 +62,9 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1199"></script><script src="astro.js?v=1199"></script><script src="lunar.js?v=1199"></script><script src="engine.js?v=1199"></script>
-<script src="saenggeuk.js?v=1199"></script><script src="gise.js?v=1199"></script><script src="panjeong.js?v=1199"></script><script src="typecard.js?v=1199"></script><script src="gyeokguk.js?v=1199"></script>
-<script src="classic.js?v=1199"></script><script src="samyeong.js?v=1199"></script><script src="jt-webtoon.js?v=1199"></script><script src="jt-webtoon-2.js?v=1199"></script><script src="ssom-gwanjeom.js?v=1199"></script><script src="ssom-baram.js?v=1199"></script><script src="ssom-daehwa.js?v=1199"></script><script src="ssom-webtoon.js?v=1199"></script><script src="ssom-webtoon-2.js?v=1199"></script><script src="ssom-webtoon-3.js?v=1199"></script><script src="ssom-wongo.js?v=1199"></script><script src="ssom-dangye.js?v=1199"></script><script src="ssom.js?v=1199"></script>
+<script src="config.js?v=1200"></script><script src="astro.js?v=1200"></script><script src="lunar.js?v=1200"></script><script src="engine.js?v=1200"></script>
+<script src="saenggeuk.js?v=1200"></script><script src="gise.js?v=1200"></script><script src="panjeong.js?v=1200"></script><script src="typecard.js?v=1200"></script><script src="gyeokguk.js?v=1200"></script>
+<script src="classic.js?v=1200"></script><script src="samyeong.js?v=1200"></script><script src="jt-webtoon.js?v=1200"></script><script src="jt-webtoon-2.js?v=1200"></script><script src="ssom-gwanjeom.js?v=1200"></script><script src="ssom-baram.js?v=1200"></script><script src="ssom-daehwa.js?v=1200"></script><script src="ssom-webtoon.js?v=1200"></script><script src="ssom-webtoon-2.js?v=1200"></script><script src="ssom-webtoon-3.js?v=1200"></script><script src="ssom-wongo.js?v=1200"></script><script src="ssom-dangye.js?v=1200"></script><script src="ssom.js?v=1200"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -123,7 +123,7 @@
   function 장끝() {
     멈춤 = true; const r = 장들[장].반응;
     if (r && !반응중) { 책사말(r.물음); return 선택(r.틀, (답) => { try { S.적기(대.키, r.장, 답); } catch (e) {}
-      const 글 = r.글[답]; if (!글) { 책사말('「' + 답 + '」 — 이어지는 글은 쓰고 있어요.'); return 다음단추(); }
+      const 글 = r.글[답]; if (!글) { return 다음단추(); }
       줄들 = 글.map(t => Array.isArray(t) ? (t[0] === '장면' ? { 누가: '장면', 말: t[1], 배경: 지금배경, 주인: t[2] } : t[0] === '당신' || t[0] === '상대' ? { 누가: t[0], 말: t[1], 배경: 지금배경 } : t[0] === '단서' ? { 누가: '추론의 단서', 말: t[1], 배경: 지금배경 } : { 누가: '책사', 말: t[1], 쪽: t[0] === '인연' ? 0 : 1, 배경: 지금배경 }) : t.indexOf('> ') === 0 ? { 누가: '예시', 말: t.slice(2), 배경: 지금배경 } : { 누가: '책사', 말: t, 배경: 지금배경 }); n = 0; 멈춤 = false; 반응중 = true; 보이기(); }); }
     다음단추();
   }
