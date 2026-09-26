@@ -1162,7 +1162,9 @@
     if (st) { try { st.value = localStorage.getItem('chaeksa.ssomStage.' + 고름) || '둘'; if (!st.value) st.value = '둘'; if (st._그리) st._그리(); } catch (e) {} st.onchange = () => { try { localStorage.setItem('chaeksa.ssomStage.' + 고름, st.value); } catch (e) {} renderSsom(); }; }
     SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))), { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null, 단계: (st && st.value) || '썸' });
     // 09-25 사장님 「웹툰궁합 시작하기로 수정하고 위로 올려줘」 — 시작 단추를 사람 칩 바로 아래(단계 카드 위)로
-    try { const vt = out.querySelector('#ssVnTop'); if (vt) { let 자리 = $('ssStart'); if (!자리) { 자리 = document.createElement('div'); 자리.id = 'ssStart'; wrap.insertAdjacentElement('afterend', 자리); } 자리.innerHTML = ''; 자리.appendChild(vt); vt.style.margin = '4px 0 14px'; } } catch (e) {}
+    try { const vt = out.querySelector('#ssVnTop'); if (vt) { let 자리 = $('ssStart'); if (!자리) { 자리 = document.createElement('div'); 자리.id = 'ssStart'; wrap.insertAdjacentElement('afterend', 자리); } 자리.innerHTML = '';
+      const cd = out.querySelector('#ssCard'); if (cd) 자리.appendChild(cd);   // 09-26 3초 결과 · 공유 카드를 맨 위(docs/87)
+      자리.appendChild(vt); vt.style.margin = '4px 0 14px'; } } catch (e) {}
   }
 
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────
