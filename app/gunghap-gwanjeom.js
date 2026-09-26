@@ -368,7 +368,8 @@
   function 격글자(p) {
     const 층 = p.층, 글 = (층.표 && 층.표.글자) || [], 주인 = 층.격 && 층.격.주인;
     if (주인 && !주인.운) { const g = 글.find(x => x.key === 주인.key); if (g && g.산다) return { stem: g.stem, branch: null, name: '그 사람', 힘: g.힘 }; }
-    if (층.격 && 층.격.지금격) { const h = (E.HIDDEN[p.R.pillars.month.branch] || [])[0]; const st = typeof h === 'number' ? h : h[0]; return { stem: st, branch: null, name: '그 사람', 힘: E.NATAL_WEIGHT.monthBranch }; }
+    // 09-27: 건록 · 양인(층격이 격을 못 잡고 층.성패만 있는 사람)도 월령 본기를 대표 글자로 — 7장 첫 줄이 비던 21/150
+    if ((층.격 && 층.격.지금격) || (층.성패 && 층.성패.격)) { const h = (E.HIDDEN[p.R.pillars.month.branch] || [])[0]; const st = typeof h === 'number' ? h : h[0]; return { stem: st, branch: null, name: '그 사람', 힘: E.NATAL_WEIGHT.monthBranch }; }
     return null;
   }
   function 얹어보기(받는이, 주는이, C, 나임) {
@@ -399,9 +400,9 @@
     };
     // 답 — 얹어보기와 같은 법으로 앞 격 · 뒤 격만 다시 잰다.
     const 바뀜 = (받는이, 주는이) => {
-      const 층 = 격글자(주는이), 앞격 = 받는이.층.격 && 받는이.층.격.지금격; if (!층 || !앞격) return null;
+      const 층 = 격글자(주는이), 앞격 = (받는이.층.격 && 받는이.층.격.지금격) || (받는이.층.성패 && 받는이.층.성패.격); if (!층 || !앞격) return null;
       let 뒤 = null; try { 뒤 = P.판정(받는이.R, C.오늘, { 운들: [층] }); } catch (e) { return null; }
-      const 뒤격 = 뒤 && 뒤.층들[1] && 뒤.층들[1].격 && 뒤.층들[1].격.지금격;
+      const 뒤층 = 뒤 && 뒤.층들[1], 뒤격 = 뒤층 && ((뒤층.격 && 뒤층.격.지금격) || (뒤층.성패 && 뒤층.성패.격));
       return { 앞: 격사람[격키(앞격)], 뒤: 뒤격 ? 격사람[격키(뒤격)] : null };
     };
     const 말7 = (x, 누가, 와, 누구는) => !x || !x.앞 ? '' : (!x.뒤 || x.앞 === x.뒤) ? 누가 + ' 곁에 ' + 와 + '도 ' + 누구는 + ' ' + x.앞 + ' 그대로예요.' : 누가 + ' 곁에 ' + 와 + '면 ' + 누구는 + ' ' + x.앞 + '에서 ' + x.뒤 + '으로 바뀌어요.';
