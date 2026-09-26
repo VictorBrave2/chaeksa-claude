@@ -219,7 +219,7 @@
     try { const P0 = global.ChaeksaPanjeong; if (P0) 원성패 = P0.판정(R, today, { 운들: [] }).층들[0].성패 || null; } catch (e) { 원성패 = null; }
     const 격이름 = 원성패 ? 원성패.격 : (원표.격 && 원표.격.이름);
     const 상신 = 원성패 ? 원성패.상신 : (원표.격 && 원표.격.상신);
-    const 격근거0 = 원성패 && 원성패.출처 === 'typecard' ? '월령 본기가 일간과 같은 오행' : (원표.격 && 원표.격.근거 || '월지가 정한 격');
+    const 격근거0 = 원성패 && 원성패.록겁 ? '월령 본기가 일간과 같은 오행' : (원표.격 && 원표.격.근거 || '월지가 정한 격');
     // 취격 근거(「여기 乙의 오행이 투출」)의 맨 한자는 이름(「을목(乙)」)으로 바꿔 낸다 — 한자만 따로 내지 않는다(머리 주석).
     const 격근거 = String(격근거0).replace(/[甲乙丙丁戊己庚辛壬癸]/g, (c) => 이름(E.STEMS.indexOf(c)));
     const 격 = 격이름 ? '<p class="wg-gk top"><b>' + esc(격이름) + '격</b> — ' + esc(조(격근거, '이에요', '예요')) + '.' + (상신 ? ' 상신은 ' + esc(상신) + '이에요.' : '') + '</p>' : '';
@@ -232,7 +232,7 @@
     try { const P = global.ChaeksaPanjeong; if (P) 판 = P.판정(R, today, { 운들: 운.filter(u => u && u.stem != null) }); } catch (e) { try { console.warn('판정 실패:', e); } catch (e2) {} 판 = null; }
     const 층of = (name) => 판 ? 판.층들.find(l => l.이름 === name) : null;
     const 앞of = (name) => { if (!판) return null; const i = 판.층들.findIndex(l => l.이름 === name); return i > 0 ? 판.층들[i - 1] : null; };
-    const 원국메움 = !!(원성패 && 원성패.출처 === 'typecard');   // 맨 윗줄 격을 격표 이름으로 메운 사람 — 운 층의 「규칙 보완 필요」를 되풀이하지 않는다
+    const 원국메움 = !!(원성패 && 원성패.록겁);   // 맨 윗줄 격을 격표 이름으로 메운 사람 — 운 층의 「규칙 보완 필요」를 되풀이하지 않는다
     const 운줄 = [
       대운 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 대운, 간지(대운) + ' 대운, 이 10년 동안', [], 층of('대운'), 앞of('대운'), 원국메움)) + '</p>' : '',
       올해 ? '<p class="wg-un">' + esc(운한줄(R, 원표, 올해, 간지(올해) + ' 올해, 이 한 해', [대운], 층of('올해'), 앞of('올해'), 원국메움)) + '</p>' : '',

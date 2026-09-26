@@ -353,10 +353,34 @@
    *  그런 명령자가 없고 격을 잡던 천간이 합거됐으면 월령 지장간의 같은 오행 · 다른 음양 글자가 발동한다(71조, 운 층만 — 발동of). 결과의 발동에 남긴다.
    *  새 주인을 막힘 없이 극하는 살아 있는 글자가 있으면 그 격은 깨진다. 길흉 말은 여기서 안 붙인다 — 「깨짐」 사실만. */
   function 층격(pillars, 운들, 원격, R, 계절지지) {
-    if (!pillars || !원격) return null;
+    if (!pillars) return null;
     운들 = 운들 || [];
     const t = 표(pillars, 운들, null, 계절지지);
     const 나 = t.글자.find(g => g.일간);
+    // 건록 · 양인(09-27 사장님 「제안대로 진행」 · 40조 판정은 한 모듈이 한 번만) — 원국 취격이 격을 못 잡은 사람(원격 없음 = 월령 본기가 일간과 같은 오행이고
+    // 중기 · 여기도 안 뜬 자리)은 여기서 록겁으로 잡는다. 전에는 판정(panjeong)이 층.성패에만 격표 이름으로 메워서 층.격만 읽는 화면이 「격 없음」으로 읽었다.
+    // 이름은 격표(typecard.gyeokName)의 비겁 규칙: 양간이 왕지(子午卯酉) 겁재월에 났으면 양인, 아니면 건록. 월령이라 운 층에서도 안 바뀐다(자평진전 8장 建祿月劫).
+    // 성패는 격표(gyeokguk.judge)가 낸다 — 원국은 명식만, 운 층은 이 층의 표(운 글자 · 합거)를 넘긴다. 33조 깨는것은 전처럼 걸지 않는다(주인이 지장간 본기라 천간 극 대상이 아니다).
+    if (!원격) {
+      const mb = pillars.month.branch, h0 = (E.HIDDEN[mb] || [])[0], 본 = typeof h0 === 'number' ? h0 : (h0 ? h0[0] : null);
+      if (본 == null || !나 || E.STEM_ELEM[본] !== E.STEM_ELEM[나.stem]) return null;
+      const 록겁 = (E.TEN_GODS[E.tenGod(나.stem, 본)] === '겁재' && E.STEM_YANG[나.stem] === 1 && [0, 3, 6, 9].indexOf(mb) >= 0) ? '양인' : '건록';
+      const 주인 = (t.지장간 || []).find(x => x.key === 'monthH0') || null;
+      let j = null;
+      try {
+        const Gk = global.ChaeksaGyeok;
+        if (R && Gk && Gk.judge) {
+          if (!운들.length) j = Gk.judge(R, 록겁);
+          else {
+            const 층j = { 합거: {}, 운: [], 글자: t.글자 };
+            t.글자.forEach(g => { if (!g.운 && !g.일간 && g.합거) 층j.합거[g.key] = true; });
+            t.글자.filter(g => g.운).forEach((g, i) => { if (g.산다) 층j.운.push({ stem: g.stem, branch: 운들[i] ? 운들[i].branch : null, name: g.이름 }); });
+            j = Gk.judge(R, 록겁, 층j);
+          }
+        }
+      } catch (e) { j = null; }
+      return { 원격: 록겁, 지금격: 록겁, 변질: false, 주인, 근거: '월령 본기가 일간과 같은 오행', 성패: j, 묶인주인: null, 발동: null, 변화: [], 록겁: true };
+    }
     // 이 층의 상태를 자평진전 격표에 그대로 넘긴다(사장님 「인수격이 경금 재성을 보았을 때를 보면 되잖아」) — 성패는 격표가 낸다.
     const 층 = { 합거: {}, 운: [], 글자: t.글자 };   // 글자: 격표가 천간을 이 표에서만 읽는다(40조, 따로 세지 않는다)
     t.글자.forEach(g => { if (!g.운 && !g.일간 && g.합거) 층.합거[g.key] = true; });
