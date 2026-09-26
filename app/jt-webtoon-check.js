@@ -15,6 +15,7 @@
     (J.조립(R, {}) || []).forEach(h => h.줄.forEach(([칸, 말]) => {
       const 곳 = { 회: h.번호, 칸 };
       if (/\{|\}|쓰고 있어요|undefined|  /.test(말)) 걸.push(Object.assign({ 종류: '빈칸 · 깨진 변수', 말 }, 곳));
+      if (칸 === '해설' && /성격|기신|구응|파격|격이 |격은 |격을 /.test(말)) 걸.push(Object.assign({ 종류: '해설에 성패 넷 말(1층은 좋은/나쁜 상태)', 말 }, 곳));   // 09-26 사장님
       if (칸 !== '답' && 칸 !== '장면' && 칸 !== '나') return;
       if (비유.test(말)) 걸.push(Object.assign({ 종류: '비유 열쇠말(되묻게 됨)', 말 }, 곳));
       if (사주말.test(말)) 걸.push(Object.assign({ 종류: '사주 말', 말 }, 곳));
