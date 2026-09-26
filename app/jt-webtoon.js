@@ -166,5 +166,5 @@
       return { 번호: 회, 묶음: h.묶음, 물음: h.물음, 줄: out };
     });
   }
-  global.ChaeksaJtWebtoon = { 사람, 뼈대, 조립, 격회, 성패회, 채우기 };
+  global.ChaeksaJtWebtoon = { 사람, 뼈대, 조립, 격회, 성패회, 채우기, 격말 };
 })(window);
