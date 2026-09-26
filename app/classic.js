@@ -219,17 +219,21 @@
              감점: deduct, 사유: why, score };
   }
 
-  /** 자평진전 50점 — 격 판정은 typecard.gyeok(→ gyeokguk.js 원문 조항)을 그대로 쓴다.
+  /** 자평진전 50점 — 격 판정은 판정엔진(panjeong 원국 층.성패)을 그대로 쓴다.
    *  원문이 넷으로 가르므로 점수도 넷이다. 예전에는 성격 50 / 파격 0 두 칸이었다.
    *
    *  이 배점은 우리가 정한 것이다(D1). 원문은 점수를 안 매긴다.
    *  다만 순서는 원문이 정한다 — 섰다 > 구제됐다 > 띠었다 > 깨졌다. */
   const JP_SCORE = { 섰다: 50, 구제됐다: 40, 띠었다: 30, 깨졌다: 0 };
+  // 09-27(40 · 63조) — 격은 옛 길(typecard.gyeok)이 아니라 판정엔진 원국 층(panjeong 층.성패)에서 받는다.
   function japyung(R) {
-    const J = global.ChaeksaTypecard.gyeok(R);
+    let J = null;
+    try { const P = global.ChaeksaPanjeong; if (P && P.판정) J = P.판정(R, new Date(), { 운들: [] }).층들[0].성패 || null; } catch (e) { J = null; }
+    if (!J) return { 격: null, 성: 0, 판정: '미상', 상신: null, score: 0 };
+    const ok = J.판정 === '깨졌다' ? 0 : 1;
     const s = JP_SCORE[J.판정];
-    return { 격: J.name, 성: J.ok, 판정: J.판정, 상신: J.상신,
-             score: s == null ? (J.ok ? 50 : 0) : s };
+    return { 격: J.격, 성: ok, 판정: J.판정, 상신: J.상신,
+             score: s == null ? (ok ? 50 : 0) : s };
   }
 
   /** 합계 100점. 두 축의 근거를 그대로 돌려준다. */
