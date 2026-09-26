@@ -204,7 +204,7 @@
     if (pfCal === 'solar') return { y, m, d };
     if (!window.ChaeksaLunar) return null;
     const r = ChaeksaLunar.lunarToSolar(y, m, d, $('pfLeap').checked);
-    return r && !r.error ? r : { error: (r && r.error) || '변환할 수 없는 날짜입니다.' };
+    return r && !r.error ? r : { error: (r && r.error) || '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
   }
   function updatePfConv() {
     const note = $('pfConv'); if (!note) return;
@@ -230,7 +230,7 @@
   function savePerson() {
     const P = People();
     const sol = pfToSolar();
-    if (!sol) { alert('생년월일을 입력해 주세요.'); return; }
+    if (!sol) { alert('생년월일을 넣어 주세요.'); return; }
     if (sol.error) { alert(sol.error); return; }
     const noTime = $('pfNoTime').checked;
     const pl = window.ChaeksaPlaces ? ChaeksaPlaces.resolve($('pfPlace') ? $('pfPlace').value : '') : null;
@@ -306,10 +306,10 @@
     if (p.tzOffset == null) {
       const diff = Math.round((p.lon - 135) * 4);
       note.classList.remove('hide');
-      note.innerHTML = `${p.name} 기준 진태양시는 시계보다 <b>${Math.abs(diff)}분 ${diff < 0 ? '늦습니다' : '빠릅니다'}</b>. 태어난 시간이 시(時) 경계에 가까우면 이 차이로 시주가 바뀝니다.`;
+      note.innerHTML = `사주는 시계가 아니라 해를 기준으로 봐요. ${p.name}에서는 해 시각이 시계보다 <b>${Math.abs(diff)}분 ${diff < 0 ? '늦어요' : '빨라요'}</b>. 그래서 1시 · 3시 · 5시처럼 홀수 시 정각 가까이 태어났다면 사주가 달라질 수 있어요.`;
     } else {
       note.classList.remove('hide');
-      note.innerHTML = `${p.name}의 표준시(UTC${p.tzOffset >= 0 ? '+' : ''}${p.tzOffset})로 계산합니다. <b>그 시기에 서머타임이 있었다면</b> 태어난 시각에서 1시간을 빼고 입력해 주세요.`;
+      note.innerHTML = `${p.name} 시계(UTC${p.tzOffset >= 0 ? '+' : ''}${p.tzOffset})로 계산해요. <b>태어난 때 서머타임 중이었다면</b> 태어난 시각에서 1시간을 빼고 넣어 주세요.`;
     }
   }
 
@@ -333,7 +333,7 @@
     if (calMode === 'solar') return { y, m, d };
     if (!window.ChaeksaLunar) return null;
     const r = ChaeksaLunar.lunarToSolar(y, m, d, $('isLeap').checked);
-    return r && !r.error ? r : { error: r && r.error ? r.error : '변환할 수 없는 날짜입니다.' };
+    return r && !r.error ? r : { error: r && r.error ? r.error : '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
   }
   function updateConv() {
     const note = $('convNote');
@@ -363,7 +363,7 @@
   function readForm() {
     const noTime = $('noTime').checked;
     const sol = toSolar();
-    if (!sol) { alert('생년월일을 입력해 주세요.'); return null; }
+    if (!sol) { alert('생년월일을 넣어 주세요.'); return null; }
     if (sol.error) { alert(sol.error); return null; }
     const p = { name: $('name').value.trim(), year: sol.y, month: sol.m, day: sol.d,
       calendar: calMode, lunarInput: calMode === 'lunar' ? { y: +$('y').value, m: +$('m').value, d: +$('d').value, leap: $('isLeap').checked } : null,
@@ -371,7 +371,7 @@
       gender: $('g').value, solarCorrection: $('solar').checked };
     const pl = window.ChaeksaPlaces ? ChaeksaPlaces.resolve($('place').value) : null;
     if (pl) { p.place = $('place').value; p.placeName = pl.name; p.longitude = pl.lon; p.tzOffset = pl.tzOffset; }
-    if (!p.year || !p.month || !p.day) { alert('생년월일을 입력해 주세요.'); return null; }
+    if (!p.year || !p.month || !p.day) { alert('생년월일을 넣어 주세요.'); return null; }
     if (p.year < 1900 || p.year > 2100 || p.month < 1 || p.month > 12 || p.day < 1 || p.day > 31) { alert('날짜를 다시 확인해 주세요.'); return null; }
     return p;
   }

@@ -62,9 +62,9 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1203"></script><script src="astro.js?v=1203"></script><script src="lunar.js?v=1203"></script><script src="engine.js?v=1203"></script>
-<script src="saenggeuk.js?v=1203"></script><script src="gise.js?v=1203"></script><script src="panjeong.js?v=1203"></script><script src="typecard.js?v=1203"></script><script src="gyeokguk.js?v=1203"></script>
-<script src="classic.js?v=1203"></script><script src="samyeong.js?v=1203"></script><script src="jt-webtoon.js?v=1203"></script><script src="jt-webtoon-2.js?v=1203"></script><script src="ssom-gwanjeom.js?v=1203"></script><script src="ssom-baram.js?v=1203"></script><script src="ssom-daehwa.js?v=1203"></script><script src="ssom-webtoon.js?v=1203"></script><script src="ssom-webtoon-2.js?v=1203"></script><script src="ssom-webtoon-3.js?v=1203"></script><script src="ssom-wongo.js?v=1203"></script><script src="ssom-dangye.js?v=1203"></script><script src="ssom.js?v=1203"></script>
+<script src="config.js?v=1204"></script><script src="astro.js?v=1204"></script><script src="lunar.js?v=1204"></script><script src="engine.js?v=1204"></script>
+<script src="saenggeuk.js?v=1204"></script><script src="gise.js?v=1204"></script><script src="panjeong.js?v=1204"></script><script src="typecard.js?v=1204"></script><script src="gyeokguk.js?v=1204"></script>
+<script src="classic.js?v=1204"></script><script src="samyeong.js?v=1204"></script><script src="jt-webtoon.js?v=1204"></script><script src="jt-webtoon-2.js?v=1204"></script><script src="ssom-gwanjeom.js?v=1204"></script><script src="ssom-baram.js?v=1204"></script><script src="ssom-daehwa.js?v=1204"></script><script src="ssom-webtoon.js?v=1204"></script><script src="ssom-webtoon-2.js?v=1204"></script><script src="ssom-webtoon-3.js?v=1204"></script><script src="ssom-wongo.js?v=1204"></script><script src="ssom-dangye.js?v=1204"></script><script src="ssom.js?v=1204"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
@@ -106,10 +106,10 @@
     const s = 줄들[n]; 배경바꾸기(s.배경);
     // 09-25 사장님 — 이름표 자리: 나 = 왼쪽 위 · 그 사람 = 오른쪽 위 · 책사 = 가운데. 장면(지문)도 조각 주인이 있으면 그 사람 이름표.
     const 주인 = s.누가 === '장면' ? s.주인 : (s.누가 === '당신' || s.누가 === '상대') ? s.누가 : null;
-    const 표 = 주인 === '당신' ? '나' : 주인 === '상대' ? '그 사람' : s.누가 === '예시' ? '예시' : s.누가 === '추론의 단서' ? '추론의 단서' : s.누가 === '장면' ? '' : '책사';
+    const 표 = 주인 === '당신' ? '나' : 주인 === '상대' ? '그 사람' : s.누가 === '예시' ? '예시' : s.누가 === '사주에서 본 근거' ? '사주에서 본 근거' : s.누가 === '장면' ? '' : '책사';
     $('who').textContent = 표;
-    $('who').className = 'who' + (주인 === '당신' ? ' you left' : 주인 === '상대' ? ' them right' : s.누가 === '예시' ? ' ex center' : s.누가 === '추론의 단서' ? ' dan center' : s.누가 === '장면' ? ' scene' : ' center' + (s.쪽 === 1 ? ' jw' : ''));
-    $('txt').className = 'txt' + (s.누가 === '장면' ? ' scene' : s.누가 === '추론의 단서' ? ' dan' : /당신|상대|예시/.test(s.누가) ? ' say' : ''); $('nx').style.display = '';
+    $('who').className = 'who' + (주인 === '당신' ? ' you left' : 주인 === '상대' ? ' them right' : s.누가 === '예시' ? ' ex center' : s.누가 === '사주에서 본 근거' ? ' dan center' : s.누가 === '장면' ? ' scene' : ' center' + (s.쪽 === 1 ? ' jw' : ''));
+    $('txt').className = 'txt' + (s.누가 === '장면' ? ' scene' : s.누가 === '사주에서 본 근거' ? ' dan' : /당신|상대|예시/.test(s.누가) ? ' say' : ''); $('nx').style.display = '';
     $('prog').textContent = (장 + 1) + '화 — ' + (n + 1) + '/' + 줄들.length;
     const 순 = s.말.replace(/\*\*/g, ''); let k = 0; 다침 = false; clearInterval(치는중);
     치는중 = setInterval(() => { k++; $('txt').textContent = 순.slice(0, k); if (k >= 순.length) { clearInterval(치는중); $('txt').innerHTML = 굵(s.말); 다침 = true; } }, 28);
@@ -124,7 +124,7 @@
     멈춤 = true; const r = 장들[장].반응;
     if (r && !반응중) { 책사말(r.물음); return 선택(r.틀, (답) => { try { S.적기(대.키, r.장, 답); } catch (e) {}
       const 글 = r.글[답]; if (!글) { return 다음단추(); }
-      줄들 = 글.map(t => Array.isArray(t) ? (t[0] === '장면' ? { 누가: '장면', 말: t[1], 배경: 지금배경, 주인: t[2] } : t[0] === '당신' || t[0] === '상대' ? { 누가: t[0], 말: t[1], 배경: 지금배경 } : t[0] === '단서' ? { 누가: '추론의 단서', 말: t[1], 배경: 지금배경 } : { 누가: '책사', 말: t[1], 쪽: t[0] === '인연' ? 0 : 1, 배경: 지금배경 }) : t.indexOf('> ') === 0 ? { 누가: '예시', 말: t.slice(2), 배경: 지금배경 } : { 누가: '책사', 말: t, 배경: 지금배경 }); n = 0; 멈춤 = false; 반응중 = true; 보이기(); }); }
+      줄들 = 글.map(t => Array.isArray(t) ? (t[0] === '장면' ? { 누가: '장면', 말: t[1], 배경: 지금배경, 주인: t[2] } : t[0] === '당신' || t[0] === '상대' ? { 누가: t[0], 말: t[1], 배경: 지금배경 } : t[0] === '단서' ? { 누가: '사주에서 본 근거', 말: t[1], 배경: 지금배경 } : { 누가: '책사', 말: t[1], 쪽: t[0] === '인연' ? 0 : 1, 배경: 지금배경 }) : t.indexOf('> ') === 0 ? { 누가: '예시', 말: t.slice(2), 배경: 지금배경 } : { 누가: '책사', 말: t, 배경: 지금배경 }); n = 0; 멈춤 = false; 반응중 = true; 보이기(); }); }
     다음단추();
   }
   function 다음단추() {

@@ -190,12 +190,12 @@
       for (const mo of buildMonths(yr)) {
         if (mo.lunarYear === ly && mo.month === lm && !!mo.isLeap === !!leap) {
           const len = mo.end - mo.start;
-          if (ld < 1 || ld > len) return { error: `그 달은 ${len}일까지 있습니다.` };
+          if (ld < 1 || ld > len) return { error: `그 달은 ${len}일까지 있어요.` };
           return dateFromJD(mo.start - 0.5 - KST + 0.5 + (ld - 1));
         }
       }
     }
-    return { error: leap ? `${ly}년에는 윤${lm}월이 없습니다.` : '해당 음력 날짜를 찾지 못했습니다.' };
+    return { error: leap ? `${ly}년에는 윤${lm}월이 없어요.` : '이 음력 날짜를 찾지 못했어요.' };
   }
 
   /** 그 해에 있는 윤달 번호 (없으면 null) */
