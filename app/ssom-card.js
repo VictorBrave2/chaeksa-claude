@@ -7,6 +7,8 @@
   // 언행 다섯 갈래 말은 작가 원고(ssom-card-mal.js 언행)에서 읽는다
   const 언행말 = (k) => ((global.ChaeksaSsomCardMal || {}).언행 || {})[k] || '';
   const 언행키 = (R) => { const 언 = (S.언행(R) || [])[0]; return 언 ? 언.십신 + (언.드러남 ? '드러남' : '숨음') : '없음'; };
+  // 언행이 둘(식신 + 상관)이면 합친 말(작가 키 둘다드러남 · 둘다숨음 · 식신드러남상관숨음 · 상관드러남식신숨음) — 근거 보기와 어긋나지 않게(09-27 검수). 없으면 첫 것
+  const 언행말둘 = (R) => { const 들 = S.언행(R) || []; if (들.length < 2) return 언행말(언행키(R)); const M = (global.ChaeksaSsomCardMal || {}).언행 || {}; const [a, b] = 들; const k = a.드러남 === b.드러남 ? (a.드러남 ? '둘다드러남' : '둘다숨음') : (a.드러남 ? a.십신 + '드러남' + b.십신 + '숨음' : b.십신 + '드러남' + a.십신 + '숨음'); return M[k] || 언행말(언행키(R)); };
   const 받침 = (t) => { const c = String(t).charCodeAt(String(t).length - 1) - 0xAC00; return c >= 0 && c < 11172 && (c % 28) !== 0; };
   const 채우기 = (틀, v) => String(틀 || '').replace(/\{([^}|]+)(?:\|([^}]+))?\}/g, (m, k, j) => { const x = v[k] == null ? '' : String(v[k]); if (!j) return x; const p = { 은: ['은', '는'], 이에요: ['이에요', '예요'], 을: ['을', '를'], 이: ['이', '가'] }[j]; return p ? x + (받침(x) ? p[0] : p[1]) : x; });
 
@@ -21,7 +23,7 @@
     const 사이 = 당신채움 && 그채움 ? '으뜸' : 당신채움 ? '당신' : 그채움 ? '그사람' : '맞춤';
     return { 사이, 당신채움, 그채움, 당신닿음, 그닿음, 으뜸: !!u.기운,
       당신바람: (S.바라는사람 || {})[S.일지십신(나R)] || '', 그바람: (S.바라는사람 || {})[S.일지십신(그R)] || '',
-      당신언행: 언행말(언행키(나R)), 그언행: 언행말(언행키(그R)) };
+      당신언행: 언행말둘(나R), 그언행: 언행말둘(그R) };
   }
   // 방향 줄 뒤에 맞음/다름 꼬리(검수 09-26: 「그래서 맞다는 거야?」). 그림 카드는 받은 사람이 「당신」을 자기로 읽으니 보낸 사람 이름(나)을 넣는다
   function 문장(r, 나) {
@@ -32,6 +34,7 @@
     return { 사이: 이름넣기(M.사이[r.사이] || ''),
       당신줄: 이름넣기(채우기(M.방향, { 받분: '당신', 주분: 그, 바람: r.당신바람, 언행: r.그언행 })) + 꼬(r.당신닿음),
       그줄: 이름넣기(채우기(M.방향, { 받분: 그, 주분: '당신', 바람: r.그바람, 언행: r.당신언행 })) + 꼬(r.그닿음),
+      비슷풀이: (r.당신닿음 === '기운' || r.그닿음 === '기운') ? (M.비슷풀이 || '') : '',
       단추: M.단추 || {}, 꼬리: M.꼬리 || '책사 · chaeksa.kr' };
   }
   // 화면 카드(html)
@@ -40,7 +43,7 @@
     const r = 재기(나R, 그R), m = 문장(r); if (!m) return '';
     const 컷 = r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give';
     return '<div class="card ss-card" id="ssCard"><img class="ss-card-cut" src="art/' + 컷 + '-s.webp" alt="">'
-      + '<p class="ss-card-lead">' + esc(m.사이) + '</p><p class="ss-card-line">' + esc(m.당신줄) + '</p><p class="ss-card-line">' + esc(m.그줄) + '</p>'
+      + '<p class="ss-card-lead">' + esc(m.사이) + '</p><p class="ss-card-line">' + esc(m.당신줄) + '</p><p class="ss-card-line">' + esc(m.그줄) + '</p>' + (m.비슷풀이 ? '<p class="ss-card-line ss-card-tip">' + esc(m.비슷풀이) + '</p>' : '')
       + '<div class="ss-card-btns"><button type="button" class="btn ghost small" id="ssCardShare">카톡으로 보내기</button><button type="button" class="btn ghost small" id="ssCardSave">이미지로 저장</button></div></div>';
   }
   // 그림 카드(canvas 1080×1350) — 컷 + 네 줄 + 꼬리
@@ -56,7 +59,7 @@
     ctx.textAlign = 'center'; ctx.fillStyle = '#f7f3ff'; ctx.font = '700 58px ' + SERIF;
     let y = wrap(ctx, m.사이, W / 2, 760, 900, 76);
     ctx.font = '400 36px ' + SANS; ctx.fillStyle = '#d8d3ea';
-    y = wrap(ctx, m.당신줄, W / 2, y + 40, 900, 54); y = wrap(ctx, m.그줄, W / 2, y + 16, 900, 54);
+    y = wrap(ctx, m.당신줄, W / 2, y + 40, 900, 54); y = wrap(ctx, m.그줄, W / 2, y + 16, 900, 54); if (m.비슷풀이) { ctx.fillStyle = '#9a95b8'; y = wrap(ctx, m.비슷풀이, W / 2, y + 12, 900, 48); }
     ctx.font = '700 40px ' + SERIF; ctx.fillStyle = '#e6c98a'; ctx.fillText(m.단추.받은사람 || '우리 둘 이야기도 보기', W / 2, H - 150);
     ctx.font = '400 28px ' + SANS; ctx.fillStyle = '#9a95b8'; ctx.fillText(m.꼬리, W / 2, H - 70);
     return r;
