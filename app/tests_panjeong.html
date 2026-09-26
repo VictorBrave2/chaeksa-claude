@@ -7,7 +7,7 @@
 <p style="font-size:12px;color:#555">눈금 — 글자 힘 0~2.0(뿌리 하나) · 국을 부리면 4.5까지 · 0.5부터 산다 / 3배 규칙 = 맞는 쪽 합산 ÷ 치는 쪽, 2부터 못 친다 / 지지 하나 힘: 제왕 1.00 · 건록 .82 · 관대 .70 · 쇠 .62 · 장생 .55 · 목욕 .50 · 양 .30 · 병 .20 · 묘고 .20 · 태 .15 · 사 .08 · 절 .05 · 묘 0 / 자리 무게: 월 2.0 · 시 1.5 · 연·일·운 1.0</p>
 <div id="out"></div>
 <script src="config.js"></script><script src="lunar.js"></script><script src="astro.js"></script><script src="engine.js"></script>
-<script src="gyeokguk.js?v=1220"></script><script src="saenggeuk.js?t=72"></script><script src="panjeong.js?t=71"></script><script src="questions.js?t=1"></script>
+<script src="gyeokguk.js?v=1220"></script><script src="saenggeuk.js?t=72"></script><script src="panjeong.js?t=72"></script><script src="questions.js?t=1"></script>
 <script>
 const E = ChaeksaEngine, G = ChaeksaSaenggeuk, P = ChaeksaPanjeong;
 const S = E.STEMS, B = E.BRANCHES;
@@ -214,6 +214,27 @@ let 통과 = 0, 실패 = 0;
   html += '<details><summary>글자 힘과 이력 (' + 층.이름 + ')</summary><pre>' + 층.표.글자.filter(g => !g.일간).map(g => g.이름 + ' ' + g.글자 + '(' + g.십신 + ') 힘 ' + G.힘말(g.힘) + (g.산다 ? '' : ' · 죽어 있음') + (g.이력.length ? '\n' + g.이력.map(i => '  ' + i.조 + ' · ' + i.말).join('\n') : '')).join('\n').replace(/</g, '&lt;') + '</pre></details>';
   out.insertAdjacentHTML('beforeend', html);
 });
+// ── 작용 기록 · 차이(09-27, docs/94) — 사장님 명식 壬申 甲辰 丁卯 庚子(1992-04-21 00:20 남) · 정미 대운. 오늘 층의 차이(앞 층 = 이달)를 본다.
+{
+  const R = { pillars: 나, dayStem: 나.day.stem };
+  const 날 = (d) => { const tf = E.dateFortune(2026, 9, d); return [운('丁未', '대운'), { stem: tf.year.stem, branch: tf.year.branch, name: '올해' }, { stem: tf.month.stem, branch: tf.month.branch, name: '이달' }, { stem: tf.day.stem, branch: tf.day.branch, name: '오늘' }]; };
+  const 차이시험 = [
+    ['9/14 신묘 — 인성 제약 생김(庚→甲 막힘 없음) · 55조 식상 풀림', 14, '辛卯', (c) => c.제약.some(e => e.무리 === '인성' && e.종류 === '생김' && e.극 === '庚→甲') && c.제약.some(e => e.조 === '55조')],
+    ['9/16 계사 — 재 → 살 → 인 → 일간 연결 생김', 16, '癸巳', (c) => c.연결.some(e => e.종류 === '생김' && e.사슬.이름 === '재 → 살 → 인 → 일간')],
+    ['9/20 정유 — 이달(정유)과 같아 차이 없음', 20, '丁酉', (c) => c.없음 === true],
+    ['9/21 무술 — 식상(戊 상관) 활성', 21, '戊戌', (c) => c.활성.some(e => e.무리 === '식상' && e.종류 === '살아남' && e.글자 === '戊')],
+  ];
+  차이시험.forEach(([이름, d, 간지, 맞나]) => {
+    let o = null, 문제 = [];
+    try { o = P.판정(R, new Date(2026, 8, d), { 운들: 날(d) }).오늘; } catch (e) { 문제.push(e.stack); }
+    if (o && o.간지 !== 간지) 문제.push('일진 기대 ' + 간지 + ' 실제 ' + o.간지);
+    if (o && !o.차이) 문제.push('차이가 없음(null) ' + (o.작용오류 || ''));
+    else if (o && !맞나(o.차이)) 문제.push('차이 목록: ' + (o.차이.목록.join(' / ') || '(없음)'));
+    const ok = !문제.length; ok ? 통과++ : 실패++;
+    out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + '작용 차이 · ' + 이름 + '</h2>' + (ok ? '' : '<pre>' + 문제.join('\n') + '</pre>')
+      + (o && o.차이 ? '<details><summary>차이 사건</summary><pre>' + (o.차이.목록.join('\n') || '(없음)') + '\n범위 ' + o.차이.범위.무리.join('·') + ' · 지속 ' + o.차이.지속.기간 + '</pre></details>' : ''));
+  });
+}
 out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
 // ── 질문 생성기(docs/37) — 시험 사주 A 에 오늘 서는 질문. 격자 전체 수도 같이.
 {

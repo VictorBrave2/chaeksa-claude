@@ -87,6 +87,128 @@
     return { 범주: 범주표.유지, 근거: '격신을 극하는 살아 있는 글자가 없음' };
   }
 
+  /* ── 작용 기록 · 차이(09-27 사장님 「가장 권위 있고 가장 먼저 보아야 하는 엔진」, docs/94) ──
+   * 층마다 십성 다섯 무리 + 일간이 무엇을 하고 있나를 표(saenggeuk.표)에서 **읽어 모은다**. 새 규칙은 없다.
+   * 격 · 성패는 지우지 않는다 — 결론이 아니라 이 기록 옆의 도구 칸(층.격 · 층.성패)이다. */
+  const 무리표 = { 비견: '비겁', 겁재: '비겁', 식신: '식상', 상관: '식상', 편재: '재성', 정재: '재성', 편관: '관성', 정관: '관성', 편인: '인성', 정인: '인성', 일간: '일간' };
+  const 무리들 = ['일간', '비겁', '식상', '재성', '관성', '인성'];
+  const 짧은 = { 비견: '비겁', 겁재: '비겁', 식신: '식', 상관: '상관', 편재: '재', 정재: '재', 편관: '살', 정관: '관', 편인: '인', 정인: '인', 일간: '일간' };
+  const 무리of = (g) => 무리표[g.십신] || null;
+  const 출처of = (g) => g.운 ? g.이름 : '원국';
+  const 칸글자 = (g) => ({ key: g.key, 글자: g.글자, 십신: g.십신, 자리: g.이름, 출처: 출처of(g), 산다: !!g.산다, 힘: g.힘, 합거: g.합거 || null, 변질: !!g.변질 });
+  // 33조 — 생하는 글자가 통관 없이(막힘 없이) 극당하면 그 생은 **약해진다**(끊기지는 않는다). 약함 표시만 단다.
+  // 일간은 주체라 치는 쪽으로 세지 않는다(병과약 · 55조와 같은 약속).
+  const 맞는중 = (t, g) => t.쌍.filter(q => q.관계 === '극' && q.to === g && q.from.산다 && !q.from.일간 && !q.막힘 && (q.유효힘 == null || q.유효힘 > 0));
+  const 흐르는생 = (t) => t.쌍.filter(r => r.관계 === '생' && r.from.산다 && r.to.산다 && !r.to.지지);
+  const 약함of = (t, r) => 맞는중(t, r.from).map(q => q.from.글자);
+  const 자리번호 = (g) => { const k = String(g.key || ''); return k.indexOf('year') === 0 ? 0 : k.indexOf('month') === 0 ? 1 : k.indexOf('day') === 0 ? 2 : k.indexOf('hour') === 0 ? 3 : null; };
+  const 붙음 = (a, b) => { const x = 자리번호(a), y = 자리번호(b); return x == null || y == null || Math.abs(x - y) <= 1; };
+
+  /** 생의 사슬 — 흐르는 생을 따라 일간에 닿는 길(세 글자 이상). 가장 긴 것만 남긴다. 61조 붙음이 안 맞는 원국끼리 고리는 끊는다. */
+  function 사슬들(t) {
+    const 줄 = 흐르는생(t).filter(r => 붙음(r.from, r.to) && !r.from.일간);
+    const 나 = t.글자.find(g => g.일간);
+    const 길 = [];
+    const 걷기 = (g, 지나온) => {
+      if (g === 나) { if (지나온.length >= 3) 길.push(지나온.slice()); return; }
+      줄.filter(r => r.from === g && 지나온.indexOf(r.to) < 0).forEach(r => { 지나온.push(r.to); 걷기(r.to, 지나온); 지나온.pop(); });
+    };
+    t.글자.filter(g => !g.일간 && g.산다).forEach(g => 걷기(g, [g]));
+    const 말 = (p) => {
+      const 약한 = [];
+      for (let i = 0; i < p.length - 1; i++) { const 치는 = 맞는중(t, p[i]).map(q => q.from.글자); if (치는.length) 약한.push(p[i].글자 + '→' + p[i + 1].글자 + '(' + 치는.join('·') + '이 ' + p[i].글자 + '을 침)'); }
+      return { 이름: p.map(g => 짧은[g.십신] || g.십신).join(' → '), 글자: p.map(g => g.글자).join(' → '), 약한고리: 약한, 조: '33조 · 61조' };
+    };
+    const 모두 = 길.map(말);
+    const 문자 = 모두.map(x => x.글자);
+    return 모두.filter((x, i) => 문자.indexOf(x.글자) === i && !문자.some(y => y !== x.글자 && y.length > x.글자.length && y.endsWith(x.글자)));
+  }
+
+  /** 층의 작용 기록. 뿌리터 = 원국 지지(자리 무게) + 운 지지(1.0) — saenggeuk 과 같은 재료. 일간 힘도 같은 저울(stemPower)로 잰다. */
+  function 작용(t, R, 운목록) {
+    const P = R.pillars, 뿌리터 = [['year', E.NATAL_WEIGHT.yearBranch], ['month', E.NATAL_WEIGHT.monthBranch], ['day', E.NATAL_WEIGHT.dayBranch], ['hour', E.NATAL_WEIGHT.hourBranch]]
+      .filter(([k]) => P[k]).map(([k, w]) => [P[k].branch, w]).concat((운목록 || []).filter(u => u.branch != null).map(u => [u.branch, 1.0]));
+    const 흐름 = 흐르는생(t);
+    const out = {};
+    무리들.forEach(M => {
+      const 천간 = t.글자.filter(g => 무리of(g) === M);
+      const 지지 = M === '일간' ? [] : (t.궁 || []).filter(g => 무리of(g) === M).concat((t.지장간 || []).filter(g => 무리of(g) === M));
+      const 산 = 천간.filter(g => g.산다);
+      const 힘들 = 산.map(g => g.일간 ? Math.round(E.stemPower(g.stem, 뿌리터) * 100) / 100 : g.힘).filter(x => x != null);
+      const 기반 = {
+        힘: 힘들.length ? Math.max.apply(null, 힘들) : 0,                                   // 2조 · 09-27 저울 같게 — 가장 센 자리 하나
+        합산: Math.round(힘들.reduce((s, x) => s + x, 0) * 100) / 100,                      // 36조① 맞는 쪽 같은 무리 합산(견줄 때 쓰는 값)
+        산글자: 산.map(g => g.글자).filter((x, i, a) => a.indexOf(x) === i),
+        뿌리: 지지.map(g => g.이름 + ' ' + g.글자 + (g.지장간 ? (g.본기 ? '(본기)' : '(중·여기)') : '(궁)')),
+        투간: 천간.some(g => !g.운 && !g.일간),
+        합거: 천간.filter(g => g.합거).map(g => ({ 글자: g.글자, 자리: g.이름, 짝: g.합거, 조: '3조 · 28조 · 37조 · 71조' })),
+        무근: 천간.filter(g => !g.일간 && !g.합거 && !g.산다).map(g => ({ 글자: g.글자, 자리: g.이름, 힘: g.힘, 조: (g.이력 || []).some(i => i.조 === '50조') ? '50조 · 33조' : '33조' })),
+        조: '1조 · 2조 · 30조(십성의 상태) · 33조 · 36조 · 41조 · 50조',
+      };
+      const 줄 = (r, 쪽) => ({ 글자: r[쪽].글자, 십신: r[쪽].십신, 무리: 무리of(r[쪽]), 출처: 출처of(r[쪽]), 받는: r.to.글자, 주는: r.from.글자 });
+      const 유입 = 흐름.filter(r => 산.indexOf(r.to) >= 0).map(r => Object.assign(줄(r, 'from'), { 약함: 약함of(t, r), 조: '33조' }));
+      const 극줄 = t.쌍.filter(r => r.관계 === '극' && 산.indexOf(r.to) >= 0 && r.from.산다 && !r.from.일간);
+      const 제약 = {
+        뚫림: 극줄.filter(r => !r.막힘 && (r.유효힘 == null || r.유효힘 > 0)).map(r => Object.assign(줄(r, 'from'), { 유효힘: r.유효힘, 조: '33조 · 36조' })),
+        막힘: 극줄.filter(r => r.막힘).map(r => Object.assign(줄(r, 'from'), {
+          사유: r.통관 ? '통관(' + r.셋째.map(c => c.글자).join('·') + ')' : r.제복 ? '제복(' + r.잡는.map(c => c.글자).join('·') + ')' : '힘차이',
+          조: r.통관 ? '33조 · 36조 · 61조 · 62조' : '36조' })),
+        합거: 기반.합거,
+      };
+      if (M === '일간') {   // 일간은 힘차이로 막지 않는다(표의 약속) — 표.닿음과 같은 줄
+        제약.뚫림 = t.쌍.filter(r => r.관계 === '극' && r.to.일간 && r.from.산다 && !r.막힘).map(r => Object.assign(줄(r, 'from'), { 조: '30조 · 33조' }));
+        제약.막힘 = t.쌍.filter(r => r.관계 === '극' && r.to.일간 && r.from.산다 && r.막힘).map(r => Object.assign(줄(r, 'from'), { 사유: r.통관 ? '통관' : '제복', 조: '30조 · 33조' }));
+      }
+      const 출구 = 흐름.filter(r => 산.indexOf(r.from) >= 0).map(r => Object.assign(줄(r, 'to'), { 붙음: 붙음(r.from, r.to), 약함: 약함of(t, r), 조: '33조 · 61조' }));
+      const 흔들림 = (t.운충 || []).filter(x => x.흔들림 && ((x.뿌리둔 || []).some(b => 천간.some(g => g.key === b.key)) || 지지.some(g => g.궁 && g.글자 === x.원지)))
+        .map(x => ({ 운: x.운, 충: x.운지 + x.원지, 자리: x.자리, 조: '54조' }));
+      out[M] = { 역할: 천간.map(칸글자).concat(지지.map(g => ({ 글자: g.글자, 십신: g.십신, 자리: g.이름, 출처: '원국', 지지: true, 본기: g.지장간 ? !!g.본기 : true }))), 기반, 유입, 제약, 출구, 흔들림 };
+    });
+    out.사슬 = 사슬들(t);
+    return out;
+  }
+
+  const 지속표 = { 원국: '평생', 대운: '대운 10년', 올해: '올해 한 해', 이달: '이달 한 달', 오늘: '오늘 하루' };
+  const 사슬무리 = { 재: '재성', 살: '관성', 관: '관성', 인: '인성', 식: '식상', 상관: '식상', 비겁: '비겁', 일간: '일간' };
+  /** 앞 층 대비 차이 — 숫자 점수 없이 사건 목록. 글자 단위로 견주므로 같은 글자가 또 오면(이달 丁酉 · 오늘 丁酉) 차이가 없다. */
+  function 차이(앞층, 층) {
+    if (!앞층 || !앞층.작용 || !층.작용) return null;
+    const a = 앞층.작용, b = 층.작용, 활성 = [], 연결 = [], 제약 = [];
+    무리들.forEach(M => {
+      const x = a[M].기반, y = b[M].기반;
+      y.산글자.filter(g => x.산글자.indexOf(g) < 0).forEach(g => 활성.push({ 무리: M, 종류: '살아남', 글자: g, 말: M + ' ' + g + ' 살아남', 조: '33조' }));
+      x.산글자.filter(g => y.산글자.indexOf(g) < 0).forEach(g => {
+        const 전키 = a[M].역할.filter(c => c.산다 && c.글자 === g).map(c => c.key);
+        const 합 = b[M].역할.find(c => 전키.indexOf(c.key) >= 0 && c.합거);
+        활성.push({ 무리: M, 종류: 합 ? '합거' : '꺼짐', 글자: g, 말: M + ' ' + g + (합 ? ' 합거(' + 합.자리 + ' ' + g + ' — ' + (/과 합$/.test(합.합거) ? 합.합거 : 합.합거 + ' 글자와 합') + ')' : ' 꺼짐'), 조: 합 ? '3조 · 28조 · 37조 · 71조' : '33조' });
+      });
+      if (x.힘 !== y.힘) 활성.push({ 무리: M, 종류: '힘', 전: x.힘, 후: y.힘, 말: M + ' 힘 ' + x.힘 + ' → ' + y.힘, 조: '1조 · 2조' });
+      // 제약 — 글자 단위 「치는→맞는」. 뚫린 극이 새로 서면 생김, 사라지거나 막히면 풀림.
+      const 뚫 = (w) => w[M].제약.뚫림.map(r => r.주는 + '→' + r.받는).filter((k, i, arr) => arr.indexOf(k) === i);
+      const 전 = 뚫(a), 후 = 뚫(b);
+      후.filter(k => 전.indexOf(k) < 0).forEach(k => 제약.push({ 무리: M, 종류: '생김', 극: k, 말: M + ' 제약 생김(' + k + ' 막힘 없음)', 조: '33조 · 36조' }));
+      전.filter(k => 후.indexOf(k) < 0).forEach(k => {
+        const 막 = b[M].제약.막힘.find(r => r.주는 + '→' + r.받는 === k);
+        제약.push({ 무리: M, 종류: '풀림', 극: k, 말: M + ' 제약 풀림(' + k + (막 ? ' ' + 막.사유 + '으로 막힘' : ' 극이 사라짐') + ')', 조: 막 ? 막.조 : '33조' });
+      });
+    });
+    // 55조 — 인성이 새로 막힘 없는 극을 받으면 그 인성이 누르던 식상(궁 · 지장간 포함)이 풀린다
+    const 인생김 = 제약.filter(e => e.무리 === '인성' && e.종류 === '생김').map(e => e.극.split('→')[1]);
+    if (인생김.length) {
+      const 식 = (층.표.쌍 || []).filter(r => r.관계 === '극' && r.from.산다 && !r.from.일간 && 무리of(r.from) === '인성' && 무리of(r.to) === '식상' && 인생김.indexOf(r.from.글자) >= 0)
+        .map(r => r.to.글자 + '(' + r.to.이름 + ')').filter((k, i, arr) => arr.indexOf(k) === i);
+      if (식.length) 제약.push({ 무리: '식상', 종류: '풀림', 극: null, 말: '식상 풀림 — ' + 식.join('·') + ' 눌림이 풀림(인성이 맞음)', 조: '55조' });
+    }
+    const 전사 = a.사슬.map(s => s.글자), 후사 = b.사슬.map(s => s.글자);
+    b.사슬.filter(s => 전사.indexOf(s.글자) < 0).forEach(s => 연결.push({ 종류: '생김', 말: s.이름 + ' 연결 생김(' + s.글자 + ')', 사슬: s, 조: s.조 }));
+    a.사슬.filter(s => 후사.indexOf(s.글자) < 0).forEach(s => 연결.push({ 종류: '끊김', 말: s.이름 + ' 연결 끊김(' + s.글자 + ')', 사슬: s, 조: s.조 }));
+    const 움직인 = 활성.concat(제약).map(e => e.무리)
+      .concat([].concat.apply([], 연결.map(e => e.사슬.이름.split(' → '))).map(x => 사슬무리[x]))
+      .filter((m, i, arr) => m && arr.indexOf(m) === i);
+    const 목록 = [].concat(활성, 연결, 제약).map(e => e.말);
+    return { 활성, 연결, 제약, 범위: { 무리수: 움직인.length, 무리: 움직인 }, 지속: { 층: 층.이름, 간지: 층.간지, 기간: 지속표[층.이름] || 층.이름 }, 없음: !목록.length, 목록 };
+  }
+
   /** G — 층을 차례로 쌓는다. */
   function 판정(R, today, opts) {
     today = today || new Date();
@@ -125,6 +247,8 @@
         층.성패 = { 격: 격.지금격, 판정: j.판정 || '미상', 파격: j.판정 === '깨졌다', 상신: j.상신 || null, 근거: j.근거 || null, 출처: '층격', 록겁: !!격.록겁 };
       }
       층.이력 = 원표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));
+      try { 층.작용 = 작용(원표, R, []); } catch (e) { 층.작용 = null; 층.작용오류 = String(e); }   // 09-27 작용 기록(docs/94)
+      층.차이 = null;
       층들.push(층); 앞 = 층;
     }
     for (const u of 운들) {
@@ -136,6 +260,7 @@
       // 건록 · 양인도 운 층마다 층격이 성패를 낸다(09-26 docs/83 5절 · 09-27 층격 안으로). 층.성패는 층격 결과를 옮겨 적기만 한다.
       if (격 && 격.록겁) { const j = 격.성패 || {}; 층.성패 = { 격: 격.지금격, 판정: j.판정 || '미상', 파격: j.판정 === '깨졌다', 상신: j.상신 || null, 근거: j.근거 || null, 출처: '층격', 록겁: true }; }
       층.이력 = 표.글자.map(g => ({ 글자: g.이름 + ' ' + g.글자, 이력: g.이력 }));
+      try { 층.작용 = 작용(표, R, 앞운들.concat([u])); 층.차이 = 차이(앞, 층); } catch (e) { 층.작용 = null; 층.차이 = null; 층.작용오류 = String(e); }
       층들.push(층); 앞 = 층; 앞운.push(u);
     }
     return { 층들, 오늘: 층들[층들.length - 1], 원격: 원격이름 };
@@ -437,5 +562,5 @@
     return '서로 크게 건드리지 않는 사이예요.';
   }
 
-  global.ChaeksaPanjeong = { 판정, 요약, 범주표, 글자결과, 대상글자, 이야기결과, 할일칸, 이유문장, 궁합, 궁합결론 };
+  global.ChaeksaPanjeong = { 작용, 차이, 판정, 요약, 범주표, 글자결과, 대상글자, 이야기결과, 할일칸, 이유문장, 궁합, 궁합결론 };
 })(window);
