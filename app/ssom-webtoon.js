@@ -26,7 +26,7 @@
   const 언행뜻 = { 식신: '챙겨 주는 기운', 상관: '하고 싶은 말을 하는 기운' };
   const 이가 = (ko) => 받침(ko) ? '이' : '가';
   function 단서(종류, p) {
-    if (종류 === '바람') return (p.누 || '') + '의 태어난 날 아래 글자 ' + (E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)] + '(' + p.일지 + ')') + 이가(E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)]) + ' ' + (p.누 || '') + '에게 ' + p.바람 + (받침(p.바람) ? '이라' : '라') + ', ' + ((S.바라는사람 || {})[p.바람] || '') + '한테 마음이 가요.';
+    if (종류 === '바람') return (p.누 || '') + '의 태어난 날의 글자 ' + (E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)] + '(' + p.일지 + ')') + 이가(E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)]) + ' ' + (p.누 || '') + '에게 ' + p.바람 + (받침(p.바람) ? '이라' : '라') + ', ' + ((S.바라는사람 || {})[p.바람] || '') + '한테 마음이 가요.';
     if (!p.언) return (p.누 || '') + '에게는 좋아하는 마음을 행동으로 내는 기운(식신 · 상관)이 없어요. 좋아해도 말이나 행동으로 먼저 티가 나지는 않아요.';
     const g = p.언.글자, gko = E.STEMS_KO[E.STEMS.indexOf(g)];
     return (p.누 || '') + '에게 ' + gko + '(' + g + ')' + 는(gko) + ' ' + p.언.십신 + '(' + 언행뜻[p.언.십신] + ')이에요. '
@@ -85,8 +85,8 @@
   function 변질말(종류, p, 분) {
     if (종류 === '일지') { const 변 = S.일지변질 && S.일지변질(p.R);
       const 합 = 변 ? 변.짝 : 육합[p.일지], 합ko = E.BRANCHES_KO[E.BRANCHES.indexOf(합)], 일ko = E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)];
-      return 변 ? 분 + '에게 ' + 합ko + '(' + 합 + ')' + 이가(합ko) + ' 오는 운에는 태어난 날 아래 글자 ' + 일ko + '(' + p.일지 + ')' + 이가(일ko) + ' 그 기운 쪽으로 끌려가요. 그동안은 속에 있던 ' + E.STEMS_KO[E.STEMS.indexOf(변.후글자)] + '(' + 변.후글자 + ') ' + 변.후 + 이가(변.후) + ' 앞에 나서서, 「' + (S.바라는사람 || {})[변.전] + '」보다 「' + (S.바라는사람 || {})[변.후] + '」한테 더 끌려요. 그 운이 지나면 돌아와요.'
-        : 분 + '의 태어난 날 아래 글자 ' + 일ko + '(' + p.일지 + ')' + 는(일ko) + ' 운이 와도 다른 기운으로 끌려가지 않아요. 그래서 끌리는 사람이 늘 같아요.'; }
+      return 변 ? 분 + '에게 ' + 합ko + '(' + 합 + ')' + 이가(합ko) + ' 오는 운에는 태어난 날의 글자 ' + 일ko + '(' + p.일지 + ')' + 이가(일ko) + ' 그 기운 쪽으로 끌려가요. 그동안은 속에 있던 ' + E.STEMS_KO[E.STEMS.indexOf(변.후글자)] + '(' + 변.후글자 + ') ' + 변.후 + 이가(변.후) + ' 앞에 나서서, 「' + (S.바라는사람 || {})[변.전] + '」보다 「' + (S.바라는사람 || {})[변.후] + '」한테 더 끌려요. 그 운이 지나면 돌아와요.'
+        : 분 + '의 태어난 날의 글자 ' + 일ko + '(' + p.일지 + ')' + 는(일ko) + ' 운이 와도 다른 기운으로 끌려가지 않아요. 그래서 끌리는 사람이 늘 같아요.'; }
     const P = p.R.pillars, ds = P.day.stem, 신 = (g) => E.TEN_GODS[E.tenGod(ds, g)];
     const 천 = ['year', 'month', 'hour'].map(k => P[k] && P[k].stem).filter(g => g != null && (신(g) === '식신' || 신(g) === '상관'));
     const g = 천.find(x => 신(x) === '식신'); const 고 = g != null ? g : 천[0];
@@ -112,10 +112,10 @@
     const P = p.R.pillars, ds = P.day.stem, 신 = (g) => E.TEN_GODS[E.tenGod(ds, g)], 목 = { 바람: [], 언행: [] };
     목.바람.push(['바람', 단서('바람', p)]);
     const 속 = (E.HIDDEN[P.day.branch] || []).map(h => typeof h === 'number' ? h : h[0]);
-    if (속.length > 1) 목.바람.push(['궁속', (p.누 || '') + '의 태어난 날 아래 글자 ' + (E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)] + '(' + p.일지 + ')') + ' 속에는 ' + 속.map(h => E.STEMS_KO[h] + '(' + E.STEMS[h] + ') ' + 신(h)).join(' · ') + 이가(신(속[속.length - 1])) + ' 같이 있어요. 평소엔 ' + ((S.바라는사람 || {})[신(속[0])] || '') + '한테 끌리고, 때에 따라 다른 쪽 사람한테도 마음이 가요.']);
+    if (속.length > 1) 목.바람.push(['궁속', (p.누 || '') + '의 태어난 날의 글자 ' + (E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)] + '(' + p.일지 + ')') + ' 속에는 ' + 속.map(h => E.STEMS_KO[h] + '(' + E.STEMS[h] + ') ' + 신(h)).join(' · ') + 이가(신(속[속.length - 1])) + ' 같이 있어요. 평소엔 ' + ((S.바라는사람 || {})[신(속[0])] || '') + '한테 끌리고, 때에 따라 다른 쪽 사람한테도 마음이 가요.']);
     const 변 = S.일지변질 && S.일지변질(p.R);
     if (변) { const 합 = 변.짝, 합ko = E.BRANCHES_KO[E.BRANCHES.indexOf(합)];
-      목.바람.push(['흔들림', 합ko + '(' + 합 + ')' + 이가(합ko) + ' 오는 해 · 달에는 ' + (p.누 || '') + '의 태어난 날 아래 글자 ' + (E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)] + '(' + p.일지 + ')') + 이가(E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)]) + ' 그 기운 쪽으로 끌려가요. 그때는 속에 있던 ' + E.STEMS_KO[E.STEMS.indexOf(변.후글자)] + '(' + 변.후글자 + ') ' + 변.후 + 이가(변.후) + ' 앞에 나서서, ' + ((S.바라는사람 || {})[변.후] || '다른 사람') + '한테 마음이 더 가요. 그 운이 지나면 돌아와요.']); }
+      목.바람.push(['흔들림', 합ko + '(' + 합 + ')' + 이가(합ko) + ' 오는 해 · 달에는 ' + (p.누 || '') + '의 태어난 날의 글자 ' + (E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)] + '(' + p.일지 + ')') + 이가(E.BRANCHES_KO[E.BRANCHES.indexOf(p.일지)]) + ' 그 기운 쪽으로 끌려가요. 그때는 속에 있던 ' + E.STEMS_KO[E.STEMS.indexOf(변.후글자)] + '(' + 변.후글자 + ') ' + 변.후 + 이가(변.후) + ' 앞에 나서서, ' + ((S.바라는사람 || {})[변.후] || '다른 사람') + '한테 마음이 더 가요. 그 운이 지나면 돌아와요.']); }
     목.언행.push(['언행', 단서('언행', p)]);
     if (p.언) { const g = E.STEMS.indexOf(p.언.글자), 천 = ['year', 'month', 'hour'].filter(k => P[k] && P[k].stem === g);
       const 지 = ['year', 'month', 'day', 'hour'].filter(k => P[k] && (E.HIDDEN[P[k].branch] || []).some(h => (typeof h === 'number' ? h : h[0]) === g)).map(k => E.BRANCHES[P[k].branch]).filter((x, j, a) => a.indexOf(x) === j);   // 같은 지지 두 번 안 쓰기(09-25 검수)

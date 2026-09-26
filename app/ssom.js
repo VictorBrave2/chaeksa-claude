@@ -8,7 +8,7 @@
   };
   const 식상말 = (x) => x.키 === '없음' ? '좋아하는 마음을 행동으로 내는 기운(식신 · 상관)은 없어요' : '좋아하는 마음을 행동으로 내는 기운은 ' + [x.식신 && E.STEMS_KO[E.STEMS.indexOf(x.식신)] + '(' + x.식신 + ') 식신(챙겨 주는 것)', x.상관 && E.STEMS_KO[E.STEMS.indexOf(x.상관)] + '(' + x.상관 + ') 상관(하고 싶은 말을 바로 하고 앞장서는 것)'].filter(Boolean).join(' · ') + (x.식신 && x.상관 ? '이 함께 있어요' : '만 있어요');
   const 받침 = (t) => { const c = String(t).charCodeAt(String(t).length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; };
-  const 사람줄 = (주, 쪽, 식) => { const 지 = E.BRANCHES_KO[E.BRANCHES.indexOf(쪽.일지)], 십 = 쪽.일지십신, 바 = (S.바라는사람 || {})[십]; return 주 + '은 ' + 쪽.일주 + '일에 태어났어요. 태어난 날 아래 글자 ' + 지말(쪽.일지) + (받침(지) ? '은 ' : '는 ') + 주 + '에게 ' + 십 + (받침(십) ? '이라' : '라') + (바 ? ', 「' + 바 + '」에게 끌려요. ' : '예요. ') + 식상말(식) + '.'; };
+  const 사람줄 = (주, 쪽, 식) => { const 지 = E.BRANCHES_KO[E.BRANCHES.indexOf(쪽.일지)], 십 = 쪽.일지십신, 바 = (S.바라는사람 || {})[십]; return 주 + '은 ' + 쪽.일주 + '일에 태어났어요. 태어난 날의 글자 ' + 지말(쪽.일지) + (받침(지) ? '은 ' : '는 ') + 주 + '에게 ' + 십 + (받침(십) ? '이라' : '라') + (바 ? ', 「' + 바 + '」에게 끌려요. ' : '예요. ') + 식상말(식) + '.'; };
   const 지말 = (b) => E.BRANCHES_KO[E.BRANCHES.indexOf(b)] + '(' + b + ')';
 
   // 흐름(09-24 사장님 전략): 1 나를 알고 · 2 그 사람을 알고 · 3 우리 둘의 주고받음 · 4 때 · 5 안고 갈 것, 맞춰 갈 것.
@@ -53,7 +53,7 @@
     const 나제 = 제목of(나R), 그제 = 제목of(그R);
     const 소개 = (누, 제) => !제[0] && !제[1] ? '' : '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
     const 근거 = ((global.ChaeksaSsomCard && global.ChaeksaSsomCard.카드(나R, 그R)) || '')   /* 09-26 3초 결과 · 공유 카드(docs/87) — 숫자 없이 사이 한 줄 + 두 방향 */ + '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">웹툰궁합 시작하기</button>'
-      + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">' + esc(사람줄('당신', z.나쪽, z.나식상)) + '<br>' + esc(사람줄('그 사람', z.그쪽, z.그식상)) + '<br>끌리는 사람은 태어난 날 아래 글자로, 좋아할 때 하는 행동은 식신 · 상관으로 봤어요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
+      + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">' + esc(사람줄('당신', z.나쪽, z.나식상)) + '<br>' + esc(사람줄('그 사람', z.그쪽, z.그식상)) + '<br>끌리는 사람은 태어난 날의 글자로, 좋아할 때 하는 행동은 식신 · 상관으로 봤어요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
     const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸', false, 달력끔(opts)) : null; } catch (e) { return null; } })();
