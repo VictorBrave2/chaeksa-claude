@@ -133,7 +133,8 @@
       });
       운천간.forEach(u => { const g = 신(u.stem), v = E.stemPower(u.stem, 지지); 힘[GRP[g]] += v; 신힘[g] = (신힘[g] || 0) + v; });
     }
-    const 일간힘 = 지지.reduce((s, [b, w]) => s + w * E.power(ds, b), 0);
+    // 09-27 사장님 「모두 가장 큰 한 곳으로」 — 일간도 남의 천간과 같은 저울(stemPower: 가장 센 자리 하나, 국이면 국 전체). 전에는 일간만 네 자리를 다 더해 무거웠다
+    const 일간힘 = E.stemPower(ds, 지지);
 
     // 인접 — 합거에서 정한 것과 같은 규칙. 월간-시간은 일간을 사이에 둔 격(隔)이다.
     const 순서 = ['year', 'month', 'day', 'hour'].filter(k => p[k]);
