@@ -93,7 +93,8 @@
       // 정통사주 11장처럼 — 지금 대운은 다 펴고, 나머지는 앞 세 줄만 보이고 뒤는 접는다
       const 접어 = (d) => (d.지금 || d.줄.length <= 3) ? 문단(d.줄) : 문단(d.줄.slice(0, 3)) + '<details class="jt-more"><summary>이 10년에 만나는 글자 ' + (d.줄.length - 3) + '줄 더 보기</summary>' + 문단(d.줄.slice(3)) + '</details>';
       const 벌 = (list) => list ? list.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + esc(d.나이) + '</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 접어(d) + '</div>').join('') : '<p class="jt-yet">성별을 넣으면 보여요.</p>';
-      return 칸그리기(v, 벌(v.대운.나), 벌(v.대운.그));
+      // 09-27 사장님 「대운칸 삭제하자」 — 두 사람 10년 목록은 걷고 첫 줄(지금 10년) 답만
+      return 칸그리기(Object.assign({}, v, { 머리: [] }), null, null);
     });
     안전(12, '앞으로 다섯 해', '같은 해에 두 사람에게 오는 것', () => {
       const v = Q.장12(C);
