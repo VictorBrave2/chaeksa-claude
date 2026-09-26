@@ -1802,3 +1802,6 @@ details.fold > .tiles { margin-top: 10px; }
 .ss-card-line{font-size:14px;color:var(--ink2);margin:2px 18px;line-height:1.6}
 .ss-card-tip{margin:8px 0 0;font-size:13px;color:var(--ink3,#9a95b8);text-align:center}
 .ss-card-btns{display:flex;gap:8px;justify-content:center;padding:12px 18px 16px}.ss-card-btns .btn{width:auto}
+
+/* 09-27 13장 첫 줄 1층 답(GPT 지적 6: 결론 먼저, 근거는 아래) */
+.jt-answer{font-weight:700;font-size:1.06em;line-height:1.55;margin:10px 0 12px;padding:10px 12px;border-left:3px solid var(--acc,#e6c98a);background:rgba(230,201,138,.08);border-radius:8px}
