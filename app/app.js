@@ -2677,7 +2677,8 @@
   document.querySelectorAll('.lp-scene a[data-go]').forEach(a => a.onclick = (e) => { e.preventDefault(); 들어가기(a.dataset.go); });
   try { const g = new URLSearchParams(location.search).get('go'); if (g) { sessionStorage.setItem(가는곳키, g); if (hasProfile() && profile) 도착(); else showForm(); } } catch (e) {}
   // 입력 컷 — 성별을 고르면 그림이 바뀐다(나: ss-me · ss-her / 그 사람: story-jigeum · story-sns)
-  const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (그림[g.value] || 그림.F) + '.webp';   // 09-26 큰 판(1024) — 작은 판은 폼 폭에서 흐렸다 if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
+  // 09-26 큰 판(1024) — 작은 판은 폼 폭에서 흐렸다. (주석을 줄 가운데 넣어 뒤가 잘렸던 것 고침 — feedback-edit-closing-quote 같은 종류)
+  const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (그림[g.value] || 그림.F) + '.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
   if ($('g')) { $('g').addEventListener('change', () => 컷바꾸기('g', 'fcCut', { M: 'jt-01-born-m', F: 'jt-01-born-f' })); 컷바꾸기('g', 'fcCut', { M: 'jt-01-born-m', F: 'jt-01-born-f' }); }
   if ($('pfG')) $('pfG').addEventListener('change', () => 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }));
   // 관문이 서 있을 때만 「로그인하고…」로 덮어쓴다. 내려 놓고 이 문구가 남으면
