@@ -190,6 +190,18 @@ def strip_comments(s):
     return COMMENT.sub('', s)
 
 
+def scan_midline_comment(src):
+    """// 주석 뒤에 코드가 이어진 줄 — 한 줄짜리 함수 가운데 주석을 넣어 뒤가 잘린 사고(09-26 app.js 컷바꾸기). 문자열 · URL 안의 // 는 뺀다."""
+    out = []
+    for n, line in enumerate(src.split('\n'), 1):
+        i = line.find('//')
+        if i < 0 or 'http' in line[max(0, i - 6):i + 8]: continue
+        if line.count("'", 0, i) % 2 or line.count('"', 0, i) % 2 or line.count('`', 0, i) % 2: continue
+        tail = line[i + 2:]
+        if re.search(r"[{};]\s*$", tail) and re.search(r"\b(if|return|const|let|var|function)\b\s*[(\s]|=>", tail):
+            out.append((n, line.strip()[:120]))
+    return out
+
 def scan_dead_ids():
     """{js: (부르는 html 목록, [없는 id])}"""
     # JS 가 문자열로 그려 넣는 id 도 「있는 것」으로 친다
@@ -444,6 +456,17 @@ def main():
     if not hit:
         print('  O %d개 파일 이상 없음 (app %d · app/mun %d)'
               % (len(quote_files), len(js_files()), len(mun_files())))
+
+    print('\n1-2) 한 줄 가운데 주석 — // 뒤에 코드가 이어진 줄(09-26 app.js 컷바꾸기 사고)')
+    mid = []
+    for f in js_files():
+        for n, l in scan_midline_comment(read(os.path.join(APP, f))):
+            mid.append('%s:%d — %s' % (f, n, l))
+    if mid:
+        막힘 += len(mid)
+        for m in mid: print('  X ' + m)
+    else:
+        print('  O 없음')
 
     print('\n2) 모듈 이름 덮어쓰기')
     try:
