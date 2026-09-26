@@ -2802,8 +2802,12 @@
       renderCloud();
       if (showMsg) cloudMsg('동기화했습니다.', true);
       if (r.changed) {
+        // 09-26 사장님 「이름 넣을 때 일정 시간 지나면 홈으로 돌아가진다」 — 부팅 뒤 몇 초 만에 서버 병합이 끝나면 start()가 홈으로 보냈다.
+        // 첫 만남 · 그 사람 폼을 열어 두었거나 입력 칸에 커서가 있으면 화면을 건드리지 않는다(다음 부팅 때 반영).
+        const 입력중 = !$('formCard').classList.contains('hide') || !$('personForm').classList.contains('hide') || (document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName));
         const saved = localStorage.getItem(KEY);
-        if (saved) { try { start(JSON.parse(saved)); } catch (e) {} }
+        if (saved && !입력중) { try { start(JSON.parse(saved)); } catch (e) {} }
+        else if (입력중) { renderPeopleBtn(); }
         // start() 는 홈으로 간다 — 결제하려다 로그인하고 막 돌아온 손님은 그 장으로 한 번 더 보낸다.
         if (복귀대기) { try { goHash(true); 복귀고르기(); } catch (e) {} }
       }
