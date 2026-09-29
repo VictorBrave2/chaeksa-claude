@@ -1868,3 +1868,13 @@ details.fold > .tiles { margin-top: 10px; }
 .bh-other .bh-fold{margin:8px 0 0}
 .bh-other .bh-ah{margin:0}
 @media (max-width:400px){.bh-row{grid-template-columns:40px 1fr 1fr 48px;font-size:12px;gap:5px}.bh-d b{font-size:14px}}
+
+/* 09-30 홈 = 분류 칸(home-cats.js) — 모바일 전용 두 줄 격자 */
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 18px}
+.cat{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.cat .k{font-size:12px;letter-spacing:.06em;color:var(--accent);padding:9px 11px 0}
+.cat .th{aspect-ratio:1/1;margin:6px 11px 0;border-radius:10px;overflow:hidden;background:var(--line)}
+.cat .th img{width:100%;height:100%;object-fit:cover;display:block}
+.cat .th.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:34px;color:var(--ink3)}
+.cat .n{font-size:14px;font-weight:700;padding:8px 11px 11px;line-height:1.35;color:var(--ink)}
+.cat.soon{opacity:.55}.cat.soon .n{font-weight:500;color:var(--ink3)}

@@ -1,0 +1,51 @@
+/* 홈 = 분류 칸 — 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 컨텐츠라도 준비중으로 넣고 칸부터 · 모바일 전용」.
+ * 분류 이름 · 차례는 bunya.js 큰분야 표에서 읽는다(연애 먼저). 이 파일은 분류마다 어느 콘텐츠를 여는지와 썸네일만 안다.
+ * 콘텐츠가 생기면 아래 칸 표에 한 줄 — 없으면 그 분류는 「준비중」. 누르면 들어가기(저장된 사람이 없으면 입구를 거쳐 그 탭). */
+(function (global) {
+  'use strict';
+  // 분류 키 → 여는 콘텐츠(하나씩. 궁합만 있던 두 콘텐츠를 둘 다 둔다). 그림 {g} = f · m
+  var 칸 = {
+    love: [{ 이름: '사랑할 때만 나오는 당신', 탭: 'love', 그림: 'art/jt-14-in-love-{g}-s.webp' }],
+    child: [{ 이름: '출산택일', 탭: 'taekil', 그림: 'art/jt-01-born-{g}-s.webp' }],
+    match: [{ 이름: '정통궁합', 탭: 'chongnon', 그림: 'art/ss-hold-s.webp' }, { 이름: '웹툰궁합', 탭: 'ssom', 그림: 'art/ss-sseom-1-s.webp' }],
+    me: [{ 이름: '정통사주', 탭: 'jeongtong', 그림: 'art/jt-05-who-{g}-s.webp' }],
+    time: [{ 이름: '이번 주엔 무엇이 바뀌나', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}-s.webp' }],
+    learn: [{ 이름: '읽을거리', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}-s.webp' }],
+  };
+  var 앞 = ['love'];   // 맨 앞에 설 분류
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function 성별() { try { var p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); return p && p.gender === 'M' ? 'm' : 'f'; } catch (e) { return 'f'; } }
+
+  function 그리기(el) {
+    if (!el || !global.ChaeksaBunya) return;
+    var 큰 = global.ChaeksaBunya.큰분야.slice();
+    큰.sort(function (a, b) { var x = 앞.indexOf(a.키), y = 앞.indexOf(b.키); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });
+    var g = 성별(), html = '';
+    큰.forEach(function (b) {
+      var 목록 = 칸[b.키] || [null];
+      목록.forEach(function (c, i) {
+        if (!c) {
+          html += '<div class="cat soon"><div class="k">' + esc(b.이름) + '</div><div class="th ph">' + esc(b.이름.charAt(0)) + '</div><div class="n">준비중</div></div>';
+          return;
+        }
+        html += '<a class="cat" href="' + esc(c.주소 || '#') + '" data-cat="' + esc(b.키) + '" data-i="' + i + '"><div class="k">' + esc(b.이름) + '</div>'
+          + '<div class="th"><img src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy"></div><div class="n">' + esc(c.이름) + '</div></a>';
+      });
+    });
+    el.innerHTML = '<div class="cats">' + html + '</div>';
+    el.querySelectorAll('a.cat').forEach(function (a) {
+      var c = 칸[a.getAttribute('data-cat')][+a.getAttribute('data-i')];
+      if (c.주소) return;
+      a.onclick = function (e) {
+        e.preventDefault();
+        if (typeof global.책사들어가기 === 'function') global.책사들어가기(c.탭);
+        if (c.곳) setTimeout(function () { var t = document.getElementById(c.곳); if (t && !t.classList.contains('hide')) t.scrollIntoView({ behavior: 'smooth' }); }, 350);
+      };
+    });
+  }
+
+  function 모두() { document.querySelectorAll('[data-home-cats]').forEach(그리기); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 모두); else 모두();
+  global.ChaeksaHomeCats = { 그리기: 그리기, 모두: 모두 };
+})(typeof window !== 'undefined' ? window : globalThis);
