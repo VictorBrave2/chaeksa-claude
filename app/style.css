@@ -1878,3 +1878,7 @@ details.fold > .tiles { margin-top: 10px; }
 .cat .th.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:34px;color:var(--ink3)}
 .cat .n{font-size:14px;font-weight:700;padding:8px 11px 11px;line-height:1.35;color:var(--ink)}
 .cat.soon{opacity:.55}.cat.soon .n{font-weight:500;color:var(--ink3)}
+
+/* 09-30 사장님 「이 삽화를 썸네일 및 생년월일 입력창 배경으로 하자」 — 입력창 뒤에 삽화, 위는 얼굴이 보이게 옅게 · 아래는 글이 읽히게 짙게. 옛 컷(#fcCut)은 숨김 */
+#formCard{padding-top:210px;background-image:linear-gradient(to bottom,color-mix(in srgb,var(--card) 10%,transparent) 0%,color-mix(in srgb,var(--card) 86%,transparent) 36%,color-mix(in srgb,var(--card) 95%,transparent) 100%),url(art/love-main.webp);background-size:100% auto,cover;background-size:cover;background-position:center top;background-repeat:no-repeat}
+#formCard #fcCut{display:none}
