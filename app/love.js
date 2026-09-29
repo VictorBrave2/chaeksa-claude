@@ -20,7 +20,8 @@
     var C = global.ChaeksaCloud;
     return Promise.resolve(C && C.token ? C.token() : null).catch(function () { return null; }).then(function (t) {
       var h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
-      return fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body) });
+      return fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body) })
+        .catch(function () { throw new Error('연결이 끊겼어요. 잠시 뒤 다시 해 주세요.'); });   // 끊김 · 시간 초과도 우리말로
     }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || '잠시 뒤 다시 해 주세요.'); return j; }); });
   }
 
@@ -54,7 +55,7 @@
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
     el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2>'
-      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 지금은 무료예요.</p>'
+      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 지금은 무료이고, 카카오 계정 하나에 한 사람 한 번 만들 수 있어요(중간에 끊기면 한 번 더).</p>'
       + '<div id="lvHead"></div><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
       + '<p class="hint" id="lvAbout" style="margin:0 0 6px"' + (저장 ? '' : ' hidden') + '>답은 태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 질문마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다.</p>'
       + '<div id="lvList"></div>';
@@ -71,26 +72,32 @@
       };
       return;
     }
+    // 질문은 받았는데 답이 덜 왔으면(끊김) 답만 다시 받는다 — 질문부터 다시 하면 한 번 더 쓴 것이 된다(한 사람 · 횟수 제한 09-30)
+    var 덜됨 = !!(저장 && 저장.items && 저장.items.length && 저장.runId && 저장.sig);
+    if (덜됨) { about.hidden = false; 목록(list, 저장, 키); }
     var 동의 = 읽기(동의키) === true;
     head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px;width:auto;flex:0 0 auto"><span>생년월일시와 「맞아요 / 아니에요」 응답을 이 콘텐츠를 고치는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
-      + '<button class="btn" id="lvGo" style="width:100%">내 연애 질문 받기</button>';
+      + '<button class="btn" id="lvGo" style="width:100%">' + (덜됨 ? '답 마저 받기' : '내 연애 질문 받기') + '</button>';
     var timer = null;
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     function 초(msg) { var s = 0; 알림(msg); timer = setInterval(function () { s += 1; st.textContent = msg + ' (' + s + '초)'; }, 1000); }
-    el.querySelector('#lvGo').onclick = function () {
-      if (!동의) { var ok = el.querySelector('#lvOk'); if (!ok || !ok.checked) return 알림('안내에 동의해 주세요.', true); 동의 = true; 쓰기(동의키, true); }
-      var btn = el.querySelector('#lvGo'); btn.disabled = true;
-      초('당신에게 맞는 질문을 고르는 중이에요. 1분 남짓 걸려요.');
-      post('/api/love-questions', { consent: true, birth: b }).then(function (r) {
-        저장 = { runId: r.runId, items: r.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '' }; }), fb: {} };
-        쓰기(키, 저장); about.hidden = false; 목록(list, 저장, 키);
-        초('질문 ' + r.items.length + '개를 골랐어요. 답을 쓰는 중이에요. 1분 남짓 더 걸려요.');
-        return post('/api/love-answers', { runId: r.runId, birth: b, items: r.items });
-      }).then(function (r) {
+    function 답받기(msg) {
+      초(msg);
+      return post('/api/love-answers', { runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
         var A = {}; r.items.forEach(function (it) { A[it.id] = it.a; });
         저장.items.forEach(function (it) { it.a = A[it.id] || '답을 쓰지 못했어요.'; });
         쓰기(키, 저장); head.innerHTML = ''; 알림('다 됐어요. 질문마다 실제 나와 맞는지 눌러 주세요.'); 목록(list, 저장, 키);
-      }).catch(function (e) { 알림(e.message, true); btn.disabled = false; });
+      });
+    }
+    el.querySelector('#lvGo').onclick = function () {
+      if (!동의) { var ok = el.querySelector('#lvOk'); if (!ok || !ok.checked) return 알림('안내에 동의해 주세요.', true); 동의 = true; 쓰기(동의키, true); }
+      var btn = el.querySelector('#lvGo'); btn.disabled = true;
+      var 일 = 덜됨 ? 답받기('답을 쓰는 중이에요. 1분 남짓 걸려요.') : (초('당신에게 맞는 질문을 고르는 중이에요. 1분 남짓 걸려요.'), post('/api/love-questions', { consent: true, birth: b }).then(function (r) {
+        저장 = { runId: r.runId, sig: r.sig, items: r.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '' }; }), fb: {} };
+        쓰기(키, 저장); 덜됨 = true; about.hidden = false; 목록(list, 저장, 키);
+        return 답받기('질문 ' + r.items.length + '개를 골랐어요. 답을 쓰는 중이에요. 1분 남짓 더 걸려요.');
+      }));
+      일.catch(function (e) { 알림(e.message, true); btn.disabled = false; if (덜됨) btn.textContent = '답 마저 받기'; });
     };
   }
 
