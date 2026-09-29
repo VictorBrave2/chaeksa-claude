@@ -5,10 +5,10 @@
   'use strict';
   // 분류 키 → 여는 콘텐츠(하나씩. 궁합만 있던 두 콘텐츠를 둘 다 둔다). 그림 {g} = f · m
   var 칸 = {
-    love: [{ 이름: '사랑할 때만 나오는 당신', 탭: 'love', 그림: 'art/love-main-s.webp' }],
+    love: [{ 이름: '사랑할 때만 나오는 당신', 탭: 'love', 그림: 'art/jt-14-in-love-{g}-s.webp' }],
     child: [{ 이름: '출산택일', 탭: 'taekil', 그림: 'art/jt-01-born-{g}-s.webp' }],
     match: [{ 이름: '정통궁합', 탭: 'chongnon', 그림: 'art/gunghap-main-s.webp' }, { 이름: '웹툰궁합', 탭: 'ssom', 그림: 'art/ss-sseom-1-s.webp' }],
-    me: [{ 이름: '정통사주', 탭: 'jeongtong', 그림: 'art/jt-05-who-{g}-s.webp' }],
+    me: [{ 이름: '정통사주', 탭: 'jeongtong', 그림: 'art/saju-main-s.webp' }],
     time: [{ 이름: '이번 주엔 무엇이 바뀌나', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}-s.webp' }],
     learn: [{ 이름: '읽을거리', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}-s.webp' }],
   };
