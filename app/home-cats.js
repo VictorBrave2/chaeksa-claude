@@ -3,12 +3,12 @@
  * 콘텐츠가 생기면 아래 칸 표에 한 줄 — 없으면 그 분류는 「준비중」. 누르면 들어가기(저장된 사람이 없으면 입구를 거쳐 그 탭). */
 (function (global) {
   'use strict';
-  // 분류 키 → 여는 콘텐츠(하나씩. 궁합만 있던 두 콘텐츠를 둘 다 둔다). 그림 {g} = f · m
+  // 분류 키 → 여는 콘텐츠(하나씩. 궁합만 있던 두 콘텐츠를 둘 다 둔다). 그림 {g} = f · m · 초점 = 얼굴이 보이는 세로 위치(%)
   var 칸 = {
-    love: [{ 이름: '사랑할 때만 나오는 당신', 탭: 'love', 그림: 'art/love-cover-s.webp' }],
-    child: [{ 이름: '출산택일', 탭: 'taekil', 그림: 'art/taekil-main-s.webp' }],
-    match: [{ 이름: '정통궁합', 탭: 'chongnon', 그림: 'art/gunghap-main-s.webp' }, { 이름: '웹툰궁합', 탭: 'ssom', 그림: 'art/ssom-main-s.webp' }],
-    me: [{ 이름: '정통사주', 탭: 'jeongtong', 그림: 'art/saju-main-s.webp' }],
+    love: [{ 이름: '사랑할 때만 나오는 당신', 탭: 'love', 그림: 'art/love-cover-s.webp', 초점: 15 }],
+    child: [{ 이름: '출산택일', 탭: 'taekil', 그림: 'art/taekil-main-s.webp', 초점: 25 }],
+    match: [{ 이름: '정통궁합', 탭: 'chongnon', 그림: 'art/gunghap-main-s.webp', 초점: 15 }, { 이름: '웹툰궁합', 탭: 'ssom', 그림: 'art/ssom-main-s.webp', 초점: 22 }],
+    me: [{ 이름: '정통사주', 탭: 'jeongtong', 그림: 'art/saju-main-s.webp', 초점: 13 }],
     time: [{ 이름: '이번 주엔 무엇이 바뀌나', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}-s.webp' }],
     learn: [{ 이름: '읽을거리', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}-s.webp' }],
   };
@@ -31,8 +31,8 @@
         }
         // 만화 표지처럼 — 그림 위에 분류 딱지와 제목(09-30 사장님 「삽화안에 글씨를 넣고싶은데 만화표지처럼」)
         html += '<a class="cat" href="' + esc(c.주소 || '#') + '" data-cat="' + esc(b.키) + '" data-i="' + i + '">'
-          + '<img class="bg" src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy"><img class="pic" src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy">'
-          + '<span class="k">' + esc(b.이름) + '</span><span class="n">' + esc(c.이름) + '</span></a>';   // 뒤는 흐린 같은 그림, 오른쪽에 세로 그림 그대로(얼굴 안 잘림 — 09-30 「면상이 다 잘리잖니」)
+          + '<img src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy" style="object-position:center ' + (c.초점 == null ? 15 : c.초점) + '%">'
+          + '<span class="k">' + esc(b.이름) + '</span><span class="n">' + esc(c.이름) + '</span></a>';   // 그림을 칸 가득 선명하게, 초점(%) = 얼굴 높이(09-30 「면상이 다 잘리잖니」 · 「흐릿하고 빈공간이 너무 많지않아?」)
       });
     });
     el.innerHTML = '<div class="cats">' + html + '</div>';
