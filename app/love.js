@@ -15,9 +15,13 @@
       longitude: p.longitude == null ? null : +p.longitude, tzOffset: p.tzOffset == null ? null : +p.tzOffset };
   }
   function 표(b) { return [b.year, b.month, b.day, b.hour, b.minute, b.gender, b.longitude, b.tzOffset].join('|'); }
+  // 로그인 표(토큰)를 실어 보낸다 — 서버는 카카오로 로그인한 사람만 질문 · 답을 만든다(09-30 사장님)
   function post(path, body) {
-    return fetch(API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || '잠시 뒤 다시 해 주세요.'); return j; }); });
+    var C = global.ChaeksaCloud;
+    return Promise.resolve(C && C.token ? C.token() : null).catch(function () { return null; }).then(function (t) {
+      var h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body) });
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || '잠시 뒤 다시 해 주세요.'); return j; }); });
   }
 
   function 목록(box, 저장, 키) {
@@ -56,6 +60,17 @@
       + '<div id="lvList"></div>';
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout');
     if (저장 && 저장.items && 저장.items.every(function (it) { return it.a; })) { 목록(list, 저장, 키); return; }
+    // 09-30 사장님 「카카오로그인 해야만 열리는건 맞지?」 — 새로 만드는 건 로그인한 사람만(이미 받은 결과는 로그인 없이도 보인다)
+    var C = global.ChaeksaCloud;
+    if (!C || !C.enabled() || !C.signedIn()) {
+      head.innerHTML = '<p class="hint" style="margin:0 0 10px">카카오로 로그인하면 열려요. 로그인하고 돌아오면 이 화면으로 다시 와요.</p>'
+        + '<button class="btn kakao" id="lvKakao" style="width:100%"><span>💬</span>카카오로 로그인</button>';
+      el.querySelector('#lvKakao').onclick = function () {
+        try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: '#love', pick: null, at: Date.now() })); } catch (e) {}
+        try { C.signInWith('kakao'); } catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} st.textContent = '로그인 창을 열지 못했어요. 잠시 뒤 다시 해 주세요.'; }
+      };
+      return;
+    }
     var 동의 = 읽기(동의키) === true;
     head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px;width:auto;flex:0 0 auto"><span>생년월일시와 「맞아요 / 아니에요」 응답을 이 콘텐츠를 고치는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
       + '<button class="btn" id="lvGo" style="width:100%">내 연애 질문 받기</button>';
