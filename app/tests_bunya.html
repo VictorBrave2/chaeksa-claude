@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>분야 표 시험</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}</style></head>
+<body><div id="out">시험하는 중이에요…</div>
+<script src="bunya.js?v=1225"></script>
+<script>
+// 홈 분야 표 시험(docs/100 전략 카) — 이번 범위는 모듈 없이 표만으로 되는 것.
+//   가 표 꼴(한 곳 · JSON 한 덩어리 · 한 줄 = 한 칸 · 함수 없음) · 나 열쇠 꼴과 겹침(카 2) · 다 없는 키 0(카 1의 표 쪽)
+//   라 빈칸 한 줄 꼴과 표 한 줄로 늘어남(합성 표) · 마 근거 짝(카 3) · 바 격결론 칸 목록(카 9의 표 쪽)
+//   사 콘텐츠 키 = 상품 코드 = 탭 · 이름 · 첫 화면 한 줄(카 2 · 13의 표 쪽) · 아 값 · 무료 범위를 표에 적지 않음(카 12 · 14의 표 쪽)
+//   자 수가 설계와 같음(docs/100 1절 · 빈칸 목록 — 설계 문서의 수는 tools_bunya.py 가 문서에서 직접 읽어 한 번 더 대조한다).
+// 모듈 목차 · 잠금 · 주소 · 화면(카 4 ~ 11 · 15 ~ 19)은 모듈 약속과 화면을 만든 뒤에 더한다.
+// 빈칸을 채우거나 줄을 더하면 「자」의 수가 달라진다 — 그때 설계 문서와 이 쪽의 수를 같이 고친다.
+(async () => {
+  const out = document.getElementById('out');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const 줄들 = []; let 통과 = 0, 실패 = 0;
+  const 글로 = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
+  const 봄 = (이름, 실제, 기대) => { const a = 글로(실제), b = 글로(기대), ok = a === b; ok ? 통과++ : 실패++; 줄들.push('<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + esc(이름) + (ok ? '' : ' — 기대 ' + esc(b) + ' · 실제 ' + esc(String(a).slice(0, 400))) + '</h2>'); };
+  const 머리 = (s) => 줄들.push('<h3>' + esc(s) + '</h3>');
+  const 없음목록 = (xs) => (xs.length ? xs.join(', ') : '0');
+  const 받기 = async (f) => { const r = await fetch(f + (f.includes('?') ? '&' : '?') + 'nocache=' + Date.now(), { cache: 'no-store' }); return r.ok ? r.text() : null; };
+  const 겹침 = (xs) => { const s = new Set(), d = new Set(); xs.forEach((x) => (s.has(x) ? d.add(x) : s.add(x))); return Array.from(d); };
+  const 복사 = (o) => JSON.parse(JSON.stringify(o));
+
+  // ── 설계에서 옮겨 적은 고정값(docs/100) ──
+  const 설계수 = { 큰: 17, 작은: 74, 물음: 313, 물음답: 66, 곁만: 36, 방향: 44, 빈칸: 167, 하위: 297, 하위답: 71, '●': 26, '◐': 18, '○': 30, 답0: 48, 콘텐츠: 10, 목차: 129, 격결론: 13 };
+  const 큰차례 = ['child', 'love', 'match', 'marry', 'me', 'work', 'money', 'health', 'time', 'family', 'people', 'study', 'day', 'move', 'law', 'name', 'learn'];   // 정해야 할 것 1 기본 안(09-18 차례)
+  const 격결론칸 = ['jt.h2', 'jt.h3', 'jt.h4', 'jt.h5', 'jt.h7', 'jt.h11', 'jt.h15', 'jt.h20', 'jt.c3', 'jt.c9', 'jt.card', 'gc.c7', 'seol'];   // 내가 정해 둔 것 13
+  const 원문분야 = ['health.body', 'learn.why', 'me.sinsal', 'people.helper'];   // 전략 나 — 신살 · 건강 · 왜 글 · 귀인
+  const 상품코드 = ['jeongtong', 'chongnon', 'ssom', 'taekil', 'duo', 'trio'];     // products(docs/97 0절 · pay.js 그림 표 · 출산택일 신청)
+  const 이름넷 = { jeongtong: '정통사주', chongnon: '정통궁합', ssom: '웹툰궁합', taekil: '출산택일' };   // docs/79 1절
+  const 결제덩어리 = ['chongnon/geungeo', 'jeongtong/geungeo', 'jeongtong/webtoon', 'ssom/dangye', 'ssom/dul'];
+  const 늘무료 = ['jeongtong/card', 'ssom/card', 'wongook/card', 'seol/card', 'week/base', 'week/days', 'week/you', 'taekil/sim', 'taekil/month'];   // 공유 카드 둘 · 홈의 내 원국 · 설명서 · 이번 주 · 시뮬레이터 · 택일 자료(카 12)
+  const 열쇠 = {
+    맨위: ['설정', '큰분야', '분야', '콘텐츠', '목차'],
+    설정: { 꼭: ['홈타일', '칸줄', '접음'], 또: [] },
+    큰분야: { 꼭: ['키', '이름', '머리', '그림', '대표'], 또: [] },
+    분야: { 꼭: ['키', '큰', '이름', '조문', '물음', '하위', '모은곳'], 또: ['곁', '열린날'] },
+    물음: { 꼭: ['글'], 또: ['칸', '곁', '방향'] },
+    하위: { 꼭: ['이름'], 또: ['칸', '곁', '조'] },
+    콘텐츠: { 꼭: ['키', '이름', '한줄', '사람', '프로필', '탭', '본적', '맛보기', '덩어리', '파일', '아이콘', '상태', '홈위', '아래줄'], 또: ['열린날'] },
+    덩어리: { 꼭: ['키', '단위', '상품', '판매', '모듈'], 또: [] },
+    목차: { 꼭: ['콘텐츠', '덩어리', '칸', '상태'], 또: ['제목', '보여줌', '주소', '다리말', '격결론', '열린날'] },
+  };
+
+  // ── 계산(tools_bunya.py 와 같은 규칙 — 표에 적지 않고 계산하는 것) ──
+  const 열린칸 = (T) => { const oc = new Set(T.콘텐츠.filter((c) => c.상태 === '열림').map((c) => c.키)); return new Set(T.목차.filter((r) => r.상태 === '열림' && oc.has(r.콘텐츠)).map((r) => r.칸)); };
+  const 갈래 = (q) => (q.방향 ? '방향' : (q.칸 && q.칸.length ? '답' : (q.곁 && q.곁.length ? '곁' : '빈칸')));
+  const 근거 = (T) => {
+    const 열 = 열린칸(T), 격 = new Set(T.목차.filter((r) => r.격결론).map((r) => r.칸)), o = {};
+    T.분야.forEach((f) => {
+      const 답칸 = new Set(); let qa = 0, ha = 0;
+      f.물음.forEach((q) => { const a = (q.칸 || []).filter((k) => 열.has(k)); if (a.length) qa++; a.forEach((k) => 답칸.add(k)); });
+      f.하위.forEach((h) => { const a = (h.칸 || []).filter((k) => 열.has(k)); if (a.length) ha++; a.forEach((k) => 답칸.add(k)); });
+      o[f.키] = { 상태: f.조문 === '없음' ? '○' : (답칸.size ? '●' : '◐'), qa, ha, 격만: 답칸.size > 0 && Array.from(답칸).every((k) => 격.has(k)) };
+    });
+    return o;
+  };
+  const 수 = (T) => {
+    const qs = [].concat(...T.분야.map((f) => f.물음)), g = {}; qs.forEach((q) => { g[갈래(q)] = (g[갈래(q)] || 0) + 1; });
+    const r = 근거(T), s = { '●': 0, '◐': 0, '○': 0 }; let 하위답 = 0;
+    Object.values(r).forEach((v) => { s[v.상태]++; 하위답 += v.ha; });
+    return { 큰: T.큰분야.length, 작은: T.분야.length, 물음: qs.length, 물음답: g.답 || 0, 곁만: g.곁 || 0, 방향: g.방향 || 0, 빈칸: g.빈칸 || 0,
+      하위: T.분야.reduce((n, f) => n + f.하위.length, 0), 하위답, '●': s['●'], '◐': s['◐'], '○': s['○'], 답0: s['◐'] + s['○'],
+      콘텐츠: T.콘텐츠.length, 목차: T.목차.length, 격결론: T.목차.filter((x) => x.격결론).length };
+  };
+  const 닿음 = (T) => {   // 칸 → 닿는 분야(분야 표를 거꾸로)
+    const m = new Map(), 넣기 = (k, f) => { if (!m.has(k)) m.set(k, new Set()); m.get(k).add(f); };
+    T.분야.forEach((f) => { f.물음.concat(f.하위).forEach((x) => (x.칸 || []).concat(x.곁 || []).forEach((k) => 넣기(k, f.키))); (f.곁 || []).forEach((k) => 넣기(k, f.키)); });
+    return m;
+  };
+
+  try {
+    const T = window.ChaeksaBunya;
+    머리('가. 표 꼴');
+    봄('가1 전역 ChaeksaBunya 가 있다', !!T && typeof T === 'object', true);
+    if (!T) throw new Error('bunya.js 가 실리지 않았다');
+    봄('가2 맨 위 열쇠 = 설정 · 큰분야 · 분야 · 콘텐츠 · 목차(표 넷과 설정 한 줄)', Object.keys(T), 열쇠.맨위);
+    봄('가3 설정 — 홈타일 · 칸줄 · 접음이 모두 자연수', Object.keys(T.설정).length === 3 && ['홈타일', '칸줄', '접음'].every((k) => Number.isInteger(T.설정[k]) && T.설정[k] > 0), true);
+    const 소스 = await 받기('bunya.js');
+    봄('가4 bunya.js 를 읽었다', 소스 != null, true);
+    const 시작 = '/*표 시작*/', 끝 = '/*표 끝*/';
+    const a = 소스.indexOf(시작), b = 소스.indexOf(끝);
+    봄('가4 표 시작 · 표 끝 표시가 한 번씩', [소스.split(시작).length - 1, 소스.split(끝).length - 1], [1, 1]);
+    const 덩이 = 소스.slice(a + 시작.length, b);
+    let 파싱 = null; try { 파싱 = JSON.parse(덩이); } catch (e) { 파싱 = null; }
+    봄('가4 두 표시 사이가 JSON 한 덩어리로 읽힌다', 파싱 != null, true);
+    봄('가4 그 JSON = 실린 전역(옛 캐시가 아니다)', 파싱 && JSON.stringify(파싱) === JSON.stringify(T), true);
+    const 나머지 = (소스.slice(0, a + 시작.length) + 소스.slice(b)).split('\n').filter((l) => !/^\s*\/\//.test(l)).join(' ').replace(/\s+/g, ' ').trim();
+    봄('가5 함수 없음 — 주석과 표를 빼면 대입 한 줄뿐', 나머지, 'window.ChaeksaBunya = /*표 시작*//*표 끝*/;');
+    {
+      const 줄 = 덩이.split('\n'); let 지금 = null; const 센 = {}, 틀린 = [];
+      줄.forEach((l, i) => {
+        const m = l.match(/^"(큰분야|분야|콘텐츠|목차)": \[$/);
+        if (m) { 지금 = m[1]; 센[지금] = 0; return; }
+        if (/^\],?$/.test(l)) { 지금 = null; return; }
+        if (!지금 || !l.trim()) return;
+        try { const o = JSON.parse(l.replace(/,$/, '')); if (!o || typeof o !== 'object' || Array.isArray(o)) throw 0; 센[지금]++; } catch (e) { 틀린.push(지금 + ' ' + (i + 1) + '줄'); }
+      });
+      봄('가6 한 줄 = 한 칸 — 표 넷의 줄마다 JSON 한 덩어리', 없음목록(틀린), '0');
+      봄('가6 줄 수 = 칸 수(큰분야 · 분야 · 콘텐츠 · 목차)', ['큰분야', '분야', '콘텐츠', '목차'].map((k) => 센[k]), ['큰분야', '분야', '콘텐츠', '목차'].map((k) => T[k].length));
+    }
+    {
+      const 틀린 = [];
+      const 본다 = (이름, o, 규칙) => {
+        const ks = Object.keys(o);
+        규칙.꼭.forEach((k) => { if (!(k in o)) 틀린.push(이름 + ' 에 ' + k + ' 없음'); });
+        ks.forEach((k) => { if (!규칙.꼭.includes(k) && !규칙.또.includes(k)) 틀린.push(이름 + ' 에 모르는 칸 ' + k); });
+      };
+      본다('설정', T.설정, 열쇠.설정);
+      T.큰분야.forEach((x) => 본다('큰분야 ' + x.키, x, 열쇠.큰분야));
+      T.분야.forEach((f) => { 본다('분야 ' + f.키, f, 열쇠.분야); f.물음.forEach((q, i) => 본다(f.키 + ' 물음' + (i + 1), q, 열쇠.물음)); f.하위.forEach((h, i) => 본다(f.키 + ' 하위' + (i + 1), h, 열쇠.하위)); });
+      T.콘텐츠.forEach((c) => { 본다('콘텐츠 ' + c.키, c, 열쇠.콘텐츠); c.덩어리.forEach((d) => 본다(c.키 + '/' + d.키, d, 열쇠.덩어리)); });
+      T.목차.forEach((r) => 본다('목차 ' + r.칸, r, 열쇠.목차));
+      봄('가7 칸 이름 — 표마다 적는 칸만(분야 표에 콘텐츠 없음 · 목차 표에 분야 · 무료/잠금 없음)', 없음목록(틀린.slice(0, 12)), '0');
+    }
+
+    머리('나. 열쇠 꼴 · 겹침(카 2)');
+    봄('나1 큰 분야 키 [a-z]+', 없음목록(T.큰분야.map((x) => x.키).filter((k) => !/^[a-z]+$/.test(k))), '0');
+    봄('나2 분야 키 큰.작은([a-z]+.[a-z]+) · 「큰」 칸 = 키 앞 · 그 큰 분야가 있다', 없음목록(T.분야.filter((f) => !/^[a-z]+\.[a-z]+$/.test(f.키) || f.큰 !== f.키.split('.')[0] || !T.큰분야.some((x) => x.키 === f.큰)).map((f) => f.키)), '0');
+    봄('나3 콘텐츠 키 · 덩어리 키 [a-z]+(주문번호 ^ck_([a-z]+)_ · #코드 로 돌아오는 길)', 없음목록([].concat(...T.콘텐츠.map((c) => [c.키].concat(c.덩어리.map((d) => c.키 + '/' + d.키))))
+      .filter((k) => !/^[a-z]+(\/[a-z]+)?$/.test(k))), '0');
+    봄('나4 칸 id [a-z0-9.-]+', 없음목록(T.목차.map((r) => r.칸).filter((k) => !/^[a-z0-9.-]+$/.test(k))), '0');
+    봄('나5 사건 이름 40자 안 — ev:want:<분야키> · ev:field:<큰키>(track.js 가 40자로 자른다)', 없음목록(T.분야.map((f) => 'ev:want:' + f.키).concat(T.큰분야.map((x) => 'ev:field:' + x.키)).filter((s) => s.length > 40)), '0');
+    봄('나6 겹침 0 — 큰 분야 키 · 이름', 없음목록(겹침(T.큰분야.map((x) => x.키)).concat(겹침(T.큰분야.map((x) => x.이름)))), '0');
+    봄('나6 겹침 0 — 분야 키 · 분야 이름', 없음목록(겹침(T.분야.map((f) => f.키)).concat(겹침(T.분야.map((f) => f.이름)))), '0');
+    봄('나6 겹침 0 — 콘텐츠 키 · 콘텐츠 이름 · 콘텐츠 안 덩어리 키', 없음목록(겹침(T.콘텐츠.map((c) => c.키)).concat(겹침(T.콘텐츠.map((c) => c.이름))).concat(...T.콘텐츠.map((c) => 겹침(c.덩어리.map((d) => c.키 + '/' + d.키))))), '0');
+    봄('나6 겹침 0 — 목차 칸 id(모든 콘텐츠를 통틀어)', 없음목록(겹침(T.목차.map((r) => r.칸))), '0');
+    봄('나6 겹침 0 — 한 분야 안의 물음 글 · 하위 이름 · 한 목록 안의 칸', 없음목록([].concat(...T.분야.map((f) => 겹침(f.물음.map((q) => q.글)).concat(겹침(f.하위.map((h) => h.이름)))
+      .concat(...f.물음.concat(f.하위).map((x) => 겹침(x.칸 || []).concat(겹침(x.곁 || [])))).concat(겹침(f.곁 || [])).map((d) => f.키 + ':' + d)))), '0');
+
+    머리('다. 없는 키 0(카 1 — 표 안에서)');
+    const 칸들 = new Set(T.목차.map((r) => r.칸)), 분야들 = new Set(T.분야.map((f) => f.키));
+    봄('다1 분야 표의 칸 · 곁이 모두 목차 표에 있다', 없음목록([].concat(...T.분야.map((f) => [].concat(...f.물음.concat(f.하위).map((x) => (x.칸 || []).concat(x.곁 || []))).concat(f.곁 || []).filter((k) => !칸들.has(k)).map((k) => f.키 + ':' + k)))), '0');
+    봄('다2 큰 분야 대표 — 그 큰 분야의 작은 분야 · 몇째가 물음 수 안', 없음목록(T.큰분야.filter((x) => { const f = T.분야.find((y) => y.키 === x.대표[0]); return !f || f.큰 !== x.키 || !(x.대표[1] >= 1 && x.대표[1] <= f.물음.length); }).map((x) => x.키)), '0');
+    봄('다3 큰 분야마다 작은 분야 한 줄 이상(빈칸 분야도 줄로 선다)', 없음목록(T.큰분야.filter((x) => !T.분야.some((f) => f.큰 === x.키)).map((x) => x.키)), '0');
+    봄('다4 콘텐츠 본적이 분야 표에 있다', 없음목록(T.콘텐츠.filter((c) => !분야들.has(c.본적)).map((c) => c.키)), '0');
+    봄('다5 맛보기 칸이 목차 표에 있고 그 콘텐츠의 칸이다', 없음목록(T.콘텐츠.filter((c) => c.맛보기 != null && !T.목차.some((r) => r.칸 === c.맛보기 && r.콘텐츠 === c.키)).map((c) => c.키)), '0');
+    봄('다6 목차 줄의 콘텐츠 · 덩어리가 콘텐츠 표에 있다', 없음목록(T.목차.filter((r) => { const c = T.콘텐츠.find((x) => x.키 === r.콘텐츠); return !c || !c.덩어리.some((d) => d.키 === r.덩어리); }).map((r) => r.칸)), '0');
+    봄('다7 덩어리마다 목차 줄 한 줄 이상(빈칸 콘텐츠도 칸 이름 한 줄)', 없음목록([].concat(...T.콘텐츠.map((c) => c.덩어리.filter((d) => !T.목차.some((r) => r.콘텐츠 === c.키 && r.덩어리 === d.키)).map((d) => c.키 + '/' + d.키)))), '0');
+    봄('다8 덩어리 상품 = products 코드 또는 null · 모듈 = Chaeksa… 전역 · 「바깥 글」 · null', 없음목록([].concat(...T.콘텐츠.map((c) => c.덩어리.filter((d) => !(d.상품 == null || 상품코드.includes(d.상품)) || !(d.모듈 == null || d.모듈 === '바깥 글' || /^Chaeksa[A-Za-z]+$/.test(d.모듈))).map((d) => c.키 + '/' + d.키)))), '0');
+    봄('다9 다리말 — 분야 키마다 한 줄(있는 것만)', 없음목록(T.목차.filter((r) => r.다리말 != null && (typeof r.다리말 !== 'object' || Object.keys(r.다리말).some((k) => !분야들.has(k) || typeof r.다리말[k] !== 'string' || !r.다리말[k]))).map((r) => r.칸)), '0');
+    봄('다10 열린날 꼴 YYYY-MM-DD(있는 것만)', 없음목록([].concat(T.분야, T.콘텐츠, T.목차).filter((x) => x.열린날 != null && !/^\d{4}-\d{2}-\d{2}$/.test(x.열린날)).map((x) => x.키 || x.칸)), '0');
+    const 첫화면 = await 받기('index.html');
+    const 탭들 = new Set(Array.from((첫화면 || '').matchAll(/data-tab="([a-z]+)"/g)).map((m) => m[1]));
+    봄('다11 탭 — 제 탭은 index.html 에 있고, 그 밖은 home · bunya · c · 창 · 바깥 쪽(.html)', 없음목록(T.콘텐츠.filter((c) => !(탭들.has(c.탭) || ['bunya', 'c', '창'].includes(c.탭) || /^[a-z0-9-]+\.html$/.test(c.탭))).map((c) => c.키 + ':' + c.탭)), '0');
+    {
+      const 파일들 = new Set();
+      T.콘텐츠.forEach((c) => { c.파일.forEach((f) => 파일들.add(f)); if (/\.html$/.test(c.탭)) 파일들.add(c.탭); });
+      T.목차.forEach((r) => { if (r.주소) 파일들.add(r.주소); });
+      const 없는 = [];
+      for (const f of 파일들) { if ((await 받기(f)) == null) 없는.push(f); }
+      봄('다12 콘텐츠 파일 · 바깥 탭 · 목차 주소가 app/ 에 있다(' + 파일들.size + '개)', 없음목록(없는), '0');
+    }
+
+    머리('라. 빈칸 한 줄 꼴 · 표 한 줄로 늘어남');
+    봄('라1 빈칸 물음 = 글 한 칸뿐(칸 · 곁 · 방향이 다 없다)', 없음목록([].concat(...T.분야.map((f) => f.물음.filter((q) => 갈래(q) === '빈칸' && Object.keys(q).join() !== '글').map((q) => f.키 + ':' + q.글)))), '0');
+    봄('라2 물음 · 하위 — 글 · 이름이 비지 않고, 칸 · 곁은 비지 않은 목록, 방향은 true 만', 없음목록([].concat(...T.분야.map((f) => f.물음.concat(f.하위).filter((x) => !(x.글 || x.이름) || ['칸', '곁'].some((k) => k in x && !(Array.isArray(x[k]) && x[k].length)) || ('방향' in x && x.방향 !== true)).map((x) => f.키 + ':' + (x.글 || x.이름))))), '0');
+    봄('라3 분야 조문 값 셋(조문 · 원문 · 없음)', 없음목록(T.분야.filter((f) => !['조문', '원문', '없음'].includes(f.조문)).map((f) => f.키)), '0');
+    봄('라4 콘텐츠 상태 넷(열림 · 준비 · 빈칸 · 내림) · 목차 상태 둘(열림 · 빈칸)', 없음목록(T.콘텐츠.filter((c) => !['열림', '준비', '빈칸', '내림'].includes(c.상태)).map((c) => c.키).concat(T.목차.filter((r) => !['열림', '빈칸'].includes(r.상태)).map((r) => r.칸))), '0');
+    {
+      const 모듈 = {}; T.콘텐츠.forEach((c) => c.덩어리.forEach((d) => { 모듈[c.키 + '/' + d.키] = d.모듈; }));
+      봄('라5 빈칸 칸 · 모듈 없는 덩어리(바깥 글 · null)의 칸은 표에 제목이 있다', 없음목록(T.목차.filter((r) => (r.상태 === '빈칸' || 모듈[r.콘텐츠 + '/' + r.덩어리] == null || 모듈[r.콘텐츠 + '/' + r.덩어리] === '바깥 글') && !r.제목).map((r) => r.칸)), '0');
+      봄('라6 바깥 글 칸은 주소(.html)가 있다', 없음목록(T.목차.filter((r) => 모듈[r.콘텐츠 + '/' + r.덩어리] === '바깥 글' && !/^[a-z0-9-]+\.html$/.test(r.주소 || '')).map((r) => r.칸)), '0');
+    }
+    {
+      const 기준 = 수(T);
+      const T2 = 복사(T);
+      T2.분야.push({ 키: 'law.test', 큰: 'law', 이름: '시험 분야', 조문: '없음', 물음: [{ 글: '시험 물음?' }], 하위: [], 모은곳: '' });
+      const s2 = 수(T2), r2 = 근거(T2)['law.test'];
+      봄('라7 새 분야 한 줄 → 작은 분야 +1 · 빈칸 물음 +1 · 근거 ○(조문 없음)', [s2.작은 - 기준.작은, s2.빈칸 - 기준.빈칸, r2.상태, s2['○'] - 기준['○']], [1, 1, '○', 1]);
+      T2.분야[T2.분야.length - 1].조문 = '조문';
+      봄('라8 그 줄에 조문을 받으면 ◐', 근거(T2)['law.test'].상태, '◐');
+      T2.분야[T2.분야.length - 1].물음[0].칸 = ['jt.c7'];
+      const s3 = 수(T2);
+      봄('라9 그 물음에 칸 한 줄을 적으면 ● · 답하는 물음 +1', [근거(T2)['law.test'].상태, s3.물음답 - 기준.물음답, s3.빈칸 - 기준.빈칸], ['●', 1, 0]);
+      const T3 = 복사(T);
+      T3.콘텐츠.find((c) => c.키 === 'dict').상태 = '열림';
+      T3.목차.find((r) => r.칸 === 'dict').상태 = '열림';
+      T3.분야.find((f) => f.키 === 'learn.dict').물음[0].칸 = ['dict'];
+      봄('라10 빈칸 콘텐츠를 열고(상태 두 칸) 물음에 칸을 적으면 그 분야가 ● 가 된다(사주 말 사전)', [근거(T)['learn.dict'].상태, 근거(T3)['learn.dict'].상태], ['◐', '●']);
+      const T4 = 복사(T);
+      T4.콘텐츠.find((c) => c.키 === 'jeongtong').상태 = '내림';
+      봄('라11 콘텐츠를 내리면 근거 계산에서 빠진다 — 답이 그것뿐인 ● 분야는 ◐(돈 › 나는 어떻게 버나)', [근거(T)['money.earn'].상태, 근거(T4)['money.earn'].상태], ['●', '◐']);
+    }
+
+    머리('마. 근거 짝(카 3)');
+    봄('마1 방향 물음에 답하는 칸 0(21 · 64조 — 곁만)', 없음목록([].concat(...T.분야.map((f) => f.물음.filter((q) => q.방향 && q.칸).map((q) => f.키 + ':' + q.글)))), '0');
+    봄('마2 조문 「없음」 분야에 답하는 칸 0(물음 · 하위)', 없음목록(T.분야.filter((f) => f.조문 === '없음' && f.물음.concat(f.하위).some((x) => (x.칸 || []).length)).map((f) => f.키)), '0');
+    봄('마3 조문 「원문」 분야 = 신살 · 건강 · 왜 글 · 귀인', T.분야.filter((f) => f.조문 === '원문').map((f) => f.키).sort(), 원문분야);
+    {
+      const 닿 = 닿음(T), 열 = 열린칸(T);
+      봄('마4 열린 칸은 모두 한 분야 이상에 닿는다(분야 표를 거꾸로 읽어)', 없음목록(T.목차.filter((r) => 열.has(r.칸) && !닿.has(r.칸)).map((r) => r.칸)), '0');
+    }
+    봄('마5 명리 판정 글 0 — 표의 글에 성패 · 길흉 판정 말(성격 · 파격 · 좋은 사주다 · 나쁜 사주다)이 없다', 없음목록([].concat(...T.분야.map((f) => f.물음.map((q) => q.글).concat(f.하위.map((h) => h.이름)))).filter((s) => /성격이다|파격이다|좋은 사주다|나쁜 사주다|흉하다|길하다/.test(s))), '0');
+
+    머리('바. 격결론(카 9 — 표 쪽)');
+    봄('바1 격결론 표시 칸 = 설계 열셋(웹툰 2 · 3 · 4 · 5 · 7 · 11 · 15 · 20회 · 근거 3 · 9장 · 한 줄 카드 · 정통궁합 7장 · 설명서)', T.목차.filter((r) => r.격결론).map((r) => r.칸).sort(), 격결론칸.slice().sort());
+    봄('바2 격결론 값은 true 만(표시를 지울 땐 칸을 지운다)', 없음목록(T.목차.filter((r) => '격결론' in r && r.격결론 !== true).map((r) => r.칸)), '0');
+    봄('바3 맛보기에 격결론 칸 0', 없음목록(T.콘텐츠.filter((c) => c.맛보기 && T.목차.some((r) => r.칸 === c.맛보기 && r.격결론)).map((c) => c.키)), '0');
+    봄('바4 답 칸이 모두 격결론인 분야 = 일과 자리 › 나에게 맞는 일 하나', Object.entries(근거(T)).filter(([, v]) => v.격만).map(([k]) => k), ['work.fit']);
+
+    머리('사. 콘텐츠 키 = 상품 코드 = 탭(카 2 · 13 — 표 쪽)');
+    const 파는 = T.콘텐츠.filter((c) => c.덩어리.some((d) => d.판매));
+    봄('사1 파는 콘텐츠 = 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일', 파는.map((c) => c.키), ['jeongtong', 'chongnon', 'ssom', 'taekil']);
+    봄('사2 파는 콘텐츠의 키 = 탭 = 판매 덩어리의 상품 코드 · products 코드', 없음목록(파는.filter((c) => c.탭 !== c.키 || !상품코드.includes(c.키) || c.덩어리.some((d) => d.판매 && d.상품 !== c.키)).map((c) => c.키)), '0');
+    봄('사3 파는 콘텐츠의 탭이 index.html 에 있다', 없음목록(파는.filter((c) => !탭들.has(c.탭)).map((c) => c.키)), '0');
+    봄('사4 판매 「결제」 덩어리 다섯 · 「신청」 은 출산택일 보고서 하나', [[].concat(...T.콘텐츠.map((c) => c.덩어리.filter((d) => d.판매 === '결제').map((d) => c.키 + '/' + d.키))).sort(), [].concat(...T.콘텐츠.map((c) => c.덩어리.filter((d) => d.판매 === '신청').map((d) => c.키 + '/' + d.키)))], [결제덩어리, ['taekil/report']]);
+    봄('사5 판매 값은 결제 · 신청 · null · 상품이 있으면 판매가 있고 판매가 없으면 상품도 없다', 없음목록([].concat(...T.콘텐츠.map((c) => c.덩어리.filter((d) => ![null, '결제', '신청'].includes(d.판매) || (d.상품 == null) !== (d.판매 == null)).map((d) => c.키 + '/' + d.키)))), '0');
+    봄('사6 파는 콘텐츠 이름 = 이름 넷(docs/79 1절)', 파는.map((c) => c.이름), 파는.map((c) => 이름넷[c.키]));
+    {
+      const m = (첫화면 || '').match(/<div class="lp-caps"[^>]*>(.*?)<\/div>/);
+      const 한줄들 = m ? Array.from(m[1].matchAll(/<span>(.*?)<\/span>/g)).map((x) => x[1]) : [];
+      봄('사7 첫 화면 lp-caps 넷 = 콘텐츠 표 한줄(정통사주 · 정통궁합 · 웹툰궁합 · 출산택일)', 한줄들, ['jeongtong', 'chongnon', 'ssom', 'taekil'].map((k) => T.콘텐츠.find((c) => c.키 === k).한줄));
+    }
+    봄('사8 사람 0 · 1 · 2 · 프로필 「필요」 · 「없어도 됨」 · 두 사람 콘텐츠 = 정통궁합 · 웹툰궁합 · 무료 질문 칸', [T.콘텐츠.every((c) => [0, 1, 2].includes(c.사람) && ['필요', '없어도 됨'].includes(c.프로필)), T.콘텐츠.filter((c) => c.사람 === 2).map((c) => c.키)], [true, ['chongnon', 'ssom', 'freeq']]);
+    봄('사9 아래 줄 넷 그대로(홈 + 정통사주 · 정통궁합 · 웹툰궁합) · 아이콘이 있다', [T.콘텐츠.filter((c) => c.아래줄).map((c) => c.키), T.콘텐츠.filter((c) => c.아래줄 && !c.아이콘).length], [['jeongtong', 'chongnon', 'ssom'], 0]);
+    봄('사10 홈위 = 이번 주 · 내 여덟 글자', T.콘텐츠.filter((c) => c.홈위).map((c) => c.키), ['week', 'wongook']);
+
+    머리('아. 값 · 무료 범위를 표에 적지 않음(카 12 · 14 — 표 쪽)');
+    {
+      const 칸이름 = [], 원글 = [];
+      const 돌기 = (o, 길) => {
+        if (Array.isArray(o)) { o.forEach((x, i) => 돌기(x, 길 + '[' + i + ']')); return; }
+        if (o && typeof o === 'object') { Object.keys(o).forEach((k) => { if (/값|무료|잠금|가격|price|free|lock/i.test(k)) 칸이름.push(길 + '.' + k); 돌기(o[k], 길 + '.' + k); }); return; }
+        if (typeof o === 'string' && /\d[\d,]*\s?원(?![가-힣])/.test(o)) 원글.push(길);
+      };
+      돌기(T, 'T');
+      봄('아1 표에 값 · 무료 · 잠금이라는 이름의 칸 0(자르는 곳은 잠금 모듈 한 곳)', 없음목록(칸이름), '0');
+      봄('아2 표의 글에 「숫자 + 원」 0(값은 products 에서 읽는다)', 없음목록(원글), '0');
+    }
+    {
+      const 판매 = {}; T.콘텐츠.forEach((c) => c.덩어리.forEach((d) => { 판매[c.키 + '/' + d.키] = d.판매; }));
+      봄('아3 늘 무료 이름표(공유 카드 둘 · 홈의 내 원국 · 설명서 · 이번 주 · 시뮬레이터 · 택일 자료)가 모두 판매 없는 덩어리', 없음목록(늘무료.filter((k) => !(k in 판매) || 판매[k] != null)), '0');
+    }
+    봄('아4 네 축 이름(…실단) 0 — bunya.js 전체', /실단/.test(소스), false);
+
+    머리('자. 수가 설계와 같음(docs/100)');
+    {
+      const s = 수(T);
+      Object.keys(설계수).forEach((k) => 봄('자 ' + k, s[k], 설계수[k]));
+      봄('자 큰 분야 차례(09-18 차례 — 표의 줄 차례)', T.큰분야.map((x) => x.키), 큰차례);
+      봄('자 분야 줄이 큰 분야 차례대로 모여 있다', T.분야.map((f) => 큰차례.indexOf(f.큰)).every((v, i, xs) => i === 0 || xs[i - 1] <= v), true);
+    }
+  } catch (e) {
+    봄('시험이 멈춤: ' + (e && e.message), 'x', 'o');
+  }
+  out.innerHTML = '<p id="sum">' + 통과 + ' 통과 · ' + 실패 + ' 실패</p>' + 줄들.join('');
+})().catch((e) => { document.getElementById('out').textContent = '시험이 멈췄어요: ' + (e && e.message); });
+</script></body></html>
