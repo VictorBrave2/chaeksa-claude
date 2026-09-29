@@ -463,6 +463,7 @@
     // 09-26 정통사주 한 줄 카드(docs/87 4절) — 시작 단추 위. 카드는 ssom-card.js 가 그린다
     if (tab === 'jeongtong' && $('jtStart') && profile && window.ChaeksaSsomCard) { try { const old = $('jtCard'); if (old) old.remove(); const R = ChaeksaEngine.calc(profile), html = window.ChaeksaSsomCard.정통카드(R); if (html) { $('jtStart').insertAdjacentHTML('beforebegin', html); window.ChaeksaSsomCard.정통붙이기($('jtStart').parentElement, R, profile.name || ''); } } catch (e) {} }
     if (tab === 'jeongtong' && $('jtStart')) $('jtStart').onclick = () => { if (!profile) return; try { sessionStorage.setItem('chaeksa.jtVn', JSON.stringify({ a: 궁합입력(profile) })); } catch (e) {} location.href = 'ssom-vn.html'; };   // 09-26 정통사주 웹툰 시작
+    if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
     if (tab === 'ssom') { try { renderSsom(); } catch (e) { try { console.warn('연애궁합 탭:', e); } catch (x) {} } }
     if (tab === 'chongnon') { try { renderChongnon(); } catch (e) { try { console.warn('궁합총론 탭:', e); } catch (x) {} } }
     if (tab === 'gunghap') renderGunghap();
@@ -2680,6 +2681,8 @@
   window.책사들어가기 = 들어가기;
   if ($('btnGunghap')) $('btnGunghap').onclick = () => 들어가기('ssom');
   if ($('btnJeongtong')) $('btnJeongtong').onclick = () => 들어가기('jeongtong');
+  // 09-30 연애 속의 나 — 첫 화면 · 홈 맨 위 카드. 저장된 사람이 있으면 바로 탭, 없으면 입구(첫 만남)를 거쳐 탭으로.
+  document.querySelectorAll('[data-love]').forEach(a => a.onclick = (e) => { e.preventDefault(); 들어가기('love'); });
   document.querySelectorAll('.lp-scene a[data-go]').forEach(a => a.onclick = (e) => { e.preventDefault(); 들어가기(a.dataset.go); });
   try { const g = new URLSearchParams(location.search).get('go'); if (g) { sessionStorage.setItem(가는곳키, g); if (hasProfile() && profile) 도착(); else showForm(); } } catch (e) {}
   // 입력 컷 — 성별을 고르면 그림이 바뀐다(나: ss-me · ss-her / 그 사람: story-jigeum · story-sns)
