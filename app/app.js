@@ -529,6 +529,8 @@
   function renderHome() {
     // 첫 의논(#chong)은 홈에서 걷었다(2026-09-12 이야기 서점 전략). 의논 화면(ganmyeong)은 전체 목록에서 연다.
     const a = R.analysis;
+    // 09-27 이번 주엔 무엇이 바뀌나 — 홈 맨 위 카드(byeonhwa.js). 그 사람은 정통궁합 · 웹툰궁합이 고른 사람(궁합그사람)과 같다
+    try { if (window.ChaeksaByeonhwaView && $('bhCard')) ChaeksaByeonhwaView.그리기($('bhCard'), profile, (() => { try { const P0 = People(), me = P0 && P0.active(), g = P0 && 궁합그사람 ? P0.get(궁합그사람) : null; return g && (!me || g.id !== me.id) ? P0.toProfile(g) : null; } catch (e) { return null; } })()); } catch (e) { try { console.warn('이번 주 실패:', e); } catch (e2) {} }
     // 첫 마디(standing)·「지금 어디에 계신지」는 2026-09-14 원국 탭 개편으로 걷었다.
     // 「타일 미리보기」는 옛 서고(#shelves)의 배지·부제를 채우던 코드였다.
     // 서고를 지웠으므로(2026-09-09) 여기서 세던 것도 걷었다 — 홈은 renderWtHome 하나가 그린다.
