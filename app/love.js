@@ -22,7 +22,7 @@
       var h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
       return fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body) })
         .catch(function () { throw new Error('연결이 끊겼어요. 잠시 뒤 다시 해 주세요.'); });   // 끊김 · 시간 초과도 우리말로
-    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || '잠시 뒤 다시 해 주세요.'); return j; }); });
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var er = new Error(j.error || '잠시 뒤 다시 해 주세요.'); er.status = r.status; throw er; } return j; }); });
   }
 
   function 목록(box, 저장, 키) {
@@ -55,7 +55,7 @@
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
     el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2>'
-      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 지금은 무료이고, 카카오 계정 하나에 한 사람 한 번 만들 수 있어요(중간에 끊기면 한 번 더).</p>'
+      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 지금은 무료이고, 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
       + '<div id="lvHead"></div><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
       + '<p class="hint" id="lvAbout" style="margin:0 0 6px"' + (저장 ? '' : ' hidden') + '>답은 태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 질문마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다.</p>'
       + '<div id="lvList"></div>';
@@ -81,12 +81,15 @@
     var timer = null;
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     function 초(msg) { var s = 0; 알림(msg); timer = setInterval(function () { s += 1; st.textContent = msg + ' (' + s + '초)'; }, 1000); }
+    function 채우기(답들, msg) {
+      var A = {}; (답들 || []).forEach(function (it) { A[it.id] = it.a; });
+      저장.items.forEach(function (it) { it.a = A[it.id] || '답을 쓰지 못했어요.'; });
+      쓰기(키, 저장); head.innerHTML = ''; 알림(msg || '다 됐어요. 질문마다 실제 나와 맞는지 눌러 주세요.'); 목록(list, 저장, 키);
+    }
     function 답받기(msg) {
       초(msg);
       return post('/api/love-answers', { runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
-        var A = {}; r.items.forEach(function (it) { A[it.id] = it.a; });
-        저장.items.forEach(function (it) { it.a = A[it.id] || '답을 쓰지 못했어요.'; });
-        쓰기(키, 저장); head.innerHTML = ''; 알림('다 됐어요. 질문마다 실제 나와 맞는지 눌러 주세요.'); 목록(list, 저장, 키);
+        채우기(r.items, r.saved ? '이 카카오 계정으로 받은 답을 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.' : null);
       });
     }
     el.querySelector('#lvGo').onclick = function () {
@@ -95,9 +98,15 @@
       var 일 = 덜됨 ? 답받기('답을 쓰는 중이에요. 1분 남짓 걸려요.') : (초('당신에게 맞는 질문을 고르는 중이에요. 1분 남짓 걸려요.'), post('/api/love-questions', { consent: true, birth: b }).then(function (r) {
         저장 = { runId: r.runId, sig: r.sig, items: r.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '' }; }), fb: {} };
         쓰기(키, 저장); 덜됨 = true; about.hidden = false; 목록(list, 저장, 키);
-        return 답받기('질문 ' + r.items.length + '개를 골랐어요. 답을 쓰는 중이에요. 1분 남짓 더 걸려요.');
+        // 이 카카오 계정으로 이미 만든 결과(다른 기기 포함)면 새로 만들지 않고 그대로 꺼내 온다(09-30)
+        if (r.saved && r.answers && r.answers.length) return 채우기(r.answers, '이 카카오 계정으로 만든 결과를 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.');
+        return 답받기(r.saved ? '이 카카오 계정으로 만든 질문을 불러왔어요. 답을 쓰는 중이에요. 1분 남짓 걸려요.' : '질문 ' + r.items.length + '개를 골랐어요. 답을 쓰는 중이에요. 1분 남짓 더 걸려요.');
       }));
-      일.catch(function (e) { 알림(e.message, true); btn.disabled = false; if (덜됨) btn.textContent = '답 마저 받기'; });
+      일.catch(function (e) {
+        알림(e.message, true); btn.disabled = false;
+        if (덜됨 && e.status === 400) { 덜됨 = false; 저장 = null; try { localStorage.removeItem(키); } catch (x) {} list.innerHTML = ''; }   // 이 기기 것이 서버와 안 맞으면 처음부터
+        btn.textContent = 덜됨 ? '답 마저 받기' : '내 연애 질문 받기';
+      });
     };
   }
 
