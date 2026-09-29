@@ -1,4 +1,4 @@
-/* 홈 = 분류 칸 — 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 컨텐츠라도 준비중으로 넣고 칸부터 · 모바일 전용」.
+/* 홈 = 분류 칸 — 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 컨텐츠라도 준비중으로 넣고 칸부터 · 모바일 전용」 · 「2줄 말고 한줄로 · 썸네일 작게 · 만화표지처럼 글씨를 그림 안에」.
  * 분류 이름 · 차례는 bunya.js 큰분야 표에서 읽는다(연애 먼저). 이 파일은 분류마다 어느 콘텐츠를 여는지와 썸네일만 안다.
  * 콘텐츠가 생기면 아래 칸 표에 한 줄 — 없으면 그 분류는 「준비중」. 누르면 들어가기(저장된 사람이 없으면 입구를 거쳐 그 탭). */
 (function (global) {
@@ -26,11 +26,12 @@
       var 목록 = 칸[b.키] || [null];
       목록.forEach(function (c, i) {
         if (!c) {
-          html += '<div class="cat soon"><div class="k">' + esc(b.이름) + '</div><div class="th ph">' + esc(b.이름.charAt(0)) + '</div><div class="n">준비중</div></div>';
+          html += '<div class="cat soon"><span class="k">' + esc(b.이름) + '</span><span class="n">준비중</span></div>';
           return;
         }
-        html += '<a class="cat" href="' + esc(c.주소 || '#') + '" data-cat="' + esc(b.키) + '" data-i="' + i + '"><div class="k">' + esc(b.이름) + '</div>'
-          + '<div class="th"><img src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy"></div><div class="n">' + esc(c.이름) + '</div></a>';
+        // 만화 표지처럼 — 그림 위에 분류 딱지와 제목(09-30 사장님 「삽화안에 글씨를 넣고싶은데 만화표지처럼」)
+        html += '<a class="cat" href="' + esc(c.주소 || '#') + '" data-cat="' + esc(b.키) + '" data-i="' + i + '">'
+          + '<img src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy"><span class="k">' + esc(b.이름) + '</span><span class="n">' + esc(c.이름) + '</span></a>';
       });
     });
     el.innerHTML = '<div class="cats">' + html + '</div>';

@@ -1869,15 +1869,16 @@ details.fold > .tiles { margin-top: 10px; }
 .bh-other .bh-ah{margin:0}
 @media (max-width:400px){.bh-row{grid-template-columns:40px 1fr 1fr 48px;font-size:12px;gap:5px}.bh-d b{font-size:14px}}
 
-/* 09-30 홈 = 분류 칸(home-cats.js) — 모바일 전용 두 줄 격자 */
-.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 18px}
-.cat{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.cat .k{font-size:12px;letter-spacing:.06em;color:var(--accent);padding:9px 11px 0}
-.cat .th{aspect-ratio:1/1;margin:6px 11px 0;border-radius:10px;overflow:hidden;background:var(--line)}
-.cat .th img{width:100%;height:100%;object-fit:cover;display:block}
-.cat .th.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:34px;color:var(--ink3)}
-.cat .n{font-size:14px;font-weight:700;padding:8px 11px 11px;line-height:1.35;color:var(--ink)}
-.cat.soon{opacity:.55}.cat.soon .n{font-weight:500;color:var(--ink3)}
+/* 09-30 홈 = 분류 칸(home-cats.js) — 한 줄에 하나, 만화 표지처럼 그림 위에 분류 딱지 · 제목. 준비중은 얇은 줄 */
+.cats{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.cat{position:relative;display:block;height:118px;border-radius:14px;overflow:hidden;text-decoration:none;background:var(--card);border:1px solid var(--line)}
+.cat img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.cat::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,9,24,.82) 0%,rgba(12,9,24,.45) 55%,rgba(12,9,24,.05) 100%)}
+.cat .k{position:absolute;z-index:1;left:14px;top:12px;font-size:11px;letter-spacing:.12em;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.2);color:#fff}
+.cat .n{position:absolute;z-index:1;left:14px;right:38%;bottom:12px;font-family:var(--serif);font-weight:900;font-size:20px;line-height:1.22;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.7)}
+.cat.soon{height:48px;opacity:.6}.cat.soon::after{display:none}
+.cat.soon .k{top:50%;transform:translateY(-50%);background:transparent;padding:0;font-size:14px;letter-spacing:0;color:var(--ink2)}
+.cat.soon .n{top:50%;bottom:auto;right:14px;left:auto;transform:translateY(-50%);font-family:var(--sans);font-weight:500;font-size:12px;color:var(--ink3);text-shadow:none}
 
 /* 09-30 사장님 「이 삽화를 썸네일 및 생년월일 입력창 배경으로 하자」 — 입력창 뒤에 삽화, 위는 얼굴이 보이게 옅게 · 아래는 글이 읽히게 짙게. 옛 컷(#fcCut)은 숨김 */
 #formCard{padding-top:210px;background-image:linear-gradient(to bottom,color-mix(in srgb,var(--card) 10%,transparent) 0%,color-mix(in srgb,var(--card) 86%,transparent) 36%,color-mix(in srgb,var(--card) 95%,transparent) 100%),url(art/love-main.webp);background-size:100% auto,cover;background-size:cover;background-position:center top;background-repeat:no-repeat}
