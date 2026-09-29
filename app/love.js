@@ -44,12 +44,12 @@
   function 그리기(el, profile) {
     if (!el) return;
     if (!profile || !profile.year) {
-      el.innerHTML = '<section class="card"><h2>연애 속의 나</h2><p class="hint">내 생년월일시를 먼저 저장해 주세요.</p></section>';
+      el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2><p class="hint">내 생년월일시를 먼저 저장해 주세요.</p></section>';
       return;
     }
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
-    el.innerHTML = '<section class="card"><h2>연애 속의 나</h2>'
+    el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2>'
       + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 지금은 무료예요.</p>'
       + '<div id="lvHead"></div><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
       + '<p class="hint" id="lvAbout" style="margin:0 0 6px"' + (저장 ? '' : ' hidden') + '>답은 태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 질문마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다.</p>'
@@ -57,7 +57,7 @@
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout');
     if (저장 && 저장.items && 저장.items.every(function (it) { return it.a; })) { 목록(list, 저장, 키); return; }
     var 동의 = 읽기(동의키) === true;
-    head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px"><span>생년월일시와 「맞아요 / 아니에요」 응답을 이 콘텐츠를 고치는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
+    head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px;width:auto;flex:0 0 auto"><span>생년월일시와 「맞아요 / 아니에요」 응답을 이 콘텐츠를 고치는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
       + '<button class="btn" id="lvGo" style="width:100%">내 연애 질문 받기</button>';
     var timer = null;
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
