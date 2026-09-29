@@ -78,9 +78,12 @@
     var 동의 = 읽기(동의키) === true;
     head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px;width:auto;flex:0 0 auto"><span>생년월일시와 「맞아요 / 아니에요」 응답을 이 콘텐츠를 고치는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
       + '<button class="btn" id="lvGo" style="width:100%">' + (덜됨 ? '답 마저 받기' : '내 연애 질문 받기') + '</button>';
-    var timer = null;
+    var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
+    var 기다림말 = '만드는 중이에요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
-    function 초(msg) { var s = 0; 알림(msg); timer = setInterval(function () { s += 1; st.textContent = msg + ' (' + s + '초)'; }, 1000); }
+    // 걸린 시간은 처음 누른 때부터 센다(새로고침 · 기다림 확인을 거쳐도 이어서)
+    function 초(msg) { if (기다리는중) msg = 기다림말; t0 = t0 || +읽기(대기키) || Date.now(); 알림(msg); var f = function () { st.textContent = msg + ' (' + Math.max(0, Math.round((Date.now() - t0) / 1000)) + '초)'; }; f(); timer = setInterval(f, 1000); }
+    function 지우기(k) { try { localStorage.removeItem(k); } catch (e) {} }
     function 채우기(답들, msg) {
       var A = {}; (답들 || []).forEach(function (it) { A[it.id] = it.a; });
       저장.items.forEach(function (it) { it.a = A[it.id] || '답을 쓰지 못했어요.'; });
@@ -92,9 +95,12 @@
         채우기(r.items, r.saved ? '이 카카오 계정으로 받은 답을 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.' : null);
       });
     }
-    el.querySelector('#lvGo').onclick = function () {
-      if (!동의) { var ok = el.querySelector('#lvOk'); if (!ok || !ok.checked) return 알림('안내에 동의해 주세요.', true); 동의 = true; 쓰기(동의키, true); }
-      var btn = el.querySelector('#lvGo'); btn.disabled = true;
+    // 09-30 사장님 「자동뜨게해」 — 이 계정으로 지금 만드는 중이면(새로고침 · 다른 기기) 새로 만들지 않고 10초마다 확인해서 다 되면 바로 띄운다.
+    // 확인은 서버에 묻기만 한다(보관된 게 있으면 꺼내 주고, 아직이면 「만드는 중」) — 토큰 안 듦. 누른 표시(대기키)가 있으면 화면을 다시 열어도 이어서 기다린다.
+    function 시작() {
+      var btn = el.querySelector('#lvGo'); if (!btn || !btn.isConnected) return;
+      btn.disabled = true;
+      if (!읽기(대기키)) 쓰기(대기키, Date.now());
       var 일 = 덜됨 ? 답받기('답을 쓰는 중이에요. 1분 남짓 걸려요.') : (초('당신에게 맞는 질문을 고르는 중이에요. 1분 남짓 걸려요.'), post('/api/love-questions', { consent: true, birth: b }).then(function (r) {
         저장 = { runId: r.runId, sig: r.sig, items: r.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '' }; }), fb: {} };
         쓰기(키, 저장); 덜됨 = true; about.hidden = false; 목록(list, 저장, 키);
@@ -102,12 +108,22 @@
         if (r.saved && r.answers && r.answers.length) return 채우기(r.answers, '이 카카오 계정으로 만든 결과를 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.');
         return 답받기(r.saved ? '이 카카오 계정으로 만든 질문을 불러왔어요. 답을 쓰는 중이에요. 1분 남짓 걸려요.' : '질문 ' + r.items.length + '개를 골랐어요. 답을 쓰는 중이에요. 1분 남짓 더 걸려요.');
       }));
-      일.catch(function (e) {
+      일.then(function () { 지우기(대기키); 기다리는중 = false; t0 = null; }, function (e) {
+        if (!btn.isConnected) return;   // 다른 화면으로 갔으면 그만(다시 열면 이어서)
+        if (e.status === 409 && Date.now() - (+읽기(대기키) || Date.now()) < 10 * 60 * 1000) { 기다리는중 = true; 초(기다림말); setTimeout(시작, 10000); return; }
+        지우기(대기키); 기다리는중 = false; t0 = null;
         알림(e.message, true); btn.disabled = false;
-        if (덜됨 && e.status === 400) { 덜됨 = false; 저장 = null; try { localStorage.removeItem(키); } catch (x) {} list.innerHTML = ''; }   // 이 기기 것이 서버와 안 맞으면 처음부터
+        if (덜됨 && e.status === 400) { 덜됨 = false; 저장 = null; 지우기(키); list.innerHTML = ''; }   // 이 기기 것이 서버와 안 맞으면 처음부터
         btn.textContent = 덜됨 ? '답 마저 받기' : '내 연애 질문 받기';
       });
+    }
+    el.querySelector('#lvGo').onclick = function () {
+      if (!동의) { var ok = el.querySelector('#lvOk'); if (!ok || !ok.checked) return 알림('안내에 동의해 주세요.', true); 동의 = true; 쓰기(동의키, true); }
+      시작();
     };
+    // 누르고 기다리던 중에 새로고침했거나 화면을 다시 열었으면 알아서 이어 간다(10분 안)
+    var 누른때 = +읽기(대기키);
+    if (동의 && 누른때 && Date.now() - 누른때 < 10 * 60 * 1000) 시작(); else if (누른때) 지우기(대기키);
   }
 
   global.ChaeksaLoveView = { 그리기: 그리기 };
