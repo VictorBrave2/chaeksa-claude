@@ -31,7 +31,8 @@
         }
         // 만화 표지처럼 — 그림 위에 분류 딱지와 제목(09-30 사장님 「삽화안에 글씨를 넣고싶은데 만화표지처럼」)
         html += '<a class="cat" href="' + esc(c.주소 || '#') + '" data-cat="' + esc(b.키) + '" data-i="' + i + '">'
-          + '<img src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy"><span class="k">' + esc(b.이름) + '</span><span class="n">' + esc(c.이름) + '</span></a>';
+          + '<img class="bg" src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy"><img class="pic" src="' + esc(c.그림.replace('{g}', g)) + '" alt="" loading="lazy">'
+          + '<span class="k">' + esc(b.이름) + '</span><span class="n">' + esc(c.이름) + '</span></a>';   // 뒤는 흐린 같은 그림, 오른쪽에 세로 그림 그대로(얼굴 안 잘림 — 09-30 「면상이 다 잘리잖니」)
       });
     });
     el.innerHTML = '<div class="cats">' + html + '</div>';
