@@ -3337,6 +3337,61 @@
              peakTxt: 칸(list[hi].d) };
   }
 
+  // 인생 곡선 카드 그림(大運圖) — 09-17 옛것 치우기 때 지웠다가 09-30 사장님 「사람들은 지어낸 점수를 좋아하나봐 홈 맨 하단에 만들어줘」로 되살림(옛 그림 그대로)
+  function drawLifeCurve(name, lc) {
+    const F = 'Noto Serif KR,serif';
+    const X0 = 46, X1 = 314, Y0 = 236, Y1 = 356;      // 그래프 자리
+    const n = lc.list.length;
+    const px = (i) => X0 + (X1 - X0) * (n === 1 ? 0.5 : i / (n - 1));
+    const py = (v) => Y1 - (Y1 - Y0) * (v / 100);
+    const pts = lc.list.map((x, i) => px(i) + ',' + py(x.v)).join(' ');
+    const area = 'M' + px(0) + ',' + Y1 + ' L' + lc.list.map((x, i) => px(i) + ',' + py(x.v)).join(' L') + ' L' + px(n - 1) + ',' + Y1 + ' Z';
+    const dots = lc.list.map((x, i) => {
+      const isCur = i === lc.curIdx, isHi = i === lc.headIdx;
+      return '<circle cx="' + px(i) + '" cy="' + py(x.v) + '" r="' + (isCur ? 5.5 : isHi ? 4.5 : 2.8) + '" '
+        + 'fill="' + (isCur ? '#b23a2a' : isHi ? '#c8a24a' : '#8a7a58') + '"/>';
+    }).join('');
+    const labels = lc.list.map((x, i) => (i % 2 === 0 || i === lc.headIdx)
+      ? '<text x="' + px(i) + '" y="' + (Y1 + 15) + '" text-anchor="middle" font-size="9" fill="#8a7a58">' + x.d.startAge + '</text>' : '').join('');
+    const hiLab = '<text x="' + px(lc.headIdx) + '" y="' + (py(lc.list[lc.headIdx].v) - 11) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="#8a6a1e">' + '최고' + '</text>';
+    const curLab = lc.curIdx >= 0 ? '<text x="' + px(lc.curIdx) + '" y="' + (py(lc.list[lc.curIdx].v) + 18) + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b23a2a">지금</text>' : '';
+    let by = 392, body = '';
+    lc.lines.forEach((l) => {
+      const ls = foldTxt(l, 274, 11.5, 2);
+      ls.forEach((L, j) => {
+        body += '<text x="' + (L[1] ? 42 : 53) + '" y="' + (by + j * 16) + '" font-size="11.5" fill="#4a3a28">'
+          + escF((L[1] ? '· ' : '') + L[0]) + '</text>';
+      });
+      by += (ls.length - 1) * 16 + 21;
+    });
+    // 글 줄이 길면 카드를 늘린다(09-30 되살릴 때 맨 아래 줄이 밑글과 겹쳤다). 도장은 글과 안 겹치게 오른쪽 위로.
+    const FY = Math.max(534, by + 10), H = FY + 26;
+    return '<svg viewBox="0 0 360 ' + H + '" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block" font-family="' + F + '">'
+      + '<defs><linearGradient id="lcg" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#f8f2e4"/><stop offset="1" stop-color="#ece1c9"/></linearGradient>'
+      + '<linearGradient id="lca" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#c8a24a" stop-opacity=".45"/><stop offset="1" stop-color="#c8a24a" stop-opacity="0"/></linearGradient></defs>'
+      + '<rect width="360" height="' + H + '" rx="26" fill="url(#lcg)"/>'
+      + '<rect x="14" y="14" width="332" height="' + (H - 28) + '" rx="18" fill="none" stroke="#a98a52" stroke-width="1.5" opacity=".7"/>'
+      + '<text x="180" y="78" text-anchor="middle" font-size="34" font-weight="900" fill="#5c421c" letter-spacing="12">大運圖</text>'
+      + '<text x="180" y="100" text-anchor="middle" font-size="11.5" fill="#8a7a58" letter-spacing="4">인생 흐름도</text>'
+      + '<text x="180" y="124" text-anchor="middle" font-size="13" fill="#5c4c2e" font-weight="700">' + escF(name) + '</text>'
+      + '<line x1="42" y1="140" x2="318" y2="140" stroke="#a98a52" stroke-width="1" opacity=".55"/>'
+      + '<text x="180" y="170" text-anchor="middle" font-size="30" font-weight="900" fill="#8a6a1e">' + escF(lc.kind + '형') + '</text>'
+      + '<text x="180" y="192" text-anchor="middle" font-size="11.5" fill="#8a7a58">' + escF(lc.kindNote) + '</text>'
+      + '<text x="180" y="214" text-anchor="middle" font-size="12" fill="#5c4c2e" font-weight="700">최고 구간 ' + escF(lc.peakTxt) + '</text>'
+      + '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="#c9b285" stroke-width="1"/>'
+      + '<path d="' + area + '" fill="url(#lca)"/>'
+      + '<polyline points="' + pts + '" fill="none" stroke="#8a6a1e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+      + dots + labels + hiLab + curLab
+      + '<text x="' + X1 + '" y="' + (Y1 + 15) + '" text-anchor="end" font-size="9" fill="#a08a5f">세</text>'
+      + body
+      + '<g transform="translate(290,28)"><rect width="40" height="40" rx="7" fill="#b23a2a" opacity=".92"/>'
+      + '<text x="20" y="27" text-anchor="middle" font-family="' + F + '" font-size="17" font-weight="900" fill="#fdf3e7">運</text></g>'
+      + '<text x="180" y="' + FY + '" text-anchor="middle" font-size="10.5" fill="#8a7a58" letter-spacing="1">chaeksa.kr · 대운 아홉 칸에 같은 기준으로 매긴 점수</text>'
+      + '</svg>';
+  }
+
 
   // ── 열두 달 흐름 — 세운도(歲運圖) ──
   // 시간 축의 구멍을 메운다: 하루(오늘의 흐름) → **한 해** → 십 년(인생 곡선).
@@ -3452,5 +3507,5 @@
 
 
 
-  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, gyeok, gyeokName, share, seasonNow, drawSeason, relation, nowOf, inyeonMonths, inyeonDays, myDays, 달그림: 달그림, inyeonWhy, monthWhy, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, jichim, inyeon, wealth, love, career, lifeCurve, yearFlow, 영역축, 영역해, 자리내력, 자리모양, 관계지도, 조 };
+  global.ChaeksaTypecard = { SEASON_GRADE, 등급100, mine, buildSample, gyeok, gyeokName, share, seasonNow, drawSeason, relation, nowOf, inyeonMonths, inyeonDays, myDays, 달그림: 달그림, inyeonWhy, monthWhy, 모습: 모습, 첫확인: 첫확인, 간명자료: 간명자료, GOD_MEANING, reading, 인연결론: 인연결론, 재물결론: 재물결론, loveStory, moneyStory, wealthWhy, wealthDrill, 재물날들: 재물날들, naepyeon, jichim, inyeon, wealth, love, career, lifeCurve, drawLifeCurve, yearFlow, 영역축, 영역해, 자리내력, 자리모양, 관계지도, 조 };
 })(window);

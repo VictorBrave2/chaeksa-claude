@@ -526,12 +526,39 @@
   // 첫 의논 맛보기(renderChong · #chong)를 여기서 걷었다 (2026-09-12 이야기 서점 전략 — 홈은 표지만 세운다).
   // 의논 전문은 의논 화면(renderGanmyeong)이 그대로 그린다. 홈에서는 전체 목록 → 「나를 두고 열 사람이」로 간다.
 
+  // ───── 인생 곡선(大運圖) — 홈 맨 아래 카드 ─────
+  // 09-30 사장님 「몰라.. 사람들은 지어낸 점수를 좋아하나봐 홈 맨 하단에 만들어줘」 — 09-17 에 지운 옛 유형 카드를 그대로 되살림.
+  // 점수는 typecard.lifeCurve 옛 기준 그대로(강약 부합 · 조후 · 일지 합) — 법전 · 십성 변화 엔진 판정이 아니다. 사장님이 알고 고른 것.
+  function 인생곡선() {
+    const T = window.ChaeksaTypecard, box = $('lcCard');
+    if (!box) return;
+    if (!T || !T.drawLifeCurve || !R || !R.daeun || !R.daeun.list || !R.daeun.list.length) { box.classList.add('hide'); return; }
+    const lc = T.lifeCurve(R, today);
+    box.innerHTML = '<h2>인생 곡선</h2>'
+      + '<p class="hint" style="margin:0 0 4px">열 해마다 바뀌는 대운 아홉 칸을 곡선으로 그렸어요. 대운이 내 사주에 필요한 것을 가져오는지로 점수를 매겼어요.</p>'
+      + (profile && profile.genderUnknown ? '<p class="hint" style="margin:6px 0 0">성별을 모른다고 하셔서 남성 기준으로 그렸어요. 대운은 성별에 따라 도는 방향이 달라요.</p>' : '')
+      + '<div class="cardwrap"><div class="cardflip"><div class="cardsvg" id="lcSvg">' + T.drawLifeCurve(이름값(), lc) + '</div></div>'
+      + '<button class="btn small" id="btnLcShare" style="margin-top:12px">이 그림 저장 · 보내기</button></div>'
+      + '<p class="hint" style="margin-top:10px;text-align:center">' + esc(lc.kind + '형 · 가장 높은 구간 ' + lc.peakTxt) + ' · 같은 사주는 언제나 같은 곡선이에요</p>';
+    box.classList.remove('hide');
+    $('btnLcShare').onclick = async () => {
+      const b = $('btnLcShare'); b.disabled = true; b.textContent = '만드는 중…';
+      try {
+        const r = await T.share($('lcSvg').innerHTML, '대운도_' + lc.peak.startAge + '세');
+        b.textContent = r === 'shared' ? '보냈어요' : r === 'copied' ? '복사됐어요 — 붙여 넣으세요' : '사진으로 저장했어요';
+      } catch (e) { b.textContent = '다시 눌러 주세요'; }
+      b.disabled = false;
+      setTimeout(() => { b.textContent = '이 그림 저장 · 보내기'; }, 2500);
+    };
+  }
+
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
     // 첫 의논(#chong)은 홈에서 걷었다(2026-09-12 이야기 서점 전략). 의논 화면(ganmyeong)은 전체 목록에서 연다.
     const a = R.analysis;
     // 09-27 이번 주엔 무엇이 바뀌나 — 홈 카드(byeonhwa.js, 09-30 맨 아래로). 그 사람은 정통궁합 · 웹툰궁합이 고른 사람(궁합그사람)과 같다
     try { if (window.ChaeksaByeonhwaView && $('bhCard')) ChaeksaByeonhwaView.그리기($('bhCard'), profile, (() => { try { const P0 = People(), me = P0 && P0.active(), g = P0 && 궁합그사람 ? P0.get(궁합그사람) : null; return g && (!me || g.id !== me.id) ? P0.toProfile(g) : null; } catch (e) { return null; } })()); } catch (e) { try { console.warn('이번 주 실패:', e); } catch (e2) {} }
+    try { 인생곡선(); } catch (e) { try { console.warn('인생 곡선 실패:', e); } catch (e2) {} }
     // 첫 마디(standing)·「지금 어디에 계신지」는 2026-09-14 원국 탭 개편으로 걷었다.
     // 「타일 미리보기」는 옛 서고(#shelves)의 배지·부제를 채우던 코드였다.
     // 서고를 지웠으므로(2026-09-09) 여기서 세던 것도 걷었다 — 홈은 renderWtHome 하나가 그린다.

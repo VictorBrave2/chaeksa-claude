@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>분야 표 시험</title>
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}</style></head>
 <body><div id="out">시험하는 중이에요…</div>
-<script src="bunya.js?v=1248"></script>
+<script src="bunya.js?v=1249"></script>
 <script>
 // 홈 분야 표 시험(docs/100 전략 카) — 이번 범위는 모듈 없이 표만으로 되는 것.
 //   가 표 꼴(한 곳 · JSON 한 덩어리 · 한 줄 = 한 칸 · 함수 없음) · 나 열쇠 꼴과 겹침(카 2) · 다 없는 키 0(카 1의 표 쪽)
@@ -78,7 +78,7 @@
     if (!T) throw new Error('bunya.js 가 실리지 않았다');
     봄('가2 맨 위 열쇠 = 설정 · 큰분야 · 분야 · 콘텐츠 · 목차(표 넷과 설정 한 줄)', Object.keys(T), 열쇠.맨위);
     봄('가3 설정 — 홈타일 · 칸줄 · 접음이 모두 자연수', Object.keys(T.설정).length === 3 && ['홈타일', '칸줄', '접음'].every((k) => Number.isInteger(T.설정[k]) && T.설정[k] > 0), true);
-    const 소스 = await 받기('bunya.js?v=1248');
+    const 소스 = await 받기('bunya.js?v=1249');
     봄('가4 bunya.js 를 읽었다', 소스 != null, true);
     const 시작 = '/*표 시작*/', 끝 = '/*표 끝*/';
     const a = 소스.indexOf(시작), b = 소스.indexOf(끝);
