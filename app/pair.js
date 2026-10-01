@@ -10,6 +10,9 @@
   var 동의키 = 'chaeksa.pairConsent', 결과키 = 'chaeksa.pair.', 고른키 = 'chaeksa.pair.pick', 누구키 = 'chaeksa.pair.by';
   var 묶음이름 = { clash: '부딪히는 곳', lead: '한쪽이 맡는 곳', same: '닮은 곳 · 서로 채우는 곳', fit: '닮은 곳 · 서로 채우는 곳' };
   var 묶음차례 = ['clash', 'lead', 'same', 'fit'];
+  // 표지 그림 — 홈 「행동양식 궁합」 칸과 같은 그림. [그림, [가로, 세로], 낮 바탕색, 밤 바탕색](색은 love.js 장 그림 표와 같은 방법으로 뽑았다).
+  // 묶음 머리 그림은 love.js 장 그림 표(ChaeksaLoveView.장그림)를 같이 쓴다 — 그림을 바꾸려면 그 표 한 줄만 고친다.
+  var 표지그림 = ['art/story-gunghap.webp', [1024, 1536], '#dfddea', '#222148'];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 읽기(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
@@ -34,6 +37,50 @@
   function 로그인하러(pick) {
     try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: '#pair', pick: pick ? ['pairPick', pick] : null, at: Date.now() })); } catch (e) {}
     try { global.ChaeksaCloud.signInWith('kakao'); return true; } catch (e) { 지우기('chaeksa.return'); return false; }
+  }
+
+  // 카드 글을 문장으로(10-01 사장님 승인 흐름 「문답 아님」) — 서버 질문이 이미 문장이면 그대로,
+  // 「누가 먼저 연락할까요?」면 「먼저 연락하는 쪽은 그 사람이에요」, 그렇게 못 바꾸면 「이 장면에서 먼저 움직이는 쪽: 그 사람」.
+  // 누구인지는 서버가 정한 값(who, 없으면 답 첫 마디)만 쓴다 — 이 파일은 누구를 정하지도 바꾸지도 않는다.
+  var 누구말 = /^(당신이에요|그 사람이에요|두 분 다예요)\s*[.!]?\s*/, 누구표 = { '당신이에요': 'me', '그 사람이에요': 'other', '두 분 다예요': 'both' };
+  function 이에요(w) { var t = String(w), c = t.charCodeAt(t.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 === 0 ? '예요' : '이에요'; }   // 받침 없으면 「예요」
+  function 누구(c) {
+    if (c.who === 'me' || c.who === 'other' || c.who === 'both') return c.who;
+    var m = String(c.a || '').trim().match(누구말); return m ? 누구표[m[1]] : null;
+  }
+  // 「누가 먼저 연락할까요?」 → 「먼저 연락하는」 — 끝 글자의 ㄹ 받침을 떼고 「는」(먹을까요 → 먹는). 못 바꾸면 null.
+  function 하는꼴(q) {
+    var m = String(q || '').trim().match(/^(?:둘\s*중\s*)?누가\s+(.+?)\s*까요\s*[?？]$/); if (!m) return null;
+    var s = m[1], c = s.charCodeAt(s.length - 1);
+    if (/\S을$/.test(s)) return s.slice(0, -1) + '는';
+    if (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 === 8) return s.slice(0, -1) + String.fromCharCode(c - 8) + '는';
+    return null;
+  }
+  function 카드글(c, 그이름) {
+    var a = String(c.a || '').trim(), q = String(c.q || '').trim(), w = 누구(c);
+    var 사람 = w === 'me' ? '당신' : w === 'other' ? 그이름 : w === 'both' ? '두 분 다' : '', 글 = a.replace(누구말, '').trim();
+    if (q && !/[?？]$/.test(q)) return { 제목: q, 글: a };
+    if (!사람) return { 제목: q, 글: a };
+    var 꼴 = 하는꼴(q);
+    // 못 바꾸는 질문은 질문 그대로 두고 답(누구)을 글 앞에 붙인다 — 「먼저 움직이는 쪽」은 질문 뜻과 다를 수 있다(10-01 검토)
+    return 꼴 ? { 제목: 꼴 + ' 쪽은 ' + 사람 + 이에요(사람), 글: 글 } : { 제목: q, 글: 사람 + 이에요(사람) + '. ' + 글 };
+  }
+  // 묶음(또는 맛보기) 하나를 그림 머리가 달린 바탕 띠로 — love.js 가 없으면 옛 글 머리로.
+  // 그림은 그 묶음 카드에 가장 많이 나온 장의 그림(앞 묶음이 쓴 그림은 건너뛴다).
+  function 묶음그림(cards, 쓴) {
+    var 표 = (global.ChaeksaLoveView && global.ChaeksaLoveView.장그림) || {}, 수 = {}, 차례 = [];
+    cards.forEach(function (c) { if (표[c.section]) { if (!수[c.section]) { 수[c.section] = 0; 차례.push(c.section); } 수[c.section]++; } });
+    차례.sort(function (x, y) { return 수[y] - 수[x]; });
+    var 고른 = 차례.filter(function (s) { return !쓴[표[s][0]]; })[0] || 차례[0];
+    if (!고른) return (global.ChaeksaLoveView && global.ChaeksaLoveView.기본그림) || [null, null, '#efe9ec', '#221f45'];
+    쓴[표[고른][0]] = 1; return 표[고른];
+  }
+  function 띠들(묶음들) {   // [{머리, 그림, html}] → 이어지는 바탕 띠
+    var LV = global.ChaeksaLoveView;
+    if (!LV || !LV.장머리) return 묶음들.map(function (m) { return '<h3 class="doc-h">' + esc(m.머리) + '</h3>' + m.html; }).join('');
+    return '<div class="lv-flow">' + 묶음들.map(function (m, i) {
+      return '<div class="lv-ch" style="' + LV.띠(m.그림, 묶음들[i + 1] ? 묶음들[i + 1].그림 : null) + '">' + LV.장머리(m.그림, m.머리, '', false) + m.html + '</div>';
+    }).join('') + '</div>';
   }
 
   // 근거 두 줄 — 서버가 보낸 말 그대로(없으면 「뚜렷하지 않음」)
@@ -73,19 +120,23 @@
       + '<section class="card"><p class="hint" style="margin:0">태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 장면마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다. 누르는 사람: '
       + '<button class="btn ghost small" data-by="me"' + (by === 'me' ? ' style="font-weight:700"' : '') + '>' + (by === 'me' ? '✓ ' : '') + '나</button> '
       + '<button class="btn ghost small" data-by="other"' + (by === 'other' ? ' style="font-weight:700"' : '') + '>' + (by === 'other' ? '✓ ' : '') + esc(그이름) + '</button></p></section>';
-    var 쓴묶음 = {};
+    var 묶음들 = [], 쓴그림 = {};
     차례.forEach(function (c) {
-      var 머리 = 묶음이름[c.group];
-      if (!쓴묶음[머리]) { 쓴묶음[머리] = 1; html += '<h3 class="doc-h">' + esc(머리) + '</h3>'; }
-      var v = (저장.fb || {})[c.id];
-      html += '<section class="card" id="prc-' + esc(c.id) + '"><p class="hint" style="margin:0 0 4px">' + 번호[c.id] + '번 장면 · ' + esc(c.section) + '</p><p style="margin:0 0 6px"><b>' + esc(c.q) + '</b></p>'
-        + '<p style="margin:0">' + esc(c.a) + '</p>'
+      var 머리 = 묶음이름[c.group], 끝 = 묶음들[묶음들.length - 1];
+      if (!끝 || 끝.머리 !== 머리) { 끝 = { 머리: 머리, cards: [], html: '' }; 묶음들.push(끝); }
+      끝.cards.push(c);
+      var v = (저장.fb || {})[c.id], 글 = 카드글(c, 그이름);
+      끝.html += '<section class="card" id="prc-' + esc(c.id) + '"><p class="hint" style="margin:0 0 4px">' + 번호[c.id] + '번 장면 · ' + esc(c.section) + '</p><p class="lv-t">' + esc(글.제목) + '</p>'
+        + (글.글 ? '<p style="margin:0">' + esc(글.글) + '</p>' : '')
         + (c.try ? '<p style="margin:8px 0 0"><b>해볼 것</b> — ' + esc(c.try) + '</p>' : '')
         + 근거(c.basis, 그이름)
         + '<p class="hint" style="margin:10px 0 0">실제 두 분과 <button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="yes"' + (v === 'yes' ? ' style="font-weight:700"' : '') + '>' + (v === 'yes' ? '✓ ' : '') + '맞아요</button> '
         + '<button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p></section>';
     });
-    box.innerHTML = html;
+    묶음들.forEach(function (m) { m.그림 = 묶음그림(m.cards, 쓴그림); });
+    box.innerHTML = html + 띠들(묶음들);
+    var 표지n = document.getElementById('prCoverN'), 표지k = document.getElementById('prCoverK');   // 표지 글 = 결론 첫 줄
+    if (표지n && (s.title || s.line)) { 표지n.textContent = s.title || s.line; if (표지k) 표지k.textContent = '결론'; }
     box.querySelectorAll('a[data-go]').forEach(function (a) {
       a.onclick = function (e) {
         e.preventDefault();   // 주소의 #은 탭이 쓰므로 건드리지 않는다
@@ -104,13 +155,14 @@
 
   // 맛보기 — 서버가 고른 장면 2개(누구인지까지)와 한 줄. 나머지는 전체에서.
   function 맛보기(box, pv, 그이름) {
-    var html = '<section class="card"><h3 class="doc-h">맛보기</h3><p style="margin:0"><b>' + esc(pv.line) + '</b></p></section>';
+    var html = '<section class="card"><h3 class="doc-h">맛보기</h3><p style="margin:0"><b>' + esc(pv.line) + '</b></p></section>', 카드들 = '';
     (pv.cards || []).forEach(function (c) {
-      html += '<section class="card"><p class="hint" style="margin:0 0 4px">' + esc(묶음이름[c.group] || '') + ' · ' + esc(c.section) + '</p>'
-        + '<p style="margin:0 0 6px"><b>「' + esc(c.situation) + '」 이 장면에서 먼저 그렇게 하는 쪽은 누구일까요?</b></p>'
-        + '<p style="margin:0">' + esc(c.a) + '</p>' + 근거(c.basis, 그이름) + '</section>';
+      var 글 = 카드글(c, 그이름);
+      카드들 += '<section class="card"><p class="hint" style="margin:0 0 4px">' + esc(묶음이름[c.group] || '') + ' · ' + esc(c.section) + '</p>'
+        + '<p style="margin:0 0 6px">「' + esc(c.situation) + '」</p><p class="lv-t">' + esc(글.제목) + '</p>'
+        + (글.글 ? '<p style="margin:0">' + esc(글.글) + '</p>' : '') + 근거(c.basis, 그이름) + '</section>';
     });
-    box.innerHTML = html;
+    box.innerHTML = html + (카드들 ? 띠들([{ 머리: '먼저 보는 장면', 그림: 묶음그림(pv.cards || [], {}), html: 카드들 }]) : '');
   }
 
   // 전체 결제 상자 — 값은 서버 상품표(products · love_pair)에서 받아 단추에 적는다(pay.js 원칙: 값은 한 곳, 줄 그은 정가 없음).
@@ -168,8 +220,10 @@
     }
     var me = PP.active(), 목록 = PP.list().filter(function (p) { return !me || p.id !== me.id; });
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
-    el.innerHTML = '<section class="card"><h2>행동양식 궁합</h2>'
-      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 「누가 먼저 그렇게 할까요?」를 묻고, 당신 · 그 사람 · 두 분 다 가운데 하나를 콕 집어 답해요. 장면 수 한 줄과 장면 2개는 먼저 보여 드리고, 두 분이 어떤 짝인지 결론과 나머지 장면은 출시 기념가로 열려요.</p>'
+    var LV = global.ChaeksaLoveView;
+    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">궁합</span><span class="n" id="prCoverN">행동양식 궁합</span></div>' : '')
+      + '<section class="card"><h2>행동양식 궁합</h2>'
+      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 당신 · 그 사람 · 두 분 다 가운데 누가 먼저 움직이는지 콕 집어 보여 드려요. 장면 수 한 줄과 장면 2개는 먼저 보여 드리고, 두 분이 어떤 짝인지 결론과 나머지 장면은 출시 기념가로 열려요.</p>'
       + '<label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label>'
       + '<div style="display:flex;gap:8px;align-items:center;margin:0 0 10px"><select id="pairPick" style="flex:1;min-width:0">'
       + (목록.length ? 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('') : '<option value="">등록된 사람이 없어요</option>')
