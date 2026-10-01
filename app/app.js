@@ -272,6 +272,8 @@
       // 궁합총론 탭에서 넣은 사람은 곧 그 사람이다 — 첫 사람이어도 바로 그린다. 고친 사람이면 새 생년월일로 다시 그린다.
       if (document.querySelector('.tab[data-tab="chongnon"]:not(.hide)')) { if (새) 궁합고르기(새); renderChongnon(); }
       if (document.querySelector('.tab[data-tab="ssom"]:not(.hide)')) { if (새) 궁합고르기(새); renderSsom(); }
+      // 행동양식 궁합 탭에서 넣은 사람은 곧 그 사람이다(10-01)
+      if (document.querySelector('.tab[data-tab="pair"]:not(.hide)') && window.ChaeksaPairView) { if (새) { try { localStorage.setItem('chaeksa.pair.pick', JSON.stringify(새)); } catch (x) {} } ChaeksaPairView.그리기($('pairBox'), profile); }
     } catch (e) {}
   }
 
@@ -464,6 +466,7 @@
     if (tab === 'jeongtong' && $('jtStart') && profile && window.ChaeksaSsomCard) { try { const old = $('jtCard'); if (old) old.remove(); const R = ChaeksaEngine.calc(profile), html = window.ChaeksaSsomCard.정통카드(R); if (html) { $('jtStart').insertAdjacentHTML('beforebegin', html); window.ChaeksaSsomCard.정통붙이기($('jtStart').parentElement, R, profile.name || ''); } } catch (e) {} }
     if (tab === 'jeongtong' && $('jtStart')) $('jtStart').onclick = () => { if (!profile) return; try { sessionStorage.setItem('chaeksa.jtVn', JSON.stringify({ a: 궁합입력(profile) })); } catch (e) {} location.href = 'ssom-vn.html'; };   // 09-26 정통사주 웹툰 시작
     if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
+    if (tab === 'pair') { try { if (window.ChaeksaPairView) ChaeksaPairView.그리기($('pairBox'), profile); } catch (e) { try { console.warn('행동양식 궁합 탭:', e); } catch (x) {} } }   // 10-01 pair.js
     if (tab === 'ssom') { try { renderSsom(); } catch (e) { try { console.warn('연애궁합 탭:', e); } catch (x) {} } }
     if (tab === 'chongnon') { try { renderChongnon(); } catch (e) { try { console.warn('궁합총론 탭:', e); } catch (x) {} } }
     if (tab === 'gunghap') renderGunghap();
@@ -1021,7 +1024,7 @@
   /** 결제 버튼에서 로그인이 필요할 때. 앱의 다른 로그인 자리와 같은 꼴(카카오 → 안 되면 설정 창).
    *  로그인하고 돌아오면 이 장과 고른 사람으로 다시 온다(2026-09-22 점검 — 예전엔 홈에 떨어져서 사려던 장을 다시 찾아야 했다).
    *  돌아오는 쪽은 파일 끝 「시작」이 chaeksa.return 을 읽는다. */
-  const 고르는칸 = { geunamja: 'gnPick', maeum: 'mmPick', gunghap: 'ghPick', sheet: 'shPick' };
+  const 고르는칸 = { geunamja: 'gnPick', maeum: 'mmPick', gunghap: 'ghPick', sheet: 'shPick', pair: 'pairPick' };
   let 복귀고름 = null;    // 로그인하러 떠나기 전에 골라 둔 사람 [칸 id, 사람 id] — 탭을 그린 뒤 다시 고른다
   let 복귀대기 = false;   // 첫 동기화가 start() 로 홈에 돌려놓으면 한 번 더 그 장으로 간다
   function 복귀고르기() {
@@ -2703,9 +2706,10 @@
     if (!tab || !document.querySelector('.tab[data-tab="' + tab + '"]')) return;
     go(tab);
     // 그 사람이 아직 없으면 바로 그 사람 폼을 연다(궁합 둘)
-    if ((tab === 'ssom' || tab === 'chongnon') && People()) { const me = People().active(); if (!People().list().some(p => !me || p.id !== me.id)) setTimeout(() => openPersonForm(null), 250); }
+    if ((tab === 'ssom' || tab === 'chongnon' || tab === 'pair') && People()) { const me = People().active(); if (!People().list().some(p => !me || p.id !== me.id)) setTimeout(() => openPersonForm(null), 250); }
   }
   window.책사들어가기 = 들어가기;
+  window.책사사람추가 = () => openPersonForm(null);   // 행동양식 궁합(pair.js)의 「+ 사람 추가」
   if ($('btnGunghap')) $('btnGunghap').onclick = () => 들어가기('ssom');
   if ($('btnJeongtong')) $('btnJeongtong').onclick = () => 들어가기('jeongtong');
   // 09-30 연애 속의 나 — 첫 화면 · 홈 맨 위 카드. 저장된 사람이 있으면 바로 탭, 없으면 입구(첫 만남)를 거쳐 탭으로.

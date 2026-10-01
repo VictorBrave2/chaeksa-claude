@@ -1,31 +1,60 @@
-/* 책사 결제 — 토스페이먼츠 승인 (Vercel 서버리스, Node 런타임)
+/* 책사 결제 — 카카오페이 · 토스페이먼츠 승인 (Vercel 서버리스, Node 런타임)
  *
  * 왜 서버가 필요한가:
- *   결제창이 닫혔다고 돈이 들어온 게 아니다. **승인(confirm)** 을 서버가 비밀키로
+ *   결제창이 닫혔다고 돈이 들어온 게 아니다. **승인** 을 서버가 비밀키로
  *   불러야 결제가 끝난다. GitHub Pages 는 정적이라 이걸 못 한다.
  *   그래서 이미 있는 Vercel(api/chat.js 가 사는 곳)에 한 자리 더 붙인다.
  *
- * 흐름
- *   1) open     브라우저 → 여기 → Supabase order_open  (금액을 DB 가 정한다)
- *   2) 결제창    브라우저 → 토스 (orderId, amount)
- *   3) confirm  브라우저 → 여기 → order_check 로 **금액 대조** → 토스 승인 → order_paid
- *   4) fail     브라우저 → 여기 → order_failed
+ * 흐름 — 카카오페이 (2026-10-01, 설계 chaeksa-behavior-core/design/kakaopay-10-01.md)
+ *   1) kopen     브라우저 → 여기 → order_open(금액은 DB) → 카카오 ready(금액 = DB 값) → order_pg_ready(tid 는 DB 에만)
+ *                → 결제창 주소(pc · mobile)만 돌려준다. 브라우저는 통째로 그 주소로 간다(팝업 없음)
+ *   2) 결제창    카카오 → approval_url(pay-done.html?pv=kakao&orderId=…&pg_token=…) / cancel_url · fail_url(pay-fail.html)
+ *   3) kconfirm  pay-done → 여기 → order_pg_get(tid · 금액) → 카카오 approve → 금액 대조 → order_pg_paid
+ *                (실패로 닫힌 카카오 주문이면 카카오 주문 조회가 SUCCESS_PAYMENT · 금액 일치일 때 결제완료로 되살린다)
+ *   4) kfail     pay-fail → 여기 → **언제나** 카카오 주문 조회 → 「끝났고 안 빠졌다」(KP_DEAD)일 때만 order_pg_failed
+ *   5) krefund   사장님(super) 전용 → 카카오 cancel(전액) → order_pg_canceled
+ *   시험 모드(dev 키 · TC CID)면 kopen 은 super 계정 또는 PAY_TEST_OPEN=1 일 때만 열린다.
+ *
+ * 흐름 — 토스(그대로. PAY_PROVIDERS 에 toss 가 있을 때만 열린다 — confirm 도 마찬가지)
+ *   open → 토스 결제창 → confirm(order_check 로 **금액 대조** → 토스 승인 → order_paid) / fail(order_failed)
  *
  * 금액 위변조
- *   2)의 amount 는 브라우저가 들고 있으므로 얼마든 고칠 수 있다. 3)에서 토스가 돌려주는
- *   amount 도 결국 2)에서 온 값이다. 그래서 **DB 의 orders.amount 와 대조**한다.
- *   이 대조 하나가 방어 전부다. 지우면 100원으로 3만원짜리를 산다.
+ *   토스: 결제창의 amount 는 브라우저가 들고 있으므로 **DB 의 orders.amount 와 대조**한다.
+ *   카카오: ready 를 서버가 DB 금액으로 부르고 tid 는 브라우저로 안 내려간다 — 브라우저가 금액을 바꿀 자리가 없다.
+ *           그래도 승인 응답의 금액을 DB 와 한 번 더 맞춘다. 다르면 곧바로 결제를 취소한다.
  *
- * 환경변수 (Vercel > Project > Settings > Environment Variables)
- *   TOSS_SECRET_KEY   필수. 여기 있어야 할 유일한 비밀. 절대 브라우저로 안 내려간다
- *   TOSS_CLIENT_KEY   공개값. GET 으로 브라우저에 내려준다 —
- *                     비밀키와 짝이므로 한 곳(여기)에 같이 둬야 어긋나지 않는다
- *   ALLOWED_ORIGIN    예: https://chaeksa.kr
- *   둘 중 하나라도 비면 ready:false 로 답하고, 화면은 '준비 중'을 보여준다.
+ * 환경변수 (Vercel > Project > Settings > Environment Variables) — 값은 여기 적지 않는다
+ *   PAY_PROVIDERS           보일 결제사, 쉼표로. 비우면 kakao. 토스 심사 뒤 「kakao,toss」
+ *   KAKAOPAY_SECRET_KEY_DEV 카카오페이 개발자센터 앱의 Secret key(dev). 시험 CID(TC0ONETIME)로 돈이 안 빠진다
+ *   KAKAOPAY_SECRET_KEY     운영 Secret key  ┐ 둘 다 있으면 운영이 이긴다(dev 키는 안 쓴다)
+ *   KAKAOPAY_CID            운영 CID          ┘ TC 로 시작하면 시험으로 적는다
+ *   PAY_RETURN_BASE         결제 뒤 돌아올 곳. 비우면 https://chaeksa.kr (로컬 시험 때만 http://localhost:8791)
+ *   PAY_HOOK_SECRET         서버 열쇠(migrate-23). 이게 있어야 결제완료를 적는다
+ *   PAY_TEST_OPEN           1 이면 시험 모드 카카오 결제를 아무나 열 수 있다(비우면 super 계정만)
+ *   TOSS_SECRET_KEY · TOSS_CLIENT_KEY   토스(비밀 · 공개 짝)
+ *   ALLOWED_ORIGIN          예: https://chaeksa.kr
+ *   service_role 키는 쓰지 않는다. 쓰는 것은 anon · 사용자 JWT · 서버 열쇠 셋뿐이다.
  *
  * 호출 주소: https://<프로젝트>.vercel.app/api/pay
  */
 const TOSS_CONFIRM = 'https://api.tosspayments.com/v1/payments/confirm';
+
+// ── 카카오페이 주소 · 머리 (여기 한 곳만 고치면 된다) ──────────────────────
+// 확인한 것(2026-10-01): ready · approve 주소, 인증 머리 「SECRET_KEY {키}」, JSON 본문, 시험 CID TC0ONETIME,
+//   approve 응답의 aid · tid · partner_order_id · payment_method_type(CARD/MONEY) · approved_at —
+//   카카오페이 개발자 포럼 운영자 답변과 연동 글 둘(velog · until.blog)이 서로 맞는 것.
+// **확인 못 한 것**(공식 문서 developers.kakaopay.com 은 자바스크립트로 그리는 쪽이라 기계로 못 읽었다):
+//   cancel · order(주문 조회) 주소, 조회 응답의 status 값 이름, approve · 조회 응답의 amount{total} 모양,
+//   approval_url 에 이미 ?가 있을 때 pg_token 을 &로 잇는지. 개발자센터 화면과 대조해 틀리면 아래만 고친다.
+const KP_BASE = 'https://open-api.kakaopay.com/online/v1/payment/';
+const KP_PATH = { ready: 'ready', approve: 'approve', cancel: 'cancel', order: 'order' };   // cancel · order 는 미확인
+const KP_AUTH = (key) => 'SECRET_KEY ' + key;
+const KP_TEST_CID = 'TC0ONETIME';
+const KP_PAID = 'SUCCESS_PAYMENT';                                                         // 미확인
+// 카카오가 「이 결제는 끝났고 돈은 안 빠졌다」고 말하는 상태(미확인). 여기 없는 이름이면 주문을 닫지 않는다 —
+// 이름이 틀려도 주문이 open 으로 남을 뿐, 돈이 빠진 주문을 실패로 적는 일은 없다.
+const KP_DEAD = ['QUIT_PAYMENT', 'FAIL_AUTH_PASSWORD', 'FAIL_PAYMENT'];
+// 시간이 지났다는 것만으로는 주문을 닫지 않는다 — 늘 카카오에 묻는다(돈이 빠진 주문을 실패로 적는 길을 없앤다).
 
 // 환경변수에 눈에 안 보이는 문자가 섞여 헤더 조립이 통째로 죽은 전례가 두 번 있다
 // (api/chat.js 주석 참고). URL·키·JWT 는 어차피 ASCII 만 유효하다.
@@ -55,10 +84,76 @@ async function rpc(name, args, userToken) {
   return await res.json();
 }
 
+// 서버 열쇠로만 여는 RPC(order_pg_get · order_pg_paid · order_pg_failed · order_pg_note · order_pg_canceled,
+// server/migrate-33). **늘 anon 키로 부른다** — 사용자 토큰을 섞으면 만료 · 가짜 토큰 하나로 결제완료 기록이
+// 401 로 막힌다. 열쇠(p_server)가 없으면 DB 가 forbidden 으로 막는다.
+const srv = (name, args) =>
+  rpc(name, { ...args, p_server: env('PAY_HOOK_SECRET') || null }, sbAnon());
+// 서버 열쇠 + auth.uid() 가 둘 다 필요한 RPC(order_pg_ready) — 사용자 토큰으로 부른다.
+const srvUser = (name, args, userToken) =>
+  rpc(name, { ...args, p_server: env('PAY_HOOK_SECRET') || null }, userToken);
+
+/** 이 토큰의 계정이 super(사장님 확인용) 인가. schema-9 ai_plan() 을 사용자 토큰으로 부른다. 모르면 false. */
+async function isSuper(userToken) {
+  if (!userToken) return false;
+  const p = await rpc('ai_plan', {}, userToken).catch(() => null);
+  return p === 'super';
+}
+
 /* 결제는 돈이 오가므로 '장애 시 통과'가 없다 — 확인 못 하면 승인하지 않는다.
  * api/chat.js 의 결제 확인(llm_gate, 2026-09-12)도 같은 쪽이다: 확인 못 하면 LLM 을 부르지 않는다. */
 
 const READY = () => !!(env('TOSS_SECRET_KEY') && env('TOSS_CLIENT_KEY'));
+
+/** 카카오페이 설정. 운영 키 + 운영 CID 가 둘 다 있으면 운영, 아니면 dev 키 + 시험 CID. 없으면 null. */
+function kConf() {
+  const key = env('KAKAOPAY_SECRET_KEY'), cid = env('KAKAOPAY_CID');
+  if (key && cid) return { key, cid, mode: /^TC/.test(cid) ? 'test' : 'live' };
+  const dev = env('KAKAOPAY_SECRET_KEY_DEV');
+  if (dev) return { key: dev, cid: KP_TEST_CID, mode: 'test' };
+  return null;
+}
+
+/** 보일 결제사 — PAY_PROVIDERS 순서대로, 키가 들어온 것만. 비우면 카카오만(토스 단추는 숨는다). */
+function providers() {
+  const want = (process.env.PAY_PROVIDERS || 'kakao').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const out = [];
+  for (const id of want) {
+    if (out.some((p) => p.id === id)) continue;
+    if (id === 'kakao') { const k = kConf(); if (k) out.push({ id: 'kakao', mode: k.mode }); }
+    if (id === 'toss' && READY()) out.push({ id: 'toss', mode: /^live_/.test(env('TOSS_SECRET_KEY')) ? 'live' : 'test' });
+  }
+  return out;
+}
+const tossOn = () => providers().some((p) => p.id === 'toss');
+
+/** 카카오페이 한 번 부르기. 던지지 않는다 — 네트워크가 끊기면 { net:true }. */
+async function kakao(path, body) {
+  const k = kConf();
+  if (!k) return { net: false, ok: false, status: 0, j: {} };
+  let r, j = {};
+  try {
+    r = await fetch(KP_BASE + KP_PATH[path], {
+      method: 'POST',
+      headers: { authorization: KP_AUTH(k.key), 'content-type': 'application/json' },
+      body: JSON.stringify({ cid: k.cid, ...body }),
+    });
+    j = await r.json().catch(() => ({}));
+  } catch (_) { return { net: true, ok: false, status: 0, j: {} }; }
+  return { net: false, ok: r.ok, status: r.status, j: j || {} };
+}
+// 응답의 금액(amount.total). 모양이 다르면 null — 모르는 것은 「다르다」로 치지 않는다(아래 kconfirm 주석).
+const kAmount = (j) => (j && j.amount && Number.isFinite(j.amount.total) ? j.amount.total : null);
+const kErr = (j) => String((j && (j.error_message || j.msg || j.message)) || '');
+const kCode = (j) => (j && j.error_code != null ? String(j.error_code) : null);
+
+/** JWT 의 sub(계정 id). 이 토큰은 바로 앞의 order_open 이 Supabase 에서 검증했다. */
+function jwtSub(token) {
+  try { return JSON.parse(Buffer.from(String(token).split('.')[1], 'base64url').toString('utf8')).sub || null; }
+  catch (_) { return null; }
+}
+
+const returnBase = () => (env('PAY_RETURN_BASE') || 'https://chaeksa.kr').replace(/\/+$/, '');
 
 module.exports = async (req, res) => {
   const origin = req.headers.origin || '';
@@ -89,10 +184,12 @@ module.exports = async (req, res) => {
     } catch (e) {
       dbErr = String((e && e.message) || e).slice(0, 80);
     }
+    const pv = providers();
     return res.status(200).json({
       ok: true,
-      ready: READY(),                 // 키가 둘 다 있어야 결제 버튼이 뜬다
-      clientKey: env('TOSS_CLIENT_KEY') || null,
+      ready: pv.length > 0,                              // 결제사가 하나라도 있어야 결제 단추가 뜬다
+      providers: pv,                                     // [{id:'kakao', mode:'test'}, …] — 이 순서로 단추를 그린다
+      clientKey: tossOn() ? env('TOSS_CLIENT_KEY') || null : null,   // 토스를 안 보일 때는 내리지 않는다
       products,
       dbError: dbErr,
     });
@@ -101,18 +198,233 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ ok: false, reason: 'method' });
   if (!originOk) return res.status(403).json({ ok: false, reason: 'origin' });
 
-  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-  if (!token) return res.status(401).json({ ok: false, reason: 'unauthenticated' });
-
   let body = req.body;
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (_) { body = {}; } }
   body = body || {};
   const action = String(body.action || '');
 
+  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+  // kconfirm · kfail 은 로그인 없이도 받는다 — 카카오톡에서 결제한 뒤 로그인 안 된 브라우저로 돌아올 수 있다.
+  // 승인에 필요한 것은 (a) DB 에만 있는 tid (b) 결제한 사람만 받는 pg_token (c) 서버 열쇠라, 세션이 없어도 안전하다.
+  const 로그인없이 = action === 'kconfirm' || action === 'kfail';
+  if (!token && !로그인없이) return res.status(401).json({ ok: false, reason: 'unauthenticated' });
+
   try {
+    // ════ 카카오페이 ════════════════════════════════════════════════
+
+    // ── K1. 주문을 열고 카카오 결제창 주소를 받는다 ──
+    if (action === 'kopen') {
+      const k = kConf();
+      if (!k || !providers().some((p) => p.id === 'kakao')) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (!env('PAY_HOOK_SECRET')) return res.status(503).json({ ok: false, reason: 'not_ready' });   // 열쇠 없이는 결제완료를 못 적는다
+      // 시험 모드는 손님에게 열지 않는다 — 돈이 안 빠진 「결제완료」로 유료 본문이 열리면 안 된다.
+      // super 계정(사장님 확인용)이거나 PAY_TEST_OPEN=1 일 때만 연다.
+      if (k.mode === 'test' && env('PAY_TEST_OPEN') !== '1' && !(await isSuper(token))) {
+        return res.status(403).json({ ok: false, reason: 'test_only' });
+      }
+
+      const product = String(body.product || '');
+      const o = await rpc('order_open', {
+        p_product: product,
+        p_note: body.note ? String(body.note).slice(0, 500) : null,
+      }, token);
+      if (!o || !o.ok) return res.status(400).json(o || { ok: false, reason: 'db' });
+
+      const uid = jwtSub(token);
+      if (!uid) return res.status(401).json({ ok: false, reason: 'unauthenticated' });
+      // 돌아올 주소에는 주문번호 · pv · why 만 싣는다. **생년월일 · 신청서는 절대 싣지 않는다.**
+      const base = returnBase(), oid = encodeURIComponent(o.orderId);
+      const kr = await kakao('ready', {
+        partner_order_id: o.orderId,             // ck_<상품>_YYYYMMDDHHMMSS_xxxxxxxx — 100자 한도 안
+        partner_user_id: uid,                    // approve 때 같은 값이어야 한다(DB orders.user_id 와 같다)
+        item_name: String(o.name || '').slice(0, 100),
+        item_code: product,
+        quantity: 1,
+        total_amount: o.amount,                  // DB 가 정한 값. 브라우저가 준 값이 아니다
+        tax_free_amount: 0,                      // 부가세 포함가 — vat_amount 는 안 보낸다(카카오가 셈한다)
+        approval_url: `${base}/pay-done.html?pv=kakao&orderId=${oid}`,
+        cancel_url: `${base}/pay-fail.html?pv=kakao&why=cancel&orderId=${oid}`,
+        fail_url: `${base}/pay-fail.html?pv=kakao&why=fail&orderId=${oid}`,
+      });
+      const tid = kr.ok && kr.j && kr.j.tid ? String(kr.j.tid) : '';
+      if (!tid) {
+        await rpc('order_failed', { p_order: o.orderId, p_code: 'KAKAO_READY',
+                                    p_message: kErr(kr.j) || (kr.net ? 'NETWORK' : String(kr.status)) }, token).catch(() => {});
+        return res.status(400).json({ ok: false, reason: 'kakao', code: kCode(kr.j),
+                                      message: kErr(kr.j) || '카카오페이 결제창을 열지 못했습니다.' });
+      }
+      // tid 는 DB 에만 둔다. 이게 실패하면 승인할 길이 없으니 결제창을 열지 않는다(그 tid 는 저절로 죽는다).
+      const put = await srvUser('order_pg_ready', { p_order: o.orderId, p_provider: 'kakao', p_tid: tid }, token)
+        .catch(() => ({ ok: false, reason: 'db' }));
+      if (!put || !put.ok) return res.status(400).json({ ok: false, reason: (put && put.reason) || 'db' });
+
+      return res.status(200).json({
+        ok: true, orderId: o.orderId, amount: o.amount, name: o.name,
+        pc: kr.j.next_redirect_pc_url || null,
+        mobile: kr.j.next_redirect_mobile_url || kr.j.next_redirect_pc_url || null,
+      });
+    }
+
+    // ── K2. 승인 ──
+    if (action === 'kconfirm') {
+      const k = kConf();
+      if (!k) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      const orderId = String(body.orderId || '').slice(0, 64);
+      const pgToken = String(body.pgToken || '').slice(0, 200);
+      if (!orderId || !pgToken) return res.status(400).json({ ok: false, reason: 'bad_request' });
+
+      const o = await srv('order_pg_get', { p_order: orderId }).catch(() => ({ ok: false, reason: 'db' }));
+      if (!o || !o.ok) return res.status(400).json(o || { ok: false, reason: 'db' });
+      if (o.status === 'paid') {
+        // 착지 페이지 새로고침. 이미 낸 것이므로 성공으로 답하고 카카오를 다시 부르지 않는다.
+        return res.status(200).json({ ok: true, already: true, name: o.name, amount: o.amount, receipt: null,
+                                      payMode: o.pay_mode || null });
+      }
+      if (o.provider !== 'kakao' || !o.tid) {
+        return res.status(400).json(o.status === 'open' ? { ok: false, reason: 'bad_request' }
+                                                        : { ok: false, reason: 'closed', status: o.status });
+      }
+
+      // 성공 경로 — 승인 응답이든 조회 응답이든 여기로 모인다.
+      const 끝 = async (j) => {
+        const saved = await srv('order_pg_paid', {
+          p_order: orderId, p_tid: o.tid,
+          p_aid: j.aid ? String(j.aid) : null,
+          p_method: j.payment_method_type ? String(j.payment_method_type) : null,
+          p_mode: k.mode,                          // 결제 순간에 시험/운영을 함께 적는다(migrate-26 pay_mode)
+        }).catch(() => ({ ok: false, reason: 'save_failed' }));
+        const ok = !!(saved && saved.ok);
+        if (!ok) {
+          // 돈은 빠졌는데 우리 기록이 안 됐다. 사장님이 찾아 맞출 수 있게 주문에 SAVE_FAILED 를 남긴다
+          // (status 는 그대로 — 새로고침하면 approve 실패 → 주문 조회 SUCCESS_PAYMENT → 여기로 다시 와서 기록한다).
+          await srv('order_pg_note', { p_order: orderId, p_tid: o.tid, p_code: 'SAVE_FAILED',
+            p_message: `카카오 승인됨 · 기록 실패(${(saved && saved.reason) || 'save_failed'}) · aid ${j.aid || '-'}` })
+            .catch(() => {});
+        }
+        return res.status(200).json({
+          ok: true, saved: ok, name: o.name, amount: o.amount,
+          payMode: o.pay_mode || k.mode,
+          method: j.payment_method_type || null, approvedAt: j.approved_at || null, receipt: null,
+          saveWarning: ok ? null : 'SAVE_FAILED',
+        });
+      };
+      // 있어서는 안 되는 일: 돈이 빠졌는데 금액 · 주문이 다르다 → 곧바로 돌려주고 사람이 볼 자리로 남긴다.
+      const 어긋남 = async (j, 금액) => {
+        const c = await kakao('cancel', { tid: o.tid, cancel_amount: 금액, cancel_tax_free_amount: 0 });
+        const code = c.ok ? 'AMOUNT_MISMATCH' : 'AMOUNT_MISMATCH_UNCANCELED';
+        const msg = `카카오 ${금액} · 주문 ${o.amount}`;
+        await srv('order_pg_failed', { p_order: orderId, p_code: code, p_message: msg }).catch(() => {});
+        // 이미 failed 였던 주문(되살리기 경로)은 order_pg_failed 가 안 건드리므로 코드를 따로 적는다.
+        await srv('order_pg_note', { p_order: orderId, p_tid: o.tid, p_code: code, p_message: msg }).catch(() => {});
+        return res.status(400).json({ ok: false, reason: 'amount_mismatch', expected: o.amount });
+      };
+      // 금액 대조. ready 를 서버가 DB 금액으로 불렀고 tid 는 브라우저가 모르므로 금액은 구조로 이미 지켜진다.
+      // 응답에서 금액을 못 읽으면(모양이 문서와 다르면) 「다르다」로 치지 않는다 — 치면 정상 결제를 전부 취소한다.
+      const 맞나 = (j) => {
+        const a = kAmount(j);
+        if (a != null && a !== o.amount) return { bad: true, a };
+        if (j.partner_order_id && String(j.partner_order_id) !== orderId) return { bad: true, a: a != null ? a : o.amount };
+        if (j.tid && String(j.tid) !== o.tid) return { bad: true, a: a != null ? a : o.amount };
+        return { bad: false };
+      };
+      const 조회 = async () => {
+        const q = await kakao('order', { tid: o.tid });
+        return { q, st: q.ok && q.j ? String(q.j.status || '') : '' };
+      };
+      const 답없음 = (q) => !q.ok && (q.net || q.status >= 500 || q.status === 0);
+      const 늦음 = () => res.status(502).json({ ok: false, reason: 'unverified', code: null,
+        message: '결제 확인이 늦어지고 있습니다. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.' });
+
+      // 실패로 닫힌 카카오 주문 — 잘못 닫혔을 수 있다(kfail · 토스 fail 경로 · 옛 만료 닫기).
+      // 카카오 주문 조회가 SUCCESS_PAYMENT 이고 금액이 맞으면 결제완료로 적는다. 금액 불일치로 닫은 주문은 되살리지 않는다.
+      if (o.status === 'failed') {
+        if (/^AMOUNT_MISMATCH/.test(String(o.fail_code || ''))) {
+          return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+        }
+        const { q, st } = await 조회();
+        if (st === KP_PAID) {
+          const m = 맞나(q.j);
+          return m.bad ? 어긋남(q.j, m.a) : 끝(q.j);
+        }
+        if (답없음(q)) return 늦음();
+        return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+      }
+      if (o.status !== 'open') return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+
+      const ar = await kakao('approve', {
+        tid: o.tid, partner_order_id: orderId, partner_user_id: o.user_id, pg_token: pgToken,
+      });
+      if (ar.ok && ar.j && ar.j.aid) {
+        const m = 맞나(ar.j);
+        return m.bad ? 어긋남(ar.j, m.a) : 끝(ar.j);
+      }
+
+      // 승인 실패를 곧바로 「결제 실패」로 적지 않는다 — 이미 승인된 중복 호출(새로고침 · 재시도)이나
+      // 응답 유실일 수 있다. 그걸 실패로 적으면 **돈은 빠졌는데 상품은 안 열린다.** 적기 전에 주문 조회로 묻는다.
+      const { q, st } = await 조회();
+      if (st === KP_PAID) {
+        const m = 맞나(q.j);
+        return m.bad ? 어긋남(q.j, m.a) : 끝(q.j);
+      }
+      // 승인도 조회도 답이 없다. 주문을 open 그대로 두고 확인 중이라고만 말한다.
+      if (답없음(q)) return 늦음();
+      if (!st || !KP_DEAD.includes(st)) {
+        // 카카오가 끝났다고 말하지 않았다(모르는 상태 이름 · 조회 주소 미확인). 실패로 적지 않고 open 으로 둔다.
+        return res.status(400).json({ ok: false, reason: 'kakao', code: kCode(ar.j),
+                                      message: kErr(ar.j) || '결제 승인에 실패했습니다.' });
+      }
+      await srv('order_pg_failed', { p_order: orderId, p_code: kCode(ar.j) || st,
+                                     p_message: kErr(ar.j) || st }).catch(() => {});
+      return res.status(400).json({ ok: false, reason: 'kakao', code: kCode(ar.j) || st,
+                                    message: kErr(ar.j) || '결제 승인에 실패했습니다.' });
+    }
+
+    // ── K3. 결제창에서 그만뒀다 / 실패했다 ──
+    // 남의 주문번호를 알아도 결제된 · 결제 중인 주문은 닫을 수 없다 — **늘** 카카오에 묻고,
+    // 「끝났고 안 빠졌다」(KP_DEAD)고 할 때만 닫는다. 시간이 지났다는 것만으로는 닫지 않는다.
+    if (action === 'kfail') {
+      const orderId = String(body.orderId || '').slice(0, 64);
+      const why = body.why === 'cancel' ? 'USER_CANCEL' : 'KAKAO_FAIL';
+      if (!orderId) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      const o = await srv('order_pg_get', { p_order: orderId }).catch(() => null);
+      if (!o || !o.ok || o.status !== 'open' || o.provider !== 'kakao' || !o.tid) return res.status(200).json({ ok: true, kept: true });
+      const q = await kakao('order', { tid: o.tid });
+      const st = q.ok && q.j ? String(q.j.status || '') : '';
+      if (!KP_DEAD.includes(st)) return res.status(200).json({ ok: true, kept: true });
+      await srv('order_pg_failed', { p_order: orderId, p_code: why, p_message: st }).catch(() => {});
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── K4. 환불(사장님 전용) ──
+    // super 계정 토큰만. 카카오에 전액 취소를 부르고, 된 뒤에만 주문을 canceled 로 적는다.
+    // (카카오페이 가맹점 관리자 화면에서 직접 환불했으면 migrate-33 머리의 SQL 한 줄로 적는다.)
+    if (action === 'krefund') {
+      if (!(await isSuper(token))) return res.status(403).json({ ok: false, reason: 'forbidden' });
+      const k = kConf();
+      if (!k) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      const orderId = String(body.orderId || '').slice(0, 64);
+      if (!orderId) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      const o = await srv('order_pg_get', { p_order: orderId }).catch(() => ({ ok: false, reason: 'db' }));
+      if (!o || !o.ok) return res.status(400).json(o || { ok: false, reason: 'db' });
+      if (o.provider !== 'kakao' || !o.tid) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      if (o.status !== 'paid') return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+      const c = await kakao('cancel', { tid: o.tid, cancel_amount: o.amount, cancel_tax_free_amount: 0 });
+      if (!c.ok) {
+        return res.status(c.net ? 502 : 400).json({ ok: false, reason: 'kakao', code: kCode(c.j),
+          message: kErr(c.j) || (c.net ? '카카오페이에 닿지 못했습니다.' : '환불에 실패했습니다.') });
+      }
+      const saved = await srv('order_pg_canceled', { p_order: orderId, p_tid: o.tid })
+        .catch(() => ({ ok: false, reason: 'save_failed' }));
+      return res.status(200).json({ ok: true, orderId, amount: o.amount, saved: !!(saved && saved.ok),
+        // 돈은 돌려줬는데 기록이 안 됐으면 migrate-33 머리의 수동 SQL 로 적는다.
+        saveWarning: saved && saved.ok ? null : (saved && saved.reason) || 'save_failed' });
+    }
+
+    // ════ 토스페이먼츠 (PAY_PROVIDERS 에 toss 가 있을 때만) ═══════════════
+
     // ── 1. 주문을 연다 ──
     if (action === 'open') {
-      if (!READY()) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (!READY() || !tossOn()) return res.status(503).json({ ok: false, reason: 'not_ready' });
       const out = await rpc('order_open', {
         p_product: String(body.product || ''),
         p_note: body.note ? String(body.note).slice(0, 500) : null,
@@ -121,7 +433,9 @@ module.exports = async (req, res) => {
     }
 
     // ── 4. 결제창에서 실패했다 ──
+    // 토스가 꺼져 있으면 받지 않는다(open · confirm 과 같은 문) — 카카오 주문을 토스 실패 길로 닫지 못하게.
     if (action === 'fail') {
+      if (!READY() || !tossOn()) return res.status(503).json({ ok: false, reason: 'not_ready' });
       const out = await rpc('order_failed', {
         p_order: String(body.orderId || ''),
         p_code: body.code ? String(body.code).slice(0, 60) : null,
@@ -131,9 +445,11 @@ module.exports = async (req, res) => {
     }
 
     // ── 3. 승인 ──
+    // 토스가 꺼져 있으면(PAY_PROVIDERS 에 toss 가 없으면) 승인도 받지 않는다 — 남은 시험 키로 토스 시험 결제를
+    // 만들어 카카오 · 연애 주문(order_check 는 결제사를 안 가린다)을 「결제완료」로 만드는 뒷문을 닫는다.
     if (action === 'confirm') {
       const secret = env('TOSS_SECRET_KEY');
-      if (!secret) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (!secret || !tossOn()) return res.status(503).json({ ok: false, reason: 'not_ready' });
 
       const orderId = String(body.orderId || '');
       const paymentKey = String(body.paymentKey || '');
@@ -245,6 +561,8 @@ module.exports = async (req, res) => {
         method: tj.method || null,
         approvedAt: tj.approvedAt || null,
         receipt: (tj.receipt && tj.receipt.url) || null,
+        payMode: /^live_/.test(secret) ? 'live' : 'test',
+        saved: !!(saved && saved.ok),
         saveWarning: saved && saved.ok ? null : (saved && saved.reason) || 'save_failed',
       });
     }

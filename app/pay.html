@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1250">
+<link rel="stylesheet" href="style.css?v=1251">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -37,6 +37,10 @@
   .cta{width:100%;margin-top:18px;padding:15px;border-radius:13px;border:0;background:var(--accent);
        color:#fff;font-size:15.5px;font-weight:700;font-family:inherit;cursor:pointer}
   .cta[disabled]{opacity:.42;cursor:default}
+  .cta + .cta{margin-top:10px}
+  /* 카카오페이 단추 — 카카오 노랑(#FEE500) 바탕에 검은 글씨. 공식 로고 파일은 개발자센터에서 받아 넣는다(아직 글자만). */
+  .cta.kakao{background:#FEE500;color:#191919}
+  .item h3 b small{font-size:12px;font-weight:700;color:var(--accent);margin-right:4px}
   .msg{margin-top:14px;font-size:13px;line-height:1.75;color:var(--ink3);text-align:center}
   .msg.bad{color:#b4534f}
   .fine{margin-top:30px;padding-top:20px;border-top:1px solid var(--line);
@@ -54,36 +58,31 @@
 <div class="doc">
   <a class="back" href="./">← 책사로 돌아가기</a>
   <h1>그 다음을 여는 자리</h1>
-  <p class="lede"><b>정통사주 · 정통궁합 · 웹툰궁합</b>은 앞부분을 무료로 보실 수 있고,
-    뒷부분은 결제하면 앱에서 바로 열립니다. 출산택일 보고서만은 되돌릴 수 없는
-    결정이라 <b>사람이 직접</b> 계산해 메일로 보내 드립니다.</p>
-  <!-- 09-29 작업판 49-8: 내린 옛 장 문구를 걷고 약관 8절(무엇을 사나 · 누구 것이 열리나 · 날짜에 매임) 문장을 그대로 옮겼다.
-       값은 여기에 적지 않는다 — products 표 한 곳, 카드가 그린다. 새 결제 화면(차례 · 카드 규칙)은 docs/97 수6. -->
+  <!-- 2026-10-01 사장님: 파는 것은 셋 — 출산택일 보고서 99,000 · 「사랑할 때만 나오는 당신」 전체판 · 행동양식 궁합(둘은 출시 기념가).
+       나머지(정통사주 · 정통궁합 · 웹툰궁합 · 썸)는 무료다. 값은 여기에 적지 않는다 — products 표 한 곳, 카드가 그린다.
+       이 쪽 글은 메인이 사실만 바로잡은 것이다 — 작가(chaeksa-writer) 원고 · 사장님 검수 대상. -->
+  <p class="lede">책사에서 돈을 받는 것은 아래 셋뿐입니다. 정통사주 · 정통궁합 · 웹툰궁합은 모두 무료입니다.
+    출산택일 보고서는 되돌릴 수 없는 결정이라 <b>사람이 직접</b> 계산해 메일로 보내 드립니다.</p>
   <div class="fine" style="margin:0 0 14px;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:12px">
     <p style="margin:0 0 6px"><b>무엇을 사나</b> — 상품마다 파는 단위가 다릅니다.</p>
-    <p style="margin:0 0 6px"><b>정통사주</b> — 한 사람 것. 그 사람의 웹툰 뒷회와 「근거 보기」 뒷장이 열립니다.<br>
-      <b>정통궁합</b> — 두 사람 한 쌍 것. 그 두 사람의 뒷장이 열립니다.<br>
-      <b>웹툰궁합</b> — 두 사람 한 쌍 것. 첫인상부터 재회까지 일곱 단계에서 잠겨 있던 회가 모두 열립니다.<br>
-      <b>「추천」 묶음</b> — 정통사주(한 사람) + 웹툰궁합(두 사람 한 쌍)<br>
-      <b>전체 묶음</b> — 정통사주(한 사람) + 정통궁합 · 웹툰궁합(두 사람 한 쌍)<br>
-      <b>출산택일 보고서</b> — 신청 한 건</p>
-    <p style="margin:0 0 6px"><b>누구 것이 열리나</b> — 결제할 때 고른 한 사람, 또는 두 사람 것만 열립니다. 묶음의 정통사주는 결제할 때 궁합에서 「나」 자리에 있던 분(홈 화면에 사주가 보이는 분) 것입니다. <b>다른 사람 · 다른 두 사람 것은 따로 결제합니다.</b> 정통궁합과 웹툰궁합은 서로 다른 상품이라, 하나를 사도 다른 하나는 열리지 않습니다.</p>
-    <p style="margin:0"><b>산 것은 결제할 때의 생년월일 날짜에 매여 있습니다.</b> 태어난 시간 · 성별 · 태어난 곳은 나중에 넣거나 고쳐도 그대로 열립니다. 생년월일 날짜를 고치거나, 같은 숫자로 음력 · 양력만 바꿔 넣어 날짜가 달라지면 다른 사람으로 보아 다시 잠깁니다.</p>
+    <p style="margin:0"><b>출산택일 보고서</b> — 신청 한 건. 신청서를 적고 결제하시면 보고서를 메일로 보내 드립니다.<br>
+      <b>「사랑할 때만 나오는 당신」 전체판</b> — 결제한 카카오 계정의 한 사람 것. 연애할 때 내가 하는 행동을 묻고 답한 것이 모두 열립니다.<br>
+      <b>행동양식 궁합</b> — 결제한 카카오 계정의 두 사람 한 쌍 것. 두 사람이 연애할 때 잘 맞는 행동과 부딪히는 행동이 열립니다.</p>
   </div>
 
   <div id="list"></div>
   <div id="form" hidden>
     <label class="agree">
       <input type="checkbox" id="agree">
-      <span><b>앱에서 열리는 콘텐츠</b>는 열어 본 회 · 장이, <b>출산택일 보고서</b>는 저희가
-        계산에 들어간 뒤가 청약철회가 제한될 수 있다는 점에 동의합니다.
-        결제로 새로 열린 유료 회 · 장을 화면에 띄우면 그 회 · 장은 열어 보신 것입니다.
+      <span><b>앱에서 열리는 콘텐츠</b>(전체판 · 행동양식 궁합)는 결제로 열린 결과를 화면에 띄운 뒤가,
+        <b>출산택일 보고서</b>는 저희가 계산에 들어간 뒤가 청약철회가 제한될 수 있다는 점에 동의합니다.
         아직 열어 보지 않으셨다면 언제든, 출산택일 보고서는 저희가 계산에 들어가기 전이라면
         이유를 묻지 않고 전부 돌려드립니다.
         (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span>
     </label>
 
-    <button class="cta" id="cta" disabled>결제하기</button>
+    <!-- 결제사마다 단추 하나 — 서버가 준 순서(PAY_PROVIDERS). 지금은 카카오페이 하나, 토스는 켜질 때만. -->
+    <div id="ctas"></div>
     <p class="msg" id="msg"></p>
     <p class="msg" id="gologin" style="display:none">
       결제하시려면 먼저 로그인이 필요합니다 — 결제한 내용을 그 계정에 매어 두어야
@@ -94,20 +93,18 @@
 
   <div class="fine">
     <p><b>부가세가 포함된 금액</b>입니다. 따로 붙는 수수료는 없습니다.</p>
-    <p><b>환불</b> — 앱에서 열리는 콘텐츠(정통사주 · 정통궁합 · 웹툰궁합 · 묶음)는 결제만 하고
-      아직 열어 보지 않으셨다면 언제든 이유를 묻지 않고 전부 돌려드립니다. 묶음에서 아직 열어 보지 않은
-      상품은 언제든 돌려받으실 수 있습니다. 한 상품 안에서 몇 회 · 장만 열어 보셨다면, 아직 열어 보지 않은
-      유료 회 · 장의 몫은 돌려드립니다. 열어 본 회 · 장은 청약철회가 제한될 수 있습니다.
+    <p><b>환불</b> — 앱에서 열리는 콘텐츠(「사랑할 때만 나오는 당신」 전체판 · 행동양식 궁합)는 결제만 하고
+      아직 열어 보지 않으셨다면 언제든 이유를 묻지 않고 전부 돌려드립니다. 결제로 열린 결과를 화면에 띄운 뒤에는
+      청약철회가 제한될 수 있습니다.
       출산택일 보고서는 저희가 계산에 들어가기 전이라면 이유를 묻지 않고 전부 돌려드리고, 작업 뒤에는 협의합니다.
-      결과물에 하자가 있거나 설명과 다른 경우에는 위 제한과 무관하게 그 상품이 든 결제 금액 전액을
-      돌려드립니다. 묶음이면 묶음 결제 금액 전체입니다(이미 일부를 돌려드렸다면 그 나머지 전부).
-      돌려드리는 금액의 셈은 <a href="terms.html#refund">약관 9절</a>에 있습니다.</p>
+      결과물에 하자가 있거나 설명과 다른 경우에는 위 제한과 무관하게 그 상품의 결제 금액 전액을
+      돌려드립니다. 자세한 셈은 <a href="terms.html#refund">약관 9절</a>에 있습니다.</p>
     <p>환불은 청약철회를 알려 주신 날부터 3영업일 이내에 돌려드립니다. 저희가 3영업일보다 늦게
       돌려드리면, 늦어진 날수만큼 연 15%로 셈한 지연배상금을 더해 드립니다.</p>
-    <p><b>서비스 제공기간</b> — 정통사주 · 정통궁합 · 웹툰궁합과 묶음은 결제가 승인되면 바로 열려, 결제한 날부터 보실 수 있습니다. 보실 수 있는 기간에 제한이 없어 결제한 계정에서 계속 열람하실 수 있습니다. 계정을 삭제하시면 다시 열 수 없습니다. 출산택일 보고서는 결제일로부터 최대 7일 안에 이메일로 제공됩니다.</p>
+    <p><b>서비스 제공기간</b> — 「사랑할 때만 나오는 당신」 전체판과 행동양식 궁합은 결제가 승인되면 바로 열려, 결제한 날부터 1년 동안 결제한 계정에서 보실 수 있습니다. 계정을 삭제하시면 다시 열 수 없습니다. 출산택일 보고서는 결제일로부터 최대 7일 안에 이메일로 제공됩니다.</p>
     <p><b>출산택일</b> — 사람이 계산해 보고서로 보내드립니다. <a href="taekil-apply.html">출산택일 신청 페이지</a>에서 신청서를 적고 결제하시면 됩니다. 보통 2~3일 걸리고, 길면 미리 알려드립니다.</p>
     <p><b>출산택일은 의학적 판단이 먼저입니다.</b> 의사의 판단을 뒤집는 용도로 쓰시면 안 됩니다.</p>
-    <p>결제는 토스페이먼츠를 통해 처리되며, 카드 정보는 책사가 저장하지 않습니다.
+    <p>결제는 <span id="pgname">카카오페이</span>를 통해 처리되며, 카드 · 계좌 정보는 책사가 저장하지 않습니다.
       <a href="terms.html">이용약관</a> · <a href="privacy.html">개인정보처리방침</a></p>
     <p style="font-size:12px;line-height:1.8;opacity:.75">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160<br>
       통신판매업 제2026-대구북구-0909호 · 대구 북구 매천로 2길19 상가 126동 1층 111호<br>
@@ -115,10 +112,10 @@
   </div>
 </div>
 
-<script src="config.js?v=1250"></script>
-<script src="track.js?v=1250"></script>
-<script src="cloud.js?v=1250"></script>
-<script src="pay.js?v=1250"></script>
+<script src="config.js?v=1251"></script>
+<script src="track.js?v=1251"></script>
+<script src="cloud.js?v=1251"></script>
+<script src="pay.js?v=1251"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -130,10 +127,10 @@
     function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); };
 
   var list = document.getElementById('list'), form = document.getElementById('form');
-  var cta = document.getElementById('cta'), agree = document.getElementById('agree');
+  var ctas = document.getElementById('ctas'), agree = document.getElementById('agree');
   // 출산택일은 신청 페이지(taekil-apply)에서 신청서와 함께 결제한다 — 여기 메모 칸은 걷었다(2026-09-11).
   var msg = document.getElementById('msg');
-  var picked = null, busy = false;
+  var picked = null, busy = false, 결제사 = [];
 
   // 출산택일은 신청서가 붙은 한 장짜리 신청 페이지에서 결제한다(2026-09-11 사장님
   // 「결제하러 가기가 너무 빡세고 어지러워」). 옛 링크(?p=taekil)도 그리로 보낸다.
@@ -146,13 +143,22 @@
     msg.className = 'msg' + (bad ? ' bad' : '');
   }
 
+  // 단추 글 — 「카카오페이로 9,900원 결제하기」. 결제사가 둘이면 단추마다 제 이름.
+  function 단추글(p) {
+    var 이름 = p.id === 'kakao' ? '카카오페이로 ' : (p.id === 'toss' ? '카드 · 토스로 ' : '');
+    return 이름 + (picked ? ChaeksaPay.won(picked.amount) + ' ' : '') + '결제하기';
+  }
+
   function refresh() {
     var signed = window.ChaeksaCloud && ChaeksaCloud.signedIn && ChaeksaCloud.signedIn();
-    cta.disabled = busy || !picked || !agree.checked || !signed;
-    if (busy) cta.textContent = '결제창을 여는 중…';
-    else if (!signed) cta.textContent = '로그인이 필요합니다';
-    else if (!picked) cta.textContent = '무엇을 볼지 골라주세요';
-    else cta.textContent = ChaeksaPay.won(picked.amount) + ' 결제하기';
+    Array.prototype.forEach.call(ctas.querySelectorAll('button'), function (b) {
+      var p = 결제사.filter(function (x) { return x.id === b.getAttribute('data-pv'); })[0] || { id: '' };
+      b.disabled = busy || !picked || !agree.checked || !signed;
+      if (busy) b.textContent = '결제창을 여는 중…';
+      else if (!signed) b.textContent = '로그인이 필요합니다';
+      else if (!picked) b.textContent = '무엇을 볼지 골라주세요';
+      else b.textContent = 단추글(p);
+    });
     // 「로그인이 필요합니다」라고만 적고 로그인할 데를 안 주면 막다른 길이다.
     // 푸터·북마크·세션 만료로 이 페이지에 바로 닿는 길이 실제로 있다.
     var 문 = document.getElementById('gologin');
@@ -170,18 +176,18 @@
     }
 
     var 그림 = ChaeksaPay.그림 || {};
-    // sort 가 같은 상품(9,900원 여덟)은 서버가 순서를 정해 주지 않는다 — 홈 표지와 같은 순서로 세운다.
-    // 그러면 연희 카드 넷이 나란히 붙지 않는다.
-    var 홈순서 = ['maeum', 'gunghap', 'sok', 'gyeolhon', 'ibyeol', 'jigeum', 'geunamja', 'jjak'];
-    var 순번 = function (c) { var i = 홈순서.indexOf(c); return i < 0 ? 99 : i; };
-    상품 = 상품.slice().sort(function (a, b) { return ((a.sort || 0) - (b.sort || 0)) || (순번(a.code) - 순번(b.code)); });
+    상품 = 상품.slice().sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
+    // 값 앞에 이름표(「출시 기념가」)를 붙인다 — ChaeksaPay.값. 줄 그은 정가는 없다(10-01 사장님).
     list.innerHTML = 상품.map(function (p) {
       var g = 그림[p.code], 파일 = Array.isArray(g) ? g[0] : g, 위치 = Array.isArray(g) ? g[1] : '';
+      var 값 = ChaeksaPay.값 ? ChaeksaPay.값(p) : ChaeksaPay.won(p.amount);
+      var 금액 = ChaeksaPay.won(p.amount), 이름표 = 값.slice(0, 값.length - 금액.length).trim();
       return '<div class="item"' + (st.ready ? ' role="button" tabindex="0" aria-selected="false"' : '')
         + ' data-code="' + esc(p.code) + '">'
         + (파일 ? '<img class="thumb" alt="' + esc(p.name) + '" src="' + esc(파일) + '"'
             + (위치 ? ' style="object-position:' + esc(위치) + '"' : '') + ' loading="lazy" onerror="this.remove()">' : '')
-        + '<div class="tx"><h3>' + esc(p.name) + ' <b>' + esc(ChaeksaPay.won(p.amount)) + '</b></h3>'
+        + '<div class="tx"><h3>' + esc(p.name) + ' <b>' + (이름표 ? '<small>' + esc(이름표) + '</small>' : '')
+        + esc(금액) + '</b></h3>'
         + '<p>' + esc(p.blurb || '') + '</p></div></div>';
     }).join('');
 
@@ -190,32 +196,51 @@
         + '<p>온라인 결제는 준비 중입니다.<br>곧 이 자리에서 바로 결제하실 수 있습니다.</p></div>');
       return;   // 결제 양식은 키가 들어온 뒤에 연다
     }
-    form.hidden = false;
 
-    function pick(el) {
-      if (el.getAttribute('data-code') === 'taekil') { location.href = 'taekil-apply.html'; return; }
-      // 사람마다 따로 사는 장(여덟)을 여기서 사면 열쇠 없이 결제된다 — 9,900원을 내고 아무것도 안 열린다(2026-09-12).
-      // 그 장으로 곧장 보내서, 그 사람을 고른 뒤 그 자리에서 결제하게 한다.
-      var 장길 = { maeum: 'maeum', gunghap: 'gunghap', geunamja: 'geunamja', gyeolhon: 'sheet-gyeolhon', ibyeol: 'sheet-ibyeol', jigeum: 'sheet-jigeum', jjak: 'sheet-jjak', sok: 'sheet-sok' }[el.getAttribute('data-code')];
-      if (장길) { location.href = './#' + 장길; return; }
-      picked = st.products.filter(function (p) { return p.code === el.getAttribute('data-code'); })[0];
-      Array.prototype.forEach.call(list.children, function (c) {
-        c.setAttribute('aria-selected', String(c === el));
+    // 결제사마다 단추 하나 — 서버가 준 순서. 지금은 카카오페이 하나이고, 토스는 PAY_PROVIDERS 에 있을 때만 생긴다.
+    ChaeksaPay.providers().then(function (pv) {
+      결제사 = pv || [];
+      if (!결제사.length) return;
+      ctas.innerHTML = 결제사.map(function (p) {
+        return '<button class="cta' + (p.id === 'kakao' ? ' kakao' : '') + '" data-pv="' + esc(p.id) + '" disabled>결제하기</button>';
+      }).join('');
+      var 이름칸 = document.getElementById('pgname');
+      if (이름칸) 이름칸.textContent = 결제사.map(function (p) { return p.name; }).join(' · ');
+      Array.prototype.forEach.call(ctas.querySelectorAll('button'), function (b) {
+        b.addEventListener('click', function () { 결제(b.getAttribute('data-pv')); });
+      });
+      // 사람 · 쌍에 매이는 상품은 그 사람을 고른 자리에서 결제한다 — 여기서 사면 누구 것인지(주문 note) 없이 결제돼
+      // 돈을 내고 아무것도 안 열린다(2026-09-12 옛 장에서 겪은 일). 출산택일은 신청서가 붙은 신청 페이지에서.
+      // 전체판은 연애 탭(love.js), 행동양식 궁합은 궁합 탭(pair.js)이 결제 열쇠를 붙여 ChaeksaPay.buy(…, 'kakao') 를 부른다.
+      var 결제자리 = { taekil: 'taekil-apply.html', love_full: './#love', love_pair: './#pair' };
+      var 여기서 = 상품.some(function (p) { return !결제자리[p.code]; });
+      if (여기서) form.hidden = false;
+      else list.insertAdjacentHTML('beforeend', '<p class="msg">결제는 <b>' + esc(결제사.map(function (p) { return p.name; }).join(' · '))
+        + '</b>로 합니다. 상품을 누르면 결제하는 자리로 갑니다.</p>');
+
+      function pick(el, 저절로) {
+        var 자리 = 결제자리[el.getAttribute('data-code')];
+        if (자리) { if (!저절로) location.href = 자리; return; }
+        picked = st.products.filter(function (p) { return p.code === el.getAttribute('data-code'); })[0];
+        Array.prototype.forEach.call(list.children, function (c) {
+          c.setAttribute('aria-selected', String(c === el));
+        });
+        refresh();
+      }
+      Array.prototype.forEach.call(list.children, function (el) {
+        if (!el.getAttribute('data-code')) return;
+        el.addEventListener('click', function () { pick(el); });
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(el); }
+        });
+      });
+      // 앱의 「결제하고 바로 보기」가 ?p=상품 으로 보낸다 — 그 상품을 미리 골라 둔다
+      var want = new URLSearchParams(location.search).get('p');
+      if (want) Array.prototype.forEach.call(list.children, function (el) {
+        if (el.getAttribute('data-code') === want) pick(el, true);   // 저절로 딴 데로 보내지 않는다(되돌이 막기)
       });
       refresh();
-    }
-    Array.prototype.forEach.call(list.children, function (el) {
-      el.addEventListener('click', function () { pick(el); });
-      el.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(el); }
-      });
     });
-    // 앱의 「결제하고 바로 보기」가 ?p=상품 으로 보낸다 — 그 상품을 미리 골라 둔다
-    var want = new URLSearchParams(location.search).get('p');
-    if (want) Array.prototype.forEach.call(list.children, function (el) {
-      if (el.getAttribute('data-code') === want) pick(el);
-    });
-    refresh();
   });
 
   agree.addEventListener('change', refresh);
@@ -229,21 +254,22 @@
   };
   if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
 
-  cta.addEventListener('click', function () {
+  function 결제(pv) {
     if (!picked || busy) return;
     if (남의로그인()) {
       var em = ChaeksaCloud.email();
       if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 결제한 것은 이 계정에서 열려요.')) return;
     }
     busy = true; say(''); refresh();
-    ChaeksaPay.buy(picked.code, null).then(function (r) {
+    ChaeksaPay.buy(picked.code, null, pv).then(function (r) {
+      // 카카오페이는 성공이면 결제창으로 페이지째 넘어간다 — 단추를 「여는 중」으로 둔다(뒤로 오면 pageshow 가 푼다).
+      if (r && r.ok) return;
       busy = false; refresh();
-      // 성공이면 결제창으로 넘어가므로 여기 코드는 대개 안 돈다.
       if (r && !r.ok && r.message) say(r.message, true);
     }).catch(function (e) {
       busy = false; refresh(); say(String(e && e.message || e), true);
     });
-  });
+  }
 
   refresh();
 })();

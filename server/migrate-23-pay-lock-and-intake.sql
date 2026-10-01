@@ -98,9 +98,10 @@ grant execute on function public.order_intake(text, jsonb) to authenticated;
 
 -- ── 들어온 주문서 보기 (사장님용 — 필요할 때 이 줄만 따로 돌린다) ─────────
 --   select id, status, amount, intake_at, intake
---     from public.orders where product = 'taekil' and status = 'paid'
+--     from public.orders where product = 'taekil' and status = 'paid' and pay_mode = 'live'
 --    order by coalesce(intake_at, created_at) desc;
---   (status = 'paid' 가 결제된 것. 신청서를 고쳐 다시 보내면 intake_at 이 바뀌어 맨 위로 온다)
+--   (status = 'paid' 가 결제된 것, pay_mode = 'live' 가 진짜 돈이 들어온 것 — 시험 결제 주문으로는 보고서를 만들지 않는다.
+--    신청서를 고쳐 다시 보내면 intake_at 이 바뀌어 맨 위로 온다)
 
 -- ── 4. 무료 등급 story 한도 24 → 40 (migrate-12 에 같이 있다가 함께 안 돌았던 몫) ──
 -- 결제해도 등급은 free 로 남는다. 앱(app/usage.js)은 이미 40 인데 서버(schema-9)는 24 라,

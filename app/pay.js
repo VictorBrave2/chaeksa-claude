@@ -1,9 +1,12 @@
-/* 책사 결제 — 브라우저 쪽 (토스페이먼츠 v2)
+/* 책사 결제 — 브라우저 쪽 (카카오페이 · 토스페이먼츠 v2)
  *
  * 여기서 하는 일은 셋뿐이다.
  *   1) /api/pay 에 주문을 열어달라고 한다 (금액은 서버가 정한다 — 우리는 못 정한다)
- *   2) 토스 결제창을 띄운다
+ *   2) 결제창으로 간다 — 카카오페이는 서버가 받아 준 주소로 페이지째 이동, 토스는 결제창을 띄운다
  *   3) 돌아온 자리(pay-done.html)에서 승인을 서버에 부탁한다
+ *
+ * 어느 결제사를 보일지는 서버가 정한다(GET 의 providers, Vercel PAY_PROVIDERS). 2026-10-01 부터 카카오페이가 먼저이고,
+ * 토스 단추는 PAY_PROVIDERS 에 toss 가 있을 때만 나온다.
  *
  * **가격을 이 파일에 안 적는다.** 값은 서버의 products 표에서 받아온다.
  * 두 벌이 있으면 반드시 어긋난다 — 이 프로젝트에서 여러 번 겪은 실패다.
@@ -32,11 +35,14 @@
   // products 표에 상품을 새로 넣으면 여기에도 한 줄 넣어야 한다 — 빠지면 그림 없는 상품이 된다.
   // 2026-09-12 밤 — 책사 그림 전부 지움. 이제 콘텐츠마다 한 장(art/story-<코드>.webp, 웹툰식 장면)이고
   // 결제 화면도 그 그림을 쓴다. 아직 없는 그림은 onerror 로 빠진다 — 빈 액자가 아니라 글자 카드가 된다.
+  // 2026-10-01 — 파는 것은 셋(출산택일 · 「사랑할 때만 나오는 당신」 전체판 · 행동양식 궁합). 옛 9,900원 장 여덟 그림은 걷었다.
   const 그림 = {
-    maeum: 'art/story-maeum.webp', gunghap: 'art/story-gunghap.webp', sok: 'art/story-sok.webp',
-    gyeolhon: 'art/story-gyeolhon.webp', ibyeol: 'art/story-ibyeol.webp', jigeum: 'art/story-jigeum.webp',
-    jjak: 'art/story-jjak.webp', geunamja: 'art/story-geunamja.webp',
+    taekil: 'art/taekil-main.webp', love_full: 'art/love-main.webp', love_pair: 'art/love-cover.webp',
   };
+  // 값 앞에 붙는 말. 값 자체는 products 표에만 있다 — 여기는 이름표뿐이다.
+  // 「출시 기념가 9,900원」처럼만 쓴다. 줄 그은 정가는 보이지 않는다(10-01 사장님).
+  const 값이름 = { love_full: '출시 기념가', love_pair: '출시 기념가' };
+  const 결제사이름 = { kakao: '카카오페이', toss: '토스페이먼츠' };
 
   let _state = null;          // GET 결과 캐시. 한 화면에서 여러 번 그리므로 한 번만 받는다
   let _sdk = null;            // SDK 로드 약속
@@ -56,6 +62,12 @@
   const ready = async () => !!(await state()).ready;
   const products = async () => (await state()).products || [];
   const product = async (code) => (await products()).find((p) => p.code === code) || null;
+  /** 보일 결제사 [{id, mode, name}] — 서버가 정한 순서. 옛 서버(providers 없음)면 키가 있을 때 토스 하나. */
+  const providers = async () => {
+    const st = await state();
+    const pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
+    return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
+  };
 
   /** 토스 SDK 는 결제할 때만 필요하다. 앱 첫 화면을 2MB 로 무겁게 만들 이유가 없다. */
   function loadSdk() {
@@ -71,15 +83,16 @@
     return _sdk;
   }
 
-  async function post(payload) {
+  // 로그인없이: 카카오 승인 · 취소는 토큰 없이도 보낸다 — 카카오톡에서 결제하고 로그인 안 된 브라우저로
+  // 돌아올 수 있다. 서버가 DB 에만 있는 tid · pg_token · 서버 열쇠로 확인한다(api/pay.js kconfirm).
+  async function post(payload, 로그인없이) {
     const C = global.ChaeksaCloud;
-    const tok = C && C.token ? await C.token() : null;
-    if (!tok) return { ok: false, reason: 'unauthenticated' };
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok },
-      body: JSON.stringify(payload),
-    });
+    let tok = null;
+    try { tok = C && C.token ? await C.token() : null; } catch (_) { tok = null; }
+    if (!tok && !로그인없이) return { ok: false, reason: 'unauthenticated' };
+    const headers = { 'content-type': 'application/json' };
+    if (tok) headers.authorization = 'Bearer ' + tok;
+    const r = await fetch(API, { method: 'POST', headers, body: JSON.stringify(payload) });
     return await r.json().catch(() => ({ ok: false, reason: 'bad_response' }));
   }
 
@@ -93,6 +106,11 @@
     amount_mismatch: '금액이 맞지 않아 승인을 멈췄습니다. 결제되지 않았습니다.',
     db: '주문 정보를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',
     server: '서버에서 문제가 생겼습니다. 잠시 뒤 다시 시도해 주세요.',
+    forbidden: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — b01099991263@gmail.com',
+    bad_request: '결제 정보가 올바르지 않습니다. 처음부터 다시 결제해 주세요.',
+    unverified: '결제 확인이 늦어지고 있습니다. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.',
+    no_provider: '지금은 그 결제 수단을 쓸 수 없습니다.',
+    test_only: '결제를 시험하는 중이라 아직 살 수 없습니다. 곧 열립니다.',
   };
   const say = (r) => REASON[r && r.reason] || (r && r.message) || '결제를 진행하지 못했습니다.';
 
@@ -100,13 +118,32 @@
    * 산다. 성공하면 결제창이 뜨고 이 페이지는 떠난다 — 그래서 돌아오는 값이 없다.
    * 막힌 경우에만 { ok:false, message } 로 돌아온다.
    */
-  async function buy(code, note) {
+  async function buy(code, note, pv) {
     // 「준비 안 됨」을 캐시에서 믿지 않는다. 키가 들어가기 전에 연 앱은 그 답을 들고 있어서,
     // 키가 들어온 뒤에도 새로고침 전까지 결제가 안 됐다(2026-09-11). 준비 안 됨이면 한 번 더 묻는다.
     let st = await state();
     if (!st.ready) st = await state(true);
     if (!st.ready) return { ok: false, message: REASON.not_ready };
 
+    // 결제사를 고른다. 안 넘기면 서버가 준 첫째(지금은 카카오페이). 서버가 안 보이는 결제사는 부르지 않는다.
+    const 결제사 = await providers();
+    const 고른 = pv ? 결제사.find((p) => p.id === pv) : 결제사[0];
+    if (!고른) return { ok: false, message: REASON.no_provider };
+
+    if (고른.id === 'kakao') {
+      // 서버가 주문을 열고(금액은 DB) 카카오 결제창 주소를 받아 온다. tid 는 서버 · DB 에만 있다.
+      // 팝업을 쓰지 않고 페이지째 간다 — 토스와 같은 전체 이동이라 인앱 브라우저에서도 막히지 않는다.
+      // 폰이면 모바일 주소(카카오톡이 열린다), 아니면 PC 주소(QR · 카카오톡 알림).
+      const o = await post({ action: 'kopen', product: code, note: note || null });
+      if (!o || !o.ok) return { ok: false, message: say(o) };
+      const 폰 = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+      const 주소 = 폰 ? (o.mobile || o.pc) : (o.pc || o.mobile);
+      if (!주소) return { ok: false, message: '카카오페이 결제창을 열지 못했습니다.' };
+      global.location.href = 주소;
+      return { ok: true };   // 페이지가 떠난다
+    }
+
+    // ── 여기부터 토스 ──
     // 주문은 결제 직전에 연다 — 아래 두 갈래가 각자 부른다.
     const 주문열기 = () => post({ action: 'open', product: code, note: note || null });
 
@@ -270,6 +307,23 @@
     return await post({ action: 'fail', orderId: q.orderId, code: q.code, message: q.message });
   }
 
+  /** 카카오페이 착지(pay-done.html?pv=kakao)에서 부른다. 로그인이 없어도 된다. 답의 모양은 confirm() 과 같다. */
+  async function kconfirm(q) {
+    const out = await post({ action: 'kconfirm', orderId: q.orderId, pgToken: q.pgToken }, true);
+    if (!out || !out.ok) return { ok: false, message: say(out), code: out && out.code };
+    return out;
+  }
+
+  /** 카카오페이 결제창에서 그만뒀거나 실패했을 때(pay-fail.html?pv=kakao). 서버가 카카오에 물어보고 닫는다. */
+  async function kfail(q) {
+    return await post({ action: 'kfail', orderId: q.orderId, why: q.why }, true);
+  }
+
+  /** 카카오페이 전액 환불 — 사장님(super) 계정만 된다(서버가 가린다). 다른 계정은 { ok:false, reason:'forbidden' }. */
+  async function krefund(orderId) {
+    return await post({ action: 'krefund', orderId });
+  }
+
   /**
    * 출산택일 주문서를 그 주문에 붙인다(order_intake · server/migrate-23). 결제 뒤 pay-done 이 부른다.
    * 던지지 않는다 — 막히면 { ok:false, reason } 이고, 부르는 쪽이 「적은 그대로 메일로」로 물러난다.
@@ -319,6 +373,8 @@
   }
 
   const won = (n) => Number(n || 0).toLocaleString('ko-KR') + '원';
+  /** 화면에 적을 값 — 「출시 기념가 9,900원」 또는 「99,000원」. 상품 줄(products 표)을 받는다. */
+  const 값 = (p) => (p && 값이름[p.code] ? 값이름[p.code] + ' ' : '') + won(p && p.amount);
 
   // ── 결제한 것을 판독한다 ──
   // 무료 화면이 렌더될 때 「이 사람이 이걸 샀는가」를 동기로 물을 수 있어야 한다.
@@ -540,5 +596,5 @@
     문의메일,
   };
 
-  global.ChaeksaPay = { state, ready, products, product, buy, confirm, markFailed, intake, mine, won, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판, 주문서 };
+  global.ChaeksaPay = { state, ready, products, product, providers, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, won, 값, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판, 주문서 };
 })(window);

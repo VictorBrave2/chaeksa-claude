@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1250">
+<link rel="stylesheet" href="style.css?v=1251">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -33,9 +33,9 @@
   <p><a class="btn sub" href="mailto:b01099991263@gmail.com?subject=%5B%EC%B1%85%EC%82%AC%5D%20%EA%B2%B0%EC%A0%9C%20%EB%AC%B8%EC%9D%98">메일로 문의하기</a></p>
 </div>
 
-<script src="config.js?v=1250"></script>
-<script src="cloud.js?v=1250"></script>
-<script src="pay.js?v=1250"></script>
+<script src="config.js?v=1251"></script>
+<script src="cloud.js?v=1251"></script>
+<script src="pay.js?v=1251"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -45,25 +45,36 @@
 
   var q = new URLSearchParams(location.search);
   var code = q.get('code'), message = q.get('message'), orderId = q.get('orderId');
+  // 카카오페이는 돌아올 주소에 pv=kakao 와 why(cancel = 손님이 그만둠 · fail = 결제가 안 됨)를 붙여 두었다(api/pay.js kopen).
+  var 카카오 = q.get('pv') === 'kakao', why = q.get('why') === 'cancel' ? 'cancel' : 'fail';
 
-  // 사용자가 창을 닫은 것과 카드가 거절된 것은 다른 일이다. 토스가 준 말을 그대로 보여준다.
-  if (message) document.getElementById('msg').textContent =
-    message + ' 결제되지 않았으므로 돈은 빠져나가지 않았습니다.';
-  if (code) document.getElementById('code').textContent = '코드 ' + code;
+  if (카카오) {
+    document.getElementById('h').textContent = why === 'cancel' ? '결제를 그만두셨습니다' : '결제가 되지 않았습니다';
+    document.getElementById('msg').textContent = '결제되지 않았으므로 돈은 빠져나가지 않았습니다.';
+    document.title = (why === 'cancel' ? '결제를 그만두셨습니다' : '결제가 되지 않았습니다') + ' · 책사';
+  } else {
+    // 사용자가 창을 닫은 것과 카드가 거절된 것은 다른 일이다. 토스가 준 말을 그대로 보여준다.
+    if (message) document.getElementById('msg').textContent =
+      message + ' 결제되지 않았으므로 돈은 빠져나가지 않았습니다.';
+    if (code) document.getElementById('code').textContent = '코드 ' + code;
+  }
 
   // 출산택일이면 신청서로 돌려보낸다 — 적은 것은 이 기기에 남아 있어 그대로 채워진다(2026-09-11 검토:
   // 첫 방문자는 「책사로 돌아가기」로 가면 신청 페이지로 가는 길이 없다). 창을 닫아 취소하면 토스가
   // orderId 를 붙이지 않으므로, 이 기기에 신청서 초안이 있는지로도 가린다.
+  // 카카오는 늘 orderId 를 붙여 오므로 주문번호로만 가린다(연애 상품을 그만뒀는데 택일 신청서로 보내지 않게).
   var 택일 = /^ck_taekil_/.test(orderId || '')
-    || !!(window.ChaeksaPay && ChaeksaPay.주문서 && ChaeksaPay.주문서.초안());
+    || (!카카오 && !!(window.ChaeksaPay && ChaeksaPay.주문서 && ChaeksaPay.주문서.초안()));
   if (택일) {
     document.getElementById('backApply').hidden = false;
     document.getElementById('backHome').className = 'btn sub';
   }
 
   // 열어둔 주문을 닫는다. 안 해도 결제는 안 되지만, 'open' 인 채 남으면 나중에 헷갈린다.
+  // 카카오는 서버가 카카오에 「정말 결제 안 됐나」를 물어본 뒤에만 닫는다(로그인 없이도 부른다).
   if (orderId && window.ChaeksaPay) {
-    ChaeksaPay.markFailed({ orderId: orderId, code: code, message: message }).catch(function () {});
+    if (카카오) ChaeksaPay.kfail({ orderId: orderId, why: why }).catch(function () {});
+    else ChaeksaPay.markFailed({ orderId: orderId, code: code, message: message }).catch(function () {});
   }
 })();
 </script>
