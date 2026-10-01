@@ -40,16 +40,17 @@
 
   function 목록(box, 저장, 키) {
     var html = '', sec = null;
-    저장.items.forEach(function (it) {
+    저장.items.forEach(function (it, i) {
       if (it.section !== sec) { sec = it.section; html += '<h3 class="doc-h">' + esc(sec) + '</h3>'; }
-      if (it.locked) { html += '<section class="card" style="opacity:.75"><p style="margin:0 0 6px"><b>' + esc(it.q) + '</b></p><p class="hint" style="margin:0">🔒 이 답은 전체판에서 열려요.</p></section>'; return; }
+      var 머리 = '<p style="margin:0 0 6px"><b>' + (i + 1) + '. ' + esc(it.q) + '</b></p>', 자리 = ' id="lvq-' + esc(it.id) + '"';   // 번호 · 자리 = 결론의 「이 답에서 보여요」가 가리키는 곳
+      if (it.locked) { html += '<section class="card"' + 자리 + ' style="opacity:.75">' + 머리 + '<p class="hint" style="margin:0">🔒 이 답은 전체판에서 열려요.</p></section>'; return; }
       var 답 = it.a ?'<p style="margin:0">' + esc(it.a) + '</p>' : '<p class="hint" style="margin:0">답을 쓰는 중이에요…</p>';
       var fb = '';
       if (it.a) {
         var v = (저장.fb || {})[it.id];
         fb = '<p class="hint" style="margin:10px 0 0">실제 나와 <button class="btn ghost small" data-id="' + esc(it.id) + '" data-v="yes"' + (v === 'yes' ? ' style="font-weight:700"' : '') + '>' + (v === 'yes' ? '✓ ' : '') + '맞아요</button> <button class="btn ghost small" data-id="' + esc(it.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p>';
       }
-      html += '<section class="card"><p style="margin:0 0 6px"><b>' + esc(it.q) + '</b></p>' + 답 + fb + '</section>';
+      html += '<section class="card"' + 자리 + '>' + 머리 + 답 + fb + '</section>';
     });
     box.innerHTML = html;
     box.querySelectorAll('button[data-v]').forEach(function (b) {
@@ -60,15 +61,54 @@
     });
   }
 
+  // 결론(10-01 사장님 「사주팔자 -> 행동양식 -> 언행추론 -> 이런 사람이다 까지 결론이 나야」) — 답 목록 맨 위.
+  // 산 사람은 모습(서버가 셋을 다 거른 것만 보관한다) · 해 볼 것 · 조심할 것까지, 안 산 사람은 첫 줄만 온다(나머지는 서버가 안 보낸다).
+  // 「이 답에서 보여요」는 그 질문 칸으로 내려 준다 — 주소의 #은 탭이 쓰므로 건드리지 않는다.
+  function 결론상자(box, 저장) {
+    var p = 저장 && 저장.portrait;
+    if (!p || !p.title) { box.innerHTML = ''; return; }
+    var 번호 = {}; (저장.items || []).forEach(function (it, i) { 번호[it.id] = i + 1; });
+    var html = '<section class="card"><h3 class="doc-h">결론</h3><p style="margin:0 0 10px"><b>' + esc(p.title) + '</b></p>';
+    if (p.locked || !Array.isArray(p.traits)) {
+      html += '<p class="hint" style="margin:0">🔒 연애할 때 당신의 모습, 그래서 해 볼 것, 조심할 것은 <a href="#" data-go="lvPay">맨 아래 전체판</a>에서 열려요.</p>';
+    } else {
+      p.traits.forEach(function (t, i) {
+        var 근거 = (t.qids || []).filter(function (id) { return 번호[id]; })
+          .map(function (id) { return '<a href="#" data-go="lvq-' + esc(id) + '">' + 번호[id] + '번 질문</a>'; }).join(' · ');
+        html += '<p style="margin:0 0 4px"><b>' + (i + 1) + '. ' + esc(t.name) + '</b></p><p style="margin:0 0 4px">' + esc(t.line) + '</p>'
+          + (근거 ? '<p class="hint" style="margin:0 0 12px">이 답에서 보여요: ' + 근거 + '</p>' : '<div style="height:8px"></div>');
+      });
+      if (p.todo) html += '<p style="margin:6px 0 4px"><b>그래서 연애할 때 이렇게 해 보세요</b></p><p style="margin:0 0 12px">' + esc(p.todo) + '</p>';
+      if (p.watch) html += '<p style="margin:0 0 4px"><b>조심할 것</b></p><p style="margin:0">' + esc(p.watch) + '</p>';
+    }
+    box.innerHTML = html + '</section>';
+    box.querySelectorAll('a[data-go]').forEach(function (a) {
+      a.onclick = function (e) {
+        e.preventDefault();
+        var t = document.getElementById(a.getAttribute('data-go'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    });
+  }
+
   // 전체판 결제 상자(10-01) — 잠긴 답이 있을 때만. 값은 서버 상품표(products · love_full)에서 받아 단추에 적는다(pay.js 원칙: 값은 한 곳).
   // 청약철회 안내와 [필수] 동의는 앱 결제 상자(app.js 결제상자)와 같은 말 — 체크 전에는 결제를 열지 않는다.
   // 다 내고 돌아오면(pay-done → #love) 이 탭이 다시 그려지고, 아래 산것확인이 서버에 물어 전체를 받아 온다.
   function 잠금상자(box, 저장, b) {
     var 잠긴 = (저장.items || []).filter(function (it) { return it.locked; }).length;
-    if (!잠긴) { box.innerHTML = ''; return; }
+    var 결론잠김 = !!(저장.portrait && 저장.portrait.locked);
+    if (!잠긴 && !결론잠김) { box.innerHTML = ''; return; }
     var 열쇠 = 올바른열쇠(저장.payKey), 열린 = 저장.items.length - 잠긴;
-    box.innerHTML = '<section class="card"><h3 class="doc-h">나머지 답 ' + 잠긴 + '개</h3>'
-      + '<p style="margin:0 0 10px">질문 ' + 저장.items.length + '개 가운데 앞 ' + 열린 + '개의 답을 먼저 보여 드렸어요. 나머지 답도 이미 다 써 두었고, 전체판을 열면 이 자리에서 바로 보여요.</p>'
+    var 받는것 = ['연애할 때 당신이 어떤 사람인지 결론과 세 가지 모습을 정리해 드려요',
+      '연애의 열 장면 가운데 당신에게 해당하는 질문만 골라서 보여 드려요',
+      '무료로 본 앞 답 5개에 이어, 나머지 답이 모두 바로 열려요',
+      '답마다 3~5문장으로 왜 그런지 풀어 드려요',
+      '질문마다 「맞아요 / 아니에요」를 눌러 실제 나와 견줘 볼 수 있어요',
+      '결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요'];
+    box.innerHTML = '<section class="card"><h3 class="doc-h">' + (잠긴 ? '나머지 답 ' + 잠긴 + '개' : '결론 전체') + '</h3>'
+      + (잠긴 ? '<p style="margin:0 0 10px">질문 ' + 저장.items.length + '개 가운데 앞 ' + 열린 + '개의 답을 먼저 보여 드렸어요. 나머지 답도 이미 다 써 두었고, 전체판을 열면 이 자리에서 바로 보여요.</p>' : '')
+      + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
+      + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
@@ -128,16 +168,17 @@
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
     el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2>'
-      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 책사가 직접 만든 알고리즘이 태어난 날의 글자에서 당신이 연애할 때 하는 행동 버릇을 계산해요. 그 계산으로 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 질문은 전부 보여 드리고, 답은 앞 몇 개를 먼저 보여 드려요. 나머지 답은 전체판(출시 기념가)에서 열려요. 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
+      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 책사가 직접 만든 알고리즘이 태어난 날의 글자에서 당신이 연애할 때 하는 행동 버릇을 계산해요. 그 계산으로 당신에게 해당할 연애 행동 질문만 골라 답해 드리고, 맨 위에 「연애할 때 당신은 어떤 사람인지」 결론을 정리해 드려요. 질문은 전부 보여 드리고, 답은 앞 몇 개를 먼저 보여 드려요. 나머지 답은 전체판(출시 기념가)에서 열려요. 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
       + '<div id="lvHead"></div><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
+      + '<div id="lvTop"></div>'
       + '<p class="hint" id="lvAbout" style="margin:0 0 6px"' + (저장 ? '' : ' hidden') + '>답은 태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 질문마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다.</p>'
       + '<div id="lvList"></div><div id="lvPay"></div>';
-    var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), pay = el.querySelector('#lvPay');
+    var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), pay = el.querySelector('#lvPay'), top = el.querySelector('#lvTop');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
     var 기다림말 = '만드는 중이에요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     // 받은 답을 질문에 붙인다. paid === false 면 서버가 맛보기만 보낸 것 — 안 온 답은 잠금 칸이 된다(옛 서버 답에는 paid 가 없다 → 전부 연 것).
-    function 채우기(답들, msg, paid, payKey) {
+    function 채우기(답들, msg, paid, payKey, 결론) {
       var A = {}; (답들 || []).forEach(function (it) { A[it.id] = it.a; });
       저장.items.forEach(function (it) {
         if (Object.prototype.hasOwnProperty.call(A, it.id)) { it.a = A[it.id] || '답을 쓰지 못했어요.'; it.locked = false; }
@@ -145,10 +186,26 @@
         else { it.a = '답을 쓰지 못했어요.'; it.locked = false; }
       });
       저장.paid = paid !== false; if (올바른열쇠(payKey)) 저장.payKey = payKey;
+      if (결론 && 결론.title) 저장.portrait = 결론;
       var 잠긴 = 저장.items.filter(function (it) { return it.locked; }).length;
       쓰기(키, 저장); head.innerHTML = '';
       알림((msg || '다 됐어요. 질문마다 실제 나와 맞는지 눌러 주세요.') + (잠긴 ? ' 나머지 답 ' + 잠긴 + '개는 맨 아래 전체판에서 열 수 있어요.' : ''));
-      목록(list, 저장, 키); 잠금상자(pay, 저장, b);
+      결론상자(top, 저장); 목록(list, 저장, 키); 잠금상자(pay, 저장, b);
+    }
+    // 결론 칸 전에 받은 결과(이 기기에 결론이 없음) — 보관된 답을 다시 불러오면 서버가 결론을 한 번 만들어 같이 준다.
+    // 답 받기 문(love-answers)은 보관된 답이 있으면 새로 쓰지 않고 꺼내 준다. 같은 기기에서 6시간에 한 번만 묻는다.
+    function 결론없음() {
+      var C0 = global.ChaeksaCloud;
+      return !저장.portrait && 저장.runId && 저장.sig && !(Date.now() - (+저장.결론물음 || 0) < 6 * 3600 * 1000)
+        && C0 && C0.enabled() && C0.signedIn();
+    }
+    function 결론받기() {
+      저장.결론물음 = Date.now(); 쓰기(키, 저장);
+      // portraitOnly — 서버에 보관된 답이 없으면 새로 쓰지 말고 그냥 돌아오라는 표시(결론만 받으러 가는 길)
+      post('/api/love-answers', { portraitOnly: true, runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
+        if (!list.isConnected || !r || !r.saved || !Array.isArray(r.items)) return;
+        채우기(r.items, r.portrait ? '결론을 맨 위에 붙였어요.' : '', r.paid, r.payKey, r.portrait);
+      }).catch(function () {});
     }
     // 잠긴 채로 이 기기에 남아 있으면 — 결제하고 돌아왔거나 다른 기기에서 샀을 수 있다. 서버에 샀는지만 묻고(peek, 만들지도 세지도 않음),
     // 샀으면 보관된 전체를 받아 온다(새로 쓰지 않는다 — 원가 0).
@@ -163,13 +220,14 @@
         return post('/api/love-questions', { consent: true, birth: b }).then(function (r2) {
           if (!list.isConnected || !r2 || !Array.isArray(r2.answers)) return;
           if (r2.runId !== 저장.runId) 저장 = { runId: r2.runId, sig: r2.sig, payKey: 올바른열쇠(r2.payKey) || 저장.payKey, items: r2.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '' }; }), fb: 저장.fb || {} };
-          채우기(r2.answers, '전체판이 열렸어요. 질문마다 실제 나와 맞는지 눌러 주세요.', r2.paid, r2.payKey);
+          채우기(r2.answers, '전체판이 열렸어요. 질문마다 실제 나와 맞는지 눌러 주세요.', r2.paid, r2.payKey, r2.portrait);
         });
       }).catch(function () { if (list.isConnected) 알림(''); });
     }
     if (저장 && 저장.items && 저장.items.every(function (it) { return it.a || it.locked; })) {
-      목록(list, 저장, 키); 잠금상자(pay, 저장, b);
-      if (저장.items.some(function (it) { return it.locked; })) 산것확인();
+      결론상자(top, 저장); 목록(list, 저장, 키); 잠금상자(pay, 저장, b);
+      if (결론없음()) 결론받기();   // 답을 다시 불러오는 길이 산 것도 함께 확인한다
+      else if (저장.items.some(function (it) { return it.locked; })) 산것확인();
       return;
     }
     // 09-30 사장님 「카카오로그인 해야만 열리는건 맞지?」 — 새로 만드는 건 로그인한 사람만(이미 받은 결과는 로그인 없이도 보인다)
@@ -195,7 +253,7 @@
     function 답받기(msg) {
       초(msg);
       return post('/api/love-answers', { runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
-        채우기(r.items, r.saved ? '이 카카오 계정으로 받은 답을 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.' : null, r.paid, r.payKey);
+        채우기(r.items, r.saved ? '이 카카오 계정으로 받은 답을 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.' : null, r.paid, r.payKey, r.portrait);
       });
     }
     // 09-30 사장님 「자동뜨게해」 — 이 계정으로 지금 만드는 중이면(새로고침 · 다른 기기) 새로 만들지 않고 10초마다 확인해서 다 되면 바로 띄운다.
@@ -209,7 +267,7 @@
         쓰기(키, 저장); 덜됨 = true; about.hidden = false; 목록(list, 저장, 키);
         // 이 카카오 계정으로 이미 만든 결과(다른 기기 포함)면 새로 만들지 않고 그대로 꺼내 온다(09-30)
         // 잠긴 사람은 맛보기만 오므로 빈 배열일 수도 있다 — 배열이면 보관된 답이 있다는 뜻이다(10-01)
-        if (r.saved && Array.isArray(r.answers) && (r.answers.length || r.paid === false)) return 채우기(r.answers, '이 카카오 계정으로 만든 결과를 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.', r.paid, r.payKey);
+        if (r.saved && Array.isArray(r.answers) && (r.answers.length || r.paid === false)) return 채우기(r.answers, '이 카카오 계정으로 만든 결과를 불러왔어요. 질문마다 실제 나와 맞는지 눌러 주세요.', r.paid, r.payKey, r.portrait);
         return 답받기(r.saved ? '이 카카오 계정으로 만든 질문을 불러왔어요. 답을 쓰는 중이에요. 1분 남짓 걸려요.' : '질문 ' + r.items.length + '개를 골랐어요. 답을 쓰는 중이에요. 1분 남짓 더 걸려요.');
       }));
       일.then(function () { 지우기(대기키); 기다리는중 = false; t0 = null; }, function (e) {

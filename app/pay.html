@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1252">
+<link rel="stylesheet" href="style.css?v=1253">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -65,9 +65,26 @@
     출산택일 보고서는 되돌릴 수 없는 결정이라 <b>사람이 직접</b> 계산해 메일로 보내 드립니다.</p>
   <div class="fine" style="margin:0 0 14px;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:12px">
     <p style="margin:0 0 6px"><b>무엇을 사나</b> — 상품마다 파는 단위가 다릅니다.</p>
-    <p style="margin:0"><b>출산택일 보고서</b> — 신청 한 건. 신청서를 적고 결제하시면 보고서를 메일로 보내 드립니다.<br>
-      <b>「사랑할 때만 나오는 당신」 전체판</b> — 결제한 카카오 계정의 한 사람 것. 책사가 직접 만든 알고리즘이 태어난 날로 계산해 나에게 해당하는 질문만 골랐습니다. 연애할 때 내가 하는 행동을 묻고 답한 것이 모두 열립니다.<br>
-      <b>행동양식 궁합</b> — 결제한 카카오 계정의 두 사람 한 쌍 것. 책사가 직접 만든 알고리즘이 두 사람의 행동 버릇을 맞대 장면마다 누가 먼저인지 집어 줍니다. 두 사람이 연애할 때 잘 맞는 행동과 부딪히는 행동이 열립니다.</p>
+    <p style="margin:0 0 10px"><b>출산택일 보고서</b> — 신청 한 건. 신청서를 적고 결제하시면 보고서를 메일로 보내 드립니다.</p>
+    <p style="margin:0"><b>「사랑할 때만 나오는 당신」 전체판</b> — 결제한 카카오 계정의 한 사람 것. 책사가 직접 만든 알고리즘이 태어난 날로 계산해 나에게 해당하는 질문만 골랐습니다. 연애할 때 내가 하는 행동을 묻고 답한 것이 모두 열립니다.</p>
+    <p style="margin:6px 0 0">결제하면 받는 것</p>
+    <ul style="margin:4px 0 10px;padding-left:20px;line-height:1.7">
+      <li>연애할 때 당신이 어떤 사람인지 결론과 세 가지 모습을 정리해 드려요</li>
+      <li>연애의 열 장면 가운데 당신에게 해당하는 질문만 골라서 보여 드려요</li>
+      <li>무료로 본 앞 답 5개에 이어, 나머지 답이 모두 바로 열려요</li>
+      <li>답마다 3~5문장으로 왜 그런지 풀어 드려요</li>
+      <li>질문마다 「맞아요 / 아니에요」를 눌러 실제 나와 견줘 볼 수 있어요</li>
+      <li>결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요</li>
+    </ul>
+    <p style="margin:0"><b>행동양식 궁합</b> — 결제한 카카오 계정의 두 사람 한 쌍 것. 책사가 직접 만든 알고리즘이 두 사람의 행동 버릇을 맞대 장면마다 누가 먼저인지 집어 줍니다. 두 사람이 연애할 때 잘 맞는 행동과 부딪히는 행동이 열립니다.</p>
+    <p style="margin:6px 0 0">결제하면 받는 것</p>
+    <ul style="margin:4px 0 0;padding-left:20px;line-height:1.7">
+      <li>두 분이 어떤 짝인지 결론과 세 가지 모습을 정리해 드려요</li>
+      <li>무료로 본 2장 말고도 연애의 아홉 장면에서 장면 카드를 최대 30장까지 드려요</li>
+      <li>카드마다 당신 · 그 사람 · 두 분 다 가운데 누가 먼저 그렇게 할지 콕 집고, 왜 그런지 적어 드려요</li>
+      <li>부딪히는 곳과 한쪽이 맡는 곳 카드에는 두 분이 실제로 해 볼 행동을 한 줄씩 적어 드려요</li>
+      <li>결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요</li>
+    </ul>
   </div>
 
   <div id="list"></div>
@@ -112,10 +129,10 @@
   </div>
 </div>
 
-<script src="config.js?v=1252"></script>
-<script src="track.js?v=1252"></script>
-<script src="cloud.js?v=1252"></script>
-<script src="pay.js?v=1252"></script>
+<script src="config.js?v=1253"></script>
+<script src="track.js?v=1253"></script>
+<script src="cloud.js?v=1253"></script>
+<script src="pay.js?v=1253"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';

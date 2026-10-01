@@ -1,7 +1,7 @@
 /* 행동양식 궁합 — 앱 탭(data-tab="pair", 10-01). 홈 「궁합」 칸에서 들어온다.
  * 당신 = 저장된 사람(profile) 그대로(생일을 다시 묻지 않는다), 그 사람 = 넣어 둔 사람 가운데 고른다(정통궁합과 같은 목록 · 「+ 사람 추가」).
  * 계산 · 카드 글은 비공개 서버가 한다 — 이 파일엔 판정 · 표 · 문턱이 없다. 서버가 보낸 글만 그린다.
- * 맛보기(요약 한 줄 + 장면 2개)는 무료, 전체는 출시 기념가 19,900원(love_pair). 결제 열쇠는 서버가 준 값만 쓴다
+ * 맛보기(장면 수 한 줄 + 장면 2개)는 무료, 전체(맨 위 결론 「두 분은 이런 짝이에요」 + 장면 전부)는 출시 기념가 19,900원(love_pair). 결제 열쇠는 서버가 준 값만 쓴다
  * (두 사람 생일로 만든 알아볼 수 없는 값 — 주문에 생일이 남지 않는다). 결제는 ChaeksaPay.buy('love_pair', 열쇠, 'kakao').
  * 생일은 주소에 싣지 않는다(POST 본문). 받은 전체 결과는 이 기기에 남기고, 서버 보관본으로 폰 · PC 어디서든 같은 결과. */
 (function (global) {
@@ -44,29 +44,55 @@
       + '<p class="hint" style="margin:4px 0 0">' + esc(그이름) + ' — ' + esc(b.other || '이 장면의 이 행동은 뚜렷하지 않아요') + '</p></details>';
   }
 
-  // 전체 결과 — 요약 → 부딪히는 곳 → 한쪽이 맡는 곳 → 닮은 곳 · 서로 채우는 곳. 카드마다 맞아요 / 아니에요(누가 눌렀는지도).
+  // 결론(10-01 사장님 「사주팔자 -> 행동양식 -> 언행추론 -> 이런 사람이다 까지 결론이 나야」) — 전체 결과 맨 위.
+  // 한 줄 · 모습(서버 거르기를 통과한 만큼 — 셋이 목표지만 모자라면 있는 만큼만 그린다, 머리에 「세 가지」를 쓰지 않는다)(모습마다 그 모습이 보이는 장면 번호, 누르면 그 카드로) · 두 분이 해 볼 것. 결론 칸 전에 만든 결과는 옛 꼴(한 줄)로.
+  function 결론(s, 번호) {
+    if (!Array.isArray(s.points) || !s.points.length) {
+      return '<section class="card"><h3 class="doc-h">두 분을 한 줄로</h3><p style="margin:0 0 8px"><b>' + esc(s.line || '') + '</b></p>'
+        + [s.clash, s.lead, s.same].filter(Boolean).map(function (t) { return '<p style="margin:0 0 6px">' + esc(t) + '</p>'; }).join('') + '</section>';
+    }
+    var html = '<section class="card"><h3 class="doc-h">두 분은 이런 짝이에요</h3><p style="margin:0 0 10px"><b>' + esc(s.title || s.line || '') + '</b></p>';
+    s.points.forEach(function (pt, i) {
+      var 근거 = (pt.ids || []).filter(function (id) { return 번호[id]; })
+        .map(function (id) { return '<a href="#" data-go="prc-' + esc(id) + '">' + 번호[id] + '번 장면</a>'; }).join(' · ');
+      html += '<p style="margin:0 0 4px"><b>' + (i + 1) + '. ' + esc(pt.name) + '</b></p><p style="margin:0 0 4px">' + esc(pt.line) + '</p>'
+        + (근거 ? '<p class="hint" style="margin:0 0 12px">이 장면에서 보여요: ' + 근거 + '</p>' : '<div style="height:8px"></div>');
+    });
+    if (s.todo) html += '<p style="margin:6px 0 4px"><b>그래서 두 분이 해 볼 것</b></p><p style="margin:0 0 8px">' + esc(s.todo) + '</p>';
+    if (s.count) html += '<p class="hint" style="margin:8px 0 0">' + esc(s.count) + '</p>';
+    return html + '</section>';
+  }
+
+  // 전체 결과 — 결론 → 부딪히는 곳 → 한쪽이 맡는 곳 → 닮은 곳 · 서로 채우는 곳. 카드마다 번호(결론이 가리키는 자리) · 맞아요 / 아니에요(누가 눌렀는지도).
   function 전체(box, 저장, 키, 그이름) {
     var s = 저장.summary || {}, by = 읽기(누구키) === 'other' ? 'other' : 'me';
-    var html = '<section class="card"><h3 class="doc-h">두 분을 한 줄로</h3><p style="margin:0 0 8px"><b>' + esc(s.line || '') + '</b></p>'
-      + [s.clash, s.lead, s.same].filter(Boolean).map(function (t) { return '<p style="margin:0 0 6px">' + esc(t) + '</p>'; }).join('')
-      + '<p class="hint" style="margin:8px 0 0">태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 장면마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다. 누르는 사람: '
+    var 차례 = [], 번호 = {};
+    묶음차례.forEach(function (g) { (저장.cards || []).forEach(function (c) { if (c.group === g) 차례.push(c); }); });
+    차례.forEach(function (c, i) { 번호[c.id] = i + 1; });
+    var html = 결론(s, 번호)
+      + '<section class="card"><p class="hint" style="margin:0">태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 장면마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다. 누르는 사람: '
       + '<button class="btn ghost small" data-by="me"' + (by === 'me' ? ' style="font-weight:700"' : '') + '>' + (by === 'me' ? '✓ ' : '') + '나</button> '
       + '<button class="btn ghost small" data-by="other"' + (by === 'other' ? ' style="font-weight:700"' : '') + '>' + (by === 'other' ? '✓ ' : '') + esc(그이름) + '</button></p></section>';
     var 쓴묶음 = {};
-    묶음차례.forEach(function (g) {
-      (저장.cards || []).filter(function (c) { return c.group === g; }).forEach(function (c) {
-        var 머리 = 묶음이름[g];
-        if (!쓴묶음[머리]) { 쓴묶음[머리] = 1; html += '<h3 class="doc-h">' + esc(머리) + '</h3>'; }
-        var v = (저장.fb || {})[c.id];
-        html += '<section class="card"><p class="hint" style="margin:0 0 4px">' + esc(c.section) + '</p><p style="margin:0 0 6px"><b>' + esc(c.q) + '</b></p>'
-          + '<p style="margin:0">' + esc(c.a) + '</p>'
-          + (c.try ? '<p style="margin:8px 0 0"><b>해볼 것</b> — ' + esc(c.try) + '</p>' : '')
-          + 근거(c.basis, 그이름)
-          + '<p class="hint" style="margin:10px 0 0">실제 두 분과 <button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="yes"' + (v === 'yes' ? ' style="font-weight:700"' : '') + '>' + (v === 'yes' ? '✓ ' : '') + '맞아요</button> '
-          + '<button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p></section>';
-      });
+    차례.forEach(function (c) {
+      var 머리 = 묶음이름[c.group];
+      if (!쓴묶음[머리]) { 쓴묶음[머리] = 1; html += '<h3 class="doc-h">' + esc(머리) + '</h3>'; }
+      var v = (저장.fb || {})[c.id];
+      html += '<section class="card" id="prc-' + esc(c.id) + '"><p class="hint" style="margin:0 0 4px">' + 번호[c.id] + '번 장면 · ' + esc(c.section) + '</p><p style="margin:0 0 6px"><b>' + esc(c.q) + '</b></p>'
+        + '<p style="margin:0">' + esc(c.a) + '</p>'
+        + (c.try ? '<p style="margin:8px 0 0"><b>해볼 것</b> — ' + esc(c.try) + '</p>' : '')
+        + 근거(c.basis, 그이름)
+        + '<p class="hint" style="margin:10px 0 0">실제 두 분과 <button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="yes"' + (v === 'yes' ? ' style="font-weight:700"' : '') + '>' + (v === 'yes' ? '✓ ' : '') + '맞아요</button> '
+        + '<button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p></section>';
     });
     box.innerHTML = html;
+    box.querySelectorAll('a[data-go]').forEach(function (a) {
+      a.onclick = function (e) {
+        e.preventDefault();   // 주소의 #은 탭이 쓰므로 건드리지 않는다
+        var t = document.getElementById(a.getAttribute('data-go'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    });
     box.querySelectorAll('button[data-by]').forEach(function (b) { b.onclick = function () { 쓰기(누구키, b.getAttribute('data-by')); 전체(box, 저장, 키, 그이름); }; });
     box.querySelectorAll('button[data-v]').forEach(function (b) {
       b.onclick = function () {
@@ -89,9 +115,16 @@
 
   // 전체 결제 상자 — 값은 서버 상품표(products · love_pair)에서 받아 단추에 적는다(pay.js 원칙: 값은 한 곳, 줄 그은 정가 없음).
   // 청약철회 안내와 [필수] 동의는 연애 속의 나 잠금상자와 같은 말 — 체크 전에는 결제를 열지 않는다.
+  var 받는것 = ['두 분이 어떤 짝인지 결론과 세 가지 모습을 정리해 드려요',
+    '무료로 본 2장 말고도 연애의 아홉 장면에서 장면 카드를 최대 30장까지 드려요',
+    '카드마다 당신 · 그 사람 · 두 분 다 가운데 누가 먼저 그렇게 할지 콕 집고, 왜 그런지 적어 드려요',
+    '부딪히는 곳과 한쪽이 맡는 곳 카드에는 두 분이 실제로 해 볼 행동을 한 줄씩 적어 드려요',
+    '결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요'];
   function 결제상자(box, 열쇠, 남은, pick) {
     box.innerHTML = '<section class="card"><h3 class="doc-h">' + (남은 > 0 ? '나머지 장면 ' + 남은 + '개' : '전체 보기') + '</h3>'
-      + '<p style="margin:0 0 10px">장면마다 누가 먼저 그렇게 하는지, 두 분이 각각 무엇을 하는지, 해볼 것 한 줄까지 전부 열려요. 결제하면 그때 두 분 것을 새로 써 드려요(1분 남짓). 산 결과는 이 카카오 계정에 남아 폰 · PC 어디서 열어도 같아요.</p>'
+      + '<p style="margin:0 0 10px">결제하면 그때 두 분 것을 새로 써 드려요(1분 남짓).</p>'
+      + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
+      + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
@@ -136,7 +169,7 @@
     var me = PP.active(), 목록 = PP.list().filter(function (p) { return !me || p.id !== me.id; });
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     el.innerHTML = '<section class="card"><h2>행동양식 궁합</h2>'
-      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 「누가 먼저 그렇게 할까요?」를 묻고, 당신 · 그 사람 · 두 분 다 가운데 하나를 콕 집어 답해요. 한 줄 요약과 장면 2개는 먼저 보여 드리고, 전체는 출시 기념가로 열려요.</p>'
+      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 「누가 먼저 그렇게 할까요?」를 묻고, 당신 · 그 사람 · 두 분 다 가운데 하나를 콕 집어 답해요. 장면 수 한 줄과 장면 2개는 먼저 보여 드리고, 두 분이 어떤 짝인지 결론과 나머지 장면은 출시 기념가로 열려요.</p>'
       + '<label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label>'
       + '<div style="display:flex;gap:8px;align-items:center;margin:0 0 10px"><select id="pairPick" style="flex:1;min-width:0">'
       + (목록.length ? 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('') : '<option value="">등록된 사람이 없어요</option>')
