@@ -12,7 +12,7 @@
   var 묶음차례 = ['clash', 'lead', 'same', 'fit'];
   // 표지 그림 — 홈 「행동양식 궁합」 칸과 같은 그림. [그림, [가로, 세로], 낮 바탕색, 밤 바탕색](색은 love.js 장 그림 표와 같은 방법으로 뽑았다).
   // 묶음 머리 그림은 love.js 장 그림 표(ChaeksaLoveView.장그림)를 같이 쓴다 — 그림을 바꾸려면 그 표 한 줄만 고친다.
-  var 표지그림 = ['art/story-gunghap.webp', [1024, 1536], '#dfddea', '#222148'];
+  var 표지그림 = ['art/ss-marry-2.webp', [1024, 1536], '#e4e1e1', '#211a1a'];   // 10-01 사장님 「비오는 삽화말고 다른거」 — 그 사람을 읽는 장면(집 안, 종이를 펴 읽는 그)
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 읽기(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
