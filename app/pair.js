@@ -135,8 +135,7 @@
       "weak": "정해지지 않음"
     },
     "why_label": "왜",
-    "seen_label": "나에게 비치는 모습",
-    "feedback_line": "읽어 보고 그 사람과 맞으면 「맞아요」, 다르면 「아니에요」를 눌러 주세요. 모인 답으로 책사가 추론을 고쳐 나가요."
+    "seen_label": "나에게 비치는 모습"
   };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -201,7 +200,7 @@
     return html + (글.disclaimer ? '<p class="hint" style="margin:0 0 12px;text-align:center">' + esc(글.disclaimer) + '</p>' : '');
   }
 
-  // 전체 결과 — 열두 단계 차례(서버가 보낸 차례 그대로) · 장마다 표시 · 맞아요 / 아니에요.
+  // 전체 결과 — 열두 단계 차례(서버가 보낸 차례 그대로) · 장마다 표시. 반응 단추(맞아요 / 아니에요)는 넣지 않는다(10-02 사장님).
   function 전체(box, 저장, 키, 그이름, 성) {
     var 장들 = 저장.chapters || [], 수 = { sharp: 0, lean: 0, mixed: 0, weak: 0 };
     장들.forEach(function (c) { 수[표시키(c)]++; });
@@ -209,14 +208,12 @@
     var html = '<section class="card">' + (LV && LV.그림 ? '' : '<h3 class="doc-h">' + esc(글.result_head.replace('{name}', 그이름)) + '</h3>')
       + '<p style="margin:0 0 8px">' + ['sharp', 'lean', 'mixed', 'weak'].filter(function (k) { return 수[k]; }).map(function (k) { return esc(글.badges[k]) + ' ' + 수[k]; }).join(' · ') + '</p>'
       + '<button class="btn" id="mnVn" type="button" style="width:100%;margin:0 0 12px">장면으로 보기</button>'
-      + '<p class="hint" style="margin:0 0 6px">' + esc(글.result_lead).replace(/\n/g, '<br>') + '</p><p class="hint" style="margin:0">' + esc(글.feedback_line) + '</p></section>';
+      + '<p class="hint" style="margin:0">' + esc(글.result_lead).replace(/\n/g, '<br>') + '</p></section>';
     var 묶음들 = [];
     장들.forEach(function (c) {
       var 끝 = 묶음들[묶음들.length - 1];
       if (!끝 || 끝.머리 !== c.stage) { 끝 = { 머리: c.stage, 그림: 무그림(), html: '' }; 묶음들.push(끝); }
-      var v = (저장.fb || {})[c.id];
-      끝.html += 장(c, '<p class="hint" style="margin:10px 0 0">실제 그 사람과 <button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="yes"' + (v === 'yes' ? ' style="font-weight:700"' : '') + '>' + (v === 'yes' ? '✓ ' : '') + '맞아요</button> '
-        + '<button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p>', 성);
+      끝.html += 장(c, '', 성);
     });
     box.innerHTML = html + 띠들(묶음들);
     var vn = box.querySelector('#mnVn'); if (vn) vn.onclick = function () { 장면으로(장들, 그이름, 성); };
@@ -225,12 +222,6 @@
       표지n.textContent = 글.result_head.replace('{name}', 그이름); if (표지k) 표지k.textContent = '사용설명서';
       var 표지s = document.getElementById('prCoverS'); if (표지s) { 표지s.remove(); if (표지n.parentNode) 표지n.parentNode.classList.remove('has-s'); }
     }
-    box.querySelectorAll('button[data-v]').forEach(function (b) {
-      b.onclick = function () {
-        저장.fb = 저장.fb || {}; 저장.fb[b.getAttribute('data-id')] = b.getAttribute('data-v'); 쓰기(키, 저장); 전체(box, 저장, 키, 그이름, 성);
-        post('/api/pair-feedback', { runId: 저장.runId, id: b.getAttribute('data-id'), value: b.getAttribute('data-v'), by: 'me' }).catch(function () {});
-      };
-    });
   }
 
   // 맛보기 — 서버가 준 무료 세 질문의 맞히기 한 줄(왜 · 비춰짐 없음).
@@ -339,7 +330,7 @@
       post('/api/manual', 본문).then(function (r) {
         지우기(대기키);
         if (!out.isConnected) return;
-        저장 = { runId: r.runId, version: r.version, chapters: r.chapters || [], fb: {} };
+        저장 = { runId: r.runId, version: r.version, chapters: r.chapters || [] };
         쓰기(키, 저장); pay.innerHTML = ''; head.innerHTML = ''; intro.innerHTML = '';
         알림(r.saved ? '이 카카오 계정으로 만든 결과를 불러왔어요.' : 글.done.replace('{n}', 저장.chapters.length));
         전체(out, 저장, 키, 그이름, 성);

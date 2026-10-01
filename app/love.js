@@ -1,5 +1,5 @@
 /* 연애 속의 나 — 앱 탭(data-tab="love"). 09-30 사장님 「프로필 연동해야지 머하노 아예 다른창을 만들어놨네」 — 저장된 사람(profile)으로 바로 돈다. 생일을 다시 묻지 않는다.
- * 계산 · 질문 · 답은 비공개 서버가 한다(이 파일엔 판정 · 가중치 없음). 이 파일은 보여 주고 「이건 나 같아요 / 나와 달라요」(yes / no)만 보낸다.
+ * 계산 · 질문 · 답은 비공개 서버가 한다(이 파일엔 판정 · 가중치 없음). 이 파일은 보여 주기만 한다(반응 단추는 10-02 사장님 말로 걷음).
  * 같은 사람 결과는 이 기기에 남겨 두고 다시 열면 그대로 보여 준다(다시 부르지 않음). 생일은 주소에 싣지 않는다(POST 본문).
  * 10-01 사장님 「유료」 — 전체판 출시 기념가 9,900원. 무료 = 결론 한 줄 + 1장 전체(서버가 나눠 보낸다 — 잠긴 답은 이 기기에 오지도 않는다).
  * 10-01 사장님 「더해서 예쁜 배경과 그림들이 이어졌으면」 — 표지 그림 → 장마다 장면 그림 + 「N장 · 장 이름」 + 그 장 한 줄, 장마다 그림에서 뽑은 옅은 바탕색이 다음 장으로 이어진다.
@@ -116,14 +116,11 @@
     (items || []).forEach(function (it) { if (!묶음[it.section]) { 묶음[it.section] = []; 차례.push(it.section); } 묶음[it.section].push(it); });
     return { 차례: 차례, 묶음: 묶음 };
   }
-  function 반응단추(id, v, 말, 지금) {
-    return '<button type="button" data-id="' + esc(id) + '" data-v="' + v + '"' + (지금 === v ? ' class="on"' : '') + '>' + 말 + '</button>';
-  }
 
   // 장마다 그림 머리 → 글들 → (잠긴 글은 이 장에서 다루는 장면만) — 1장 끝에 결제 상자 자리(#lvPay).
-  // 「이건 나 같아요 / 나와 달라요」는 그 자리만 바꾼다(목록 전체를 다시 그리면 결제 상자의 체크가 풀린다).
+  // 반응 단추(이건 나 같아요 / 나와 달라요)는 넣지 않는다(10-02 사장님 「맞아요 아니에요는 왜자꾸 넣는거야?」).
   function 목록(box, 저장, 키) {
-    var 장 = 장들(저장.items), ch = (저장.portrait && 저장.portrait.chapters) || {}, fb = 저장.fb || {}, html = '';
+    var 장 = 장들(저장.items), ch = (저장.portrait && 저장.portrait.chapters) || {}, html = '';
     장.차례.forEach(function (sec, i) {
       var g = 장그림[sec] || 기본그림, 다음 = 장.차례[i + 1] ? (장그림[장.차례[i + 1]] || 기본그림) : null, 잠긴 = [];
       html += '<div class="lv-ch" id="lvch-' + (i + 1) + '" style="' + 띠(g, 다음) + '">' + 장머리(g, (i + 1) + '장 · ' + sec, typeof ch[sec] === 'string' ? ch[sec] : '', false);
@@ -132,7 +129,6 @@
         var 글 = 항목글(it);
         html += '<section class="card lv-item" id="lvq-' + esc(it.id) + '"><p class="lv-t">' + esc(글.제목) + '</p>'
           + (글.글 ? '<p class="lv-a">' + esc(글.글) + '</p>' : '<p class="hint" style="margin:0">글을 쓰는 중이에요…</p>')
-          + (it.a ? '<p class="lv-fb">' + 반응단추(it.id, 'yes', '이건 나 같아요', fb[it.id]) + '<span aria-hidden="true"> · </span>' + 반응단추(it.id, 'no', '나와 달라요', fb[it.id]) + '</p>' : '')
           + '</section>';
       });
       if (잠긴.length) {
@@ -144,14 +140,6 @@
       html += '</div>';
     });
     box.innerHTML = 장.차례.length ? '<div class="lv-flow">' + html + '</div>' : '';
-    box.querySelectorAll('button[data-v]').forEach(function (bt) {
-      bt.onclick = function () {
-        var id = bt.getAttribute('data-id'), v = bt.getAttribute('data-v');
-        저장.fb = 저장.fb || {}; 저장.fb[id] = v; 쓰기(키, 저장);
-        bt.parentNode.querySelectorAll('button[data-v]').forEach(function (x) { x.classList.toggle('on', x === bt); });
-        post('/api/love-feedback', { runId: 저장.runId, id: id, value: v }).catch(function () {});
-      };
-    });
   }
 
   // 결론(10-01 사장님 「사주팔자 -> 행동양식 -> 언행추론 -> 이런 사람이다 까지 결론이 나야」) — 장들 위.
@@ -213,7 +201,6 @@
       '세 가지 모습마다 몇 장에서 드러나는지 짚어 드려요',
       (첫장다열림 ? '2장부터 마지막 장까지' : '나머지 장면 모두') + ', 연애할 때 당신이 하는 행동을 풀어 쓴 글이 바로 열려요',
       (저장.portrait && 저장.portrait.chapters && Object.keys(저장.portrait.chapters).length ? '장마다 그 장의 당신을 한 줄로 정리해 드려요' : ''),
-      '글마다 「이건 나 같아요 · 나와 달라요」를 눌러 실제 나와 견줘 볼 수 있어요',
       '결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요'];
     box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">' + (잠긴 ? '아직 봉인된 글 ' + 잠긴 + '개' : '해독 결과 전체') + '</h3>'
       + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었고, 봉인을 풀면 이 자리에서 바로 보여요.</p>' : '')
@@ -282,7 +269,7 @@
       + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 책사가 직접 만든 알고리즘이 태어난 날의 글자에서 당신이 연애할 때 하는 말과 행동을 계산해요. 맨 위에 「연애할 때 당신은 어떤 사람인지」 결론을 정리하고, 연애의 장면마다 당신이 하는 행동을 장으로 나눠 풀어 드려요. 1장은 먼저 모두 보여 드리고, 2장부터는 봉인을 풀면(출시 기념가) 열려요. 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
       + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
       + '<div id="lvTop"></div>'
-      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 글마다 아래 「이건 나 같아요 · 나와 달라요」를 눌러 주시면 더 정확하게 고쳐 나갑니다.</p>'
+      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요.</p>'
       + '<div id="lvList"></div><div id="lvEnd"></div>';
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
@@ -374,7 +361,7 @@
     // 덜 된 동안은 장을 그리지 않는다 — 기다림 네 단계만 보인다.
     var 덜됨 = !!(저장 && 저장.items && 저장.items.length && 저장.runId && 저장.sig);
     var 동의 = 읽기(동의키) === true;
-    head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px;width:auto;flex:0 0 auto"><span>생년월일시와 「이건 나 같아요 · 나와 달라요」 응답을 이 콘텐츠를 고치는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
+    head.innerHTML = (동의 ? '' : '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="lvOk" style="margin-top:5px;width:auto;flex:0 0 auto"><span>생년월일시를 이 콘텐츠를 만드는 데 쓰는 것에 동의해요. 이름·연락처는 보내지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>')
       + '<button class="btn" id="lvGo" style="width:100%">' + (덜됨 ? '이어서 받기' : '내 연애 행동 보기') + '</button>';
     // 기다림 네 단계 — 지난 단계는 ✓, 지금 단계는 굵게, 남은 단계는 옅게
     function 단계그리기(초수) {
