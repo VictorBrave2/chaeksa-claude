@@ -9,10 +9,71 @@
   'use strict';
   var API = 'https://chaeksa-behavior-core.vercel.app';
   var 동의키 = 'chaeksa.manualConsent', 결과키 = 'chaeksa.manual.', 고른키 = 'chaeksa.pair.pick';
-  var 표지그림 = ['art/ss-marry-2.webp', [1024, 1536], '#e4e1e1', '#211a1a'];   // 10-01 사장님 「비오는 삽화말고 다른거」 — 그 사람을 읽는 장면(집 안, 종이를 펴 읽는 그)
-  // 단계 머리 그림 — love.js 장 그림 표(ChaeksaLoveView.장그림)에서 맞는 장을 빌린다. 맞는 그림이 없는 단계는 글 머리만.
-  var 단계그림 = { '썸': '썸을 탈 때', '고백과 시작': '연애가 시작됐을 때', '연락': '연락과 애정표현', '서운함과 다툼': '싸웠을 때', '화해': '관계가 흔들릴 때',
-    '질투와 믿음': '질투와 신뢰', '권태': '권태가 왔을 때', '이별과 재회': '이별과 재회', '결혼과 미래': '오래 함께할 때' };
+  var 표지그림 = ['art/story-friend-to-lover.webp', [1024, 1536], '#e0dedf', '#100d0e'];   // 10-02 사장님 「적절한 삽화로 재배치」 — 이어폰을 나눠 끼고 그 사람을 몰래 바라보는 장면(짝짓기 일꾼 추천)
+  // 질문마다 배경 삽화(10-02 사장님 「웹툰 + 미연시 · 질문에 어울리는 삽화」) — 질문 id: [그 사람이 남자일 때, 여자일 때](art/ 이름, .webp 뺌).
+  // 그림 보기 일꾼 8명이 삽화 162장에 장면 설명을 달고, 짝짓기 일꾼이 질문 47개에 골랐다(10-02). 바꾸려면 이 표 한 줄만.
+  var 장그림 = {
+    q01: ['story-ask-favor', 'ss-her'],
+    q02: ['story-he-likes', 'story-office-crush'],
+    q03: ['ss-give', 'ss-meet-party'],
+    q04: ['ss-meet-app', 'ss-meet-app'],
+    q05: ['ss-sseom-4', 'story-reply'],
+    q06: ['ss-sseom-3', 'story-confess'],
+    q07: ['story-meet-friends', 'story-friend-money'],
+    q08: ['story-contact', 'ss-early-2'],
+    q09: ['ss-early-1', 'jt-16-alone-together-f'],
+    q10: ['story-long-distance', 'jt-06-steady-f'],
+    q11: ['story-biz-partner', 'story-drunk-text'],
+    q12: ['jt-12-money-year-m', 'ss-her'],
+    q13: ['jt-14-in-love-m', 'story-blind-date'],
+    q14: ['story-money', 'story-money'],
+    q15: ['story-big-buy', 'jt-11-money-stay-f'],
+    q16: ['jt-11-money-stay-m', 'story-lend'],
+    q17: ['story-say-love', 'story-say-love'],
+    q18: ['story-anniversary', 'story-gift'],
+    q19: ['story-first-touch', 'story-first-touch'],
+    q20: ['ss-steady-4', 'ss-sseom-2'],
+    q21: ['jt-16-alone-together-m', 'story-sok'],
+    q22: ['story-cold', 'story-hurt'],
+    q23: ['story-geunamja', 'ss-then-now'],
+    q24: ['ss-shake-3', 'ss-early-4'],
+    q25: ['ss-steady-2', 'ss-steady-2'],
+    q26: ['ss-early-3', 'ss-early-3'],
+    q27: ['ss-shake-2', 'ss-shake-1'],
+    q28: ['story-fight', 'story-fight'],
+    q29: ['story-maeum', 'story-hold'],
+    q30: ['story-ask-favor', 'story-apology-text'],
+    q31: ['story-jealous', 'ss-meet-club'],
+    q32: ['ss-me', 'ss-again-2'],
+    q33: ['ss-meet-office', 'ss-meet-run'],
+    q34: ['ss-meet-party', 'story-jealous'],
+    q35: ['story-maeum', 'story-sns'],
+    q36: ['ss-marry-3', 'story-geunamja'],
+    q37: ['ss-steady-1', 'ss-steady-3'],
+    q38: ['ss-then-now', 'story-breakup'],
+    q39: ['ss-again-1', 'story-get-back'],
+    q40: ['story-he-likes', 'ss-meet-blind'],
+    q41: ['ss-marry-1', 'ss-marry-3'],
+    q42: ['story-marry-talk', 'story-kid-talk'],
+    q43: ['ss-marry-2', 'ss-marry-2'],
+    q44: ['story-contract', 'story-spouse-money'],
+    q45: ['ss-steady-3', 'ss-early-5'],
+    q46: ['ss-me', 'story-friend-drift'],
+    q47: ['story-sanggyeonrye', 'story-parents-talk']
+  };
+  function 그림키(c, 성) { if (c.bg) return c.bg; var p = 장그림[c.id]; return p ? p[성 === 'F' ? 1 : 0] : null; }
+  function 삽화(키) {
+    return 키 ? '<img src="art/' + esc(키) + '.webp" alt="" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;border-radius:12px;margin:0 0 12px">' : '';
+  }
+  // 장면으로 보기(미연시, ssom-vn.html?m=1) — 받은 글을 그대로 넘긴다(주소에 싣지 않고 이 탭 sessionStorage 로만).
+  function 장면으로(장들, 그이름, 성) {
+    try {
+      sessionStorage.setItem('chaeksa.manualVn', JSON.stringify({ name: 그이름, chapters: 장들.map(function (c) {
+        return { id: c.id, stage: c.stage, question: c.question, kind: c.kind, sure: c.sure, t: c.t || c.line, a: c.a || '', s: c.s || '', bg: 그림키(c, 성) || 'story-friend-to-lover' };
+      }) }));
+    } catch (e) {}
+    location.href = 'ssom-vn.html?m=1';
+  }
 
   // ── 화면 글(작가 chaeksa-writer, 10-02) ──
   // 예시 장(example) = 사장님 명식으로 실제로 나온 장 그대로(10-02 견본 2판 q08, 생년월일은 안 드러냄).
@@ -104,11 +165,8 @@
     try { global.ChaeksaCloud.signInWith('kakao'); return true; } catch (e) { 지우기('chaeksa.return'); return false; }
   }
 
-  // 단계(또는 맛보기) 하나를 그림 머리가 달린 바탕 띠로 — love.js 가 없으면 글 머리로.
-  function 그림of(단계) {
-    var LV = global.ChaeksaLoveView, 표 = (LV && LV.장그림) || {}, k = 단계그림[단계];
-    return (k && 표[k]) || (LV && LV.기본그림) || [null, null, '#efe9ec', '#221f45'];
-  }
+  // 단계(또는 맛보기) 하나를 글 머리 띠로 — 그림은 장마다 삽화가 맡는다. love.js 가 없으면 글 머리로.
+  function 무그림() { var LV = global.ChaeksaLoveView; return (LV && LV.기본그림) || [null, null, '#efe9ec', '#221f45']; }
   function 띠들(묶음들) {   // [{머리, 그림, html}] → 이어지는 바탕 띠
     var LV = global.ChaeksaLoveView;
     if (!LV || !LV.장머리) return 묶음들.map(function (m) { return '<h3 class="doc-h">' + esc(m.머리) + '</h3>' + m.html; }).join('');
@@ -124,8 +182,8 @@
     return '<span style="display:inline-block;font-size:12px;font-weight:700;line-height:1.6;padding:0 9px;border-radius:99px;border:1px solid ' + 색 + ';color:' + 색 + '">' + esc(글.badges[k]) + '</span>';
   }
   // 한 장 — 질문 · 표시 · 맞히기 · (왜 · 나에게 비치는 모습)
-  function 장(c, 끝) {
-    return '<section class="card"' + (c.id ? ' id="mn-' + esc(c.id) + '"' : '') + '><p class="hint" style="margin:0 0 6px">' + esc(c.question) + '</p>'
+  function 장(c, 끝, 성) {
+    return '<section class="card"' + (c.id ? ' id="mn-' + esc(c.id) + '"' : '') + '>' + 삽화(그림키(c, 성)) + '<p class="hint" style="margin:0 0 6px">' + esc(c.question) + '</p>'
       + '<p style="margin:0 0 6px">' + 표시(c) + '</p><p class="lv-t">' + esc(c.t || c.line) + '</p>'
       + (c.a ? '<p class="hint" style="margin:10px 0 2px"><b>' + esc(글.why_label) + '</b></p><p style="margin:0">' + esc(c.a) + '</p>' : '')
       + (c.s ? '<p class="hint" style="margin:10px 0 2px"><b>' + esc(글.seen_label) + '</b></p><p style="margin:0">' + esc(c.s) + '</p>' : '')
@@ -138,28 +196,30 @@
     (글.intro || []).forEach(function (s, i) {
       var 문들 = String(s.body || '').split(/\n\s*\n/), 뒤 = i === 2 && 문들.length > 1 ? 문들.pop() : '';   // 3번 칸: 마지막 문단은 예시 장 뒤에(작가 메모)
       html += '<section class="card"><h3 class="doc-h">' + esc(s.head) + '</h3>' + 문단(문들.join('\n\n')) + '</section>';
-      if (i === 2) html += 장({ question: 글.example.question, kind: 'side', sure: 글.example.sure, t: 글.example.t, a: 글.example.a, s: 글.example.s }) + (뒤 ? '<section class="card">' + 문단(뒤) + '</section>' : '');
+      if (i === 2) html += 장({ question: 글.example.question, kind: 'side', sure: 글.example.sure, t: 글.example.t, a: 글.example.a, s: 글.example.s, bg: 그림키({ id: 'q08' }, 'M') }) + (뒤 ? '<section class="card">' + 문단(뒤) + '</section>' : '');
     });
     return html + (글.disclaimer ? '<p class="hint" style="margin:0 0 12px;text-align:center">' + esc(글.disclaimer) + '</p>' : '');
   }
 
   // 전체 결과 — 열두 단계 차례(서버가 보낸 차례 그대로) · 장마다 표시 · 맞아요 / 아니에요.
-  function 전체(box, 저장, 키, 그이름) {
+  function 전체(box, 저장, 키, 그이름, 성) {
     var 장들 = 저장.chapters || [], 수 = { sharp: 0, lean: 0, mixed: 0, weak: 0 };
     장들.forEach(function (c) { 수[표시키(c)]++; });
     var LV = global.ChaeksaLoveView;   // 이름은 표지에 한 번만(docs/79) — 표지가 있으면 카드 머리는 뺀다
     var html = '<section class="card">' + (LV && LV.그림 ? '' : '<h3 class="doc-h">' + esc(글.result_head.replace('{name}', 그이름)) + '</h3>')
       + '<p style="margin:0 0 8px">' + ['sharp', 'lean', 'mixed', 'weak'].filter(function (k) { return 수[k]; }).map(function (k) { return esc(글.badges[k]) + ' ' + 수[k]; }).join(' · ') + '</p>'
+      + '<button class="btn" id="mnVn" type="button" style="width:100%;margin:0 0 12px">장면으로 보기</button>'
       + '<p class="hint" style="margin:0 0 6px">' + esc(글.result_lead).replace(/\n/g, '<br>') + '</p><p class="hint" style="margin:0">' + esc(글.feedback_line) + '</p></section>';
     var 묶음들 = [];
     장들.forEach(function (c) {
       var 끝 = 묶음들[묶음들.length - 1];
-      if (!끝 || 끝.머리 !== c.stage) { 끝 = { 머리: c.stage, 그림: 그림of(c.stage), html: '' }; 묶음들.push(끝); }
+      if (!끝 || 끝.머리 !== c.stage) { 끝 = { 머리: c.stage, 그림: 무그림(), html: '' }; 묶음들.push(끝); }
       var v = (저장.fb || {})[c.id];
       끝.html += 장(c, '<p class="hint" style="margin:10px 0 0">실제 그 사람과 <button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="yes"' + (v === 'yes' ? ' style="font-weight:700"' : '') + '>' + (v === 'yes' ? '✓ ' : '') + '맞아요</button> '
-        + '<button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p>');
+        + '<button class="btn ghost small" data-id="' + esc(c.id) + '" data-v="no"' + (v === 'no' ? ' style="font-weight:700"' : '') + '>' + (v === 'no' ? '✓ ' : '') + '아니에요</button></p>', 성);
     });
     box.innerHTML = html + 띠들(묶음들);
+    var vn = box.querySelector('#mnVn'); if (vn) vn.onclick = function () { 장면으로(장들, 그이름, 성); };
     var 표지n = document.getElementById('prCoverN'), 표지k = document.getElementById('prCoverK');
     if (표지n) {
       표지n.textContent = 글.result_head.replace('{name}', 그이름); if (표지k) 표지k.textContent = '사용설명서';
@@ -167,16 +227,18 @@
     }
     box.querySelectorAll('button[data-v]').forEach(function (b) {
       b.onclick = function () {
-        저장.fb = 저장.fb || {}; 저장.fb[b.getAttribute('data-id')] = b.getAttribute('data-v'); 쓰기(키, 저장); 전체(box, 저장, 키, 그이름);
+        저장.fb = 저장.fb || {}; 저장.fb[b.getAttribute('data-id')] = b.getAttribute('data-v'); 쓰기(키, 저장); 전체(box, 저장, 키, 그이름, 성);
         post('/api/pair-feedback', { runId: 저장.runId, id: b.getAttribute('data-id'), value: b.getAttribute('data-v'), by: 'me' }).catch(function () {});
       };
     });
   }
 
   // 맛보기 — 서버가 준 무료 세 질문의 맞히기 한 줄(왜 · 비춰짐 없음).
-  function 맛보기(box, pv) {
-    var 카드들 = (pv.cards || []).map(function (c) { return 장(c); }).join('');
-    box.innerHTML = 카드들 ? 띠들([{ 머리: 글.preview_head, 그림: 그림of('연락'), html: 카드들 + '<p class="hint" style="margin:0 0 12px">' + esc(글.preview_note) + '</p>' }]) : '';
+  function 맛보기(box, pv, 그이름, 성) {
+    var 카드들 = (pv.cards || []).map(function (c) { return 장(c, '', 성); }).join('');
+    box.innerHTML = 카드들 ? 띠들([{ 머리: 글.preview_head, 그림: 무그림(), html: 카드들 + '<p class="hint" style="margin:0 0 10px">' + esc(글.preview_note) + '</p>'
+      + '<button class="btn ghost" id="mnVnFree" type="button" style="width:100%;margin:0 0 12px">이 3개를 장면으로 보기</button>' }]) : '';
+    var vn = box.querySelector('#mnVnFree'); if (vn) vn.onclick = function () { 장면으로(pv.cards || [], 그이름, 성); };
   }
 
   // 결제 상자 — 값은 서버 상품표(products · love_pair)에서 받아 단추에 적는다(pay.js 원칙: 값은 한 곳, 줄 그은 정가 없음).
@@ -225,14 +287,14 @@
   function 그리기(el, profile) {
     if (!el) return;
     var PP = global.ChaeksaPeople;
-    if (!PP) { el.innerHTML = '<section class="card"><h2>그 사람 사용설명서</h2><p class="hint">잠시 뒤 다시 열어 주세요.</p></section>'; return; }
+    if (!PP) { el.innerHTML = '<section class="card"><h2>SSS급 그 사람 사용설명서</h2><p class="hint">잠시 뒤 다시 열어 주세요.</p></section>'; return; }
     var meId = PP.activeId ? PP.activeId() : null, 목록 = PP.list().filter(function (p) { return p.id !== meId; }).concat(PP.list().filter(function (p) { return p.id === meId; }));
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     var LV = global.ChaeksaLoveView;
     // 10-01 규격(docs/79) — 이름은 표지에 한 번만. 그 사람 고르기 = 정통궁합 · 웹툰궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김).
-    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">궁합</span><span class="n" id="prCoverN">그 사람 사용설명서</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
+    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">궁합</span><span class="n" id="prCoverN">SSS급 그 사람 사용설명서</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
       + '<div id="pairIntro"></div>'
-      + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>그 사람 사용설명서</h2>')
+      + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>SSS급 그 사람 사용설명서</h2>')
       + (목록.length
         ? '<div id="pairPickWrap" style="margin:0 0 10px"><label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label><select id="pairPick">'
           + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('')
@@ -254,12 +316,12 @@
 
   function 보기(el, 그사람) {
     var intro = el.querySelector('#pairIntro'), head = el.querySelector('#pairHead'), st = el.querySelector('#pairSt'), out = el.querySelector('#pairOut'), pay = el.querySelector('#pairPay');
-    var ob = 생일(global.ChaeksaPeople.toProfile(그사람)), 그이름 = 이름(그사람);
+    var ob = 생일(global.ChaeksaPeople.toProfile(그사람)), 그이름 = 이름(그사람), 성 = ob.gender === 'F' ? 'F' : 'M';
     var 키 = 결과키 + 표(ob), 대기키 = 키 + '.wait', 저장 = 읽기(키);
     var timer = null, t0 = null;
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg || ''; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     function 초(msg) { t0 = t0 || +읽기(대기키) || Date.now(); 알림(msg); var f = function () { st.textContent = msg + ' (' + Math.max(0, Math.round((Date.now() - t0) / 1000)) + '초)'; }; f(); timer = setInterval(f, 1000); }
-    if (저장 && Array.isArray(저장.chapters)) { 전체(out, 저장, 키, 그이름); return; }   // 이 기기에 받은 전체 — 다시 부르지 않는다
+    if (저장 && Array.isArray(저장.chapters)) { 전체(out, 저장, 키, 그이름, 성); return; }   // 이 기기에 받은 전체 — 다시 부르지 않는다
     intro.innerHTML = 소개();
 
     var C = global.ChaeksaCloud;
@@ -280,7 +342,7 @@
         저장 = { runId: r.runId, version: r.version, chapters: r.chapters || [], fb: {} };
         쓰기(키, 저장); pay.innerHTML = ''; head.innerHTML = ''; intro.innerHTML = '';
         알림(r.saved ? '이 카카오 계정으로 만든 결과를 불러왔어요.' : 글.done.replace('{n}', 저장.chapters.length));
-        전체(out, 저장, 키, 그이름);
+        전체(out, 저장, 키, 그이름, 성);
       }, function (e) {
         if (!out.isConnected) return;
         if (e.status === 409 && Date.now() - (+읽기(대기키) || Date.now()) < 10 * 60 * 1000) { setTimeout(만들기, 10000); return; }
@@ -295,7 +357,7 @@
         if (!out.isConnected) return;
         head.innerHTML = '';
         알림('');
-        if (r.preview) 맛보기(out, r.preview);
+        if (r.preview) 맛보기(out, r.preview, 그이름, 성);
         if (r.paid) { pay.innerHTML = ''; 만들기(); return; }   // 산 사람 — 보관된 것이 있으면 꺼내 오고, 없으면 지금 쓴다
         var pv = r.preview || {};
         결제상자(pay, r.payKey, Math.max(0, (pv.count || 0) - (pv.cards || []).length), 그사람.id);

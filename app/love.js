@@ -191,7 +191,7 @@
   // 맨 끝 — 그 사람과 맞대 보기(행동양식 궁합 탭 #pair)
   function 끝상자(box, 저장) {
     if (!저장 || !저장.items || !저장.items.length) { box.innerHTML = ''; return; }
-    box.innerHTML = '<section class="card lv-next"><p class="lv-t">그 사람 사용설명서</p>'
+    box.innerHTML = '<section class="card lv-next"><p class="lv-t">SSS급 그 사람 사용설명서</p>'
       + '<p class="hint" style="margin:0 0 10px">태어날 때 봉인된 그 사람의 연애 버릇을 당신 것과 장면마다 맞대 봐요. 누가 먼저 움직이는지, 어디서 부딪히는지 보여 드려요.</p>'
       + '<button class="btn" type="button" id="lvPair" style="width:100%">그 사람의 봉인도 풀어 보기</button></section>';
     box.querySelector('#lvPair').onclick = function () {
