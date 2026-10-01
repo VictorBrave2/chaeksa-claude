@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1251">
+<link rel="stylesheet" href="style.css?v=1252">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -66,8 +66,8 @@
   <div class="fine" style="margin:0 0 14px;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:12px">
     <p style="margin:0 0 6px"><b>무엇을 사나</b> — 상품마다 파는 단위가 다릅니다.</p>
     <p style="margin:0"><b>출산택일 보고서</b> — 신청 한 건. 신청서를 적고 결제하시면 보고서를 메일로 보내 드립니다.<br>
-      <b>「사랑할 때만 나오는 당신」 전체판</b> — 결제한 카카오 계정의 한 사람 것. 연애할 때 내가 하는 행동을 묻고 답한 것이 모두 열립니다.<br>
-      <b>행동양식 궁합</b> — 결제한 카카오 계정의 두 사람 한 쌍 것. 두 사람이 연애할 때 잘 맞는 행동과 부딪히는 행동이 열립니다.</p>
+      <b>「사랑할 때만 나오는 당신」 전체판</b> — 결제한 카카오 계정의 한 사람 것. 책사가 직접 만든 알고리즘이 태어난 날로 계산해 나에게 해당하는 질문만 골랐습니다. 연애할 때 내가 하는 행동을 묻고 답한 것이 모두 열립니다.<br>
+      <b>행동양식 궁합</b> — 결제한 카카오 계정의 두 사람 한 쌍 것. 책사가 직접 만든 알고리즘이 두 사람의 행동 버릇을 맞대 장면마다 누가 먼저인지 집어 줍니다. 두 사람이 연애할 때 잘 맞는 행동과 부딪히는 행동이 열립니다.</p>
   </div>
 
   <div id="list"></div>
@@ -112,10 +112,10 @@
   </div>
 </div>
 
-<script src="config.js?v=1251"></script>
-<script src="track.js?v=1251"></script>
-<script src="cloud.js?v=1251"></script>
-<script src="pay.js?v=1251"></script>
+<script src="config.js?v=1252"></script>
+<script src="track.js?v=1252"></script>
+<script src="cloud.js?v=1252"></script>
+<script src="pay.js?v=1252"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -234,6 +234,7 @@
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(el); }
         });
       });
+      시험판(결제사, 상품);
       // 앱의 「결제하고 바로 보기」가 ?p=상품 으로 보낸다 — 그 상품을 미리 골라 둔다
       var want = new URLSearchParams(location.search).get('p');
       if (want) Array.prototype.forEach.call(list.children, function (el) {
@@ -253,6 +254,30 @@
     try { return !!(ChaeksaCloud.signedIn() && ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold()); } catch (e) { return false; }
   };
   if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
+
+  // 10-01 시험 결제 — 카카오페이가 시험 모드일 때, 검수 계정(super)에게만 보인다. 상품 셋을 결제창 끝까지 시험한다(돈 안 빠짐).
+  // 검수 계정은 콘텐츠가 이미 다 열려 잠금 상자가 안 나오므로 여기서 산다. 사람 · 쌍 상품은 아무것도 안 여는 시험 표시로 — 결제 흐름만 본다.
+  function 시험판(pv, 상품) {
+    var 시험 = (pv || []).some(function (p) { return p.id === 'kakao' && p.mode === 'test'; });
+    if (!시험 || !window.ChaeksaCloud || !ChaeksaCloud.signedIn()) return;
+    ChaeksaCloud.api('/rest/v1/rpc/ai_plan', { method: 'POST', body: '{}' }).then(function (g) {
+      if (g !== 'super') return;
+      var 표시 = { taekil: null, love_full: 'love_full:' + new Array(33).join('0'), love_pair: 'love_pair:' + new Array(33).join('0') };
+      var box = document.createElement('div'); box.className = 'soon';
+      box.innerHTML = '<p><b>시험 결제(검수 계정에만 보여요)</b> — 돈이 빠지지 않아요. 결제창을 끝까지 지나 돌아오는지만 봅니다.</p>'
+        + 상품.map(function (p) { return '<button class="cta kakao" type="button" data-test="' + esc(p.code) + '" style="margin-top:8px">' + esc(p.name) + ' 시험 결제</button>'; }).join('');
+      list.parentNode.insertBefore(box, list.nextSibling);
+      Array.prototype.forEach.call(box.querySelectorAll('button[data-test]'), function (b) {
+        b.addEventListener('click', function () {
+          var code = b.getAttribute('data-test'); b.disabled = true;
+          ChaeksaPay.buy(code, 표시[code], 'kakao').then(function (r) {
+            if (r && r.ok) return;   // 결제창으로 넘어간다
+            b.disabled = false; say((r && r.message) || '시험 결제를 열지 못했어요.', true);
+          }).catch(function (e) { b.disabled = false; say(String(e && e.message || e), true); });
+        });
+      });
+    }).catch(function () {});
+  }
 
   function 결제(pv) {
     if (!picked || busy) return;

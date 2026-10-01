@@ -136,7 +136,7 @@
     var me = PP.active(), 목록 = PP.list().filter(function (p) { return !me || p.id !== me.id; });
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     el.innerHTML = '<section class="card"><h2>행동양식 궁합</h2>'
-      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 장면마다 「누가 먼저 그렇게 할까요?」를 묻고, 당신 · 그 사람 · 두 분 다 가운데 하나를 콕 집어 답해요. 한 줄 요약과 장면 2개는 먼저 보여 드리고, 전체는 출시 기념가로 열려요.</p>'
+      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 「누가 먼저 그렇게 할까요?」를 묻고, 당신 · 그 사람 · 두 분 다 가운데 하나를 콕 집어 답해요. 한 줄 요약과 장면 2개는 먼저 보여 드리고, 전체는 출시 기념가로 열려요.</p>'
       + '<label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label>'
       + '<div style="display:flex;gap:8px;align-items:center;margin:0 0 10px"><select id="pairPick" style="flex:1;min-width:0">'
       + (목록.length ? 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('') : '<option value="">등록된 사람이 없어요</option>')

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1251">
+<link rel="stylesheet" href="style.css?v=1252">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -35,9 +35,9 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=1251"></script>
-<script src="cloud.js?v=1251"></script>
-<script src="pay.js?v=1251"></script>
+<script src="config.js?v=1252"></script>
+<script src="cloud.js?v=1252"></script>
+<script src="pay.js?v=1252"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -204,7 +204,17 @@
             : '<p>결제하신 내용이 앱에서 열렸습니다.'
               + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
+        + (시험 && 카카오 ? '<p><button class="btn sub" id="testRefund" type="button">이 시험 결제 취소하기(검수 계정)</button></p><p class="warn" id="testRefundMsg"></p>' : '')
         + '<p><a class="btn sub" href="./">책사로 돌아가기</a></p>');
+      // 10-01 시험 결제의 취소(환불) 길도 끝까지 시험한다 — 서버(krefund)가 검수 계정만 받는다.
+      var 취소 = document.getElementById('testRefund');
+      if (취소) 취소.onclick = function () {
+        취소.disabled = true;
+        ChaeksaPay.krefund(orderId).then(function (x) {
+          document.getElementById('testRefundMsg').textContent = x && x.ok ? '취소됐습니다(시험). 주문이 「취소」로 바뀌었습니다.' : '취소하지 못했습니다: ' + ((x && (x.message || x.code)) || '알 수 없음');
+          if (!(x && x.ok)) 취소.disabled = false;
+        }).catch(function (e) { document.getElementById('testRefundMsg').textContent = String(e && e.message || e); 취소.disabled = false; });
+      };
       if (code === 'taekil') 접수(orderId);
     })
     .catch(function (e) { fail(String(e && e.message || e)); });

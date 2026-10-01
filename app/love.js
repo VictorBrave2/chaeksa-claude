@@ -128,7 +128,7 @@
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
     el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2>'
-      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 질문은 전부 보여 드리고, 답은 앞 몇 개를 먼저 보여 드려요. 나머지 답은 전체판(출시 기념가)에서 열려요. 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
+      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 책사가 직접 만든 알고리즘이 태어난 날의 글자에서 당신이 연애할 때 하는 행동 버릇을 계산해요. 그 계산으로 당신에게 해당할 연애 행동 질문만 골라 답해 드려요. 질문은 전부 보여 드리고, 답은 앞 몇 개를 먼저 보여 드려요. 나머지 답은 전체판(출시 기념가)에서 열려요. 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
       + '<div id="lvHead"></div><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
       + '<p class="hint" id="lvAbout" style="margin:0 0 6px"' + (저장 ? '' : ' hidden') + '>답은 태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요. 질문마다 「맞아요 / 아니에요」를 눌러 주시면 더 정확하게 고쳐 나갑니다.</p>'
       + '<div id="lvList"></div><div id="lvPay"></div>';
