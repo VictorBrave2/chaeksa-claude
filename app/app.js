@@ -2709,7 +2709,8 @@
     if ((tab === 'ssom' || tab === 'chongnon' || tab === 'pair') && People()) { const me = People().active(); if (!People().list().some(p => !me || p.id !== me.id)) setTimeout(() => openPersonForm(null), 250); }
   }
   window.책사들어가기 = 들어가기;
-  window.책사사람추가 = () => openPersonForm(null);   // 행동양식 궁합(pair.js)의 「+ 사람 추가」
+  window.책사사람추가 = () => openPersonForm(null);   // 그 사람 사용설명서(pair.js) — 아직 아무도 없을 때 「그 사람 생년월일 넣기」
+  window.책사사람칩 = 사람칩;   // 그 사람 사용설명서(pair.js)도 정통궁합 · 웹툰궁합과 같은 사람 칩(docs/79 4절)
   if ($('btnGunghap')) $('btnGunghap').onclick = () => 들어가기('ssom');
   if ($('btnJeongtong')) $('btnJeongtong').onclick = () => 들어가기('jeongtong');
   // 09-30 연애 속의 나 — 첫 화면 · 홈 맨 위 카드. 저장된 사람이 있으면 바로 탭, 없으면 입구(첫 만남)를 거쳐 탭으로.

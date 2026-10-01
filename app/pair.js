@@ -136,7 +136,10 @@
     묶음들.forEach(function (m) { m.그림 = 묶음그림(m.cards, 쓴그림); });
     box.innerHTML = html + 띠들(묶음들);
     var 표지n = document.getElementById('prCoverN'), 표지k = document.getElementById('prCoverK');   // 표지 글 = 결론 첫 줄
-    if (표지n && (s.title || s.line)) { 표지n.textContent = s.title || s.line; if (표지k) 표지k.textContent = '결론'; }
+    if (표지n && (s.title || s.line)) {
+      표지n.textContent = s.title || s.line; if (표지k) 표지k.textContent = '해독 결과';
+      var 표지s = document.getElementById('prCoverS'); if (표지s) { 표지s.remove(); if (표지n.parentNode) 표지n.parentNode.classList.remove('has-s'); }   // 결과가 나오면 부제는 걷는다
+    }
     box.querySelectorAll('a[data-go]').forEach(function (a) {
       a.onclick = function (e) {
         e.preventDefault();   // 주소의 #은 탭이 쓰므로 건드리지 않는다
@@ -155,14 +158,14 @@
 
   // 맛보기 — 서버가 고른 장면 2개(누구인지까지)와 한 줄. 나머지는 전체에서.
   function 맛보기(box, pv, 그이름) {
-    var html = '<section class="card"><h3 class="doc-h">맛보기</h3><p style="margin:0"><b>' + esc(pv.line) + '</b></p></section>', 카드들 = '';
+    var html = '<section class="card"><h3 class="doc-h">먼저 풀린 봉인</h3><p style="margin:0"><b>' + esc(pv.line) + '</b></p></section>', 카드들 = '';
     (pv.cards || []).forEach(function (c) {
       var 글 = 카드글(c, 그이름);
       카드들 += '<section class="card"><p class="hint" style="margin:0 0 4px">' + esc(묶음이름[c.group] || '') + ' · ' + esc(c.section) + '</p>'
         + '<p style="margin:0 0 6px">「' + esc(c.situation) + '」</p><p class="lv-t">' + esc(글.제목) + '</p>'
         + (글.글 ? '<p style="margin:0">' + esc(글.글) + '</p>' : '') + 근거(c.basis, 그이름) + '</section>';
     });
-    box.innerHTML = html + (카드들 ? 띠들([{ 머리: '먼저 보는 장면', 그림: 묶음그림(pv.cards || [], {}), html: 카드들 }]) : '');
+    box.innerHTML = html + (카드들 ? 띠들([{ 머리: '먼저 풀린 장면', 그림: 묶음그림(pv.cards || [], {}), html: 카드들 }]) : '');
   }
 
   // 전체 결제 상자 — 값은 서버 상품표(products · love_pair)에서 받아 단추에 적는다(pay.js 원칙: 값은 한 곳, 줄 그은 정가 없음).
@@ -173,21 +176,21 @@
     '부딪히는 곳과 한쪽이 맡는 곳 카드에는 두 분이 실제로 해 볼 행동을 한 줄씩 적어 드려요',
     '결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요'];
   function 결제상자(box, 열쇠, 남은, pick) {
-    box.innerHTML = '<section class="card"><h3 class="doc-h">' + (남은 > 0 ? '나머지 장면 ' + 남은 + '개' : '전체 보기') + '</h3>'
-      + '<p style="margin:0 0 10px">결제하면 그때 두 분 것을 새로 써 드려요(1분 남짓).</p>'
-      + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
+    box.innerHTML = '<section class="card"><h3 class="doc-h">' + (남은 > 0 ? '아직 봉인된 장면 ' + 남은 + '개' : '봉인 전부 풀기') + '</h3>'
+      + '<p style="margin:0 0 10px">결제하면 그때 두 분의 여덟 글자를 연산해 새로 써 드려요(1분 남짓).</p>'
+      + '<p style="margin:0 0 4px"><b>결제하면 풀리는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="prAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
-      + '<button class="btn" id="prBuy" type="button" style="width:100%">출시 기념가 19,900원으로 전체 보기</button>'
+      + '<button class="btn" id="prBuy" type="button" style="width:100%">출시 기념가 19,900원 결제하고 봉인 풀기</button>'
       + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p></section>';
     var btn = box.querySelector('#prBuy'), say = box.querySelector('#prPaySay'), P = global.ChaeksaPay;
     if (P && P.product) P.product('love_pair').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
-      if (p && p.amount) btn.textContent = (P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount)) + '으로 전체 보기';
+      if (p && p.amount) btn.textContent = (P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount)) + ' 결제하고 봉인 풀기';
       else { btn.disabled = true; say.textContent = '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열 수 있어요.'; }
     }).catch(function () {});
     btn.onclick = function () {
@@ -215,25 +218,31 @@
     if (!el) return;
     var PP = global.ChaeksaPeople;
     if (!profile || !profile.year || !PP) {
-      el.innerHTML = '<section class="card"><h2>행동양식 궁합</h2><p class="hint">내 생년월일시를 먼저 저장해 주세요.</p></section>';
+      el.innerHTML = '<section class="card"><h2>그 사람 사용설명서</h2><p class="hint">내 생년월일시를 먼저 저장해 주세요.</p></section>';
       return;
     }
     var me = PP.active(), 목록 = PP.list().filter(function (p) { return !me || p.id !== me.id; });
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     var LV = global.ChaeksaLoveView;
-    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">궁합</span><span class="n" id="prCoverN">행동양식 궁합</span></div>' : '')
-      + '<section class="card"><h2>행동양식 궁합</h2>'
-      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 당신 · 그 사람 · 두 분 다 가운데 누가 먼저 움직이는지 콕 집어 보여 드려요. 장면 수 한 줄과 장면 2개는 먼저 보여 드리고, 두 분이 어떤 짝인지 결론과 나머지 장면은 출시 기념가로 열려요.</p>'
-      + '<label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label>'
-      + '<div style="display:flex;gap:8px;align-items:center;margin:0 0 10px"><select id="pairPick" style="flex:1;min-width:0">'
-      + (목록.length ? 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('') : '<option value="">등록된 사람이 없어요</option>')
-      + '</select><button class="btn ghost small" id="pairAdd" type="button" style="flex:none">+ 사람 추가</button></div>'
+    // 10-01 규격(docs/79) — 이름은 표지에 한 번만(밑 카드에 같은 h2 를 되풀이하지 않는다). 결과 전 표지 = 이름 + 작은 부제.
+    // 그 사람 고르기 = 정통궁합 · 웹툰궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김). 칩의 「＋ 다른 사람」이 사람 폼을 연다.
+    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">궁합</span><span class="n" id="prCoverN">그 사람 사용설명서</span><span class="s" id="prCoverS">태어날 때 봉인된 그 사람의 연애 버릇</span></div>' : '')
+      + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>그 사람 사용설명서</h2>')
+      + '<p class="hint" style="margin:0 0 10px">두 분의 태어난 날로 계산한 연애 행동 버릇을 맞대 봐요. 계산은 책사가 직접 만든 알고리즘으로 해요. 장면마다 당신 · 그 사람 · 두 분 다 가운데 누가 먼저 움직이는지 콕 집어 보여 드려요. 장면 수 한 줄과 장면 2개는 먼저 보여 드리고, 두 분이 어떤 짝인지 해독 결과와 나머지 장면은 봉인을 풀면(출시 기념가) 열려요.</p>'
+      + (목록.length
+        ? '<div id="pairPickWrap" style="margin:0 0 10px"><label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label><select id="pairPick">'
+          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('')
+          + '</select></div>'
+        : '<button class="btn" id="pairAdd" type="button" style="width:100%;margin:0 0 10px">그 사람 생년월일 넣기</button>')
       + '<div id="pairHead"></div><p class="hint" id="pairSt" style="margin:8px 0 0"></p></section>'
       + '<div id="pairOut"></div><div id="pairPay"></div>';
+    if (!목록.length) {
+      el.querySelector('#pairAdd').onclick = function () { if (typeof global.책사사람추가 === 'function') global.책사사람추가(); };
+      return;
+    }
     var pick = el.querySelector('#pairPick');
-    el.querySelector('#pairAdd').onclick = function () { if (typeof global.책사사람추가 === 'function') global.책사사람추가(); };
     pick.onchange = function () { 쓰기(고른키, pick.value); 그리기(el, profile); };
-    if (!목록.length) { el.querySelector('#pairSt').textContent = '그 사람 생년월일을 먼저 넣어 주세요. 「+ 사람 추가」를 누르면 돼요.'; return; }
+    if (typeof global.책사사람칩 === 'function') global.책사사람칩(el.querySelector('#pairPickWrap'), pick, 목록, 고른, null);
     쓰기(고른키, 고른);
     보기(el, profile, PP.get(고른));
   }
@@ -275,7 +284,7 @@
       });
     }
     function 열기() {
-      알림('두 분을 맞대 보는 중이에요…');
+      알림('두 분의 여덟 글자를 맞대 연산하는 중이에요…');
       post('/api/pair-report', Object.assign({ preview: true }, 본문)).then(function (r) {
         if (!out.isConnected) return;
         head.innerHTML = '';
@@ -289,7 +298,7 @@
     if (동의) { 열기(); return; }
     head.innerHTML = '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 8px"><input type="checkbox" id="prOk1" style="margin-top:5px;width:auto;flex:0 0 auto"><span>두 사람의 생년월일시를 계산 서버로 보내요. 생년월일은 저장하지 않고 알아볼 수 없게 바꾼 값만 남아요. AI 에는 생년월일이 가지 않아요. <a href="privacy.html">개인정보 처리방침</a></span></label>'
       + '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="prOk2" style="margin-top:5px;width:auto;flex:0 0 auto"><span>그 사람의 생년월일시를 넣는다는 걸 그 사람에게 알리고, 결과도 함께 보기를 권할게요.</span></label>'
-      + '<button class="btn" id="prGo" style="width:100%">두 분 맛보기 보기</button>';
+      + '<button class="btn" id="prGo" style="width:100%">두 분의 봉인 열어 보기</button>';
     head.querySelector('#prGo').onclick = function () {
       var a = head.querySelector('#prOk1'), b = head.querySelector('#prOk2');
       if (!a.checked || !b.checked) return 알림('안내 두 칸에 모두 동의해 주세요.', true);

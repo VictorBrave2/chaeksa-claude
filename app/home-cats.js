@@ -8,7 +8,7 @@
   var 칸 = {
     love: [{ 이름: '사랑할 때만 나오는 당신', 탭: 'love', 그림: 'art/love-cover.webp', 크기: [1086, 1448] }],
     child: [{ 이름: '출산택일', 탭: 'taekil', 그림: 'art/taekil-main.webp', 크기: [1086, 1448] }],
-    match: [{ 이름: '정통궁합', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 크기: [1086, 1448] }, { 이름: '웹툰궁합', 탭: 'ssom', 그림: 'art/ssom-main.webp', 크기: [1086, 1448] }, { 이름: '행동양식 궁합', 탭: 'pair', 그림: 'art/story-gunghap.webp', 크기: [1024, 1536] }],
+    match: [{ 이름: '정통궁합', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 크기: [1086, 1448] }, { 이름: '웹툰궁합', 탭: 'ssom', 그림: 'art/ssom-main.webp', 크기: [1086, 1448] }, { 이름: '그 사람 사용설명서', 탭: 'pair', 그림: 'art/story-gunghap.webp', 크기: [1024, 1536] }],
     me: [{ 이름: '정통사주', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 크기: [1086, 1448] }],
     time: [{ 이름: '이번 주엔 무엇이 바뀌나', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}.webp', 크기: [1024, 1536] }],
     learn: [{ 이름: '읽을거리', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}.webp', 크기: [1024, 1536] }],
