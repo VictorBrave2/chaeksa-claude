@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>연애궁합 — 장면으로 보기 · 책사</title>
+<title>웹툰궁합 — 장면으로 보기 · 책사</title>
 <meta name="robots" content="noindex,nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -62,19 +62,19 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1259"></script><script src="astro.js?v=1259"></script><script src="lunar.js?v=1259"></script><script src="engine.js?v=1259"></script>
-<script src="saenggeuk.js?v=1259"></script><script src="gise.js?v=1259"></script><script src="panjeong.js?v=1259"></script><script src="typecard.js?v=1259"></script><script src="gyeokguk.js?v=1259"></script>
-<script src="classic.js?v=1259"></script><script src="samyeong.js?v=1259"></script><script src="jt-webtoon.js?v=1259"></script><script src="jt-webtoon-2.js?v=1259"></script><script src="ssom-gwanjeom.js?v=1259"></script><script src="ssom-baram.js?v=1259"></script><script src="ssom-daehwa.js?v=1259"></script><script src="ssom-webtoon.js?v=1259"></script><script src="ssom-webtoon-2.js?v=1259"></script><script src="ssom-webtoon-3.js?v=1259"></script><script src="ssom-wongo.js?v=1259"></script><script src="ssom-dangye.js?v=1259"></script><script src="ssom.js?v=1259"></script>
+<script src="config.js?v=1260"></script><script src="astro.js?v=1260"></script><script src="lunar.js?v=1260"></script><script src="engine.js?v=1260"></script>
+<script src="saenggeuk.js?v=1260"></script><script src="gise.js?v=1260"></script><script src="panjeong.js?v=1260"></script><script src="typecard.js?v=1260"></script><script src="gyeokguk.js?v=1260"></script>
+<script src="classic.js?v=1260"></script><script src="samyeong.js?v=1260"></script><script src="jt-webtoon.js?v=1260"></script><script src="jt-webtoon-2.js?v=1260"></script><script src="ssom-gwanjeom.js?v=1260"></script><script src="ssom-baram.js?v=1260"></script><script src="ssom-daehwa.js?v=1260"></script><script src="ssom-webtoon.js?v=1260"></script><script src="ssom-webtoon-2.js?v=1260"></script><script src="ssom-webtoon-3.js?v=1260"></script><script src="ssom-wongo.js?v=1260"></script><script src="ssom-dangye.js?v=1260"></script><script src="ssom.js?v=1260"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
-// 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 사장님 쌍 견본으로 연다.
+// 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 지어낸 두 사람 견본으로 연다(실제 사람 생일 아님). 썸 원고가 있는 짝(丁卯 남 × 丙午 여, 같은 원고 열쇠)이어야 장면이 나온다.
 (function () {
   const S = window.ChaeksaSsom, P = window.ChaeksaSsomPage;
   let v = null; try { v = JSON.parse(sessionStorage.getItem('chaeksa.ssomVn') || 'null'); } catch (e) {}
-  if (!v || !v.a) v = { a: { year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 }, b: { year: 1999, month: 12, day: 20, hour: 20, minute: 0, gender: 'F', longitude: 126.98 }, opts: { 만난: { y: 2026, m: 8 }, 단계: '썸' }, 견본: true };
+  if (!v || !v.a) v = { a: { year: 1995, month: 6, day: 5, hour: 10, minute: 40, gender: 'M', longitude: 126.98 }, b: { year: 1997, month: 3, day: 5, hour: 14, minute: 15, gender: 'F', longitude: 126.98 }, opts: { 만난: { y: 2026, m: 8 }, 단계: '썸' }, 견본: true };
   // 09-26 정통사주 웹툰(한 사람) — sessionStorage chaeksa.jtVn {a} 가 있으면 그 대본으로. 회 = 장, 컷 = 줄. 접힘(해설 · 단서)은 장면 보기에서 뺀다(글 보기 「왜 그럴까」에서).
   let jt = null; try { jt = JSON.parse(sessionStorage.getItem('chaeksa.jtVn') || 'null'); } catch (e) {}
-  if (/[?&]jt=1/.test(location.search) && !jt) jt = { a: { year: 1992, month: 4, day: 21, hour: 0, minute: 20, gender: 'M', longitude: 126.98 }, 견본: true };
+  if (/[?&]jt=1/.test(location.search) && !jt) jt = { a: { year: 1995, month: 6, day: 5, hour: 10, minute: 40, gender: 'M', longitude: 126.98 }, 견본: true };
   const 컷이름 = { 1: '01-born', 2: '02-push', 3: '03-seat', 4: '04-good-bad', 5: '05-who', 6: '06-steady', 7: '07-shake', 8: '08-power', 9: '09-shadow', 10: '10-money-in', 11: '11-money-stay', 12: '12-money-year', 13: '13-heart', 14: '14-in-love', 15: '15-work', 16: '16-alone-together', 17: '17-work-year', 18: '18-ten-years', 19: '19-return', 20: '20-where' };
   const 격컷 = { 정관: 'jeonggwan', 편관: 'pyeongwan', 정재: 'jeongjae', 편재: 'pyeonjae', 정인: 'jeongin', 편인: 'pyeonin', 식신: 'siksin', 상관: 'sanggwan', 비견: 'bigyeon', 겁재: 'geopjae' };
   function 정통대본(a) {
@@ -114,13 +114,13 @@
   let 장 = 0, 줄들 = [], n = -1, 치는중 = null, 다침 = true, 멈춤 = false, 표지중 = false, 반응중 = false;
   function 표지(i) {
     장 = i; 멈춤 = true; 표지중 = true; 반응중 = false; $('choices').classList.remove('on');
-    $('chap').innerHTML = '<small>' + (i + 1) + ' / ' + 장들.length + (장들[i].묶음 ? ' · ' + 굵(장들[i].묶음) : '') + '</small><h1>' + 굵(장들[i].제목) + '</h1><p>' + (v.견본 && i === 0 ? (jt ? '견본 — 사장님 명식(丁卯)<br>' : '견본 — 사장님 쌍(丁卯 × 丙午, 26년 8월에 만남)<br>') : '') + '눌러서 시작</p>';
+    $('chap').innerHTML = '<small>' + (i + 1) + ' / ' + 장들.length + (장들[i].묶음 ? ' · ' + 굵(장들[i].묶음) : '') + '</small><h1>' + 굵(장들[i].제목) + '</h1><p>' + (v.견본 && i === 0 ? (jt ? '견본 — 지어낸 한 사람<br>' : '견본 — 지어낸 두 사람(2026년 8월에 만남)<br>') : '') + '눌러서 시작</p>';
     $('chap').classList.remove('off'); 배경바꾸기(장들[i].배경[0]);
   }
   function 시작() { $('chap').classList.add('off'); 표지중 = false; 멈춤 = false; 줄들 = 장들[장].줄.map((x, j, a) => Object.assign({ 배경: 장들[장].배경[Math.min(장들[장].배경.length - 1, Math.floor(j * 장들[장].배경.length / a.length))] }, x)); n = 0; 보이기(); }
   function 보이기() {
     const s = 줄들[n]; 배경바꾸기(s.배경);
-    // 09-25 사장님 — 이름표 자리: 나 = 왼쪽 위 · 그 사람 = 오른쪽 위 · 책사 = 가운데. 장면(지문)도 조각 주인이 있으면 그 사람 이름표.
+    // 09-25 — 이름표 자리: 나 = 왼쪽 위 · 그 사람 = 오른쪽 위 · 책사 = 가운데. 장면(지문)도 조각 주인이 있으면 그 사람 이름표.
     const 주인 = s.누가 === '장면' ? s.주인 : (s.누가 === '당신' || s.누가 === '상대') ? s.누가 : null;
     const 표 = 주인 === '당신' ? '나' : 주인 === '상대' ? '그 사람' : s.누가 === '예시' ? '예시' : s.누가 === '사주에서 본 근거' ? '사주에서 본 근거' : s.누가 === '장면' ? '' : '책사';
     $('who').textContent = 표;
@@ -149,7 +149,7 @@
     선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
   function 목차() {
-    // 두 사람 이야기(1~5) · 지금 단계의 질문(6~)으로 나눈 목차 판(09-25 사장님 「목차를 적절하게 수정해」)
+    // 두 사람 이야기(1~5) · 지금 단계의 질문(6~)으로 나눈 목차 판(09-25 「목차를 적절하게 수정해」)
     const 항 = (c, i) => '<button type="button" class="toc-i' + (i === 장 ? ' now' : '') + '" data-i="' + i + '"><span>' + (i + 1) + '</span>' + c.제목.replace(/\*\*/g, '') + '</button>';
     if (mn) {   // 사용설명서 — 열두 단계로 나눈 목차
       let 앞 = ''; $('tocBody').innerHTML = 장들.map((c, i) => (c.묶음 !== 앞 ? '<div class="toc-g">' + 굵(앞 = c.묶음 || '') + '</div>' : '') + 항(c, i)).join('');

@@ -189,6 +189,7 @@ module.exports = async (req, res) => {
       ok: true,
       ready: pv.length > 0,                              // 결제사가 하나라도 있어야 결제 단추가 뜬다
       providers: pv,                                     // [{id:'kakao', mode:'test'}, …] — 이 순서로 단추를 그린다
+      testOpen: env('PAY_TEST_OPEN') === '1',            // 시험 모드를 손님에게도 연 날 — 화면(pay.js 곧열림)이 값 단추를 그대로 둔다
       clientKey: tossOn() ? env('TOSS_CLIENT_KEY') || null : null,   // 토스를 안 보일 때는 내리지 않는다
       products,
       dbError: dbErr,

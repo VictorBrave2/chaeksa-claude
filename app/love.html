@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><title>사랑할 때만 나오는 당신 · 책사</title>
 <!-- 09-30 사장님 「프로필 연동해야지 … 아예 다른창을 만들어놨네」 — 따로 폼을 걷고 앱의 「연애 속의 나」 탭으로 넘긴다. -->
-<script>location.replace('./?go=love');</script>
+<script>(function(){var q=new URLSearchParams(location.search);var f=q.get('from');location.replace('./?go=love'+(f?'&from='+encodeURIComponent(f):''));})();</script>
 <meta http-equiv="refresh" content="0;url=./?go=love">
 </head><body></body></html>

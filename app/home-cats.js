@@ -43,8 +43,8 @@
       if (c.주소) return;
       a.onclick = function (e) {
         e.preventDefault();
-        if (typeof global.책사들어가기 === 'function') global.책사들어가기(c.탭);
-        if (c.곳) setTimeout(function () { var t = document.getElementById(c.곳); if (t && !t.classList.contains('hide')) t.scrollIntoView({ behavior: 'smooth' }); }, 350);
+        // 곳(칸)도 같이 넘긴다 — 입력을 거쳐 오면 시간이 흐르니 app.js 도착() 이 그 탭을 연 뒤 그 칸으로 내려간다(10-02, 옛 350ms 타이머는 입력 중에 헛돌았다).
+        if (typeof global.책사들어가기 === 'function') global.책사들어가기(c.탭, c.곳);
       };
     });
   }

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1259">
+<link rel="stylesheet" href="style.css?v=1260">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -35,9 +35,9 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=1259"></script>
-<script src="cloud.js?v=1259"></script>
-<script src="pay.js?v=1259"></script>
+<script src="config.js?v=1260"></script>
+<script src="cloud.js?v=1260"></script>
+<script src="pay.js?v=1260"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -59,7 +59,7 @@
       + (code ? '<p class="warn">코드 ' + esc(code) + '</p>' : '')
       + '<p class="warn">돈이 빠져나갔는데 이 화면이 보인다면 아래로 알려주세요. 바로 확인해 돌려드립니다.</p>'
       + '<p><a class="btn go" href="./">책사로 돌아가기</a></p>'
-      + '<p><a class="btn sub" href="mailto:b01099991263@gmail.com">b01099991263@gmail.com</a></p>');
+      + '<p><a class="btn sub" href="mailto:dl4431@naver.com">dl4431@naver.com</a></p>');
   }
 
   // ── 출산택일 신청서 ──────────────────────────────────────────
@@ -185,7 +185,7 @@
           +   '<div class="row"><span>주문번호</span><span style="font-size:11.5px">' + esc(orderId) + '</span></div>'
           + '</div>'
           + (code === 'taekil' ? '<div id="taekil-slot"></div>' : '')
-          + '<p><a class="btn go" href="mailto:b01099991263@gmail.com?subject=' + encodeURIComponent('[책사] 결제 기록 확인 ' + orderId) + '">메일로 알리기</a></p>'
+          + '<p><a class="btn go" href="mailto:dl4431@naver.com?subject=' + encodeURIComponent('[책사] 결제 기록 확인 ' + orderId) + '">메일로 알리기</a></p>'
           + '<p class="warn">코드 ' + esc(r.saveWarning || 'SAVE_FAILED') + '</p>');
         if (code === 'taekil') 접수(orderId);
         return;

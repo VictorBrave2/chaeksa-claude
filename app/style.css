@@ -76,9 +76,14 @@ body{
 /* ───── 헤더 ───── */
 /* 09-25 사장님 「화면에 헤더가 고정되면 좋겠는데」 — 위 헤더도 아래 단추줄처럼 고정. 흐림 없이(폰 렉) 바탕색만. */
 header{display:flex;align-items:center;justify-content:space-between;padding:10px max(18px,calc((100vw - 520px)/2 + 18px)) 10px;position:fixed;top:0;left:0;right:0;z-index:9;background:var(--nav-bg);border-bottom:1px solid var(--line)}
-body{padding-top:100px}
-@media (min-width:480px){body{padding-top:84px}}
+/* 10-02 위에 붙은 머리줄은 첫 화면(index.html)에만 있다. 머리줄이 없는 바깥 쪽(택일 안내 · 글 · 신청서)은 맨 위가 100px 비어 보였다 —
+   머리줄 자리 띄우기는 index.html 의 <body class="has-head"> 에만 건다. */
+body.has-head{padding-top:100px}
+@media (min-width:480px){body.has-head{padding-top:84px}}
 header .logo small{white-space:nowrap}
+/* 10-02 처음 온 손님의 부제 「생년월일로 보는 연애 · 궁합 · 출산택일」 — 폰에서는 앞말을 접어 머리말 한 줄에 단추들과 같이 들어가게 */
+.logo .sub-wide{display:none}
+@media (min-width:480px){.logo .sub-wide{display:inline}}
 .logo{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:.02em}
 .logo .seal{
   font-style:normal;width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;
@@ -447,7 +452,16 @@ nav button.on:hover{color:var(--accent)}
 .seg button{flex:1;padding:10px;border-radius:11px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink2);font-size:13.5px;cursor:pointer;font-family:var(--sans)}
 .seg button.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft);font-weight:700}
 footer{font-size:11px;color:var(--ink3);text-align:center;margin-top:34px;line-height:1.85;letter-spacing:.02em;position:relative;z-index:1}
+footer a{color:var(--accent)}   /* 10-02 바닥글 링크가 브라우저 기본 파랑으로 나왔다(밤 화면에선 거의 안 보임) */
 .hide{display:none!important}
+/* 10-02 첫 화면 깜빡임 막기 — index.html 머리 스크립트가 html 에 data-boot 를 붙이고, app.js 가 다 선 뒤 뗀다. 그 사이(스크립트를 받는 몇 초)에만 쓰는 규칙.
+   입력 칸은 숨기고, 넣어 둔 사람이 있으면 홈 · 없으면 첫 화면을 처음부터 보여 준다. */
+html[data-boot] #formCard{display:none!important}
+html[data-boot=form] #formCard{display:block!important}
+html[data-boot=landing] #landing{display:block!important}
+html[data-boot=landing] #btnSettings{display:none!important}
+html[data-boot=home] #app{display:block!important}
+html[data-boot=home] #nav{display:grid!important}
 
 /* ───── 랜딩 ───── */
 .lp-hero{text-align:center;padding:22px 4px 30px}
@@ -1601,7 +1615,9 @@ details.fold > .tiles { margin-top: 10px; }
 .tk-form label{display:block;font-size:12px;color:var(--ink3);margin:0}
 .tk-form input,.tk-form select{width:100%;box-sizing:border-box;margin-top:4px}
 .tk-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 8px}
-.tk-nav b{font-family:var(--serif);font-size:15px;text-align:center}
+/* 10-02 폰에서 앞날 · 뒷날 단추가 .btn 의 width:100% 를 물려받아 가운데 날짜가 53px 로 눌려 다섯 줄로 쪼개졌다 — 단추는 글자만큼, 날짜가 남는 폭을 쓴다 */
+.tk-nav .btn{width:auto;flex:0 0 auto;margin-top:0;padding:10px 14px;white-space:nowrap}
+.tk-nav b{flex:1 1 auto;min-width:0;font-family:var(--serif);font-size:15px;text-align:center}
 .tk-filter{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink2);margin:0 0 8px;cursor:pointer}
 .tk-filter input{width:auto;margin:0}
 .tk-note{font-size:12.5px;color:var(--ink3);line-height:1.75;margin:8px 0}

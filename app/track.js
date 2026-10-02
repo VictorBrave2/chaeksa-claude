@@ -123,8 +123,9 @@
   /** 깔때기 사건(2026-09-15 사장님 「계기판을 어떻게 살리지」) — 같은 visits 표에 path='ev:이름' 으로 한 줄.
    *  profile(생년월일 넣음) · sheet(유료 장 엶) · pay(결제 단추 누름) · naverform·applymail(출산택일 신청 페이지의
  *  네이버폼·메일 단추, 2026-09-22). 한 브라우저에서 하루 한 번만.
-   *  집계는 funnel_stats(migrate-30) 가 vid 로 사람을 가른다. 스위치가 꺼져 있으면 vid 없이 보내 사건 수만 남는다. */
-  function event(name) {
+   *  집계는 funnel_stats(migrate-30) 가 vid 로 사람을 가른다. 스위치가 꺼져 있으면 vid 없이 보내 사건 수만 남는다.
+   *  opt.noVid — 방문 번호를 붙이지 않는다. index.html 머리의 오류 문지기(err:파일:줄, 10-02)가 쓴다: 고장 횟수만 세면 되므로 사람과 잇지 않는다. */
+  function event(name, opt) {
     try {
       if (dntOn()) return;   // 방문과 같다 — Do Not Track 이면 사건도 안 남긴다(2026-09-22, 방침과 어긋나 있었다)
       if (!CFG.url || !CFG.anonKey) return;
@@ -133,7 +134,7 @@
       if (localStorage.getItem(k) === today) return;
       localStorage.setItem(k, today);
       var row = { source: 'ev', path: 'ev:' + String(name).slice(0, 40), first_time: false };
-      if (global.CHAEKSA_TRACK_VID) { var vid = localStorage.getItem('chaeksa.vid'); if (vid) row.vid = vid; }
+      if (global.CHAEKSA_TRACK_VID && !(opt && opt.noVid)) { var vid = localStorage.getItem('chaeksa.vid'); if (vid) row.vid = vid; }
       fetch(CFG.url + '/rest/v1/visits', {
         method: 'POST', keepalive: true,
         headers: { 'content-type': 'application/json', apikey: CFG.anonKey, Authorization: 'Bearer ' + CFG.anonKey, Prefer: 'return=minimal' },

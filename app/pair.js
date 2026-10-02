@@ -115,7 +115,7 @@
     "preview_head": "먼저 풀린 질문 3개",
     "preview_note": "왜 그런지와 나에게 비치는 모습은 결제하면 열려요.",
     "pay_head": "아직 봉인된 장 {n}개",
-    "pay_lead": "결제하면 그때 그 사람의 생년월일시로 새로 써 드려요(30초 남짓).",
+    "pay_lead": "결제하면 그때 그 사람의 생년월일시로 새로 써 드려요(3분쯤).",
     "pay_items": [
       "썸부터 가족과 친구까지, 연애 열두 단계의 남은 장이 모두 열려요",
       "장마다 그 사람이 어떻게 할지 한 줄, 왜 그런지, 나에게 어떻게 비칠 수 있는지를 적어 드려요",
@@ -124,7 +124,7 @@
       "결제한 카카오 계정에 1년 동안 보관돼서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요"
     ],
     "pay_button": "{price} 결제하고 봉인 풀기",
-    "making": "그 사람의 봉인을 푸는 중이에요. 30초 남짓 걸려요. 이 화면을 그대로 두세요.",
+    "making": "그 사람의 봉인을 푸는 중이에요. 3분쯤 걸려요. 이 화면을 그대로 두세요.",
     "done": "다 됐어요. 모두 {n}장이에요.",
     "result_head": "{name} 사용설명서",
     "result_lead": "장마다 붙은 표시는 그 사람 안에서 그 마음이 얼마나 분명한지를 알려 줘요.\n뚜렷함 — 이쪽 마음이 분명해서, 이렇게 할 가능성이 커요.\n그런 편 — 대체로 이쪽으로 기울어요.\n두 마음 — 두 마음이 함께 있어서, 이렇게 할 수도 있고 저렇게 할 수도 있어요.\n정해지지 않음 — 이 질문에는 정해진 쪽이 없어서, 상황에 맞게 행동할 거예요.",
@@ -239,13 +239,13 @@
       + '<p style="margin:0 0 10px">' + esc(글.pay_lead) + '</p>'
       + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 글.pay_items.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
-      + '<p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
+      + '<div id="prBuyWrap"><p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="prAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
       + '<button class="btn" id="prBuy" type="button" style="width:100%">' + esc(글.pay_button.replace('{price}', '출시 기념가 19,900원')) + '</button>'
-      + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p></section>';
+      + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p></div></section>';
     var btn = box.querySelector('#prBuy'), say = box.querySelector('#prPaySay'), P = global.ChaeksaPay;
     if (P && P.product) P.product('love_pair').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
@@ -271,6 +271,8 @@
           if (r && r.ok === false && !r.closed) say.textContent = r.message || '결제창을 열지 못했어요.';
         });
     };
+    // 결제가 아직 시험 모드면(손님은 살 수 없다) 값 단추 자리를 「곧 열려요 · 채널 추가」로 바꾼다. 갈림은 pay.js 곧열림 하나.
+    if (P && P.곧열림자리) P.곧열림자리(box.querySelector('#prBuyWrap'));
   }
 
   // profile(내 생일)은 받기만 한다 — 이 상품은 그 사람 생일 하나만 쓴다(10-02). 목록은 넣어 둔 사람 전부(다른 사람이 앞, 나는 맨 뒤 「· 나」).
@@ -323,7 +325,7 @@
       return;
     }
     var 본문 = { other: ob, consent: true };
-    // 전체 받기 — 산 뒤에만. 이미 만든 것은 서버가 꺼내 주고, 없으면 새로 쓴다(30초 남짓). 다른 기기에서 만드는 중이면 10초마다 확인.
+    // 전체 받기 — 산 뒤에만. 이미 만든 것은 서버가 꺼내 주고, 없으면 새로 쓴다(3분쯤 — 10-02 사장님 「설명서3분으로 설명」). 다른 기기에서 만드는 중이면 10초마다 확인.
     function 만들기() {
       if (!읽기(대기키)) 쓰기(대기키, Date.now());
       초(글.making);

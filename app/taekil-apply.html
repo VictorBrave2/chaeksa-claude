@@ -4,22 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>출산택일 보고서 신청 · 책사</title>
-<meta name="description" content="신청서 한 장 적고 결제하시면 끝입니다. 후보 기간 전체를 모든 날 모든 시각으로 계산해 보통 2~3일 안에 메일로 보내 드립니다.">
+<meta name="description" content="네이버폼에 아는 만큼 적어 보내 주시면 답장 메일로 값과 결제 방법을 알려 드립니다. 결제가 확인되면 후보 기간 전체를 모든 날 모든 시각으로 계산해 보통 2~3일 안에 보고서를 메일로 보내 드립니다.">
 <link rel="canonical" href="https://chaeksa.kr/taekil-apply.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1259">
+<link rel="stylesheet" href="style.css?v=1260">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
   .doc h1{font-family:var(--serif);font-size:25px;line-height:1.35;margin:0 0 8px}
   .lede{font-size:14.5px;line-height:1.85;color:var(--ink2);margin:0 0 18px}
   /* 신청의 전부가 세 걸음이다 — 지금 어디쯤인지 보이게(2026-09-11 사장님 「너무 빡세고 어지러워」) */
-  .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;list-style:none}
+  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;list-style:none}
   .steps li{padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);
             text-align:center;font-size:12.5px;line-height:1.5;color:var(--ink3)}
   .steps b{display:block;font-family:var(--serif);font-size:15px;color:var(--ink);margin-bottom:3px}
+  /* 10-02 폰(420px 아래)에서는 세 칸이 너무 좁아 글이 한두 글자씩 끊겼다 — 한 걸음을 한 줄로, 세로로 쌓는다 */
+  @media (max-width:420px){
+    .steps{grid-template-columns:1fr;gap:6px}
+    .steps li{display:flex;align-items:baseline;gap:10px;padding:10px 14px;text-align:left}
+    .steps b{flex:0 0 7em;margin:0;font-size:14.5px}
+  }
   .sum{padding:15px 17px;border-radius:14px;background:var(--accent-soft);border:1px solid var(--accent-line)}
   .sum p{font-size:13.5px;line-height:1.8;color:var(--ink2);margin:0}
   .sum p + p{margin-top:6px}
@@ -41,13 +47,13 @@
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>출산택일 보고서 신청</h1>
-  <p class="lede">신청서를 보내 주시면 접수 메일로 결제 방법을 안내드리고, 사람이 직접 계산해 보고서를 메일로 보내 드립니다.</p>
+  <!-- 세 걸음은 택일 탭 · taekil.html · pay.html 과 같은 말이다(10-02). 결제창이 열리면(config.js 창구 주소를 비우면) 아래 스크립트가 결제 길로 바꾼다. -->
+  <p class="lede" id="lede">네이버폼에 적어 보내 주시면 답장 메일로 값과 결제 방법을 알려 드리고, 결제가 확인되면 사람이 직접 계산해 보고서를 메일로 보내 드립니다.</p>
 
-  <ol class="steps">
-    <li><b>신청(네이버폼)</b>후보 기간·가족 생년월일시</li>
-    <li><b>접수 확인</b>답장 메일</li>
-    <li><b>결제</b><span data-price="taekil">99,000원</span></li>
-    <li><b>메일로 받기</b>보통 2~3일</li>
+  <ol class="steps" id="steps">
+    <li><b>① 네이버폼</b>아는 만큼 적어 보내기</li>
+    <li><b>② 답장 메일</b>값 <span data-price="taekil">99,000원</span>과 결제 방법 안내</li>
+    <li><b>③ 메일로 받기</b>결제 확인 뒤 보통 2~3일</li>
   </ol>
   <p class="loginmsg" id="loginMsg" role="alert" hidden></p>
 
@@ -65,8 +71,9 @@
     <p style="margin:0 0 12px">네이버폼에 후보 기간·지역·가족 생년월일시를 적어 보내 주세요.
       접수되면 답장 메일을 드리고, 그 메일에서 값(<span data-price="taekil">99,000원</span>)과 결제 방법을 안내합니다.
       결제가 확인되면 계산을 시작하고, 보고서는 메일로 보내 드립니다. 계산을 시작하기 전에는 언제든 전액 돌려드립니다.</p>
-    <a class="send" id="intakeAltGo" href="#" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">네이버폼으로 신청하기 →</a>
-    <p style="margin:10px 0 0;font-size:13px">폼이 안 열리면 메일로 보내 주셔도 됩니다 — <a id="intakeAltMail" href="#">b01099991263@gmail.com</a></p>
+    <!-- 10-02 이 쪽에서 돈이 들어오는 단 하나의 길인데 글자 링크라 잘 안 보였다 — 금색 큰 단추(.btn)로 -->
+    <a class="btn" id="intakeAltGo" href="#" target="_blank" rel="noopener" style="display:block;margin-top:4px;text-align:center;text-decoration:none;color:var(--seal-ink)">네이버폼으로 신청하기 →</a>
+    <p style="margin:10px 0 0;font-size:13px">폼이 안 열리면 메일로 보내 주셔도 됩니다 — <a id="intakeAltMail" href="#">dl4431@naver.com</a></p>
   </div>
 
   <form class="intake" id="intake" novalidate>
@@ -100,10 +107,10 @@
   </div>
 </div>
 
-<script src="config.js?v=1259"></script>
-<script src="track.js?v=1259"></script>
-<script src="cloud.js?v=1259"></script>
-<script src="pay.js?v=1259"></script>
+<script src="config.js?v=1260"></script>
+<script src="track.js?v=1260"></script>
+<script src="cloud.js?v=1260"></script>
+<script src="pay.js?v=1260"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -169,6 +176,11 @@
     }).catch(function () {});
     return;
   }
+  // 여기부터는 결제창이 열린 길이다 — 위 세 걸음 · 첫 줄을 그 길대로 바꾼다(값 글자는 아래 state 가 채운다).
+  document.getElementById('lede').textContent = '아래 신청서를 적고 결제하시면, 사람이 직접 계산해 보고서를 메일로 보내 드립니다.';
+  document.getElementById('steps').innerHTML = '<li><b>① 신청서</b>이 페이지에서 아는 만큼</li>'
+    + '<li><b>② 결제</b><span data-price="taekil">99,000원</span></li>'
+    + '<li><b>③ 메일로 받기</b>보통 2~3일</li>';
   document.getElementById('fields').innerHTML = F.틀();
   document.getElementById('agreeDataText').innerHTML = F.동의문;
 

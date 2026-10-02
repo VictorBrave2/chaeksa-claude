@@ -29,3 +29,6 @@ marketing/계산결과-2027-04-창원상담.txt
 # 상담 답글(부모 생일이 들어 있음)은 저장소에 올리지 않는다
 marketing/cards/*/붙여넣기.html
 app/art/ss-*.png
+
+# 브라우저 점검 도구(playwright)가 남기는 기록 폴더 - 화면 캡처 · 기록이라 저장소에 넣지 않는다(10-02)
+.playwright-mcp/

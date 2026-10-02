@@ -11,6 +11,15 @@ except Exception: pass
 # (2026-09-20 사장님 「법전, 메모리 피드백 항목 제외하고 다 삭제해」 — 배포를 막던 검사 문을 뗐다. 검사는 python tools_check.py 로 따로 돌릴 수 있다.)
 
 APP = r"C:\Users\LEE\Desktop\궁극의 책사\app"
+
+# 10-02 멈춤 안전장치 — 아무 파일도 고치기 전에 app/ 의 모든 .js 가 문법상 열리는지 node --check 로 본다.
+# 한 파일이라도 틀리면 여기서 멈추고 파일 · 줄을 보여 준다(버전도 안 올리고 HTML 도 안 건드린다).
+# 말 · 금지어 검사(tools_check.py)는 여전히 배포를 막지 않는다 — 이것은 「열리기는 하나」만 본다.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import tools_jscheck
+if not tools_jscheck.check(APP):
+    sys.exit(1)
+
 FILES = ['style.css', 'landing-cuts.webp', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'byeonhwa-jogak.js', 'byeonhwa.js', 'love.js', 'pair.js', 'bunya.js', 'home-cats.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'gungtong-wonmun.js', 'samyeong.js', 'yeongyeok.js', 'ilju.js', 'jeongtong.js', 'stories.js', 'landing.js',
          'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js',
          'gyeokguk.js', 'chaeksadan.js', 'geunamja.js', 'maeum.js', 'gunghap.js', 'gunghap-gwanjeom.js', 'gunghap-chongnon.js', 'ssom-gwanjeom.js', 'ssom-wongo.js', 'ssom-baram.js', 'ssom-dangye.js', 'ssom-daehwa.js', 'ssom-webtoon.js', 'ssom-webtoon-2.js', 'ssom-webtoon-3.js', 'ssom-webtoon-check.js', 'ssom-score.js', 'ssom-score-mal.js', 'ssom-card.js', 'ssom-card-mal.js', 'ssom.js', 'jt-webtoon.js', 'jt-webtoon-2.js', 'jt-webtoon-check.js', 'jt-webtoon-proto.js', 'sheets.js', 'hwakin.js', 'mun.js', 'mun/all.js', 'jamgeum-mal.js', 'pay.js', 'app.js']

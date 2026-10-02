@@ -26,7 +26,7 @@
   function 그리기(box, a, b, opts) {
     opts = opts || {};
     // 09-25 사장님 「입력도 막아줘」: 연애궁합 웹툰은 남녀 두 사람 이야기로만 만든다 — 같은 성별이면 그리지 않는다
-    if (같은성별(a, b)) { box.innerHTML = '<div class="card"><p>연애궁합은 남녀 두 사람의 이야기로 만들어져 있어요. 성별을 다시 확인해 주세요.</p></div>'; return; }
+    if (같은성별(a, b)) { box.innerHTML = '<div class="card"><p>웹툰궁합은 남녀 두 사람의 이야기로 만들어져 있어요. 성별을 다시 확인해 주세요.</p></div>'; return; }
     let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
     const z = S.짝(나R, 그R), 원고 = W[z.키];
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];

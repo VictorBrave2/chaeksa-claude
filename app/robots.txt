@@ -16,10 +16,9 @@ User-agent: Google-Extended
 User-agent: Yeti
 User-agent: Bingbot
 # 시험용 페이지는 색인하지 않는다 — 검색 결과에 뜨면 신뢰만 깎인다
-Disallow: /cards.html
-Disallow: /tests_panjeong.html
-Disallow: /tests_seolmyeongseo.html
-Disallow: /tests_taekilsim.html
+# tests_ 로 시작하는 시험 화면 전부 · 원고 보기 화면(jt-wongo-view · ssom-wongo-view). 화면 안에도 noindex 가 붙어 있다.
+Disallow: /tests_
+Disallow: /*-wongo-view
 Disallow: /myeongsik.html
 Disallow: /jeongtong.html
 Disallow: /tools/

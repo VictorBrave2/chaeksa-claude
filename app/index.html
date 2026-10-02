@@ -3,8 +3,61 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>책사 — 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일</title>
-<meta name="description" content="태어날 아이, 이 시각에 낳으면 — 날짜를 고르면 그날 열두 시진을 궁통보감 · 자평진전 · 적천수가 각자 어떻게 보는지 보여 드려요. 점수로 합치지 않아요. 회원가입 없이 무료. 그 사람 이야기는 두 사람 생년월일로 날짜마다 답해요.">
+<script>
+/* 멈춤 안전장치(10-02) — 다른 스크립트보다 먼저 선다. 우리 파일에서 난 오류와 못 받은 우리 스크립트만 본다
+ * (카카오 같은 남의 파일 · 브라우저 확장 · 「Script error.」는 안 본다).
+ *  ① 앱이 아직 서지 않았으면(app.js 맨 끝의 window.ChaeksaReady 가 없으면) 빈 화면 대신 「새로 고침」 띠를 띄운다.
+ *     앱이 선 뒤에 난 오류는 띠 없이 기록만 한다 — 화면은 살아 있고 그 단추 하나만 안 되는 경우라서.
+ *  ② 기록은 track.js 사건 통로로 「ev:err:파일:줄」 한 줄, 화면을 한 번 열 때 한 번. 오류 문구 · 방문 번호 · 넣은 값은 안 보낸다.
+ *     Do Not Track · localhost 는 track.js 가 거른다. 보는 법: visits 표에서 path like 'ev:err:%'. */
+(function () {
+  var 기록함 = false, 띠 = false;
+  function 우리것(u) { try { return !!u && new URL(u, location.href).origin === location.origin; } catch (e) { return false; } }
+  function 이름(u) { return String(u || '').split('#')[0].split('?')[0].split('/').pop().slice(0, 26) || 'page'; }
+  function 다음에(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(fn, 0); });
+    else setTimeout(fn, 0);
+  }
+  function 기록(곳) {
+    if (기록함) return; 기록함 = true;
+    다음에(function () { try { var T = window.ChaeksaTrack; if (T && T.event) T.event('err:' + 곳, { noVid: true }); } catch (e) {} });
+  }
+  function 띠보이기() {
+    다음에(function () {
+      if (띠 || window.ChaeksaReady || !document.body) return; 띠 = true;
+      var d = document.createElement('div');
+      d.setAttribute('role', 'alert');
+      d.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;bottom:calc(16px + env(safe-area-inset-bottom, 0px));max-width:520px;margin:0 auto;z-index:2147483000;'
+        + 'display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:#2d2a33;color:#fff;'
+        + 'font:15px/1.5 "Noto Sans KR",system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.25)';
+      d.innerHTML = '<span style="flex:1">화면을 여는 중에 문제가 생겼어요. 새로 고침을 눌러 주세요.</span>'
+        + '<button type="button" style="flex:none;padding:9px 14px;border:0;border-radius:10px;background:#fff;color:#2d2a33;font:inherit;font-weight:700;cursor:pointer">새로 고침</button>';
+      d.querySelector('button').onclick = function () { location.reload(); };
+      document.body.appendChild(d);
+    });
+  }
+  window.addEventListener('error', function (e) {
+    var t = e && e.target;
+    if (t && t !== window && t.tagName) {          // 파일을 못 받은 경우 — 스크립트만 본다(그림 · 글꼴은 안 본다)
+      if (t.tagName === 'SCRIPT' && 우리것(t.src)) { 기록('load:' + 이름(t.src)); 띠보이기(); }
+      return;
+    }
+    if (!우리것(e.filename)) return;
+    기록(이름(e.filename) + ':' + (e.lineno || 0)); 띠보이기();
+  }, true);
+  // 잡지 않은 약속(promise) 실패 — 화면을 세우는 길이 아니라서 띠는 없이, 우리 파일 줄이 보일 때만 기록한다.
+  window.addEventListener('unhandledrejection', function (e) {
+    try {
+      var s = String((e && e.reason && e.reason.stack) || ''), o = location.origin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var m = s.match(new RegExp(o + '/[^\\s()]*?([^/\\s()?#]+\\.js)(?:\\?[^:\\s()]*)?:(\\d+)'));
+      if (m) 기록('p:' + m[1].slice(0, 26) + ':' + m[2]);
+    } catch (x) {}
+  });
+})();
+</script>
+<title>책사 — 연애할 때의 나 · 그 사람 사용설명서 · 정통사주 · 궁합 · 출산택일</title>
+<!-- 검색 · 카톡 미리보기 소개글(10-02) — 홈 진열대 그대로. 바꿀 땐 og:title · og:description · 아래 JSON-LD · manifest.json · llms.txt 도 같이. -->
+<meta name="description" content="생년월일시로 보는 연애할 때의 나, 그 사람이 연애 단계마다 어떻게 할지, 옛 책으로 읽는 정통사주 · 정통궁합, 우리 둘 이야기를 그린 웹툰궁합, 제왕절개 시각 고르기. 정통사주 · 궁합 · 출산택일 시뮬레이터는 가입 없이 무료, 연애 두 가지는 카카오 로그인 뒤 첫 부분 무료.">
 <link rel="canonical" href="https://chaeksa.kr/">
 <!-- 네이버 웹마스터도구 소유확인. 지우면 확인이 풀린다 — 등록 뒤에도 두어야 한다. -->
 <meta name="naver-site-verification" content="47ce3558f6a916bf636e928f9f2a8780e11a9cbb">
@@ -12,8 +65,8 @@
 <meta name="google-site-verification" content="Ghn7lZUA45bSc5tEbUrtJpKzTrHdSWYi5rYZC-NE_gs">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
-<meta property="og:title" content="책사 — 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일">
-<meta property="og:description" content="세 고전으로 읽는 나의 사주, 두 사람을 나란히 놓는 궁합, 썸부터 결혼까지 연애궁합, 태어날 아이의 때를 고르는 출산택일. 점수로 합치지 않아요. 회원가입 없이 무료.">
+<meta property="og:title" content="책사 — 연애할 때의 나 · 그 사람 사용설명서 · 정통사주 · 궁합 · 출산택일">
+<meta property="og:description" content="생년월일시로 보는 연애할 때의 나, 그 사람이 연애 단계마다 어떻게 할지, 옛 책으로 읽는 정통사주 · 정통궁합, 우리 둘 이야기를 그린 웹툰궁합, 제왕절개 시각 고르기. 정통사주 · 궁합 · 출산택일 시뮬레이터는 가입 없이 무료, 연애 두 가지는 카카오 로그인 뒤 첫 부분 무료.">
 <meta property="og:url" content="https://chaeksa.kr/">
 <meta property="og:image" content="https://chaeksa.kr/og-home-2.jpg">
 <meta property="og:image:width" content="1200">
@@ -21,6 +74,25 @@
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f6f3f4" id="metaTheme">
+<script>
+/* 첫 화면 깜빡임 막기(10-02) — 아래 스크립트 70여 개가 다 오기 전에 브라우저가 화면을 먼저 그린다. 그 전에 둘만 정해 둔다.
+ *  ① 낮/밤 — 고른 값(설정 · 해/달 단추)이 있으면 그대로, 「자동」이면 시계(18~6시 밤). app.js applyTheme · 다른 쪽(pay.html 등)과 같은 규칙이다.
+ *     전에는 낮 화면을 먼저 그렸다가 app.js 가 밤으로 바꿔서, 밤에는 흰 화면이 남색으로 번쩍였다.
+ *  ② 처음 보일 칸 — html 의 data-boot 에 적으면 style.css 가 그 칸만 보여 준다. app.js 가 다 선 뒤(맨 끝) 떼고, 그 뒤로는 지금처럼 app.js 가 정한다.
+ *     home = 넣어 둔 사람이 있음(홈) · form = 사람 없이 ?go= 로 옴(입력 칸) · wait = 사람 없이 #탭 · ?go=taekil 로 옴(빈 채로 기다림) · landing = 그 밖(첫 화면).
+ *     전에는 입력 칸(#formCard)이 기본으로 보여서, 스크립트가 다 올 때까지 입력 칸이 떴다가 사라졌다. */
+(function () {
+  var d = document.documentElement, 모드 = 'auto', 사람 = false;
+  try { 모드 = localStorage.getItem('chaeksa.theme') || 'auto'; } catch (e) {}
+  var h = new Date().getHours(), 밤 = 모드 === 'night' || (모드 === 'auto' && (h < 6 || h >= 18));
+  d.setAttribute('data-theme', 밤 ? 'night' : 'day');
+  var 띠색 = document.getElementById('metaTheme'); if (띠색) 띠색.setAttribute('content', 밤 ? '#161433' : '#f6f3f4');
+  try { var l = JSON.parse(localStorage.getItem('chaeksa.people') || 'null'); 사람 = !!(l && l.length); } catch (e) {}
+  try { if (!사람) 사람 = !!localStorage.getItem('chaeksa.profile'); } catch (e) {}
+  var 갈곳 = /[?&]go=([a-z][\w-]*)/.exec(location.search), 해시 = /^#[a-z]/i.test(location.hash);
+  d.setAttribute('data-boot', 사람 ? 'home' : (갈곳 && 갈곳[1] !== 'taekil') ? 'form' : (갈곳 || 해시) ? 'wait' : 'landing');
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json?v=2">
@@ -29,33 +101,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1259">
+<link rel="stylesheet" href="style.css?v=1260">
+<!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
+     home-cats.js 칸 표 맨 앞(love) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다. -->
+<link rel="preload" as="image" href="art/love-cover.webp" fetchpriority="high">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
   "name":"책사","alternateName":"책사 — 나의 명리비서","inLanguage":"ko-KR",
-  "description":"절기 시각까지 천문 계산한 만세력으로 사주를 봅니다. 오늘·이달·올해의 흐름, 인연이 오는 해, 우리 둘 사이 무료. 출산택일 보고서."},
+  "description":"생년월일시로 보는 연애할 때의 나, 그 사람이 연애 단계마다 어떻게 할지, 옛 책으로 읽는 정통사주 · 정통궁합, 우리 둘 이야기를 그린 웹툰궁합, 제왕절개 시각 고르기. 정통사주 · 궁합 · 출산택일 시뮬레이터는 가입 없이 무료, 연애 두 가지는 카카오 로그인 뒤 첫 부분 무료."},
  {"@type":"Organization","@id":"https://chaeksa.kr/#org","name":"책사","url":"https://chaeksa.kr/",
-  "logo":"https://chaeksa.kr/icon-512.png","image":"https://chaeksa.kr/og.jpg",
-  "sameAs":["https://pf.kakao.com/_jdqxaX"]},
+  "logo":"https://chaeksa.kr/icon-512.png","image":"https://chaeksa.kr/og.jpg"},
  {"@type":"Service","name":"출산택일 보고서","provider":{"@id":"https://chaeksa.kr/#org"},
   "areaServed":"KR","serviceType":"명리 택일",
   "description":"후보 날짜 전체를 궁통보감·자평진전 두 고전으로 거르고, 대운·가족과 부딪히는 날·수술 가능한 시간까지 얹어 근거와 함께 문서로 드립니다. 점수·순위는 매기지 않습니다. 진태양시(경도+균시차) 보정과 궁통보감 조후용신표 원문 대조를 포함합니다."}
 ]}
 </script>
 </head>
-<body>
+<body class="has-head">
 <noscript>
   <div style="max-width:520px;margin:48px auto;padding:0 20px;line-height:1.9;font-family:sans-serif;text-align:center">
     <p><b>책사는 자바스크립트가 필요합니다.</b></p>
     <p>사주 계산이 브라우저 안에서 이뤄지기 때문입니다.
-       생년월일시는 서버로 보내지 않습니다.</p>
+       넣은 정보는 이 기기에 저장됩니다. 로그인하면 다른 기기에서도 보이게 책사 서버에도 저장하고,
+       연애 콘텐츠는 만들 때 한 번 더 여쭌 뒤 계산 서버로 보냅니다.</p>
     <p>브라우저 설정에서 자바스크립트를 켜주시면 바로 쓰실 수 있습니다.</p>
   </div>
 </noscript>
 <div class="wrap">
   <header>
-    <div class="logo"><i class="seal">策</i><span>책사<small id="subtitle">나의 책사단</small></span></div>
+    <div class="logo"><i class="seal">策</i><span>책사<small id="subtitle"><span class="sub-wide">생년월일로 보는 </span>연애 · 궁합 · 출산택일</small></span></div>
     <div class="hbtns">
       <button class="btn-ghost hide" id="btnPerson" aria-label="사람 바꾸기"><b id="personName"></b> ▾</button>
       <button class="btn-ghost btn-icon" id="btnTheme" aria-label="낮·밤 테마 바꾸기" title="낮/밤 바꾸기">☀</button>
@@ -70,10 +145,7 @@
     <div class="lp-hero lp-min" id="lpHero">
       <!-- 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 건 준비중」 — home-cats.js 가 그린다. -->
       <div data-home-cats></div>
-      <div class="lp-scene hide">
-        <img src="landing-cuts.webp?v=1259" alt="정통사주 · 정통궁합 · 웹툰궁합 · 출산택일" width="1210" height="1450">
-        <a href="#" data-go="jeongtong" aria-label="정통사주"></a><a href="#" data-go="chongnon" aria-label="정통궁합"></a><a href="#" data-go="ssom" aria-label="웹툰궁합"></a><a href="taekil-sim.html?from=site-landing" aria-label="출산택일"></a>
-      </div>
+      <!-- 10-02 숨어 있던 네 컷 그림(.lp-scene)은 걷었다 — 안 보이는데도 열 때마다 그림(194KB)을 받고 있었다. 칸은 위 분류 칸(home-cats.js)이 대신한다. -->
       <div class="lp-caps hide" aria-hidden="true"><span>나는 어떤 사람이고, 요즘은 어떤 때인지</span><span>두 사람이 잘 맞는 곳과 부딪히는 곳</span><span>내가 바라는 사람 vs 그 사람이 하는 행동</span><span>병원이 준 날짜 중 어느 날이 나은지</span></div>
       <button class="btn lp-cta hide" id="btnGunghap" type="button">로그인 없이 생년월일로 궁합 시작하기</button>
       <button class="btn ghost lp-cta hide" id="btnJeongtong" type="button">생년월일시로 정통사주 무료분석</button>
@@ -84,9 +156,10 @@
   </section>
 
   <!-- 온보딩 -->
-  <section class="card" id="formCard">
-    <!-- 09-25 사장님 「본인 프로필 저장 + 상대 프로필 저장으로 가자, 입구가 여러 개가 되잖아」 — 입구는 이것 하나. 웹툰식(컷 + 말풍선). 성별을 고르면 컷이 바뀐다. -->
-    <div class="gc-cut" id="fcCut"><img src="art/jt-01-born-f.webp" alt=""><div class="gc-bubble"><b>책사</b>당신부터요. 언제 태어났어요?</div></div>
+  <!-- 10-02 입력 칸은 처음엔 숨겨 둔다(class hide). 보일 때는 app.js showForm 이 연다 — 전에는 기본으로 보여서 스크립트가 다 올 때까지 떴다가 사라졌다. -->
+  <section class="card hide" id="formCard">
+    <!-- 09-25 사장님 「본인 프로필 저장 + 상대 프로필 저장으로 가자, 입구가 여러 개가 되잖아」 — 입구는 이것 하나.
+         10-02 컷 + 말풍선(#fcCut)은 걷었다 — 09-30 부터 배경 삽화(style.css #formCard)가 대신해서 숨겨 둔 채 그림(74KB)만 받고 있었다. -->
     <label>뭐라고 부를까요</label>
     <input id="name" type="text" aria-label="이름" placeholder="예: 지수" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
     <label>생년월일</label>
@@ -119,7 +192,7 @@
     <p class="hint hide" id="placeNote"></p>
     <div class="check"><input type="checkbox" id="solar" checked><label for="solar" style="margin:0">태어난 곳의 해 시각으로 맞춰서 보기 (켜 두세요)</label></div>
     <button class="btn" id="btnGo">내 사주 보기</button>
-    <p class="hint">넣은 정보는 이 기기에만 저장돼요.</p>
+    <p class="hint">넣은 정보는 이 기기에 저장돼요. 로그인하면 폰 · PC 어디서나 보이게 책사 서버에도 저장해요. 연애 콘텐츠는 만들 때 한 번 더 여쭌 뒤 계산 서버로 보내요.</p>
   </section>
 
   <div id="app" class="hide">
@@ -134,10 +207,7 @@
       <!-- 09-25 사장님 「뼈대 교통정리 · 전부 ㄱㄱ」(docs/78) — 홈 = 컷 넷 + 내 원국(smMain)만. 이야기 목록(wtTop · wtHome) · 어떤 사이(wgMain) · 오늘의 질문(qToday)은 style.css 에서 감춤(코드는 남김). -->
       <!-- 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 건 준비중」 — home-cats.js 가 그린다. -->
       <div data-home-cats></div>
-      <div class="lp-scene home-scene hide">
-        <img src="landing-cuts.webp?v=1259" alt="정통사주 · 정통궁합 · 웹툰궁합 · 출산택일" width="1210" height="1450">
-        <a href="#" data-go="jeongtong" aria-label="정통사주"></a><a href="#" data-go="chongnon" aria-label="정통궁합"></a><a href="#" data-go="ssom" aria-label="웹툰궁합"></a><a href="taekil.html" aria-label="출산택일"></a>
-      </div>
+      <!-- 10-02 숨어 있던 네 컷 그림(.lp-scene.home-scene)은 걷었다 — 위 첫 화면과 같은 까닭. -->
       <!-- 09-27 GPT 지적 5: 표지마다 「무슨 답을 얻나」 한 줄(작가) -->
       <div class="lp-caps hide" aria-hidden="true"><span>나는 어떤 사람이고, 요즘은 어떤 때인지</span><span>두 사람이 잘 맞는 곳과 부딪히는 곳</span><span>내가 바라는 사람 vs 그 사람이 하는 행동</span><span>병원이 준 날짜 중 어느 날이 나은지</span></div>
       <div id="wtTop" class="wt hide"></div>
@@ -186,9 +256,15 @@
       <section class="card">
         <h2>擇 · 출산택일 보고서</h2>
         <p class="hint" style="margin:0 0 14px">카드와 콘텐츠는 전부 자동 계산이지만, 택일은 <b>사람이 직접 봅니다.</b> 되돌릴 수 없는 결정이기 때문입니다.</p>
-        <!-- 신청은 맨 위에서 바로 — 아래 설명을 다 읽어야 단추가 나오던 것을 올렸다(2026-09-11). -->
-        <a class="btn" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none;margin:0 0 6px"><span class="seal">擇</span> 보고서 신청하기 — <span data-price="taekil">99,000원</span></a>
-        <p class="hint" style="margin:0 0 18px;text-align:center">신청서 한 장 적고 결제하시면 끝입니다. 보통 2~3일, 메일로 보내 드립니다.</p>
+        <!-- 신청 단추는 맨 위 이것 하나다(10-02). 전에는 「보고서 신청하기」 둘 · 「먼저 물어보기(문의서)」가 따로 있었는데 셋 다 같은 네이버폼으로 갔다.
+             글은 지금 길(네이버폼 → 답장 메일 → 결제 → 메일 보고서)대로 적어 둔다. config.js CHAEKSA_TAEKIL_INTAKE_URL 이 비면
+             (결제창이 열리는 날) app.js wireTaekil 이 단추를 사이트 신청서로 돌리고 세 걸음 글도 결제 길로 바꾼다. -->
+        <a class="btn" id="btnTaekGo" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none;margin:0 0 12px"><span class="seal">擇</span> <span id="taekGoLabel">네이버폼으로 신청하기</span> — <span data-price="taekil">99,000원</span></a>
+        <div class="doc" id="taekSteps" style="margin:0 0 18px">
+          <p><b>①</b> 네이버폼에 아는 만큼 적어 보내 주세요.</p>
+          <p><b>②</b> 답장 메일로 값과 결제 방법을 알려 드립니다.</p>
+          <p><b>③</b> 결제가 확인되면 보통 2~3일 안에 보고서를 메일로 보내 드립니다.</p>
+        </div>
 
         <h3 class="doc-h">이렇게 봅니다</h3>
         <div class="doc">
@@ -219,17 +295,13 @@
 
         <!-- 금액 글자는 products 표에서 받아 채운다(app.js wireTaekil). 적어 둔 값은 못 받았을 때만 보인다. -->
         <p class="hint" style="margin:16px 0 10px"><b>출산택일 보고서 — <span data-price="taekil">99,000원</span></b>. 부가세 포함, 따로 붙는 수수료는 없습니다. 작업을 시작하기 전에는 이유를 묻지 않고 전액 돌려드립니다.</p>
-        <a class="btn" id="btnTaekPay" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none"><span class="seal">擇</span> 보고서 신청하기</a>
-        <a class="btn ghost small" id="btnTaekForm" href="#" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:10px">결제 전에 먼저 물어보기 (문의서)</a>
-        <p class="hint" id="taekFormNote" style="margin-top:10px">적어주신 것은 <b>검토에만 쓰고 답변 뒤에 지웁니다.</b></p>
+        <p class="hint" id="taekAskLine" style="margin:0 0 10px">먼저 물어보실 것이 있으면 네이버폼에 같이 적어 보내 주세요. 답장 메일을 보시고 결제하실지 정하시면 됩니다.</p>
+        <p class="hint" id="taekFormNote" style="margin:0 0 10px">네이버폼에 적어주신 것은 <b>검토에만 쓰고 답변 뒤에 지웁니다.</b></p>
         <button class="btn kakao hide" id="btnTaekKakao"><span class="seal">話</span>카카오톡으로 문의하기</button>
         <p class="hint hide" id="taekKakaoNote" style="margin-top:10px">누르시면 <b>위 양식이 복사</b>되고 채팅창이 열립니다. 붙여넣고 아는 만큼만 채워 보내주세요.</p>
-        <a class="btn ghost small" id="btnTaekMail" href="#" style="display:block;text-align:center;text-decoration:none;margin-top:10px">메일이 편하시면</a>
+        <p class="hint" style="margin-top:10px">단추가 안 열리거나 메일이 편하시면 <a id="btnTaekMail" href="#">메일로 보내 주셔도 됩니다 →</a></p>
         <p class="hint" style="margin-top:10px">개업·이전·계약 등 다른 택일도 같은 방식으로 봐드립니다.</p>
         <p class="hint" style="margin-top:10px"><a href="taekil.html">출산택일을 어떻게 보는지 자세히 →</a></p>
-        <p class="hint hide" id="taekChannel" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
-          카카오톡 <a id="taekChannelLink" href="#" target="_blank" rel="noopener"><b>책사 채널을 추가</b></a>해 두시면
-          매달 택일 자료가 나올 때 알려드립니다. 광고는 보내지 않습니다.</p>
       </section>
     </div>
 
@@ -245,8 +317,6 @@
     <!-- 독립 콘텐츠: 지칠 때와 채울 때 -->
 
     <!-- 독립 콘텐츠: 내 편이 되어주는 사람 -->
-
-    <!-- 독립 콘텐츠: 인연이 오는 해 -->
 
     <!-- 의논 — 번호 발언 통변. 채점은 2026-08-31 에 들어냈다(맥락도 이유도 없었다) -->
 
@@ -377,7 +447,7 @@
   </div>
 
   <footer>
-  <a href="taekil.html">출산택일</a> · <a href="read.html">읽을거리</a> · <a href="pay.html">상담 신청</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
+  <a href="taekil.html">출산택일</a> · <a href="read.html">읽을거리</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
   <!-- 통신판매업자는 초기화면에 사업자 정보를 드러낸다. 결제 심사도 이 줄을 본다.
        약관 11절·pay.html 과 **같은 값**이어야 한다 — 한 곳만 고치면 어긋난다. -->
   유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>
@@ -400,7 +470,7 @@
 <div class="modal hide" id="peopleSheet">
   <div class="sheet">
     <h3>누구의 사주를 볼까요</h3>
-    <p class="hint" style="margin:0 0 14px">등록한 사람을 눌러 바꿉니다. 오늘 브리핑·원국·택일·상담이 모두 그 사람 기준으로 바뀝니다.</p>
+    <p class="hint" style="margin:0 0 14px">넣어 둔 사람을 누르면 바뀌어요. 정통사주 · 연애 · 이번 주 흐름이 그 사람 것으로 바뀌어요.</p>
     <div id="peopleList"></div>
     <button class="btn" id="btnAddPerson">사람 추가하기</button>
     <button class="btn ghost" id="btnClosePeople">닫기</button>
@@ -410,7 +480,7 @@
 <!-- 사람 추가/수정 -->
 <div class="modal hide" id="personForm">
   <div class="sheet">
-    <div class="gc-cut" id="pfCut"><img src="art/jt-13-heart-m.webp" alt=""><div class="gc-bubble"><b>책사</b>그 사람은요? 생년월일만 있으면 돼요.</div></div>
+    <div class="gc-cut" id="pfCut"><img src="art/jt-13-heart-m.webp" alt="" loading="lazy"><div class="gc-bubble"><b>책사</b>그 사람은요? 생년월일만 있으면 돼요.</div></div>
     <h3 id="pfTitle" class="hide">그 사람을 적어 주세요</h3>
     <label>뭐라고 부를까요</label>
     <input id="pfName" type="text" aria-label="이름" placeholder="이름이나 「그 사람」도 괜찮아요" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
@@ -446,24 +516,41 @@
   </div>
 </div>
 
+<!-- 로그인 — 10-02 머리말 「로그인」은 카카오 단추 하나만 있는 작은 창을 연다(app.js btnLogin).
+     이메일 로그인(메일 링크 · 심사 계정 비밀번호)은 아래 작은 글씨 → 설정 창의 「이메일로 로그인」으로 그대로 이어진다. -->
+<div class="modal hide" id="loginSheet">
+  <div class="sheet">
+    <h3>로그인</h3>
+    <p class="hint" style="margin:0 0 14px">폰을 바꿔도 넣어 둔 사람과 산 것이 그대로예요.</p>
+    <button class="btn kakao" id="btnKakaoLogin"><span class="seal">話</span>카카오로 계속하기</button>
+    <p class="hint" style="text-align:center;margin:12px 0 4px"><a href="#" id="lnMailLogin" style="color:var(--ink3)">이메일 계정이 있어요</a></p>
+    <button class="btn ghost" id="btnCloseLogin">닫기</button>
+  </div>
+</div>
+
 <!-- 설정 -->
 <div class="modal hide" id="settings">
   <div class="sheet">
     <h3>설정</h3>
-    <p class="hint" style="margin:0 0 6px">책사단은 <b>바로 부르실 수 있습니다.</b> 아래는 직접 발급받은 키를 쓰고 싶을 때만 입력하세요.</p>
-    <label>내 API 키로 쓰기 (선택)</label>
-    <input id="apiKey" aria-label="API 키" type="password" placeholder="비워두면 책사 서버를 이용합니다" autocomplete="off">
-    <p class="hint">입력하면 이 기기에만 저장되고 Anthropic 서버로만 전송됩니다.</p>
+    <!-- 10-02 개발용 칸(.devonly)은 주소에 ?dev=1 이 있을 때만 보인다(app.js openSettings). 손님 화면에는 안 나온다. -->
+    <div class="devonly hide">
+      <p class="hint" style="margin:0 0 6px">개발용 — 직접 발급받은 키를 쓸 때만 넣습니다.</p>
+      <label>내 API 키로 쓰기 (선택)</label>
+      <input id="apiKey" aria-label="API 키" type="password" placeholder="비워두면 책사 서버를 이용합니다" autocomplete="off">
+      <p class="hint">입력하면 이 기기에만 저장되고 Anthropic 서버로만 전송됩니다.</p>
+    </div>
     <label>화면 테마</label>
     <div class="seg" id="themeSeg">
       <button data-t="auto">자동 (시간에 따라)</button>
       <button data-t="day">낮 · 한지</button>
       <button data-t="night">밤 · 새벽</button>
     </div>
-    <hr>
-    <label>프록시 서버 주소 (고급, 비워두면 기본값)</label>
-    <input id="proxyUrl" aria-label="프록시 서버 주소" placeholder="https://…/v1/messages">
-    <div class="row" style="margin-top:16px"><button class="btn" id="btnSaveSettings">저장</button><button class="btn ghost" id="btnCloseSettings">닫기</button></div>
+    <div class="devonly hide">
+      <hr>
+      <label>프록시 서버 주소 (고급, 비워두면 기본값)</label>
+      <input id="proxyUrl" aria-label="프록시 서버 주소" placeholder="https://…/v1/messages">
+    </div>
+    <div class="row" style="margin-top:16px"><button class="btn devonly hide" id="btnSaveSettings">저장</button><button class="btn ghost" id="btnCloseSettings">닫기</button></div>
     <hr>
     <div id="cloudBox">
       <label style="margin-top:0">기기 간 동기화</label>
@@ -507,46 +594,46 @@
   document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(d); });
 })();
 </script>
-<script src="config.js?v=1259"></script>
-<script src="track.js?v=1259"></script>
-<script src="cloud.js?v=1259"></script>
-<script src="usage.js?v=1259"></script>
-<script src="places.js?v=1259"></script>
-<script src="people.js?v=1259"></script>
-<script src="astro.js?v=1259"></script>
-<script src="lunar.js?v=1259"></script>
-<script src="engine.js?v=1259"></script>
-<script src="saenggeuk.js?v=1259"></script><script src="gise.js?v=1259"></script>
-<script src="panjeong.js?v=1259"></script>
-<script src="sipseong.js?v=1259"></script><script src="sipseong-byeonhwa.js?v=1259"></script><script src="byeonhwa-jogak.js?v=1259"></script><script src="byeonhwa.js?v=1259"></script><script src="bunya.js?v=1259"></script><script src="home-cats.js?v=1259"></script><script src="love.js?v=1259"></script><script src="pair.js?v=1259"></script>
-<script src="questions.js?v=1259"></script>
-<script src="wongook.js?v=1259"></script>
-<script src="seolmyeongseo.js?v=1259"></script>
-<script src="chaeyong.js?v=1259"></script>
-<script src="brief.js?v=1259"></script>
-<script src="chaeksadan.js?v=1259"></script>
-<script src="geunamja.js?v=1259"></script>
-<script src="maeum.js?v=1259"></script>
-<script src="gunghap.js?v=1259"></script>
-<script src="sheets.js?v=1259"></script>
-<script src="hwakin.js?v=1259"></script>
-<script src="mun.js?v=1259"></script>
-<script src="mun/all.js?v=1259"></script>
-<script src="typecard.js?v=1259"></script>
-<script src="gyeokguk.js?v=1259"></script>
-<script src="memo.js?v=1259"></script>
-<script src="classic.js?v=1259"></script>
-<script src="gungtong-wonmun.js?v=1259"></script><script src="ilju.js?v=1259"></script><script src="yeongyeok.js?v=1259"></script><script src="samyeong.js?v=1259"></script><script src="gwanjeom.js?v=1259"></script><script src="jeongtong.js?v=1259"></script>
-<script src="gunghap-gwanjeom.js?v=1259"></script><script src="ssom-gwanjeom.js?v=1259"></script><script src="ssom-baram.js?v=1259"></script><script src="ssom-dangye.js?v=1259"></script><script src="ssom-daehwa.js?v=1259"></script><script src="ssom-webtoon.js?v=1259"></script><script src="ssom-webtoon-2.js?v=1259"></script><script src="ssom-webtoon-3.js?v=1259"></script><script src="ssom-wongo.js?v=1259"></script><script src="jt-webtoon.js?v=1259"></script><script src="jt-webtoon-2.js?v=1259"></script><script src="ssom-score.js?v=1259"></script><script src="ssom-score-mal.js?v=1259"></script><script src="ssom-card.js?v=1259"></script><script src="ssom-card-mal.js?v=1259"></script><script src="ssom.js?v=1259"></script><script src="gunghap-chongnon.js?v=1259"></script>
-<script src="taekilsim.js?v=1259"></script>
-<script src="stories.js?v=1259"></script>
-<script src="tongbyeon.js?v=1259"></script>
-<script src="rules-wealth-love.js?v=1259"></script>
-<script src="rules-health-study-move.js?v=1259"></script>
-<script src="share.js?v=1259"></script>
-<script src="ai.js?v=1259"></script>
-<script src="pay.js?v=1259"></script>
-<script src="app.js?v=1259"></script>
-<script src="landing.js?v=1259"></script>
+<script src="config.js?v=1260"></script>
+<script src="track.js?v=1260"></script>
+<script src="cloud.js?v=1260"></script>
+<script src="usage.js?v=1260"></script>
+<script src="places.js?v=1260"></script>
+<script src="people.js?v=1260"></script>
+<script src="astro.js?v=1260"></script>
+<script src="lunar.js?v=1260"></script>
+<script src="engine.js?v=1260"></script>
+<script src="saenggeuk.js?v=1260"></script><script src="gise.js?v=1260"></script>
+<script src="panjeong.js?v=1260"></script>
+<script src="sipseong.js?v=1260"></script><script src="sipseong-byeonhwa.js?v=1260"></script><script src="byeonhwa-jogak.js?v=1260"></script><script src="byeonhwa.js?v=1260"></script><script src="bunya.js?v=1260"></script><script src="home-cats.js?v=1260"></script><script src="love.js?v=1260"></script><script src="pair.js?v=1260"></script>
+<script src="questions.js?v=1260"></script>
+<script src="wongook.js?v=1260"></script>
+<script src="seolmyeongseo.js?v=1260"></script>
+<script src="chaeyong.js?v=1260"></script>
+<script src="brief.js?v=1260"></script>
+<script src="chaeksadan.js?v=1260"></script>
+<script src="geunamja.js?v=1260"></script>
+<script src="maeum.js?v=1260"></script>
+<script src="gunghap.js?v=1260"></script>
+<script src="sheets.js?v=1260"></script>
+<script src="hwakin.js?v=1260"></script>
+<script src="mun.js?v=1260"></script>
+<script src="mun/all.js?v=1260"></script>
+<script src="typecard.js?v=1260"></script>
+<script src="gyeokguk.js?v=1260"></script>
+<script src="memo.js?v=1260"></script>
+<script src="classic.js?v=1260"></script>
+<script src="gungtong-wonmun.js?v=1260"></script><script src="ilju.js?v=1260"></script><script src="yeongyeok.js?v=1260"></script><script src="samyeong.js?v=1260"></script><script src="gwanjeom.js?v=1260"></script><script src="jeongtong.js?v=1260"></script>
+<script src="gunghap-gwanjeom.js?v=1260"></script><script src="ssom-gwanjeom.js?v=1260"></script><script src="ssom-baram.js?v=1260"></script><script src="ssom-dangye.js?v=1260"></script><script src="ssom-daehwa.js?v=1260"></script><script src="ssom-webtoon.js?v=1260"></script><script src="ssom-webtoon-2.js?v=1260"></script><script src="ssom-webtoon-3.js?v=1260"></script><script src="ssom-wongo.js?v=1260"></script><script src="jt-webtoon.js?v=1260"></script><script src="jt-webtoon-2.js?v=1260"></script><script src="ssom-score.js?v=1260"></script><script src="ssom-score-mal.js?v=1260"></script><script src="ssom-card.js?v=1260"></script><script src="ssom-card-mal.js?v=1260"></script><script src="ssom.js?v=1260"></script><script src="gunghap-chongnon.js?v=1260"></script>
+<script src="taekilsim.js?v=1260"></script>
+<script src="stories.js?v=1260"></script>
+<script src="tongbyeon.js?v=1260"></script>
+<script src="rules-wealth-love.js?v=1260"></script>
+<script src="rules-health-study-move.js?v=1260"></script>
+<script src="share.js?v=1260"></script>
+<script src="ai.js?v=1260"></script>
+<script src="pay.js?v=1260"></script>
+<script src="app.js?v=1260"></script>
+<script src="landing.js?v=1260"></script>
 </body>
 </html>

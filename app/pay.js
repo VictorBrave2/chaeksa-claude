@@ -36,8 +36,9 @@
   // 2026-09-12 밤 — 책사 그림 전부 지움. 이제 콘텐츠마다 한 장(art/story-<코드>.webp, 웹툰식 장면)이고
   // 결제 화면도 그 그림을 쓴다. 아직 없는 그림은 onerror 로 빠진다 — 빈 액자가 아니라 글자 카드가 된다.
   // 2026-10-01 — 파는 것은 셋(출산택일 · 「사랑할 때만 나오는 당신」 전체판 · 행동양식 궁합). 옛 9,900원 장 여덟 그림은 걷었다.
+  // 10-02 love_pair(SSS급 그 사람 사용설명서)는 홈 칸 · 표지와 같은 그림으로 — love-cover 는 「사랑할 때만 나오는 당신」 표지였다.
   const 그림 = {
-    taekil: 'art/taekil-main.webp', love_full: 'art/love-main.webp', love_pair: 'art/love-cover.webp',
+    taekil: 'art/taekil-main.webp', love_full: 'art/love-main.webp', love_pair: 'art/story-friend-to-lover.webp',
   };
   // 값 앞에 붙는 말. 값 자체는 products 표에만 있다 — 여기는 이름표뿐이다.
   // 「출시 기념가 9,900원」처럼만 쓴다. 줄 그은 정가는 보이지 않는다(10-01 사장님).
@@ -69,6 +70,36 @@
     return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
   };
 
+  /**
+   * 손님이 지금 결제할 수 없나 — 갈림은 여기 하나(10-02). true 면 값 단추 대신 「곧 열려요」를 그린다.
+   * 결제사가 모두 시험 모드(mode:'test')면 서버가 손님 주문을 막는다(api/pay.js kopen → test_only).
+   * 서버가 여는 것은 검수 계정(super)과 시험을 손님에게 연 날(PAY_TEST_OPEN → GET 의 testOpen)뿐이다.
+   * 그동안 손님은 [필수] 칸에 체크하고 단추를 누른 뒤에야 「아직 살 수 없습니다」를 봤다 — 그 헛걸음을 없앤다.
+   * 운영 키가 들어와 mode 가 'live' 가 되면 저절로 false — 원래 단추가 돌아온다. 결제 상태를 못 받았으면(네트워크) false.
+   */
+  async function 곧열림() {
+    const st = await state();
+    if (!st || st.ok === false) return false;
+    if (st.testOpen) return false;
+    const pv = await providers();
+    if (pv.some((p) => p.mode !== 'test')) return false;
+    try { const U = global.ChaeksaUsage; if (U && U.plan && U.plan() === 'super') return false; } catch (e) {}
+    return true;
+  }
+  /**
+   * 값 단추 자리(wrap — 청약철회 안내 · [필수] 칸 · 값 단추 · 안내 줄을 감싼 칸)를 「곧 열려요」로 바꾼다.
+   * 연애 속의 나(love.js)와 사용설명서(pair.js)가 상자를 그린 뒤 부른다. 바꿨으면 true.
+   * 10-02 사장님 「카톡책사 삭제」 — 카카오톡 채널 추가 단추는 걷었다.
+   */
+  async function 곧열림자리(wrap) {
+    let 곧 = false;
+    try { 곧 = await 곧열림(); } catch (e) { 곧 = false; }
+    if (!곧 || !wrap || !wrap.isConnected || wrap.querySelector('[data-busy]')) return false;
+    wrap.innerHTML = '<p style="margin:0 0 4px"><b>결제는 곧 열려요.</b></p>'
+      + '<p style="margin:0">열리면 이 자리에서 바로 결제하고 볼 수 있어요.</p>';
+    return true;
+  }
+
   /** 토스 SDK 는 결제할 때만 필요하다. 앱 첫 화면을 2MB 로 무겁게 만들 이유가 없다. */
   function loadSdk() {
     if (_sdk) return _sdk;
@@ -98,7 +129,7 @@
 
   const REASON = {
     unauthenticated: '결제하시려면 먼저 로그인해 주세요.',
-    not_ready: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — b01099991263@gmail.com',
+    not_ready: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — dl4431@naver.com',
     no_product: '없는 상품입니다.',
     too_many: '오늘 연 주문이 너무 많습니다. 내일 다시 시도해 주세요.',
     no_order: '주문을 찾지 못했습니다.',
@@ -106,7 +137,7 @@
     amount_mismatch: '금액이 맞지 않아 승인을 멈췄습니다. 결제되지 않았습니다.',
     db: '주문 정보를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',
     server: '서버에서 문제가 생겼습니다. 잠시 뒤 다시 시도해 주세요.',
-    forbidden: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — b01099991263@gmail.com',
+    forbidden: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — dl4431@naver.com',
     bad_request: '결제 정보가 올바르지 않습니다. 처음부터 다시 결제해 주세요.',
     unverified: '결제 확인이 늦어지고 있습니다. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.',
     no_provider: '지금은 그 결제 수단을 쓸 수 없습니다.',
@@ -456,7 +487,7 @@
   // (받아 둔 날짜는 적어 주시면 나란히 비교한다). 병원이 말한 날짜는 의학 판단이라 그 안에서만 본다.
   // 적는 동안 이 기기에 초안으로 둔다 — 카카오 로그인이나 결제창을 다녀와도 다시 쓰지 않게(2026-09-11
   // 사장님 「결제하러 가기가 너무 빡세고 어지러워」). 접수되면 지우고, 접수된 것은 주문번호로 기억한다.
-  const 문의메일 = 'b01099991263@gmail.com';
+  const 문의메일 = 'dl4431@naver.com';
   const 초안키 = 'chaeksa.taekil.draft', 보낸키 = 'chaeksa.taekil.sent';
   const 초안수명 = 3 * 24 * 3600 * 1000;   // 사흘 지난 초안은 스스로 붙이지 않는다(남의 기기·옛 신청일 수 있다)
   const 글 = (s) => String(s == null ? '' : s).replace(/[&<>"']/g,
@@ -596,5 +627,5 @@
     문의메일,
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, won, 값, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판, 주문서 };
+  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, won, 값, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판, 주문서 };
 })(window);

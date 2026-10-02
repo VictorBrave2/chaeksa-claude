@@ -1,7 +1,9 @@
 /* 책사 앱 UI v1 */
 (function () {
   'use strict';
-  const E = ChaeksaEngine, f = E.fmt, AI = ChaeksaAI;
+  // AI 는 window. 로 읽는다(10-02 멈춤 안전장치) — ai.js 하나를 못 받으면 예전엔 이 줄에서 앱 전체가 섰다.
+  // 지금 ai.js 를 쓰는 곳은 걷은 기능과 개발용 설정 칸뿐이라, 없으면 그 칸만 비고 나머지는 그대로 돈다.
+  const E = ChaeksaEngine, f = E.fmt, AI = window.ChaeksaAI || null;
   const $ = (id) => document.getElementById(id);
   const KEY = 'chaeksa.profile', PKEY = 'chaeksa.partners';
   const HK = () => 'chaeksa.chat.' + (profile && profile.id ? profile.id : 'solo');
@@ -89,6 +91,7 @@
   };
 
   // ───── 테마: 하루의 리듬 ─────
+  // 10-02 index.html 머리 스크립트가 같은 규칙으로 처음 화면부터 낮/밤을 정해 둔다(밤에 흰 화면이 번쩍이던 것). 규칙을 바꾸면 둘을 같이.
   const TKEY = 'chaeksa.theme';
   const themeMode = () => localStorage.getItem(TKEY) || 'auto';
   const isNightHour = (d) => { const h = d.getHours(); return h < 6 || h >= 18; };
@@ -515,7 +518,8 @@
     $('landing').classList.add('hide'); $('formCard').classList.add('hide');
     $('btnSettings').classList.remove('hide');
     $('app').classList.remove('hide'); $('nav').classList.remove('hide');
-    $('subtitle').textContent = nim() ? `${nim()}의 책사단` : '나의 책사단';
+    // 10-02 「책사단」은 걷은 말이다. 처음 온 손님은 index.html 의 소개 한 줄(연애 · 궁합 · 출산택일)을 보고, 저장한 뒤에는 「○○님의 책사」.
+    $('subtitle').textContent = nim() ? `${nim()}의 책사` : '나의 책사';
     renderPeopleBtn();
     renderToday(); try { renderMe(); } catch (e) {} renderPartners(); renderHome();   // 09-25 원국 탭(me) 걷음 — 홈 안의 원국만
     try { renderWtHome(); } catch (e) { try { console.warn('홈 목록 실패:', e); } catch (e2) {} }
@@ -1135,7 +1139,7 @@
     };
     // 내 원국이 없으면 두 분을 놓을 수 없다. (원국이 없으면 아래 탭이 안 보이지만, 주소로 들어오는 길을 막아 둔다.)
     if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요. 내 원국이 있어야 두 분을 나란히 놓아요.', '내 생년월일 넣기', () => go('home')); return; }
-    if (!P || !GC) { 안내('지금은 궁합총론을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
+    if (!P || !GC) { 안내('지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요. 넣으면 바로 두 분을 나란히 놓아요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
@@ -1174,7 +1178,7 @@
       add.textContent = 단추; add.classList.remove('ghost'); add.onclick = 누르면; out.innerHTML = '';
     };
     if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
-    if (!P || !SP) { 안내('지금은 연애궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
+    if (!P || !SP) { 안내('지금은 웹툰궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
@@ -1651,13 +1655,11 @@
   }
 
   // 2026-08-30 「카카오로 물어보기도 다 치우자」 — 비워두면 카카오 버튼이 스스로 숨고
-  // 메일만 남는다(그렇게 만들어 두었다). 채널 아이디는 되살릴 때를 위해 주석으로 남긴다: '_jdqxaX'
+  // 메일만 남는다(그렇게 만들어 두었다). 10-02 사장님 「카톡책사 삭제」 — 책사 카카오톡 채널은 쓰지 않는다.
   const KAKAO_CHANNEL = '';
-  // 택일 신청서(네이버폼). 여기가 주 창구다 — 2026-09-10 까지 이 탭의 유일한 창구가
-  // mailto: 하나였는데, 모바일에서 메일 앱이 안 잡히면 눌러도 아무 일이 안 난다.
-  // 블로그에서 오는 사람은 거의 모바일이라 사실상 창구가 없었던 셈이다.
-  // 비우면 메일이 다시 주 버튼으로 올라간다.
-  const TAEK_FORM_URL = 'https://naver.me/FdqTMrhq';
+  // 택일 신청 창구(네이버폼) 주소는 config.js CHAEKSA_TAEKIL_INTAKE_URL 한 곳에만 둔다(10-02 — 여기 따로 적어 둔 같은 주소를 걷었다).
+  // 2026-09-10 까지 이 탭의 유일한 창구가 mailto: 하나였다 — 모바일에서 메일 앱이 안 잡히면 눌러도 아무 일이 안 나서
+  // 블로그에서 오는 사람(거의 모바일)에게는 사실상 창구가 없었다. 그래서 신청 단추는 네이버폼(또는 사이트 신청서)이고 메일은 곁길이다.
 
   const KAKAO_CHAT = (() => {
     const v = String(KAKAO_CHANNEL || '').trim();
@@ -1710,32 +1712,30 @@
     if (window.ChaeksaPay && ChaeksaPay.product) ChaeksaPay.product('taekil').then(p => {
       if (p) document.querySelectorAll('[data-price="taekil"]').forEach(el => { el.textContent = ChaeksaPay.won(p.amount); });
     }).catch(() => {});
-    a.href = 'mailto:b01099991263@gmail.com?subject='
+    a.href = 'mailto:dl4431@naver.com?subject='
       + encodeURIComponent('[책사] 출산택일 상담 문의')
       + '&body=' + encodeURIComponent(TAEK_FORM);
 
-    // 신청서가 주 버튼이다(화면에 그렇게 적혀 있다). 주소가 비어 있을 때만
-    // 메일을 도로 올린다 — 그때는 메일이 유일한 창구라 작게 두면 안 된다.
-    const f = $('btnTaekForm');
-    if (f) {
-      if (TAEK_FORM_URL) { f.href = TAEK_FORM_URL; }
-      else {
-        f.classList.add('hide');
-        if ($('taekFormNote')) $('taekFormNote').classList.add('hide');
-        a.className = 'btn';
-        a.innerHTML = '<span class="seal">書</span> 상담 문의하기';
-      }
+    // 신청 단추는 하나다(10-02). 네이버폼 창구가 열려 있으면 네이버폼으로 바로 보내고(화면 글이 그 길로 적혀 있다),
+    // 창구 주소가 비면(결제창이 열리는 날 config.js 에서 지운다) 사이트 신청서(taekil-apply.html — 신청서 + 결제)로 돌리고
+    // 세 걸음 글도 결제 길로 바꾼다. 네이버폼 단추 누름은 신청 페이지와 같은 사건(naverform)으로 센다.
+    const go = $('btnTaekGo'), 폼 = String(window.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
+    if (go && 폼) {
+      go.href = 폼; go.target = '_blank'; go.rel = 'noopener';
+      go.addEventListener('click', () => { try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('naverform'); } catch (e) {} });
+    } else if (go) {
+      go.href = 'taekil-apply.html'; go.removeAttribute('target');
+      if ($('taekGoLabel')) $('taekGoLabel').textContent = '보고서 신청하기';
+      if ($('taekSteps')) $('taekSteps').innerHTML = '<p><b>①</b> 신청서에 아는 만큼 적고</p>'
+        + '<p><b>②</b> 그 자리에서 결제하시면</p>'
+        + '<p><b>③</b> 보통 2~3일 안에 보고서를 메일로 보내 드립니다.</p>';
+      ['taekAskLine', 'taekFormNote'].forEach(id => { if ($(id)) $(id).classList.add('hide'); });
     }
 
     const k = $('btnTaekKakao');
     if (!k || !KAKAO_CHAT) return;
     k.classList.remove('hide');
     if ($('taekKakaoNote')) $('taekKakaoNote').classList.remove('hide');
-    const ch = $('taekChannel'), cl = $('taekChannelLink');
-    if (ch && cl && KAKAO_HOME !== KAKAO_CHAT) {
-      cl.href = KAKAO_HOME;
-      ch.classList.remove('hide');
-    }
     k.onclick = () => {
       const ok = copyText(TAEK_FORM);
       // 창 열기는 클릭 제스처 안에서 해야 팝업 차단에 안 걸린다
@@ -1940,7 +1940,7 @@
     억부:     ['형준', '저울을 든'],   궁위:     ['성아', '자리를 읽는'],
     인연:     ['연희', '인연을 맡은'], 재물:     ['계상', '셈에 밝은'],
     천직:     ['장현', '일을 보는'],   운로:     ['소현', '멀리 보는'],
-    택일:     ['검명', '때를 고르는'],   좌장:     ['태윤', '책사단을 이끄는'],
+    택일:     ['검명', '때를 고르는'],   좌장:     ['태윤', '의논을 모으는'],
   };
   // 사람 이름으로 온 것도 축으로 되돌린다 — 보험이다.
   // AI 는 프롬프트대로 축 이름(〔택일〕)을 적고 화면이 사람 이름으로 바꿔 세운다.
@@ -2442,9 +2442,9 @@
           const 자동 = !(err && (err.timeout || err.truncated || err.blocked)) && (간명예열.fails || 0) < 1;
           간명예열.fails = (간명예열.fails || 0) + 1;
           if (자동) {
-            간명말('책사단을 부르지 못했습니다(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 시도합니다.');
+            간명말('글을 불러오지 못했어요(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 해 볼게요.');
             setTimeout(간명예열, 20000);
-          } else 간명말('책사단을 부르지 못했습니다 — ' + 원인.slice(0, 120), true);
+          } else 간명말('글을 불러오지 못했어요 — ' + 원인.slice(0, 120), true);
         });
     }).catch(() => { 간명예열.busy = false; });
   }
@@ -2453,18 +2453,18 @@
     const cacheKey = 간명키();
     let text = 간명캐시();
     if (!text) {
-      el.innerHTML = '<p class="hint">책사단이 둘러앉았습니다 — 잰 것을 펴서 의논하는 중입니다 (약 1분). 이 화면을 벗어나셔도 의논은 계속됩니다.</p>';
+      el.innerHTML = '<p class="hint">글을 만드는 중이에요(약 1분). 이 화면을 벗어나셔도 계속 만들어요.</p>';
       if (간명예열.busy) return;   // 이미 굽는 중 — 끝나면 다시 그려진다
       // 「로그인 상태를 확인해 주세요」라고 적혀 있었는데 AI.ready() 는 로그인과 무관하다
       // (기본 프록시가 있어 늘 참이다). 뜨더라도 엉뚱한 말이라 고쳤다.
-      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 책사단을 부를 수 없습니다 — 설정에서 비서 연결을 확인해 주세요.</p>'; return; }
+      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 글을 만들 수 없어요. 잠시 뒤에 다시 열어 주세요.</p>'; return; }
       // 여기까지 오는 일은 드물다 — 조립기가 원가 0으로 바로 써 주기 때문이다.
       // 조립기가 죽었을 때만 이 갈래가 산다.
       //
       // **손님은 굽지 못한다.** 서버가 401 로 막고 클라 한도도 0이라 돈은 안 새지만,
       // 여기서 간명예열() 을 부르면 실패만 하고 이상한 화면이 남는다. 사실대로 적는다.
       if (비로그인()) {
-        el.innerHTML = '<p class="hint">책사단의 글은 <b>카카오로 남겨 두신 뒤에</b> 열립니다.'
+        el.innerHTML = '<p class="hint">이 글은 <b>카카오로 로그인한 뒤에</b> 열립니다.'
           + ' 지금은 조립이 안 돼서 그렇습니다 — 잠시 뒤에 다시 열어 보셔도 됩니다.</p>';
         return;
       }
@@ -2566,22 +2566,38 @@
   // 무료 의논이 LLM 을 안 쓰게 된 뒤로 하는 일이 없고, 유료는 설정과 상관없이 opus 다(ai.js modelFor).
   // 저장된 tier 값은 그대로 두고 안 읽는다.
   // 사용량 상자(오늘 브리핑·책사단의 글·좌장의 원국 해석)는 2026-09-13 에 뺐다 — 사장님 「다 삭제해」. 그 셋을 부르는 문 자체를 지웠다.
+  // 10-02 개발용 칸(내 API 키 · 프록시 주소 · 저장 단추, index.html .devonly)은 주소에 ?dev=1 이 있을 때만 보인다.
+  // 손님에게는 쓸 일이 없고, 남이 알려 준 프록시 주소를 넣으면 사주 정보가 엉뚱한 곳으로 갈 수 있다.
+  const 개발자화면 = (() => { try { return new URLSearchParams(location.search).get('dev') === '1'; } catch (e) { return false; } })();
   function openSettings() {
     renderCloud();
-    const s = AI.settings(); $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
+    document.querySelectorAll('#settings .devonly').forEach(el => el.classList.toggle('hide', !개발자화면));
+    const s = (AI && AI.settings) ? AI.settings() : {}; $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
   }
   $('btnSettings').onclick = openSettings;
-  // 상단 「로그인」 — 설정 안에 묻혀 있던 로그인을 밖으로(2026-09-15 사장님 「설정에서 로그인을 밖으로 빼줘」).
-  // 설정 창을 열고 로그인 칸으로 내려가 이메일 접이를 편다. 로그인돼 있으면 단추는 숨는다(renderCloud).
-  const bl = $('btnLogin');
-  if (bl) bl.onclick = () => {
-    openSettings();
+  // 상단 「로그인」 — 카카오 단추 하나만 있는 작은 창(10-02). 예전에는 설정 창을 열어 개발용 칸 · 비밀번호 칸이 먼저 보였다.
+  // 이메일 로그인(메일 링크 · 심사 계정 비밀번호)은 「이메일 계정이 있어요」 → 설정 창의 이메일 칸으로 그대로 이어진다.
+  // 로그인돼 있으면 단추는 숨는다(renderCloud).
+  const closeLogin = () => { const m = $('loginSheet'); if (m) m.classList.add('hide'); };
+  function 이메일로그인열기() {
+    closeLogin(); openSettings();
     const box = $('cloudOut'); if (!box) return;
     const fold = box.querySelector('details.mailfold'); if (fold) fold.open = true;
     setTimeout(() => { try { box.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) {} }, 50);
+  }
+  const bl = $('btnLogin');
+  if (bl) bl.onclick = () => { const m = $('loginSheet'); if (m) m.classList.remove('hide'); else 이메일로그인열기(); };
+  if ($('loginSheet')) $('loginSheet').onclick = (e) => { if (e.target === $('loginSheet')) closeLogin(); };
+  if ($('btnCloseLogin')) $('btnCloseLogin').onclick = closeLogin;
+  if ($('lnMailLogin')) $('lnMailLogin').onclick = (e) => { e.preventDefault(); 이메일로그인열기(); };
+  if ($('btnKakaoLogin')) $('btnKakaoLogin').onclick = () => {
+    const C = window.ChaeksaCloud;
+    if (!C || !C.enabled || !C.enabled()) { closeLogin(); openSettings(); return; }   // 서버 준비 전 — 설정 창이 「아직 준비 중」을 말한다
+    try { C.signInWith('kakao'); } catch (e) { closeLogin(); openSettings(); cloudMsg(e.message); }
   };
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
   $('btnSaveSettings').onclick = () => {
+    if (!AI || !AI.settings) { $('settings').classList.add('hide'); return; }   // ai.js 를 못 받았으면 저장할 것이 없다
     const cur = AI.settings();
     AI.saveSettings({ apiKey: $('apiKey').value.trim(), tier: cur.tier || 'balanced', proxyUrl: $('proxyUrl').value.trim() });
     $('settings').classList.add('hide');
@@ -2695,16 +2711,27 @@
   $('btnStart2').onclick = enterOrLogin;
   // 09-25 사장님 「본인 프로필 저장 + 상대 프로필 저장으로 가자, 입구가 여러 개가 되잖아」 —
   // 첫 화면의 궁합 · 정통사주 · 컷씬 칸은 모두 같은 입구(첫 만남 → 그 사람)로 들어와 그 탭으로 간다. ssom.html 따로 폼 없음.
-  const 가는곳키 = 'chaeksa.goto';
-  function 들어가기(tab) {
-    try { sessionStorage.setItem(가는곳키, tab); } catch (e) {}
+  // 10-02 곳 — 탭 안의 한 칸(홈의 「이번 주」 bhCard 등). 입력을 거쳐 오면 시간이 흐르니 탭과 함께 적어 두었다가 도착한 뒤 그 칸으로 내려간다.
+  const 가는곳키 = 'chaeksa.goto', 가는칸키 = 'chaeksa.gotoSpot';
+  // 사주 없이 읽는 탭(NO_PROFILE_TABS — 출산택일)은 생년월일을 묻지 않고 바로 연다(10-02 — 부모 본인 생년월일은 받을 까닭이 없다).
+  // 원국이 없으면 탭이 든 #app 이 숨어 있다. 첫 화면 · 입력 칸을 접고 자리를 내준다(goHash 와 같은 일).
+  function 바로열기(tab) {
+    if (!profile) { $('landing').classList.add('hide'); $('formCard').classList.add('hide'); $('app').classList.remove('hide'); }
+    go(tab);
+  }
+  function 들어가기(tab, 곳) {
+    if (NO_PROFILE_TABS.indexOf(tab) >= 0) { 바로열기(tab); return; }
+    try { sessionStorage.setItem(가는곳키, tab); if (곳) sessionStorage.setItem(가는칸키, 곳); else sessionStorage.removeItem(가는칸키); } catch (e) {}
     if (hasProfile() && profile) { 도착(); return; }
     enterOrLogin();
   }
   function 도착() {
-    let tab = null; try { tab = sessionStorage.getItem(가는곳키); sessionStorage.removeItem(가는곳키); } catch (e) {}
+    let tab = null, 곳 = null;
+    try { tab = sessionStorage.getItem(가는곳키); 곳 = sessionStorage.getItem(가는칸키); sessionStorage.removeItem(가는곳키); sessionStorage.removeItem(가는칸키); } catch (e) {}
     if (!tab || !document.querySelector('.tab[data-tab="' + tab + '"]')) return;
+    if (곳) 홈자리 = 0;   // 보던 자리로 되감지 않는다 — 그 칸으로 간다
     go(tab);
+    if (곳) requestAnimationFrame(() => { const t = $(곳); if (t && !t.classList.contains('hide')) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     // 그 사람이 아직 없으면 바로 그 사람 폼을 연다(궁합 둘)
     if ((tab === 'ssom' || tab === 'chongnon' || tab === 'pair') && People()) { const me = People().active(); if (!People().list().some(p => !me || p.id !== me.id)) setTimeout(() => openPersonForm(null), 250); }
   }
@@ -2715,12 +2742,12 @@
   if ($('btnJeongtong')) $('btnJeongtong').onclick = () => 들어가기('jeongtong');
   // 09-30 연애 속의 나 — 첫 화면 · 홈 맨 위 카드. 저장된 사람이 있으면 바로 탭, 없으면 입구(첫 만남)를 거쳐 탭으로.
   document.querySelectorAll('[data-love]').forEach(a => a.onclick = (e) => { e.preventDefault(); 들어가기('love'); });
-  document.querySelectorAll('.lp-scene a[data-go]').forEach(a => a.onclick = (e) => { e.preventDefault(); 들어가기(a.dataset.go); });
-  try { const g = new URLSearchParams(location.search).get('go'); if (g) { sessionStorage.setItem(가는곳키, g); if (hasProfile() && profile) 도착(); else showForm(); } } catch (e) {}
+  // 네 컷 그림(.lp-scene)의 칸 누르기는 10-02 그림과 함께 걷었다 — 첫 화면 · 홈은 분류 칸(home-cats.js)이 들어가기()를 부른다.
+  // ?go=탭 처리는 파일 끝 「시작」으로 옮겼다(10-02). 여기서 하면 뒤의 showLanding · start 가 덮어써 홈 목록이 떴다.
   // 입력 컷 — 성별을 고르면 그림이 바뀐다(나: ss-me · ss-her / 그 사람: story-jigeum · story-sns)
   // 09-26 큰 판(1024) — 작은 판은 폼 폭에서 흐렸다. (주석을 줄 가운데 넣어 뒤가 잘렸던 것 고침 — feedback-edit-closing-quote 같은 종류)
   const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (그림[g.value] || 그림.F) + '.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
-  if ($('g')) { $('g').addEventListener('change', () => 컷바꾸기('g', 'fcCut', { M: 'jt-01-born-m', F: 'jt-01-born-f' })); 컷바꾸기('g', 'fcCut', { M: 'jt-01-born-m', F: 'jt-01-born-f' }); }
+  // 첫 만남 입력 칸의 컷(#fcCut)은 10-02 걷었다(배경 삽화가 대신한다). 그 사람 칸(#pfCut)만 성별로 바뀐다.
   if ($('pfG')) $('pfG').addEventListener('change', () => 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }));
   // 관문이 서 있을 때만 「로그인하고…」로 덮어쓴다. 내려 놓고 이 문구가 남으면
   // 일어나지도 않을 로그인을 랜딩이 계속 약속한다.
@@ -2981,7 +3008,25 @@
     }
   }
   goHash(booted);         // #탭이름 으로 들어온 경우 그 탭을 연다
+  // ?go=탭 — love.html · jeongtong.html · ssom.html · gunghap-chongnon.html 이 보낸 손님은 그 탭으로 곧장 간다.
+  // 사람이 있으면 그 탭, 없으면 입력 칸(넣고 나면 그 탭). 출산택일은 입력 없이 바로.
+  // 맨 끝에서 한다 — 앞에서 하면 위의 showLanding · start 가 덮어써 홈 목록이 떴다(10-02).
+  // 해시(#탭)로 이미 장이 열렸으면(결제 · 로그인 복귀) 그쪽이 먼저다.
+  try {
+    const g = new URLSearchParams(location.search).get('go');
+    const 해시탭 = (location.hash || '').replace(/^#/, '').replace(/^sheet-[a-z]+$/, 'sheet');
+    const 있는탭 = (t) => !!t && /^[a-z][\w-]*$/.test(t) && !!document.querySelector('.tab[data-tab="' + t + '"]');
+    if (있는탭(g) && !있는탭(해시탭)) {
+      // 새로고침해도 또 끌려가지 않게 주소에서 go 만 뗀다(from 같은 다른 꼬리는 그대로).
+      try { const q = new URLSearchParams(location.search); q.delete('go'); const s = q.toString(); history.replaceState(null, '', location.pathname + (s ? '?' + s : '') + location.hash); } catch (e) {}
+      들어가기(g);
+    }
+  } catch (e) {}
   복귀고르기();           // 결제하려다 로그인하러 떠났으면 그때 고른 사람을 다시 고른다
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
+  // 여기까지 오면 앱이 다 섰다 — index.html 머리의 오류 문지기가 이 표시를 보고 「새로 고침」 띠를 띄울지 정한다(10-02).
+  // 첫 화면 표시(data-boot)를 뗀다 — 여기서부터는 위에서 app.js 가 정한 화면이 그대로 보인다(10-02 첫 화면 깜빡임 막기, index.html 머리 · style.css).
+  document.documentElement.removeAttribute('data-boot');
+  window.ChaeksaReady = true;
 })();
