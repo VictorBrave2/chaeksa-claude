@@ -290,7 +290,7 @@
         봄('차7 단계 값(칩 · 연애 갈래 단계 칩)이 웹툰궁합 고르는 칸(ssom.js 고름칸) 값 안', [값들.size > 0, 없음목록(쓴.filter((v) => !값들.has(v)))], [true, '0']);
       }
       {
-        const 원 = { jeongtong: (await 받기('jeongtong.js?v=9b6afdadd0')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=64cbd4c726')) || '', app: (await 받기('app.js?v=fe12bd92aa')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
+        const 원 = { jeongtong: (await 받기('jeongtong.js?v=9b6afdadd0')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=64cbd4c726')) || '', app: (await 받기('app.js?v=a37ea2768f')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
         const 곳들 = new Set(칩.map((c) => c.길.곳).filter(Boolean)), 틀린 = [];
         곳들.forEach((s) => {
           if (/^jtCh\d+$/.test(s)) { if (!원.jeongtong.includes("id=\"jtCh' + 번호")) 틀린.push(s); }

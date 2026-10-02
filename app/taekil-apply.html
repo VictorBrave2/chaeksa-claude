@@ -56,6 +56,7 @@
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
+  <p class="hint" id="ownerBar" hidden style="margin:6px 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r2,14px)">검수 계정 — <a href="taekil-admin.html"><b>사장님 목록 →</b></a> · <a href="./#taekil">내 보고서 →</a></p>
   <h1>출산택일 보고서 신청</h1>
   <!-- 세 걸음은 택일 탭 · taekil.html · 택일 비용 글과 같은 말이다(10-02 「켜는 날」 — 바깥 신청 폼을 걷고 사이트 신청서 → 결제 → 「내 보고서」 한 길).
        처음 몇 건은 사장님이 확인한 뒤 내보낸다(app_flags.taekil_auto_release '0') — 「바로 열린다」고 적지 않는다. -->
@@ -369,6 +370,19 @@
   });
   F.읽기켜기(form, { 셈: function (n) { 영곳 = n === 0; 단추(); } });
   단추();
+})();
+</script>
+<script>
+// 10-02 사장님 「사장님 목록이 안보임」 — 검수 계정(super)이면 맨 위 띠로 사장님 목록 길을 보인다(화면 편의 — 실제 막음은 DB ai_plan()).
+(function () {
+  var n = 0;
+  function 보기() {
+    var bar = document.getElementById('ownerBar'); if (!bar) return;
+    var 수퍼 = false; try { 수퍼 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) {}
+    bar.hidden = !수퍼;
+    if (!수퍼 && ++n < 10) setTimeout(보기, 800);   // 로그인 표가 늦게 서는 경우
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 보기); else 보기();
 })();
 </script>
 </body>

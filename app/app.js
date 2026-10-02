@@ -1525,6 +1525,8 @@
     try { 수퍼 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) { 수퍼 = false; }
     const 딱지 = { todo: '만들기 →', no_intake: '신청서 붙이기 →', making: '만드는 중', checking: '확인 중', ready: '보고서 열기 →', canceled: '환불됨' };
     const 날 = (s) => { const d = new Date(s); return isNaN(d) ? '' : d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 결제'; };
+    const 수퍼길 = '<p class="hint" style="margin:10px 0 0">검수 계정 — <a href="taekil-admin.html">사장님 목록 →</a> · <a href="taekil-apply.html">사이트 신청서로 시험하기 →</a></p>';
+    if (수퍼) { box.innerHTML = '<div class="tk-mine"><h3>내 보고서</h3><p class="hint" style="margin:0">불러오는 중…</p>' + 수퍼길 + '</div>'; box.classList.remove('hide'); }
     T.mine().then(rows => {
       const xs = Array.isArray(rows) ? rows : [];
       if (!xs.length && !수퍼) { box.classList.add('hide'); box.innerHTML = ''; return; }
@@ -1532,10 +1534,10 @@
         + (xs.length ? xs.map(x => '<a class="tk-mine-row" href="' + escP(T.주소(x.id)) + '"><span><b>' + escP(x.range || '출산택일 보고서') + '</b>'
             + '<span>' + escP([날(x.paidAt), T.상태말[x.state] || ''].filter(Boolean).join(' · ')) + '</span></span><i>' + escP(딱지[x.state] || '보기 →') + '</i></a>').join('')
           : '<p class="hint" style="margin:0">이 계정으로 결제한 출산택일 보고서가 없어요.</p>')
-        + (수퍼 ? '<p class="hint" style="margin:10px 0 0">검수 계정 — <a href="taekil-admin.html">사장님 목록 →</a> · <a href="taekil-apply.html">사이트 신청서로 시험하기 →</a></p>' : '')
+        + (수퍼 ? 수퍼길 : '')
         + '</div>';
       box.classList.remove('hide');
-    }).catch(() => {});
+    }).catch(() => { if (수퍼) { box.innerHTML = '<div class="tk-mine"><h3>내 보고서</h3><p class="hint" style="margin:0">목록을 불러오지 못했어요. 새로 고침해 주세요.</p>' + 수퍼길 + '</div>'; box.classList.remove('hide'); } });
   }
 
   function wireTaekil() {

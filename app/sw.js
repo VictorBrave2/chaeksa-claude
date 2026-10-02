@@ -9,7 +9,7 @@
  *  그 밖(지문 없는 파일 · 숫자 ?v=) — 네트워크 먼저, 끊겼을 때만 캐시.
  *  캐시에는 제대로 받은 것(r.ok)만 넣는다 — 404 · 오류 쪽이 캐시에 남아 다음에 그것을 보이는 일이 없게.
  */
-const CACHE = 'chaeksa-v1268';          // tools_bust.py --bump 가 올린다 — 이 파일이 바뀌어야 브라우저가 새 일꾼을 받는다
+const CACHE = 'chaeksa-v1269';          // tools_bust.py --bump 가 올린다 — 이 파일이 바뀌어야 브라우저가 새 일꾼을 받는다
 const FILES_CACHE = 'chaeksa-files';    // ① 지문 붙은 파일 — 배포마다 지우지 않는다
 const IMG_CACHE = 'chaeksa-img';        // ② 그림
 const IMG_MAX = 400;
