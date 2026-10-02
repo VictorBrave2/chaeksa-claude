@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1260">
+<link rel="stylesheet" href="style.css?v=1263">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -28,14 +28,18 @@
   <h1 id="h">결제가 취소되었습니다</h1>
   <p id="msg">결제되지 않았습니다. 돈은 빠져나가지 않았습니다.</p>
   <p class="warn" id="code"></p>
+  <p id="backBuyNote" hidden></p>
+  <p id="backBuy" hidden><a class="btn go" id="backBuyA" href="./">다시 결제하러 가기</a></p>
   <p id="backApply" hidden><a class="btn go" href="taekil-apply.html">신청서로 돌아가 다시 결제하기</a></p>
   <p><a class="btn go" id="backHome" href="./">책사로 돌아가기</a></p>
-  <p><a class="btn sub" href="mailto:dl4431@naver.com?subject=%5B%EC%B1%85%EC%82%AC%5D%20%EA%B2%B0%EC%A0%9C%20%EB%AC%B8%EC%9D%98">메일로 문의하기</a></p>
+  <p><a class="btn sub" id="mailQ" href="mailto:dl4431@naver.com?subject=%5B%EC%B1%85%EC%82%AC%5D%20%EA%B2%B0%EC%A0%9C%20%EB%AC%B8%EC%9D%98">메일로 문의하기</a></p>
 </div>
 
-<script src="config.js?v=1260"></script>
-<script src="cloud.js?v=1260"></script>
-<script src="pay.js?v=1260"></script>
+<script src="config.js?v=1263"></script>
+<script src="cloud.js?v=1263"></script>
+<script src="pay.js?v=1263"></script>
+<script src="yaksok.js?v=1263"></script>
+<script src="oryu.js?v=1263"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -63,8 +67,24 @@
   // 첫 방문자는 「책사로 돌아가기」로 가면 신청 페이지로 가는 길이 없다). 창을 닫아 취소하면 토스가
   // orderId 를 붙이지 않으므로, 이 기기에 신청서 초안이 있는지로도 가린다.
   // 카카오는 늘 orderId 를 붙여 오므로 주문번호로만 가린다(연애 상품을 그만뒀는데 택일 신청서로 보내지 않게).
-  var 택일 = /^ck_taekil_/.test(orderId || '')
-    || (!카카오 && !!(window.ChaeksaPay && ChaeksaPay.주문서 && ChaeksaPay.주문서.초안()));
+  // 10-02 연애 두 상품을 그만두거나 막혔으면 그 화면으로 돌려보낸다 — 전에는 「책사로 돌아가기」(홈)뿐이라 사려던 화면을 다시 찾아야 했다.
+  // 주문번호 앞부분이 상품이다(ck_love_full_ · ck_love_pair_). 돌아가면 고른 사람 · 넣어 둔 생년월일은 그대로다(pair.js 고른키 · 저장된 사람).
+  var 연애곳 = /^ck_love_pair_/.test(orderId || '') ? ['pair', './#pair'] : /^ck_love_full_/.test(orderId || '') ? ['love', './#love'] : null;
+  if (연애곳) {
+    var Y = window.ChaeksaYaksok, 이름 = (Y && Y.이름(연애곳[0])) || '';
+    var 쪽지 = document.getElementById('backBuyNote');
+    쪽지.textContent = (이름 ? '「' + 이름 + '」 ' : '') + '결제 화면으로 돌아가요. ' + (연애곳[0] === 'pair' ? '고른 그 사람 그대로예요.' : '넣어 둔 내 생년월일 그대로예요.');
+    쪽지.hidden = false;
+    document.getElementById('backBuyA').href = 연애곳[1];
+    document.getElementById('backBuy').hidden = false;
+    document.getElementById('backHome').className = 'btn sub';
+  }
+
+  // 문의 메일에 화면 이름 · 주문번호 · 안 된 것을 미리 채운다(oryu.js 메일주소 — 생년월일은 안 싣는다). 그 파일이 없으면 처음 주소 그대로.
+  if (window.ChaeksaOryu) document.getElementById('mailQ').href = ChaeksaOryu.메일주소({ 화면: '결제 취소 · 실패', 주문: orderId, 무엇: document.getElementById('msg').textContent, 코드: code });
+
+  var 택일 = !연애곳 && (/^ck_taekil_/.test(orderId || '')
+    || (!카카오 && !!(window.ChaeksaPay && ChaeksaPay.주문서 && ChaeksaPay.주문서.초안())));
   if (택일) {
     document.getElementById('backApply').hidden = false;
     document.getElementById('backHome').className = 'btn sub';

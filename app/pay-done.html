@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1260">
+<link rel="stylesheet" href="style.css?v=1263">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
@@ -35,9 +35,11 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=1260"></script>
-<script src="cloud.js?v=1260"></script>
-<script src="pay.js?v=1260"></script>
+<script src="config.js?v=1263"></script>
+<script src="cloud.js?v=1263"></script>
+<script src="pay.js?v=1263"></script>
+<script src="yaksok.js?v=1263"></script>
+<script src="oryu.js?v=1263"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -53,13 +55,18 @@
   function draw(html) { out.innerHTML = html; }
 
   function fail(msg, code) {
+    // 10-02 문의 메일에 화면 이름 · 주문번호 · 안 된 것을 미리 채운다(oryu.js 메일주소 — 생년월일은 안 싣는다). 그 파일이 없으면 주소만.
+    // 연애 두 상품이면 「보던 화면」으로 돌려보낸다 — 그 화면이 서버에 산 것을 다시 묻는다(결제됐으면 열리고, 아니면 결제 상자).
+    var O = window.ChaeksaOryu, 메일 = O ? O.메일주소({ 화면: '결제 확인', 주문: orderId, 무엇: msg, 코드: code }) : 'mailto:dl4431@naver.com';
+    var 돌아갈 = { love_full: './#love', love_pair: './#pair' }[(String(orderId || '').match(/^ck_([a-z_]+?)_\d{14}_/) || [])[1]];
     draw('<div class="mark">止</div>'
       + '<h1>결제를 마치지 못했습니다</h1>'
       + '<p>' + esc(msg) + '</p>'
       + (code ? '<p class="warn">코드 ' + esc(code) + '</p>' : '')
       + '<p class="warn">돈이 빠져나갔는데 이 화면이 보인다면 아래로 알려주세요. 바로 확인해 돌려드립니다.</p>'
-      + '<p><a class="btn go" href="./">책사로 돌아가기</a></p>'
-      + '<p><a class="btn sub" href="mailto:dl4431@naver.com">dl4431@naver.com</a></p>');
+      + (돌아갈 ? '<p><a class="btn go" href="' + 돌아갈 + '">보던 화면으로 돌아가기</a></p><p><a class="btn sub" href="./">책사 처음으로</a></p>'
+               : '<p><a class="btn go" href="./">책사로 돌아가기</a></p>')
+      + '<p><a class="btn sub" href="' + esc(메일) + '">메일로 문의하기 (dl4431@naver.com)</a></p>');
   }
 
   // ── 출산택일 신청서 ──────────────────────────────────────────
@@ -190,10 +197,17 @@
         if (code === 'taekil') 접수(orderId);
         return;
       }
+      // 10-02 연애 두 상품은 산 화면으로 저절로 데려간다(3초) — 전에는 「곧 시작하겠습니다」와 단추 하나만 남아, 단추를 못 본 손님은 여기서 멈췄다.
+      // 돌아가면 그 화면이 서버에 산 것을 확인하고 바로 만들기 시작한다(love.js 열고시작 · pair.js 만들기). 만드는 시간은 상품 약속 장부(yaksok.js) 그대로.
+      // 시험 결제(검수 계정)는 「시험 결제 취소하기」를 누를 수 있게 저절로 넘어가지 않는다. 「여기 머물기」를 누르면 멈춘다. 승인 · 금액 확인은 위 그대로다.
+      var 연애 = code === 'love_full' || code === 'love_pair';
+      var Y = window.ChaeksaYaksok, 약 = (Y && Y.줄(code)) || {}, 저절로 = 연애 && !시험;
+      var 이어서 = '돌아가면 ' + (code === 'love_pair' ? '고른 그 사람의 생년월일시로' : '내 생년월일시로') + ' 바로 만들기 시작해요. '
+        + (약.시간 || '조금') + ' 걸리니 다 될 때까지 그 화면을 그대로 두세요.' + (r.already ? ' 이미 만든 것이 있으면 그대로 열려요.' : '');
       draw('<div class="mark">成</div>'
-        + '<h1>결제가 끝났습니다</h1>'
+        + '<h1>' + (연애 ? (r.already ? '이미 결제된 주문이에요. 봉인을 풀러 갑니다' : '결제됐어요. 봉인을 풀러 갑니다') : '결제가 끝났습니다') + '</h1>'
         + (시험 ? '<p><b>시험 결제 — 돈이 빠지지 않았습니다</b></p>' : '')
-        + '<p>' + (r.already ? '이미 처리된 주문입니다.' : '고맙습니다. 곧 시작하겠습니다.') + '</p>'
+        + '<p>' + (연애 ? esc(이어서) : (r.already ? '이미 처리된 주문입니다.' : '고맙습니다. 곧 시작하겠습니다.')) + '</p>'
         + '<div class="box">'
         +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
         +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
@@ -201,8 +215,11 @@
         + '</div>'
         + (code === 'taekil'
             ? '<p>출산택일은 <b>사람이 직접 계산</b>합니다.</p><div id="taekil-slot"></div>'
-            : '<p>결제하신 내용이 앱에서 열렸습니다.'
-              + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
+            : 연애
+              ? '<p class="warn" id="goSay">' + (저절로 ? '3초 뒤에 저절로 넘어가요.' : '') + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>'
+                + (저절로 ? '<p id="stayRow"><button class="btn sub" id="stay" type="button">여기 머물기</button></p>' : '')
+              : '<p>결제하신 내용이 앱에서 열렸습니다.'
+                + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
         + (시험 && 카카오 ? '<p><button class="btn sub" id="testRefund" type="button">이 시험 결제 취소하기(검수 계정)</button></p><p class="warn" id="testRefundMsg"></p>' : '')
         + '<p><a class="btn sub" href="./">책사로 돌아가기</a></p>');
@@ -216,6 +233,19 @@
         }).catch(function (e) { document.getElementById('testRefundMsg').textContent = String(e && e.message || e); 취소.disabled = false; });
       };
       if (code === 'taekil') 접수(orderId);
+      if (저절로) {
+        var 남은 = 3, 말 = document.getElementById('goSay'), 머물 = document.getElementById('stay');
+        var 째깍 = setInterval(function () {
+          if (--남은 > 0) { 말.textContent = 남은 + '초 뒤에 저절로 넘어가요.'; return; }
+          clearInterval(째깍); 말.textContent = '넘어가는 중이에요…';
+          location.replace(갈곳);   // 이 결제 확인 쪽은 「뒤로」 목록에 남기지 않는다(뒤로 가면 다시 끌려오지 않게)
+        }, 1000);
+        머물.onclick = function () {
+          clearInterval(째깍);
+          말.textContent = '여기 머물러요. 준비되면 「바로 보러 가기」를 눌러 주세요.';
+          var 줄 = document.getElementById('stayRow'); if (줄 && 줄.parentNode) 줄.parentNode.removeChild(줄);
+        };
+      }
     })
     .catch(function (e) { fail(String(e && e.message || e)); });
 })();

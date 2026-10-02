@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>약속 장부 시험</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}.info{color:#a60}</style></head>
+<body><div id="out">시험하는 중이에요…</div><div id="stage" hidden></div>
+<script src="config.js?v=1263"></script>
+<script src="bunya.js?v=1263"></script>
+<script src="yaksok.js?v=1263"></script>
+<script src="love.js?v=1263"></script>
+<script src="pair.js?v=1263"></script>
+<script src="home-cats.js?v=1263"></script>
+<script src="people.js?v=1263"></script>
+<script>
+// 상품 약속 장부 시험(10-02 개편 2묶음 「상품 약속 장부 한 줄씩 만들고, 모든 화면이 거기서 읽게 하기」).
+//   가 장부 꼴 · 나 값과 「무료」 · 다 화면이 장부를 읽는다(그려 보기 · 장부 한 칸을 바꾸면 같이 바뀐다)
+//   라 손으로 쓴 곳(약관 · 처리방침 · 검색 설명 · 화면 글)에 걷은 약속 0 · 만드는 시간 · 질문 수 · 보관 해가 장부와 같다(옛 문장을 넣으면 빨간불)
+//   마 한 사실은 한 곳 — 장부 글을 다른 파일에 손으로 옮겨 적지 않았다
+//   바 생년월일은 필요한 만큼만(10-02) — 입력창 맨 위 「필요한 것」이 장부에서 · 사용설명서는 그 사람 것만 · 그 사람부터 넣어도 「나」가 아니다(people.js)
+// tools_check.py 7) 이 라 · 마 를 배포 전에 한 번 더 본다. 결제 모듈(pay.js)은 싣지 않는다 — 값 자리는 빈 채로 그려진다(값은 상품표 한 곳).
+(async () => {
+  const out = document.getElementById('out'), stage = document.getElementById('stage');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const 줄들 = []; let 통과 = 0, 실패 = 0, 알림수 = 0;
+  const 글로 = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
+  const 봄 = (이름, 실제, 기대) => { const a = 글로(실제), b = 글로(기대), ok = a === b; ok ? 통과++ : 실패++; 줄들.push('<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + esc(이름) + (ok ? '' : ' — 기대 ' + esc(b) + ' · 실제 ' + esc(String(a).slice(0, 400))) + '</h2>'); };
+  const 알림 = (이름, 글) => { 알림수++; 줄들.push('<h2 class="info">! ' + esc(이름) + (글 ? ' — ' + esc(글) : '') + '</h2>'); };
+  const 머리 = (s) => 줄들.push('<h3>' + esc(s) + '</h3>');
+  const 없음목록 = (xs) => (xs.length ? xs.join(', ') : '0');
+  const 받기 = async (f) => { try { const r = await fetch(f + (f.includes('?') ? '&' : '?') + 'nocache=' + Date.now(), { cache: 'no-store' }); return r.ok ? r.text() : null; } catch (e) { return null; } };
+  const 있나 = async (f) => (await 받기(f)) != null;
+  // 주석을 걷은 사본 — 걷은 약속 · 숫자는 손님이 읽는 글에서만 찾는다(주석에 옛말을 적어 둔 것은 기록이다).
+  const 주석걷기 = (s) => String(s || '').replace(/<!--[\s\S]*?-->/g, ' ').replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:\\'"`])\/\/[^\n]*/gm, '$1');
+  const 목록글 = (el) => Array.from(el.querySelectorAll('li')).map((li) => li.textContent);
+  const 새칸 = () => { const d = document.createElement('div'); stage.appendChild(d); return d; };
+  const 글모음 = (v, xs = []) => { if (typeof v === 'string') xs.push(v); else if (Array.isArray(v)) v.forEach((x) => 글모음(x, xs)); else if (v && typeof v === 'object') Object.values(v).forEach((x) => 글모음(x, xs)); return xs; };
+  const 시간꼴 = /(\d+)\s?분\s?(남짓|쯤)/g, 질문꼴 = /질문\s?(\d+)\s?개/g, 해꼴 = /(\d+)\s?년\s?동안/g;
+  const 찾기 = (꼴, s) => Array.from(String(s).matchAll(꼴)).map((m) => m[0].replace(/\s/g, '').replace(/(이면|이)$/, ''));
+
+  // ── 장부 밖에서 정해진 것 ──
+  const 유료코드 = ['love_full', 'love_pair', 'taekil'];   // 10-01 사장님 「유료 셋」(products 표 · pay.html 시험판)
+  const 아는칸 = ['코드', '탭', '이름', '상품이름', '단위', '한줄', '홈한줄', '딱지', '미리', '신청', '만듦', '시간', '받는것', '보관', '필요', '환불', '자리', '그림', '입력단추'];
+  const 파는꼭 = ['탭', '상품이름', '단위', '한줄', '딱지', '받는것', '환불', '자리', '그림'];
+  const 아는조건 = ['장한줄'];
+  // 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
+  const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'pay-done.html', 'pay-fail.html', 'love.html',
+    'love.js?v=1263', 'pair.js?v=1263', 'home-cats.js?v=1263', 'app.js?v=1263', 'pay.js?v=1263', 'gunghap-gwanjeom.js?v=1263', 'bunya.js?v=1263'];
+  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=1263', 'pair.js?v=1263', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=1263'];
+  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=1263', 'pair.js?v=1263', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=1263', 'home-cats.js?v=1263'];
+  const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=1263', 'pair.js?v=1263'];
+
+  try {
+    const Y = window.ChaeksaYaksok, T = Y && Y.장부;
+    머리('가. 장부 꼴');
+    봄('가1 전역 ChaeksaYaksok 이 있다', !!(Y && T && T.콘텐츠), true);
+    if (!Y) throw new Error('yaksok.js 가 실리지 않았다');
+    const 소스 = await 받기('yaksok.js?v=1263');
+    const 시작 = '/*장부 시작*/', 끝 = '/*장부 끝*/';
+    봄('가2 장부 시작 · 장부 끝 표시가 한 번씩', [String(소스).split(시작).length - 1, String(소스).split(끝).length - 1], [1, 1]);
+    let 파싱 = null; try { 파싱 = JSON.parse(소스.slice(소스.indexOf(시작) + 시작.length, 소스.indexOf(끝))); } catch (e) { 파싱 = null; }
+    봄('가2 두 표시 사이가 JSON 한 덩어리 = 실린 장부(tools_check.py 가 그대로 읽는다)', 파싱 != null && JSON.stringify(파싱) === JSON.stringify(T), true);
+    봄('가3 맨 위 열쇠', Object.keys(T), ['콘텐츠', '차례', '무료라고 쓰지 않는 콘텐츠', '걷은 약속', '확인 대기']);
+    const 키들 = Object.keys(T.콘텐츠), 파는 = 키들.filter((k) => T.콘텐츠[k].코드), 무료 = 키들.filter((k) => !T.콘텐츠[k].코드);
+    봄('가4 칸 이름 — 아는 칸만', 없음목록([].concat(...키들.map((k) => Object.keys(T.콘텐츠[k]).filter((c) => !아는칸.includes(c)).map((c) => k + '.' + c)))), '0');
+    봄('가5 파는 줄마다 꼭 있을 칸(탭 · 상품이름 · 단위 · 한줄 · 딱지 · 받는것 · 환불 · 자리 · 그림)', 없음목록([].concat(...파는.map((k) => 파는꼭.filter((c) => !(T.콘텐츠[k][c] && (c !== '받는것' || T.콘텐츠[k][c].length))).map((c) => k + '.' + c)))), '0');
+    봄('가6 딱지 — 파는 줄은 {값} 자리가 있고 무료 줄은 없다', 없음목록(키들.filter((k) => { const d = T.콘텐츠[k].딱지 || ''; return !d || /\{값\}/.test(d) !== !!T.콘텐츠[k].코드; })), '0');
+    봄('가7 코드 = 유료 셋(10-01 사장님) · 차례 = 파는 줄 전부', [파는.map((k) => T.콘텐츠[k].코드).sort(), T.차례.slice().sort()], [유료코드.slice().sort(), 파는.slice().sort()]);
+    봄('가8 이름이 다 찾힌다(장부 또는 분야 표 bunya.js)', 없음목록(키들.filter((k) => !Y.이름(k))), '0');
+    봄('가9 받는것 조건 이름은 아는 것만(장한줄)', 없음목록([].concat(...파는.map((k) => T.콘텐츠[k].받는것.filter((t) => Array.isArray(t) && !(t.length === 2 && 아는조건.includes(t[1]))).map(() => k)))), '0');
+    {
+      const 첫화면 = await 받기('index.html');
+      const 탭들 = new Set(Array.from((첫화면 || '').matchAll(/data-tab="([a-z]+)"/g)).map((m) => m[1]));
+      const 없는 = [];
+      for (const k of 키들) {
+        const r = T.콘텐츠[k];
+        if (/\.html$/.test(r.탭)) { if (!(await 있나(r.탭))) 없는.push(k + ' 탭 ' + r.탭); } else if (!탭들.has(r.탭)) 없는.push(k + ' 탭 ' + r.탭);
+        if (r.자리) { const m = r.자리.match(/^\.\/\?go=([a-z]+)$/); if (m ? !탭들.has(m[1]) : !(await 있나(r.자리))) 없는.push(k + ' 자리 ' + r.자리); }
+        if (r.그림 && !(await 있나(r.그림))) 없는.push(k + ' 그림 ' + r.그림);
+      }
+      봄('가10 탭 · 결제하는 자리 · 그림이 다 있다', 없음목록(없는), '0');
+    }
+
+    머리('나. 값과 「무료」');
+    봄('나1 장부 글에 「숫자 + 원」 0(값은 상품표 products 한 곳)', 없음목록(키들.filter((k) => 글모음(T.콘텐츠[k]).some((s) => /\d[\d,]*\s?원(?![가-힣])/.test(s)))), '0');
+    봄('나2 무료라고 쓰지 않는 콘텐츠(사랑할 때만 나오는 당신 — 10-02 사장님 「무료범위없이 예시만」)의 글에 「무료」 0', 없음목록(T['무료라고 쓰지 않는 콘텐츠'].filter((k) => !T.콘텐츠[k] || 글모음(T.콘텐츠[k]).some((s) => /무료/.test(s)))), '0');
+    봄('나3 딱지 — 값을 못 받으면 그 자리째 빠지고, 받으면 붙는다', 파는.map((k) => [/\{값\}|·\s*$/.test(Y.딱지글(k)), Y.딱지글(k, 'X원').endsWith('X원'), Y.딱지html(k).includes('data-yaksok-price="' + T.콘텐츠[k].코드 + '"')]), 파는.map(() => [false, true, true]));
+    봄('나4 사장님 딱지 말(10-02) — 「예시 보기 · 값」 · 「질문 3개 무료 · 값」(사장님 「그대로두기」)', [Y.딱지글('love', 'X원'), Y.딱지글('pair', 'X원')], ['예시 보기 · X원', '질문 3개 무료 · X원']);
+    봄('나5 사용설명서 만드는 시간 = 3분쯤(10-02 사장님 「설명서3분으로 설명」)', Y.줄('love_pair').시간, '3분쯤');
+
+    머리('다. 화면이 장부를 읽는다(그려 보기)');
+    const LV = window.ChaeksaLoveView, PV = window.ChaeksaPairView, HC = window.ChaeksaHomeCats;
+    봄('다0 love.js · pair.js · home-cats.js 가 실렸다', [!!(LV && LV.사기상자 && LV.잠금상자 && LV.끝상자), !!(PV && PV.결제상자), !!(HC && HC.그리기)], [true, true, true]);
+    const 생일 = { year: 1901, month: 1, day: 1, hour: 0, minute: 0, gender: 'F', longitude: null, tzOffset: null };   // 시험용 — 이 기기에 남은 결과와 겹치지 않을 해
+    {
+      const a = 새칸(); LV.사기상자(a, 생일, () => {});
+      봄('다1 연애 결제 상자(결제 전) — 받는 것 = 장부 love 줄', 목록글(a), Y.받는것목록('love'));
+      봄('다1 연애 결제 상자 — 만드는 때와 시간(장부 만듦 · 시간)', a.textContent.includes(Y.만듦글('love')), true);
+      const 잠긴 = { items: [{ id: 'q1', section: '썸을 탈 때', q: '시험 질문', locked: true }], portrait: { locked: true, title: '시험' } };
+      const b = 새칸(); LV.잠금상자(b, 잠긴, 생일);
+      const c = 새칸(); LV.잠금상자(c, Object.assign({}, 잠긴, { portrait: { locked: true, title: '시험', chapters: { '썸을 탈 때': '한 줄' } } }), 생일);
+      봄('다2 연애 잠금상자 — 장 한 줄이 없는 결과는 그 줄만 빼고, 있는 결과는 장부 그대로', [목록글(b), 목록글(c)], [Y.받는것목록('love', { 장한줄: false }), Y.받는것목록('love')]);
+      const d = 새칸(); LV.끝상자(d, 잠긴);
+      const 단추 = d.querySelector('#lvPair');
+      봄('다3 연애 끝상자 — 이름 · 미리 보는 것 · 단추 딱지가 장부 pair 줄', [d.querySelector('.lv-t').textContent, d.textContent.includes(Y.줄('pair').미리), 단추 && 단추.textContent], [Y.이름('pair'), true, '그 사람 사용설명서 보기 — ' + Y.딱지글('pair')]);
+      const e = 새칸(); PV.결제상자(e, null, 3, null);
+      봄('다4 사용설명서 결제 상자 — 받는 것 · 만드는 때와 시간 = 장부 pair 줄', [목록글(e), e.textContent.includes(Y.만듦글('pair'))], [Y.받는것목록('pair'), true]);
+      const f = 새칸(); Y.무엇을사나(f);
+      봄('다5 pay.html 「무엇을 사나」 — 상품마다 받는 것 = 장부', T.차례.map((k) => 목록글(f.querySelector('[data-yaksok="' + k + '"]'))), T.차례.map((k) => Y.받는것목록(k)));
+      봄('다5 pay.html 「무엇을 사나」 — 상품이름 · 단위 · 한줄이 보인다', T.차례.filter((k) => { const t = f.querySelector('[data-yaksok="' + k + '"]').textContent, r = T.콘텐츠[k]; return !(t.includes(r.상품이름) && t.includes(r.단위) && t.includes(Y.한줄(k))); }), []);
+      const 페이 = await 받기('pay.html');
+      const 블록 = String(페이).split('무엇을 사나')[1] ? String(페이).split('무엇을 사나')[1].split('id="list"')[0] : '';
+      봄('다5 pay.html 은 장부를 싣고 부르며, 「무엇을 사나」 자리에 손으로 쓴 목록(li)이 없다', [/src="yaksok\.js/.test(페이), /Y\.무엇을사나\(/.test(페이), /<li>/.test(블록)], [true, true, false]);
+      const g = 새칸(); HC.그리기(g);
+      const 칸들 = Array.from(g.querySelectorAll('a.cat[data-key]'));
+      봄('다6 홈 칸 — 이름 · 딱지가 장부(무료 콘텐츠 이름은 분야 표)에서', 칸들.filter((a) => { const k = a.getAttribute('data-key'), t = a.querySelector('.t'); return a.querySelector('.n').textContent !== Y.이름(k) || (t ? t.textContent : '') !== Y.딱지글(k); }).map((a) => a.getAttribute('data-key')), []);
+      봄('다6 홈 칸 — 장부의 콘텐츠가 홈에 서 있다(연애 · 사용설명서 · 출산택일 · 정통사주 · 정통궁합 · 웹툰궁합)', ['love', 'pair', 'taekil', 'jeongtong', 'chongnon', 'ssom'].filter((k) => !칸들.some((a) => a.getAttribute('data-key') === k)), []);
+      봄('다6 홈 칸 — 한줄(.s)이 장부 홈한줄(없으면 분야 표 한줄)에서', 칸들.filter((a) => { const k = a.getAttribute('data-key'), s = a.querySelector('.s'); return (s ? s.textContent : '') !== Y.홈한줄(k); }).map((a) => a.getAttribute('data-key')), []);
+      봄('다6 홈 칸 — 무료라고 쓰지 않는 콘텐츠(사랑할 때만 나오는 당신) 칸 글에 「무료」 0', 칸들.filter((a) => T['무료라고 쓰지 않는 콘텐츠'].includes(a.getAttribute('data-key')) && /무료/.test(a.textContent)).map((a) => a.getAttribute('data-key')), []);
+      {
+        // 10-02 홈 첫 화면 다시 짜기 — 그림 칸이 없는 분류는 물음 칸(답이 있는 장으로 곧장) · 남은 분류는 맨 아래 「곧 열려요」 한 줄
+        const B = window.ChaeksaBunya, 물음 = Array.from(g.querySelectorAll('a.cat-q'));
+        const 곧 = g.querySelector('.cats-soon'), 곧글 = 곧 ? 곧.textContent : '';
+        봄('다9 홈 물음 칸 — 일 · 돈 · 건강 · 사람 사이는 분야 표 물음의 칸 값(jt.cN)대로 정통사주 N장, 결혼은 웹툰궁합 「결혼」 단계, 날 고르기는 출산택일',
+          물음.map((a) => [a.getAttribute('data-cat'), a.getAttribute('data-tab'), a.getAttribute('data-spot') || '']),
+          [['marry', 'ssom', '단계:결혼'], ['work', 'jeongtong', 'jtCh9'], ['money', 'jeongtong', 'jtCh7'], ['health', 'jeongtong', 'jtCh10'], ['people', 'jeongtong', 'jtCh6'], ['day', 'taekil', '']]);
+        봄('다9 홈 물음 칸 — 물음 글은 분야 표에 있는 글(정통사주 장으로 가는 칸)', 물음.filter((a) => a.getAttribute('data-tab') === 'jeongtong' && !B.분야.some((f) => f.물음.some((q) => q.글 === a.querySelector('.n').textContent && (q.칸 || []).includes('jt.c' + a.getAttribute('data-spot').replace('jtCh', ''))))).map((a) => a.getAttribute('data-cat')), []);
+        봄('다9 홈 — 분류마다 한 곳에만(그림 칸 · 물음 칸 · 「곧 열려요」) · 「준비중」 글자 0',
+          [B.큰분야.filter((b) => (g.querySelectorAll('[data-cat="' + b.키 + '"]').length > 0) + 곧글.split(' · ').includes(b.이름) !== 1).map((b) => b.키), /준비중/.test(g.textContent)], [[], false]);
+      }
+      {
+        // 10-02 다시 온 손님 홈 · 아래 메뉴 — 아래 줄 다섯 칸, 연애 · 궁합은 고르기 창(app.js 고르기창)이 홈 칸 표(ChaeksaHomeCats.묶음) 차례대로 장부 이름 · 홈한줄 · 딱지로 그린다
+        봄('다10 아래 줄 고르기 창 — 연애 · 궁합 묶음 = 홈 칸 차례(사용설명서는 연애 쪽)', [HC.묶음 ? HC.묶음('love').map((c) => c.탭) : null, HC.묶음 ? HC.묶음('match').map((c) => c.탭) : null], [['love', 'pair'], ['chongnon', 'ssom']]);
+        const 첫화면2 = String((await 받기('index.html')) || ''), 아래줄 = (첫화면2.split('<nav id="nav"')[1] || '').split('</nav>')[0];
+        봄('다10 아래 줄 다섯 칸 — 홈 · 내 사주 · 연애(고르기) · 궁합(고르기) · 출산택일', Array.from(아래줄.matchAll(/<button\b[^>]*?(?:data-pick="([a-z]+)"[^>]*?)?data-go="([a-z]+)"/g)).map((m) => (m[1] ? m[1] + '>' : '') + m[2]), ['home', 'jeongtong', 'love>love', 'match>chongnon', 'taekil']);
+        봄('다10 고르기 창 자리(#navPick · #navPickList)가 있다', [/id="navPick"/.test(첫화면2), /id="navPickList"/.test(첫화면2)], [true, true]);
+        const 홈 = 첫화면2.split('data-tab="home"')[1] || '', 띠 = 홈.indexOf('id="wkBand"'), 띠끝 = 홈.indexOf('</details>', 띠);
+        봄('다11 홈 맨 위 이번 주 띠 — 물음 칩 · 그림 칸보다 위, 이번 주 카드 · 인생 곡선은 띠(접힘) 안',
+          [띠 >= 0 && 띠 < 홈.indexOf('data-home-ask') && 띠 < 홈.indexOf('data-home-cats'), 홈.indexOf('id="bhCard"') > 띠 && 홈.indexOf('id="bhCard"') < 띠끝, 홈.indexOf('id="lcCard"') > 띠 && 홈.indexOf('id="lcCard"') < 띠끝],
+          [true, true, true]);
+      }
+      const h = 새칸(); LV.그리기(h, { year: 1901, month: 1, day: 1, hour: 0, minute: 0, gender: 'F', name: '시험' });
+      const 소개 = h.querySelector('section.card p.hint');
+      봄('다7 연애 소개 — 한줄 · 미리 보는 것 · 만드는 때를 장부에서(「당신」 없음)', [소개 && 소개.textContent.includes(Y.한줄('love')), 소개 && 소개.textContent.includes(Y.줄('love').미리), 소개 && 소개.textContent.includes(Y.만듦글('love')), /당신/.test(소개 && 소개.textContent)], [true, true, true, false]);
+    }
+    {
+      // 장부 한 칸을 바꾸면 화면이 같이 바뀐다 — 바꿨다가 되돌린다
+      const 원래 = { 줄: T.콘텐츠.love.받는것[0], 딱지: T.콘텐츠.ssom.딱지, 시간: T.콘텐츠.pair.시간 };
+      T.콘텐츠.love.받는것[0] = '시험으로 바꾼 줄'; T.콘텐츠.ssom.딱지 = '시험 딱지'; T.콘텐츠.pair.시간 = '시험 시간';
+      try {
+        const a = 새칸(); LV.사기상자(a, 생일, () => {});
+        const f = 새칸(); Y.무엇을사나(f);
+        const g = 새칸(); HC.그리기(g);
+        const e = 새칸(); PV.결제상자(e, null, 3, null);
+        const 홈ssom = g.querySelector('a.cat[data-key="ssom"] .t');
+        봄('다8 장부 한 칸을 바꾸면 결제 상자 · pay.html · 홈 딱지 · 만드는 시간이 같이 바뀐다',
+          [목록글(a)[0], 목록글(f.querySelector('[data-yaksok="love"]'))[0], 홈ssom && 홈ssom.textContent, e.textContent.includes('(시험 시간)')],
+          ['시험으로 바꾼 줄', '시험으로 바꾼 줄', '시험 딱지', true]);
+      } finally {
+        T.콘텐츠.love.받는것[0] = 원래.줄; T.콘텐츠.ssom.딱지 = 원래.딱지; T.콘텐츠.pair.시간 = 원래.시간;
+      }
+    }
+
+    머리('라. 손으로 쓴 곳 — 걷은 약속 0 · 숫자가 장부와 같다');
+    const 글 = {};
+    for (const f of 손글파일) { const s = await 받기(f); if (s == null) 알림('파일을 못 읽었다', f); 글[f] = 주석걷기(s); }
+    const 걷은 = T['걷은 약속'];
+    const 걷은찾기 = (파일글) => { const 찾음 = []; Object.keys(파일글).forEach((f) => 걷은.forEach((p) => { if (파일글[f].includes(p)) 찾음.push(f + ' 「' + p + '」'); })); return 찾음; };
+    봄('라1 걷은 약속 0 — 화면 · 약관 · 처리방침 · 검색 설명(' + 손글파일.length + '개 파일, 주석 빼고)', 없음목록(걷은찾기(글)), '0');
+    T['확인 대기'].forEach((x) => { if ((글[x.곳] || '').includes(x.글)) 알림('사장님 확인 대기 — ' + x.곳 + ' 「' + x.글 + '」', x.까닭); });
+    const 장부글 = 글모음(T.콘텐츠).join('\n');
+    const 허용 = { 시간: new Set(찾기(시간꼴, 장부글)), 질문: new Set(찾기(질문꼴, 장부글)), 해: new Set(찾기(해꼴, 장부글)) };
+    const 어긋남 = (파일들, 꼴, 갈래) => [].concat(...파일들.map((f) => 찾기(꼴, 글[f] || '').filter((x) => !허용[갈래].has(x)).map((x) => f + ' ' + x)));
+    봄('라2 만드는 시간(N분 남짓 · N분쯤) = 장부 시간(' + Array.from(허용.시간).join(' · ') + ')', 없음목록(어긋남(시간파일, 시간꼴, '시간')), '0');
+    봄('라3 질문 N개 = 장부(' + Array.from(허용.질문).join(' · ') + ')', 없음목록(어긋남(질문파일, 질문꼴, '질문')), '0');
+    봄('라4 보관 N년 동안 = 장부(' + Array.from(허용.해).join(' · ') + ')', 없음목록(어긋남(해파일, 해꼴, '해')), '0');
+    봄('라5 약관(terms.html)에 앱에서 만드는 상품의 만드는 시간이 장부 그대로 있다', 파는.filter((k) => /분/.test(T.콘텐츠[k].시간 || '') && !(글['terms.html'] || '').includes(T.콘텐츠[k].시간)), []);
+    {
+      // 스스로 시험 — 옛 문장을 일부러 넣으면 빨간불이 켜지는가
+      const 가짜 = { 'pay.html': '결제하면 「맞아요 / 아니에요」를 누를 수 있어요. 최대 30장.', 'terms.html': '결제한 뒤 5분쯤이면 만들어져요. 질문 5개는 무료. 2년 동안 보관.' };
+      봄('라6 옛 문장을 넣으면 걸린다(걷은 약속 · 시간 · 질문 수 · 보관 해)', [걷은찾기(가짜).length, 찾기(시간꼴, 가짜['terms.html']).filter((x) => !허용.시간.has(x)), 찾기(질문꼴, 가짜['terms.html']).filter((x) => !허용.질문.has(x)), 찾기(해꼴, 가짜['terms.html']).filter((x) => !허용.해.has(x))], [2, ['5분쯤'], ['질문5개'], ['2년동안']]);
+    }
+
+    머리('마. 한 사실은 한 곳 — 장부 글을 다른 파일에 옮겨 적지 않았다');
+    {
+      const 긴글 = [...new Set([].concat(...키들.map((k) => { const r = T.콘텐츠[k]; return 글모음([r.한줄, r.미리, r.만듦, r.보관, r.환불, r.받는것, r.신청]); })).filter((s) => s.length >= 12))];
+      const 겹친 = [];
+      Object.keys(글).forEach((f) => 긴글.forEach((s) => { if (글[f].includes(s)) 겹친.push(f + ' 「' + s.slice(0, 24) + '…」'); }));
+      봄('마1 장부의 긴 글(' + 긴글.length + '개)이 다른 파일에 그대로 적혀 있지 않다', 없음목록(겹친), '0');
+    }
+
+    머리('바. 생년월일은 필요한 만큼만(입력창 맨 위 · 사용설명서는 그 사람 것만)');
+    {
+      const 입력있는 = 키들.filter((k) => T.콘텐츠[k].입력단추);
+      봄('바1 입력 단추 말이 있는 콘텐츠는 필요한 것(필요 칸)도 있다 — 입력창 맨 위에 까닭 한 줄', 없음목록(입력있는.filter((k) => !T.콘텐츠[k].필요)), '0');
+      봄('바2 입력머리 — 탭 이름으로 찾는다(home = 이번 주) · 장부에 없는 탭은 null',
+        [Y.입력머리('home') && Y.입력머리('home').키, Y.입력머리('pair') && Y.입력머리('pair').이름, Y.입력머리('pair') && Y.입력머리('pair').필요, Y.입력머리('없는탭')],
+        ['week', Y.이름('pair'), T.콘텐츠.pair.필요, null]);
+      봄('바3 사용설명서는 그 사람 생년월일 하나 — 필요한 것이 그 사람 것으로 시작하고 내 생년월일이 없다', [/^그 사람 생년월일시/.test(T.콘텐츠.pair.필요), /내 생년월일/.test(T.콘텐츠.pair.필요)], [true, false]);
+      const PP = window.ChaeksaPeople, 키1 = 'chaeksa.people', 키2 = 'chaeksa.activePerson';
+      봄('바4 people.js 가 실렸다', !!(PP && PP.add && PP.hasSelf), true);
+      // 이 기기의 사람 목록을 잠깐 비우고 시험한 뒤 그대로 되돌린다
+      const 옛 = [localStorage.getItem(키1), localStorage.getItem(키2)];
+      const 생 = { year: 1901, month: 1, day: 1, hour: 0, minute: 0, gender: 'M' };
+      try {
+        localStorage.removeItem(키1); localStorage.removeItem(키2);
+        const a = PP.add({ name: '', relation: '그 사람', isSelf: false, birth: 생 });
+        봄('바5 그 사람부터 넣어도 「나」가 아니다(보는 사람은 된다)', [PP.get(a).relation, PP.get(a).isSelf, PP.activeId() === a, PP.hasSelf()], ['그 사람', false, true, false]);
+        const b = PP.add({ name: '', relation: '나', isSelf: true, birth: 생 });
+        봄('바6 그다음 「나」로 넣은 사람만 「나」', [PP.get(b).isSelf, PP.get(a).isSelf, PP.hasSelf()], [true, false, true]);
+        localStorage.removeItem(키1); localStorage.removeItem(키2);
+        const c = PP.add({ name: '', birth: 생 });
+        봄('바7 관계 없이 처음 넣으면 「나」(옛 한 사람 저장 옮기기와 같은 길)', [PP.get(c).relation, PP.get(c).isSelf], ['나', true]);
+      } finally {
+        if (옛[0] == null) localStorage.removeItem(키1); else localStorage.setItem(키1, 옛[0]);
+        if (옛[1] == null) localStorage.removeItem(키2); else localStorage.setItem(키2, 옛[1]);
+      }
+    }
+  } catch (e) {
+    봄('시험이 멈춤: ' + (e && e.message), 'x', 'o');
+  }
+  out.innerHTML = '<p id="sum">' + 통과 + ' 통과 · ' + 실패 + ' 실패' + (알림수 ? ' · 확인 ' + 알림수 : '') + '</p>' + 줄들.join('');
+})().catch((e) => { document.getElementById('out').textContent = '시험이 멈췄어요: ' + (e && e.message); });
+</script></body></html>

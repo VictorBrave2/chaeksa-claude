@@ -2,7 +2,8 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>분야 표 시험</title>
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}</style></head>
 <body><div id="out">시험하는 중이에요…</div>
-<script src="bunya.js?v=1260"></script>
+<script src="bunya.js?v=1263"></script>
+<script src="home-ask.js?v=1263"></script>
 <script>
 // 홈 분야 표 시험(docs/100 전략 카) — 이번 범위는 모듈 없이 표만으로 되는 것.
 //   가 표 꼴(한 곳 · JSON 한 덩어리 · 한 줄 = 한 칸 · 함수 없음) · 나 열쇠 꼴과 겹침(카 2) · 다 없는 키 0(카 1의 표 쪽)
@@ -78,7 +79,7 @@
     if (!T) throw new Error('bunya.js 가 실리지 않았다');
     봄('가2 맨 위 열쇠 = 설정 · 큰분야 · 분야 · 콘텐츠 · 목차(표 넷과 설정 한 줄)', Object.keys(T), 열쇠.맨위);
     봄('가3 설정 — 홈타일 · 칸줄 · 접음이 모두 자연수', Object.keys(T.설정).length === 3 && ['홈타일', '칸줄', '접음'].every((k) => Number.isInteger(T.설정[k]) && T.설정[k] > 0), true);
-    const 소스 = await 받기('bunya.js?v=1260');
+    const 소스 = await 받기('bunya.js?v=1263');
     봄('가4 bunya.js 를 읽었다', 소스 != null, true);
     const 시작 = '/*표 시작*/', 끝 = '/*표 끝*/';
     const a = 소스.indexOf(시작), b = 소스.indexOf(끝);
@@ -210,7 +211,7 @@
     봄('사5 판매 값은 결제 · 신청 · null · 상품이 있으면 판매가 있고 판매가 없으면 상품도 없다', 없음목록([].concat(...T.콘텐츠.map((c) => c.덩어리.filter((d) => ![null, '결제', '신청'].includes(d.판매) || (d.상품 == null) !== (d.판매 == null)).map((d) => c.키 + '/' + d.키)))), '0');
     봄('사6 파는 콘텐츠 이름 = 이름 넷(docs/79 1절)', 파는.map((c) => c.이름), 파는.map((c) => 이름넷[c.키]));
     {
-      const m = (첫화면 || '').match(/<div class="lp-caps"[^>]*>(.*?)<\/div>/);
+      const m = (첫화면 || '').match(/<div class="lp-caps[^"]*"[^>]*>(.*?)<\/div>/);   // 10-02 lp-caps 는 숨긴 채(class 「lp-caps hide」) 남아 있다
       const 한줄들 = m ? Array.from(m[1].matchAll(/<span>(.*?)<\/span>/g)).map((x) => x[1]) : [];
       봄('사7 첫 화면 lp-caps 넷 = 콘텐츠 표 한줄(정통사주 · 정통궁합 · 웹툰궁합 · 출산택일)', 한줄들, ['jeongtong', 'chongnon', 'ssom', 'taekil'].map((k) => T.콘텐츠.find((c) => c.키 === k).한줄));
     }
@@ -242,6 +243,75 @@
       Object.keys(설계수).forEach((k) => 봄('자 ' + k, s[k], 설계수[k]));
       봄('자 큰 분야 차례(09-18 차례 — 표의 줄 차례)', T.큰분야.map((x) => x.키), 큰차례);
       봄('자 분야 줄이 큰 분야 차례대로 모여 있다', T.분야.map((f) => 큰차례.indexOf(f.큰)).every((v, i, xs) => i === 0 || xs[i - 1] <= v), true);
+    }
+
+    // 10-02 홈 「무엇이 궁금하세요?」(home-ask.js) — 답이 걸린 물음이 칩이 되고, 칩을 누르면 그 물음의 칸(장 · 회 · 단계 · 글)이 열린다.
+    머리('차. 물음 칩 → 탭 · 장(home-ask.js)');
+    {
+      const A = window.ChaeksaHomeAsk;
+      봄('차1 전역 ChaeksaHomeAsk 가 있다', !!A && typeof A.갈래들 === 'function', true);
+      if (!A) throw new Error('home-ask.js 가 실리지 않았다');
+      const 갈 = A.갈래들(T), 칩 = [].concat(...갈.map((g) => g.칩)), 열 = 열린칸(T);
+      const 물음 = {}; T.분야.forEach((f) => f.물음.forEach((q, i) => { 물음[f.키 + '.' + (i + 1)] = q; }));
+      봄('차2 칩 수 = 답이 걸린 물음 수(설계 물음답) — 빠진 물음 0', 칩.length, 설계수.물음답);
+      봄('차2 칩 id 겹침 0 · 칩 글 = 분야 표 물음 글 그대로', [없음목록(겹침(칩.map((c) => c.id))), 없음목록(칩.filter((c) => !물음[c.id] || 물음[c.id].글 !== c.글).map((c) => c.id))], ['0', '0']);
+      봄('차3 칩마다 간 칸 = 그 물음의 칸 목록 가운데 열린 칸 · 그보다 앞의 칸은 갈 길이 없는 칸', 없음목록(칩.filter((c) => { const ks = 물음[c.id].칸 || [], i = ks.indexOf(c.칸); return i < 0 || !열.has(c.칸) || ks.slice(0, i).some((k) => A.칸길(k, T)); }).map((c) => c.id)), '0');
+      // 칸 → 탭 · 곳 — 칸 이름에서 따로 셈해 대조한다(home-ask.js 칸길과 다른 손으로).
+      const 단계 = { meet: '시작전', some: '썸', early: '초반', steady: '안정기', wed: '결혼', shaky: '흔들림', again: '재회' };
+      const 기대길 = (k) => {
+        const r = T.목차.find((x) => x.칸 === k); let m;
+        if (r && r.주소) return { 주소: r.주소 };
+        if ((m = /^jt\.c(\d+)$/.exec(k))) return { 탭: 'jeongtong', 곳: 'jtCh' + m[1] };
+        if ((m = /^jt\.h(\d+)$/.exec(k))) return { 탭: 'jeongtong', 곳: '회:' + m[1] };
+        if ((m = /^gc\.c(\d+)$/.exec(k))) return { 탭: 'chongnon', 곳: 'gcCh' + m[1] };
+        if (k === 'ss.card') return { 탭: 'ssom', 곳: 'ssStart' };
+        if (/^ss\.d\d$/.test(k)) return { 탭: 'ssom', 곳: '단계:둘' };
+        if ((m = /^ss\.([a-z]+)\.\d$/.exec(k))) return { 탭: 'ssom', 곳: '단계:' + 단계[m[1]] };
+        if (/^wk\./.test(k)) return { 탭: 'home', 곳: 'bhCard' };
+        if (k === 'tk.sim') return { 탭: 'taekil' };
+        return { 모름: k };
+      };
+      const 짧게 = (w) => (w.주소 ? w.주소 : w.탭 + (w.곳 ? ' · ' + w.곳 : ''));
+      봄('차4 칩 66개 전부 — 칸 → 탭 · 장(정통사주 · 정통궁합 N장 · 웹툰 N화 · 웹툰궁합 단계 · 이번 주 · 시뮬레이터 · 바깥 글)', 없음목록(칩.filter((c) => 짧게(c.길) !== 짧게(기대길(c.칸))).map((c) => c.id + ' ' + 짧게(c.길) + ' ≠ ' + 짧게(기대길(c.칸)))), '0');
+      const 칩길 = (글) => { const c = 칩.find((x) => x.글 === 글); return c ? 짧게(c.길) : '없음'; };
+      봄('차5 본보기 다섯 — 맞는 일 → 정통사주 9장 · 약한 곳 → 10장 · 「왜 요즘 차가워요?」 → 웹툰궁합 연애 초반 · 제왕절개 → 출산택일 · 「왜 일간이 나예요?」 → 그 글',
+        ['나한테 맞는 일은 뭐예요?', '나는 어디가 약해요?', '왜 요즘 차가워요?', '제왕절개 몇 시가 좋아요?', '왜 일간이 나예요?'].map(칩길),
+        ['jeongtong · jtCh9', 'jeongtong · jtCh10', 'ssom · 단계:초반', 'taekil', 'why-day-master-is-me.html']);
+      봄('차6 칩의 탭은 index.html 에 있다', 없음목록(칩.filter((c) => c.길.탭 && !탭들.has(c.길.탭)).map((c) => c.id + ':' + c.길.탭)), '0');
+      {
+        const 주소들 = Array.from(new Set(칩.filter((c) => c.길.주소).map((c) => c.길.주소))), 없는 = [];
+        for (const f of 주소들) { if ((await 받기(f)) == null) 없는.push(f); }
+        봄('차6 칩의 바깥 글 주소가 app/ 에 있다(' + 주소들.length + '개)', 없음목록(없는), '0');
+      }
+      {
+        const ssom = (await 받기('ssom.js?v=1263')) || '', 고름 = (ssom.match(/const 고름칸 = \[([\s\S]*?)\];/) || [])[1] || '';
+        const 값들 = new Set(Array.from(고름.matchAll(/\['([^']+)', '/g)).map((m) => m[1]));
+        const 쓴 = 칩.filter((c) => c.길.단계).map((c) => c.길.단계).concat(A.단계칩.map((s) => s[1]));
+        봄('차7 단계 값(칩 · 연애 갈래 단계 칩)이 웹툰궁합 고르는 칸(ssom.js 고름칸) 값 안', [값들.size > 0, 없음목록(쓴.filter((v) => !값들.has(v)))], [true, '0']);
+      }
+      {
+        const 원 = { jeongtong: (await 받기('jeongtong.js?v=1263')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=1263')) || '', app: (await 받기('app.js?v=1263')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
+        const 곳들 = new Set(칩.map((c) => c.길.곳).filter(Boolean)), 틀린 = [];
+        곳들.forEach((s) => {
+          if (/^jtCh\d+$/.test(s)) { if (!원.jeongtong.includes("id=\"jtCh' + 번호")) 틀린.push(s); }
+          else if (/^gcCh\d+$/.test(s)) { if (!원.chongnon.includes("id=\"gcCh' + 번호")) 틀린.push(s); }
+          else if (/^회:\d+$/.test(s)) { if (!원.app.includes("'ssom-vn.html?h='") || !/\[\?&\]h=\(\\d\+\)/.test(원.vn)) 틀린.push(s); }
+          else if (/^단계:/.test(s)) { if (!원.app.includes("곳.indexOf('단계:') === 0")) 틀린.push(s); }
+          else if (s === 'ssStart') { if (!원.app.includes("자리.id = 'ssStart'")) 틀린.push(s); }
+          else if (s === 'bhCard') { if (!원.idx.includes('id="bhCard"')) 틀린.push(s); }
+          else 틀린.push(s + '(모르는 곳)');
+        });
+        봄('차8 칩이 가는 곳을 받는 쪽이 있다 — 장 id(jeongtong.js · gunghap-chongnon.js) · 「회:N」(app.js 도착 → ssom-vn.html ?h=N) · 「단계:」(app.js 도착) · ssStart · bhCard', 없음목록(틀린), '0');
+      }
+      {
+        const 바람 = [].concat(...갈.map((g) => g.바람.concat(...(g.묶음 || []).map((m) => m.바람))));
+        const 방향수 = Object.values(물음).filter((q) => q.방향).length;
+        봄('차9 받고 싶어요 = 답 없는 물음 전부(방향 물음은 넣지 않음) — 칩 + 받고 싶어요 + 방향 = 물음 전체', [바람.filter((w) => 물음[w.id] && 물음[w.id].방향).length, 칩.length + 바람.length + 방향수], [0, 설계수.물음]);
+        봄('차9 사건 이름 ev:want:<분야키>.<몇째> 40자 안 · 물음 번호 꼴', 없음목록(바람.map((w) => 'ev:want:' + w.id).filter((s) => s.length > 40 || !/^ev:want:[a-z]+\.[a-z]+\.\d+$/.test(s))), '0');
+      }
+      봄('차10 갈래 차례 — 연애 · 궁합 · 나 · 일 · 돈 · 때 · 아이가 먼저 · 답 없는 분야는 맨 끝 「그 밖에」', 갈.map((g) => g.키).slice(0, 7).concat(갈[갈.length - 1].키), ['love', 'match', 'me', 'work', 'money', 'time', 'child', 'etc']);
+      const 소스2 = (await 받기('home-ask.js?v=1263')) || '';
+      봄('차11 home-ask.js 에 물음 글을 적지 않음 · 네 축 이름(…실단) 0', [칩.filter((c) => 소스2.includes(c.글)).length, /실단/.test(소스2)], [0, false]);
     }
   } catch (e) {
     봄('시험이 멈춤: ' + (e && e.message), 'x', 'o');

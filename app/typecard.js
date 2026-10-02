@@ -252,14 +252,21 @@
   }
   /** 카드 내보내기. 반환: 'shared' | 'copied' | 'saved'.
    *  모바일은 공유 시트가 자연스럽고, PC는 윈도우 공유 시트가 어중간해서
-   *  아예 건너뛰고 클립보드 복사로 간다 — 카톡·메모장에 Ctrl+V면 끝이다. */
-  async function share(svgStr, label) {
+   *  아예 건너뛰고 클립보드 복사로 간다 — 카톡·메모장에 Ctrl+V면 끝이다.
+   *  url(10-02 인생 곡선 — 받은 사람이 들어올 주소와 꼬리표)을 주면 폰 공유 글에 같이 싣고,
+   *  카톡은 그림이 붙으면 글 · 링크를 버리므로(share.js 와 같은 까닭) 공유 전에 주소를 클립보드에도 넣어 둔다. */
+  async function share(svgStr, label, url) {
     const blob = await toPng(svgStr);
     const mobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
     if (mobile && navigator.canShare) {
       const file = new File([blob], `책사_카드_${label}.png`, { type: 'image/png' });
       if (navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title: '내 사주 카드', text: `${label} · chaeksa.kr` }); return 'shared'; } catch (e) {}
+        if (url) { try { if (navigator.clipboard) await navigator.clipboard.writeText(url); } catch (e) {} }
+        const data = { files: [file], title: '내 사주 카드', text: `${label} · ` + (url || 'chaeksa.kr') };
+        if (url) data.url = url;
+        try { await navigator.share(data); return 'shared'; } catch (e) {
+          if (url && !(e && e.name === 'AbortError')) { delete data.url; try { await navigator.share(data); return 'shared'; } catch (e2) {} }
+        }
       }
     }
     if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {

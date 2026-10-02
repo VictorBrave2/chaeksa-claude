@@ -4,7 +4,8 @@
  * 무료 = 가장 궁금할 질문 세 개(연락 · 애정 표현 · 서운함)의 맞히기 한 줄(토큰 0). 전체(열두 단계 · 장마다 맞히기 · 왜 · 나에게 비치는 모습)는
  * 출시 기념가 19,900원(love_pair). 결제 열쇠는 서버가 준 값만 쓴다(그 사람 생일로 만든 알아볼 수 없는 값 — 주문에 생일이 남지 않는다).
  * 생일은 주소에 싣지 않는다(POST 본문). 받은 전체 결과는 이 기기에 남기고, 서버 보관본으로 폰 · PC 어디서든 같은 결과.
- * 화면 글은 작가가 쓴 것(아래 글 표) — 고칠 땐 글 표 한 곳만. 「당신」은 쓰지 않는다(10-02 사장님). */
+ * 화면 글은 작가가 쓴 것(아래 글 표) — 고칠 땐 글 표 한 곳만. 「당신」은 쓰지 않는다(10-02 사장님).
+ * 다만 상품 약속(미리 보는 것 · 만드는 시간 · 결제하면 받는 것 · 보관 · 환불)은 상품 약속 장부(yaksok.js pair 줄) 한 곳이다 — pay.html 과 같은 말. */
 (function (global) {
   'use strict';
   var API = 'https://chaeksa-behavior-core.vercel.app';
@@ -98,7 +99,8 @@
       },
       {
         "head": "이렇게 열려요",
-        "body": "그 사람의 생년월일시만 있으면 돼요.\n\n누구나 가장 궁금해할 질문 3개(연락 · 애정 표현 · 서운함)의 답을 먼저 무료로 보여 드려요.\n\n나머지 장과, 장마다 왜 그런지 · 나에게 비치는 모습은 출시 기념가 19,900원에 열려요.\n\n결제한 카카오 계정에 1년 동안 보관돼서, 폰에서도 PC에서도 다시 볼 수 있어요.\n\n결과를 만들지 못하면 전액 환불해 드려요."
+        "body": "그 사람의 생년월일시만 있으면 돼요.",
+        "yaksok": true
       }
     ],
     "example": {
@@ -115,16 +117,8 @@
     "preview_head": "먼저 풀린 질문 3개",
     "preview_note": "왜 그런지와 나에게 비치는 모습은 결제하면 열려요.",
     "pay_head": "아직 봉인된 장 {n}개",
-    "pay_lead": "결제하면 그때 그 사람의 생년월일시로 새로 써 드려요(3분쯤).",
-    "pay_items": [
-      "썸부터 가족과 친구까지, 연애 열두 단계의 남은 장이 모두 열려요",
-      "장마다 그 사람이 어떻게 할지 한 줄, 왜 그런지, 나에게 어떻게 비칠 수 있는지를 적어 드려요",
-      "무료로 본 질문 3개도 왜 그런지와 나에게 비치는 모습까지 열려요",
-      "장마다 뚜렷함 표시가 붙어서, 어디까지 믿고 어디서 직접 물어볼지 가늠할 수 있어요",
-      "결제한 카카오 계정에 1년 동안 보관돼서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요"
-    ],
     "pay_button": "{price} 결제하고 봉인 풀기",
-    "making": "그 사람의 봉인을 푸는 중이에요. 3분쯤 걸려요. 이 화면을 그대로 두세요.",
+    "making": "그 사람의 봉인을 푸는 중이에요. {시간} 걸려요. 이 화면을 그대로 두세요.",
     "done": "다 됐어요. 모두 {n}장이에요.",
     "result_head": "{name} 사용설명서",
     "result_lead": "장마다 붙은 표시는 그 사람 안에서 그 마음이 얼마나 분명한지를 알려 줘요.\n뚜렷함 — 이쪽 마음이 분명해서, 이렇게 할 가능성이 커요.\n그런 편 — 대체로 이쪽으로 기울어요.\n두 마음 — 두 마음이 함께 있어서, 이렇게 할 수도 있고 저렇게 할 수도 있어요.\n정해지지 않음 — 이 질문에는 정해진 쪽이 없어서, 상황에 맞게 행동할 거예요.",
@@ -189,10 +183,54 @@
       + (끝 || '') + '</section>';
   }
 
-  // 소개(작가 다섯 칸) — 3번 칸 뒤에 예시 장 한 장.
+  function 화면이름() { var Y = global.ChaeksaYaksok; return (Y && Y.이름('pair')) || 'SSS급 그 사람 사용설명서'; }   // 문의 메일 제목에 싣는 화면 이름
+
+  // 다 읽은 뒤 갈 곳(10-02) — 전에는 「← 홈」뿐이었다. 그 사람을 읽었으니 이번엔 내 차례(사랑할 때만 나오는 당신) + 같은 그 사람과 나란히 보는 궁합 둘.
+  // 이름 · 한 줄 · 딱지는 상품 약속 장부(yaksok.js)에서 — 사랑할 때만 나오는 당신 딱지는 「예시 보기 · 값」(무료라고 쓰지 않는다, 10-02 사장님).
+  function 끝칸() {
+    var Y = global.ChaeksaYaksok;
+    var 이름 = (Y && Y.이름('love')) || '사랑할 때만 나오는 당신', 한줄 = Y ? Y.홈한줄('love') : '', 딱지 = Y ? Y.딱지html('love') : '';
+    var 궁합 = ['ssom', 'chongnon'].map(function (k) {
+      var n = Y && Y.이름(k); if (!n) return '';
+      var t = Y.딱지글(k);
+      return '<a href="#' + k + '" data-pair-next="' + k + '">' + esc(n) + '</a>' + (t ? ' (' + esc(t) + ')' : '');
+    }).filter(Boolean).join(' · ');
+    return '<section class="card lv-next"><p class="lv-t">그 사람 앞에서 나는 어떤가</p>'
+      + '<p class="hint" style="margin:0 0 10px">그 사람을 읽었으니 이번엔 내 차례예요. 「' + esc(이름) + '」' + (한줄 ? ' — ' + esc(한줄) + '.' : '') + '</p>'
+      + '<button class="btn" type="button" data-pair-next="love" style="width:100%">연애할 때 나는 어떤지 보기' + (딱지 ? ' — ' + 딱지 : '') + '</button>'
+      + (궁합 ? '<p class="hint" style="margin:12px 0 0">그 사람과 나를 나란히 놓고 보기 — ' + 궁합 + '</p>' : '')
+      + '</section>';
+  }
+  // 끝칸 단추 · 링크 — 앱 안이면 그 탭으로(내 생년월일이 없으면 app.js 들어가기가 먼저 받는다). 궁합 둘은 같은 그 사람을 골라 둔다.
+  function 끝칸잇기(box, 그id) {
+    var Y = global.ChaeksaYaksok; if (Y && Y.값채우기) Y.값채우기(box);
+    Array.prototype.forEach.call(box.querySelectorAll('[data-pair-next]'), function (a) {
+      a.onclick = function (e) {
+        var k = a.getAttribute('data-pair-next');
+        e.preventDefault();
+        if (k !== 'love' && 그id && typeof global.책사궁합고르기 === 'function') global.책사궁합고르기(그id);
+        if (typeof global.책사들어가기 === 'function') global.책사들어가기(k); else location.hash = '#' + k;
+      };
+    });
+  }
+
+  // 상품 약속 장부(yaksok.js pair 줄) — 미리 보는 것 · 만드는 때와 시간 · 결제하면 받는 것 · 보관 · 환불은 장부 한 곳에서 읽는다(10-02).
+  // pay.html 「무엇을 사나」와 같은 말이 된다. 여기(글 표)에 다시 적지 않는다.
+  function 약() { var Y = global.ChaeksaYaksok; return (Y && Y.줄('pair')) || {}; }
+  function 값채우기(root) { var Y = global.ChaeksaYaksok; if (Y) Y.값채우기(root); }
+  // 「이렇게 열려요」 칸 — 작가 첫 문장(글 표 body) 뒤에 장부의 미리 · 값 · 보관 · 환불. 값 자리는 상품표(products)에서 채운다.
+  function 열림칸(s) {
+    var Y = global.ChaeksaYaksok, r = 약();
+    return 문단(s.body) + 문단(r.미리)
+      + '<p style="margin:0 0 8px">나머지 장과, 장마다 왜 그런지 · 나에게 비치는 모습은 결제하면 열려요' + (Y ? Y.값자리('love_pair', '(', ')') : '') + '.</p>'
+      + 문단(r.보관 ? r.보관 + '.' : '') + 문단(r.환불);
+  }
+
+  // 소개(작가 다섯 칸) — 3번 칸 뒤에 예시 장 한 장. 다섯째 칸(yaksok)은 장부에서 읽는다. 넣은 뒤 값채우기(그 칸)를 부른다.
   function 소개() {
     var html = '';
     (글.intro || []).forEach(function (s, i) {
+      if (s.yaksok) { html += '<section class="card"><h3 class="doc-h">' + esc(s.head) + '</h3>' + 열림칸(s) + '</section>'; return; }
       var 문들 = String(s.body || '').split(/\n\s*\n/), 뒤 = i === 2 && 문들.length > 1 ? 문들.pop() : '';   // 3번 칸: 마지막 문단은 예시 장 뒤에(작가 메모)
       html += '<section class="card"><h3 class="doc-h">' + esc(s.head) + '</h3>' + 문단(문들.join('\n\n')) + '</section>';
       if (i === 2) html += 장({ question: 글.example.question, kind: 'side', sure: 글.example.sure, t: 글.example.t, a: 글.example.a, s: 글.example.s, bg: 그림키({ id: 'q08' }, 'M') }) + (뒤 ? '<section class="card">' + 문단(뒤) + '</section>' : '');
@@ -201,7 +239,7 @@
   }
 
   // 전체 결과 — 열두 단계 차례(서버가 보낸 차례 그대로) · 장마다 표시. 반응 단추(맞아요 / 아니에요)는 넣지 않는다(10-02 사장님).
-  function 전체(box, 저장, 키, 그이름, 성) {
+  function 전체(box, 저장, 키, 그이름, 성, 그id) {
     var 장들 = 저장.chapters || [], 수 = { sharp: 0, lean: 0, mixed: 0, weak: 0 };
     장들.forEach(function (c) { 수[표시키(c)]++; });
     var LV = global.ChaeksaLoveView;   // 이름은 표지에 한 번만(docs/79) — 표지가 있으면 카드 머리는 뺀다
@@ -215,8 +253,9 @@
       if (!끝 || 끝.머리 !== c.stage) { 끝 = { 머리: c.stage, 그림: 무그림(), html: '' }; 묶음들.push(끝); }
       끝.html += 장(c, '', 성);
     });
-    box.innerHTML = html + 띠들(묶음들);
+    box.innerHTML = html + 띠들(묶음들) + 끝칸();   // 맨 끝 — 다 읽은 뒤 갈 곳(10-02)
     var vn = box.querySelector('#mnVn'); if (vn) vn.onclick = function () { 장면으로(장들, 그이름, 성); };
+    끝칸잇기(box, 그id);
     var 표지n = document.getElementById('prCoverN'), 표지k = document.getElementById('prCoverK');
     if (표지n) {
       표지n.textContent = 글.result_head.replace('{name}', 그이름); if (표지k) 표지k.textContent = '사용설명서';
@@ -235,18 +274,19 @@
   // 결제 상자 — 값은 서버 상품표(products · love_pair)에서 받아 단추에 적는다(pay.js 원칙: 값은 한 곳, 줄 그은 정가 없음).
   // 청약철회 안내와 [필수] 동의는 연애 속의 나 잠금상자와 같은 말 — 체크 전에는 결제를 열지 않는다.
   function 결제상자(box, 열쇠, 남은, pick) {
+    var Y = global.ChaeksaYaksok, 만듦 = Y ? Y.만듦글('pair') : '', 받는것 = Y ? Y.받는것목록('pair') : [];   // 장부 pair 줄
     box.innerHTML = '<section class="card"><h3 class="doc-h">' + esc(글.pay_head.replace('{n}', 남은 > 0 ? 남은 : '')) + '</h3>'
-      + '<p style="margin:0 0 10px">' + esc(글.pay_lead) + '</p>'
+      + (만듦 ? '<p style="margin:0 0 10px">' + esc(만듦) + '</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
-      + 글.pay_items.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
+      + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<div id="prBuyWrap"><p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="prAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
       + '<button class="btn" id="prBuy" type="button" style="width:100%">' + esc(글.pay_button.replace('{price}', '출시 기념가 19,900원')) + '</button>'
-      + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p></div></section>';
-    var btn = box.querySelector('#prBuy'), say = box.querySelector('#prPaySay'), P = global.ChaeksaPay;
+      + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p><div id="prPayErr"></div></div></section>';
+    var btn = box.querySelector('#prBuy'), say = box.querySelector('#prPaySay'), 막힘칸 = box.querySelector('#prPayErr'), P = global.ChaeksaPay;
     if (P && P.product) P.product('love_pair').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
       if (p && p.amount) btn.textContent = 글.pay_button.replace('{price}', P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount));
@@ -256,6 +296,7 @@
       if (btn.dataset.busy) return;
       var ok = box.querySelector('#prAgree');
       if (!ok || !ok.checked) { say.textContent = '위 [필수] 칸에 체크해 주셔야 결제할 수 있어요.'; return; }
+      막힘칸.innerHTML = '';
       var C = global.ChaeksaCloud; P = global.ChaeksaPay;
       if (!P || !P.buy) { say.textContent = '결제 화면을 불러오지 못했어요. 새로고침해 주세요.'; return; }
       if (!열쇠) { say.textContent = '처음부터 다시 해 주세요.'; return; }
@@ -268,20 +309,29 @@
         .catch(function (e) { return { ok: false, message: String((e && e.message) || e) }; })
         .then(function (r) {
           delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;
-          if (r && r.ok === false && !r.closed) say.textContent = r.message || '결제창을 열지 못했어요.';
+          if (r && r.ok === false && !r.closed) {   // 10-02 공용 오류 상자(oryu.js) — 그 파일이 없으면 예전처럼 한 줄
+            var O = global.ChaeksaOryu, 말 = r.message || '결제창을 열지 못했어요.';
+            if (O) { say.textContent = ''; O.결제(막힘칸, 말, 화면이름(), function () { btn.click(); }); } else say.textContent = 말;
+          }
         });
     };
-    // 결제가 아직 시험 모드면(손님은 살 수 없다) 값 단추 자리를 「곧 열려요 · 채널 추가」로 바꾼다. 갈림은 pay.js 곧열림 하나.
+    // 결제가 아직 시험 모드면(손님은 살 수 없다) 값 단추 자리를 「결제는 곧 열려요」로 바꾼다(카카오톡 채널 단추는 10-02 걷음). 갈림은 pay.js 곧열림 하나.
     if (P && P.곧열림자리) P.곧열림자리(box.querySelector('#prBuyWrap'));
   }
 
   // profile(내 생일)은 받기만 한다 — 이 상품은 그 사람 생일 하나만 쓴다(10-02). 목록은 넣어 둔 사람 전부(다른 사람이 앞, 나는 맨 뒤 「· 나」).
-  // 나를 빼면, 내 생일 없이 그 사람부터 넣은 손님은 그 사람이 「나」로 잡혀(people.js 첫 사람 = active) 고를 사람이 없어진다.
+  // 「나」는 「나」로 넣은 사람(isSelf)이다 — 보는 사람(active)이 아니다. 내 생일 없이 그 사람부터 넣은 손님(app.js 들어가기 → 그 사람 칸)은
+  // 그 사람이 보는 사람이 되지만 「나」는 아니다(10-02 people.js — 전에는 첫 사람이면 「나」로 잡혀 그 사람 옆에 「· 나」가 붙었다).
   function 그리기(el, profile) {
     if (!el) return;
     var PP = global.ChaeksaPeople;
-    if (!PP) { el.innerHTML = '<section class="card"><h2>SSS급 그 사람 사용설명서</h2><p class="hint">잠시 뒤 다시 열어 주세요.</p></section>'; return; }
-    var meId = PP.activeId ? PP.activeId() : null, 목록 = PP.list().filter(function (p) { return p.id !== meId; }).concat(PP.list().filter(function (p) { return p.id === meId; }));
+    if (!PP) {   // 사람 목록(people.js)을 못 받았다 — 공용 오류 상자(다시 하기 · 문의하기), 그 파일도 없으면 한 줄
+      el.innerHTML = '<section class="card"><h2>SSS급 그 사람 사용설명서</h2><div id="pairErr"><p class="hint">잠시 뒤 다시 열어 주세요.</p></div></section>';
+      if (global.ChaeksaOryu) global.ChaeksaOryu.그리기(el.querySelector('#pairErr'), { 무엇: '지금은 이 화면을 열지 못했어요', 까닭: '인터넷이 잠깐 끊겼거나, 화면 파일을 받다가 멈췄을 수 있어요.', 화면: 화면이름() }, function () { 그리기(el, profile); });
+      return;
+    }
+    var 나 = PP.list().filter(function (p) { return p.isSelf; })[0], meId = 나 ? 나.id : null;
+    var 목록 = PP.list().filter(function (p) { return p.id !== meId; }).concat(나 ? [나] : []);
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     var LV = global.ChaeksaLoveView;
     // 10-01 규격(docs/79) — 이름은 표지에 한 번만. 그 사람 고르기 = 정통궁합 · 웹툰궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김).
@@ -293,10 +343,10 @@
           + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('')
           + '</select></div>'
         : '<button class="btn" id="pairAdd" type="button" style="width:100%;margin:0 0 10px">그 사람 생년월일 넣기</button>')
-      + '<div id="pairHead"></div><p class="hint" id="pairSt" style="margin:8px 0 0"></p></section>'
+      + '<div id="pairHead"></div><p class="hint" id="pairSt" style="margin:8px 0 0"></p><div id="pairErr"></div></section>'
       + '<div id="pairOut"></div><div id="pairPay"></div>';
     if (!목록.length) {
-      el.querySelector('#pairIntro').innerHTML = 소개();
+      el.querySelector('#pairIntro').innerHTML = 소개(); 값채우기(el.querySelector('#pairIntro'));
       el.querySelector('#pairAdd').onclick = function () { if (typeof global.책사사람추가 === 'function') global.책사사람추가(); };
       return;
     }
@@ -308,14 +358,21 @@
   }
 
   function 보기(el, 그사람) {
-    var intro = el.querySelector('#pairIntro'), head = el.querySelector('#pairHead'), st = el.querySelector('#pairSt'), out = el.querySelector('#pairOut'), pay = el.querySelector('#pairPay');
+    var intro = el.querySelector('#pairIntro'), head = el.querySelector('#pairHead'), st = el.querySelector('#pairSt'), out = el.querySelector('#pairOut'), pay = el.querySelector('#pairPay'), 막힘칸 = el.querySelector('#pairErr');
     var ob = 생일(global.ChaeksaPeople.toProfile(그사람)), 그이름 = 이름(그사람), 성 = ob.gender === 'F' ? 'F' : 'M';
     var 키 = 결과키 + 표(ob), 대기키 = 키 + '.wait', 저장 = 읽기(키);
     var timer = null, t0 = null;
     function 알림(msg, err) { clearInterval(timer); st.textContent = msg || ''; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     function 초(msg) { t0 = t0 || +읽기(대기키) || Date.now(); 알림(msg); var f = function () { st.textContent = msg + ' (' + Math.max(0, Math.round((Date.now() - t0) / 1000)) + '초)'; }; f(); timer = setInterval(f, 1000); }
-    if (저장 && Array.isArray(저장.chapters)) { 전체(out, 저장, 키, 그이름, 성); return; }   // 이 기기에 받은 전체 — 다시 부르지 않는다
-    intro.innerHTML = 소개();
+    // 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈 · 다시 하기 · 문의하기(메일에 화면 이름). 그 파일이 없으면 예전처럼 한 줄.
+    function 막힘(o, 다시) {
+      var O = global.ChaeksaOryu;
+      if (!O || !막힘칸) { 알림(o.까닭 || o.무엇, true); return; }
+      알림(''); o.화면 = 화면이름();
+      O.그리기(막힘칸, o, typeof 다시 === 'function' ? function () { 막힘칸.innerHTML = ''; 다시(); } : null);
+    }
+    if (저장 && Array.isArray(저장.chapters)) { 전체(out, 저장, 키, 그이름, 성, 그사람.id); return; }   // 이 기기에 받은 전체 — 다시 부르지 않는다
+    intro.innerHTML = 소개(); 값채우기(intro);
 
     var C = global.ChaeksaCloud;
     if (!C || !C.enabled() || !C.signedIn()) {
@@ -328,20 +385,21 @@
     // 전체 받기 — 산 뒤에만. 이미 만든 것은 서버가 꺼내 주고, 없으면 새로 쓴다(3분쯤 — 10-02 사장님 「설명서3분으로 설명」). 다른 기기에서 만드는 중이면 10초마다 확인.
     function 만들기() {
       if (!읽기(대기키)) 쓰기(대기키, Date.now());
-      초(글.making);
+      초(글.making.replace('{시간}', 약().시간 || '조금'));   // 만드는 시간은 장부 pair 줄(약관 9절과 같은 말 — 10-02 사장님 「설명서3분으로 설명」)
       post('/api/manual', 본문).then(function (r) {
         지우기(대기키);
         if (!out.isConnected) return;
         저장 = { runId: r.runId, version: r.version, chapters: r.chapters || [] };
         쓰기(키, 저장); pay.innerHTML = ''; head.innerHTML = ''; intro.innerHTML = '';
         알림(r.saved ? '이 카카오 계정으로 만든 결과를 불러왔어요.' : 글.done.replace('{n}', 저장.chapters.length));
-        전체(out, 저장, 키, 그이름, 성);
+        전체(out, 저장, 키, 그이름, 성, 그사람.id);
       }, function (e) {
         if (!out.isConnected) return;
         if (e.status === 409 && Date.now() - (+읽기(대기키) || Date.now()) < 10 * 60 * 1000) { setTimeout(만들기, 10000); return; }
         지우기(대기키); t0 = null;
-        알림(e.message, true);
-        if (e.status === 402) 결제상자(pay, e.body && e.body.payKey, 0, 그사람.id);
+        if (e.status === 402) { 알림(e.message, true); 결제상자(pay, e.body && e.body.payKey, 0, 그사람.id); return; }
+        // 산 사람만 여기 온다(열기에서 paid) — 결제한 것은 그대로 · 다시 하기 = 다시 만들기(이미 만든 것은 서버가 꺼내 준다)
+        막힘({ 무엇: '그 사람 사용설명서를 다 만들지 못했어요', 까닭: e.message, 돈: '남음', 코드: e.status ? 'HTTP ' + e.status : '' }, 만들기);
       });
     }
     function 열기() {
@@ -354,7 +412,7 @@
         if (r.paid) { pay.innerHTML = ''; 만들기(); return; }   // 산 사람 — 보관된 것이 있으면 꺼내 오고, 없으면 지금 쓴다
         var pv = r.preview || {};
         결제상자(pay, r.payKey, Math.max(0, (pv.count || 0) - (pv.cards || []).length), 그사람.id);
-      }, function (e) { if (out.isConnected) 알림(e.message, true); });
+      }, function (e) { if (out.isConnected) 막힘({ 무엇: '그 사람 사용설명서를 열지 못했어요', 까닭: e.message, 코드: e.status ? 'HTTP ' + e.status : '' }, 열기); });
     }
     if (읽기(동의키) === true) { 열기(); return; }
     head.innerHTML = '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="prOk1" style="margin-top:5px;width:auto;flex:0 0 auto"><span>' + esc(글.consent) + ' <a href="privacy.html">개인정보 처리방침</a></span></label>'
@@ -365,5 +423,5 @@
     };
   }
 
-  global.ChaeksaPairView = { 그리기: 그리기 };
+  global.ChaeksaPairView = { 그리기: 그리기, 결제상자: 결제상자 };   // 결제상자는 약속 장부 시험(tests_yaksok.html)이 그려 본다
 })(typeof window !== 'undefined' ? window : globalThis);

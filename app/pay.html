@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1260">
+<link rel="stylesheet" href="style.css?v=1263">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--ink3);text-decoration:none}
@@ -65,27 +65,10 @@
     출산택일 보고서는 되돌릴 수 없는 결정이라 <b>사람이 직접</b> 계산해 메일로 보내 드립니다.</p>
   <div class="fine" style="margin:0 0 14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px">
     <p style="margin:0 0 6px"><b>무엇을 사나</b> — 상품마다 파는 단위가 다릅니다.</p>
-    <!-- 10-02 출산택일 신청은 지금 네이버폼 길이다(config.js CHAEKSA_TAEKIL_INTAKE_URL). 결제창이 열리는 날 이 줄과 아래 「출산택일 —」 줄을 결제 길로 되돌린다(작업판). -->
-    <p style="margin:0 0 10px"><b>출산택일 보고서</b> — 신청 한 건. 네이버폼에 아는 만큼 적어 보내 주시면 답장 메일로 값과 결제 방법을 알려 드리고, 결제가 확인되면 보고서를 메일로 보내 드립니다.</p>
-    <!-- 10-02 「결제하면 풀리는 것」 두 목록은 결제 상자의 목록과 같은 말이다 — love.js 잠금상자 받는것 · pair.js 글.pay_items. 저쪽을 고치면 여기도 같이 고친다.
-         (love.js 의 「장마다 그 장의 나를 한 줄로」는 서버가 그 줄을 줄 때만 보이므로 여기엔 약속으로 적지 않는다.) -->
-    <p style="margin:0"><b>「사랑할 때만 나오는 당신」 전체판</b> — 결제한 카카오 계정의 한 사람 것. 책사가 직접 만든 알고리즘이 태어난 날로 연애할 때 내가 하는 말과 행동을 계산해, 맨 위에 결론을 정리하고 연애의 장면마다 장으로 나눠 풀어 씁니다. 결제 전에는 지어낸 한 사람의 결과로 예시를 보여 드리고, 결제하면 그때 내 것을 만들어 드립니다(1분 남짓).</p>
-    <p style="margin:6px 0 0">결제하면 풀리는 것</p>
-    <ul style="margin:4px 0 10px;padding-left:20px;line-height:1.7">
-      <li>연애할 때 나는 어떤 사람인지 해독 결과 전문 — 세 가지 모습, 그래서 해 볼 것, 조심할 것</li>
-      <li>마음에 드는 사람이 생겼을 때부터 오래 함께할 때까지, 장면마다 내가 하는 행동을 풀어 쓴 글 전부</li>
-      <li>장마다 그 장의 나를 한 줄로 정리해 드려요</li>
-      <li>결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요</li>
-    </ul>
-    <p style="margin:0"><b>「SSS급 그 사람 사용설명서」</b> — 결제한 카카오 계정의 그 사람 한 명 것. 책사가 직접 만든 알고리즘이 그 사람 생년월일시로 썸부터 가족과 친구까지 연애 열두 단계마다 그 사람이 어떻게 할지 맞히고, 왜 그런지와 나에게 어떻게 비칠 수 있는지를 적어 줍니다. 누구나 가장 궁금해할 질문 3개(연락 · 애정 표현 · 서운함)는 결제 전에 무료로 먼저 보여 드립니다.</p>
-    <p style="margin:6px 0 0">결제하면 풀리는 것</p>
-    <ul style="margin:4px 0 0;padding-left:20px;line-height:1.7">
-      <li>썸부터 가족과 친구까지, 연애 열두 단계의 남은 장이 모두 열려요</li>
-      <li>장마다 그 사람이 어떻게 할지 한 줄, 왜 그런지, 나에게 어떻게 비칠 수 있는지를 적어 드려요</li>
-      <li>무료로 본 질문 3개도 왜 그런지와 나에게 비치는 모습까지 열려요</li>
-      <li>장마다 뚜렷함 표시가 붙어서, 어디까지 믿고 어디서 직접 물어볼지 가늠할 수 있어요</li>
-      <li>결제한 카카오 계정에 1년 동안 보관돼서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요</li>
-    </ul>
+    <!-- 10-02 상품마다 무엇을 받나 · 결제 전에 무엇을 보나 · 얼마나 걸리나 · 결제하면 받는 것은 상품 약속 장부(yaksok.js) 한 곳에서 읽어 그린다.
+         여기에 손으로 적지 않는다 — 적어 두면 상품을 고칠 때 이 쪽만 옛말로 남는다(10-02 걷은 「맞아요/아니에요」 · 옛 판 30장을 계속 팔았다).
+         출산택일 신청 길(네이버폼 · 결제)도 장부가 config.js CHAEKSA_TAEKIL_INTAKE_URL 을 보고 고른다. -->
+    <div id="yaksokList"><p style="margin:0">상품 설명을 불러오지 못했습니다. 새로 고침해 주세요.</p></div>
   </div>
 
   <div id="list"></div>
@@ -130,10 +113,11 @@
   </div>
 </div>
 
-<script src="config.js?v=1260"></script>
-<script src="track.js?v=1260"></script>
-<script src="cloud.js?v=1260"></script>
-<script src="pay.js?v=1260"></script>
+<script src="config.js?v=1263"></script>
+<script src="track.js?v=1263"></script>
+<script src="cloud.js?v=1263"></script>
+<script src="pay.js?v=1263"></script>
+<script src="yaksok.js?v=1263"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -149,6 +133,10 @@
   // 출산택일은 신청 페이지(taekil-apply)에서 신청서와 함께 결제한다 — 여기 메모 칸은 걷었다(2026-09-11).
   var msg = document.getElementById('msg');
   var picked = null, busy = false, 결제사 = [];
+  var Y = window.ChaeksaYaksok;   // 상품 약속 장부(yaksok.js) — 상품 설명 · 그림 · 결제하는 자리
+
+  // 「무엇을 사나」 — 장부 한 곳에서 읽어 그린다(10-02, yaksok.js 무엇을사나). 값은 여기 적지 않는다(아래 상품 카드가 products 표에서 받는다).
+  if (Y) Y.무엇을사나(document.getElementById('yaksokList'));
 
   // 출산택일은 신청서가 붙은 한 장짜리 신청 페이지에서 결제한다(2026-09-11 사장님
   // 「결제하러 가기가 너무 빡세고 어지러워」). 옛 링크(?p=taekil)도 그리로 보낸다.
@@ -193,11 +181,12 @@
       return;
     }
 
-    var 그림 = ChaeksaPay.그림 || {};
+    // 상품 그림은 장부(yaksok.js 그림 칸)에서 — 상품마다 서로 다른 한 장.
+    var 장부줄 = function (code) { return (Y && Y.줄(code)) || {}; };
     상품 = 상품.slice().sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
     // 값 앞에 이름표(「출시 기념가」)를 붙인다 — ChaeksaPay.값. 줄 그은 정가는 없다(10-01 사장님).
     list.innerHTML = 상품.map(function (p) {
-      var g = 그림[p.code], 파일 = Array.isArray(g) ? g[0] : g, 위치 = Array.isArray(g) ? g[1] : '';
+      var 파일 = 장부줄(p.code).그림 || '', 위치 = '';
       var 값 = ChaeksaPay.값 ? ChaeksaPay.값(p) : ChaeksaPay.won(p.amount);
       var 금액 = ChaeksaPay.won(p.amount), 이름표 = 값.slice(0, 값.length - 금액.length).trim();
       return '<div class="item"' + (st.ready ? ' role="button" tabindex="0" aria-selected="false"' : '')
@@ -230,7 +219,10 @@
       // 사람 · 쌍에 매이는 상품은 그 사람을 고른 자리에서 결제한다 — 여기서 사면 누구 것인지(주문 note) 없이 결제돼
       // 돈을 내고 아무것도 안 열린다(2026-09-12 옛 장에서 겪은 일). 출산택일은 신청서가 붙은 신청 페이지에서.
       // 전체판은 연애 탭(love.js), 행동양식 궁합은 궁합 탭(pair.js)이 결제 열쇠를 붙여 ChaeksaPay.buy(…, 'kakao') 를 부른다.
-      var 결제자리 = { taekil: 'taekil-apply.html', love_full: './?go=love', love_pair: './?go=pair' };   // ?go= — 생년월일이 없는 손님도 입력을 거쳐 그 장으로 간다(#탭은 첫 화면에 멈췄다)
+      // 결제하는 자리는 장부(yaksok.js 자리 칸) — ?go= 는 생년월일이 없는 손님도 입력을 거쳐 그 장으로 간다(#탭은 첫 화면에 멈췄다).
+      // 장부를 못 받았으면 여기서는 아무것도 팔지 않는다 — 사람 · 쌍에 매이는 상품을 누구 것인지 없이 결제하게 두지 않는다.
+      var 결제자리 = {};
+      상품.forEach(function (p) { var 자리 = 장부줄(p.code).자리; if (자리) 결제자리[p.code] = 자리; else if (!Y) 결제자리[p.code] = './'; });
       var 여기서 = 상품.some(function (p) { return !결제자리[p.code]; });
       if (여기서) form.hidden = false;
       else list.insertAdjacentHTML('beforeend', '<p class="msg">결제는 <b>' + esc(결제사.map(function (p) { return p.name; }).join(' · '))

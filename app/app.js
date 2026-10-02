@@ -118,11 +118,13 @@
   let pendingPick = null;    // 방금 추가한 사람 — 공범 선택칸에 미리 골라둔다
 
 
+  // 이름 없이 넣은 사람을 부르는 말 — 「나」는 「나」로 넣은 사람뿐, 그 밖은 관계(그 사람 · 연인 …). 10-02 전에는 이름 없는 그 사람도 「나」로 불렀다.
+  const 이름없을때 = (p) => (p && !p.isSelf && p.relation && p.relation !== '나') ? p.relation : '나';
   function renderPeopleBtn() {
     const btn = $('btnPerson'); if (!btn || !People()) return;
     const p = People().active();
     btn.classList.toggle('hide', !p);
-    if (p) $('personName').textContent = 사람이름(p.name) || '나';
+    if (p) $('personName').textContent = 사람이름(p.name) || 이름없을때(p);
   }
 
   // 09-25 사람 고르기 · 고치기 폼이 같이 쓴다(wirePeople 안에 두면 openPeople 이 못 본다)
@@ -146,7 +148,7 @@
     $('peopleList').innerHTML = P.list().map(p => `
       <div class="pr ${p.id === cur ? 'on' : ''}" data-id="${p.id}">
         <button class="pr-main" data-id="${p.id}" data-a="pick">
-          <b>${esc(사람이름(p.name) || '나')}</b>
+          <b>${esc(사람이름(p.name) || 이름없을때(p))}</b>
           <span>${esc(p.relation)}${p.isSelf ? '' : ''} · ${p.birth.year}.${p.birth.month}.${p.birth.day}${p.birth.hour == null ? ' (시간 모름)' : ''}</span>
         </button>
         <button class="btn-ghost" data-id="${p.id}" data-a="edit" aria-label="수정">고치기</button>
@@ -161,16 +163,59 @@
     $('peopleSheet').classList.remove('hide');
   }
 
-  function openPersonForm(id) {
+  // ───── 사람 칸을 무엇을 하러 여나(10-02 생년월일은 필요한 만큼만) ─────
+  // 콘텐츠로 들어오다 이 칸이 뜨면, 맨 위에 그 콘텐츠 이름과 필요한 것(상품 약속 장부 필요 칸)을 띄우고 말풍선 · 저장 단추 말을 맞춘다.
+  //   누구 'them' = 그 사람 생년월일(사용설명서 · 궁합) · 'me' = 내 생년월일(그 사람만 넣어 둔 손님이 내 것이 필요한 콘텐츠로 갈 때).
+  //   길이 있으면(들어가기가 연 것) 관계 칸은 숨기고, 저장하면 고른 탭으로 간다(도착). 길 없이 열면(궁합 탭의 「그 사람 넣기」 등) 저장 뒤 지금처럼 그 탭이 다시 그린다.
+  let 사람폼길 = null, 사람폼누구 = null;
+  const 사람폼처음 = {};
+  function 사람폼모양(m) {
+    const say = $('pfSay'), why = $('pfWhy'), rel = $('pfRelWrap'), agree = $('pfAgree'), save = $('pfSave'), nm = $('pfName');
+    if (사람폼처음.say == null) { 사람폼처음.say = say ? say.textContent : ''; 사람폼처음.save = save ? save.textContent : '저장'; 사람폼처음.ph = nm ? nm.placeholder : ''; }
+    사람폼길 = null; 사람폼누구 = m ? m.누구 : null;
+    if (say) say.textContent = (m && m.말) || 사람폼처음.say;
+    if (why) {
+      why.classList.toggle('hide', !(m && m.이름));
+      if (m && m.이름) { $('pfWhyN').textContent = m.이름; $('pfWhyS').textContent = m.필요 ? '필요한 것 — ' + m.필요 : ''; }
+    }
+    if (rel) rel.classList.toggle('hide', !!(m && m.길));
+    if (agree) agree.classList.toggle('hide', 사람폼누구 === 'me');   // 「그 사람 동의를 받고」는 내 생년월일에는 맞지 않는다
+    if (save) save.textContent = (m && m.단추) || 사람폼처음.save;
+    if (nm) nm.placeholder = 사람폼누구 === 'me' ? '예: 지수' : 사람폼처음.ph;
+  }
+  // 누구 · 탭 · 길(true = 저장하면 그 탭으로) — 사람 목록(people.js)이 없으면 false(부르는 쪽이 옛 길로 간다).
+  function 사람폼열기(누구, tab, 길) {
+    if (!People()) return false;
+    const Y = window.ChaeksaYaksok, 머리 = Y && Y.입력머리 ? Y.입력머리(tab) : null, 말 = Y && Y.입력단추 ? Y.입력단추(tab) : null;
+    // 그 사람 칸의 「필요한 것」 — 장부 필요가 그 사람 것으로 시작하면(사용설명서) 그대로, 두 사람 콘텐츠(궁합)면 지금 넣는 그 사람 것만.
+    const 필요 = !머리 ? '' : 누구 === 'me' ? 머리.필요 : /^그 사람/.test(머리.필요 || '') ? 머리.필요 : '그 사람 생년월일시';
+    openPersonForm(null, {
+      누구, 길: !!길, 이름: 머리 && 머리.이름, 필요, 표지: 누구 === 'me' && window.ChaeksaHomeCats && ChaeksaHomeCats.표지 ? ChaeksaHomeCats.표지(tab) : null,
+      말: 누구 === 'me' ? '내 생년월일시를 넣어 주세요. 이건 내 것으로 만들어요.' : '그 사람은 언제 태어났어요? 그 사람 생년월일시 하나면 돼요.',
+      // 저장 단추 — 장부 입력단추(사용설명서 「저장하고 사용설명서 보기」 · 연애 「저장하고 예시 보기」). 「다음 — 그 사람 …」은 이 칸에 맞지 않아 「저장하고 보기」.
+      단추: (길 && 말 && !/^다음/.test(말)) ? 말 : '저장하고 보기',
+    });
+    사람폼길 = 길 ? { 누구, tab } : null;
+    return true;
+  }
+  // 길을 들고 연 칸을 그만둘 때(취소 · 폰 「뒤로」) — 들고 있던 갈 곳도 내려놓는다(입력접기와 같은 까닭).
+  function 사람폼그만() {
+    if (!사람폼길) return;
+    사람폼길 = null;
+    try { sessionStorage.removeItem('chaeksa.goto'); sessionStorage.removeItem('chaeksa.gotoSpot'); } catch (e) {}
+  }
+
+  function openPersonForm(id, 모양) {
     const P = People(); if (!P) return;
     editingId = id || null;
-    const p = id ? P.get(id) : null;
+    const p = id ? P.get(id) : null, 나칸 = !!(모양 && 모양.누구 === 'me');
     $('pfTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
     $('pfRel').innerHTML = P.RELATIONS.map(r => `<option value="${r}">${r}</option>`).join('');
     if ($('pfPlace') && window.ChaeksaPlaces) $('pfPlace').innerHTML = ChaeksaPlaces.options();
     const b = p ? p.birth : {};
     $('pfName').value = p ? p.name : '';
-    $('pfRel').value = p ? p.relation : (P.list().length ? '그 사람' : '나');
+    // 10-02 누구 것인지 정해서 열면(사람폼열기) 관계도 그대로 — 처음 넣는 사람이라고 「나」로 두지 않는다(people.js add 머리말)
+    $('pfRel').value = p ? p.relation : 모양 ? (나칸 ? '나' : '그 사람') : (P.list().length ? '그 사람' : '나');
     pfCal = b.calendar === 'lunar' ? 'lunar' : 'solar';
     setPfCal(pfCal);
     if (pfCal === 'lunar' && b.lunarInput) {
@@ -184,12 +229,17 @@
     $('pfMi').value = b.minute == null ? '' : b.minute;
     $('pfNoTime').checked = b.hour == null && !!p;
     $('pfH').disabled = $('pfMi').disabled = $('pfNoTime').checked;
-    $('pfG').value = b.gender || (profile && profile.gender === 'M' ? 'F' : 'M');   // 09-25 새 사람은 내 반대 성별이 기본
-    try { 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); } catch (e) {}
+    // 09-25 새 사람은 내 반대 성별이 기본. 10-02 내 생년월일 칸(나칸)은 첫 입력 칸(#g)처럼 여성이 먼저 — 지금 보는 사람이 그 사람이라 반대로 두면 틀린다.
+    $('pfG').value = b.gender || (나칸 ? 'F' : (profile && profile.gender === 'M' ? 'F' : 'M'));
+    if (나칸) { const im = $('pfCut') && $('pfCut').querySelector('img'); if (im) { im.style.opacity = 1; im.src = 모양.표지 || 'art/love-main.webp'; } }   // 내 칸 그림 = 고른 콘텐츠 표지(원본)
+    else { try { 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); } catch (e) {} }
     $('pfGUnknown').checked = !!b.genderUnknown;
     $('pfG').disabled = $('pfGUnknown').checked;
     if ($('pfPlace')) $('pfPlace').value = b.place || 'KR:서울';
+    // 10-02 태어난 곳은 접어 둔다(「더 정확하게(선택)」). 서울이 아닌 사람을 고칠 때만 펼쳐서 보여 준다.
+    if ($('pfMore') && $('pfPlace')) $('pfMore').open = !!$('pfPlace').value && $('pfPlace').value !== 'KR:서울';
     $('pfDelete').classList.toggle('hide', !p || P.list().length <= 1);
+    사람폼모양(모양 || null);
     $('personForm').classList.remove('hide');
     updatePfConv();
   }
@@ -252,14 +302,21 @@
       P.update(editingId, { name, relation: rel, birth, isSelf: rel === '나' });
     } else {
       // 사람을 추가해도 보던 프로필은 그대로 둔다 — 첫 사람일 때만 people.js가 활성화한다
-      pendingPick = P.add({ name, relation: rel, isSelf: rel === '나' || !P.list().length, birth });
+      // 10-02 「나」는 관계가 「나」일 때만 — 전에는 첫 사람이면 무조건 「나」라, 사용설명서에 그 사람부터 넣으면 그 사람이 「나」가 됐다.
+      pendingPick = P.add({ name, relation: rel, isSelf: rel === '나', birth });
       try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('profile'); } catch (e) {}   // 깔때기 ② 생년월일 넣음
     }
+    const 길 = 사람폼길; 사람폼길 = null;   // 10-02 콘텐츠로 들어오다 연 칸(사람폼열기)
     $('personForm').classList.add('hide');
     $('peopleSheet').classList.add('hide');
     if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
     const 새 = pendingPick;   // renderPartners 가 비우기 전에 붙잡는다
-    if (!R || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
+    // 10-02 그 사람만 넣어 두었던 손님이 내 생년월일을 넣었으면 이제 나를 보는 사람으로 세운다. 사용설명서로 넣은 그 사람은 사용설명서가 고를 사람으로.
+    if (길 && 새) {
+      if (길.누구 === 'me') P.setActive(새);
+      else if (길.tab === 'pair') { try { localStorage.setItem('chaeksa.pair.pick', JSON.stringify(새)); } catch (e) {} }
+    }
+    if (!R || (길 && 길.누구 === 'me') || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
     else { renderPeopleBtn(); renderPartners(); renderHome(); }
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
     try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
@@ -278,6 +335,8 @@
       // 행동양식 궁합 탭에서 넣은 사람은 곧 그 사람이다(10-01)
       if (document.querySelector('.tab[data-tab="pair"]:not(.hide)') && window.ChaeksaPairView) { if (새) { try { localStorage.setItem('chaeksa.pair.pick', JSON.stringify(새)); } catch (x) {} } ChaeksaPairView.그리기($('pairBox'), profile); }
     } catch (e) {}
+    // 10-02 콘텐츠로 들어오다 연 칸이면 저장한 뒤 그 탭으로 간다(들어가기가 적어 둔 갈 곳 — 도착)
+    if (길) { try { 도착(); } catch (e) {} }
   }
 
   function wirePeople() {
@@ -285,7 +344,7 @@
     $('btnPerson').onclick = openPeople;
     $('btnClosePeople').onclick = () => $('peopleSheet').classList.add('hide');
     $('btnAddPerson').onclick = () => openPersonForm(null);
-    $('pfCancel').onclick = () => $('personForm').classList.add('hide');
+    $('pfCancel').onclick = () => { $('personForm').classList.add('hide'); 사람폼그만(); };
     $('pfSave').onclick = savePerson;
     $('pfDelete').onclick = () => 사람지우기(editingId);
     $('pfCalSeg').querySelectorAll('button').forEach(b => b.onclick = () => setPfCal(b.dataset.cal));
@@ -384,13 +443,19 @@
     const p = readForm(); if (!p) return;
     localStorage.setItem(KEY, JSON.stringify(p));
     localStorage.setItem('chaeksa.profileAt', new Date().toISOString());
-    if (People()) {
-      const id = People().add({ name: p.name, relation: '나', isSelf: true, birth: p });
-      People().setActive(id);
-      start(People().toProfile(People().active()));
-    } else start(p);
-    if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
-    try { 도착(); } catch (e) {}   // 09-25 첫 화면에서 고른 탭으로
+    // 10-02 화면마다 주소 — 입력 칸 주소(#form)를 갈 곳 주소로 바꿔 쓴다(새로 쌓지 않는다). 저장한 뒤 「뒤로」를 눌러도 입력 칸이 다시 뜨지 않는다.
+    const 전방식 = 주소방식; 주소방식 = 'replace';
+    try {
+      if (People()) {
+        const id = People().add({ name: p.name, relation: '나', isSelf: true, birth: p });
+        People().setActive(id);
+        start(People().toProfile(People().active()));
+      } else start(p);
+      if (window.ChaeksaCloud) ChaeksaCloud.pushSoon();
+      try { 도착(); } catch (e) {}   // 09-25 첫 화면에서 고른 탭으로
+    } finally { 주소방식 = 전방식; }
+    // 갈 곳 없이 홈에 섰고 입력 칸이 처음 화면 위에 쌓인 것이었으면 한 칸 되돌린다 — 「뒤로」 한 번에 같은 홈이 또 나오지 않게.
+    try { const s = history.state; if (주소켜짐 && 보인주소 === '' && s && s.책사 && s.앞 === '') history.back(); } catch (e) {}
   };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
 
@@ -414,11 +479,65 @@
   const 지금자리 = () => window.scrollY || document.documentElement.scrollTop || 0;
   const 열린탭 = () => { const el = document.querySelector('.tab:not(.hide)'); return el ? el.dataset.tab : ''; };
 
+  // ───── 화면마다 주소 (10-02) ─────
+  // 전에는 탭을 옮겨도 주소가 그대로라, 폰 「뒤로」를 누르면 사이트를 나가 네이버 블로그로 돌아갔다. 보던 화면 주소를 카톡에 보낼 수도 없었다.
+  // 이제 화면을 열 때마다 주소 끝에 #탭이름 을 남긴다(홈 · 첫 화면은 꼬리 없음, 입력 칸은 #form). 「뒤로」 · 「앞으로」는 주소따라가기()가 그 화면을 다시 연다.
+  //  · 주소방식 — push(한 칸 쌓는다 · 보통) · replace(지금 칸을 바꿔 쓴다 · 입력 칸에서 저장할 때) · none(주소를 안 건드린다 · 「뒤로」를 따라 열 때, 서버에서 받아 다시 그릴 때).
+  //  · 부팅 중(주소켜짐 false)에는 주소를 안 건드린다 — 결제 복귀(#sheet-…) · 로그인 복귀 해시를 파일 끝 goHash 가 읽어야 한다. 다 선 뒤 주소시작()이 켠다.
+  //  · 쌓을 때 상태(history.state)에 앞 화면(앞)을 적는다. 「← 홈」 · 아래 메뉴 · 로고가 바로 앞 화면으로 가는 것이면 새로 쌓지 않고 한 칸 되돌린다(돌아가기) — 홈 ↔ 탭을 오갈수록 「뒤로」가 길어지지 않게.
+  let 주소켜짐 = false, 주소방식 = 'push', 보인주소 = null;
+  // 주소 꼬리 → 화면 이름. '' = 홈(사람이 없으면 첫 화면) · 'form' = 입력 칸 · 그 밖은 탭 이름. 모르는 꼬리(#jtCh3 같은 칸 이동 · 로그인 꼬리)는 null.
+  function 경로(hash) {
+    let t = String(hash || '').replace(/^#/, '');
+    if (/^sheet-[a-z]+$/.test(t)) t = 'sheet';
+    if (!t || t === 'home' || t === 'gacha' || t === 'today') return '';
+    if (t === 'form') return 'form';
+    return /^[a-z][\w-]*$/.test(t) && document.querySelector('.tab[data-tab="' + t + '"]') ? t : null;
+  }
+  function 주소(r) {
+    const 바닥 = location.pathname + location.search;
+    if (!r) return 바닥;
+    if (r === 'sheet' && window.현재장) return 바닥 + '#sheet-' + window.현재장;
+    return 바닥 + '#' + r;
+  }
+  const 앞칸 = () => (history.state && history.state.책사) ? history.state.앞 : null;
+  function 주소남기기(r) {
+    if (r == null || r === 보인주소) return;
+    const 앞 = 보인주소; 보인주소 = r;
+    if (!주소켜짐 || 주소방식 === 'none') return;
+    try {
+      if (주소방식 === 'replace') history.replaceState({ 책사: 1, 앞: 앞칸() }, '', 주소(r));
+      else history.pushState({ 책사: 1, 앞: 앞 }, '', 주소(r));
+    } catch (e) {}
+  }
+  function 주소없이(fn) { const 전 = 주소방식; 주소방식 = 'none'; try { fn(); } finally { 주소방식 = 전; } }
+  // 주소가 보이는 화면과 다르면 지금 칸을 바꿔 쓴다(새로 쌓지 않는다).
+  function 주소맞추기() {
+    if (!주소켜짐 || 보인주소 == null || 경로(location.hash) === 보인주소) return;
+    try { history.replaceState({ 책사: 1, 앞: 앞칸() }, '', 주소(보인주소)); } catch (e) {}
+  }
+  // 사람이 누른 「← 홈」 · 아래 메뉴 · 로고 · 입력 칸 「← 처음으로」. 가려는 화면이 바로 앞 칸이면 한 칸 되돌린다(새로 쌓지 않는다).
+  function 돌아가기(tab) {
+    const r = 경로('#' + tab);
+    if (주소켜짐 && 주소방식 === 'push' && r != null && r !== 보인주소 && 앞칸() === r) {
+      주소없이(() => go(tab));
+      try { history.back(); } catch (e) {}   // 돌아온 칸은 이미 보이는 화면이라 주소따라가기가 아무것도 안 한다
+      return;
+    }
+    go(tab);
+  }
+  // 로고 · 입력 칸 「← 처음으로」 — 넣어 둔 사람이 있으면 홈, 없으면 첫 화면. 입력 칸을 그만두면 들고 있던 갈 곳도 내려놓는다.
+  function 처음으로() {
+    if (보인주소 === 'form') 입력접기();
+    돌아가기('home');
+    if (!hasProfile()) window.scrollTo({ top: 0 });
+  }
+
   // 09-25 사장님 「콘텐츠 들어가면 홈으로 빠져나갈 길이 위아래 있어야」 — 화면 규격: 홈이 아닌 탭은 맨 위 · 맨 아래에 「← 홈」. 코드가 보장한다(탭마다 손으로 안 넣는다).
   function 홈길(tab) {
     if (tab === 'home') return;
     const el = document.querySelector('.tab[data-tab="' + tab + '"]'); if (!el) return;
-    const 만들기 = (pos) => { const b = document.createElement('button'); b.className = 'btn ghost small backhome backhome-' + pos; b.dataset.open = 'home'; b.textContent = '← 홈'; b.onclick = () => go('home'); return b; };
+    const 만들기 = (pos) => { const b = document.createElement('button'); b.className = 'btn ghost small backhome backhome-' + pos; b.dataset.open = 'home'; b.textContent = '← 홈'; b.onclick = () => 돌아가기('home'); return b; };
     if (!el.querySelector(':scope > .backhome-top')) { const t = el.querySelector(':scope > .backhome'); if (t) t.classList.add('backhome-top'); else el.insertAdjacentElement('afterbegin', 만들기('top')); }
     if (!el.querySelector(':scope > .backhome-bottom')) el.insertAdjacentElement('beforeend', 만들기('bottom'));
   }
@@ -428,11 +547,12 @@
     if (열린탭() === 'home') 홈자리 = (tab === 'home') ? 0 : 지금자리();
     // 유형 카드(789 유형·SSR 등급·시즌 카드)는 2026-09-04 삭제 — 「무슨 말인지도 모르더라」. 옛 링크는 홈으로.
     if (tab === 'gacha' || tab === 'today') tab = 'home';   // 오늘 탭은 2026-09-13 에 걷었다 — 옛 링크는 홈으로
+    주소남기기(경로('#' + tab));   // 10-02 화면마다 주소(위 「화면마다 주소」)
     홈길(tab);
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
-    document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.go === tab));
+    document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.pick ? 분류탭(b.dataset.pick, b.dataset.go).indexOf(tab) >= 0 : b.dataset.go === tab));
     // 탭 위의 열 책사 한마디(renderChorus)는 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
     if (tab !== 'home') 본표시(tab); else { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
     // 자리 잡기 — 홈이면 보던 데로, 아니면 맨 위로.
@@ -483,7 +603,43 @@
       try { const e = 고르는칸[tab] ? $(고르는칸[tab]) : null; if (e && [...e.options].some(o => o.value === id)) { e.value = id; if (e.onchange) e.onchange(); } } catch (e) {}
     }
   }
-  document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.go));
+  // 10-02 아래 줄 다섯 칸 — 홈 · 내 사주 · 출산택일은 곧장 그 탭, 연애 · 궁합(data-pick)은 고르기 창. 창을 못 그리면 data-go 탭으로 곧장.
+  document.querySelectorAll('nav button').forEach(b => b.onclick = () => { if (b.dataset.pick && 고르기창(b.dataset.pick)) return; 돌아가기(b.dataset.go); });
+  // ───── 아래 줄 고르기 창(10-02) — 연애 · 궁합을 누르면 그 분류의 콘텐츠를 한 줄씩 견주어 고른다 ─────
+  // 무엇이 있나 · 차례 = 홈 분류 칸(home-cats.js 칸 표 → ChaeksaHomeCats.묶음). 창 머리 = 분야 표 큰분야 이름 · 머리(bunya.js).
+  // 줄마다 이름 · 무엇을 보나(홈한줄) · 딱지(무엇이 무료 · 얼마 — 값은 상품표에서) = 상품 약속 장부(yaksok.js). 글을 여기 손으로 적지 않는다.
+  // 고르면 들어가기() — 홈 칸을 누른 것과 같은 길(그 사람이 아직 없으면 그 사람 칸부터).
+  // go() 가 먼저 부를 수 있어 함수 선언으로 둔다(끌어올려진다). 홈 칸 표를 못 읽으면 data-go 탭 하나.
+  function 분류탭(분류, 기본) {
+    try { const HC = window.ChaeksaHomeCats; if (HC && HC.묶음) { const t = HC.묶음(분류).map(c => c.탭).filter(Boolean); if (t.length) return t; } } catch (e) {}
+    return 기본 ? [기본] : [];
+  }
+  function 고르기창(분류) {
+    const HC = window.ChaeksaHomeCats, Y = window.ChaeksaYaksok, B = window.ChaeksaBunya, m = $('navPick'), list = $('navPickList');
+    if (!m || !list || !HC || !HC.묶음 || !Y) return false;
+    const 칸들 = HC.묶음(분류).filter(c => c.탭 && document.querySelector('.tab[data-tab="' + c.탭 + '"]'));
+    if (!칸들.length) return false;
+    const 큰 = ((B && B.큰분야) || []).find(x => x.키 === 분류) || {}, 지금 = 열린탭();
+    $('navPickT').textContent = 큰.이름 || '';
+    $('navPickS').textContent = 큰.머리 || '';
+    $('navPickS').classList.toggle('hide', !큰.머리);
+    list.innerHTML = 칸들.map(c => {
+      const 이름 = Y.이름(c.키), 한줄 = Y.홈한줄 ? Y.홈한줄(c.키) : Y.한줄(c.키), 딱지 = Y.딱지html(c.키);
+      return '<button type="button" class="np-row' + (c.탭 === 지금 ? ' on' : '') + '" data-tab="' + escP(c.탭) + '"' + (c.탭 === 지금 ? ' aria-current="page"' : '') + '>'
+        + '<b>' + escP(이름) + '</b>' + (한줄 ? '<span class="np-s">' + escP(한줄) + '</span>' : '') + (딱지 ? '<span class="np-t">' + 딱지 + '</span>' : '') + '</button>';
+    }).join('');
+    try { Y.값채우기(list); } catch (e) {}
+    list.querySelectorAll('.np-row').forEach(b => b.onclick = () => { m.classList.add('hide'); 들어가기(b.dataset.tab); });
+    m.classList.remove('hide');
+    return true;
+  }
+  if ($('navPick')) {
+    $('navPick').onclick = (e) => { if (e.target === $('navPick')) $('navPick').classList.add('hide'); };
+    $('btnNavPickClose').onclick = () => $('navPick').classList.add('hide');
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('navPick').classList.contains('hide')) $('navPick').classList.add('hide'); });
+  }
+  // 10-02 로고를 누르면 처음으로(전에는 눌러도 아무 일이 없었다). index.html 의 로고는 ./ 로 가는 링크라 스크립트가 없어도 첫 화면으로 간다.
+  document.querySelectorAll('header .logo').forEach(a => a.addEventListener('click', (e) => { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; e.preventDefault(); 처음으로(); }));   // 새 탭으로 열기(Ctrl · ⌘)는 링크 그대로
 
   // 주소 뒤 #탭이름 으로 바로 들어올 수 있게 한다. taekil.html 같은 바깥 페이지에서
   // '상담 신청하기'를 눌렀을 때 홈으로 떨어지면 버튼 문구와 어긋난다.
@@ -507,7 +663,37 @@
     }
     go(t);
   }
-  window.addEventListener('hashchange', () => goHash(!!(People() && People().active())));
+  // 「뒤로」 · 「앞으로」 · #탭 링크 — 주소가 가리키는 화면을 연다. 이미 그 화면이면 아무것도 안 한다(popstate 와 hashchange 가 같이 와도 한 번만).
+  function 주소따라가기() {
+    if (!주소켜짐) return;
+    const r = 경로(location.hash);
+    if (r == null || r === 보인주소) return;
+    // 떠 있는 창(사람 고르기 · 그 사람 넣기 · 로그인 · 설정)은 닫는다 — 화면만 바뀌고 창이 그 위에 남지 않게.
+    ['peopleSheet', 'personForm', 'loginSheet', 'settings', 'navPick'].forEach(id => { const m = $(id); if (m) m.classList.add('hide'); });
+    사람폼그만();
+    const 입력에서 = 보인주소 === 'form';
+    주소없이(() => {
+      if (r === '') { if (입력에서) 입력접기(); go('home'); }
+      else if (r === 'form') { if (hasProfile() && profile) go('home'); else showForm(); }
+      else goHash(!!(People() && People().active()));
+    });
+    주소맞추기();
+  }
+  window.addEventListener('popstate', 주소따라가기);
+  window.addEventListener('hashchange', 주소따라가기);
+  // 부팅이 끝나면(파일 끝 「시작」) 켠다. 주소가 보이는 화면과 같으면(그냥 · 결제 복귀 · 로그인 복귀) 그대로 두고,
+  // ?go= · 받은 #탭 주소로 곧장 다른 화면에 섰으면 밑에 처음 화면 한 칸을 깔아 「뒤로」가 사이트 밖이 아니라 처음 화면으로 오게 한다.
+  function 주소시작() {
+    try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}   // 자리는 go() 가 잡는다(홈은 보던 자리, 탭은 맨 위) — 브라우저가 따로 되감으면 둘이 다툰다
+    주소켜짐 = true;
+    if (보인주소 == null) return;
+    const 지금 = 경로(location.hash), 바닥 = location.pathname + location.search;
+    try {
+      if (지금 === 보인주소 && 보인주소 !== 'form') history.replaceState({ 책사: 1, 앞: null }, '', location.href);   // 입력 칸(#form)으로 곧장 왔으면 아래 갈래 — 밑에 처음 화면을 깐다
+      else if (보인주소 === '') history.replaceState({ 책사: 1, 앞: null }, '', 바닥);
+      else { history.replaceState({ 책사: 1, 앞: null }, '', 바닥); history.pushState({ 책사: 1, 앞: '' }, '', 주소(보인주소)); }
+    } catch (e) {}
+  }
   // 초기 호출은 파일 끝에서 한다. 여기서 부르면 go() 가 renderNokpae() 등을 타는데
   // 그 함수들이 쓰는 const 가 아직 선언 전이라 TDZ 오류가 난다.
 
@@ -539,33 +725,72 @@
   function 인생곡선() {
     const T = window.ChaeksaTypecard, box = $('lcCard');
     if (!box) return;
-    if (!T || !T.drawLifeCurve || !R || !R.daeun || !R.daeun.list || !R.daeun.list.length) { box.classList.add('hide'); return; }
+    if (!T || !T.drawLifeCurve || !R || !R.daeun || !R.daeun.list || !R.daeun.list.length) { box.classList.add('hide'); return null; }
     const lc = T.lifeCurve(R, today);
     box.innerHTML = '<h2>인생 곡선</h2>'
       + '<p class="hint" style="margin:0 0 4px">열 해마다 바뀌는 대운 아홉 칸을 곡선으로 그렸어요. 대운이 내 사주에 필요한 것을 가져오는지로 점수를 매겼어요.</p>'
       + (profile && profile.genderUnknown ? '<p class="hint" style="margin:6px 0 0">성별을 모른다고 하셔서 남성 기준으로 그렸어요. 대운은 성별에 따라 도는 방향이 달라요.</p>' : '')
       + '<div class="cardwrap"><div class="cardflip"><div class="cardsvg" id="lcSvg">' + T.drawLifeCurve(이름값(), lc) + '</div></div>'
-      + '<button class="btn small" id="btnLcShare" style="margin-top:12px">이 그림 저장 · 보내기</button></div>'
+      + '<button class="btn small" id="btnLcShare" style="margin-top:12px">이 그림 저장 · 보내기</button><p class="hint" id="lcShareSay" style="margin:8px 0 0;text-align:center"></p></div>'
       + '<p class="hint" style="margin-top:10px;text-align:center">' + esc(lc.kind + '형 · 가장 높은 구간 ' + lc.peakTxt) + ' · 같은 사주는 언제나 같은 곡선이에요</p>';
     box.classList.remove('hide');
+    // 10-02 개편 2묶음 「공유 카드 넓히기」 — 전에는 링크 없이 그림만 갔다. 받은 사람이 들어올 주소(꼬리표 card-curve)를 같이 보낸다.
+    // 폰 공유는 글에 주소를 싣고 클립보드에도 넣는다(typecard.js share). 주소는 화면에도 적어 둔다 — 카톡이 글을 버렸을 때 붙여 넣게.
+    const 곡선주소 = 'https://chaeksa.kr/?from=card-curve';
     $('btnLcShare').onclick = async () => {
-      const b = $('btnLcShare'); b.disabled = true; b.textContent = '만드는 중…';
+      const b = $('btnLcShare'), say = $('lcShareSay'); b.disabled = true; b.textContent = '만드는 중…';
+      try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('share-curve'); } catch (e) {}
       try {
-        const r = await T.share($('lcSvg').innerHTML, '대운도_' + lc.peak.startAge + '세');
+        const r = await T.share($('lcSvg').innerHTML, '대운도_' + lc.peak.startAge + '세', 곡선주소);
         b.textContent = r === 'shared' ? '보냈어요' : r === 'copied' ? '복사됐어요 — 붙여 넣으세요' : '사진으로 저장했어요';
+        if (say) say.innerHTML = '받는 사람도 자기 곡선을 볼 수 있게 이 주소를 같이 보내 주세요<br><b style="user-select:all;overflow-wrap:anywhere">' + esc(곡선주소) + '</b>';
       } catch (e) { b.textContent = '다시 눌러 주세요'; }
       b.disabled = false;
       setTimeout(() => { b.textContent = '이 그림 저장 · 보내기'; }, 2500);
     };
+    return lc;   // 10-02 홈 맨 위 이번 주 띠(이번주띠)가 지금 구간 한 줄을 쓴다
+  }
+
+  // ───── 이번 주 띠 — 홈 맨 위(10-02 개편 2묶음 「다시 온 손님 홈」) ─────
+  // 넣어 둔 사람이 다시 오면 맨 위에서 오늘 한 줄과 인생 곡선의 지금 구간을 본다(전에는 그림 칸 아래 4,500px 밑이라 다시 와도 안 보였다).
+  // 누르면 펼쳐 이번 주 카드(bhCard) · 인생 곡선(lcCard)이 그 자리에 선다(index.html #wkBand). 펼침은 이 기기에 기억한다(다음에 와도 그대로).
+  // 글은 여기서 짓지 않는다 — 오늘 한 줄 = 이번 주 카드가 오늘 칸 맨 위에 내는 그 줄(byeonhwa.js 사람말 → 세계실단, 카드를 그린 같은 S),
+  // 지금 구간 = 인생 곡선 카드 글 첫 줄(typecard.js lifeCurve lines[0])의 첫 문장. 둘 다 없으면 띠를 숨긴다.
+  const 띠열림키 = 'chaeksa.wkOpen';
+  function 이번주띠(S, lc) {
+    const box = $('wkBand'), sum = $('wkSum'), V = window.ChaeksaByeonhwaView;
+    if (!box || !sum) return;
+    let 오늘줄 = '';
+    try {
+      const 날들 = (S && S.주 && S.주.날들) || [], i = 날들.findIndex(x => x.날짜 === S.오늘);
+      if (V && V.사람말 && V.체덧 && V.세계실단 && i >= 0) 오늘줄 = V.세계실단(V.사람말(날들[i], V.체덧(S, i))) || '';
+    } catch (e) { 오늘줄 = ''; }
+    const 곡선첫 = lc && lc.lines && lc.lines[0] ? String(lc.lines[0]) : '';
+    const 곡선줄 = ((/^(.*?)[.!?](\s|$)/.exec(곡선첫) || [null, 곡선첫])[1] || '').trim();
+    if (!오늘줄 && !곡선줄) { box.classList.add('hide'); sum.innerHTML = ''; return; }
+    sum.innerHTML = '<span class="wk-h"><b>' + escP((nim() ? nim() + '의' : '나의') + ' 이번 주') + '</b><i class="wk-tg"></i></span>'
+      // 오늘 한 줄은 「10월 2일 금요일은 …」처럼 제 날짜로 시작한다(byeonhwa-jogak.js 세계틀 · 요즘그대로.날) — 머리표에는 「오늘」만.
+      + (오늘줄 ? '<span class="wk-day">오늘</span><span class="wk-s">' + escP(오늘줄) + '</span>' : '')
+      + (곡선줄 ? '<span class="wk-l"><b>인생 곡선</b>' + escP(곡선줄) + '</span>' : '');
+    const 표 = () => { const t = sum.querySelector('.wk-tg'); if (t) t.textContent = box.open ? '접기 ▴' : '펼쳐 보기 ▾'; };
+    if (!box.dataset.wired) {
+      box.dataset.wired = '1';
+      try { if (localStorage.getItem(띠열림키) === '1') box.open = true; } catch (e) {}
+      box.addEventListener('toggle', () => { 표(); try { localStorage.setItem(띠열림키, box.open ? '1' : '0'); } catch (e) {} });
+    }
+    표();
+    box.classList.remove('hide');
   }
 
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
     // 첫 의논(#chong)은 홈에서 걷었다(2026-09-12 이야기 서점 전략). 의논 화면(ganmyeong)은 전체 목록에서 연다.
     const a = R.analysis;
-    // 09-27 이번 주엔 무엇이 바뀌나 — 홈 카드(byeonhwa.js, 09-30 맨 아래로). 그 사람은 정통궁합 · 웹툰궁합이 고른 사람(궁합그사람)과 같다
-    try { if (window.ChaeksaByeonhwaView && $('bhCard')) ChaeksaByeonhwaView.그리기($('bhCard'), profile, (() => { try { const P0 = People(), me = P0 && P0.active(), g = P0 && 궁합그사람 ? P0.get(궁합그사람) : null; return g && (!me || g.id !== me.id) ? P0.toProfile(g) : null; } catch (e) { return null; } })()); } catch (e) { try { console.warn('이번 주 실패:', e); } catch (e2) {} }
-    try { 인생곡선(); } catch (e) { try { console.warn('인생 곡선 실패:', e); } catch (e2) {} }
+    // 09-27 이번 주엔 무엇이 바뀌나 — 홈 카드(byeonhwa.js, 10-02 맨 위 이번 주 띠 안 · 펼치면 보인다). 그 사람은 정통궁합 · 웹툰궁합이 고른 사람(궁합그사람)과 같다
+    let 주S = null, 곡선 = null;
+    try { if (window.ChaeksaByeonhwaView && $('bhCard')) 주S = ChaeksaByeonhwaView.그리기($('bhCard'), profile, (() => { try { const P0 = People(), me = P0 && P0.active(), g = P0 && 궁합그사람 ? P0.get(궁합그사람) : null; return g && (!me || g.id !== me.id) ? P0.toProfile(g) : null; } catch (e) { return null; } })()); } catch (e) { try { console.warn('이번 주 실패:', e); } catch (e2) {} }
+    try { 곡선 = 인생곡선(); } catch (e) { try { console.warn('인생 곡선 실패:', e); } catch (e2) {} }
+    try { 이번주띠(주S, 곡선); } catch (e) { try { console.warn('이번 주 띠 실패:', e); } catch (e2) {} }
     // 첫 마디(standing)·「지금 어디에 계신지」는 2026-09-14 원국 탭 개편으로 걷었다.
     // 「타일 미리보기」는 옛 서고(#shelves)의 배지·부제를 채우던 코드였다.
     // 서고를 지웠으므로(2026-09-09) 여기서 세던 것도 걷었다 — 홈은 renderWtHome 하나가 그린다.
@@ -603,7 +828,7 @@
         + '<span class="cs-txt">' + escP(말0)
         + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + escP(행동0) + '</span>' : '')
         + '</span><span class="cs-go">' + (탭이름(탭0) ? esc(탭이름(탭0)) + ' ' : '') + '▸</span></button>'
-        + '<button class="hs-keep" type="button">이 한마디 간직하기</button></div>';
+        + '</div>';   // 「이 한마디 간직하기」(한마디 카드 · share.js drawSay)는 10-02 개편 2묶음에서 걷었다 — 이 장면(#homeScene)이 화면에 없다
       sc.classList.add('noface');   // 얼굴 자리를 접는다 — 얼굴을 안 세우니 늘 접힌다
       const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
       // ── 어제와 오늘이 이어진다 (2026-09-04 1단계 「내일 다시 열 이유」) ──
@@ -624,33 +849,9 @@
         if (y && y.말 && y.말 !== 말0) {
           const box = document.createElement('div'); box.className = 'hs-yday';
           box.innerHTML = '<span class="k">어제 · ' + esc(이름of(y.이름)) + '</span><p>' + esc(y.말) + '</p>';
-          sc.querySelector('.hs-body').insertBefore(box, sc.querySelector('.hs-keep'));
+          sc.querySelector('.hs-body').appendChild(box);
         }
       } catch (e) {}
-      // 보낼 만한 카드 — 원국 카드는 「내가 어떤 사람인가」의 증거고
-      // 이 카드는 「나에게 해 준 말」이다. 남의 대화창에 걸리는 쪽은 뒤쪽이다.
-      const bk = sc.querySelector('.hs-keep');
-      if (bk) bk.onclick = async () => {
-        bk.disabled = true; const 원 = bk.textContent; bk.textContent = '만드는 중…';
-        try {
-          // 제 캔버스를 그 자리에서 만든다. #shareCanvas 를 같이 쓰면 원국 공유가
-          // shareReady 때문에 다시 안 그려서 한마디 카드를 원국이라며 내보낸다.
-          const cv = document.createElement('canvas');
-          await ChaeksaShare.drawSay(cv, {
-            // 말을 건네는 컷(say-<키>.webp)이 있으면 그것을, 없으면 초상을 쓴다 — config.js CHAEKSA_SAY_ART
-            초상: (window.CHAEKSA_SAY_ART || []).includes(키0) ? 'art/say-' + 키0 + '.webp?v=' + (window.CHAEKSA_ART || 1)
-              : (window.CHAEKSA_ART && 초상(키0, 0)) ? 초상(키0, 0) + '?v=' + window.CHAEKSA_ART : '',
-            이름: 이름of(이름0), 직함: 직함of(이름0), 말: 말0,
-            본인: nim(), 간지: f.pillar(tf.day) + '일',
-          });
-          const 이름칸 = nim().replace(/님$/, '');
-          const 보냄 = await ChaeksaShare.share(cv, 이름칸, '한마디',
-            이름of(이름0) + '이 아뢴 한마디 · chaeksa.kr');
-          bk.textContent = 보냄 ? '보냈습니다' : '저장했습니다';
-        } catch (e) { bk.textContent = '만들지 못했습니다'; }
-        bk.disabled = false;
-        setTimeout(() => { bk.textContent = 원; }, 2500);
-      };
     }
     // ── 기억 (docs/29 넷) — 지난번 한 말을 들고 있다가 묻는다. 세지 않는다. ──
     // 사람 열쇠는 사람 목록의 id, 없으면 생년월일시·성별. 사람을 바꾸면 기억도 따로다.
@@ -716,7 +917,7 @@
   }
   // data-scroll 이 있으면 탭을 연 뒤 그 자리로 내린다 — 홈 「이달의 나」가 오늘 탭의 달력(#myMonth)으로 간다.
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {
-    go(b.dataset.open);
+    돌아가기(b.dataset.open);
     const id = b.dataset.scroll;
     // go() 가 맨 위로 올린 뒤 탭이 그려지는 데 한 박자 걸린다 — 60ms 에 smooth 로 보냈더니
     // 1초 뒤에도 10,000px 위에 있었다. 그려진 다음에 곧장 간다.
@@ -954,20 +1155,7 @@
     };
   }
 
-  let shareReady = false;
-  async function renderShareCard() {
-    if (shareReady) return;
-    try { await ChaeksaShare.draw($('shareCanvas'), R, nim()); shareReady = true; }
-    catch (e) { $('shareCanvas').closest('.card').classList.add('hide'); }
-  }
-  if ($('btnShare')) $('btnShare').onclick = async () => {
-    await renderShareCard();
-    try { await ChaeksaShare.share($('shareCanvas'), profile.name); } catch (e) {}
-  };
-  if ($('btnSaveImg')) $('btnSaveImg').onclick = async () => {
-    await renderShareCard();
-    ChaeksaShare.save($('shareCanvas'), profile.name);
-  };
+  // 원국 공유 카드(renderShareCard · #btnShare · #btnSaveImg → share.js draw)는 10-02 개편 2묶음에서 걷었다 — 부르는 단추가 화면에 없었다.
   // renderProfileCard(「좌장이 읽는 원국」 Opus 정독)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. wongook 상품은 팔지 않는다.
   async function renderProfileCard() { const c = $('aiProfile'); if (c) c.remove(); }
 
@@ -1128,6 +1316,14 @@
     칩.querySelector('.ss-wh-add').onclick = () => openPersonForm(null);
     if (add) add.classList.add('hide');   // 아래 「그 사람 생년월일 넣기」는 칩의 「＋ 다른 사람」이 대신한다
   }
+  // 10-02 화면 파일(정통궁합 · 웹툰궁합)을 못 받았을 때 — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 다시 하기 · 문의하기(메일에 화면 이름).
+  // 오류 상자 파일도 없으면 false — 예전 안내 한 줄로.
+  function 못불러옴(out, 화면, 다시, 숨길) {
+    const O = window.ChaeksaOryu; if (!O || !out) return false;
+    (숨길 || []).forEach(x => { if (x) x.classList.add('hide'); });
+    O.그리기(out, { 무엇: '지금은 「' + 화면 + '」 화면을 불러오지 못했어요', 까닭: '인터넷이 잠깐 끊겼거나, 화면 파일을 받다가 멈췄을 수 있어요.', 화면 }, 다시);
+    return true;
+  }
   function renderChongnon() {
     const P = People(), GC = window.ChaeksaGunghapChongnon;
     const out = $('gcTabOut'), sel = $('gcPick'), wrap = $('gcPickWrap'), none = $('gcNone'), add = $('btnGcAdd');
@@ -1135,11 +1331,11 @@
     const 비우기 = () => { out.innerHTML = ''; 궁합그린것 = ''; };
     const 안내 = (말, 단추, 누르면) => {
       wrap.classList.add('hide'); none.textContent = 말; none.classList.remove('hide');
-      add.textContent = 단추; add.classList.remove('ghost'); add.onclick = 누르면; 비우기();
+      add.textContent = 단추; add.classList.remove('ghost', 'hide'); add.onclick = 누르면; 비우기();
     };
     // 내 원국이 없으면 두 분을 놓을 수 없다. (원국이 없으면 아래 탭이 안 보이지만, 주소로 들어오는 길을 막아 둔다.)
     if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요. 내 원국이 있어야 두 분을 나란히 놓아요.', '내 생년월일 넣기', () => go('home')); return; }
-    if (!P || !GC) { 안내('지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
+    if (!P || !GC) { 궁합그린것 = ''; if (!못불러옴(out, '정통궁합', renderChongnon, [wrap, none, add, $('gcStart')])) 안내('지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요. 넣으면 바로 두 분을 나란히 놓아요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
@@ -1175,10 +1371,10 @@
     if (!out || !sel) return;
     const 안내 = (말, 단추, 누르면) => {
       wrap.classList.add('hide'); none.textContent = 말; none.classList.remove('hide');
-      add.textContent = 단추; add.classList.remove('ghost'); add.onclick = 누르면; out.innerHTML = '';
+      add.textContent = 단추; add.classList.remove('ghost', 'hide'); add.onclick = 누르면; out.innerHTML = '';
     };
     if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
-    if (!P || !SP) { 안내('지금은 웹툰궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
+    if (!P || !SP) { if (!못불러옴(out, '웹툰궁합', renderSsom, [wrap, none, add, $('ssMore')])) 안내('지금은 웹툰궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
@@ -1198,6 +1394,8 @@
     const mv = ((met && met.value) || '').split('-').map(Number);
     const st = $('ssStage');
     if (st && SP.단계카드 && !st.dataset.cards) { SP.단계카드(st); st.dataset.cards = '1'; }
+    // 10-02 홈 물음 칸(「결혼을 생각할 때」)에서 왔으면 그 단계를 이 사람의 단계로 한 번 골라 둔다(도착 → 다음단계키).
+    if (st) { try { const 다음 = sessionStorage.getItem('chaeksa.ssomStageNext'); if (다음) { sessionStorage.removeItem('chaeksa.ssomStageNext'); if (Array.from(st.options).some(o => o.value === 다음)) localStorage.setItem('chaeksa.ssomStage.' + 고름, 다음); } } catch (e) {} }
     if (st) { try { st.value = localStorage.getItem('chaeksa.ssomStage.' + 고름) || '둘'; if (!st.value) st.value = '둘'; if (st._그리) st._그리(); } catch (e) {} st.onchange = () => { try { localStorage.setItem('chaeksa.ssomStage.' + 고름, st.value); } catch (e) {} renderSsom(); }; }
     SP.그리기(out, 궁합입력(profile), 궁합입력(P.toProfile(P.get(고름))), { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null, 단계: (st && st.value) || '썸' });
     // 09-25 사장님 「웹툰궁합 시작하기로 수정하고 위로 올려줘」 — 시작 단추를 사람 칩 바로 아래(단계 카드 위)로
@@ -2670,8 +2868,10 @@
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
     $('btnSettings').classList.add('hide');
+    주소남기기('');   // 10-02 첫 화면 주소는 꼬리 없음
   }
   function showForm() {
+    주소남기기('form');   // 10-02 입력 칸은 #form — 폰 「뒤로」가 앞 화면으로 간다
     $('landing').classList.add('hide');
     $('formCard').classList.remove('hide');
     $('btnSettings').classList.remove('hide');
@@ -2707,36 +2907,91 @@
     }
     showForm();
   }
-  $('btnStart').onclick = enterOrLogin;
+  $('btnStart').onclick = () => { 입력준비(null); enterOrLogin(); };   // 10-02 고른 콘텐츠 없이 — 입력 칸 맨 위는 처음 모양(「내 생년월일시」)
   $('btnStart2').onclick = enterOrLogin;
   // 09-25 사장님 「본인 프로필 저장 + 상대 프로필 저장으로 가자, 입구가 여러 개가 되잖아」 —
   // 첫 화면의 궁합 · 정통사주 · 컷씬 칸은 모두 같은 입구(첫 만남 → 그 사람)로 들어와 그 탭으로 간다. ssom.html 따로 폼 없음.
   // 10-02 곳 — 탭 안의 한 칸(홈의 「이번 주」 bhCard 등). 입력을 거쳐 오면 시간이 흐르니 탭과 함께 적어 두었다가 도착한 뒤 그 칸으로 내려간다.
-  const 가는곳키 = 'chaeksa.goto', 가는칸키 = 'chaeksa.gotoSpot';
+  const 가는곳키 = 'chaeksa.goto', 가는칸키 = 'chaeksa.gotoSpot', 다음단계키 = 'chaeksa.ssomStageNext';
   // 사주 없이 읽는 탭(NO_PROFILE_TABS — 출산택일)은 생년월일을 묻지 않고 바로 연다(10-02 — 부모 본인 생년월일은 받을 까닭이 없다).
   // 원국이 없으면 탭이 든 #app 이 숨어 있다. 첫 화면 · 입력 칸을 접고 자리를 내준다(goHash 와 같은 일).
   function 바로열기(tab) {
     if (!profile) { $('landing').classList.add('hide'); $('formCard').classList.add('hide'); $('app').classList.remove('hide'); }
     go(tab);
   }
+  // 10-02 생년월일은 필요한 만큼만 — 사용설명서는 그 사람 생년월일 하나만 쓴다. 내 입력 칸을 거치지 않고 그 사람 칸(사람 추가 창)부터 연다.
+  const 그사람만탭 = ['pair'];
+  // 「나」로 넣은 사람이 있는가. 사람 목록(people.js)이 없으면 옛 한 사람 저장(chaeksa.profile) = 나.
+  const 나있음 = () => { const P = People(); return !P || !P.hasSelf || P.hasSelf(); };
   function 들어가기(tab, 곳) {
     if (NO_PROFILE_TABS.indexOf(tab) >= 0) { 바로열기(tab); return; }
     try { sessionStorage.setItem(가는곳키, tab); if (곳) sessionStorage.setItem(가는칸키, 곳); else sessionStorage.removeItem(가는칸키); } catch (e) {}
-    if (hasProfile() && profile) { 도착(); return; }
+    const 그사람만 = 그사람만탭.indexOf(tab) >= 0;
+    if (hasProfile() && profile) {
+      // 그 사람만 넣어 둔 손님(사용설명서로 먼저 온 사람)이 내 것이 필요한 콘텐츠로 가면 — 그 사람 것으로 그리지 않고 내 생년월일부터 받는다.
+      // (연애 속의 나를 결제하면 그 사람 것이 만들어지는 일이 없게)
+      if (!그사람만 && !나있음() && 사람폼열기('me', tab, true)) return;
+      도착(); return;
+    }
+    if (그사람만 && 사람폼열기('them', tab, true)) return;
+    입력준비(tab);
     enterOrLogin();
   }
+  // 10-02 입력 칸을 들어온 콘텐츠에 맞춘다 — 단추 말(상품 약속 장부 입력단추 칸: 「저장하고 예시 보기」 · 「다음 — 그 사람 생년월일」 …),
+  // 맨 위 그림(홈에서 누른 그 칸 표지 · 원본) · 콘텐츠 이름 · 필요한 것(장부 필요 칸), 친구가 보낸 카드 링크(?from=card-…)로 왔으면 그 띠.
+  // tab 이 없거나 장부에 없으면(장부를 못 받았어도) 처음 모양(「내 생년월일시」 · 「내 사주 보기」) 그대로.
+  function 입력준비(tab) {
+    const Y = window.ChaeksaYaksok, b = $('btnGo');
+    if (b) { if (!b.dataset.base) b.dataset.base = b.textContent; b.textContent = (tab && Y && Y.입력단추(tab)) || b.dataset.base; }
+    const 머리 = tab && Y && Y.입력머리 ? Y.입력머리(tab) : null, n = $('fcWhatN'), s = $('fcWhatS'), art = $('fcArt'), 띠 = $('fcFrom');
+    if (n && s) {
+      if (n.dataset.base == null) { n.dataset.base = n.textContent; s.dataset.base = s.textContent; }
+      n.textContent = (머리 && 머리.이름) || n.dataset.base;
+      s.textContent = 머리 && 머리.필요 ? '필요한 것 — ' + 머리.필요 : s.dataset.base;
+    }
+    const 표지 = 머리 && window.ChaeksaHomeCats && ChaeksaHomeCats.표지 ? ChaeksaHomeCats.표지(tab) : null;
+    if (art) art.style.backgroundImage = 표지 ? 'url("' + 표지 + '")' : '';
+    if (띠) {
+      // 카드 링크는 ?go=탭&from=card-… 뿐이다(ssom-card.js) — 보낸 사람 이름 · 생일은 주소에 없어서 「친구」라고만 쓴다.
+      let from = ''; try { from = new URLSearchParams(location.search).get('from') || ''; } catch (e) {}
+      const 카드 = !!(머리 && 머리.이름 && /^card-[a-z]+$/.test(from));
+      띠.classList.toggle('hide', !카드);
+      띠.innerHTML = 카드 ? '친구가 보낸 <b>「' + escP(머리.이름) + '」</b>' + josa(머리.이름, '이에요', '예요').slice(머리.이름.length) + '. 내 생년월일시를 넣으면 나도 바로 볼 수 있어요.' : '';
+    }
+  }
+  // 10-02 입력 칸을 그만두고 나갈 때(「← 처음으로」 · 로고 · 폰 「뒤로」) — 들고 있던 갈 곳과 단추 말 · 맨 위 모양을 내려놓는다.
+  // 안 그러면 나중에 「내 생년월일 저장해 두기」로 들어와 저장해도 그때 고른 콘텐츠로 끌려간다.
+  function 입력접기() {
+    try { sessionStorage.removeItem(가는곳키); sessionStorage.removeItem(가는칸키); } catch (e) {}
+    입력준비(null);
+  }
+  if ($('btnFormBack')) $('btnFormBack').onclick = 처음으로;
   function 도착() {
     let tab = null, 곳 = null;
     try { tab = sessionStorage.getItem(가는곳키); 곳 = sessionStorage.getItem(가는칸키); sessionStorage.removeItem(가는곳키); sessionStorage.removeItem(가는칸키); } catch (e) {}
     if (!tab || !document.querySelector('.tab[data-tab="' + tab + '"]')) return;
+    // 10-02 홈 물음 칸 「결혼」 — 곳 「단계:결혼」 = 웹툰궁합의 그 단계를 미리 골라 둔다(renderSsom 이 그 사람을 고를 때 한 번 쓴다). 내려갈 칸은 단계 고르기.
+    if (곳 && 곳.indexOf('단계:') === 0) { try { sessionStorage.setItem(다음단계키, 곳.slice(3)); } catch (e) {} 곳 = 'ssMore'; }
     if (곳) 홈자리 = 0;   // 보던 자리로 되감지 않는다 — 그 칸으로 간다
     go(tab);
-    if (곳) requestAnimationFrame(() => { const t = $(곳); if (t && !t.classList.contains('hide')) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    // 10-02 「무엇이 궁금하세요?」 칩(home-ask.js) — 곳 「회:N」 = 답이 정통사주 웹툰 N화에 있는 물음. 탭을 연 뒤 그 화부터 장면 보기로 간다(시작 단추와 같은 길 · ssom-vn.html ?h=N).
+    const 회m = 곳 && /^회:(\d+)$/.exec(곳);
+    if (회m) { if (tab === 'jeongtong' && profile) { try { sessionStorage.setItem('chaeksa.jtVn', JSON.stringify({ a: 궁합입력(profile) })); } catch (e) {} location.href = 'ssom-vn.html?h=' + 회m[1]; } return; }
+    // 10-02 접힌 장(<details>) 안의 칸이면 펼친 채 내려간다 — 홈 물음 칸 「돈 · 일 · 건강 · 사람 사이」 → 정통사주 N장(jtChN, 「근거 보기」 안의 접힌 장).
+    // 탭 내용은 go() 뒤에 그려지기도 한다(정통사주 장은 그린 뒤에야 생김) — 칸이 생길 때까지 0.2초마다 4초 동안 찾는다.
+    if (곳) { let n = 0; const 찾기 = () => { const t = $(곳); if (!t || t.classList.contains('hide') || !t.offsetParent && t.tagName !== 'DETAILS') { if (++n < 20) setTimeout(찾기, 200); return; }
+      for (let d = t; d; d = d.parentElement) if (d.tagName === 'DETAILS') d.open = true; setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }; setTimeout(찾기, 0); }
     // 그 사람이 아직 없으면 바로 그 사람 폼을 연다(궁합 둘)
-    if ((tab === 'ssom' || tab === 'chongnon' || tab === 'pair') && People()) { const me = People().active(); if (!People().list().some(p => !me || p.id !== me.id)) setTimeout(() => openPersonForm(null), 250); }
+    // 10-02 사용설명서는 「나」 아닌 사람이 하나라도 있으면 된다(그 사람만 넣어 둔 손님은 그 사람이 보는 사람이다). 궁합 둘은 보는 사람 말고 한 사람 더.
+    if ((tab === 'ssom' || tab === 'chongnon' || tab === 'pair') && People()) {
+      const me = People().active(), l = People().list();
+      const 있음 = tab === 'pair' ? l.some(p => !p.isSelf) : l.some(p => !me || p.id !== me.id);
+      if (!있음) setTimeout(() => 사람폼열기('them', tab, false), 250);
+    }
   }
   window.책사들어가기 = 들어가기;
-  window.책사사람추가 = () => openPersonForm(null);   // 그 사람 사용설명서(pair.js) — 아직 아무도 없을 때 「그 사람 생년월일 넣기」
+  window.책사사람추가 = () => { if (!사람폼열기('them', 'pair', false)) openPersonForm(null); };   // 그 사람 사용설명서(pair.js) — 아직 아무도 없을 때 「그 사람 생년월일 넣기」
+  window.책사궁합고르기 = 궁합고르기;   // 10-02 사용설명서 끝 칸(pair.js 끝칸) → 웹툰궁합 · 정통궁합을 같은 그 사람으로
   window.책사사람칩 = 사람칩;   // 그 사람 사용설명서(pair.js)도 정통궁합 · 웹툰궁합과 같은 사람 칩(docs/79 4절)
   if ($('btnGunghap')) $('btnGunghap').onclick = () => 들어가기('ssom');
   if ($('btnJeongtong')) $('btnJeongtong').onclick = () => 들어가기('jeongtong');
@@ -2747,8 +3002,8 @@
   // 입력 컷 — 성별을 고르면 그림이 바뀐다(나: ss-me · ss-her / 그 사람: story-jigeum · story-sns)
   // 09-26 큰 판(1024) — 작은 판은 폼 폭에서 흐렸다. (주석을 줄 가운데 넣어 뒤가 잘렸던 것 고침 — feedback-edit-closing-quote 같은 종류)
   const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (그림[g.value] || 그림.F) + '.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
-  // 첫 만남 입력 칸의 컷(#fcCut)은 10-02 걷었다(배경 삽화가 대신한다). 그 사람 칸(#pfCut)만 성별로 바뀐다.
-  if ($('pfG')) $('pfG').addEventListener('change', () => 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }));
+  // 첫 만남 입력 칸의 컷(#fcCut)은 10-02 걷었다(맨 위 그림 .fc-art 가 대신한다). 그 사람 칸(#pfCut)만 성별로 바뀐다.
+  if ($('pfG')) $('pfG').addEventListener('change', () => { if (사람폼누구 !== 'me') 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); });   // 10-02 내 칸은 콘텐츠 표지 그대로
   // 관문이 서 있을 때만 「로그인하고…」로 덮어쓴다. 내려 놓고 이 문구가 남으면
   // 일어나지도 않을 로그인을 랜딩이 계속 약속한다.
   // (버튼 문구 대입은 index.html 과 바이트까지 같아 죽은 코드라 지웠다.)
@@ -2875,10 +3130,16 @@
         // 첫 만남 · 그 사람 폼을 열어 두었거나 입력 칸에 커서가 있으면 화면을 건드리지 않는다(다음 부팅 때 반영).
         const 입력중 = !$('formCard').classList.contains('hide') || !$('personForm').classList.contains('hide') || (document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName));
         const saved = localStorage.getItem(KEY);
-        if (saved && !입력중) { try { start(JSON.parse(saved)); } catch (e) {} }
-        else if (입력중) { renderPeopleBtn(); }
-        // start() 는 홈으로 간다 — 결제하려다 로그인하고 막 돌아온 손님은 그 장으로 한 번 더 보낸다.
-        if (복귀대기) { try { goHash(true); 복귀고르기(); } catch (e) {} }
+        const 다시그림 = !!saved && !입력중;
+        // 10-02 화면마다 주소 — 다시 그리는 동안 주소를 안 건드린다. start() 가 홈으로 보내도 주소(#탭)는 보던 장 그대로라,
+        // 바로 goHash 로 그 장에 돌아온다(전에는 서버 병합이 끝나면 보던 장에서 홈으로 튕겼다). 결제하려다 로그인하고 막 돌아온 손님도 이 길.
+        주소없이(() => {
+          if (다시그림) { try { start(JSON.parse(saved)); } catch (e) {} }
+          else if (입력중) { renderPeopleBtn(); }
+          if (다시그림 || 복귀대기) { try { goHash(true); } catch (e) {} }
+          if (복귀대기) { try { 복귀고르기(); } catch (e) {} }
+        });
+        주소맞추기();
       }
     } catch (e) { if (showMsg) cloudMsg('동기화 실패: ' + e.message); }
     복귀대기 = false;
@@ -3008,6 +3269,8 @@
     }
   }
   goHash(booted);         // #탭이름 으로 들어온 경우 그 탭을 연다
+  // 10-02 넣어 둔 사람이 없는데 #탭 주소로 왔으면(카톡으로 받은 주소 등) ?go= 처럼 입력 칸을 거쳐 그 탭으로. #form 이면 입력 칸.
+  if (!booted) { try { const r = 경로(location.hash); if (r === 'form') showForm(); else if (r && NO_PROFILE_TABS.indexOf(r) < 0) 들어가기(r); } catch (e) {} }
   // ?go=탭 — love.html · jeongtong.html · ssom.html · gunghap-chongnon.html 이 보낸 손님은 그 탭으로 곧장 간다.
   // 사람이 있으면 그 탭, 없으면 입력 칸(넣고 나면 그 탭). 출산택일은 입력 없이 바로.
   // 맨 끝에서 한다 — 앞에서 하면 위의 showLanding · start 가 덮어써 홈 목록이 떴다(10-02).
@@ -3023,6 +3286,7 @@
     }
   } catch (e) {}
   복귀고르기();           // 결제하려다 로그인하러 떠났으면 그때 고른 사람을 다시 고른다
+  주소시작();             // 10-02 여기서부터 화면을 옮길 때마다 주소가 따라간다(위 「화면마다 주소」)
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
   // 여기까지 오면 앱이 다 섰다 — index.html 머리의 오류 문지기가 이 표시를 보고 「새로 고침」 띠를 띄울지 정한다(10-02).

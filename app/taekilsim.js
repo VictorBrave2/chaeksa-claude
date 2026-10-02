@@ -78,8 +78,9 @@
       + '<label>성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
       + '<label>태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
       + '<div class="tk-nav"><button type="button" class="btn ghost small" id="tkPrev">← 앞날</button><b id="tkHead"></b><button type="button" class="btn ghost small" id="tkNext">뒷날 →</button></div>'
-      + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 궁통보감 · 자평진전 모두 걸리는 것 없는 자리만 보기</label>'
+      + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 궁통보감 · 자평진전 두 책 모두 문제 삼지 않는 시각만 보기</label>'
       + '<p class="tk-note" id="tkTop"></p><div id="tkList"></div>'
+      + '<div class="tk-send"><button type="button" class="btn ghost small" id="tkSend">이 날 가족에게 보내기</button><p class="tk-note" id="tkSendSay">' + esc(보내기안내) + '</p></div>'
       + '<p class="tk-note">' + esc(W.출산택일.꼬리) + '</p>'
       + '<a class="btn" href="taekil-apply.html?from=sim" style="display:block;text-align:center;text-decoration:none;margin-top:12px">보고서 신청하기</a>'
       + '<p class="tk-note">출산 날짜와 시각은 산모와 아기의 안전, 담당 선생님의 판단이 먼저예요. 택일은 그 범위 안에서 고르는 참고자료입니다.</p>'
@@ -94,9 +95,9 @@
       q('tkHead').textContent = m + '월 ' + d + '일 · ' + (첫 ? 첫.일주 + '일' : '');
       const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length, 으뜸수 = r.rows.filter(x => x.본 && x.본.으뜸 && !x.밤끝).length;
       q('tkTop').textContent = W.출산택일.머리 + ' ' + r.곳 + ' 기준 시계 시각이에요(이날은 시계가 해보다 ' + Math.abs(r.밀림) + '분 ' + (r.밀림 >= 0 ? '빨라요' : '늦어요') + '). '
-        + (깨끗 ? '이날은 궁통보감 · 자평진전 모두 걸리는 것 없는 자리가 ' + 깨끗 + '곳 있어요.' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '곳은 궁통보감이 찾는 글자가 다 뜬 으뜸 자리예요.' : '') : '이날은 궁통보감 · 자평진전이 다 걸리는 것 없다고 본 자리가 없어요. 앞뒤 날도 보세요.');
+        + (깨끗 ? '이날은 궁통보감 · 자평진전 두 책 모두 문제 삼지 않는 시각이 ' + 깨끗 + '개 있어요.' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '개는 궁통보감이 찾는 글자가 다 뜬 으뜸 시각이에요.' : '') : '이날은 궁통보감 · 자평진전 두 책 모두 문제 삼지 않는 시각이 없어요. 앞뒤 날도 보세요.');
       const 보일 = 거르기 ? r.rows.filter(x => x.본 && x.본.없음) : r.rows;
-      q('tkList').innerHTML = 보일.length ? 보일.map(줄).join('') : '<p class="tk-note">이날은 해당하는 자리가 없어요.</p>';
+      q('tkList').innerHTML = 보일.length ? 보일.map(줄).join('') : '<p class="tk-note">이날은 해당하는 시각이 없어요.</p>';
     }
     const 옮기기 = (n) => { const [y, m, d] = 날.split('-').map(Number); const t = new Date(y, m - 1, d + n); 날 = t.getFullYear() + '-' + 두(t.getMonth() + 1) + '-' + 두(t.getDate()); q('tkDate').value = 날; 그리기(); };
     q('tkDate').onchange = (e) => { if (e.target.value) { 날 = e.target.value; 그리기(); } };
@@ -104,7 +105,35 @@
     q('tkPlace').onchange = (e) => { 곳값 = e.target.value; 그리기(); };
     q('tkClean').onchange = (e) => { 거르기 = e.target.checked; 그리기(); };
     q('tkPrev').onclick = () => 옮기기(-1); q('tkNext').onclick = () => 옮기기(1);
+    q('tkSend').onclick = async () => {
+      const b = q('tkSend'), say = q('tkSendSay'), [, m, d] = 날.split('-').map(Number);
+      if (!m || !d || b.disabled) return;
+      const url = 보낼주소(날);
+      b.disabled = true;
+      try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('share-tk'); } catch (e) {}
+      let r = '';
+      try {
+        r = await 링크보내기({ title: m + '월 ' + d + '일에 낳으면 — 시각마다 세 고전이 보는 것', text: '이 날 열두 시각을 궁통보감 · 자평진전 · 적천수가 각각 어떻게 보는지 같이 봐 주세요 · 책사',
+          image: 'https://chaeksa.kr/art/kakao/taekil-main.jpg', url, button: '이 날 시각 보기' });
+      } catch (e) { r = ''; }
+      b.disabled = false;
+      say.textContent = r === 'copied' ? '주소를 복사했어요 — 카톡 대화창에 붙여 넣어 보내 주세요. ' + 보내기안내
+        : r ? 보내기안내 : '이 주소를 복사해서 보내 주세요: ' + url;
+    };
     그리기();
+  }
+
+  // 「이 날 가족에게 보내기」(10-02 개편 2묶음 「공유 카드 넓히기」) — 가족이 같은 날짜 화면을 연다. 주소에는 날짜와 꼬리표(from=share-tk)만 싣는다.
+  // 성별 · 태어날 곳 · 부모 생년월일은 싣지 않는다(받는 쪽에서 다시 고른다). 보내는 길은 share.js shareLink(카카오 링크 → 폰 공유 창 → 주소 복사),
+  // share.js 가 없는 화면(시험 페이지)에서는 폰 공유 창 → 주소 복사만.
+  const 보내기안내 = '주소에는 고른 날짜만 실려요. 성별 · 태어날 곳은 받는 쪽에서 다시 고르면 돼요.';
+  const 보낼주소 = (날) => 'https://chaeksa.kr/taekil-sim.html?d=' + encodeURIComponent(날) + '&from=share-tk';
+  async function 링크보내기(o) {
+    const SH = global.ChaeksaShare;
+    if (SH && SH.shareLink) return SH.shareLink(o);
+    if (navigator.share) { try { await navigator.share({ title: o.title, text: o.text, url: o.url }); return 'shared'; } catch (e) { if (e && e.name === 'AbortError') return 'aborted'; } }
+    try { if (navigator.clipboard) { await navigator.clipboard.writeText(o.url); return 'copied'; } } catch (e) {}
+    return '';
   }
 
   /** 글에서 온 사람이면 그 달로 연다 — 주소에 d=YYYY-MM-DD 가 있으면 그 날(사이트 정본은 이것을 단다).
@@ -121,5 +150,5 @@
   function 세우기() { const box = document.getElementById('tkSim'); if (box && !box.dataset.on) { box.dataset.on = '1'; render(box, { date: 첫날() }); } }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 세우기); else 세우기();
 
-  global.ChaeksaTaekilSim = { 하루, render };
+  global.ChaeksaTaekilSim = { 하루, render, 보낼주소 };
 })(window);

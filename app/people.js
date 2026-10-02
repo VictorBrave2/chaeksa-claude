@@ -7,6 +7,11 @@
  *   [{ id, name, relation, isSelf, birth:{year,month,day,hour,minute,gender,...}, createdAt }]
  *
  * 기존 데이터(단일 프로필 chaeksa.profile, 궁합 상대 chaeksa.partners)는 처음 한 번 자동으로 옮긴다.
+ *
+ * 「나」(isSelf)는 관계가 「나」인 사람뿐이다(10-02 개편 「생년월일은 필요한 만큼만」).
+ *   전에는 처음 넣은 사람이면 관계가 무엇이든 「나」로 잡혔다. 그래서 사용설명서에 그 사람 생년월일부터 넣은 손님은
+ *   그 사람이 「나」가 됐다. 이제 그 사람은 처음 넣어도 그 사람이다. 보는 사람(active)은 지금처럼 처음 넣은 사람이 되고,
+ *   「나」가 필요한 콘텐츠(연애 속의 나 · 정통사주 …)로 가면 app.js 들어가기가 내 생년월일을 따로 받는다.
  */
 (function (global) {
   'use strict';
@@ -47,15 +52,19 @@
   function setActive(id) { localStorage.setItem(ACT, id); }
   function get(id) { return list().find(p => p.id === id) || null; }
   function self() { return list().find(p => p.isSelf) || list()[0] || null; }
+  /** 「나」로 넣은 사람이 있는가(10-02) — self() 는 없으면 첫 사람을 주지만, 이것은 정말 「나」가 있을 때만 true. */
+  function hasSelf() { return list().some(p => p.isSelf); }
   function others() { const a = activeId(); return list().filter(p => p.id !== a); }
 
   function add(person) {
     const arr = list();
+    const 관계 = person.relation || (arr.length ? '그 사람' : '나');
     const p = {
       id: newId(),
       name: (person.name || '').trim() || '이름 없음',
-      relation: person.relation || (arr.length ? '그 사람' : '나'),
-      isSelf: !arr.length ? true : !!person.isSelf,
+      relation: 관계,
+      // 「나」는 isSelf 를 넘긴 대로, 안 넘겼으면 관계가 「나」일 때만(위 머리말 — 첫 사람이라고 「나」로 잡지 않는다)
+      isSelf: person.isSelf != null ? !!person.isSelf : 관계 === '나',
       birth: birthOf(person.birth || person),
       createdAt: new Date().toISOString().slice(0, 10),
       _at: new Date().toISOString(),
@@ -119,7 +128,7 @@
   }
 
   global.ChaeksaPeople = {
-    RELATIONS, list, add, update, remove, get, self, others,
+    RELATIONS, list, add, update, remove, get, self, hasSelf, others,
     active, activeId, setActive, toProfile, migrate, birthOf,
   };
 })(window);

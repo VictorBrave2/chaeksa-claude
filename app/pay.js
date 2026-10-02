@@ -24,40 +24,32 @@
   // 「새 코드의 문제」를 가른다(2026-09-11: 고친 뒤에도 같은 오류를 다시 받았는데 운영 코드로는 재현되지 않았다).
   const 판 = ((document.currentScript && document.currentScript.src || '').match(/[?&]v=(\d+)/) || [])[1] || '';
 
-  // 상품 그림 — 상품마다 **서로 다른 그림 한 장**. 토스 심사가 「상품 이미지가 없거나
-  // 같은 그림을 반복해 쓰면」 떨어뜨린다(2026-09-11 전자계약 심사 안내).
-  // 결제 화면(pay.html)만 쓴다. 칸은 **정사각**이다 — 정사각 그림을 정사각 칸에 넣으면 잘릴 데가 없다.
-  // 2026-09-11 오전에는 여기 연애 장면(love-*)을 3:1 로 넣었는데, 그 벌은 판이 바뀌기 전 그림(서양 저택·
-  // 낯선 남자)이라 앱에서 이미 꺼 둔 것이었다(config.js CHAEKSA_ART). 그림 111장을 눈으로 다 보고
-  // (워크플로 감사 · 심판 둘 같은 결론) 지금 세계의 책사 그림으로 바꿨다 — 홈 표지와 같은 책사가 같은 질문에 나온다.
-  // 연희의 네 장은 붉은 실을 든 모습이 서로 달라 네 질문을 나눠 맡는다.
-  // 값이 [파일, 위치] 면 정사각이 아닌 그림이라 얼굴이 보이게 object-position 을 준다(그려 보고 고른 값).
-  // products 표에 상품을 새로 넣으면 여기에도 한 줄 넣어야 한다 — 빠지면 그림 없는 상품이 된다.
-  // 2026-09-12 밤 — 책사 그림 전부 지움. 이제 콘텐츠마다 한 장(art/story-<코드>.webp, 웹툰식 장면)이고
-  // 결제 화면도 그 그림을 쓴다. 아직 없는 그림은 onerror 로 빠진다 — 빈 액자가 아니라 글자 카드가 된다.
-  // 2026-10-01 — 파는 것은 셋(출산택일 · 「사랑할 때만 나오는 당신」 전체판 · 행동양식 궁합). 옛 9,900원 장 여덟 그림은 걷었다.
-  // 10-02 love_pair(SSS급 그 사람 사용설명서)는 홈 칸 · 표지와 같은 그림으로 — love-cover 는 「사랑할 때만 나오는 당신」 표지였다.
-  const 그림 = {
-    taekil: 'art/taekil-main.webp', love_full: 'art/love-main.webp', love_pair: 'art/story-friend-to-lover.webp',
-  };
+  // 상품 그림(결제 화면 pay.html 의 정사각 칸) · 상품 설명 · 결제하는 자리는 10-02 부터 상품 약속 장부(yaksok.js) 한 곳에 있다 —
+  // 상품마다 서로 다른 그림 한 장(토스 심사 「같은 그림을 반복해 쓰면」 떨어뜨림, 2026-09-11). products 표에 상품을 새로 넣으면 장부에 한 줄.
   // 값 앞에 붙는 말. 값 자체는 products 표에만 있다 — 여기는 이름표뿐이다.
   // 「출시 기념가 9,900원」처럼만 쓴다. 줄 그은 정가는 보이지 않는다(10-01 사장님).
   const 값이름 = { love_full: '출시 기념가', love_pair: '출시 기념가' };
   const 결제사이름 = { kakao: '카카오페이', toss: '토스페이먼츠' };
 
   let _state = null;          // GET 결과 캐시. 한 화면에서 여러 번 그리므로 한 번만 받는다
+  let _stateWait = null;      // 받는 중인 약속 — 앱 부팅 · 홈 딱지 값 · 결제 상자가 거의 동시에 물어도 GET 은 한 번(10-02)
   let _sdk = null;            // SDK 로드 약속
 
   /** 준비 상태와 상품표. 실패해도 던지지 않는다 — 결제가 안 되는 것이 화면이 죽을 이유는 아니다. */
   async function state(force) {
     if (_state && !force) return _state;
-    try {
-      const r = await fetch(API, { headers: { accept: 'application/json' } });
-      _state = await r.json();
-    } catch (e) {
-      _state = { ok: false, ready: false, products: [], error: String(e && e.message || e) };
-    }
-    return _state;
+    if (_stateWait && !force) return _stateWait;
+    const 받기 = (async () => {
+      try {
+        const r = await fetch(API, { headers: { accept: 'application/json' } });
+        _state = await r.json();
+      } catch (e) {
+        _state = { ok: false, ready: false, products: [], error: String(e && e.message || e) };
+      }
+      return _state;
+    })();
+    _stateWait = 받기;
+    try { return await 받기; } finally { if (_stateWait === 받기) _stateWait = null; }
   }
 
   const ready = async () => !!(await state()).ready;
@@ -627,5 +619,5 @@
     문의메일,
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, won, 값, say, paidLoad, paidFor, paidForKey, 그림, 누르면, 판, 주문서 };
+  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서 };
 })(window);

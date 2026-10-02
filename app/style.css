@@ -85,6 +85,8 @@ header .logo small{white-space:nowrap}
 .logo .sub-wide{display:none}
 @media (min-width:480px){.logo .sub-wide{display:inline}}
 .logo{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:.02em}
+/* 10-02 로고가 처음으로 가는 링크가 됐다 — 글자색 · 밑줄은 그대로(링크 파랑 금지) */
+a.logo{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .logo .seal{
   font-style:normal;width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;
   background:var(--seal-bg);color:var(--seal-ink);font-size:20px;font-weight:900;
@@ -381,6 +383,7 @@ nav button svg{width:22px;height:22px;display:block;stroke:currentColor;fill:non
 nav button.on{color:var(--accent);font-weight:700}
 nav button:hover{color:var(--ink2)}
 nav button.on:hover{color:var(--accent)}
+nav button span{white-space:nowrap}   /* 10-02 아래 줄 다섯 칸 — 「출산택일」이 좁은 폰(320px)에서 두 줄로 꺾이지 않게 */
 
 /* ───── 오늘 · 먹색 히어로 ───── */
 .hero-day{
@@ -1147,13 +1150,7 @@ details.fold > .tiles { margin-top: 10px; }
 .gm-close{border-left-color:var(--g3);background:var(--g3-bg)}
 .gm-close .gm-who{color:var(--g3-ink)}
 
-/* 「이 한마디 간직하기」 — 얼빡 장면 아래. 아뢰는 말 버튼보다 한 단 조용하게,
-   누르면 4:5 카드가 나온다. 캡처하고 싶어지는 자리에 캡처보다 나은 것을 둔다. */
-.hs-keep{display:block;width:100%;margin:8px 0 0;padding:9px 12px;border:1px solid rgba(230,201,138,.34);
-  border-radius:11px;background:rgba(22,20,51,.42);color:#e6c98a;font-size:12.5px;letter-spacing:.02em;
-  cursor:pointer;transition:background .16s,border-color .16s}
-.hs-keep:hover{background:rgba(22,20,51,.62);border-color:rgba(230,201,138,.6)}
-.hs-keep:disabled{opacity:.6;cursor:default}
+/* 「이 한마디 간직하기」(.hs-keep)는 10-02 개편 2묶음에서 걷었다(한마디 카드 · share.js drawSay). */
 
 /* 첫 만남의 예 — 열 사람이 자리에 앉는다. 처음 사주를 넣으신 한 번만 뜬다.
    붙잡지 않는다: 3.4초 뒤 스스로 물러나고, 아무 데나 누르면 즉시 넘어간다. */
@@ -1621,6 +1618,8 @@ details.fold > .tiles { margin-top: 10px; }
 .tk-filter{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink2);margin:0 0 8px;cursor:pointer}
 .tk-filter input{width:auto;margin:0}
 .tk-note{font-size:12.5px;color:var(--ink3);line-height:1.75;margin:8px 0}
+/* 10-02 「이 날 가족에게 보내기」(taekilsim.js) — 시각 목록 바로 아래. 주소가 길게 나와도 화면 밖으로 안 나가게 */
+.tk-send{margin:12px 0 4px}.tk-send .btn{display:block;width:100%;margin:0}.tk-send .tk-note{margin:6px 0 0;overflow-wrap:anywhere}
 .tk-row{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 8px;background:var(--bg)}
 .tk-row>summary{list-style:none;cursor:pointer}
 .tk-row>summary::-webkit-details-marker{display:none}
@@ -1885,21 +1884,79 @@ details.fold > .tiles { margin-top: 10px; }
 .bh-other .bh-ah{margin:0}
 @media (max-width:400px){.bh-row{grid-template-columns:40px 1fr 1fr 48px;font-size:12px;gap:5px}.bh-d b{font-size:14px}}
 
-/* 09-30 홈 = 분류 칸(home-cats.js) — 한 줄에 하나, 만화 표지처럼 그림 위에 분류 딱지 · 제목. 준비중은 얇은 줄 */
-.cats{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
-/* 09-30 사장님 「메뉴 한칸을 삽화 원본사이즈만큼으로 늘려주고 삽화 화질을 줄이지 않았으면해」 — 칸 높이 = 그림 원본 비율(자르지 않음), 원본 그림 그대로. 제목은 아래쪽 어둠 위에 */
-.cat{position:relative;display:block;text-align:left;border-radius:14px;overflow:hidden;text-decoration:none;background:var(--card);border:1px solid var(--line)}
-.cat img{display:block;width:100%;height:auto}
-.cat::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,9,24,.78) 0%,rgba(12,9,24,.35) 16%,rgba(12,9,24,0) 32%)}
-.cat .k{position:absolute;z-index:2;left:14px;top:12px;font-size:11px;letter-spacing:.12em;padding:2px 9px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff}
-.cat .n{position:absolute;z-index:2;left:16px;right:16px;bottom:16px;font-family:var(--serif);font-weight:900;font-size:24px;line-height:1.22;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.7)}
-.cat.soon{height:48px;opacity:.6}.cat.soon::after{display:none}
-.cat.soon .k{top:50%;transform:translateY(-50%);background:transparent;padding:0;font-size:14px;letter-spacing:0;color:var(--ink2)}
-.cat.soon .n{top:50%;bottom:auto;right:14px;left:auto;transform:translateY(-50%);font-family:var(--sans);font-weight:500;font-size:12px;color:var(--ink3);text-shadow:none}
+/* 09-30 홈 = 분류 칸(home-cats.js) — 만화 표지처럼 그림 위에 분류 딱지 · 제목.
+   10-02 홈 첫 화면 다시 짜기(개편 2묶음) — 한 줄에 그림 하나(원본 비율 그대로)라 폰 첫 화면에 그림 한 장만 보였다.
+   이제 소개 줄 · 2열 그림 칸(3:4로 높이를 같게 — 폰 첫 화면에 네 칸) · 칸마다 한줄(.s) · 딱지(.t, 무엇이 무료 · 얼마) · 물음 칸(.cat-q) · 「곧 열려요」 한 줄.
+   그림은 srcset(home-cats.js) — 작은 판(360)과 원본 가운데 칸 폭 × 화면 선명도에 맞는 것을 브라우저가 고른다(선명한 폰은 원본). */
+.home-intro{margin:0 0 16px;text-align:center}
+.home-intro .hi-t{margin:0;font-family:var(--serif);font-weight:900;font-size:21px;line-height:1.45;letter-spacing:-.02em;color:var(--ink);word-break:keep-all}
+.home-intro .hi-s{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0 0;padding:0}
+.home-intro .hi-s span{font-size:12px;line-height:1.5;padding:3px 10px;border-radius:999px;background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--ink2);white-space:nowrap}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin:0 0 18px;text-align:left}
+.cat{display:flex;flex-direction:column;min-width:0;border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line)}
+.cat .pic{position:relative;display:block;aspect-ratio:3/4;overflow:hidden;background:var(--bg2)}
+.cat .pic img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+.cat .pic::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,9,24,.82) 0%,rgba(12,9,24,.42) 26%,rgba(12,9,24,0) 50%);pointer-events:none}
+.cat .k{position:absolute;z-index:2;left:8px;top:8px;font-size:10.5px;letter-spacing:.08em;padding:1px 8px;border-radius:999px;background:rgba(0,0,0,.42);color:#fff}
+.cat .n{position:absolute;z-index:2;left:10px;right:10px;bottom:9px;font-family:var(--serif);font-weight:900;font-size:16.5px;line-height:1.28;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.7);word-break:keep-all;overflow-wrap:anywhere}
+.cat .s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:7px 10px 0;font-size:12.5px;line-height:1.42;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.cat .t{display:block;margin:auto 10px 0;padding:5px 0 9px;font-size:12px;line-height:1.45;font-weight:700;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+/* 물음 칸 — 그림 칸이 없는 분류(일 · 돈 · 건강 · 사람 사이 · 결혼 · 날 고르기). 누르면 답이 있는 장으로 곧장 */
+.cats-h{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--ink2);text-align:left}
+.cats-q{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px;text-align:left}
+.cat-q{display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 12px;border-radius:12px;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line)}
+.cat-q .k{font-size:11px;letter-spacing:.06em;color:var(--ink3)}
+.cat-q .n{font-size:14px;font-weight:700;line-height:1.4;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.cat-q .t{margin-top:auto;padding-top:3px;font-size:11.5px;line-height:1.45;font-weight:700;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere}
+.cats-soon{margin:0 0 14px;font-size:12.5px;line-height:1.6;color:var(--ink3);text-align:left;word-break:keep-all}
+/* 10-02 「무엇이 궁금하세요?」(home-ask.js) — 소개 줄 바로 아래. 갈래 줄(옆으로 밀기) · 물음 칩(넷까지 · 나머지는 「더 보기」)
+   · 연애 갈래 맨 위 단계 칩 · 아직 답이 없는 물음(접힘 · 「받고 싶어요」). 그림 칸을 첫 화면에서 밀어내지 않게 낮게 짠다. */
+.hask{display:block;margin:0 0 18px;text-align:left}
+.ask-h{margin:0 0 8px;font-family:var(--serif);font-size:16px;font-weight:900;letter-spacing:-.01em;color:var(--ink)}
+.ask-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 0 10px;padding:0 0 2px}
+.ask-tabs::-webkit-scrollbar{display:none}
+.ask-tabs button{flex:0 0 auto;font:inherit;font-size:13px;line-height:1.3;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2);white-space:nowrap;cursor:pointer}
+.ask-tabs button.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft);font-weight:700}
+.ask-st-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}
+.ask-st-l{font-size:12px;color:var(--ink3);margin-right:2px}
+.ask-st{font-size:12.5px;line-height:1.35;padding:4px 10px;border-radius:999px;border:1px dashed var(--accent-line);color:var(--ink2);text-decoration:none;white-space:nowrap}
+.ask-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ask-c{max-width:100%;padding:7px 12px;border-radius:16px;font-size:13.5px;line-height:1.4;text-decoration:none;color:var(--ink);background:var(--accent-soft);border:1px solid var(--accent-line);word-break:keep-all;overflow-wrap:anywhere}
+.ask-more{display:block;margin:6px 0 0;padding:4px 0;border:0;background:none;font:inherit;font-size:12.5px;font-weight:700;color:var(--accent);cursor:pointer}
+.ask-want{margin:8px 0 0;font-size:12.5px;color:var(--ink3)}
+.ask-want summary{cursor:pointer;padding:3px 0;line-height:1.5;word-break:keep-all}
+.ask-want-p{margin:4px 0 8px;font-size:12px;line-height:1.55;color:var(--ink3);word-break:keep-all}
+.ask-want-h{margin:10px 0 4px;font-size:12px;font-weight:700;color:var(--ink2)}
+.ask-w{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 6px 6px 0;padding:6px 10px;border-radius:14px;border:1px dashed var(--line);background:none;font:inherit;font-size:13px;line-height:1.4;color:var(--ink2);text-align:left;word-break:keep-all;overflow-wrap:anywhere;cursor:pointer}
+.ask-w i{flex:0 0 auto;font-style:normal;font-size:11px;font-weight:700;color:var(--accent)}
+.ask-w.done{opacity:.6;cursor:default}
+.ask-w.done i{color:var(--ink3)}
 
-/* 09-30 사장님 「이 삽화를 썸네일 및 생년월일 입력창 배경으로 하자」 — 입력창 뒤에 삽화, 위는 얼굴이 보이게 옅게 · 아래는 글이 읽히게 짙게. 옛 컷(#fcCut)은 숨김 */
-#formCard{padding-top:210px;background-image:linear-gradient(to bottom,color-mix(in srgb,var(--card) 10%,transparent) 0%,color-mix(in srgb,var(--card) 86%,transparent) 36%,color-mix(in srgb,var(--card) 95%,transparent) 100%),url(art/love-main.webp);background-size:100% auto,cover;background-size:cover;background-position:center top;background-repeat:no-repeat}
+/* 09-30 사장님 「이 삽화를 썸네일 및 생년월일 입력창 배경으로 하자」 — 입력창 위에 삽화. 옛 컷(#fcCut)은 숨김.
+   10-02 생년월일은 필요한 만큼만 — 그림은 맨 위 200px(.fc-art)에만 두고, 글자 칸 뒤는 민 바탕(전에는 카드 전체가 그림 바탕이라 글자가 그림 위에 겹쳤다).
+   그림은 고른 콘텐츠의 홈 표지 원본(app.js 입력준비가 style 로 바꾼다 · 화질 그대로). 아래 url 은 고른 콘텐츠가 없을 때. */
 #formCard #fcCut{display:none}
+#formCard{position:relative}
+.fc-art{position:relative;height:200px;margin:-20px -20px 14px;border-radius:var(--r) var(--r) 0 0;overflow:hidden;background:var(--bg2) url(art/love-main.webp) center 22%/cover no-repeat}
+.fc-art::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 55%,var(--card2) 100%)}
+/* 10-02 입력 칸 「← 처음으로」 — 그림 자리 왼쪽 위에 얹는다 */
+#formCard .fc-back{position:absolute;z-index:2;top:12px;left:12px;margin:0}
+/* 무엇을 하러 왔는지 · 필요한 것(입력창 · 사람 추가 창 맨 위) */
+.fc-what{margin:0 0 4px}
+.fc-what h2{margin:0;font-size:20px;line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
+.fc-what .hint{margin:6px 0 0;font-size:13px;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.sheet .fc-what{margin:0 0 6px}
+.sheet .fc-what h2{font-family:var(--letter);font-weight:700;font-size:19px}
+/* 친구가 보낸 카드 링크로 온 손님 띠 */
+.fc-from{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--accent-line);font-size:13.5px;line-height:1.6;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.fc-from b{color:var(--accent)}
+/* 더 정확하게(선택) — 태어난 곳 · 해 시각 접힘 */
+.fc-more{margin:16px 0 0;padding:8px 0 0;border-top:1px dashed var(--line)}
+.fc-more>summary{cursor:pointer;list-style:none;padding:6px 0;font-size:13.5px;color:var(--ink2);word-break:keep-all}
+.fc-more>summary::-webkit-details-marker{display:none}
+.fc-more>summary::after{content:" ▸";opacity:.6}
+.fc-more[open]>summary::after{content:" ▾"}
+.fc-more>.hint{margin:2px 0 0}
 /* 10-01 사장님 「더해서 예쁜 배경과 그림들이 이어졌으면」 — 연애 속의 나(love.js) · 행동양식 궁합(pair.js).
    표지 = 홈 분류 칸(.cat)처럼 그림 전체 + 아래 어두운 띠 위 제목. 장 = 그림 머리 + 그 그림에서 뽑은 옅은 바탕이 다음 장 색으로 이어진다(색은 love.js 장 그림 표). */
 .lv-cover{position:relative;display:block;border-radius:14px;overflow:hidden;margin:0 0 12px;background:var(--card);border:1px solid var(--line)}
@@ -1934,3 +1991,36 @@ details.fold > .tiles { margin-top: 10px; }
 .lv-steps{list-style:none;margin:12px 0 0;padding:0;font-size:14px;line-height:1.9;color:var(--ink3)}
 .lv-steps li.done{color:var(--ink2)}
 .lv-steps li.now{color:var(--ink);font-weight:700}
+
+/* 10-02 다시 온 손님 홈 — 맨 위 「○○님의 이번 주」 띠(app.js 이번주띠 · index.html #wkBand).
+   접힌 채로는 오늘 한 줄 · 인생 곡선 지금 구간만(첫 화면에 질문 칩 · 그림 칸이 같이 보이게 낮게). 펼치면 띠는 머리 한 줄로 줄고 그 아래 이번 주 카드 · 인생 곡선 카드가 선다. */
+.wk-band{margin:0 0 16px;text-align:left}
+.wk-band>summary{display:block;list-style:none;cursor:pointer;padding:12px 14px;border-radius:14px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--accent-line);box-shadow:var(--shadow)}
+.wk-band>summary::-webkit-details-marker{display:none}
+.wk-band>summary:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.wk-band[open]>summary{margin-bottom:12px}
+.wk-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.wk-h b{min-width:0;font-family:var(--serif);font-size:16px;font-weight:900;letter-spacing:-.01em;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.wk-tg{flex:0 0 auto;font-style:normal;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
+.wk-day{display:block;margin:6px 0 2px;font-size:11.5px;letter-spacing:.04em;color:var(--accent)}
+.wk-s{display:block;font-size:14.5px;line-height:1.6;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.wk-l{display:block;margin:8px 0 0;padding:8px 0 0;border-top:1px dashed var(--line);font-size:13px;line-height:1.5;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.wk-l b{margin-right:6px;font-size:11.5px;letter-spacing:.04em;color:var(--accent)}
+.wk-band[open]>summary .wk-day,.wk-band[open]>summary .wk-s,.wk-band[open]>summary .wk-l{display:none}
+/* 10-02 아래 줄 「연애」 · 「궁합」 고르기 창(app.js 고르기창 · index.html #navPick) — 콘텐츠마다 한 줄: 이름 · 무엇을 보나 · 딱지(무엇이 무료 · 얼마) */
+#navPick .sheet h3{margin:0}
+#navPick .sheet .hint{margin:4px 0 0}
+.np-list{display:flex;flex-direction:column;gap:8px;margin:14px 0 12px}
+.np-row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:center;width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.np-row.on{border-color:var(--accent2);background:var(--accent-soft)}
+.np-row b{grid-column:1;font-family:var(--serif);font-size:16px;font-weight:900;line-height:1.35;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere}
+.np-row .np-s{grid-column:1;margin-top:3px;font-size:13px;line-height:1.5;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.np-row .np-t{grid-column:1;margin-top:4px;font-size:12.5px;line-height:1.45;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;word-break:keep-all;overflow-wrap:anywhere}
+.np-row::after{content:"\203A";grid-column:2;grid-row:1 / span 3;font-size:22px;line-height:1;color:var(--ink3)}
+/* 10-02 공용 오류 상자(oryu.js) — 막혔을 때 무엇이 안 됐는지 · 돈 · [다시 하기] [문의하기]. 연애 · 사용설명서 · 정통사주 · 정통궁합 · 웹툰궁합이 같이 쓴다 */
+.oryu{margin:10px 0;padding:14px 16px;border-radius:14px;border:1px solid var(--line2);border-left:3px solid var(--seal, #8c2f23);background:var(--bg2);text-align:left}
+.oryu p{margin:0 0 6px;font-size:14px;line-height:1.7;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.oryu .oryu-h{font-weight:700;color:var(--ink)}
+.oryu .hint{margin:8px 0 0;font-size:12px;color:var(--ink3)}
+.oryu-do{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.oryu-do .btn{flex:1 1 140px;width:auto;margin-top:6px;display:block;box-sizing:border-box;text-align:center;text-decoration:none}

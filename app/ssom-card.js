@@ -26,6 +26,8 @@
       당신언행: 언행말둘(나R), 그언행: 언행말둘(그R) };
   }
   // 방향 줄 뒤에 맞음/다름 꼬리(검수 09-26: 「그래서 맞다는 거야?」). 그림 카드는 받은 사람이 「당신」을 자기로 읽으니 보낸 사람 이름(나)을 넣는다
+  // 이름이 없으면 「보낸 사람」을 넣는다(10-02 개편 2묶음 — 받은 사람이 「당신은 …」을 자기 얘기로 읽었다). 내 화면 카드(카드 · 정통카드)는 「당신」 그대로.
+  const 보낸이 = '보낸 사람';
   function 문장(r, 나) {
     const M = global.ChaeksaSsomCardMal || {}; if (!M.사이) return null;
     // 09-27 사장님 「하려던 말」: 갈래 셋마다 틀이 따로(결론 먼저) — 방향맞음 · 방향비슷 · 방향다름
@@ -69,7 +71,8 @@
   function 붙이기(box, 나R, 그R, 이름) {
     const el = box.querySelector('#ssCard'); if (!el) return;
     const c = document.createElement('canvas');
-    const go = async (mode) => { try { await 그리기(c, 나R, 그R, 이름 && 이름 !== '우리' ? 이름 : ''); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=ssom&from=card-ssom'; if (mode === 'share') { const r = 재기(나R, 그R), m = 문장(r, 이름 && 이름 !== '우리' ? 이름 : ''); const ok = await SH.kakaoShare({ title: m.사이, text: m.당신줄 + ' ' + m.그줄, image: 'https://chaeksa.kr/art/kakao/' + (r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give') + '.jpg', url, button: m.단추.받은사람 }); if (!ok) { await SH.share(c, 이름 || '우리', '웹툰궁합', '우리 둘 사이 · 책사', url); 링크띠(el); } } else await SH.save(c, 이름 || '우리', '웹툰궁합'); } catch (e) {} };
+    const nm = 이름 && 이름 !== '우리' ? 이름 : 보낸이;
+    const go = async (mode) => { try { await 그리기(c, 나R, 그R, nm); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=ssom&from=card-ssom'; if (mode === 'share') { const r = 재기(나R, 그R), m = 문장(r, nm); const ok = await SH.kakaoShare({ title: m.사이, text: m.당신줄 + ' ' + m.그줄, image: 'https://chaeksa.kr/art/kakao/' + (r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give') + '.jpg', url, button: m.단추.받은사람 }); if (!ok) { await SH.share(c, 이름 || '우리', '웹툰궁합', '우리 둘 사이 · 책사', url); 링크띠(el); } } else await SH.save(c, 이름 || '우리', '웹툰궁합'); } catch (e) {} };
     const b1 = el.querySelector('#ssCardShare'), b2 = el.querySelector('#ssCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile() && !global.CHAEKSA_KAKAO_JS_KEY) b1.textContent = '카톡으로 보내기(저장해서 보내요)';
@@ -97,7 +100,8 @@
   function 정통붙이기(box, R, 이름) {
     const el = box.querySelector('#jtCard'); if (!el) return;
     const c = document.createElement('canvas'), nm = 이름 && 이름 !== '우리' ? 이름 : '';
-    const go = async (mode) => { try { await 정통그리기(c, R, nm); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=jeongtong&from=card-jt'; if (mode === 'share') { const r = 정통재기(R), 한줄 = nm ? r.한줄.replace(/^당신은/, nm + (받침(nm) ? '은' : '는')) : r.한줄; const ok = await SH.kakaoShare({ title: 한줄, text: '생년월일시면 3초 · 책사', image: 'https://chaeksa.kr/art/kakao/' + r.컷 + '.jpg', url, button: '내 것도 보기' }); if (!ok) { await SH.share(c, nm || '나', '정통사주', '내 타고난 기운 · 책사', url); 링크띠(el); } } else await SH.save(c, nm || '나', '정통사주'); } catch (e) {} };
+    const 보낼이름 = nm || 보낸이;   // 받은 사람에게 가는 그림 · 카카오 글은 「당신은」 대신 이름이나 「보낸 사람」
+    const go = async (mode) => { try { await 정통그리기(c, R, 보낼이름); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=jeongtong&from=card-jt'; if (mode === 'share') { const r = 정통재기(R), 한줄 = r.한줄.replace(/^당신은/, 보낼이름 + (받침(보낼이름) ? '은' : '는')); const ok = await SH.kakaoShare({ title: 한줄, text: '생년월일시면 3초 · 책사', image: 'https://chaeksa.kr/art/kakao/' + r.컷 + '.jpg', url, button: '내 것도 보기' }); if (!ok) { await SH.share(c, nm || '나', '정통사주', '내 타고난 기운 · 책사', url); 링크띠(el); } } else await SH.save(c, nm || '나', '정통사주'); } catch (e) {} };
     const b1 = el.querySelector('#jtCardShare'), b2 = el.querySelector('#jtCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile() && !global.CHAEKSA_KAKAO_JS_KEY) b1.textContent = '카톡으로 보내기(저장해서 보내요)';

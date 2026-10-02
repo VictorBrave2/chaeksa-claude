@@ -62,9 +62,9 @@
   <div class="chap" id="chap"></div>
   <div class="toc" id="tocPanel"><div class="toc-h"><b>목차</b><button class="toc-x" id="tocX" type="button">✕</button></div><div class="toc-body" id="tocBody"></div></div>
 </div>
-<script src="config.js?v=1260"></script><script src="astro.js?v=1260"></script><script src="lunar.js?v=1260"></script><script src="engine.js?v=1260"></script>
-<script src="saenggeuk.js?v=1260"></script><script src="gise.js?v=1260"></script><script src="panjeong.js?v=1260"></script><script src="typecard.js?v=1260"></script><script src="gyeokguk.js?v=1260"></script>
-<script src="classic.js?v=1260"></script><script src="samyeong.js?v=1260"></script><script src="jt-webtoon.js?v=1260"></script><script src="jt-webtoon-2.js?v=1260"></script><script src="ssom-gwanjeom.js?v=1260"></script><script src="ssom-baram.js?v=1260"></script><script src="ssom-daehwa.js?v=1260"></script><script src="ssom-webtoon.js?v=1260"></script><script src="ssom-webtoon-2.js?v=1260"></script><script src="ssom-webtoon-3.js?v=1260"></script><script src="ssom-wongo.js?v=1260"></script><script src="ssom-dangye.js?v=1260"></script><script src="ssom.js?v=1260"></script>
+<script src="config.js?v=1263"></script><script src="astro.js?v=1263"></script><script src="lunar.js?v=1263"></script><script src="engine.js?v=1263"></script>
+<script src="saenggeuk.js?v=1263"></script><script src="gise.js?v=1263"></script><script src="panjeong.js?v=1263"></script><script src="typecard.js?v=1263"></script><script src="gyeokguk.js?v=1263"></script>
+<script src="classic.js?v=1263"></script><script src="samyeong.js?v=1263"></script><script src="jt-webtoon.js?v=1263"></script><script src="jt-webtoon-2.js?v=1263"></script><script src="ssom-gwanjeom.js?v=1263"></script><script src="ssom-baram.js?v=1263"></script><script src="ssom-daehwa.js?v=1263"></script><script src="ssom-webtoon.js?v=1263"></script><script src="ssom-webtoon-2.js?v=1263"></script><script src="ssom-webtoon-3.js?v=1263"></script><script src="ssom-wongo.js?v=1263"></script><script src="ssom-dangye.js?v=1263"></script><script src="ssom.js?v=1263"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 지어낸 두 사람 견본으로 연다(실제 사람 생일 아님). 썸 원고가 있는 짝(丁卯 남 × 丙午 여, 같은 원고 열쇠)이어야 장면이 나온다.
@@ -80,7 +80,7 @@
   function 정통대본(a) {
     const J = window.ChaeksaJtWebtoon; if (!J) return null;
     const R = ChaeksaEngine.calc(a), 사 = J.사람(R), g = a.gender === 'M' ? 'm' : 'f';
-    const 장들 = J.조립(R, {}).map(h => ({ 제목: h.물음, 배경: ['jt-' + ((h.번호 === 3 || h.번호 === 4 || h.번호 === 15) && 격컷[사.격] ? 'g-' + 격컷[사.격] : 컷이름[h.번호]) + '-' + g],
+    const 장들 = J.조립(R, {}).map(h => ({ 번호: h.번호, 제목: h.물음, 배경: ['jt-' + ((h.번호 === 3 || h.번호 === 4 || h.번호 === 15) && 격컷[사.격] ? 'g-' + 격컷[사.격] : 컷이름[h.번호]) + '-' + g],
       줄: h.줄.filter(([k]) => k !== '해설' && k !== '단서').map(([k, 말]) => k === '장면' ? { 누가: '장면', 말, 주인: '당신' } : k === '나' ? { 누가: '당신', 말 } : { 누가: '책사', 말, 쪽: k === '답' ? 0 : 1 }) }));
     return { 장들, 총론수: 0, 키: 'jt' };
   }
@@ -105,6 +105,9 @@
   const $ = (id) => document.getElementById(id);
   const bgs = [$('bgA'), $('bgB')]; let 앞 = 0, 지금배경 = '';
   const 배경바꾸기 = (u) => { if (!u || u === 지금배경) return; 지금배경 = u; 앞 ^= 1; bgs[앞].style.backgroundImage = 'url(art/' + u + '.webp)'; bgs[앞].classList.add('on'); bgs[앞 ^ 1].classList.remove('on'); };
+  // 10-02 개편 — 다음 그림을 미리 받아 둔다(장면을 넘길 때 멈칫하지 않게). 같은 그림은 한 번만 부른다. 원본 그대로(줄인 그림 아님).
+  const 받은그림 = {}, 받는중 = [];
+  const 미리받기 = (u) => { if (!u || 받은그림[u] || u === 지금배경) return; 받은그림[u] = 1; const im = new Image(); im.decoding = 'async'; im.src = 'art/' + u + '.webp'; 받는중.push(im); };
   for (let i = 0; i < 14; i++) { const p = document.createElement('i'); p.className = 'petal'; p.style.left = Math.random() * 110 + '%'; p.style.animationDuration = 7 + Math.random() * 8 + 's'; p.style.animationDelay = -Math.random() * 12 + 's'; p.style.opacity = .4 + Math.random() * .5; $('petals').appendChild(p); }
   const 굵 = (x) => x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
   function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = mn ? './#pair' : jt && jt.a ? './?go=jeongtong' : 'ssom.html'; }
@@ -116,10 +119,14 @@
     장 = i; 멈춤 = true; 표지중 = true; 반응중 = false; $('choices').classList.remove('on');
     $('chap').innerHTML = '<small>' + (i + 1) + ' / ' + 장들.length + (장들[i].묶음 ? ' · ' + 굵(장들[i].묶음) : '') + '</small><h1>' + 굵(장들[i].제목) + '</h1><p>' + (v.견본 && i === 0 ? (jt ? '견본 — 지어낸 한 사람<br>' : '견본 — 지어낸 두 사람(2026년 8월에 만남)<br>') : '') + '눌러서 시작</p>';
     $('chap').classList.remove('off'); 배경바꾸기(장들[i].배경[0]);
+    장들[i].배경.slice(1).forEach(미리받기); if (장들[i + 1]) 미리받기(장들[i + 1].배경[0]);   // 이 장의 나머지 그림 · 다음 장 첫 그림
   }
   function 시작() { $('chap').classList.add('off'); 표지중 = false; 멈춤 = false; 줄들 = 장들[장].줄.map((x, j, a) => Object.assign({ 배경: 장들[장].배경[Math.min(장들[장].배경.length - 1, Math.floor(j * 장들[장].배경.length / a.length))] }, x)); n = 0; 보이기(); }
   function 보이기() {
     const s = 줄들[n]; 배경바꾸기(s.배경);
+    // 앞으로 나올 그림 가운데 지금과 다른 것 둘(이 장 뒷줄 → 다음 장 첫 그림)을 미리 받는다
+    const 앞그림 = 줄들.slice(n + 1).map(x => x.배경).concat(장들[장 + 1] ? [장들[장 + 1].배경[0]] : []).filter((u, j, a) => u && u !== 지금배경 && a.indexOf(u) === j).slice(0, 2);
+    앞그림.forEach(미리받기);
     // 09-25 — 이름표 자리: 나 = 왼쪽 위 · 그 사람 = 오른쪽 위 · 책사 = 가운데. 장면(지문)도 조각 주인이 있으면 그 사람 이름표.
     const 주인 = s.누가 === '장면' ? s.주인 : (s.누가 === '당신' || s.누가 === '상대') ? s.누가 : null;
     const 표 = 주인 === '당신' ? '나' : 주인 === '상대' ? '그 사람' : s.누가 === '예시' ? '예시' : s.누가 === '사주에서 본 근거' ? '사주에서 본 근거' : s.누가 === '장면' ? '' : '책사';
@@ -170,7 +177,9 @@
     if (반응중) { 반응중 = false; return 다음단추(); }
     장끝();
   };
-  표지(첫장);   // 「이 단계를 장면으로 보기」는 단계 첫 장부터
+  // 10-02 홈 「무엇이 궁금하세요?」 칩 — 정통사주 웹툰은 ?h=N 이면 N화부터(답이 그 화에 있는 물음). 「처음부터 다시」는 그대로 1화부터.
+  const 회m = 대.키 === 'jt' && /[?&]h=(\d+)/.exec(location.search), 회i = 회m ? 장들.findIndex(c => c.번호 === +회m[1]) : -1;
+  표지(회i >= 0 ? 회i : 첫장);   // 「이 단계를 장면으로 보기」는 단계 첫 장부터
 })();
 </script>
 </body>

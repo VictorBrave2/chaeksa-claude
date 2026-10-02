@@ -29,8 +29,9 @@
   var 표지그림 = ['art/love-cover.webp', [1086, 1448], '#f1e6d8', '#352b35'];
   var 기본그림 = [null, null, '#efe9ec', '#221f45'];   // 표에 없는 장 이름 — 그림 없이 글 머리만
 
-  // 기다림 네 단계(10-01 사장님 승인 흐름) — 걸린 시간(초)으로 넘어간다. 서버 진행을 재는 것이 아니다.
-  var 단계 = ['여덟 글자의 봉인을 여는 중', '봉인된 연애 버릇을 연산하는 중', '사랑할 때 나올 말과 행동을 해독하는 중', '해독한 것을 한 장에 새기는 중'], 단계때 = [0, 8, 20, 55];
+  // 기다림 네 단계(10-01 흐름) — 걸린 시간(초)으로 넘어간다. 서버 진행을 재는 것이 아니다. 다만 질문이 이미 왔으면(덜됨) 셋째 단계부터 보인다(질문 고르기는 끝났다).
+  // 10-02 개편 — 「봉인 · 해독」 말 대신 지금 무엇을 하고 있는지 보이는 말로. 기다리는 동안 아래에 장 이름 · 장면 목록(밑그림)이 먼저 깔린다.
+  var 단계 = ['태어난 날의 글자를 읽는 중', '연애할 때 나오는 버릇을 고르는 중', '장면마다 내 글을 쓰는 중', '연애할 때의 나를 한 줄로 정리하는 중'], 단계때 = [0, 8, 20, 55];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 읽기(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
@@ -142,6 +143,20 @@
     box.innerHTML = 장.차례.length ? '<div class="lv-flow">' + html + '</div>' : '';
   }
 
+  // 기다리는 동안의 밑그림(10-02 개편) — 질문이 오자마자 「나에게 나온 장 N개 · 글 M개」와 장 이름 · 쓰고 있는 장면을 흐리게 먼저 깐다.
+  // 결제한 사람에게 온 질문 목록 그대로다(새로 드러나는 것 없음). 답이 다 오면 다그리기(목록)가 이 자리를 장마다 그림과 글로 바꾼다.
+  function 밑그림(box, 저장) {
+    var 장 = 장들(저장 && 저장.items);
+    if (!장.차례.length) { box.innerHTML = ''; return; }
+    box.innerHTML = '<section class="card lv-wait"><h3 class="doc-h">나에게 나온 장 ' + 장.차례.length + '개 · 글 ' + 저장.items.length + '개</h3>'
+      + '<p class="hint" style="margin:0 0 4px">아래 장면들을 하나씩 내 글로 쓰고 있어요. 다 쓰면 이 자리가 장마다 그림과 글로 바뀌어요.</p>'
+      + 장.차례.map(function (sec, i) {
+        return '<p class="lv-t" style="margin:14px 0 4px">' + (i + 1) + '장 · ' + esc(sec) + ' <span style="font-weight:400;font-size:12.5px;color:var(--ink3)">글 ' + 장.묶음[sec].length + '개</span></p>'
+          + '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:var(--ink3)">'
+          + 장.묶음[sec].map(function (it) { return '<li>' + esc(it.q) + '</li>'; }).join('') + '</ul>';
+      }).join('') + '</section>';
+  }
+
   // 결론(10-01 사장님 「사주팔자 -> 행동양식 -> 언행추론 -> 이런 사람이다 까지 결론이 나야」) — 장들 위.
   // 산 사람은 모습(서버가 셋을 다 거른 것만 보관한다) · 해 볼 것 · 조심할 것까지, 안 산 사람은 첫 줄만 온다(나머지는 서버가 안 보낸다).
   // 모습의 근거는 장으로 — 「2장 · 3장에서 보여요」, 누르면 그 장 그림으로 내려간다. 주소의 #은 탭이 쓰므로 건드리지 않는다.
@@ -176,15 +191,110 @@
     });
   }
 
-  // 맨 끝 — SSS급 그 사람 사용설명서(#pair)로 가는 상자. 10-02 지금 판(그 사람 생년월일시 하나 · 열두 단계 · 질문 3개 무료)에 맞춘 말 — 옛 판(장면마다 맞대 보기)은 걷었다.
+  // 상품 약속 장부(yaksok.js) — 무엇을 받나 · 미리 보는 것 · 만드는 시간 · 결제하면 받는 것은 장부 한 곳에서 읽는다(10-02). 여기에 손으로 적지 않는다.
+  function 장부() { return global.ChaeksaYaksok || null; }
+  function 약(키) { var Y = 장부(); return (Y && Y.줄(키)) || {}; }
+  function 화면이름() { var Y = 장부(); return (Y && Y.이름('love')) || '사랑할 때만 나오는 당신'; }   // 문의 메일 제목에 싣는 화면 이름
+  // 결제 단계에서 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈은 빠지지 않았어요 · 다시 하기 · 문의하기. 그 파일이 없으면 예전처럼 한 줄.
+  function 결제막힘(say, 자리, 말, 다시) {
+    var O = global.ChaeksaOryu, 글 = 말 || '결제창을 열지 못했어요.';
+    if (!O || !자리) { say.textContent = 글; return; }
+    say.textContent = ''; O.결제(자리, 글, 화면이름(), 다시);
+  }
+
+  // 맨 끝 — SSS급 그 사람 사용설명서(#pair)로 가는 상자. 이름 · 한줄 · 미리 보는 것 · 딱지는 장부 pair 줄에서(옛 판 「장면마다 맞대 보기」는 걷었다).
   function 끝상자(box, 저장) {
     if (!저장 || !저장.items || !저장.items.length) { box.innerHTML = ''; return; }
-    box.innerHTML = '<section class="card lv-next"><p class="lv-t">SSS급 그 사람 사용설명서</p>'
-      + '<p class="hint" style="margin:0 0 10px">이번엔 그 사람 차례예요. 그 사람 생년월일시 하나로, 썸부터 가족과 친구까지 연애 열두 단계에서 그 사람이 어떻게 할지, 왜 그런지, 나에게 어떻게 비칠지 알려 드려요. 질문 3개는 무료예요.</p>'
-      + '<button class="btn" type="button" id="lvPair" style="width:100%">그 사람 사용설명서 보기 — 질문 3개 무료</button></section>';
+    var Y = 장부(), 딱지 = Y ? Y.딱지html('pair') : '';
+    box.innerHTML = '<section class="card lv-next"><p class="lv-t">' + esc((Y && Y.이름('pair')) || '그 사람 사용설명서') + '</p>'
+      + '<p class="hint" style="margin:0 0 10px">이번엔 그 사람 차례예요. ' + esc((Y && Y.한줄('pair')) || '') + (약('pair').미리 ? ' ' + esc(약('pair').미리) : '') + '</p>'
+      + '<button class="btn" type="button" id="lvPair" style="width:100%">그 사람 사용설명서 보기' + (딱지 ? ' — ' + 딱지 : '') + '</button></section>';
+    if (Y) Y.값채우기(box);
     box.querySelector('#lvPair').onclick = function () {
       if (typeof global.책사들어가기 === 'function') global.책사들어가기('pair'); else location.hash = '#pair';
     };
+  }
+
+  // ── 연애 결과 보내기(10-02 개편 2묶음 「공유 카드 넓히기」) — 산 사람의 결과 끝, 사용설명서 상자(#lvEnd) 위.
+  // 카드에 싣는 것은 해독 결과 첫 줄(결론 한 줄)과 표지 그림뿐이다. 이름 · 생년월일 · 장마다 쓴 글은 싣지 않는다.
+  // 결론 줄에 「당신」이 있으면 「보낸 사람」으로 바꾼다 — 받은 사람이 자기 얘기로 읽지 않게(ssom-card.js 와 같은 규칙).
+  // 받은 사람 주소 ./?go=love&from=card-love — 입력 칸 맨 위에 「친구가 보낸 …」 띠가 선다(app.js 입력준비). 꼬리표는 track.js 가 유입으로 센다.
+  // 카카오 링크가 되면 그림(art/kakao/love-cover.jpg, 표지 원본에서 만든 800×1000 판) + 한 줄 + 단추 한 장, 안 되면 그림 카드(1080×1350)를 폰 공유 · 저장으로(share.js).
+  var 보낼주소 = 'https://chaeksa.kr/?go=love&from=card-love', 보낼단추 = '내 연애 버릇도 보기';
+  function 보낼한줄(저장) {
+    var p = 저장 && 저장.portrait;
+    if (!p || !p.title || p.locked || (저장.items || []).some(function (it) { return it.locked; })) return '';   // 다 열린(산) 결과에만
+    return String(p.title).trim().replace(/당신/g, '보낸 사람');   // 둘 다 받침으로 끝나 뒤 조사(은 · 이 · 을 · 의)가 그대로 맞는다
+  }
+  var 카드W = 1080, 카드H = 1350, 명조 = '"Gowun Batang","Noto Serif KR",serif', 고딕 = '"Noto Sans KR",sans-serif';
+  // 글줄 접기 — 띄어쓰기로 나눠 폭에 맞춘다(ssom-card.js wrap 과 같은 방식)
+  function 줄로(ctx, text, maxW) {
+    var 줄 = [], cur = '';
+    String(text).split(' ').forEach(function (w) { var t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { 줄.push(cur); cur = w; } else cur = t; });
+    if (cur) 줄.push(cur);
+    return 줄;
+  }
+  // 그림 카드 — 표지 원본(줄인 판 아님)을 위에, 결론 한 줄 · 단추 말 · 꼬리를 아래에. 결론이 길면 글자를 줄여 단추 위 칸에 넣는다.
+  function 카드그리기(canvas, 한줄) {
+    var 글꼴 = document.fonts && document.fonts.ready ? Promise.resolve(document.fonts.ready).catch(function () {}) : Promise.resolve();
+    return 글꼴.then(function () {
+      canvas.width = 카드W; canvas.height = 카드H;
+      var ctx = canvas.getContext('2d'), 그림높이 = 800;
+      ctx.fillStyle = '#161433'; ctx.fillRect(0, 0, 카드W, 카드H);
+      return new Promise(function (res) {
+        var im = new Image();
+        im.onload = function () {
+          var s = Math.max(카드W / im.width, 그림높이 / im.height), w = im.width * s, h = im.height * s;
+          ctx.drawImage(im, (카드W - w) / 2, -(h - 그림높이) * 0.15, w, h);
+          var g = ctx.createLinearGradient(0, 그림높이 - 260, 0, 그림높이); g.addColorStop(0, 'rgba(22,20,51,0)'); g.addColorStop(1, '#161433');
+          ctx.fillStyle = g; ctx.fillRect(0, 그림높이 - 260, 카드W, 260); res();
+        };
+        im.onerror = function () { res(); };
+        im.src = 표지그림[0];
+      }).then(function () {
+        var 크기 = [52, 46, 41, 37, 34], 줄 = [], lh = 0;
+        ctx.textAlign = 'center';
+        for (var k = 0; k < 크기.length; k++) { ctx.font = '700 ' + 크기[k] + 'px ' + 명조; 줄 = 줄로(ctx, 한줄, 920); lh = Math.round(크기[k] * 1.38); if (줄.length * lh <= 310) break; }
+        ctx.fillStyle = '#f7f3ff';
+        줄.forEach(function (t, i) { ctx.fillText(t, 카드W / 2, 870 + i * lh); });
+        ctx.font = '700 40px ' + 명조; ctx.fillStyle = '#e6c98a'; ctx.fillText(보낼단추, 카드W / 2, 카드H - 150);
+        ctx.font = '400 28px ' + 고딕; ctx.fillStyle = '#9a95b8'; ctx.fillText(화면이름() + ' · 책사 chaeksa.kr', 카드W / 2, 카드H - 70);
+        return canvas;
+      });
+    });
+  }
+  function 보내기상자(box, 저장) {
+    if (!box) return;
+    var 한줄 = 보낼한줄(저장);
+    if (!한줄) { box.innerHTML = ''; return; }
+    box.innerHTML = '<section class="card ss-card lv-share"><img class="ss-card-cut" src="' + esc(표지그림[0]) + '" alt="" loading="lazy" decoding="async">'
+      + '<p class="ss-card-line" style="margin-top:12px">친구에게 보내기</p>'
+      + '<p class="ss-card-lead">' + esc(한줄) + '</p>'
+      + '<p class="ss-card-line">친구에게는 이 한 줄과 표지 그림만 가요. 이름 · 생년월일 · 장마다 쓴 글은 실리지 않아요.</p>'
+      + '<div class="ss-card-btns"><button type="button" class="btn ghost small" id="lvShareGo">카톡으로 보내기</button><button type="button" class="btn ghost small" id="lvShareSave">이미지로 저장</button></div>'
+      + '<p class="ss-card-tip" id="lvShareSay" style="margin:0;padding:0 18px 16px;overflow-wrap:anywhere" hidden></p></section>';
+    var c = document.createElement('canvas'), say = box.querySelector('#lvShareSay'), b1 = box.querySelector('#lvShareGo'), b2 = box.querySelector('#lvShareSave'), Y = 장부();
+    function 안내(t) { say.textContent = t || ''; say.hidden = !t; }
+    function 보내기(mode) {
+      var SH = global.ChaeksaShare;
+      if (!SH) { 안내('보내기 도구를 불러오지 못했어요. 새로고침해 주세요.'); return; }
+      안내('');
+      try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('share-love'); } catch (e) {}
+      if (mode === 'save') {
+        카드그리기(c, 한줄).then(function () { return SH.save(c, '나', '연애'); }).catch(function () { 안내('그림을 만들지 못했어요. 다시 눌러 주세요.'); });
+        return;
+      }
+      // 카카오 링크가 먼저(그림을 그릴 필요가 없다). 안 되면 그림 카드를 그려 폰 공유 창으로, 공유 창이 없으면 저장한다.
+      SH.kakaoShare({ title: 한줄, text: ((Y && Y.홈한줄('love')) || '연애할 때 내가 하는 말과 행동') + ' · 책사', image: 'https://chaeksa.kr/art/kakao/love-cover.jpg', url: 보낼주소, button: 보낼단추 }).then(function (ok) {
+        if (ok) return;
+        return 카드그리기(c, 한줄).then(function () { return SH.share(c, '나', '연애', 한줄 + ' · 책사', 보낼주소); }).then(function (보냄) {
+          안내(보냄 ? '링크도 복사해 뒀어요 — 카톡 글칸에 붙여 넣으면 그림이랑 같이 가요.' : '그림을 저장했어요. 카톡에 그림을 올리고 이 주소도 같이 보내 주세요: ' + 보낼주소);
+        });
+      }).catch(function () { 안내('보내지 못했어요. 다시 눌러 주세요.'); });
+    }
+    b1.onclick = function () { 보내기('share'); };
+    b2.onclick = function () { 보내기('save'); };
+    if (global.ChaeksaShare && !global.ChaeksaShare.canShareFile() && !global.CHAEKSA_KAKAO_JS_KEY) b1.textContent = '카톡으로 보내기(저장해서 보내요)';
   }
 
   // 결제 전 예시(10-02 사장님 「무료범위없이 예시만」) — 손님 본인 답은 결제 전에 하나도 내주지 않는다.
@@ -224,11 +334,9 @@
   // 결제 전 결제 상자 — 결제 열쇠는 누를 때 서버에 묻는다(peek, 만들지도 세지도 않음). 이미 샀으면(검수 계정 포함) 결제 대신 바로 만든다(다음).
   // [필수] 동의에 「생년월일시를 이 콘텐츠를 만드는 데 쓰는 것」을 함께 받는다 — 결제 전에는 생년월일을 서버에 보내지 않는다.
   function 사기상자(box, b, 다음) {
-    var 받는것 = ['연애할 때 나는 어떤 사람인지 해독 결과 전문 — 세 가지 모습, 그래서 해 볼 것, 조심할 것',
-      '마음에 드는 사람이 생겼을 때부터 오래 함께할 때까지, 장면마다 내가 하는 행동을 풀어 쓴 글 전부',
-      '장마다 그 장의 나를 한 줄로 정리해 드려요',
-      '결제하면 그때 내 것을 만들어 드려요(1분 남짓). 결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요'];
+    var Y = 장부(), 받는것 = Y ? Y.받는것목록('love') : [], 만듦 = Y ? Y.만듦글('love') : '';   // 장부 love 줄 — pay.html 「무엇을 사나」와 같은 말
     box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">내 해독 결과 받기</h3>'
+      + (만듦 ? '<p style="margin:0 0 10px">' + esc(만듦) + '</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 그때 만들어 바로 열리는 디지털 콘텐츠입니다. '
@@ -237,8 +345,8 @@
       + '<input type="checkbox" id="lvAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용과, 생년월일시를 이 콘텐츠를 만드는 데 쓰는 것에 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a> · <a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a>)</span></label>'
       + '<button class="btn" id="lvBuy" type="button" style="width:100%">출시 기념가 9,900원 결제하고 내 것 받기</button>'
-      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p></div></section>';
-    var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), P = global.ChaeksaPay;
+      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div></section>';
+    var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), 막힘칸 = box.querySelector('#lvPayErr'), P = global.ChaeksaPay;
     if (P && P.product) P.product('love_full').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
       if (p && p.amount) btn.textContent = (P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount)) + ' 결제하고 내 것 받기';
@@ -248,7 +356,7 @@
       if (btn.dataset.busy) return;
       var ok = box.querySelector('#lvAgree');
       if (!ok || !ok.checked) { say.textContent = '위 [필수] 칸에 체크해 주셔야 결제할 수 있어요.'; return; }
-      쓰기(동의키, true);
+      쓰기(동의키, true); 막힘칸.innerHTML = '';
       var C = global.ChaeksaCloud; P = global.ChaeksaPay;
       if (!P || !P.buy) { say.textContent = '결제 화면을 불러오지 못했어요. 새로고침해 주세요.'; return; }
       if (!(C && C.signedIn && C.signedIn())) {   // 산 것을 그 카카오 계정에 매어 두어야 다른 기기에서도 열린다
@@ -269,7 +377,7 @@
         .then(function (r) {
           if (!btn.isConnected) return;
           delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;
-          if (r && r.ok === false && !r.closed) say.textContent = r.message || '결제창을 열지 못했어요.';
+          if (r && r.ok === false && !r.closed) 결제막힘(say, 막힘칸, r.message, function () { btn.click(); });
         });
     };
     if (P && P.곧열림자리) P.곧열림자리(box.querySelector('#lvBuyWrap'));
@@ -285,12 +393,10 @@
     var 열쇠 = 올바른열쇠(저장.payKey), 열린 = 저장.items.length - 잠긴;
     var 첫장 = 저장.items.length ? 저장.items[0].section : null;
     var 첫장다열림 = !저장.items.some(function (it) { return it.section === 첫장 && it.locked; });
-    // 이 목록은 pay.html 「결제하면 풀리는 것」과 같은 말이다(10-02) — 고치면 거기도 같이 고친다.
-    var 받는것 = ['연애할 때 나는 어떤 사람인지 해독 결과 전문 — 세 가지 모습, 그래서 해 볼 것, 조심할 것',
-      '세 가지 모습마다 몇 장에서 드러나는지 짚어 드려요',
-      (첫장다열림 ? '2장부터 마지막 장까지' : '나머지 장면 모두') + ', 연애할 때 내가 하는 행동을 풀어 쓴 글이 바로 열려요',
-      (저장.portrait && 저장.portrait.chapters && Object.keys(저장.portrait.chapters).length ? '장마다 그 장의 나를 한 줄로 정리해 드려요' : ''),
-      '결제한 카카오 계정에 1년 동안 남아서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요'];
+    // 이 목록은 장부 love 줄(yaksok.js) — pay.html 「무엇을 사나」 · 사기상자와 같은 말이다(10-02).
+    // 「장마다 그 장의 나를 한 줄로」는 서버가 그 줄을 준 결과에만 보이므로 이 결과에 장 한 줄이 있을 때만 적는다(장부 조건 「장한줄」).
+    var 장한줄 = !!(저장.portrait && 저장.portrait.chapters && Object.keys(저장.portrait.chapters).length);
+    var Y = 장부(), 받는것 = Y ? Y.받는것목록('love', { 장한줄: 장한줄 }) : [];
     box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">' + (잠긴 ? '아직 봉인된 글 ' + 잠긴 + '개' : '해독 결과 전체') + '</h3>'
       + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었고, 봉인을 풀면 이 자리에서 바로 보여요.</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 풀리는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
@@ -301,8 +407,8 @@
       + '<input type="checkbox" id="lvAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
       + '<button class="btn" id="lvBuy" type="button" style="width:100%">출시 기념가 9,900원 결제하고 봉인 풀기</button>'
-      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p></div></section>';
-    var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), P = global.ChaeksaPay;
+      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div></section>';
+    var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), 막힘칸 = box.querySelector('#lvPayErr'), P = global.ChaeksaPay;
     // 서버가 준 결제 열쇠가 없으면 단추를 잠그고 서버에 묻는다. 로그인 전이면 단추는 그대로 두고(누르면 로그인), 돌아와서 묻는다.
     var C1 = global.ChaeksaCloud;
     if (!열쇠 && C1 && C1.enabled && C1.enabled() && C1.signedIn && C1.signedIn()) {
@@ -324,6 +430,7 @@
       if (btn.dataset.busy) return;
       var ok = box.querySelector('#lvAgree');
       if (!ok || !ok.checked) { say.textContent = '위 [필수] 칸에 체크해 주셔야 결제할 수 있어요.'; return; }
+      막힘칸.innerHTML = '';
       var C = global.ChaeksaCloud; P = global.ChaeksaPay;
       if (!P || !P.buy) { say.textContent = '결제 화면을 불러오지 못했어요. 새로고침해 주세요.'; return; }
       if (!(C && C.signedIn && C.signedIn())) {   // 산 것을 그 카카오 계정에 매어 두어야 다른 기기에서도 열린다
@@ -340,10 +447,10 @@
         .catch(function (e) { return { ok: false, message: String((e && e.message) || e) }; })
         .then(function (r) {
           delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;
-          if (r && r.ok === false && !r.closed) say.textContent = r.message || '결제창을 열지 못했어요.';
+          if (r && r.ok === false && !r.closed) 결제막힘(say, 막힘칸, r.message, function () { btn.click(); });
         });
     };
-    // 결제가 아직 시험 모드면(손님은 살 수 없다) 값 단추 자리를 「곧 열려요 · 채널 추가」로 바꾼다. 갈림은 pay.js 곧열림 하나.
+    // 결제가 아직 시험 모드면(손님은 살 수 없다) 값 단추 자리를 「결제는 곧 열려요」로 바꾼다(카카오톡 채널 단추는 10-02 걷음). 갈림은 pay.js 곧열림 하나.
     if (P && P.곧열림자리) P.곧열림자리(box.querySelector('#lvBuyWrap'));
   }
 
@@ -355,28 +462,38 @@
     }
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
+    // 소개 — 무엇을 받나(한줄) · 결제 전에 보는 것(미리) · 만드는 때와 시간(만듦)은 장부 love 줄에서(10-02). 「당신」 대신 「나」.
+    var Y = 장부(), 소개 = [Y ? Y.한줄('love') : '', 약('love').미리 || '', Y ? Y.만듦글('love') : ''].filter(Boolean).map(esc).join(' ');
     el.innerHTML = '<div class="lv-cover">' + 그림(표지그림, true) + '<span class="k" id="lvCoverK">연애</span><span class="n" id="lvCoverN">사랑할 때만 나오는 당신</span></div>'
       + '<section class="card">'
-      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준으로, 책사가 직접 만든 알고리즘이 태어난 날의 글자에서 당신이 연애할 때 하는 말과 행동을 계산해요. 맨 위에 「연애할 때 당신은 어떤 사람인지」 결론을 정리하고, 연애의 장면마다 당신이 하는 행동을 장으로 나눠 풀어 드려요. 결제 전에는 지어낸 한 사람의 결과로 예시를 보여 드리고, 결제하면 그때 내 것을 만들어 드려요(출시 기념가). 카카오 계정 하나에 한 사람 한 번 만들 수 있어요. 만든 결과는 폰 · PC 어디서 열어도 같아요.</p>'
-      + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p></section>'
+      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준이에요. ' + 소개 + ' 카카오 계정 하나에 한 사람 한 번 만들 수 있어요.</p>'
+      + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p><div id="lvErr"></div></section>'
       + '<div id="lvTop"></div>'
       + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요.</p>'
-      + '<div id="lvList"></div><div id="lvEnd"></div>';
-    var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps');
+      + '<div id="lvList"></div><div id="lvShare"></div><div id="lvEnd"></div>';   // lvShare = 결과 보내기(산 결과에만)
+    var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps'), 막힘칸 = el.querySelector('#lvErr'), 공유칸 = el.querySelector('#lvShare');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
-    var 기다림말 = '여덟 글자를 해독하는 중이에요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
+    var 기다림말 = '이 카카오 계정으로 지금 만들고 있어요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
     function 알림(msg, err) { clearInterval(timer); steps.hidden = true; st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
+    // 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈 · 다시 하기 · 문의하기(메일에 화면 이름). 그 파일이 없으면 예전처럼 한 줄(false).
+    function 막힘(o, 다시) {
+      var O = global.ChaeksaOryu;
+      if (!O) { 알림(o.까닭 || o.무엇, true); return false; }
+      알림(''); o.화면 = 화면이름();
+      O.그리기(막힘칸, o, typeof 다시 === 'function' ? function () { 막힘칸.innerHTML = ''; 다시(); } : null);
+      return true;
+    }
     // 표지 글 — 결론이 있으면 결론 첫 줄, 없으면 콘텐츠 이름
     function 표지글() {
       var p = 저장 && 저장.portrait, k = el.querySelector('#lvCoverK'), n = el.querySelector('#lvCoverN');
       if (k) k.textContent = p && p.title ? '해독 결과' : '연애';
       if (n) n.textContent = p && p.title ? p.title : '사랑할 때만 나오는 당신';
     }
-    // 다 받은 결과를 그린다 — 표지 · 결론 · 장들(1장 끝에 결제 상자) · 맨 끝 맞대 보기
+    // 다 받은 결과를 그린다 — 표지 · 결론 · 장들(1장 끝에 결제 상자) · 결과 보내기(산 결과에만) · 맨 끝 사용설명서 상자
     function 다그리기() {
       표지글(); 결론상자(top, 저장); 목록(list, 저장, 키);
       var slot = list.querySelector('#lvPay'); if (slot) 잠금상자(slot, 저장, b);
-      끝상자(end, 저장); about.hidden = false;
+      보내기상자(공유칸, 저장); 끝상자(end, 저장); about.hidden = false;
     }
     // 받은 답을 질문에 붙인다. paid === false 면 서버가 맛보기만 보낸 것 — 안 온 답은 잠금 칸이 된다(옛 서버 답에는 paid 가 없다 → 전부 연 것).
     function 채우기(답들, msg, paid, payKey, 결론) {
@@ -440,12 +557,14 @@
     // 새로 만드는 건 산 사람만(10-02 「무료범위없이 예시만」) — 로그인은 결제 상자를 누를 때. 이미 받은 결과는 로그인 없이도 보인다.
     var C = global.ChaeksaCloud, 로그인 = !!(C && C.enabled() && C.signedIn());
     // 질문은 받았는데 답이 덜 왔으면(끊김) 답만 다시 받는다 — 질문부터 다시 하면 한 번 더 쓴 것이 된다(한 사람 · 횟수 제한 09-30)
-    // 덜 된 동안은 장을 그리지 않는다 — 기다림 네 단계만 보인다.
+    // 덜 된 동안은 그림 장을 그리지 않는다 — 위에 기다림 네 단계, 아래에 장 이름 · 장면 목록 밑그림(10-02)만 보인다.
     var 덜됨 = !!(저장 && 저장.items && 저장.items.length && 저장.runId && 저장.sig);
+    var 산것 = false;   // 서버가 「샀다」고 답한 길로 왔나 — 막혔을 때 「결제한 것은 그대로」를 이때만 말한다
     var 동의 = 읽기(동의키) === true;
     // 기다림 네 단계 — 지난 단계는 ✓, 지금 단계는 굵게, 남은 단계는 옅게
     function 단계그리기(초수) {
       var n = 0; 단계때.forEach(function (t, i) { if (초수 >= t) n = i; });
+      if (덜됨 && n < 2) n = 2;   // 질문이 이미 왔다 — 글자 읽기 · 버릇 고르기는 끝났다
       steps.innerHTML = 단계.map(function (t, i) { return '<li class="' + (i < n ? 'done' : i === n ? 'now' : '') + '">' + (i < n ? '✓ ' : '') + t + (i === n ? '…' : '') + '</li>'; }).join('');
     }
     // 걸린 시간은 처음 누른 때부터 센다(새로고침 · 기다림 확인을 거쳐도 이어서)
@@ -456,7 +575,7 @@
     }
     function 지우기(k) { try { localStorage.removeItem(k); } catch (e) {} }
     function 답받기(msg) {
-      초(msg);
+      초(msg); 밑그림(list, 저장);   // 질문은 다 왔다 — 장 이름 · 장면 목록을 먼저 깔고 기다린다
       return post('/api/love-answers', { runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
         채우기(r.items, r.saved ? '이 카카오 계정으로 받은 결과를 불러왔어요.' : null, r.paid, r.payKey, r.portrait);
       });
@@ -467,7 +586,7 @@
       var btn = el.querySelector('#lvGo'); if (!btn || !btn.isConnected) return;
       btn.disabled = true;
       if (!읽기(대기키)) 쓰기(대기키, Date.now());
-      var 말 = '1분 남짓 걸려요. 이 화면을 그대로 두세요.';
+      var 말 = (약('love').시간 || '조금') + ' 걸려요. 이 화면을 그대로 두세요.';   // 만드는 시간은 장부 love 줄(약관 9절과 같은 말)
       var 일 = 덜됨 ? 답받기(말) : (초(말), post('/api/love-questions', { consent: true, birth: b }).then(function (r) {
         저장 = { runId: r.runId, sig: r.sig, payKey: 올바른열쇠(r.payKey), items: r.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '', t: '' }; }), fb: {} };
         쓰기(키, 저장); 덜됨 = true;
@@ -481,34 +600,45 @@
         if (e.status === 402) { 지우기(대기키); 기다리는중 = false; t0 = null; 알림(''); return 예시판(); }   // 안 샀다 — 예시와 결제 상자로
         if (e.status === 409 && Date.now() - (+읽기(대기키) || Date.now()) < 10 * 60 * 1000) { 기다리는중 = true; 초(기다림말); setTimeout(시작, 10000); return; }
         지우기(대기키); 기다리는중 = false; t0 = null;
-        알림(e.message, true); btn.disabled = false;
+        btn.disabled = false;
         if (덜됨 && e.status === 400) { 덜됨 = false; 저장 = null; 지우기(키); list.innerHTML = ''; }   // 이 기기 것이 서버와 안 맞으면 처음부터
         btn.textContent = 덜됨 ? '이어서 받기' : '내 연애 행동 보기';
+        // 10-02 공용 오류 상자 — 무엇이 안 됐는지 · (산 것이 확인된 길이면) 결제한 것은 그대로 · 다시 하기(이 단추 대신) · 문의하기
+        if (막힘({ 무엇: '내 해독 결과를 다 받지 못했어요', 까닭: e.message, 돈: 산것 ? '남음' : '', 코드: e.status ? 'HTTP ' + e.status : '' }, function () { btn.hidden = false; 시작(); })) btn.hidden = true;
       });
     }
     // 산 사람 — 만들기 단추를 놓고 바로 시작한다(결제하고 돌아오면 또 누르지 않게).
-    function 열고시작() {
-      list.innerHTML = ''; end.innerHTML = '';
+    function 열고시작(산) {
+      if (산) 산것 = true;
+      막힘칸.innerHTML = ''; list.innerHTML = ''; end.innerHTML = ''; 공유칸.innerHTML = '';
       head.innerHTML = '<button class="btn" id="lvGo" style="width:100%">' + (덜됨 ? '이어서 받기' : '내 연애 행동 보기') + '</button>';
       el.querySelector('#lvGo').onclick = 시작;
       시작();
     }
     // 안 산 사람 — 지어낸 한 사람 예시 + 결제 상자(누르면 로그인 · 결제, 이미 샀으면 바로 만들기)
     function 예시판() {
-      head.innerHTML = ''; about.hidden = true;
-      예시(list); 사기상자(end, b, function () { 동의 = true; 열고시작(); });
+      head.innerHTML = ''; about.hidden = true; 막힘칸.innerHTML = ''; 공유칸.innerHTML = '';
+      예시(list); 사기상자(end, b, function () { 동의 = true; 열고시작(true); });   // 사기상자는 서버가 「샀다」고 할 때만 다음을 부른다
+    }
+    // 결제했는지 서버에 묻지 못했을 때(끊김 · 서버, 10-02) — 예시는 보여 주되 결제 상자는 두지 않는다(이미 산 손님이 또 결제하지 않게).
+    // 결제는 어차피 서버를 거쳐야 열린다. 다시 하기 = 이 화면을 다시 그린다. 오류 상자 파일이 없으면 예전처럼 예시와 결제 상자.
+    function 확인못함(e) {
+      if (!global.ChaeksaOryu) { 예시판(); return; }
+      head.innerHTML = ''; about.hidden = true; end.innerHTML = ''; 공유칸.innerHTML = '';
+      예시(list);
+      막힘({ 무엇: '결제했는지 확인하지 못했어요', 까닭: e && e.message, 더: '이미 결제하셨다면 다시 하기를 눌러 주세요. 결제는 한 번만 하시면 돼요.', 코드: e && e.status ? 'HTTP ' + e.status : '' }, function () { 그리기(el, profile); });
     }
     if (로그인 && 덜됨) { 동의 = true; 쓰기(동의키, true); 열고시작(); return; }   // 질문까지 받고 끊긴 사람 — 답만 이어서(산 사람만 질문을 받는다)
     if (로그인 && 동의) {   // 결제하고 돌아왔거나 이미 산 사람인지 서버에 묻는다(peek — 만들지도 세지도 않음)
       알림('확인하는 중이에요…');
-      샀나묻기(b).then(function (r) { if (!list.isConnected) return; 알림(''); if (r && r.paid === true) 열고시작(); else 예시판(); },
-        function () { if (!list.isConnected) return; 알림(''); 예시판(); });
+      샀나묻기(b).then(function (r) { if (!list.isConnected) return; 알림(''); if (r && r.paid === true) 열고시작(true); else 예시판(); },
+        function (e) { if (!list.isConnected) return; 알림(''); 확인못함(e); });
       return;
     }
     지우기(대기키);
     예시판();
   }
 
-  // 장 그림 표 · 그림 · 바탕을 행동양식 궁합(pair.js)도 쓴다
-  global.ChaeksaLoveView = { 그리기: 그리기, 장그림: 장그림, 기본그림: 기본그림, 그림: 그림, 띠: 띠, 장머리: 장머리 };
+  // 장 그림 표 · 그림 · 바탕을 행동양식 궁합(pair.js)도 쓴다. 사기상자 · 잠금상자 · 끝상자는 약속 장부 시험(tests_yaksok.html)이 그려 본다.
+  global.ChaeksaLoveView = { 그리기: 그리기, 장그림: 장그림, 기본그림: 기본그림, 그림: 그림, 띠: 띠, 장머리: 장머리, 사기상자: 사기상자, 잠금상자: 잠금상자, 끝상자: 끝상자, 보내기상자: 보내기상자, 보낼한줄: 보낼한줄 };
 })(typeof window !== 'undefined' ? window : globalThis);

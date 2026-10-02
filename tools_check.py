@@ -15,6 +15,11 @@
   6) 화면 금지말    app/*.js · app/mun/*.js · app/*.html 의 화면 문자열에 깨졌 · 떠 있 · 이레 · 잣대 ·
                     순위 · TOP5 · 1위 · 몇 점 · (41조) · 하늘 · 땅 이 들었나. 확인(!)으로만 낸다. (2026-09-22)
                     코드 안 판정키(객체 키 · === 비교 · includes 인자)는 화면 글이 아니라서 뺀다.
+  7) 상품 약속 장부  상품 약속은 app/yaksok.js 장부 한 곳이다. 장부 꼴(파는 줄의 꼭 칸 · 값 「숫자+원」 없음 ·
+                    「무료」라고 쓰지 않는 콘텐츠), 손으로 쓴 곳(약관 · 처리방침 · 검색 설명 · 화면 글)에 걷은 약속이
+                    남았나, 만드는 시간 · 질문 수 · 보관 해가 장부와 같은가를 본다 — 어긋나면 막힘(X, 환불 · 표시광고).
+                    장부 글을 다른 파일에 그대로 옮겨 적은 곳 · 사장님 확인 대기는 확인(!). (2026-10-02 — pay.html 이
+                    걷은 「맞아요/아니에요」 · 옛 판 30장을 계속 팔았고, 무료 범위를 걷은 뒤 「1장 무료」가 남았다)
 
 사용:  python tools_check.py
 막힘(X)이 하나라도 있으면 배포하지 않는다. 확인(!)은 눈으로 보고 판단한다.
@@ -438,6 +443,121 @@ def scan_screen_words():
     return out
 
 
+# ── 7) 상품 약속 장부(10-02) ──────────────────────────────────────
+# tests_yaksok.html 의 라 · 마 와 같은 규칙이다. 걷은 약속 · 확인 대기 목록은 장부(yaksok.js) 안에 있다 — 두 검사가 같은 목록을 읽는다.
+YAKSOK_START, YAKSOK_END = '/*장부 시작*/', '/*장부 끝*/'
+# 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
+YAKSOK_FILES = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html',
+                'taekil-apply.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'love.js', 'pair.js', 'home-cats.js',
+                'app.js', 'pay.js', 'gunghap-gwanjeom.js', 'bunya.js']
+YAKSOK_NUM = {   # 갈래: (꼴, 보는 파일)
+    '만드는 시간': (re.compile(r'(\d+)\s?분\s?(남짓|쯤)'),
+                ['pay.html', 'terms.html', 'love.js', 'pair.js', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js']),
+    '질문 수': (re.compile(r'질문\s?(\d+)\s?개'),
+              ['pay.html', 'terms.html', 'privacy.html', 'love.js', 'pair.js', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js', 'home-cats.js']),
+    '보관 해': (re.compile(r'(\d+)\s?년\s?동안'), ['pay.html', 'terms.html', 'privacy.html', 'love.js', 'pair.js']),
+}
+YAKSOK_MUST = ['탭', '상품이름', '단위', '한줄', '딱지', '받는것', '환불', '자리', '그림']
+
+
+def load_yaksok():
+    """장부 JSON(dict). 못 읽으면 None."""
+    import json
+    p = os.path.join(APP, 'yaksok.js')
+    if not os.path.exists(p):
+        return None
+    src = read(p).replace('\r\n', '\n')
+    a, b = src.find(YAKSOK_START), src.find(YAKSOK_END)
+    if a < 0 or b < a:
+        return None
+    try:
+        return json.loads(src[a + len(YAKSOK_START):b])
+    except ValueError:
+        return None
+
+
+def _texts(v, out=None):
+    out = [] if out is None else out
+    if isinstance(v, str):
+        out.append(v)
+    elif isinstance(v, list):
+        for x in v:
+            _texts(x, out)
+    elif isinstance(v, dict):
+        for x in v.values():
+            _texts(x, out)
+    return out
+
+
+def _visible_any(f, src):
+    if f.endswith('.js'):
+        return visible_js(src)
+    if f.endswith('.html'):
+        return visible_html(src)
+    return src
+
+
+def scan_yaksok():
+    """(막힘 [글], 확인 [글]). 장부를 못 읽으면 막힘 하나."""
+    T = load_yaksok()
+    if not T or not isinstance(T.get('콘텐츠'), dict):
+        return ['app/yaksok.js 장부(「장부 시작」 ~ 「장부 끝」 JSON)를 읽지 못했다'], []
+    bad, warn = [], []
+    rows = T['콘텐츠']
+    for k, r in rows.items():
+        if r.get('코드'):
+            for c in YAKSOK_MUST:
+                if not r.get(c):
+                    bad.append('장부 %s 줄에 %s 칸이 없다' % (k, c))
+            if '{값}' not in (r.get('딱지') or ''):
+                bad.append('장부 %s 줄 딱지에 {값} 자리가 없다(값은 상품표에서 붙인다)' % k)
+            if r.get('그림') and not os.path.exists(os.path.join(APP, r['그림'])):
+                bad.append('장부 %s 줄 그림 %s 이 없다' % (k, r['그림']))
+        elif '{값}' in (r.get('딱지') or ''):
+            bad.append('장부 %s 줄은 무료인데 딱지에 {값} 자리가 있다' % k)
+        for t in _texts(r):
+            if re.search(r'\d[\d,]*\s?원(?![가-힣])', t):
+                bad.append('장부 %s 줄에 값(숫자+원) — 값은 상품표(products) 한 곳: %s' % (k, t[:40]))
+    for k in T.get('무료라고 쓰지 않는 콘텐츠', []):
+        if any('무료' in t for t in _texts(rows.get(k, {}))):
+            bad.append('장부 %s 줄에 「무료」 — 10-02 사장님 「무료범위없이 예시만」' % k)
+    vis = {}
+    for f in YAKSOK_FILES:
+        p = os.path.join(APP, f)
+        if os.path.exists(p):
+            vis[f] = _visible_any(f, read(p))
+    for f, v in vis.items():
+        for phrase in T.get('걷은 약속', []):
+            for m in re.finditer(re.escape(phrase), v):
+                bad.append('%s %d행 — 걷은 약속 「%s」' % (f, v.count('\n', 0, m.start()) + 1, phrase))
+    for x in T.get('확인 대기', []):
+        v = vis.get(x.get('곳'), '')
+        if x.get('글') and x['글'] in v:
+            warn.append('%s 「%s」 — 사장님 확인 대기: %s' % (x['곳'], x['글'], x.get('까닭', '')))
+    norm = lambda m: re.sub(r'\s', '', m.group(0))
+    every = '\n'.join(_texts(rows))
+    for 갈래, (pat, files) in YAKSOK_NUM.items():
+        ok = set(norm(m) for m in pat.finditer(every))
+        for f in files:
+            for m in pat.finditer(vis.get(f, '')):
+                if norm(m) not in ok:
+                    bad.append('%s %d행 — %s 「%s」가 장부(%s)와 다르다' % (f, vis[f].count('\n', 0, m.start()) + 1, 갈래, m.group(0), ' · '.join(sorted(ok)) or '없음'))
+    terms = vis.get('terms.html', '')
+    for k, r in rows.items():
+        if r.get('코드') and '분' in (r.get('시간') or '') and r['시간'] not in terms:
+            bad.append('terms.html — %s 만드는 시간 「%s」가 약관에 없다(약관 9절과 장부를 같이 고친다)' % (k, r['시간']))
+    long_texts = set()
+    for r in rows.values():
+        for t in _texts([r.get('한줄'), r.get('미리'), r.get('만듦'), r.get('보관'), r.get('환불'), r.get('받는것'), r.get('신청')]):
+            if len(t) >= 12:
+                long_texts.add(t)
+    for f, v in vis.items():
+        for t in sorted(long_texts):
+            if t in v:
+                warn.append('%s — 장부 글을 그대로 옮겨 적었다(장부에서 읽게): %s…' % (f, t[:30]))
+    return bad, warn
+
+
 def main():
     막힘, 확인 = 0, 0
 
@@ -549,6 +669,19 @@ def main():
                 print('      %s%d: %s' % ('' if len(files) == 1 else f + ' ', ln, text[:80]))
     else:
         print('  O 화면 문자열에 금지말 없음')
+
+    print('\n7) 상품 약속 장부(app/yaksok.js) — 걷은 약속 · 만드는 시간 · 질문 수 · 보관 해')
+    y_bad, y_warn = scan_yaksok()
+    for x in y_bad:
+        print('  X ' + x)
+    for x in y_warn:
+        print('  ! ' + x)
+    막힘 += len(y_bad)
+    확인 += len(y_warn)
+    if not y_bad and not y_warn:
+        print('  O 장부 꼴 · 손으로 쓴 곳 %d개 파일 모두 장부와 같다' % len(YAKSOK_FILES))
+    elif not y_bad:
+        print('  O 막힘 없음 — 위 확인(!)만 눈으로 본다')
 
     print('\n' + '─' * 52)
     print('막힘 %d · 확인 %d' % (막힘, 확인) + (' (그중 화면 금지말 %d곳)' % len(words) if words else ''))

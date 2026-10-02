@@ -48,17 +48,23 @@
     return '<table class="jt-table"><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table>';
   }
 
-  // 장은 접이식이다 — 목차에서 누르면 그 장이 열리며 내려간다. 1장만 처음부터 열어 둔다.
+  // 장은 접이식이다 — 목차에서 누르면 그 장이 열리며 내려간다. 10-02 개편 — 1장도 접힌 채 시작한다(펼치면 목차와 장 제목 열셋이 먼저 보인다).
   const 장목록 = [];
   const 장 = (번호, 제목, 부제, 속) => {
     장목록.push([번호, 제목]);
-    return '<details class="card jt-ch" id="jtCh' + 번호 + '"' + (번호 === 1 ? ' open' : '') + '><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
+    return '<details class="card jt-ch" id="jtCh' + 번호 + '"><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
   };
   const 목차 = () => '<nav class="card jt-toc"><div class="jt-no">목차</div>' + 장목록.map(([n, t]) => '<a href="#jtCh' + n + '" data-ch="' + n + '"><b>' + n + '</b>' + esc(t) + '</a>').join('') + '</nav>';
   const 문단 = (arr) => arr.map(t => '<p>' + esc(t) + '</p>').join('');
 
   function 그리기(box, input) {
-    let R; try { R = E.calc(input); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
+    let R; try { R = E.calc(input); } catch (e) {
+      // 10-02 공용 오류 상자(oryu.js) — 같은 생년월일로 다시 해도 같으니 다시 하기 없이 문의하기만. 메일에 생년월일은 싣지 않는다. 그 파일이 없으면 한 줄.
+      const O = global.ChaeksaOryu;
+      if (O) O.그리기(box, { 무엇: '이 생년월일로는 정통사주를 계산하지 못했어요', 더: '생년월일시를 다시 확인해 주세요. 맞게 넣었는데도 이 칸이 보이면 문의해 주세요.', 화면: '정통사주' });
+      else box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>';
+      return;
+    }
     const today = new Date(), 판 = P.판정(R, today, { 운들: [] }), 본 = W.읽기(W.평생, 판, R), 층 = 판.층들[0];
     const 눈 = {}; 본.눈들.forEach(n => { 눈[n.고전] = n; });
     const WM = global.ChaeksaGungtongWonmun || { 구절: {}, 계절: {} };
@@ -72,9 +78,13 @@
     // 장마다 따로 감싼다 — 한 장이 죽어도 나머지 장은 나온다(전에는 한 장이 죽으면 열세 장이 다 안 나왔다).
     const 시없음 = !R.pillars.hour, 있는자리 = ['year', 'month', 'day', 'hour'].filter(k => R.pillars[k]), 온수 = 시없음 ? '여섯' : '여덟';
     const 못그림 = 시없음 ? '태어난 시간을 알아야 이 장을 볼 수 있어요. 시간 없이 보는 법은 준비하고 있어요.' : '이 장을 지금 그리지 못했어요. 잠시 뒤에 다시 열어 주세요.';
+    // 한 장이 죽으면 — 시간을 몰라서면 그 까닭 한 줄, 아니면 공용 오류 상자(oryu.js: 다시 하기 · 문의하기, 메일에 몇 장인지). 그 파일이 없으면 예전 한 줄.
+    const 못그린칸 = (번호) => (!시없음 && global.ChaeksaOryu)
+      ? global.ChaeksaOryu.html({ 무엇: '이 장을 지금 그리지 못했어요', 더: '다시 하기를 눌러도 같으면 문의해 주세요. 몇 장인지 메일에 적어 두었어요.', 화면: '정통사주 ' + 번호 + '장' })
+      : 준비(못그림);
     const 안전 = (번호, 제목, 부제, 짓기, 답짓기) => {
       let 답 = ''; try { 답 = 답짓기 ? 답짓기() : ''; } catch (e) { 답 = ''; }
-      let 속; try { 속 = 답칸(답) + 짓기(); } catch (e) { 속 = 준비(못그림); if (global.console) console.warn('정통사주 ' + 번호 + '장', e); }
+      let 속; try { 속 = 답칸(답) + 짓기(); } catch (e) { 속 = 못그린칸(번호); if (global.console) console.warn('정통사주 ' + 번호 + '장', e); }
       out.push(장(번호, 제목, 부제, 속));
     };
     const 기 = 층.기세, 적 = 눈['적천수'];
@@ -203,6 +213,7 @@
     out.push(장(13, '질문과 답', '', 준비('준비하고 있어요.')));
 
     box.innerHTML = 목차() + out.join('');
+    if (global.ChaeksaOryu) global.ChaeksaOryu.잇기(box, () => 그리기(box, input));   // 못 그린 장의 다시 하기 = 처음부터 다시 그린다
     box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#jtCh' + a.dataset.ch); if (d) d.open = true; }));
     try { const S = global.ChaeksaSeolmyeong, b = box.querySelector('#jtSeol'); if (S && b) S.render(R, today, b, {}); } catch (e) {}
   }
