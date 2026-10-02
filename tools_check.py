@@ -448,16 +448,22 @@ def scan_screen_words():
 YAKSOK_START, YAKSOK_END = '/*장부 시작*/', '/*장부 끝*/'
 # 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
 YAKSOK_FILES = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html',
-                'taekil-apply.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'love.js', 'pair.js', 'home-cats.js',
-                'app.js', 'pay.js', 'gunghap-gwanjeom.js', 'bunya.js']
-YAKSOK_NUM = {   # 갈래: (꼴, 보는 파일)
+                'taekil-apply.html', 'taekil-sample.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'love.js', 'pair.js', 'home-cats.js',
+                'app.js', 'pay.js', 'gunghap-gwanjeom.js', 'bunya.js', 'about.html']
+YAKSOK_NUM = {   # 갈래: (꼴, 보는 파일) — about.html(10-02 개편 3묶음 책사 소개)은 상품 말을 장부에서 읽는다. 손으로 쓴 숫자가 끼면 여기서 잡는다
     '만드는 시간': (re.compile(r'(\d+)\s?분\s?(남짓|쯤)'),
-                ['pay.html', 'terms.html', 'love.js', 'pair.js', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js']),
+                ['pay.html', 'terms.html', 'love.js', 'pair.js', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js', 'about.html']),
     '질문 수': (re.compile(r'질문\s?(\d+)\s?개'),
-              ['pay.html', 'terms.html', 'privacy.html', 'love.js', 'pair.js', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js', 'home-cats.js']),
-    '보관 해': (re.compile(r'(\d+)\s?년\s?동안'), ['pay.html', 'terms.html', 'privacy.html', 'love.js', 'pair.js']),
+              ['pay.html', 'terms.html', 'privacy.html', 'love.js', 'pair.js', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js', 'home-cats.js', 'about.html']),
+    '보관 해': (re.compile(r'(\d+)\s?년\s?동안'), ['pay.html', 'terms.html', 'privacy.html', 'love.js', 'pair.js', 'about.html']),
 }
-YAKSOK_MUST = ['탭', '상품이름', '단위', '한줄', '딱지', '받는것', '환불', '자리', '그림']
+# 10-02 개편 3묶음 — 상품 소개 쪽 다섯(tools_sogae.py 가 장부 · 분야 표에서 만든다). 걷은 약속 · 시간 · 질문 수 · 보관 해는 여기서도 본다.
+# 장부 글을 그대로 담는 것은 만든 쪽이라서 아래 「장부 글을 그대로 옮겨 적었다」 확인에서는 뺀다. tests_yaksok.html 도 같은 목록.
+SOGAE_PAGES = ['love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html']
+YAKSOK_FILES += [f for f in SOGAE_PAGES if f not in YAKSOK_FILES]
+for _pat, _files in YAKSOK_NUM.values():
+    _files += [f for f in SOGAE_PAGES if f not in _files]
+YAKSOK_MUST =['탭', '상품이름', '단위', '한줄', '딱지', '받는것', '환불', '자리', '그림']
 
 
 def load_yaksok():
@@ -513,6 +519,8 @@ def scan_yaksok():
                 bad.append('장부 %s 줄 딱지에 {값} 자리가 없다(값은 상품표에서 붙인다)' % k)
             if r.get('그림') and not os.path.exists(os.path.join(APP, r['그림'])):
                 bad.append('장부 %s 줄 그림 %s 이 없다' % (k, r['그림']))
+            if r.get('견본') and not os.path.exists(os.path.join(APP, r['견본'])):   # 10-02 개편 3묶음 — 결제 전에 여는 견본 쪽
+                bad.append('장부 %s 줄 견본 쪽 %s 이 없다' % (k, r['견본']))
         elif '{값}' in (r.get('딱지') or ''):
             bad.append('장부 %s 줄은 무료인데 딱지에 {값} 자리가 있다' % k)
         for t in _texts(r):
@@ -552,10 +560,47 @@ def scan_yaksok():
             if len(t) >= 12:
                 long_texts.add(t)
     for f, v in vis.items():
+        if f in SOGAE_PAGES:      # 장부에서 만든 쪽 — 손으로 옮겨 적은 것이 아니다(tools_sogae.py)
+            continue
         for t in sorted(long_texts):
             if t in v:
                 warn.append('%s — 장부 글을 그대로 옮겨 적었다(장부에서 읽게): %s…' % (f, t[:30]))
     return bad, warn
+
+
+# ── 8) 사업자 정보 — 홈 바닥글과 글자 하나까지 같은가(10-02 개편 3묶음 책사 소개) ──────
+# 통신판매업자는 초기화면(홈 바닥글)에 사업자 정보를 드러낸다. 같은 값을 손으로 옮겨 적은 쪽(책사 소개 · 유료 상품과 환불)이
+# 한 곳만 고쳐져 어긋나면 막는다. 바닥글의 사업자 줄(숫자가 든 줄)을 「 · 」로 나눈 조각이 그 쪽 화면 글에 그대로 있어야 한다.
+BIZ_FILES = ['about.html', 'pay.html']
+
+
+def scan_biz():
+    """(막힘 [글], 조각 수)."""
+    idx = os.path.join(APP, 'index.html')
+    if not os.path.exists(idx):
+        return ['app/index.html 이 없다'], 0
+    src = read(idx)
+    m = re.search(r'<footer>([\s\S]*?)</footer>', src)
+    if not m:
+        return ['index.html 에 <footer> 가 없다'], 0
+    foot = re.sub(r'<!--[\s\S]*?-->', ' ', m.group(1))
+    foot = re.sub(r'<br\s*/?>', '\n', foot)
+    foot = re.sub(r'<[^>]+>', '', foot)
+    pieces = [p.strip() for line in foot.split('\n') if re.search(r'\d', line)
+              for p in line.split('·') if p.strip()]
+    if not pieces:
+        return ['index.html 바닥글에서 사업자 정보 줄을 찾지 못했다'], 0
+    bad = []
+    for f in BIZ_FILES:
+        p = os.path.join(APP, f)
+        if not os.path.exists(p):
+            bad.append('%s 이 없다' % f)
+            continue
+        v = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', re.sub(r'<!--[\s\S]*?-->', ' ', read(p))))
+        for piece in pieces:
+            if re.sub(r'\s+', ' ', piece) not in v:
+                bad.append('%s — 바닥글의 「%s」가 없다(바닥글 · 약관 11절과 같이 고친다)' % (f, piece))
+    return bad, len(pieces)
 
 
 def main():
@@ -682,6 +727,31 @@ def main():
         print('  O 장부 꼴 · 손으로 쓴 곳 %d개 파일 모두 장부와 같다' % len(YAKSOK_FILES))
     elif not y_bad:
         print('  O 막힘 없음 — 위 확인(!)만 눈으로 본다')
+
+    print('\n8) 사업자 정보 — 홈 바닥글과 같은가(%s)' % ' · '.join(BIZ_FILES))
+    b_bad, b_n = scan_biz()
+    for x in b_bad:
+        print('  X ' + x)
+    막힘 += len(b_bad)
+    if not b_bad:
+        print('  O 바닥글 조각 %d개가 %d개 파일에 그대로 있다' % (b_n, len(BIZ_FILES)))
+
+    # 10-02 개편 3묶음 — 상품 소개 쪽 다섯 · 미리보기 그림 · 사이트맵은 tools_sogae.py 가 장부 · 분야 표에서 만든다.
+    # 장부를 고치고 아직 다시 만들지 않았으면 확인(!) — 배포(tools_bust.py --bump) 때 저절로 다시 만든다. 만들다 죽으면 막힘.
+    print('\n9) 상품 소개 쪽 · 미리보기 · 사이트맵(tools_sogae.py) — 장부와 같은가')
+    try:
+        import tools_sogae
+        s_bad, s_warn = tools_sogae.check()
+    except Exception as e:
+        s_bad, s_warn = ['tools_sogae.py 를 못 돌렸다: %s' % e], []
+    for x in s_bad:
+        print('  X ' + x)
+    for x in s_warn:
+        print('  ! ' + x)
+    막힘 += len(s_bad)
+    확인 += len(s_warn)
+    if not s_bad and not s_warn:
+        print('  O 소개 쪽 · 미리보기 그림 · 사이트맵이 장부 · 쪽 목록과 같다')
 
     print('\n' + '─' * 52)
     print('막힘 %d · 확인 %d' % (막힘, 확인) + (' (그중 화면 금지말 %d곳)' % len(words) if words else ''))

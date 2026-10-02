@@ -15,42 +15,46 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1263">
+<link rel="stylesheet" href="style.css?v=49407658c7">
 <style>
   .doc{max-width:660px;margin:0 auto;padding:22px 16px 80px}
-  .back{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--ink3);text-decoration:none}
+  .back{display:inline-block;margin-bottom:16px;font-size:var(--t2);color:var(--ink3);text-decoration:none}
   .doc p a{color:var(--accent)}   /* 10-02 아래 바닥글 링크가 브라우저 기본 파랑이었다 */
-  .doc h1{font-family:var(--serif);font-size:23px;line-height:1.45;margin:0 0 8px}
-  .doc .lead{font-size:14.5px;line-height:1.85;color:var(--ink2);margin:0 0 18px}
+  .doc h1{font-family:var(--serif);font-size:var(--t5);line-height:1.45;margin:0 0 8px}
+  .doc .lead{font-size:var(--t2);line-height:1.85;color:var(--ink2);margin:0 0 18px}
 </style>
 </head>
 <body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>이 시각에 낳으면,<br>세 고전은 어떻게 보나</h1>
   <p class="lead">글의 표에서 고른 날짜를 넣어 보세요. 그날 열두 시진마다 궁통보감 · 자평진전 · 적천수가 각자 본 것을 적어 드려요. 셋은 서로 다른 것을 보기 때문에 점수로 합치지 않습니다.</p>
   <div id="tkSim"></div>
-  <p style="margin-top:30px;font-size:13px;color:var(--ink3)">
-    <a href="./">책사 홈</a> · <a href="taekil.html">출산택일 안내</a> · <a href="taekil-apply.html">보고서 신청</a> ·
+  <p style="margin-top:30px;font-size:var(--t2);color:var(--ink3)">
+    <a href="./">책사 홈</a> · <a href="taekil.html">출산택일 안내</a> · <a href="taekil-sample.html">보고서 견본</a> · <a href="taekil-apply.html">보고서 신청</a> ·
     <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a></p>
-  <p style="font-size:12px;line-height:1.8;opacity:.75;color:var(--ink3)">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+  <p style="font-size:var(--t1);line-height:1.8;opacity:.75;color:var(--ink3)">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
 </div>
 <script>
 (function(){var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();
 </script>
-<script src="config.js?v=1263"></script>
-<script src="track.js?v=1263"></script>
-<script src="places.js?v=1263"></script>
-<script src="astro.js?v=1263"></script>
-<script src="lunar.js?v=1263"></script>
-<script src="engine.js?v=1263"></script>
-<script src="saenggeuk.js?v=1263"></script><script src="gise.js?v=1263"></script>
-<script src="panjeong.js?v=1263"></script>
-<script src="typecard.js?v=1263"></script>
-<script src="gyeokguk.js?v=1263"></script>
-<script src="classic.js?v=1263"></script>
-<script src="gwanjeom.js?v=1263"></script>
-<script src="taekilsim.js?v=1263"></script>
-<script src="share.js?v=1263"></script>
+<script src="config.js?v=085d614551"></script>
+<script src="track.js?v=fd7357e815"></script>
+<script src="places.js?v=c37e825f17"></script>
+<script src="astro.js?v=c0bb3fa175"></script>
+<script src="lunar.js?v=9d5b6391f1"></script>
+<script src="engine.js?v=5e229af245"></script>
+<script src="saenggeuk.js?v=fe0683a9e6"></script><script src="gise.js?v=d0f879078e"></script>
+<script src="panjeong.js?v=b80b485f4b"></script>
+<script src="typecard.js?v=606368696f"></script>
+<script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=cc88b5f18e"></script>
+<script src="gwanjeom.js?v=29b898c413"></script>
+<!-- 시뮬레이터 끝 「보고서와 무엇이 다른지」 — 상품 말은 장부(yaksok.js), 값은 상품표(pay.js 가 받는다). 둘이 없어도 시뮬레이터는 돈다. -->
+<script src="yaksok.js?v=642528e0a0"></script>
+<script src="pay.js?v=2829f4fc9c"></script>
+<script src="taekilsim.js?v=ca3ee0ffb1"></script>
+<script src="share.js?v=d14e2a4e8e"></script>
 </body>
 </html>

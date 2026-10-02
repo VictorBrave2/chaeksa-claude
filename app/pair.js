@@ -64,7 +64,7 @@
   };
   function 그림키(c, 성) { if (c.bg) return c.bg; var p = 장그림[c.id]; return p ? p[성 === 'F' ? 1 : 0] : null; }
   function 삽화(키) {
-    return 키 ? '<img src="art/' + esc(키) + '.webp" alt="" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;border-radius:12px;margin:0 0 12px">' : '';
+    return 키 ? '<img src="art/' + esc(키) + '.webp" alt="" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;border-radius:var(--r2);margin:0 0 12px">' : '';
   }
   // 장면으로 보기(미연시, ssom-vn.html?m=1) — 받은 글을 그대로 넘긴다(주소에 싣지 않고 이 탭 sessionStorage 로만).
   function 장면으로(장들, 그이름, 성) {
@@ -172,7 +172,7 @@
   function 표시키(c) { return c.kind === 'side' ? (c.sure === 'sharp' ? 'sharp' : 'lean') : (c.kind === 'weak' ? 'weak' : 'mixed'); }
   function 표시(c) {
     var k = 표시키(c), 색 = k === 'sharp' ? 'var(--seal, #8c2f23)' : 'var(--ink2, #6a645c)';
-    return '<span style="display:inline-block;font-size:12px;font-weight:700;line-height:1.6;padding:0 9px;border-radius:99px;border:1px solid ' + 색 + ';color:' + 색 + '">' + esc(글.badges[k]) + '</span>';
+    return '<span style="display:inline-block;font-size:var(--t1);font-weight:700;line-height:1.6;padding:0 9px;border-radius:var(--r3);border:1px solid ' + 색 + ';color:' + 색 + '">' + esc(글.badges[k]) + '</span>';
   }
   // 한 장 — 질문 · 표시 · 맞히기 · (왜 · 나에게 비치는 모습)
   function 장(c, 끝, 성) {
@@ -279,13 +279,15 @@
       + (만듦 ? '<p style="margin:0 0 10px">' + esc(만듦) + '</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
-      + '<div id="prBuyWrap"><p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
+      + '<div id="prBuyWrap"><p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
-      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
+      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:var(--t1);line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="prAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
       + '<button class="btn" id="prBuy" type="button" style="width:100%">' + esc(글.pay_button.replace('{price}', '출시 기념가 19,900원')) + '</button>'
-      + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p><div id="prPayErr"></div></div></section>';
+      + '<p class="hint" id="prPaySay" style="margin:8px 0 0"></p><div id="prPayErr"></div></div>'
+      // 10-02 개편 3묶음 — 결제 전에 누가 만들고 어떻게 계산하는지 확인하는 길(새 탭이라 보던 맛보기는 그대로)
+      + '<p class="hint" style="margin:10px 0 0;text-align:center"><a href="about.html" target="_blank" rel="noopener" style="color:var(--ink3)">누가 만들고 어떻게 계산하나요? — 책사 소개 →</a></p></section>';
     var btn = box.querySelector('#prBuy'), say = box.querySelector('#prPaySay'), 막힘칸 = box.querySelector('#prPayErr'), P = global.ChaeksaPay;
     if (P && P.product) P.product('love_pair').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
@@ -335,7 +337,7 @@
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     var LV = global.ChaeksaLoveView;
     // 10-01 규격(docs/79) — 이름은 표지에 한 번만. 그 사람 고르기 = 정통궁합 · 웹툰궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김).
-    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">궁합</span><span class="n" id="prCoverN">SSS급 그 사람 사용설명서</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
+    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">연애</span><span class="n" id="prCoverN">SSS급 그 사람 사용설명서</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
       + '<div id="pairIntro"></div>'
       + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>SSS급 그 사람 사용설명서</h2>')
       + (목록.length

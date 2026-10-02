@@ -166,6 +166,10 @@ def og_image(slug):
             except Exception:
                 w = h = None
             return f'{SITE}cards/{folder}/01.png', w, h
+    # 10-02 개편 3묶음 — 글 제목 + 삽화 한 장으로 찍은 미리보기(tools_sogae.py → app/cards/og/<slug>.jpg)가 있으면 그것.
+    # read.html 에 걸린 글은 tools_sogae.py 가 찍고 그 쪽 머리도 같은 그림으로 바꾼다 — 여기서 다른 답을 내면 두 도구가 서로 덮는다.
+    if os.path.exists(os.path.join(A, 'cards', 'og', slug + '.jpg')):
+        return f'{SITE}cards/og/{slug}.jpg', 1200, 630
     return SITE + 'og.jpg', 1200, 630
 
 def first_added(slug):
@@ -206,6 +210,8 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
            + ('<p><b>같이 읽으면 좋은 글</b></p><ul>' + ''.join(f'<li><a href="{s}.html">{html.escape(t)}</a></li>' for s, t in related) + '</ul>' if related else '')
            + f'<p>날짜를 직접 넣어 보시려면 <a href="{sim_href(slug, site_tag(slug))}">출산택일 시뮬레이터</a>를 여세요. 회원가입 없이 무료입니다.</p></div>')
     imgmeta = f'<meta property="og:image" content="{img[0]}">' + (f'\n<meta property="og:image:width" content="{img[1]}">\n<meta property="og:image:height" content="{img[2]}">' if img[1] else '')
+    # 10-02 개편 3묶음 — 맨 위 머리줄(<div class="mini-head" role="banner">: 策 로고 + 「← 홈」)은 손으로 만든 바깥 쪽과 같은 한 줄이다(style.css .mini-head).
+    # 글자 · 모서리는 style.css 계단 이름(--t1~t6 · --r1~r3)만 쓴다 — 픽셀 값을 새로 적지 않는다.
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -229,29 +235,30 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 <link rel="stylesheet" href="style.css">
 <style>
   .doc{{max-width:660px;margin:0 auto;padding:24px 18px 90px}}
-  .doc h1{{font-family:var(--serif);font-size:26px;line-height:1.4;margin-bottom:10px}}
-  .doc h2{{font-size:17px;font-weight:700;color:var(--ink);margin:34px 0 11px;letter-spacing:-.01em}}
+  .doc h1{{font-family:var(--serif);font-size:var(--t6);line-height:1.4;margin-bottom:10px}}
+  .doc h2{{font-size:var(--t4);font-weight:700;color:var(--ink);margin:34px 0 11px;letter-spacing:-.01em}}
   .doc h2::after{{display:none}}
-  .doc p,.doc li{{font-size:14.5px;line-height:1.9;color:var(--ink2)}}
+  .doc p,.doc li{{font-size:var(--t2);line-height:1.9;color:var(--ink2)}}
   .doc p{{margin-bottom:11px}}
   .doc b{{color:var(--ink)}}
   .doc a{{color:var(--accent)}}
   .doc hr{{border:0;border-top:1px solid var(--line);margin:30px 0}}
-  .doc blockquote{{margin:0 0 14px;padding:12px 15px;background:var(--accent-soft);border-left:3px solid var(--accent-line);border-radius:0 8px 8px 0}}
-  .doc blockquote p{{margin:0 0 4px;font-size:14px}}
-  .note{{border-left:3px solid var(--accent-line);background:var(--accent-soft);padding:13px 15px;border-radius:0 8px 8px 0;margin:14px 0}}
-  .note p{{margin:0;font-size:14px}} .note p + p{{margin-top:7px}}
+  .doc blockquote{{margin:0 0 14px;padding:12px 15px;background:var(--accent-soft);border-left:3px solid var(--accent-line);border-radius:0 var(--r1) var(--r1) 0}}
+  .doc blockquote p{{margin:0 0 4px;font-size:var(--t2)}}
+  .note{{border-left:3px solid var(--accent-line);background:var(--accent-soft);padding:13px 15px;border-radius:0 var(--r1) var(--r1) 0;margin:14px 0}}
+  .note p{{margin:0;font-size:var(--t2)}} .note p + p{{margin-top:7px}}
   .note.answer{{border-left-color:var(--accent);margin:18px 0 26px}}
   .doc a.btn{{color:var(--seal-ink);display:inline-block;text-decoration:none}}
-  .back{{display:inline-block;margin-bottom:20px;font-size:13px;color:var(--ink3);text-decoration:none}}
-  .pn{{display:flex;justify-content:space-between;gap:12px;margin-top:30px;font-size:13.5px}}
-  .meta{{font-size:12.5px;color:var(--ink3);margin-bottom:18px}}
+  .back{{display:inline-block;margin-bottom:20px;font-size:var(--t2);color:var(--ink3);text-decoration:none}}
+  .pn{{display:flex;justify-content:space-between;gap:12px;margin-top:30px;font-size:var(--t2)}}
+  .meta{{font-size:var(--t1);color:var(--ink3);margin-bottom:18px}}
   .readmore{{margin-top:34px;border-top:1px solid var(--line);padding-top:20px}}
   .readmore ul{{margin:6px 0 12px 18px}} .readmore li{{margin-bottom:6px}}
 </style>
 <script type="application/ld+json">{ldjson}</script>
 </head>
 <body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>{html.escape(title)}</h1>
@@ -260,10 +267,10 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 {body}
   {rel}
   {nav}
-  <p style="margin-top:34px;font-size:13px;color:var(--ink3)">
+  <p style="margin-top:34px;font-size:var(--t2);color:var(--ink3)">
     <a href="./">책사 홈</a> · <a href="taekil.html">출산택일 안내</a> · <a href="taekil-apply.html">보고서 신청</a> ·
     <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a></p>
-  <p style="font-size:12px;line-height:1.8;opacity:.75;color:var(--ink3)">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+  <p style="font-size:var(--t1);line-height:1.8;opacity:.75;color:var(--ink3)">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
 </div>
 <script>
 (function(){{var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');}})();

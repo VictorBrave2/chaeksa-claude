@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SSS급 그 사람 사용설명서 — 그 사람이 연애 단계마다 어떻게 할지 · 책사</title>
+<meta name="description" content="책사가 직접 만든 알고리즘이 그 사람 생년월일시로 썸부터 가족과 친구까지 연애 열두 단계마다 그 사람이 어떻게 할지 맞히고, 왜 그런지와 나에게 어떻게 비칠 수 있는지를 적어 드려요.">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<link rel="canonical" href="https://chaeksa.kr/pair.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="책사">
+<meta property="og:title" content="SSS급 그 사람 사용설명서 — 그 사람이 연애 단계마다 어떻게 할지">
+<meta property="og:description" content="책사가 직접 만든 알고리즘이 그 사람 생년월일시로 썸부터 가족과 친구까지 연애 열두 단계마다 그 사람이 어떻게 할지 맞히고, 왜 그런지와 나에게 어떻게 비칠 수 있는지를 적어 드려요.">
+<meta property="og:image" content="https://chaeksa.kr/cards/og/pair.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://chaeksa.kr/pair.html">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<!-- tools_sogae.py 가 만든 쪽 — 글은 상품 약속 장부(yaksok.js) · 분야 표(bunya.js) · 그 콘텐츠 파일에서 읽는다. 손으로 고치지 말고 장부를 고친 뒤 python tools_sogae.py (배포 때도 저절로 돈다). -->
+<script>
+/* 넣어 둔 사람이 있는 손님은 지금처럼 앱의 그 화면으로 곧장 간다(들어온 길 from 은 그대로). 처음 온 손님 · 검색 로봇은 아래 소개를 본다. */
+(function(){try{var l=JSON.parse(localStorage.getItem('chaeksa.people')||'[]');if(!(l&&l.length)&&!localStorage.getItem('chaeksa.profile'))return;var f=new URLSearchParams(location.search).get('from');location.replace('./?go=pair'+(f?'&from='+encodeURIComponent(f):''));}catch(e){}})();
+(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1266">
+<style>
+  .doc{max-width:660px;margin:0 auto;padding:24px 18px 90px}
+  .doc h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:6px 0 8px;color:var(--ink)}
+  .doc h2{font-size:var(--t4);font-weight:700;color:var(--ink);margin:34px 0 11px;letter-spacing:-.01em}
+  .doc h2::after{display:none}
+  .doc p,.doc li,.doc dd{font-size:var(--t2);line-height:1.85;color:var(--ink2)}
+  .doc p{margin:0 0 10px}
+  .doc a{color:var(--accent)}
+  .sg-hero{display:flex;gap:20px;align-items:flex-start}
+  .sg-cover{flex:0 0 240px;width:240px;height:auto;border-radius:var(--r2);box-shadow:var(--shadow-lift)}
+  .sg-head{flex:1;min-width:0}
+  .sg-tag{display:inline-block;margin:0;padding:3px 11px;border:1px solid var(--accent-line);border-radius:var(--r3);background:var(--accent-soft);color:var(--accent);font-size:var(--t1);line-height:1.6}
+  .doc .sg-lead{font-size:var(--t3);line-height:1.8;color:var(--ink2)}
+  .doc a.btn{display:block;text-align:center;text-decoration:none;color:var(--seal-ink)}
+  .sg-list,.sg-toc{margin:0;padding-left:20px}
+  .sg-list li,.sg-toc li{margin-bottom:4px}
+  .sg-ex{margin:12px 0 0}
+  .doc .sg-exline{font-family:var(--letter);font-size:var(--t3);color:var(--ink);font-weight:700}
+  .sg-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+  .sg-dl dt{font-size:var(--t2);font-weight:700;color:var(--ink);line-height:1.85}
+  .sg-dl dd{margin:0}
+  .doc .sg-foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:var(--t1);line-height:1.8;color:var(--ink3)}
+  .doc .sg-foot a{color:var(--ink3)}
+  @media (max-width:560px){
+    .sg-hero{display:block}
+    .sg-cover{display:block;width:62vw;max-width:260px;margin:0 auto 16px}
+  }
+</style>
+</head>
+<body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
+<main class="doc sg" data-sogae="pair">
+  <div class="sg-hero">
+  <img class="sg-cover" src="art/story-friend-to-lover.webp" srcset="art/story-friend-to-lover-s.webp 360w, art/story-friend-to-lover.webp 1024w" sizes="(min-width:600px) 240px, 62vw" width="1024" height="1536" alt="" decoding="async">
+  <div class="sg-head">
+    <p class="sg-tag">질문 3개 무료<span data-yaksok-price="love_pair" data-pre=" · " data-post="" data-fmt="won"></span></p>
+    <h1>SSS급 그 사람 사용설명서</h1>
+    <p class="sg-lead">책사가 직접 만든 알고리즘이 그 사람 생년월일시로 썸부터 가족과 친구까지 연애 열두 단계마다 그 사람이 어떻게 할지 맞히고, 왜 그런지와 나에게 어떻게 비칠 수 있는지를 적어 드려요.</p>
+    <a class="btn sg-go" data-go href="./?go=pair&amp;from=site-pair">그 사람 생년월일로 시작</a>
+    <p class="hint">필요한 것 — 그 사람 생년월일시 · 카카오 로그인</p>
+  </div>
+  </div>
+
+  <h2>결제 전에 볼 수 있는 것</h2>
+  <p>누구나 가장 궁금해할 질문 3개(연락 · 애정 표현 · 서운함)의 답을 먼저 무료로 보여 드려요.</p>
+
+  <h2>결제하면 받는 것</h2>
+  <ul class="sg-list">
+    <li>썸부터 가족과 친구까지, 연애 열두 단계의 남은 장이 모두 열려요</li>
+    <li>장마다 그 사람이 어떻게 할지 한 줄, 왜 그런지, 나에게 어떻게 비칠 수 있는지를 적어 드려요</li>
+    <li>무료로 본 질문 3개도 왜 그런지와 나에게 비치는 모습까지 열려요</li>
+    <li>장마다 뚜렷함 표시가 붙어서, 어디까지 믿고 어디서 직접 물어볼지 가늠할 수 있어요</li>
+  </ul>
+
+  <h2>열두 단계, 장마다 세 가지</h2>
+  <p>썸에서 시작해 고백과 시작 · 연락 · 데이트와 돈 · 애정 표현 · 서운함과 다툼 · 화해 · 질투와 믿음 · 권태 · 이별과 재회 · 결혼과 미래 · 가족과 친구까지, 연애를 열두 단계로 나눴어요.</p>
+  <p>단계마다 「그 사람은 ~할까?」 하고 묻는 장이 있고, 한 장에 세 가지를 적어 드려요.<br>그 사람이 그 순간 어떻게 할지 한 줄<br>왜 그렇게 하는지<br>그 행동이 나에게 어떻게 비칠 수 있는지</p>
+
+  <h2>값과 환불</h2>
+  <dl class="sg-dl">
+    <dt>값</dt><dd><span data-yaksok-price="love_pair" data-pre="" data-post=""></span></dd>
+    <dt>만드는 시간</dt><dd>결제하면 그때 그 사람의 생년월일시로 새로 써 드려요(3분쯤).</dd>
+    <dt>보관</dt><dd>결제한 카카오 계정에 1년 동안 보관돼서, 폰에서 열어도 PC에서 열어도 같은 결과가 나와요</dd>
+    <dt>환불</dt><dd>열어 보기 전에는 전액 돌려드려요. 결과를 만들지 못해도 전액 돌려드려요.</dd>
+  </dl>
+
+  <a class="btn sg-go" data-go href="./?go=pair&amp;from=site-pair">그 사람 생년월일로 시작</a>
+
+  <p class="sg-foot"><a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="read.html">읽을거리</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
+  유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>
+  대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+</main>
+<script src="config.js?v=1266"></script>
+<script src="track.js?v=1266"></script>
+<script src="yaksok.js?v=1266"></script>
+<script src="pay.js?v=1266"></script>
+<script>
+(function(){
+  var f='';try{f=new URLSearchParams(location.search).get('from')||'';}catch(e){}
+  if(f)Array.prototype.forEach.call(document.querySelectorAll('a[data-go]'),function(a){a.href='./?go=pair&from='+encodeURIComponent(f);});
+  try{if(window.ChaeksaYaksok)ChaeksaYaksok.값채우기(document);}catch(e){}
+})();
+</script>
+</body>
+</html>

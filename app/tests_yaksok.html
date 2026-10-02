@@ -2,13 +2,13 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>약속 장부 시험</title>
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}.info{color:#a60}</style></head>
 <body><div id="out">시험하는 중이에요…</div><div id="stage" hidden></div>
-<script src="config.js?v=1263"></script>
-<script src="bunya.js?v=1263"></script>
-<script src="yaksok.js?v=1263"></script>
-<script src="love.js?v=1263"></script>
-<script src="pair.js?v=1263"></script>
-<script src="home-cats.js?v=1263"></script>
-<script src="people.js?v=1263"></script>
+<script src="config.js?v=085d614551"></script>
+<script src="bunya.js?v=4997f91d48"></script>
+<script src="yaksok.js?v=642528e0a0"></script>
+<script src="love.js?v=f6663152b9"></script>
+<script src="pair.js?v=5440340f55"></script>
+<script src="home-cats.js?v=4c12671548"></script>
+<script src="people.js?v=64424c6e15"></script>
 <script>
 // 상품 약속 장부 시험(10-02 개편 2묶음 「상품 약속 장부 한 줄씩 만들고, 모든 화면이 거기서 읽게 하기」).
 //   가 장부 꼴 · 나 값과 「무료」 · 다 화면이 장부를 읽는다(그려 보기 · 장부 한 칸을 바꾸면 같이 바뀐다)
@@ -37,22 +37,26 @@
 
   // ── 장부 밖에서 정해진 것 ──
   const 유료코드 = ['love_full', 'love_pair', 'taekil'];   // 10-01 사장님 「유료 셋」(products 표 · pay.html 시험판)
-  const 아는칸 = ['코드', '탭', '이름', '상품이름', '단위', '한줄', '홈한줄', '딱지', '미리', '신청', '만듦', '시간', '받는것', '보관', '필요', '환불', '자리', '그림', '입력단추'];
+  const 아는칸 = ['코드', '탭', '이름', '상품이름', '단위', '한줄', '홈한줄', '딱지', '미리', '견본', '신청', '만듦', '시간', '받는것', '보관', '필요', '환불', '자리', '그림', '입력단추'];
   const 파는꼭 = ['탭', '상품이름', '단위', '한줄', '딱지', '받는것', '환불', '자리', '그림'];
   const 아는조건 = ['장한줄'];
   // 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
-  const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'pay-done.html', 'pay-fail.html', 'love.html',
-    'love.js?v=1263', 'pair.js?v=1263', 'home-cats.js?v=1263', 'app.js?v=1263', 'pay.js?v=1263', 'gunghap-gwanjeom.js?v=1263', 'bunya.js?v=1263'];
-  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=1263', 'pair.js?v=1263', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=1263'];
-  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=1263', 'pair.js?v=1263', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=1263', 'home-cats.js?v=1263'];
-  const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=1263', 'pair.js?v=1263'];
+  const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'taekil-sample.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html',
+    'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'home-cats.js?v=4c12671548', 'app.js?v=b0d720a7e0', 'pay.js?v=2829f4fc9c', 'gunghap-gwanjeom.js?v=7cdb63d9d0', 'bunya.js?v=4997f91d48', 'about.html'];
+  // about.html(10-02 개편 3묶음 책사 소개) — 상품 말은 장부에서 읽는다. 손으로 쓴 숫자가 끼면 여기서 잡는다(tools_check.py 7)과 같은 목록)
+  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=4c12671548', 'about.html'];
+  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=7cdb63d9d0', 'home-cats.js?v=4c12671548', 'about.html'];
+  const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'about.html'];
+  // 10-02 개편 3묶음 — 상품 소개 쪽 다섯(tools_sogae.py 가 장부 · 분야 표에서 만든다. tools_check.py SOGAE_PAGES 와 같은 목록). 시간 · 질문 수 · 보관 해도 장부와 같아야 한다.
+  const 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
+  [시간파일, 질문파일, 해파일].forEach((목록) => Object.values(소개쪽).forEach((f) => { if (!목록.includes(f)) 목록.push(f); }));
 
   try {
     const Y = window.ChaeksaYaksok, T = Y && Y.장부;
     머리('가. 장부 꼴');
     봄('가1 전역 ChaeksaYaksok 이 있다', !!(Y && T && T.콘텐츠), true);
     if (!Y) throw new Error('yaksok.js 가 실리지 않았다');
-    const 소스 = await 받기('yaksok.js?v=1263');
+    const 소스 = await 받기('yaksok.js?v=642528e0a0');
     const 시작 = '/*장부 시작*/', 끝 = '/*장부 끝*/';
     봄('가2 장부 시작 · 장부 끝 표시가 한 번씩', [String(소스).split(시작).length - 1, String(소스).split(끝).length - 1], [1, 1]);
     let 파싱 = null; try { 파싱 = JSON.parse(소스.slice(소스.indexOf(시작) + 시작.length, 소스.indexOf(끝))); } catch (e) { 파싱 = null; }
@@ -74,8 +78,9 @@
         if (/\.html$/.test(r.탭)) { if (!(await 있나(r.탭))) 없는.push(k + ' 탭 ' + r.탭); } else if (!탭들.has(r.탭)) 없는.push(k + ' 탭 ' + r.탭);
         if (r.자리) { const m = r.자리.match(/^\.\/\?go=([a-z]+)$/); if (m ? !탭들.has(m[1]) : !(await 있나(r.자리))) 없는.push(k + ' 자리 ' + r.자리); }
         if (r.그림 && !(await 있나(r.그림))) 없는.push(k + ' 그림 ' + r.그림);
+        if (r.견본 && !(await 있나(r.견본))) 없는.push(k + ' 견본 ' + r.견본);   // 10-02 개편 3묶음 — 결제 전에 여는 견본 쪽
       }
-      봄('가10 탭 · 결제하는 자리 · 그림이 다 있다', 없음목록(없는), '0');
+      봄('가10 탭 · 결제하는 자리 · 그림 · 견본 쪽이 다 있다', 없음목록(없는), '0');
     }
 
     머리('나. 값과 「무료」');
@@ -182,7 +187,9 @@
     {
       const 긴글 = [...new Set([].concat(...키들.map((k) => { const r = T.콘텐츠[k]; return 글모음([r.한줄, r.미리, r.만듦, r.보관, r.환불, r.받는것, r.신청]); })).filter((s) => s.length >= 12))];
       const 겹친 = [];
-      Object.keys(글).forEach((f) => 긴글.forEach((s) => { if (글[f].includes(s)) 겹친.push(f + ' 「' + s.slice(0, 24) + '…」'); }));
+      // 상품 소개 쪽 다섯은 tools_sogae.py 가 장부를 읽어 「만드는」 쪽이라(손으로 옮겨 적지 않음) 같은 글이 있는 게 맞다 — 그 다섯은 뺀다(10-02)
+      const 장부로만듦 = ['love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html'];
+      Object.keys(글).filter((f) => 장부로만듦.indexOf(f) < 0).forEach((f) => 긴글.forEach((s) => { if (글[f].includes(s)) 겹친.push(f + ' 「' + s.slice(0, 24) + '…」'); }));
       봄('마1 장부의 긴 글(' + 긴글.length + '개)이 다른 파일에 그대로 적혀 있지 않다', 없음목록(겹친), '0');
     }
 
@@ -212,6 +219,66 @@
         if (옛[0] == null) localStorage.removeItem(키1); else localStorage.setItem(키1, 옛[0]);
         if (옛[1] == null) localStorage.removeItem(키2); else localStorage.setItem(키2, 옛[1]);
       }
+    }
+
+    머리('사. 책사 소개 · 내 결제(10-02 개편 3묶음)');
+    {
+      const 소개 = String((await 받기('about.html')) || ''), 첫 = String((await 받기('index.html')) || ''), 페이2 = String((await 받기('pay.html')) || '');
+      const 바닥 = (첫.split('<footer>')[1] || '').split('</footer>')[0], 설정 = 첫.split('id="settings"')[1] || '';
+      봄('사1 책사 소개 쪽이 있고, 무료 · 유료 목록은 장부를 읽어 그린다(yaksok.js · #scope · 딱지html)', [!!소개, /src="yaksok\.js/.test(소개), /id="scope"/.test(소개), /Y\.딱지html\(/.test(소개)], [true, true, true, true]);
+      봄('사2 홈 바닥글 · 설정 창 · pay.html 이 책사 소개로 잇는다', [/href="about\.html"/.test(바닥), /href="about\.html"/.test(설정), /href="about\.html"/.test(페이2)], [true, true, true]);
+      // 바닥글의 사업자 줄(숫자가 든 줄)을 「 · 」로 나눈 조각이 책사 소개 화면 글에 그대로 있다(tools_check.py 8)과 같은 규칙)
+      const 글만 = (s) => String(s).replace(/<!--[\s\S]*?-->/g, ' ').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, ' ');
+      const 조각 = [].concat(...글만(바닥).split('\n').filter((l) => /\d/.test(l)).map((l) => l.split('·').map((x) => x.replace(/\s+/g, ' ').trim()).filter(Boolean)));
+      const 소개글 = 글만(소개).replace(/\s+/g, ' ');
+      봄('사3 책사 소개의 사업자 정보 = 홈 바닥글(조각 ' + 조각.length + '개, 글자 하나까지)', [조각.length > 5, 조각.filter((x) => !소개글.includes(x))], [true, []]);
+      봄('사4 설정 창 「내 결제」 자리(#myPayList)는 로그인 칸(#cloudIn) 안에 있다', /id="myPayList"/.test((설정.split('id="cloudIn"')[1] || '').split('id="cloudMsg"')[0]), true);
+      const 상자들 = [새칸(), 새칸(), 새칸()];
+      LV.사기상자(상자들[0], 생일, () => {});
+      LV.잠금상자(상자들[1], { items: [{ id: 'q1', section: '썸을 탈 때', q: '시험 질문', locked: true }] }, 생일);
+      PV.결제상자(상자들[2], null, 3, null);
+      봄('사5 결제 상자 셋(연애 결제 전 · 연애 잠금 · 사용설명서)에 책사 소개 길', 상자들.map((b) => !!b.querySelector('a[href="about.html"]')), [true, true, true]);
+    }
+
+    머리('아. 상품 소개 쪽 — 검색 · 카톡의 문(10-02 개편 3묶음, tools_sogae.py)');
+    {
+      const 쪽 = {};
+      for (const k of Object.keys(소개쪽)) {
+        const s = String((await 받기(소개쪽[k])) || '');
+        쪽[k] = { 글: s, d: new DOMParser().parseFromString(s, 'text/html') };
+      }
+      const 열쇠 = Object.keys(소개쪽);
+      봄('아1 소개 쪽 다섯 — 넘기기만 하는 빈 쪽이 아니다(제목 · 본문 · 시작 단추 · 미리보기 그림 · 검색 허용)', 없음목록(열쇠.filter((k) => {
+        const { 글, d } = 쪽[k];
+        return !(d.querySelector('main h1') && d.querySelectorAll('main h2').length && d.querySelector('a[data-go][href^="./?go="]')
+          && (d.querySelector('meta[property="og:image"]') || {}).content === 'https://chaeksa.kr/cards/og/' + k + '.jpg'
+          && !/noindex/.test(글) && !/http-equiv="refresh"/.test(글));
+      })), '0');
+      봄('아2 이름 · 한줄 · 필요한 것은 장부(없으면 분야 표) 그대로', 없음목록(열쇠.filter((k) => {
+        const d = 쪽[k].d, 필요 = (d.querySelector('.sg-head .hint') || {}).textContent || '';
+        return (d.querySelector('main h1') || {}).textContent !== Y.이름(k) || (d.querySelector('.sg-lead') || {}).textContent !== Y.한줄(k)
+          || 필요 !== '필요한 것 — ' + (Y.줄(k).필요 || '');
+      })), '0');
+      봄('아3 파는 쪽(연애 · 사용설명서)의 받는 것 · 만드는 시간 = 장부, 값은 상품표 자리(손으로 쓴 값 없음)', 없음목록(['love', 'pair'].filter((k) => {
+        const d = 쪽[k].d, 줄 = Array.from(d.querySelectorAll('main h2')).find((h) => h.textContent === '결제하면 받는 것');
+        const 목록 = 줄 && 줄.nextElementSibling ? Array.from(줄.nextElementSibling.querySelectorAll('li')).map((li) => li.textContent) : [];
+        const 장부줄 = (Y.줄(k).받는것 || []).filter((t) => typeof t === 'string');
+        return JSON.stringify(목록) !== JSON.stringify(장부줄) || !d.body.textContent.includes(Y.만듦글(k))
+          || !d.querySelector('[data-yaksok-price="' + Y.줄(k).코드 + '"]') || /\d[\d,]*\s?원/.test(d.querySelector('main').textContent);
+      })), '0');
+      const 화면글 = (d) => { const c = d.body.cloneNode(true); c.querySelectorAll('script,style').forEach((x) => x.remove()); return c.textContent; };
+      봄('아4 「무료라고 쓰지 않는 콘텐츠」(연애 속의 나) 소개 쪽 화면 글에 「무료」 없음 · 예시는 지어낸 한 사람이라고 밝힌다', [
+        T['무료라고 쓰지 않는 콘텐츠'].filter((k) => 쪽[k] && /무료/.test(화면글(쪽[k].d))), /지어낸 한 사람/.test(화면글(쪽.love.d))], [[], true]);
+      봄('아5 넣어 둔 사람이 있으면 그 탭으로 곧장(머리 스크립트가 chaeksa.people · chaeksa.profile 을 보고 ./?go=탭)', 없음목록(열쇠.filter((k) => {
+        const 머리글 = 쪽[k].글.split('</head>')[0];
+        return !(머리글.includes("localStorage.getItem('chaeksa.people')") && 머리글.includes("localStorage.getItem('chaeksa.profile')") && 머리글.includes("'./?go=" + Y.줄(k).탭 + "'"));
+      })), '0');
+      const 지도 = String((await 받기('sitemap.xml')) || ''), 로봇 = String((await 받기('robots.txt')) || '');
+      봄('아6 사이트맵에 소개 쪽 다섯 · 읽을거리가 있고, robots.txt 가 소개 쪽을 막지 않는다', [
+        열쇠.map((k) => 소개쪽[k]).concat(['read.html']).filter((f) => !지도.includes('<loc>https://chaeksa.kr/' + f + '</loc>')),
+        열쇠.map((k) => 소개쪽[k]).filter((f) => new RegExp('^Disallow:\\s*/' + f.replace(/[.]/g, '\\.') + '\\s*$', 'm').test(로봇))], [[], []]);
+      const 첫3 = String((await 받기('index.html')) || '');
+      봄('아7 홈 미리보기 그림은 지금 진열판(og-home-3.jpg)', /<meta property="og:image" content="https:\/\/chaeksa\.kr\/og-home-3\.jpg">/.test(첫3), true);
     }
   } catch (e) {
     봄('시험이 멈춤: ' + (e && e.message), 'x', 'o');

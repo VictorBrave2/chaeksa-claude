@@ -1,6 +1,6 @@
 /* 썸 궁합 화면 — 명리는 ssom-gwanjeom.js(72조), 글은 ssom-wongo.js. 이 파일은 그리기만 한다. */
 (function (global) {
-  const E = global.ChaeksaEngine, S = global.ChaeksaSsom, W = global.ChaeksaSsomWongo || {}, PL = global.ChaeksaPlaces;
+  const E = global.ChaeksaEngine, S = global.ChaeksaSsom, W = global.ChaeksaSsomWongo || {};
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 줄 = (t) => {
     const 굵 = (x) => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
@@ -194,47 +194,7 @@
     });
   }
 
-  function 세우기() {
-    const box = document.getElementById('gcOut'), f = document.getElementById('gcForm');
-    if (!box || !f) return;
-    const q = (id) => document.getElementById(id);
-    ['gcPlaceA', 'gcPlaceB'].forEach(id => { if (PL && q(id)) q(id).innerHTML = PL.options(); });
-    if (q('gcStage')) { 단계카드(q('gcStage')); q('gcStage').value = '둘'; q('gcStage')._그리(); q('gcStage').addEventListener('change', () => { if (box.innerHTML) f.requestSubmit ? f.requestSubmit() : f.onsubmit(new Event('submit')); }); }
-    let p = null; try { p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); } catch (e) {}
-    if (p && p.year) {
-      q('gcDateA').value = p.year + '-' + String(p.month).padStart(2, '0') + '-' + String(p.day).padStart(2, '0');
-      if (!p.noTime && p.hour != null && p.hour !== '') q('gcTimeA').value = String(p.hour).padStart(2, '0') + ':' + String(p.minute || 0).padStart(2, '0');
-      q('gcGA').value = p.gender === 'M' ? 'M' : 'F';
-    }
-    // 09-25 「입력부터 웹툰식으로」 — 성별을 고르면 컷 그림이 그 사람으로 바뀐다(당신 컷은 당신 성별, 그 사람 컷은 그 사람 성별)
-    // 09-25 사장님 「같은 사진이 들어가면 섭섭한데」 — 자리마다 다른 컷(나 남 ss-me · 나 여 ss-her · 그 사람 남 story-jigeum · 그 사람 여 story-sns), 한쪽 성별을 고르면 맞은편은 반대로
-    const 컷그림 = { A: { M: 'ss-me', F: 'ss-her' }, B: { M: 'story-jigeum', F: 'story-sns' } };
-    const 컷바꾸기 = () => ['A', 'B'].forEach(n => { const g = q('gcG' + n), c = q('gcCut' + n); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (컷그림[n][g.value] || 컷그림[n].F) + '-s.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } });
-    ['A', 'B'].forEach(n => { const g = q('gcG' + n); if (g) g.addEventListener('change', () => { const o = q('gcG' + (n === 'A' ? 'B' : 'A')); if (o && g.value && o.value === g.value) o.value = g.value === 'M' ? 'F' : 'M'; 컷바꾸기(); }); }); 컷바꾸기();
-    const 잠금 = (n) => { const c = q('gcNoTime' + n); if (c) q('gcTime' + n).disabled = c.checked; };
-    ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n); if (c) { c.addEventListener('change', () => 잠금(n)); 잠금(n); } });
-    // 09-25 첫 화면은 생년월일 · 성별만 — 시각은 「모름」이 기본. 「태어난 시각 · 곳」을 펼치면 시각을 넣는 것으로 본다.
-    ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n), d = c && c.closest('details'); if (d) d.addEventListener('toggle', () => { if (d.open && c.checked) { c.checked = false; 잠금(n); } }); });
-    const 읽기 = (n) => {
-      const [y, m, d] = (q('gcDate' + n).value || '').split('-').map(Number);
-      const [hh, mi] = (q('gcTime' + n).value || '12:00').split(':').map(Number);
-      if (!y || !m || !d) return null;
-      const 모름 = !!(q('gcNoTime' + n) && q('gcNoTime' + n).checked);
-      const 곳 = PL ? PL.resolve(q('gcPlace' + n).value) : { lon: 126.98, tzOffset: null };
-      return { year: y, month: m, day: d, hour: 모름 ? null : hh, minute: 모름 ? 0 : (mi || 0), gender: q('gcG' + n).value || null, longitude: 곳.lon, tzOffset: 곳.tzOffset };
-    };
-    f.onsubmit = (e) => {
-      e.preventDefault();
-      const a = 읽기('A'), b = 읽기('B');
-      if (!a || !b) return;
-      const mv = (q('gcMet') && q('gcMet').value || '').split('-').map(Number);
-      그리기(box, a, b, { 만난: mv[0] ? { y: mv[0], m: mv[1] } : null, 단계: (q('gcStage') && q('gcStage').value) || '썸' });
-      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-    // 장면 보기에서 돌아오면(뒤로 가기 포함) 이 탭에서 보던 두 사람을 다시 그린다 — 같은 탭 sessionStorage만, 주소엔 안 실음
-    try { const v = JSON.parse(sessionStorage.getItem('chaeksa.ssomVn') || 'null'); if (v && v.a && v.b) { 그리기(box, v.a, v.b, v.opts || {}); if (v.opts && v.opts.단계 && q('gcStage')) q('gcStage').value = v.opts.단계; } } catch (e) {}
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 세우기); else 세우기();
+  // 따로 열던 썸 궁합 쪽(ssom.html)의 입력 칸(#gcForm)을 세우던 코드는 10-02 개편 3묶음에서 지웠다 — 그 쪽은 이제 앱(?go=ssom)으로 넘기기만 한다. 그리기 · 대본 · 단계카드는 app.js · ssom-vn.html 이 부른다.
   /* 장면 보기(미연시)용 대본 — 글 보기와 같은 원고 · 같은 풀이를 장(章) 목록으로 낸다(09-25 사장님 「미연시로 변환」).
    *  장 = { 제목, 배경: [art 이름 …], 줄: [{ 누가, 말 }], 반응: { 장, 틀, 물음 } | null }. 누가 = 책사 · 당신 · 상대 · 예시. */
   function 대본(a, b, opts) {

@@ -8,7 +8,7 @@
  */
 (function (global) {
   'use strict';
-  const E = global.ChaeksaEngine, P = global.ChaeksaPanjeong, W = global.ChaeksaGwanjeom, PL = global.ChaeksaPlaces, G = global.ChaeksaSaenggeuk;
+  const E = global.ChaeksaEngine, P = global.ChaeksaPanjeong, W = global.ChaeksaGwanjeom, G = global.ChaeksaSaenggeuk;
   if (!E || !P || !W) return;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 오행말 = ['목', '화', '토', '금', '수'];
@@ -218,31 +218,6 @@
     try { const S = global.ChaeksaSeolmyeong, b = box.querySelector('#jtSeol'); if (S && b) S.render(R, today, b, {}); } catch (e) {}
   }
 
-  function 세우기() {
-    const box = document.getElementById('jtOut'), f = document.getElementById('jtForm'); if (!box || !f) return;
-    const q = (id) => document.getElementById(id);
-    if (PL) q('jtPlace').innerHTML = PL.options();
-    // 앱에 이미 넣어 둔 생년월일이 있으면 그대로 쓴다
-    let p = null; try { p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); } catch (e) {}
-    if (p && p.year) {
-      q('jtDate').value = p.year + '-' + String(p.month).padStart(2, '0') + '-' + String(p.day).padStart(2, '0');
-      if (!p.noTime && p.hour != null && p.hour !== '') q('jtTime').value = String(p.hour).padStart(2, '0') + ':' + String(p.minute || 0).padStart(2, '0');
-      else if (q('jtNoTime')) q('jtNoTime').checked = true;   // 앱에서 「시간을 몰라요」로 넣은 사람 — 낮 12시로 풀지 않는다
-      q('jtG').value = p.gender === 'F' ? 'F' : 'M';
-    }
-    // 「시간을 몰라요」 — 체크하면 시각 칸을 잠그고 hour 를 null 로 넘긴다(시주는 비운다)
-    const 모름 = () => !!(q('jtNoTime') && q('jtNoTime').checked);
-    const 잠금 = () => { q('jtTime').disabled = 모름(); };
-    if (q('jtNoTime')) { q('jtNoTime').addEventListener('change', 잠금); 잠금(); }
-    f.onsubmit = (e) => {
-      e.preventDefault();
-      const [y, m, d] = (q('jtDate').value || '').split('-').map(Number), [hh, mi] = (q('jtTime').value || '12:00').split(':').map(Number);
-      if (!y || !m || !d) return;
-      const 곳 = PL ? PL.resolve(q('jtPlace').value) : { lon: 126.98, tzOffset: null };
-      그리기(box, { year: y, month: m, day: d, hour: 모름() ? null : hh, minute: 모름() ? 0 : (mi || 0), gender: q('jtG').value, longitude: 곳.lon, tzOffset: 곳.tzOffset });
-      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 세우기); else 세우기();
+  // 따로 열던 정통사주 쪽(jeongtong.html)의 입력 칸(#jtForm)을 세우던 코드는 10-02 개편 3묶음에서 지웠다 — 그 쪽은 이제 앱(?go=jeongtong)으로 넘기기만 한다. 그리기는 app.js 가 부른다.
   global.ChaeksaJeongtong = { 그리기 };
 })(window);

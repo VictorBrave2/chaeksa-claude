@@ -20,7 +20,7 @@ User-agent: Bingbot
 Disallow: /tests_
 Disallow: /*-wongo-view
 Disallow: /myeongsik.html
-Disallow: /jeongtong.html
+# (10-02 개편 3묶음) jeongtong.html 막음은 걷었다 — 넘김 쪽이던 것이 정통사주 소개 쪽이 됐다(tools_sogae.py). 검색에 나와야 하는 쪽이다.
 Disallow: /tools/
 # 그 밖의 공개 글은 전부 연다
 Allow: /

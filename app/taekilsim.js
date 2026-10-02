@@ -64,6 +64,27 @@
       + '<div class="tk-eyes">' + 칩 + '</div></summary>' + 속 + '</details>';
   }
 
+  // 시뮬레이터 끝 — 보고서와 무엇이 다른지 두 줄 + 견본 · 신청(10-02 개편 3묶음 「출산택일 한 길」).
+  // 전에는 「보고서 신청하기」 단추 하나뿐이라, 무료로 하루씩 본 것과 값을 내고 받는 보고서가 무엇이 다른지 몰랐다.
+  // 보고서 쪽 말(상품이름 · 받는 것 · 신청 길 · 견본 주소)은 상품 약속 장부(yaksok.js 택일 줄), 값은 상품표(products)에서 읽는다 — 여기 손으로 적지 않는다.
+  // 장부가 없는 화면(시험 쪽)이면 신청 단추만 남는다. 신청 단추는 taekil.html 과 같은 길이다 — 네이버폼 창구(config.js CHAEKSA_TAEKIL_INTAKE_URL)가
+  // 열려 있으면 네이버폼으로 바로, 비면(결제창이 열리는 날) 사이트 신청서(taekil-apply.html)로. 아래 한 줄(장부 신청글)도 같이 바뀐다.
+  function 다리() {
+    const Y = global.ChaeksaYaksok, r = Y && Y.줄 ? Y.줄('taekil') : null;
+    const 폼 = String(global.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
+    const 신청 = '<a class="btn small" id="tkApply" href="' + esc(폼 || 'taekil-apply.html?from=sim') + '"' + (폼 ? ' target="_blank" rel="noopener"' : '') + '>'
+      + (폼 ? '네이버폼으로 신청하기' : '보고서 신청하기') + '</a>';
+    if (!r) return '<div class="tk-vs tk-vs-go">' + 신청 + '</div>';
+    return '<div class="tk-vs">'
+      + '<p class="tk-vs-h">시뮬레이터와 보고서는 이렇게 달라요</p>'
+      + '<div class="tk-vs-row"><b>이 시뮬레이터 · 무료</b><p>날짜 하루를 골라 그날 열두 시각을 직접 봐요. 가족 생년월일과 병원 시간은 넣지 않고, 대운(10년마다 바뀌는 운)도 보지 않아요.</p></div>'
+      + '<div class="tk-vs-row"><b>' + esc(r.상품이름) + (r.코드 ? Y.값자리(r.코드, ' · ', '', 'won') : '') + '</b><ul>'
+      + Y.받는것목록('taekil').map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></div>'
+      + '<div class="tk-vs-go">' + (r.견본 ? '<a class="btn ghost small" href="' + esc(r.견본) + '?from=sim">견본 보기</a>' : '') + 신청 + '</div>'
+      + '<p class="tk-note">' + esc(Y.신청글('taekil')) + '</p>'
+      + '</div>';
+  }
+
   /** box 안에 시뮬레이터를 세운다. opts.date = 'YYYY-MM-DD' */
   function render(box, opts) {
     if (!box) return;
@@ -82,11 +103,14 @@
       + '<p class="tk-note" id="tkTop"></p><div id="tkList"></div>'
       + '<div class="tk-send"><button type="button" class="btn ghost small" id="tkSend">이 날 가족에게 보내기</button><p class="tk-note" id="tkSendSay">' + esc(보내기안내) + '</p></div>'
       + '<p class="tk-note">' + esc(W.출산택일.꼬리) + '</p>'
-      + '<a class="btn" href="taekil-apply.html?from=sim" style="display:block;text-align:center;text-decoration:none;margin-top:12px">보고서 신청하기</a>'
+      + 다리()
       + '<p class="tk-note">출산 날짜와 시각은 산모와 아기의 안전, 담당 선생님의 판단이 먼저예요. 택일은 그 범위 안에서 고르는 참고자료입니다.</p>'
       + '</section>';
     const q = (id) => box.querySelector('#' + id);
     q('tkG').value = 성별; q('tkPlace').value = 곳값;
+    try { global.ChaeksaYaksok && global.ChaeksaYaksok.값채우기(box); } catch (e) {}
+    const 신청단추 = q('tkApply');
+    if (신청단추 && 신청단추.target === '_blank') 신청단추.addEventListener('click', () => { try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('naverform'); } catch (e) {} });
     function 그리기() {
       const [y, m, d] = 날.split('-').map(Number);
       if (!y || !m || !d) return;

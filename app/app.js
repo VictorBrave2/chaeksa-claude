@@ -3,14 +3,13 @@
   'use strict';
   // AI 는 window. 로 읽는다(10-02 멈춤 안전장치) — ai.js 하나를 못 받으면 예전엔 이 줄에서 앱 전체가 섰다.
   // 지금 ai.js 를 쓰는 곳은 걷은 기능과 개발용 설정 칸뿐이라, 없으면 그 칸만 비고 나머지는 그대로 돈다.
-  const E = ChaeksaEngine, f = E.fmt, AI = window.ChaeksaAI || null;
+  // 10-02 개편 3묶음 — ai.js 는 이제 처음에 받지 않는다(탭별 꾸러미 ai · sheet · gunghap). 그래서 부를 때마다 읽는다(AI()).
+  const E = ChaeksaEngine, f = E.fmt, AI = () => window.ChaeksaAI || null;
   const $ = (id) => document.getElementById(id);
   const KEY = 'chaeksa.profile', PKEY = 'chaeksa.partners';
-  const HK = () => 'chaeksa.chat.' + (profile && profile.id ? profile.id : 'solo');
   // let 이다 — 앱을 열어둔 채 날이 바뀔 수 있다. 오늘·달력 탭에 들어올 때 다시 읽는다.
   let today = new Date();
   let profile = null, R = null;
-  const elemClass = (i, isStem) => 'e-' + (isStem ? f.stemElem(i) : f.branchElem(i));
   // 호칭을 걷었다(2026-09-10 사장님 「공주,도련님 삭제. 통변 과정에서 자꾸 꼬이네」 · docs/40).
   // 예전엔 글에 「공주님」을 박아 두고 남자 명식이면 화면에서 「도련님」으로 바꿔치기했다.
   // 그 바꿔치기가 아래 fix() 의 DOM 훑기 안에 있어서, 한 문장이 화면에 서기까지
@@ -54,41 +53,14 @@
     }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
     // window.호칭갱신 은 걷었다 — 되돌릴 호칭이 없어졌다(2026-09-10).
   })();
-  const nimSafe = () => esc(nim());
-  // 이름을 안 적으신 분은 nim() 이 빈 문자열이다. 그대로 이으면 「의 책사단」
-  // 「을 위한 첫 의논」처럼 조사만 남는다. 부르는 자리마다 갈래를 준비한다.
-  const 부름 = (뒤, 없을때) => { const n = nim(); return n ? esc(n) + 뒤 : 없을때; };
-  const god = (stem) => E.TEN_GODS[E.tenGod(R.analysis.dayStem, stem)];
 
-  // 아주 가벼운 마크다운: **굵게**, 줄바꿈만 (LLM 서술 표시용)
   // 화면으로 나가는 마지막 문 — 십신·격 이름을 공주님말로 바꾼 뒤 이스케이프한다(2026-09-04 「보이지 않는 심장」).
   const 공말 = (s) => (window.ChaeksaDan && ChaeksaDan.공주님말) ? ChaeksaDan.공주님말(s) : s;
   const esc = (s) => 공말(String(s == null ? '' : s)).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   // 십신을 이름 그대로 내는 자리(이야기 화면 · 오늘 한마디)는 이걸로 — esc() 는 공주님말을 거쳐서 「상관」이 「튀는 재주」로 바뀐다.
   // 2026-09-12 이야기 화면에서 「튀는 재주 오는 날 = 말이 세게 나가요」가 나가고서야 알았다. 화면 감시자 면제(data-plain)만으로는 안 된다.
   const escP = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-  // 받침 조사 — 표(讀)는 typecard 한 벌뿐이다. 여기서 또 만들면 반드시 어긋난다.
-  // 한자 뒤에 「戊이」 「癸과」를 박아 두었던 자리가 실제로 있었다(3000판 18건).
-  const 조 = (s, 있, 없) => {
-    const T = window.ChaeksaTypecard;
-    return (T && T.조) ? T.조(s, 있, 없) : 있;
-  };
-  const mdLite = (t) => String(t)
-    .replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]))
-    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-    .replace(/^#{1,3}\s*(.+)$/gm, '<b>$1</b>')
-    .replace(new RegExp(String.fromCharCode(10), 'g'), '<br>');
 
-  // 엮임 종류 이름은 화면에 안 낸다 — 무엇이 일어났는지만 남긴다(공주님 원칙)
-  const 강약말 = (s) => ({ 신강: '힘이 센 쪽', 중화: '고른 쪽', 신약: '힘이 약한 쪽' })[String(s || '').split(' ')[0]] || s;
-  const 엮임말 = (k) => k ? ({ 육합: '붙음', 삼합: '한 덩어리', 반합: '반쯤 묶임', 복음: '같은 글자 겹침', 충: '부딪힘' }[k] || k) : k;
-  const GOD_FLOW = {
-    비견:'내 중심이 서는 때. 독립·자립·내 것 챙기기.', 겁재:'경쟁과 지출이 늘어나는 때. 동업·보증·큰 지출은 신중하게.',
-    식신:'여유와 표현의 때. 즐기고 만들고 나누면 돌아옵니다.', 상관:'말과 재능이 튀는 때. 창작·홍보는 좋고, 윗사람과는 부드럽게.',
-    편재:'기회와 움직임의 때. 나가고 만나고 시도하면 돈이 붙습니다.', 정재:'실속과 안정의 때. 차곡차곡 모으고 관리하면 남습니다.',
-    편관:'압박과 단련의 때. 힘들지만 실력이 붙습니다. 건강 먼저.', 정관:'인정과 질서의 때. 승진·시험·계약·공식 관계에 유리.',
-    편인:'생각이 깊어지는 때. 공부·연구·기획·혼자만의 시간.', 정인:'배우고 받는 때. 도움 주는 사람, 문서·자격·학업 운.',
-  };
 
   // ───── 테마: 하루의 리듬 ─────
   // 10-02 index.html 머리 스크립트가 같은 규칙으로 처음 화면부터 낮/밤을 정해 둔다(밤에 흰 화면이 번쩍이던 것). 규칙을 바꾸면 둘을 같이.
@@ -319,14 +291,9 @@
     if (!R || (길 && 길.누구 === 'me') || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
     else { renderPeopleBtn(); renderPartners(); renderHome(); }
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
-    try { renderGeunamja(); renderMaeum(); renderGunghap(); renderSheet();
-      ['gnPick', 'mmPick', 'ghPick', 'shPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
-    } catch (e) {}
-    try {
-      // 이야기 화면에서 「+ 추가」로 넣은 사람은 곧 그 질문의 그 사람이다 — 방금 넣고 또 고르게 하지 않는다.
-      // 첫 사람일 때는 고르는 칸(stWho)이 아직 없고 「그 사람 추가」 단추만 있다. 예전엔 stWho 를 조건으로 봐서
-      // 첫 사람을 넣어도 화면이 그대로였다(2026-09-22 점검). 두 경우 다 있는 단추(btnStAdd)로 본다 — 혼자 보는 이야기에는 없다.
-      if (새 && $('btnStAdd') && document.querySelector('.tab[data-tab="story"]:not(.hide)')) { window.현재그사람 = 새; renderStory(); }
+    // (이 남자 · 그 사람 마음 · 이야기 탭은 09-26 걷었다 — 그 탭들을 다시 그리던 줄은 10-02 개편 3묶음에서 지웠다)
+    try { renderGunghap(); renderSheet();
+      ['ghPick', 'shPick'].forEach(id => { const e = $(id); if (e && 새 && [...e.options].some(o => o.value === 새)) e.value = 새; });
     } catch (e) {}
     try {
       // 궁합총론 탭에서 넣은 사람은 곧 그 사람이다 — 첫 사람이어도 바로 그린다. 고친 사람이면 새 생년월일로 다시 그린다.
@@ -516,7 +483,7 @@
     if (!주소켜짐 || 보인주소 == null || 경로(location.hash) === 보인주소) return;
     try { history.replaceState({ 책사: 1, 앞: 앞칸() }, '', 주소(보인주소)); } catch (e) {}
   }
-  // 사람이 누른 「← 홈」 · 아래 메뉴 · 로고 · 입력 칸 「← 처음으로」. 가려는 화면이 바로 앞 칸이면 한 칸 되돌린다(새로 쌓지 않는다).
+  // 사람이 누른 「← 홈」 · 아래 메뉴 · 로고 · 입력 칸 「← 홈」. 가려는 화면이 바로 앞 칸이면 한 칸 되돌린다(새로 쌓지 않는다).
   function 돌아가기(tab) {
     const r = 경로('#' + tab);
     if (주소켜짐 && 주소방식 === 'push' && r != null && r !== 보인주소 && 앞칸() === r) {
@@ -526,12 +493,83 @@
     }
     go(tab);
   }
-  // 로고 · 입력 칸 「← 처음으로」 — 넣어 둔 사람이 있으면 홈, 없으면 첫 화면. 입력 칸을 그만두면 들고 있던 갈 곳도 내려놓는다.
+  // 로고 · 입력 칸 「← 홈」 — 넣어 둔 사람이 있으면 홈, 없으면 첫 화면. 입력 칸을 그만두면 들고 있던 갈 곳도 내려놓는다.
   function 처음으로() {
     if (보인주소 === 'form') 입력접기();
     돌아가기('home');
     if (!hasProfile()) window.scrollTo({ top: 0 });
   }
+
+  // ───── 탭별 꾸러미 (10-02 개편 3묶음 「빠르기」) ─────
+  // 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 첫 화면 · 홈이 쓰는 것은 그 가운데 일부다.
+  // 이제 index.html 의 <script> 줄은 첫 화면 · 입력 칸 · 홈 · 아래 메뉴 · 결제 · 로그인이 쓰는 것만 받고, 나머지는 index.html 맨 아래
+  // <template id="kkureomi"> 에 적어 두었다가(template 안의 스크립트는 받지도 돌지도 않는다) 탭을 열 때 받는다. 표는 그 template 하나다.
+  //  · 줄마다 data-for = 그 파일이 필요한 탭 이름들. 탭을 열면 그 이름이 적힌 줄만, 적힌 차례대로 받는다
+  //    (async=false — 먼저 받아진 파일이 있어도 적힌 차례대로 돈다. 차례는 옛 index.html 차례 그대로 · 엔진 순서 그대로).
+  //  · template 의 data-all 탭(sheet · gunghap)은 줄을 다 받는다. home · ai 는 탭이 아니라 꾸러미 이름이다(아래 홈꾸러미 · 설정 창 개발용 칸).
+  //  · 한 번 받은 파일은 다시 받지 않는다(다른 탭 꾸러미와 겹치는 파일도). 받다가 하나라도 실패하면 그 탭에 오류 상자(oryu.js) —
+  //    「다시 하기」는 새로 고침이다. 앞서 돈 파일이 못 받은 파일을 빈 채로 물고 있을 수 있어서, 그 파일만 다시 받아서는 낫지 않는다.
+  //  · 판정 · 그리기 재료(판정 · 격 · 조후 · 인생 곡선 · 설명서 · 궁합 13장 · 웹툰 · 택일)가 다 실은 옛 차례와 글자 하나까지 같은지
+  //    꾸러미마다 따로 재 보고 나눴다(10-02, node 가짜 화면 · 지어낸 사람 셋).
+  const 꾸러미틀 = document.getElementById('kkureomi');
+  const 꾸러미모두 = ((꾸러미틀 && 꾸러미틀.getAttribute('data-all')) || '').split(/\s+/).filter(Boolean);
+  const 꾸러미줄 = (() => {
+    const 안 = 꾸러미틀 && 꾸러미틀.content;
+    if (!안 || !안.querySelectorAll) return [];
+    return Array.from(안.querySelectorAll('script[src]')).map(s => ({ src: s.getAttribute('src'), 탭: (s.getAttribute('data-for') || '').split(/\s+/).filter(Boolean) }));
+  })();
+  const 받은파일 = {};            // src → 받는 약속. 실패하면 지운다
+  const 다받은파일 = new Set();    // 다 받아 돈 파일
+  // 처음 <script> 줄로 이미 받은 파일은 받은 것으로 친다 — template 에 겹쳐 적어도 두 번 돌지 않게
+  document.querySelectorAll('script[src]').forEach(s => { const a = s.getAttribute('src'); if (a) 다받은파일.add(a); });
+  function 꾸러미파일(이름) { return 꾸러미줄.filter(r => 꾸러미모두.indexOf(이름) >= 0 || r.탭.indexOf(이름) >= 0).map(r => r.src); }
+  function 꾸러미왔나(이름) { return 꾸러미파일(이름).every(src => 다받은파일.has(src)); }
+  function 꾸러미받는중(이름) { return 꾸러미파일(이름).some(src => !!받은파일[src] && !다받은파일.has(src)); }
+  function 파일받기(src) {
+    if (다받은파일.has(src)) return Promise.resolve();
+    if (받은파일[src]) return 받은파일[src];
+    return (받은파일[src] = new Promise((됨, 안됨) => {
+      const s = document.createElement('script');
+      s.src = src; s.async = false;
+      s.onload = () => { 다받은파일.add(src); 됨(); };
+      s.onerror = () => { delete 받은파일[src]; s.remove(); 안됨(new Error('못 받음 ' + src)); };
+      document.body.appendChild(s);
+    }));
+  }
+  function 꾸러미받기(이름) { return Promise.all(꾸러미파일(이름).map(파일받기)); }
+  // 탭 파일이 오는 동안 — 탭 맨 위(← 홈 아래)에 「불러오는 중」 한 줄. 다 오면 그 탭을 그린다(그 사이 다른 화면으로 갔으면 안 그린다 — 탭차례).
+  let 탭차례 = 0;
+  function 꾸러미기다림(tab, 차례) {
+    const el = document.querySelector('.tab[data-tab="' + tab + '"]'); if (!el) return;
+    const 자리 = (n) => { const 위 = el.querySelector(':scope > .backhome-top'); if (위) 위.insertAdjacentElement('afterend', n); else el.insertAdjacentElement('afterbegin', n); };
+    el.querySelectorAll(':scope > .kk-err').forEach(x => x.remove());
+    let 알림 = el.querySelector(':scope > .kk-wait');
+    if (!알림) { 알림 = document.createElement('p'); 알림.className = 'hint kk-wait'; 알림.setAttribute('role', 'status'); 알림.textContent = '화면을 불러오는 중이에요…'; 자리(알림); }
+    꾸러미받기(tab).then(() => {
+      알림.remove();
+      if (차례 === 탭차례 && 열린탭() === tab) 탭그리기(tab);
+    }, () => {
+      알림.remove();
+      if (차례 !== 탭차례 || 열린탭() !== tab) return;
+      const box = document.createElement('div'); box.className = 'kk-err'; 자리(box);
+      // 화면 이름 — 장부 이름(연애 · 사용설명서 · 정통사주 …), 없으면 그 탭 제목(비밀 열 가지 · 우리 둘, 잘 맞아요?)
+      let 이름 = ''; try { const Y = window.ChaeksaYaksok, h = el.querySelector('h2'); 이름 = (Y && Y.이름 && Y.이름(tab)) || (h ? h.textContent.trim() : ''); } catch (e) {}
+      if (!못불러옴(box, 이름 || '책사', () => location.reload())) box.innerHTML = '<p class="hint">지금은 이 화면을 불러오지 못했어요. 새로 고침을 눌러 주세요.</p>';
+    });
+  }
+  // 홈 — 넣어 둔 사람이 있을 때 홈 아래 「설명서」(seolmyeongseo.js)와 인생 곡선(typecard.js)이 판정 엔진을 쓴다. 홈을 먼저 그린 뒤 받아서 그 둘만 마저 그린다.
+  // 그 사이 이번 주 띠는 오늘 한 줄만 보이고, 받으면 인생 곡선 한 줄이 붙는다. 이번 주 카드는 다시 그리지 않는다(펼쳐 본 날이 닫히지 않게).
+  let 홈주 = null;   // renderHome 이 이번 주 카드를 그리고 받은 값 — 이번주띠가 쓴다
+  function 홈꾸러미() {
+    if (!R || 꾸러미왔나('home')) return;
+    꾸러미받기('home').then(() => {
+      if (!R) return;
+      try { 이번주띠(홈주, 인생곡선()); } catch (e) { try { console.warn('인생 곡선 실패:', e); } catch (e2) {} }
+      try { renderWtHome(); } catch (e) { try { console.warn('홈 목록 실패:', e); } catch (e2) {} }
+    }, () => {});
+  }
+  // 이 꾸러미 표를 시험 쪽(tests_kkureomi.html)이 읽는다.
+  window.ChaeksaKkureomi = { 파일: 꾸러미파일, 왔나: 꾸러미왔나, 받기: 꾸러미받기 };
 
   // 09-25 사장님 「콘텐츠 들어가면 홈으로 빠져나갈 길이 위아래 있어야」 — 화면 규격: 홈이 아닌 탭은 맨 위 · 맨 아래에 「← 홈」. 코드가 보장한다(탭마다 손으로 안 넣는다).
   function 홈길(tab) {
@@ -542,6 +580,7 @@
     if (!el.querySelector(':scope > .backhome-bottom')) el.insertAdjacentElement('beforeend', 만들기('bottom'));
   }
   function go(tab) {
+    const 차례 = ++탭차례;   // 10-02 탭별 꾸러미 — 파일이 늦게 오는 사이 다른 화면으로 갔으면 늦게 온 쪽은 그리지 않는다(꾸러미기다림)
     // 떠나기 전에 자리를 적어 둔다. 그리기 전에 해야 한다 — 그린 뒤엔 이미 0 으로 튕겨 있다.
     // 홈에서 아래 「홈」을 다시 누르는 것은 「맨 위로」라는 뜻이다. 그때만 자리를 잊는다.
     if (열린탭() === 'home') 홈자리 = (tab === 'home') ? 0 : 지금자리();
@@ -580,10 +619,16 @@
         }).catch(() => {});
       } catch (e) {}
     }
+    // 10-02 개편 3묶음 「빠르기」 — 그 탭 파일(탭별 꾸러미)이 아직 안 왔으면 받은 뒤에 그린다(아래 「탭별 꾸러미」).
+    // 홈은 기다리지 않는다 — 홈은 처음 받은 파일로 다 그려지고, 아래 「설명서」 · 인생 곡선만 홈꾸러미가 뒤에서 받아 마저 그린다.
+    if (tab === 'home') 홈꾸러미();
+    else if (!꾸러미왔나(tab)) { 꾸러미기다림(tab, 차례); return; }
+    탭그리기(tab);
+  }
+  // 탭 안을 그린다 — go() 가 그 탭 파일이 다 온 뒤에 부른다(파일이 늦게 오면 꾸러미기다림이 받은 뒤 부른다).
+  function 탭그리기(tab) {
     // 시각을 다시 읽는다. 「지금」 표시와 오늘 간지가 로드 시각에 얼어 있었다.
     // 달력 탭은 2026-09-17 에 걷었다(사장님 「달력 삭제 — 설득력없음」). 날 점수(calendar.js)도 같이 나갔다.
-    if (tab === 'geunamja') renderGeunamja();
-    if (tab === 'maeum') renderMaeum();
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
     // 09-26 정통사주 한 줄 카드(docs/87 4절) — 시작 단추 위. 카드는 ssom-card.js 가 그린다
     if (tab === 'jeongtong' && $('jtStart') && profile && window.ChaeksaSsomCard) { try { const old = $('jtCard'); if (old) old.remove(); const R = ChaeksaEngine.calc(profile), html = window.ChaeksaSsomCard.정통카드(R); if (html) { $('jtStart').insertAdjacentHTML('beforebegin', html); window.ChaeksaSsomCard.정통붙이기($('jtStart').parentElement, R, profile.name || ''); } } catch (e) {} }
@@ -594,8 +639,6 @@
     if (tab === 'chongnon') { try { renderChongnon(); } catch (e) { try { console.warn('궁합총론 탭:', e); } catch (x) {} } }
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
-    if (tab === 'story') renderStory();
-    if (tab === 'memo') renderMemo();
     if (tab === 'taekil') wireTaekil();
     // 궁합총론 13장 링크로 건너왔으면 거기서 보던 그 사람을 이 장에서도 골라 둔다 — 첫 사람으로 바뀌어 있으면 엉뚱한 사람을 보게 된다.
     if (궁합넘김) {
@@ -707,7 +750,7 @@
     // 10-02 「책사단」은 걷은 말이다. 처음 온 손님은 index.html 의 소개 한 줄(연애 · 궁합 · 출산택일)을 보고, 저장한 뒤에는 「○○님의 책사」.
     $('subtitle').textContent = nim() ? `${nim()}의 책사` : '나의 책사';
     renderPeopleBtn();
-    renderToday(); try { renderMe(); } catch (e) {} renderPartners(); renderHome();   // 09-25 원국 탭(me) 걷음 — 홈 안의 원국만
+    renderPartners(); renderHome();   // 09-25 원국 탭(me) 걷음 — 홈 안의 원국만
     try { renderWtHome(); } catch (e) { try { console.warn('홈 목록 실패:', e); } catch (e2) {} }
     go('home');
   }
@@ -784,136 +827,13 @@
 
   // ───── 홈 — 타일과 가운데 만세력 ─────
   function renderHome() {
-    // 첫 의논(#chong)은 홈에서 걷었다(2026-09-12 이야기 서점 전략). 의논 화면(ganmyeong)은 전체 목록에서 연다.
-    const a = R.analysis;
     // 09-27 이번 주엔 무엇이 바뀌나 — 홈 카드(byeonhwa.js, 10-02 맨 위 이번 주 띠 안 · 펼치면 보인다). 그 사람은 정통궁합 · 웹툰궁합이 고른 사람(궁합그사람)과 같다
     let 주S = null, 곡선 = null;
     try { if (window.ChaeksaByeonhwaView && $('bhCard')) 주S = ChaeksaByeonhwaView.그리기($('bhCard'), profile, (() => { try { const P0 = People(), me = P0 && P0.active(), g = P0 && 궁합그사람 ? P0.get(궁합그사람) : null; return g && (!me || g.id !== me.id) ? P0.toProfile(g) : null; } catch (e) { return null; } })()); } catch (e) { try { console.warn('이번 주 실패:', e); } catch (e2) {} }
+    홈주 = 주S;   // 10-02 홈꾸러미가 판정 엔진을 받은 뒤 인생 곡선을 붙일 때 쓴다(인생 곡선 · typecard.js 는 탭별 꾸러미 home 에 있다 — 오기 전에는 곡선 없이 띠만)
     try { 곡선 = 인생곡선(); } catch (e) { try { console.warn('인생 곡선 실패:', e); } catch (e2) {} }
     try { 이번주띠(주S, 곡선); } catch (e) { try { console.warn('이번 주 띠 실패:', e); } catch (e2) {} }
-    // 첫 마디(standing)·「지금 어디에 계신지」는 2026-09-14 원국 탭 개편으로 걷었다.
-    // 「타일 미리보기」는 옛 서고(#shelves)의 배지·부제를 채우던 코드였다.
-    // 서고를 지웠으므로(2026-09-09) 여기서 세던 것도 걷었다 — 홈은 renderWtHome 하나가 그린다.
-    // tf 는 아래 홈 장면(hs-day)과 나눔 문구가 그대로 쓴다.
-    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    // ── 홈의 얼굴 (2026-08-30 「양산형 홈페이지 같잖아」) ──
-    // 스무 개짜리 균일 타일 그리드는 앱 런처 문법이라 궁정이 되지 않는다.
-    // 홈을 하루로 만든다: 오늘의 장면 → 첫 의논 → 오늘 나온 책사 하나.
-    // 나머지 타일은 전부 서랍에 넣었다(index.html 의 details.fold).
-    // 지어내지 않는다: 이름과 오늘의 간지, 엔진이 낸 값뿐이다.
-    // 차례는 도열 칸에서 오늘 나온 이를 밝히는 데 쓰였다. 도열을 걷어서(2026-09-12) 자리만 고른다.
-    let [키0, 이름0, 탭0, 말0] = 오늘의책사[날번호() % 오늘의책사.length];
-    let 행동0 = '', 비 = null;
-    // 비서(docs/29 둘) — 오늘 이 사람에게 잰 값으로 한 사람이 말한다.
-    // 위의 문 안내 문장은 값이 하나도 없을 때만 남는다(엔진이 못 재면 물러난다).
-    try {
-      비 = (window.ChaeksaDan && ChaeksaDan.오늘) ? ChaeksaDan.오늘(R, today) : null;
-      if (비 && 비.말) {
-        이름0 = 비.축; 키0 = 책사키[비.축] || 키0; 탭0 = 비.탭 || 탭0; 말0 = 비.말; 행동0 = 비.행동 || '';
-      }
-    } catch (e) {}
-    const sc = $('homeScene');
-    if (sc) {
-      sc.classList.remove('hide');
-      // 맞이하는 말이 먼저다 — 사실 통보는 그 다음이다.
-      // 「기다리고 있었습니다」는 연출이지 명리 주장이 아니다(판정은 엔진, 전달은 우리 몫).
-      // 얼굴이 없으면 얼빡 자리를 비우고 인장만 세운다 — 빈 액자는 두지 않는다.
-      // 책사 얼굴·이름·직함은 걷었다(2026-09-12 「열책사 어쩌고 다 지우자」). 오늘 한마디 문장만 남긴다.
-      sc.innerHTML =
-        '<div class="hs-veil"></div><div class="hs-body">'
-        + '<p class="hs-hail">오늘</p>'
-        + '<p class="hs-name">' + esc(nim()) + '</p>'
-        + '<p class="hs-day">' + esc(f.pillarKo(tf.day)) + ' · ' + esc(f.stemElem(tf.day.stem)) + '의 날이에요</p>'
-        + '<button class="hs-say" type="button">'
-        + '<span class="cs-txt">' + escP(말0)
-        + (행동0 ? '<span style="display:block;margin-top:6px;opacity:.78;font-size:.92em">' + escP(행동0) + '</span>' : '')
-        + '</span><span class="cs-go">' + (탭이름(탭0) ? esc(탭이름(탭0)) + ' ' : '') + '▸</span></button>'
-        + '</div>';   // 「이 한마디 간직하기」(한마디 카드 · share.js drawSay)는 10-02 개편 2묶음에서 걷었다 — 이 장면(#homeScene)이 화면에 없다
-      sc.classList.add('noface');   // 얼굴 자리를 접는다 — 얼굴을 안 세우니 늘 접힌다
-      const b0 = sc.querySelector('.hs-say'); if (b0) b0.onclick = () => go(탭0);
-      // ── 어제와 오늘이 이어진다 (2026-09-04 1단계 「내일 다시 열 이유」) ──
-      // 오늘의 한마디를 날짜별로 남겨 두고, 어제 것이 있으면 그 아래 세운다. 온 날도 센다(기기 안에서만).
-      try {
-        const ymd = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        const 오늘키 = ymd(today), 어제 = new Date(today); 어제.setDate(today.getDate() - 1); const 어제키 = ymd(어제);
-        const 일기 = JSON.parse(localStorage.getItem('chaeksa.daily') || '{}');
-        const 날들 = JSON.parse(localStorage.getItem('chaeksa.days') || '[]');
-        const 다시 = 날들.length > 0 && !날들.includes(오늘키);
-        if (!날들.includes(오늘키)) { 날들.push(오늘키); localStorage.setItem('chaeksa.days', JSON.stringify(날들.slice(-60))); }
-        일기[오늘키] = { 이름: 이름0, 말: 말0 };
-        Object.keys(일기).sort().slice(0, -14).forEach(k => delete 일기[k]);
-        localStorage.setItem('chaeksa.daily', JSON.stringify(일기));
-        const hail = sc.querySelector('.hs-hail');
-        if (hail && (다시 || 날들.length > 1)) hail.textContent = '오늘도 오셨습니다.';
-        const y = 일기[어제키];
-        if (y && y.말 && y.말 !== 말0) {
-          const box = document.createElement('div'); box.className = 'hs-yday';
-          box.innerHTML = '<span class="k">어제 · ' + esc(이름of(y.이름)) + '</span><p>' + esc(y.말) + '</p>';
-          sc.querySelector('.hs-body').appendChild(box);
-        }
-      } catch (e) {}
-    }
-    // ── 기억 (docs/29 넷) — 지난번 한 말을 들고 있다가 묻는다. 세지 않는다. ──
-    // 사람 열쇠는 사람 목록의 id, 없으면 생년월일시·성별. 사람을 바꾸면 기억도 따로다.
-    try {
-      const M = window.ChaeksaMemo;
-      const rm = $('remember');
-      if (M && M.said && rm) {
-        const P3 = People();
-        const pid = (P3 && P3.active()) ? 'p:' + P3.active().id
-          : 'b:' + [profile.year, profile.month, profile.day, profile.hour, profile.gender].join('-');
-        if (비 && 비.말) M.said(pid, today, 비);
-        const ask = M.toAsk(pid, today);
-        if (ask) {
-          const [yy, mm, dd] = ask.day.split('-').map(Number);
-          rm.innerHTML =
-            '<p class="hint" style="margin:0 0 6px">지난 ' + mm + '월 ' + dd + '일, '
-            + esc(이름of(ask.축)) + '이 이렇게 말씀드렸습니다</p>'
-            + '<p style="margin:0 0 10px;line-height:1.62">' + esc(ask.말) + '</p>'
-            + '<p style="margin:0 0 8px;font-weight:700">맞으셨나요?</p>'
-            + '<div style="display:flex;gap:8px">'
-            + '<button class="btn small ghost" type="button" data-ans="yes" style="flex:1;margin:0">맞았어요</button>'
-            + '<button class="btn small ghost" type="button" data-ans="no" style="flex:1;margin:0">아니었어요</button>'
-            + '<button class="btn small ghost" type="button" data-ans="dunno" style="flex:1;margin:0">모르겠어요</button>'
-            + '</div>'
-            + '<p class="hint" style="margin:8px 0 0">점수로 세지 않습니다. 저희가 들고 있다가 다음 말에 씁니다.</p>';
-          rm.classList.remove('hide');
-          rm.querySelectorAll('[data-ans]').forEach(b => b.onclick = () => {
-            M.answer(pid, ask.day, b.dataset.ans);
-            rm.innerHTML = '<p style="margin:0;line-height:1.62">'
-              + (b.dataset.ans === 'yes' ? '기억해 두겠습니다. 맞은 자리는 다음에 한 칸 더 내려가 보겠습니다.'
-               : b.dataset.ans === 'no' ? '빗나간 것도 저희 몫입니다. 지우지 않고 그대로 두겠습니다.'
-               : '그것도 답입니다. 티가 안 나는 날도 있습니다.') + '</p>';
-            setTimeout(() => rm.classList.add('hide'), 2600);
-          });
-        } else {
-          rm.classList.add('hide');
-          // 답이 붙은 말이 있으면 맞이하는 말이 그것을 잇는다 — 기억하는 장면은 여기서 난다.
-          const la = M.lastAnswered(pid);
-          const hail = sc && sc.querySelector('.hs-hail');
-          if (la && hail && la.답 !== 'dunno') {
-            hail.textContent = la.답 === 'yes'
-              ? '지난번 말씀이 맞았다 하셨지요. 오늘도 들고 있었습니다.'
-              : '지난번은 빗나갔지요. 그것도 두고 왔습니다.';
-          }
-        }
-      }
-    } catch (e) {}
-    // 책사단 도열(#todayEnvoy)이 여기 있었다. 2026-09-12 사장님 「이동경로가 꼬이네」로 걷었다.
-    // 열 얼굴이 곧 열 개의 문이었는데, 그 열 곳 가운데 일곱이 09-04 에 사장님이 홈에서 빼신 화면이다
-    // (index.html 176줄 — year·inyeon·jikcheop·dohwa·lovestory·gacha·gwangye).
-    // 홈 목록은 「뺀다」 하고 도열은 「들어간다」 하니, 한 화면 안에서 두 길이 서로 어긋났다.
-    // 화면과 탭 코드는 살아 있다 — 주소(#jikcheop)와 그날 한마디 단추(위 hs-say)로 열린다.
-    // 랜딩의 열 사람 도열(#lpCorps)도 2026-09-12 밤에 걷었다(「열책사 어쩌고 다 지우자」).
-    // 서고(#shelves)의 배지·부제 열둘을 채우던 자리였다. 서고를 지웠다(2026-09-09 「홈 하나로 정리」).
-    // T.jichim · T.naepyeon · T.inyeon · T.yearFlow · T.lifeCurve · T.career · T.관계지도 ·
-    // T.love · T.wealth · T.cachedSample 을 홈을 그릴 때마다 돌려서 안 보이는 칸에 쓰고 있었다.
-    // 그 화면들이 필요로 하면 그 탭이 열릴 때 제가 돈다. 홈에서는 안 돈다.
-    // 홈의 비망록 배너를 걷었다(2026-09-10). #memoBadge · #memoTitle · #memoSub 가
-    // index.html 에 **한 번도 없었다** — 첫 줄의 `if (!$('memoSub')) return;` 에 걸려
-    // 늘 그냥 돌아 나왔다. 오류가 안 나니 아무도 몰랐다. tools_check 4번이 잡았다.
-    // 비망록은 2026-08-31 에 서고에서 내린 물건이라(「공주님께 숙제를 시킨다」) 되살리지 않는다.
-    // 화면은 #memo 로 그대로 열린다.
+    // 홈 장면(#homeScene · 오늘 한마디)과 기억 물음(#remember)은 화면에서 걷은 뒤에도 코드가 남아 홈을 그릴 때마다 헛돌았다 — 10-02 개편 3묶음에서 지웠다.
   }
   // data-scroll 이 있으면 탭을 연 뒤 그 자리로 내린다 — 홈 「이달의 나」가 오늘 탭의 달력(#myMonth)으로 간다.
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {
@@ -924,245 +844,10 @@
     if (id) setTimeout(() => { const el = $(id); if (el) el.scrollIntoView({ block: 'start', behavior: 'auto' }); }, 260);
   });
 
-  // ───── 오늘 ─────
-  function renderToday() { try { renderTodayMemo(); } catch (e) {} }   // 오늘 탭을 걷었다(2026-09-13). 비망록 알림만 남긴다(상자가 없으면 스스로 빠진다).
-
-  // 오늘의 시간대 — 12시진 곡선. 用값을 막대 높이로, 십신을 사건 라벨로 바꾼다.
-  // 오늘의 시간대(renderHours·pickHour)는 오늘 탭과 함께 걷었다(2026-09-13). 시운은 판정 단위에서 뺀다 — 시진까지 내리면 틀릴 자리가 12배다.
-
-  // 진태양시 보정을 켠 것과 끈 것을 나란히 보여준다.
-  // 시각 보정은 이 서비스가 다른 곳과 갈리는 지점이라, 묻기 전에 먼저 보여준다.
-  function renderSolarCompare(profile) {
-    const box = $('solarCmp'); if (!box) return;
-    if (profile.noTime || profile.hour == null || profile.hour === '') { box.classList.add('hide'); return; }
-    let on, off;
-    try {
-      on  = E.calc(Object.assign({}, profile, { solarCorrection: true,  tzOffset: null }));
-      off = E.calc(Object.assign({}, profile, { solarCorrection: false, tzOffset: 9 }));
-    } catch (e) { box.classList.add('hide'); return; }
-    box.classList.remove('hide');
-    const KEYS = ['year','month','day','hour'], NAMES = { year:'연주', month:'월주', day:'일주', hour:'시주' };
-    const diff = KEYS.filter(k => f.pillar(on.pillars[k]) !== f.pillar(off.pillars[k]));
-    const c = on.corrected;
-    const clock = `${String(profile.hour).padStart(2,'0')}:${String(profile.minute || 0).padStart(2,'0')}`;
-    const solar = `${String(c.hh).padStart(2,'0')}:${String(c.mm).padStart(2,'0')}`;
-    if (!diff.length) {
-      box.innerHTML = `<div class="sc-head"><b>시각 보정</b><span>시계 ${clock} → 실제 태양시 ${solar}</span></div>
-        <p class="sc-same">이 시각은 보정을 넣어도 사주가 같아요. 경계에서 멀어요.</p>`;
-      return;
-    }
-    const reasons = [];
-    const y = +profile.year, mo = +profile.month, d = +profile.day;
-    const n = y * 10000 + mo * 100 + d;
-    if ((y === 1987 && n >= 19870510 && n <= 19871011) || (y === 1988 && n >= 19880508 && n <= 19881009))
-      reasons.push('서머타임 시행 중 (−1시간)');
-    if (n >= 19540321 && n <= 19610809) reasons.push('당시 한국 표준시가 지금과 달랐음 (−30분)');
-    const lon = profile.longitude;
-    if (lon) reasons.push(`${plNameOf(profile)} 경도 보정 (−${Math.round((135 - lon) * 4)}분)`);
-    box.innerHTML = `
-      <div class="sc-head"><b>시각 보정을 넣으면 ${diff.map(k => NAMES[k]).join('·')}가 바뀌어요</b>
-        <span>시계 ${clock} → 실제 태양시 ${solar}</span></div>
-      <div class="sc-grid">
-        <div class="sc-col off"><div class="t">보정 안 함</div>
-          ${KEYS.map(k => `<span class="${diff.includes(k) ? 'hit' : ''}">${f.pillar(off.pillars[k])}</span>`).join('')}
-          <div class="s">${off.analysis.strength}</div></div>
-        <div class="sc-col on"><div class="t">진태양시 보정</div>
-          ${KEYS.map(k => `<span class="${diff.includes(k) ? 'hit' : ''}">${f.pillar(on.pillars[k])}</span>`).join('')}
-          <div class="s">${on.analysis.strength}</div></div>
-      </div>
-      ${reasons.length ? `<ul class="sc-why">${reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
-      ${off.analysis.strength !== on.analysis.strength
-        ? `<p class="sc-note">일간의 강약 판정도 <b>${off.analysis.strength}</b>에서 <b>${on.analysis.strength}</b>로 달라집니다.</p>` : ''}
-      <p class="hint">책사는 보정한 쪽으로 계산합니다. 바꾸시려면 위 이름 옆 ▾ → 고치기에서 끄실 수 있습니다.</p>`;
-  }
-  function plNameOf(p) { return p.placeName || '서울'; }
-
-  // ── 슈퍼계정 — 유료 수준 화면을 되단다 ──
-  // 체용 카드·통변좌표는 무료 화면에서 걷어냈지만(2026-08-28) 함수와 엔진은 남겼고,
-  // DOM 이 없으면 조용히 빠져나가게 되어 있다. 그러니 슈퍼계정이면 DOM 만
-  // 다시 만들어주면 그대로 그려진다 — 렌더 코드를 두 벌 만들지 않는다.
-  // 등급은 JWT 의 app_metadata.plan 에서 온다(Supabase 서명이라 위조 불가).
-  // 켜는 법은 server/schema-9.sql. 화면 DOM 이야 누구나 devtools 로 만들 수 있지만
-  // 그래봐야 자기 브라우저에서 계산 결과를 보는 것뿐이고, 돈이 걸린 AI 한도는
-  // 서버(ai_usage_bump)가 따로 강제한다.
-  function mountSuper() {
-    try { if (!window.ChaeksaUsage || ChaeksaUsage.plan() !== 'super') return; } catch (e) { return; }
-    if (!$('coordBox')) {
-      const cta = $('aiBrief');
-      if (cta) cta.insertAdjacentHTML('afterend', '<div class="coord" id="coordBox"></div>');
-    }
-    if (!$('chaeyongCard')) {
-      const g = $('gyeokCard');
-      if (g) g.insertAdjacentHTML('afterend', `<section class="card" id="chaeyongCard">
-        <h2>6차원 적층 체용 <span style="font-size:11px;color:var(--ink3);font-weight:400">상담 전용 · 슈퍼계정에만 보입니다</span></h2>
-        <p class="hint" style="margin:0 0 12px">원국 위에 대운·세운·월운·일운·시운을 한 층씩 얹으며, 그때마다 體(나)와 用(들어오는 기운)의 관계를 다시 판정합니다.</p>
-        <div id="cyStack"></div>
-        <p class="hint" id="cyTurn"></p>
-      </section>`);
-    }
-  }
-
-
-  // loadAiBrief(「좌장에게 오늘을 묻기」 LLM 브리핑)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. 히어로는 규칙 문장만 선다.
-  function loadAiBrief() { heroFallback(); }
-  // AI를 못 쓸 때도 히어로는 비지 않는다 — 규칙 엔진의 첫 문장을 세운다
-  function heroFallback() {}   // 오늘 탭을 걷었다(2026-09-13 사장님 「근거도 없고 이해도 어려워」) — 히어로가 없다.
-
-  // ───── 6차원 적층 체용 ─────
-  // 무료 화면에서는 카드를 걷어냈다 (2026-08-28) — 體·用·적층은 일반인이 읽을 말이 아니다.
-  // 함수와 엔진(chaeyong.js)은 그대로 둔다. 유료 상담에서 쓴다.
-  // #cyStack 이 없으면 여기서 조용히 빠져나간다.
-  function renderChaeyong() {
-    const box = $('cyStack'); if (!box || !window.ChaeksaChaeyong) return;
-    const cy = ChaeksaChaeyong.stack(R, today);
-    box.innerHTML = cy.layers.map(l => {
-      const cls = l.value > 0.3 ? 'up' : (l.value < -0.3 ? 'dn' : 'mid');
-      const w = Math.min(100, Math.abs(l.value) / 3 * 100);
-      return `<div class="cy ${l.level === 1 ? 'base' : cls}">
-        <div class="cy-h"><span class="cy-lv">${l.level}</span><b>${esc(l.name)}</b>
-          <span class="gz">${esc(l.ganji)}</span>
-          ${l.god ? `<span class="cy-god">${esc(l.god)}</span>` : ''}
-          <span class="cy-sign ${cls}">${esc(l.sign)}${l.level > 1 ? (l.value > 0 ? ' +' : ' ') + l.value : ''}</span></div>
-        ${l.level > 1 ? `<div class="cy-bar"><i style="width:${w}%"></i></div>` : ''}
-        <p>${esc(l.note || '')}</p>
-      </div>`;
-    }).join('');
-    const t = $('cyTurn');
-    const parts = [`총합 <b>${cy.sum > 0 ? '+' : ''}${cy.sum}</b> — ${cy.sum > 1 ? '전체적으로 흐름이 돕는 쪽' : (cy.sum < -1 ? '전체적으로 눌리는 쪽' : '한쪽으로 기울지 않은 상태')}입니다.`];
-    if (cy.turns.length) parts.push(`흐름이 뒤집히는 지점: <b>${cy.turns.map(x => `${x.from} → ${x.to}`).join(', ')}</b>. 이 층에서 체감이 달라집니다.`);
-    if (cy.shifted) parts.push(`층을 지나며 일간이 <b>${cy.natalStrength} → ${cy.finalStrength}</b>으로 옮겨갑니다.`);
-    // 총합은 '원국이 어떤가'이고 촉발은 '지금 방아쇠가 당겨졌나'다. 둘은 다를 수 있다 —
-    // 원국은 눌려 있는데 오늘 이 시각에 터지는 경우가 그것이다.
-    if (cy.triggerBy) {
-      const 세다 = Math.abs(cy.trigger) >= 1.5;
-      parts.push(`지금 방아쇠를 당기는 건 <b>${cy.triggerBy}</b>입니다`
-        + (cy.trigger > 0 ? ` — 터지면 풀리는 쪽(${'+' + cy.trigger})` : ` — 터지면 눌리는 쪽(${cy.trigger})`)
-        + (세다 ? '. 오늘 중 이 시간대를 특히 보세요.' : '.'));
-    }
-    t.innerHTML = parts.join(' ');
-  }
-
-  // ───── 나 ─────
-  // 한입 카드 — 원국 풀이를 다섯 장으로 분해한 것. 문장은 brief.js의 MZ 자산.
-  function renderMzDeck() {}   // 2026-09-14 뺐다 — 원국은 홈 맨 위(wongook.js).
-
-
-
-  function renderMe() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
-
-  // ───── 격국 성패 · 형충회합 · 갈림 (2026-08-28) ─────
-  // 엔진이 내는 것을 무료 화면에 그대로 뿌린다.
-  // 판정은 넷이고(자평진전 논용신성패구응), 상신을 같이 말한다.
-  // 「갈림」은 판정이 사람 손에 넘어가는 자리다 — 숨기지 않고 알린다.
-  function renderGyeok() {
-    const box = $('gyeokBox'); if (!box) return;
-    const card = box.closest('.card');
-    // 격은 판정엔진 원국 층의 성패(층.성패)에서 읽는다(63조 문 하나 · 09-23 「층격이 나의 관점이긴해」) — typecard 를 직접 부르지 않는다.
-    // (#gyeokBox 는 지금 어느 화면에도 없다. 되살릴 때 정통사주 3장 · 원국 탭과 같은 격이 나오게 둔다.)
-    const P = window.ChaeksaPanjeong, Gk = window.ChaeksaGyeok;
-    if (!P || !Gk) { if (card) card.classList.add('hide'); return; }
-    let J; try { const s = P.판정(R, today, { 운들: [] }).층들[0].성패; J = s ? { name: s.격, 판정: s.판정, 상신: s.상신, 근거: s.근거 || {}, 잰것: {} } : null; } catch (e) { if (card) card.classList.add('hide'); return; }
-    if (!J || !J.판정) { if (card) card.classList.add('hide'); return; }
-    if (card) card.classList.remove('hide');
-
-    // 색은 **성패**를 따른다 — 섰다·구제됐다가 성격, 띠었다·깨졌다가 패격이다.
-    // 예전엔 판정 이름으로 갈라 띠었다(패격)를 중간색으로, 구제됐다(성격)도 중간색으로 칠했다.
-    // 성패는 둘뿐이니 색도 둘이다. 그 안의 결(온전/가까스로/흠 하나/무너짐)은
-    // LABEL 의 짧게·풀어서가 말한다 — 색으로 네 칸을 흉내 내면 패격이 성격처럼 보인다.
-    const 성패 = (Gk.성패of ? Gk.성패of(J.판정) : '');
-    const cls = 성패 === '성격' ? 'ok' : 성패 === '패격' ? 'no' : 'mid';
-    // 화면에 쓰는 말은 gyeokguk.js 의 LABEL 한 곳에서만 정한다.
-    const L = (Gk.LABEL || {})[J.판정] || { 짧게: J.판정, 풀어서: '' };
-    const 근거말 = Gk.근거말 || {};
-    const 한줄 = L.풀어서;
-
-    const 근거줄 = [];
-    // 조항은 판정키다 — 카드에도 공주님말을 낸다(gyeokguk.js 공주님말표).
-    const 읽 = (t) => (Gk.공주님말of ? Gk.공주님말of(t) : t);
-    const 붙 = (lb, arr) => { (arr || []).forEach(t => 근거줄.push(
-      `<div><span class="lb">${esc(근거말[lb] || lb)}</span><span>${esc(읽(t))}</span></div>`)); };
-    const g = J.근거 || {};
-    if (J.판정 === '구제됐다') { 붙('깨졌다', g.깨졌다); 붙('구제', g.구제); }
-    else { 붙('섰다', g.섰다); 붙('띠었다', g.띠었다); if (!(g.섰다 || []).length) 붙('깨졌다', g.깨졌다); }
-
-    const w = J.잰것 || {};
-    const 힘줄 = ['일간', '비겁', '식상', '재성', '관성', '인성']
-      .filter(k => w[k] != null)
-      .map(k => `${k} <b>${w[k].toFixed(2)}</b>`).join(' · ');
-
-    // 지지의 형충회합 — 순서대로 해소한 결과
-    let 관계 = '';
-    try {
-      const br = E.branchRels(R.pillars);
-      const 성 = (br.성립 || []).map(v =>
-        `<li>${esc(v.종류)} <b>${esc(v.글자)}</b> <span style="color:var(--ink3)">${esc((v.자리 || []).join('·'))}</span>${v.격지 ? ' <span style="color:var(--accent)">격지</span>' : ''}</li>`);
-      const 보 = (br.보류 || []).map(v =>
-        `<li class="off">${esc(v.종류)} ${esc(v.글자)} — ${esc(v.사유)}</li>`);
-      if (성.length || 보.length) 관계 = `<div class="gk-rel">
-        <p class="t">지지의 형충회합 — 삼합 &gt; 육합 &gt; 충 순서로 풀었습니다</p>
-        <ul>${성.join('')}${보.join('')}</ul></div>`;
-    } catch (e) {}
-
-    // 갈림 — 판정이 사람 손에 넘어가는 자리
-    let 갈림 = '';
-    try {
-      // 강약 점수가 갈리는 자리(「신약 0.37 / 중화 0.42」)는 법전 29조로 화면에서 뺀다 — 격이 갈리는 자리만 남긴다(2026-09-13).
-      const fs = (E.forks(R.pillars) || []).filter(v => !/신강|신약|중화/.test(String(v.무료) + String(v.다른쪽)));
-      if (fs.length) 갈림 = `<div class="gk-fork">
-        <p class="t">여기서 판정이 갈립니다</p>
-        <p class="arm" style="margin:-4px 0 10px">명리가에 따라 다르게 보는 자리입니다.
-          이 화면은 늘 보수적인 쪽으로 계산하고, 갈린다는 사실을 숨기지 않습니다.</p>
-        ${fs.map(v => `<div class="it"><b>${esc(v.이름)}</b> — ${esc(v.사실)}<br>
-          <span class="arm">이 화면의 판정 · ${esc(v.무료)}<br>
-          ${esc(v.갈래)} ${esc(v.다른쪽)}</span></div>`).join('')}
-        </div>`;
-    } catch (e) {}
-
-    // 격이 어디서 나왔는지 — 월지가 격을 정한다. 힘은 천간에서 오므로 축이 다르다.
-    const mb = R.pillars.month.branch;
-    const 국 = (E.samhapOf ? E.samhapOf([[R.pillars.year.branch, 1], [mb, 2],
-      [R.pillars.day.branch, 1]].concat(R.pillars.hour ? [[R.pillars.hour.branch, 1.5]] : []))
-      : []).filter(x => x.글자.indexOf(mb) >= 0)[0];
-    // 한자 뒤의 조사는 우리말 읽기의 받침으로 고른다 — 「辰가」가 아니라 「辰이」다.
-    const 받침 = (ko) => { const c = (ko || '').charCodeAt((ko || '').length - 1);
-      return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 !== 0; };
-    const 이가 = (b) => 받침(f.branchKo(b)) ? '이' : '가';
-    const 출처 = 국
-      ? `태어난 달의 ${f.branch(mb)}(${f.branchKo(mb)})${이가(mb)} ${국.글자.map(b => f.branch(b)).join('')} ${E.ELEM[국.elem]} 기운으로 뭉쳤습니다. 그 뭉친 기운이 이 사주의 중심입니다`
-      : `태어난 달의 ${f.branch(mb)}(${f.branchKo(mb)})에서 나온 것입니다`;
-
-    box.innerHTML = `
-      <div class="gk-head">
-        <span class="nm">${esc(J.name)}격</span>
-        <span class="vd ${cls}">${esc(L.짧게)}</span>
-      </div>
-      <p class="gk-sang" style="margin-bottom:8px">${esc(출처)}</p>
-      <p class="gk-sang">${esc(한줄)}${J.상신 ? `<br>이 사주를 쓸 수 있게 해주는 것은 <b>${esc(J.상신)}</b>입니다` : ''}</p>
-      ${근거줄.length || 힘줄 || 관계 ? `<button class="gk-more" id="gkMore">계산 근거 보기 ▸</button>` : ''}
-      <div class="gk-detail hide" id="gkDetail">
-      ${근거줄.length ? `<div class="gk-why">${근거줄.join('')}</div>` : ''}
-      ${힘줄 ? `<p class="gk-force">천간이 지지에서 받은 힘 — ${힘줄}<br>
-        <span style="color:var(--ink3)">0 은 그 십신이 천간에 안 떴거나 뿌리를 못 내렸다는 뜻입니다.
-        격은 월지가 정하고 힘은 천간에서 오므로 둘이 어긋날 수 있습니다.</span></p>` : ''}
-      ${관계}
-      </div>
-      ${갈림}`;
-
-    const more = $('gkMore'), detail = $('gkDetail');
-    if (more && detail) more.onclick = () => {
-      const 열림 = !detail.classList.toggle('hide');
-      more.textContent = 열림 ? '계산 근거 접기 ▾' : '계산 근거 보기 ▸';
-    };
-  }
-
   // 원국 공유 카드(renderShareCard · #btnShare · #btnSaveImg → share.js draw)는 10-02 개편 2묶음에서 걷었다 — 부르는 단추가 화면에 없었다.
-  // renderProfileCard(「좌장이 읽는 원국」 Opus 정독)는 2026-09-13 에 지웠다 — 사장님 「다 삭제해」. wongook 상품은 팔지 않는다.
-  async function renderProfileCard() { const c = $('aiProfile'); if (c) c.remove(); }
+  // 오늘 탭 · 시각 보정 견줌(#solarCmp) · 슈퍼계정 체용 카드 · 격 카드(#gyeokBox) · 원국 정독(#aiProfile)은 화면에서 걷은 뒤 코드만 남아 있던 것을 10-02 개편 3묶음에서 지웠다.
 
 
-  // ───── 이 남자, 나한테 돈을 쓸까요? (docs/31 · 9,900원 첫 장) ─────
-  // 물음 열 개. 1·2·6은 미리보기, 나머지는 결제(geunamja) 뒤에. 값은 geunamja.js, 말도 거기.
-  function renderGeunamja() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
   // ───── 카드 줄 (2026-09-04 밤 사장님 「나에 대한 건 카드식, 그에 대한 건 섬세하게 문장+카드로」) ─────
   // 그 사람 장: 위에 카드 한 줄(한눈에) + 아래 문장. 나 장: 카드만, 문장은 접어 둔다.
   function 카드줄(Q, 미리, 다열림, 접기) {
@@ -1181,37 +866,6 @@
     }).join('') + '</div>';
   }
 
-  function showGeunamja(you0, youName, met) {
-    const G = window.ChaeksaGeunamja; const box = $('gnResult'); if (!box) return;
-    let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    // 역산 — 공주님 쪽 「먼저 달라진 것」이 바뀌었을 수 있으니 내 사주도 다시 계산한다
-    let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
-    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    // 한 남자에 한 번 — 열쇠는 그 남자의 생년월일시. 다른 남자는 새로 산다(사장님 「개별로 받아야지」).
-    const 열쇠 = 'geunamja:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
-    const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('geunamja', 열쇠)) || null;
-    const 미리 = new Set([0, 1, 5]);
-    const 다 = paid || 표무료();   // 표가 무료가 되면 산 사람이 아니어도 열 가지가 다 열린다
-    const 절 = f.Q.map((q, i) => {
-      const 열림 = 다 || 미리.has(i);
-      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
-        + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
-        + '</div>';
-    }).join('');
-    const 결제 = paid ? '' : 결제상자('btnGnBuy', youName, '그래서 이 사람이 나한테 도움이 되는 사람인지는 나머지 일곱 가지 비밀에서 봅니다.');
-    box.innerHTML = `<h2>이 남자, 나한테 돈을 쓸까요?</h2>
-      <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${카드줄(f.Q, 미리, 다, false)}
-      ${절}
-      ${한편자리(paid, youName)}
-      ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
-      ${결제}`;
-    box.classList.remove('hide');
-    한편붙이기(box, 'geunamja', { 제목: '이 남자, 나한테 돈을 쓸까요?', 부제: '그래서 이 사람이 나한테 도움이 되는 사람인지' }, f, met, you0.관찰, 열쇠, youName);
-    const bb = box.querySelector('#btnGnBuy');
-    if (bb) bb.onclick = () => 결제누름(bb, 'geunamja', 열쇠);
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
 
   /** 결제 버튼에서 로그인이 필요할 때. 앱의 다른 로그인 자리와 같은 꼴(카카오 → 안 되면 설정 창).
    *  로그인하고 돌아오면 이 장과 고른 사람으로 다시 온다(2026-09-22 점검 — 예전엔 홈에 떨어져서 사려던 장을 다시 찾아야 했다).
@@ -1252,39 +906,6 @@
     return ChaeksaPay.누르면(bb, code, 열쇠, 결제로그인);
   }
 
-  // ───── 그 사람, 나한테 마음이 있을까요? (둘째 장 · maeum.js) ─────
-  function renderMaeum() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
-  function showMaeum(you0, youName, met) {
-    const G = window.ChaeksaMaeum; const box = $('mmResult'); if (!box) return;
-    let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    // 역산 — 공주님 쪽 「먼저 달라진 것」이 바뀌었을 수 있으니 내 사주도 다시 계산한다
-    let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
-    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
-    const 열쇠 = 'maeum:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
-    const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('maeum', 열쇠)) || null;
-    const 미리 = new Set([0, 1, 3]);
-    const 다 = paid || 표무료();
-    const 절 = f.Q.map((q, i) => {
-      const 열림 = 다 || 미리.has(i);
-      return `<div class="gn-q${열림 ? '' : ' locked'}"><p class="gn-k"><i>비밀 ${i + 1}</i> ${esc(q.물음)}</p>`
-        + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
-        + '</div>';
-    }).join('');
-    const 결제 = paid ? '' : 결제상자('btnMmBuy', youName, '그래서 이 사람이 나한테 좋은 사람인지는 나머지 일곱 가지 비밀에서 봅니다.');
-    const 관찰말 = { 여자: '나한테 다가옴', 돈: '돈 씀씀이', 말: '말·표현', 자리: '일·자리', 없음: '달라진 것 없음' }[you0.관찰] || '';
-    box.innerHTML = `<h2>그 사람, 나한테 마음이 있을까요?</h2>
-      <p class="hint">${esc(youName)} · ${met ? '만난 해 ' + met + '년 · ' : ''}${관찰말 ? '먼저 달라진 것 ' + 관찰말 + ' · ' : ''}${today.getFullYear()}년 ${today.getMonth() + 1}월 기준</p>
-      ${카드줄(f.Q, 미리, 다, false)}
-      ${절}
-      ${한편자리(paid, youName)}
-      ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
-      ${결제}`;
-    box.classList.remove('hide');
-    한편붙이기(box, 'maeum', { 제목: '그 사람, 나한테 마음이 있을까요?', 부제: '그래서 이 사람이 나한테 좋은 사람인지' }, f, met, you0.관찰, 열쇠, youName);
-    const bb = box.querySelector('#btnMmBuy');
-    if (bb) bb.onclick = () => 결제누름(bb, 'maeum', 열쇠);
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
 
   // ───── 궁합총론 탭 (2026-09-23 사장님 「아래탭에 넣어」) ─────
   // 나는 지금 보는 원국(profile), 그 사람은 넣어 둔 사람 가운데 고른다. 명리는 gunghap-gwanjeom.js, 그리기는 gunghap-chongnon.js.
@@ -1335,6 +956,7 @@
     };
     // 내 원국이 없으면 두 분을 놓을 수 없다. (원국이 없으면 아래 탭이 안 보이지만, 주소로 들어오는 길을 막아 둔다.)
     if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요. 내 원국이 있어야 두 분을 나란히 놓아요.', '내 생년월일 넣기', () => go('home')); return; }
+    if (P && !GC && 꾸러미받는중('chongnon')) return;   // 10-02 정통궁합 파일(탭별 꾸러미)이 아직 오는 중 — 다 오면 go() 가 다시 그린다
     if (!P || !GC) { 궁합그린것 = ''; if (!못불러옴(out, '정통궁합', renderChongnon, [wrap, none, add, $('gcStart')])) 안내('지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요. 넣으면 바로 두 분을 나란히 놓아요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
@@ -1374,6 +996,7 @@
       add.textContent = 단추; add.classList.remove('ghost', 'hide'); add.onclick = 누르면; out.innerHTML = '';
     };
     if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
+    if (P && !SP && 꾸러미받는중('ssom')) return;   // 10-02 웹툰궁합 파일(탭별 꾸러미)이 아직 오는 중 — 다 오면 go() 가 다시 그린다
     if (!P || !SP) { if (!못불러옴(out, '웹툰궁합', renderSsom, [wrap, none, add, $('ssMore')])) 안내('지금은 웹툰궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
@@ -1557,8 +1180,6 @@
   function renderPartners() { pendingPick = null; }
 
 
-  // ───── 재물 그릇 — 녹패 ─────
-  let nokpaeFor = null;   // 어느 사주로 그렸는지 — 프로필이 바뀌면 다시 그린다
 
   // ───── 택일 1:1 상담 문의 ─────
   // 카카오톡 채널. 채팅 주소(pf.kakao.com/_XXX/chat)든 채널 홈 주소(pf.kakao.com/_XXX)든
@@ -1572,12 +1193,9 @@
   // 스크립트 평가 때 한 번 물어 캐시한다. 응답이 오기 전 렌더는 카카오만 보인다(무해).
   let payReady = false;
   if (window.ChaeksaPay) {
-    // 이 왕복은 동기 렌더보다 늦게 온다 — 항상. 그래서 도착하면 「오늘」을 다시 그린다.
-    // 안 그러면 아직 아무것도 안 산 손님에게 「이번 달 일운」 결제 버튼이 영영 안 뜬다
-    // (오늘 탭은 go() 에 렌더 호출이 없어 탭을 눌러도 다시 안 그려진다).
+    // 이 왕복은 동기 렌더보다 늦게 온다 — 항상. (도착하면 다시 그리던 「이번 달 일운 달력」은 상품 · 칸을 걷어 10-02 개편 3묶음에서 지웠다.)
     ChaeksaPay.state().then(s => {
-      const 전 = payReady; payReady = !!(s && s.ready);
-      if (payReady !== 전) { try { renderMyMonth(); } catch (e) {} }
+      payReady = !!(s && s.ready);
       // 결제 상자의 [필수] 칸을 이 답보다 먼저 체크했으면 단추가 잠긴 채 남는다 — 지금 상태로 맞춘다(2026-09-22 검토).
       try { document.querySelectorAll('input[data-pay-agree]').forEach(c => { const b = document.getElementById(c.getAttribute('data-pay-agree')); if (b && !b.dataset.busy) b.disabled = !(payReady && c.checked); }); } catch (e) {}
     }).catch(() => {});
@@ -1590,7 +1208,6 @@
       // 열면 그 탭만 결제 안내가 떠 있었다. 재방문자는 표본이 로컬에 있어 탭이
       // 주문 조회 왕복보다 먼저 그려진다.
       inyeonFor = null; lsFor = null; msFor = null; dohwaFor = null;
-      try { renderMyMonth(); } catch (e) {}
     }).catch(() => {});
   }
 
@@ -1619,9 +1236,9 @@
     // 콘텐츠는 열람이 시작되면 제공이 시작된 것이고, 그 뒤에는 청약철회가 제한될 수 있다. 체크 전에는 단추가 잠긴다
     // (아래 결제동의 · pay.js 누르면 이 한 번 더 막는다).
     const 동의 = '<div class="pb-refund" style="margin:14px 0 10px;text-align:left">'
-      + '<p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
+      + '<p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
-      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer">'
+      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:var(--t1);line-height:1.7;color:var(--ink);cursor:pointer">'
       + '<input type="checkbox" data-pay-agree="' + id + '" style="margin-top:4px;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span>'
       + '</label></div>';
@@ -1802,55 +1419,6 @@
     });
   }
 
-  // ── 이번 달 일운 달력 — 달마다 다시 사는 상품 ──
-  // 무료는 오늘과 이번 주까지. 서른 날 전체는 결제한 그 달만 열린다.
-  function renderMyMonth() {
-    const T = window.ChaeksaTypecard;
-    const wkEl = $('week'), wkCard = wkEl && wkEl.closest('.card');
-    if (!T || !T.myDays || !wkCard || !R) return;
-    let box = $('myMonth');
-    if (!box) { wkCard.insertAdjacentHTML('afterend', '<section class="card" id="myMonth"></section>'); box = $('myMonth'); }
-    const y = today.getFullYear(), m = today.getMonth() + 1;
-    // 「이번 달 일운 달력」 상품은 2026-09-14 삭제(사장님) — 결제 권유를 걷고, 이미 산 분만 그대로 연다.
-    const paid = window.ChaeksaPay && ChaeksaPay.paidFor && ChaeksaPay.paidFor('month');
-    if (!paid) { box.innerHTML = ''; box.classList.add('hide'); return; }
-    const v = T.myDays(R, y, m);
-    // 좋은 날 배점(monthScoreFor)은 2026-09-04 폐지 — 점수·좋은 날·조심할 날·주 단위 평균을 걷고,
-    // 서른 칸에는 그날 하늘에 온 글자(십신 · 돈/자리/연)만 남긴다. 아래 주절·좋은절·조심절·예고는 비운다.
-    const 폐지 = true;
-    const 주절 = 폐지 ? '' : v.주들.map(w => {
-      const g = w.top.십신;
-      return `<div class="pb-dd"><b>${w.시작}~${w.끝}일</b> <span class="pb-god">${w.평균 >= 60 ? '순한 주' : w.평균 <= 42 ? '무거운 주' : '보통 주'}</span>
-        <p class="pb-why">◦ 가장 좋은 날은 <b>${w.top.일}일(${w.top.요일})</b> ${esc(w.top.간지)} · ${esc(g)} — ${esc(GOD_FLOW[g] || '')}</p>
-        ${w.low.점수 <= 35 ? `<p class="pb-why">◦ ${w.low.일}일(${w.low.요일})은 눌립니다 — 큰 결정은 미루세요</p>` : ''}
-      </div>`;
-    }).join('');
-    const 좋은절 = 폐지 ? '' : v.좋은.length
-      ? v.좋은.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)} · ${esc(r.십신)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ''}</p>`).join('')
-      : '<p class="pb-why">◦ 크게 열리는 날이 없는 달입니다 — 무리해서 일을 벌이기보다 다음 달을 준비하는 달로 쓰세요</p>';
-    const 조심절 = 폐지 ? '' : v.조심.length
-      ? v.조심.map(r => `<p class="pb-why">◦ <b>${r.일}일(${r.요일})</b> ${esc(r.간지)}${r.이유.length ? ' — ' + esc(r.이유[0]) : ' — 기운이 눌리는 날입니다'}</p>`).join('')
-      : '';
-    // 다음 달 예고 — 달마다 다시 사는 상품의 고리
-    let 예고 = '';   // 「다음 달 풀리는 날 N일」 예고도 배점 폐지로 걷었다
-    const mw = T.monthWhy ? T.monthWhy(R) : null;
-    box.innerHTML = `<h2>${m}월 일운 달력<span class="h2sub">결제 열람 · ${y}년</span></h2>
-      ${mw ? `<div class="nx-diag pbd"><p class="nx-diag-k">왜 나에게는 날의 서열인가</p>${mw.말.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
-      <div class="pb-grid">` + v.rows.map(r => {
-        const cls = '';   // 점수 색칠(good/bad)은 배점 폐지로 안 한다
-        // 같은 달력의 다른 줄(docs/29 셋) — 그날 하늘에 온 글자가 돈·자리·인연 중 무엇인가.
-        // 오늘의 비서(chaeksadan.오늘)와 같은 잣대다: 재성=돈 · 관성=자리 · 배우자성=연.
-        const 무리 = { 편재:'재성', 정재:'재성', 편관:'관성', 정관:'관성' }[r.십신] || '';
-        const 여 = ((profile && profile.gender) || 'M') !== 'M';
-        const 표 = 무리 === '재성' ? (여 ? '돈' : '돈·연') : 무리 === '관성' ? (여 ? '자리·연' : '자리') : '';
-        return `<div class="pb-cell${cls}${r.일 === today.getDate() ? ' now' : ''}">
-          <b>${r.일}</b><span>${esc(r.십신.slice(0, 2))}</span>${표 ? `<span style="display:block;font-size:9px;color:var(--accent)">${표}</span>` : ''}</div>`;
-      }).join('') + `</div>
-      <p class="hint" style="margin:6px 0 0">칸 아래 작은 글자 — 그날 천간에 온 것이 <b>돈</b>인지 <b>자리</b>인지 <b>인연</b>인지. 홈의 오늘 한마디와 같은 기준입니다.</p>
-      ${주절}${좋은절}${조심절}
-      <p class="pb-ft">잣대 공개 — 그날 천간에 온 글자가 나에게 무슨 십신인가, 그것뿐입니다. 좋은 날·조심할 날의 점수는 매기지 않습니다(2026-09-04). 각 날의 시간대는 그날이 되면 「오늘의 시간대」가 12시진 곡선으로 그려드립니다.</p>
-      ${예고}`;
-  }
 
   // 2026-08-30 「카카오로 물어보기도 다 치우자」 — 비워두면 카카오 버튼이 스스로 숨고
   // 메일만 남는다(그렇게 만들어 두었다). 10-02 사장님 「카톡책사 삭제」 — 책사 카카오톡 채널은 쓰지 않는다.
@@ -1867,10 +1435,6 @@
     return 'https://pf.kakao.com/' + id + '/chat';
   })();
 
-  // 채널 홈. '채널 추가'와 '대화하기' 버튼이 이미 붙어 있는 페이지다.
-  // 카카오 JS SDK로도 추가 버튼을 붙일 수 있지만 스크립트 2MB에 팝업 차단까지 얹힌다.
-  // 링크 한 줄로 되는 일에 그걸 들일 이유가 없다.
-  const KAKAO_HOME = KAKAO_CHAT.replace(/\/chat$/, '');
 
   // 빈 창을 열면 무엇을 써야 할지 몰라 닫는다. 메일은 본문을 채워서 열 수 있지만
   // 카카오는 미리 채워주는 수단이 없다. 그래서 양식을 클립보드에 넣고 채팅을 연다.
@@ -1950,165 +1514,9 @@
     return (word || '') + (has ? withBatchim : without);
   }
 
-  // ───── 비망록 — 판단 기록장 ─────
-  // 이 앱에서 유일하게 "시간이 지날수록 값이 커지는" 자리다.
-  // 카드는 한 번 보고 끝나지만 여기 쌓인 기록은 비서가 먼저 말을 걸 근거가 된다.
-  function memoPersonId() { const P = People(); const a = P && P.active(); return a ? a.id : 'solo'; }
-
-  function memoRow(it, opts) {
-    const M = window.ChaeksaMemo;
-    const v = it.verdict;
-    const 판단 = v ? `<span class="mm-grade">${esc(v.grade)}</span> <span class="mm-dim">${esc(v.pillar)}월 · ${v.score}점</span>` : '';
-    let 결과 = '';
-    if (it.outcome) {
-      const o = M.OUTCOMES[it.outcome.result] || {};
-      결과 = `<div class="mm-out"><b style="color:${o.col}">${o.mark} ${esc(o.label)}</b>${it.outcome.note ? ' — ' + esc(it.outcome.note) : ''}</div>`;
-    } else if (opts && opts.ask) {
-      결과 = `<div class="mm-ask">어떻게 되었습니까?
-        <button class="chip" data-id="${it.id}" data-r="good">○ 좋았다</button>
-        <button class="chip" data-id="${it.id}" data-r="soso">△ 그저 그랬다</button>
-        <button class="chip" data-id="${it.id}" data-r="bad">✕ 아니었다</button></div>`;
-    }
-    return `<div class="mm">
-      <div class="mm-head"><b>${esc(it.q)}</b><span class="mm-when">${M.label(it.ym)}</span></div>
-      <div class="mm-v">${판단}</div>
-      ${v && v.line ? `<div class="mm-line">${esc(v.line)}</div>` : ''}
-      ${결과}
-      <button class="mm-del" data-del="${it.id}" aria-label="지우기">지우기</button>
-    </div>`;
-  }
-
-  let memoKind = 'track';   // 기본은 '계속되는 일' — 비서가 값어치를 내는 쪽이다
-
-  function memoTrackRow(it) {
-    const M = window.ChaeksaMemo;
-    const logs = (it.logs || []).slice().reverse();
-    const 이번달 = M.loggedThisMonth(it, today);
-    const pat = M.pattern(it, R);
-    const 기록 = logs.length
-      ? `<div class="mm-logs">${logs.slice(0, 6).map(l => {
-          const o = M.OUTCOMES[l.result] || {};
-          return `<span class="mm-log" title="${esc(l.note || '')}"><b style="color:${o.col}">${o.mark}</b> ${M.label(l.ym).replace(/^\d+년 /, '')}</span>`;
-        }).join('')}${logs.length > 6 ? `<span class="mm-log mm-dim">외 ${logs.length - 6}달</span>` : ''}</div>`
-      : '<div class="mm-line">아직 기록이 없습니다.</div>';
-    // 기록한 그 자리에서 드리는 말이 먼저다. 패턴은 그다음.
-    const 마지막 = logs[0];
-    const 응답 = 마지막 && 마지막.say
-      ? `<div class="mm-say mm-${esc(마지막.say.tone)}">${esc(마지막.say.text)}</div>` : '';
-
-    // 말할 수 있는 것만 말한다. 두세 달로 단정하면 그게 점집이다.
-    let 패턴 = '';
-    const 조각 = [];
-    if (pat && pat.engine) {
-      pat.engine.forEach(e => 조각.push(e.side === '좋다'
-        ? `제가 <b>좋다</b>고 본 ${e.n}달 중 <b>${e.hit}달</b>이 실제로 괜찮으셨습니다`
-        : `제가 <b>아니라</b>고 본 ${e.n}달 중 <b>${e.hit}달</b>이 실제로 그랬습니다`));
-    }
-    if (pat && pat.god) {
-      if (pat.god.worst) 조각.push(`<b>${esc(pat.god.worst.g)}</b> 달이 유독 힘드셨습니다 (${pat.god.worst.n}달 중 ${pat.god.worst.bad}달)`);
-      if (pat.god.best) 조각.push(`<b>${esc(pat.god.best.g)}</b> 달은 나으셨습니다 (${pat.god.best.n}달 중 ${pat.god.best.good}달)`);
-    }
-    if (조각.length) 패턴 = `<div class="mm-pat">${pat.n}달치로 보면 — ${조각.join('. ')}.</div>`;
-    else if (pat && pat.need > 0 && !응답) 패턴 = `<div class="mm-pat mm-dim">${pat.need}달만 더 쌓이면 어떤 달이 힘든지도 말씀드릴 수 있습니다.</div>`;
-    else if (logs.length >= 4) 패턴 = `<div class="mm-pat mm-dim">아직 한쪽으로 기울지 않았습니다. 더 지켜보겠습니다.</div>`;
-    const 물음 = 이번달
-      ? '<div class="mm-line mm-dim">이번 달은 기록하셨습니다. 다시 누르면 덮어씁니다.</div>'
-      : '';
-    return `<div class="mm">
-      <div class="mm-head"><b>${esc(it.q)}</b><span class="mm-when">${logs.length}달째</span></div>
-      ${기록}${응답}${패턴}${물음}
-      <div class="mm-ask">이번 달은 어떻습니까?
-        <button class="chip" data-tid="${it.id}" data-r="good">○ 괜찮다</button>
-        <button class="chip" data-tid="${it.id}" data-r="soso">△ 그저 그렇다</button>
-        <button class="chip" data-tid="${it.id}" data-r="bad">✕ 힘들다</button></div>
-      <button class="mm-del" data-del="${it.id}" aria-label="지우기">지우기</button>
-    </div>`;
-  }
-
-  /** 한 줄 받기. 브라우저 prompt 대신 우리 옷을 입은 칸으로 묻는다.
-   *  취소하면 null 을 돌려준다 — 예전에는 취소를 '' 로 삼켜 그대로 기록했다. */
-  function 한줄받기(질문, 도움) {
-    return new Promise((resolve) => {
-      const 막 = document.createElement('div');
-      막.className = 'askline';
-      막.innerHTML = '<div class="al-in">'
-        + '<p class="al-q">' + esc(질문) + '</p>'
-        + (도움 ? '<p class="al-h">' + esc(도움) + '</p>' : '')
-        + '<input class="al-i" type="text" maxlength="120" placeholder="한 줄로 적어 주세요">'
-        + '<div class="al-b"><button class="btn ghost small" data-x="0">그냥 두기</button>'
-        + '<button class="btn small" data-x="1">남기기</button></div></div>';
-      const 끝 = (v) => { try { 막.remove(); } catch (e) {} resolve(v); };
-      막.onclick = (e) => { if (e.target === 막) 끝(null); };
-      막.querySelector('[data-x="0"]').onclick = () => 끝(null);
-      막.querySelector('[data-x="1"]').onclick = () => 끝(막.querySelector('.al-i').value.trim());
-      막.querySelector('.al-i').onkeydown = (e) => {
-        if (e.key === 'Enter') 끝(막.querySelector('.al-i').value.trim());
-        if (e.key === 'Escape') 끝(null);
-      };
-      document.body.appendChild(막);
-      setTimeout(() => { try { 막.querySelector('.al-i').focus(); } catch (e) {} }, 30);
-    });
-  }
-
-  function renderMemo() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
-
-  if ($('btnMemoAdd')) $('btnMemoAdd').onclick = () => {
-    const M = window.ChaeksaMemo;
-    const q = $('memoQ').value.trim();
-    if (!q) { $('memoQ').focus(); return; }
-    if (memoKind === 'track') M.track(memoPersonId(), q);
-    else M.add(memoPersonId(), q, +$('memoY').value, +$('memoM').value, R);
-    $('memoQ').value = '';
-    renderMemo(); renderHome(); renderToday();
-  };
-
-  // 비서가 먼저 말을 거는 자리 — 오늘 탭 맨 위
-  function renderTodayMemo() {
-    const M = window.ChaeksaMemo, box = $('todayMemo'); if (!M || !box) return;
-    const pid = memoPersonId();
-    const due = M.due(pid, today);
-    const 미기록 = M.tracks(pid).filter(t => !M.loggedThisMonth(t, today));
-    box.classList.toggle('hide', !due.length && !미기록.length);
-    if (!due.length && !미기록.length) return;
-    if (!due.length) {
-      // 계속 지켜보는 일 — 이번 달을 아직 안 적었다
-      const t0 = 미기록[0];
-      box.innerHTML = `<h2>記 · 지켜보고 있는 것</h2>
-        <div class="brief" style="font-size:15px"><p><b>${esc(t0.q)}</b> — 이번 달은 어떻습니까?</p>
-        <p style="color:var(--ink2)">${(t0.logs || []).length}달치가 쌓여 있습니다${미기록.length > 1 ? ` (외 ${미기록.length - 1}건)` : ''}.</p></div>
-        <button class="btn ghost small" id="btnTodayMemoGo" style="margin-top:10px">비망록 열기</button>`;
-      if ($('btnTodayMemoGo')) $('btnTodayMemoGo').onclick = () => go('memo');
-      return;
-    }
-    const it = due[0];
-    const 지남 = it.ym < (today.getFullYear() * 100 + today.getMonth() + 1);
-    box.innerHTML = `<h2>記 · 말씀하신 것</h2>
-      <div class="brief" style="font-size:15px"><p>${esc(it.q)} — <b>${M.label(it.ym)}</b>${지남 ? '이 지났습니다.' : '입니다.'}</p>
-      ${it.verdict ? `<p style="color:var(--ink2)">그때 제 판단은 <b>${esc(josa(it.verdict.grade, '이었습니다', '였습니다'))}</b>. ${esc(it.verdict.line)}</p>` : ''}</div>
-      <button class="btn ghost small" data-open="memo" style="margin-top:10px">비망록 열기</button>`;
-    box.querySelector('[data-open]').onclick = () => go('memo');
-  }
+  // 비망록(memo 탭 · 오늘 탭 알림 #todayMemo · 적는 칸 #memoQ)은 탭을 걷은 뒤 코드만 남아 있던 것을 10-02 개편 3묶음에서 지웠다. 기록 모듈 memo.js 는 그대로다.
 
 
-  // ───── 열두 달 흐름 — 세운도 ─────
-  let yearPick = today.getFullYear();
-
-
-
-  // ───── 천직 — 천직첩 ─────
-  let jikFor = null;
-
-  // ───── 연애·인연 — 도화첩 ─────
-  // ───── 關 · 관계지도 (docs/30) ─────
-  // 지도는 궁위 배치다 — 가운데가 공주님, 위가 연주(초년) · 왼쪽 월주(자람) · 오른쪽 시주(말년) · 아래 일지(배우자).
-  // 사람은 제 글자가 선 궁 쪽에 앉는다. 겉은 진하게, 속은 점선, 없음은 흐리게, 묶임은 사슬 표시.
-  let gwFor = null;
-
-  // ───── 지칠 때와 채울 때 ─────
-  let jcFor = null;
-
-  // ───── 내 편이 되어주는 사람 ─────
-  let npFor = null;
 
   // ───── 인연이 오는 해 ─────
   let inyeonFor = null;
@@ -2117,14 +1525,6 @@
   // 무료: 과거 구간 찍기 + 현재 판. 유료(인연 시기 상품): 미래.
   // 과거와 미래가 같은 잣대라는 것이 이 화면의 값어치다 — 그래서 그 말을 화면에 적는다.
   let lsFor = null;
-  // ── 간명서 — 번호 문항 통변 + 문항별 [맞다/애매/아니다] ──
-  // 채팅 간명이 친구 채점 90%를 받았다. 그 형식(문항·채점·정직)이 제품이다.
-  let gmFor = null;
-  // 간명서는 무료다(2026-08-29 「첫화면에 바로 뿌려버려 — 무조건 신뢰를 얻어야 해」).
-  // 신뢰를 파는 게 아니라 먼저 준다. 유료 선은 미래의 해상도(달·날·시)에만 남는다.
-  // GM_VER: 간명 프롬프트 판 — 말투·형식을 고치면 올린다. 캐시가 새 원국으로 한 번만 재굽기.
-  // 오늘 나온 책사 — [초상 키, 이름, 데려갈 화면, 아뢰는 말]
-  // 말은 권유지 판단이 아니다. 명리 주장은 각 화면이 제 계산으로 한다.
   // 초상이 아직 없을 때 얼굴 자리에 세울 인장
   const 책사인장 = { 자평진전: '格', 궁통보감: '候', 억부: '抑', 궁위: '宮',
                      인연: '緣', 재물: '財', 천직: '職', 운로: '運',
@@ -2152,17 +1552,6 @@
   const 축으로 = (who) => (책사이름[who] ? who : (사람에서축[who] || who));
   const 이름of = (who) => { const 축 = 축으로(who); return (책사이름[축] || [축])[0]; };
   const 직함of = (who) => { const 축 = 축으로(who); return (책사이름[축] || ['', ''])[1] || ''; };
-  const 오늘의책사 = [
-    ['jwajang', '좌장', 'compat', '두 분 사이가 서로에게 무엇인지 읽어 드리겠습니다.'],
-    ['inyeon', '인연', 'inyeon', '앞으로 열 해 가운데 어느 해에 기우는지 짚어 드리겠습니다.'],
-    ['gungtong', '궁통보감', 'today', '오늘의 기운이 추운지 더운지 봐 드리겠습니다.'],
-    ['jaemul', '재물', 'nokpae', '돈이 어떤 모양으로 들어오는지, 어디로 새는지 짚어 드릴까요.'],
-    ['eokbu', '억부', 'jichim', '무엇이 깎고 무엇이 채우는지 짚어 드리겠습니다.'],
-    ['unro', '운로', 'life', '언제가 두터워지고 언제가 담금질인지 곡선으로 펴 드릴까요.'],
-    ['japyung', '자평진전', 'me', '격이 성격인지 파격인지, 원국을 펴 보여 드리겠습니다.'],
-    ['cheonjik', '천직', 'jikcheop', '스물다섯 결 가운데 어느 쪽인지 아뢰겠습니다.'],
-    ['gungwi', '궁위', 'dohwa', '곁자리에 앉은 글자가 누구를 가리키는지 보시겠습니까.'],
-  ];
   // ── 발언자 표시 — 무료 의논과 유료 본문이 함께 쓴다 ──
   // 초상은 app/art/chaeksa-<키>.webp. 없으면 onerror 로 스스로 사라져 글자 칩만 남는다 —
   // 그림이 도착하는 순서대로 화면이 좋아진다.
@@ -2218,10 +1607,6 @@
     return Object.keys(인용어).some(축 =>
       축 !== 나 && 인용어[축].some(w => 본문.indexOf(w) >= 0));
   }
-  const 얼굴 = (who) => {
-    const k = 책사키[축으로(who)]; if (!k) return '';
-    return '<img src="art/chaeksa-' + k + '.webp" alt="" onerror="this.remove()">';
-  };
   // \u2460~\u2473(①~⑳) 에 \u3251~(㉑~) 를 더했다 — 조립기의 「자리를 두고 — 여러 눈으로」 넷(2026-09-03).
   const 발언자류 = /^([\u2460-\u2473\u3251-\u325F])?\s*\u3014([^\u3015]{1,12})\u3015\s*/;
   const 번호자리 = (ch) => { const c = ch.charCodeAt(0); return c >= 0x3251 ? 21 + (c - 0x3251) : c - 0x2460; };
@@ -2274,25 +1659,6 @@
   // 살릴 일이 생기면 git 에서 꺼낸다(2f24d4d 이전). 엔진 E.branchRels 는 그대로 있다.
   // 세는 말 — 「나를 두고 열 가지」처럼 개수를 한글로 적는다. 숫자를 적으면 목록표처럼 읽힌다.
   const 한글수 = (n) => ['영', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두'][n] || String(n);
-  /** 그 탭이 화면에서 무엇이라 불리는지. 홈의 오늘 한마디가 어디로 가는지 적는 데 쓴다.
-   *  이름표를 새로 만들지 않는다 — 화면에 이미 선 제목을 읽는다. 두 벌이 되면 반드시 어긋난다.
-   *  제목 앞의 인장 한 글자(「緣 · 」)는 뗀다. 화면에 한자를 안 쓴다(CLAUDE.md). */
-  function 탭이름(tab) {
-    if (!tab) return '';
-    try {
-      const el = document.querySelector('[data-tab="' + tab + '"] h2, [data-tab="' + tab + '"] h3');
-      const t = el ? String(el.textContent || '').trim().replace(/^\S+\s*·\s*/, '') : '';
-      if (t) return t.length > 14 ? t.slice(0, 13) + '…' : t;
-    } catch (e) {}
-    const h = 홈목록.find(x => x.tab === tab && !x.scroll);
-    return h ? h.이름 : '';
-  }
-  // ───── 이야기 화면 — 질문 하나, 답은 날짜로 (2026-09-12 사장님 「1컨텐츠+1질문+1삽화, 무료 7일 유료 30일」) ─────
-  // 7일은 무료. 30일은 「이번 달 30일」 상품(month) 하나로 모든 이야기가 열린다 — 이야기마다 따로 팔지 않는다.
-  // 말투는 사장님 말투(짧게 · A = B · 존댓말). 십신 이름은 그대로 부른다(법전 27조) — 이 탭은 data-plain 이다.
-  function renderStory() {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
-  /** 이야기 본문 — 7일(무료) + 30일(이번 달 결제). 두 사람이면 Rm, 혼자면 null. 고르기칸은 위에 붙일 HTML. */
-  function renderStoryBody(box, 머리, st, Rm, 고르기칸) {}   // 09-26 걷은 탭(docs/78) — 몸통 삭제, 이름만 남김(호출 자리 안전)
 
   function renderWtHome() {
     const box = $('wtHome'); if (!box || !R) return;
@@ -2498,259 +1864,9 @@
       return 발언줄(t, 새);
     }).join('');
   }
-  // v13: 열 목소리 · 좌장의 맺음 · 분배 상한 · 벽 자르기 · 유령 인용 제거(2026-08-30).
-  //      원국을 안 올리면 이미 다녀가신 분은 옛 의논에 갇혀 오늘 한 일이 안 보인다.
-  // v14 (2026-08-31) — 소현의 갈림 한 줄이 거짓이었다. 이미 조립된 의논에도 그 줄이
-  // 굳어 있으므로 원국을 올려 전부 다시 조립시킨다(조립은 공짜다).
-  // 대가: LLM 으로 구워 둔 의논이 있는 분은 조립본으로 바뀐다. 개통 전이라 시험판뿐이다.
-  // v15 (2026-08-31) — 채점을 들어냈다. 좌장의 맺음말이 채점을 청하고 있어서
-  // 이미 조립된 의논에도 그 부탁이 굳어 있다. 원국을 올려 다시 조립시킨다(공짜다).
-  // v16 (2026-08-31) — 온서의 기신 문장이 바뀌었다. 감점과 무관한 오행을
-  // 대던 것을 실제 원인 글자로 고쳤고, 보좌 빈 칸에서 문장이 사라지던 것도 풀었다.
-  // v17 (2026-08-31) — 변주 고르는 법이 바뀌었다(자리별로 독립, 씨앗은 여덟 글자).
-  // 이미 조립된 의논은 옛 방식으로 뽑힌 말이라 다시 짠다. 조립기라 공짜다.
-  // v19 — 호칭을 걷었다(2026-09-10 · docs/40). 이걸 안 올리면 이미 저장된 의논에
-  //       「공주님」이 그대로 남아 화면에 다시 뜬다. 실제로 그랬다.
-  const GM_VER = 'v19';   // v18 — 영역관제(docs/27): 존재→위치 · 처방→서술 · 官 네 축
-  // 키에 **성별과 분**이 빠져 있었다. 성별은 배우자성을 가르고(남=재성·여=관성)
-  // 분은 시진 경계를 가르므로, 같은 연월일시라도 의논이 다르다.
-  // 관문을 내린 뒤로 「이 생일 저 생일 넣어보기」가 기본 동작이 되므로
-  // 이 구멍은 **남의 의논을 보여주는 구멍**이 된다. 옆의 story 키는 이미
-  // 같은 이유로 성별을 넣고 있었다(app.js 의 chaeksa.storyai 키).
-  const 간명키 = () => {
-    const i = (R && R.input) || profile || {};
-    return 'chaeksa.ganmyeong.' + GM_VER + '.'
-      + [i.year, i.month, i.day, i.hour].join('.')
-      + '.' + (i.minute || 0) + '.' + (i.gender || '?');
-  };
-  /** 현재 키의 캐시. 없으면 떠돌이(키 표기가 달라진 옛 캐시)를 주워 현재 키로 이관한다. */
-  function 간명캐시() {
-    const ck = 간명키();
-    let t = localStorage.getItem(ck);
-    if (!t) {
-      // 이관은 **여덟 글자가 같을 때만** 한다.
-      // 예전엔 「떠돌이가 하나면 가져온다」였는데, 그러면 남의 의논을 주워 온다 —
-      // 관문을 내린 뒤로 한 기기에서 여러 생일을 넣어 보는 것이 기본이라
-      // 떠돌이가 늘 생긴다. 의논 첫 줄에 사주 여덟 글자가 적혀 있으니 그걸 대조한다.
-      const 떠돌이 = Object.keys(localStorage).filter(k => k.indexOf('chaeksa.ganmyeong.' + GM_VER + '.') === 0 && k.indexOf('.grade.') < 0 && k !== ck);
-      let 내것 = null;
-      try { 내것 = (window.ChaeksaTypecard && R) ? (ChaeksaTypecard.간명자료(R, today) || {}).사주 : null; } catch (e) {}
-      if (내것) {
-        떠돌이.some(k => {
-          const v = localStorage.getItem(k) || '';
-          if (v.indexOf(내것) !== 0) return false;      // 첫 줄이 내 사주로 시작해야 한다
-          t = v;
-          try { localStorage.setItem(ck, t); localStorage.removeItem(k);
-            console.warn('간명 캐시 키 이관(사주 일치):', k, '→', ck); } catch (e) {}
-          return true;
-        });
-      }
-      if (!t && 떠돌이.length) { try { console.warn('떠돌이 캐시', 떠돌이.length, '개 — 사주가 달라 안 가져왔다. 현재 키:', ck); } catch (e) {} }
-    }
-    // 없으면 그 자리에서 조립한다 (chaeksadan.js). 원가 0원·지연 0초라 굽기를 기다릴 이유가 없다.
-    // 이미 구워진 의논이 있는 분은 위에서 걸려 그대로 쓴다 — 아무도 제 것을 잃지 않는다.
-    // 한 번 조립하면 저장한다 — 같은 사람에게 늘 같은 글이 나와야 한다.
-    // 조립기 문장은 원국이 바뀌면 다시 짓는다(원가 0). 구운 간명(LLM)은 ⟪층⟫ 꼬리가 없어 여기 안 걸린다 — 아무도 제 것을 잃지 않는다.
-    // 2026-09-04 저녁 D2: 정율·온서·형준을 GPT 결로 다시 씀. 옛 조립 문장을 쥔 기기가 그대로 보여 주던 자리.
-    const 조립표식 = '⟦조립 D2⟧';
-    if (t && t.indexOf('⟪') >= 0 && t.indexOf(조립표식) < 0) t = null;
-    if (!t && R && window.ChaeksaDan) {
-      try {
-        t = ChaeksaDan.의논(R, today);
-        if (t) { localStorage.setItem(ck, t + '\n' + 조립표식); t = t; }
-      } catch (e) { try { console.warn('의논 조립 실패:', e); } catch (e2) {} t = null; }
-    }
-    return t ? t.replace('\n' + 조립표식, '') : t;
-  }
-  // ── 굽기와 기다림을 갈라놓는다 (2026-08-30 「토큰만 먹고 출력이 안 된다」) ──
-  // 그날의 사고: 굽는 중이라는 응답을 받으면 20초 뒤 「같은 함수」를 다시 불렀다.
-  // 그 함수는 프록시를 두드리는 함수라, 자물쇠가 3분 만에 풀리는 순간 새로 굽기 시작했다.
-  // 죽은 굽기 → 자물쇠 → 폴링 → 자물쇠 만료 → 또 굽기. 3분마다 영원히 토큰만 탔다.
-  // 이제 기다림은 서버 캐시를 「읽기만」 하고, 굽는 문은 간명예열() 하나뿐이다.
+  // 서버 캐시의 「굽는 중」 자리표 — 유료 한 편 읽기(위 서버읽기)는 이 표시로 시작하는 글을 버린다.
   const BAKING표식 = '§BAKING§';
-  async function 간명서버읽기() {
-    try {
-      const C = window.ChaeksaCloud;
-      if (!C || !C.api || !C.signedIn || !C.signedIn()) return null;
-      const j = await C.api('/rest/v1/rpc/ganmyeong_get', {
-        method: 'POST',
-        body: JSON.stringify({ p_pk: 간명키().replace('chaeksa.ganmyeong.', '') }),
-      });
-      if (j && j.ok && j.hit && j.body && j.body.indexOf(BAKING표식) !== 0) return j.body;
-    } catch (e) { try { console.warn('간명 캐시 조회 실패:', e); } catch (e2) {} }
-    return null;
-  }
-  function 간명도착(t) {
-    // 빈 응답을 캐시하면 화면이 영원히 빈 채로 「받았다」고 믿는다 — 실패로 다룬다.
-    if (!t || String(t).length < 100) {
-      간명예열.busy = false;
-      간명말('의논이 비어서 돌아왔습니다 — [다시 시도]를 눌러 주세요.', true);
-      return;
-    }
-    try { localStorage.setItem(간명키(), t); } catch (e) {}
-    간명예열.busy = false; 간명예열.rounds = 0; 간명예열.fails = 0;
-    // 의논 화면(#gmBody · renderGanmyeong)은 2026-09-17 옛것 치우기로 걷었다 — 들어가는 길이 없던 탭이다.
-  }
-  function 간명말(msg, 재시도) {
-    // 홈의 첫 의논 카드(#chongWait·#chongBake)는 걷었다(2026-09-12). 이제 의논 화면(#gmBody)에만 말한다.
-    const g = $('gmBody');
-    if (g && g.isConnected && !간명캐시()) {
-      g.innerHTML = '<p class="hint">' + esc(msg) + '</p>'
-        + (재시도 ? '<button class="btn" id="gmRetry">다시 시도</button>' : '');
-      const r = $('gmRetry');
-      if (r) r.onclick = () => { r.disabled = true; 간명예열.fails = 0; 간명예열(); };
-    }
-  }
-  /** 굽는 중일 때의 기다림. 읽기만 하므로 공짜고, 절대 새로 굽지 않는다. */
-  function 간명폴링() {
-    간명예열.rounds = (간명예열.rounds || 0) + 1;
-    if (간명예열.rounds > 25) {           // 5분
-      간명예열.busy = false;
-      간명말('의논이 예상보다 길어지고 있습니다 — 잠시 뒤 [다시 시도]를 눌러 주세요.', true);
-      return;
-    }
-    간명서버읽기().then(t => {
-      if (t) { 간명도착(t); return; }
-      간명말('의논 중입니다 (' + (간명예열.rounds * 12) + '초). 이 화면을 벗어나셔도 계속됩니다.');
-      setTimeout(간명폴링, 12000);
-    });
-  }
-  function 간명예열() {
-    // 이 앱에서 간명을 굽는 유일한 문. 다른 곳에서는 이것만 부른다.
-    if (!R || !profile || !window.ChaeksaAI || !ChaeksaAI.ready || !ChaeksaAI.ready()) return;
-    const ck = 간명키();
-    if (localStorage.getItem(ck) || 간명예열.busy) return;
-    간명예열.busy = true; 간명예열.rounds = 0;
-    // 굽는 도중의 새로고침이 요청을 죽인다 — 「하도 새로고침하니까」(2026-08-30 실증).
-    if (!간명예열.guard) {
-      간명예열.guard = (e) => { if (간명예열.busy) { e.preventDefault(); e.returnValue = ''; } };
-      window.addEventListener('beforeunload', 간명예열.guard);
-    }
-    // 굽기 전에 서버를 공짜로 한 번 본다 — 다른 기기나 끊긴 요청이 이미 구워 놨을 수 있다.
-    간명서버읽기().then(있음 => {
-      if (있음) { 간명도착(있음); return null; }
-      return ChaeksaAI.ganmyeong(ChaeksaTypecard.간명자료(R, today), ck.replace('chaeksa.ganmyeong.', ''))
-        .then(t => 간명도착(t))
-        .catch(err => {
-          if (err && err.baking) { 간명폴링(); return; }   // busy 유지 = 중복 굽기 차단
-          간명예열.busy = false;
-          const 원인 = (err && err.blocked && err.blocked.body) || (err && err.message) || String(err);
-          try { console.warn('간명 실패:', err); } catch (e2) {}
-          // 시간초과는 토큰을 이미 쓴 실패다 — 자동 재시도를 걸지 않는다. 손으로만 다시.
-          const 자동 = !(err && (err.timeout || err.truncated || err.blocked)) && (간명예열.fails || 0) < 1;
-          간명예열.fails = (간명예열.fails || 0) + 1;
-          if (자동) {
-            간명말('글을 불러오지 못했어요(' + 원인.slice(0, 90) + ') — 20초 뒤 한 번 더 해 볼게요.');
-            setTimeout(간명예열, 20000);
-          } else 간명말('글을 불러오지 못했어요 — ' + 원인.slice(0, 120), true);
-        });
-    }).catch(() => { 간명예열.busy = false; });
-  }
-  async function mountGanmyeong(el, whereTag) {
-    const T = window.ChaeksaTypecard, AI = window.ChaeksaAI;
-    const cacheKey = 간명키();
-    let text = 간명캐시();
-    if (!text) {
-      el.innerHTML = '<p class="hint">글을 만드는 중이에요(약 1분). 이 화면을 벗어나셔도 계속 만들어요.</p>';
-      if (간명예열.busy) return;   // 이미 굽는 중 — 끝나면 다시 그려진다
-      // 「로그인 상태를 확인해 주세요」라고 적혀 있었는데 AI.ready() 는 로그인과 무관하다
-      // (기본 프록시가 있어 늘 참이다). 뜨더라도 엉뚱한 말이라 고쳤다.
-      if (!AI || !AI.ready || !AI.ready()) { el.innerHTML = '<p class="hint">지금은 글을 만들 수 없어요. 잠시 뒤에 다시 열어 주세요.</p>'; return; }
-      // 여기까지 오는 일은 드물다 — 조립기가 원가 0으로 바로 써 주기 때문이다.
-      // 조립기가 죽었을 때만 이 갈래가 산다.
-      //
-      // **손님은 굽지 못한다.** 서버가 401 로 막고 클라 한도도 0이라 돈은 안 새지만,
-      // 여기서 간명예열() 을 부르면 실패만 하고 이상한 화면이 남는다. 사실대로 적는다.
-      if (비로그인()) {
-        el.innerHTML = '<p class="hint">이 글은 <b>카카오로 로그인한 뒤에</b> 열립니다.'
-          + ' 지금은 조립이 안 돼서 그렇습니다 — 잠시 뒤에 다시 열어 보셔도 됩니다.</p>';
-        return;
-      }
-      // 서버에 구워진 것이 있으면 공짜로 가져온다.
-      text = await 간명서버읽기();
-      if (text) { try { localStorage.setItem(cacheKey, text); } catch (e2) {} }
-      else {
-        // **클릭 없이 굽지 않는다.** 앱을 여는 것만으로 돈이 나가면 안 된다 —
-        // 바로 옆 renderChong 이 같은 이유로 버튼을 세워 두었는데 여기만 자동이었다.
-        // #ganmyeong 해시로 들어오면 클릭 0회로 구워졌다.
-        // 무료 화면에서는 LLM 을 굽지 않는다(2026-09-12) — 조립을 한 번 더 펴 볼 뿐이다(원가 0).
-        el.innerHTML = '<div class="nx-diag"><p>의논을 펴지 못했습니다.</p></div>'
-          + '<button class="btn" id="gmBake" style="margin-top:12px">의논 다시 펴기</button>';
-        const bb = el.querySelector('#gmBake');
-        if (bb) bb.onclick = () => { bb.disabled = true; mountGanmyeong(el, whereTag); };
-        return;
-      }
-    }
-    // ── 채점을 들어냈다 (2026-08-31) ──
-    // 채점이 있던 이유는 둘이었다: ① 적중률 집계 ② 「누가 맞혔는지」.
-    // 둘 다 오늘 지웠다(판정이 인기순으로 왜곡되고, 재 보지 않은 것을 재었다고
-    // 말하게 되므로). 그러고 나니 남은 것은 —
-    //   스무 발언을 읽히고, 예순 번 누르게 하고, 아무것도 안 돌려준다.
-    // 공주님 쪽에 남는 것이 없으면 그건 일이지 재미가 아니다. 그래서 치웠다.
-    // 문(유료·로그인)은 채점 뒤가 아니라 **다 읽은 자리**에 그대로 둔다.
-    // 옛 채점 기록(chaeksa.ganmyeong.grade.*)은 지우지 않는다 — 남의 기기 것을
-    // 우리가 청소할 이유가 없고, 안 읽으면 그만이다.
-    // AI가 마크다운을 섞어도 화면엔 순수 글만 — 이미 구워진 캐시도 여기서 같이 씻긴다
-    text = text.replace(/\*\*/g, '').replace(/^#{1,4} */gm, '').replace(/^ *-{3,} *$/gm, '').replace(/^ *[*•] +/gm, '');
-    const parts = text.split(/(?=[①-⑳㉑-㉔])/);
-    // 좌장의 맺음은 발언이 아니다 — 스무 발언 뒤에 오는 회의의 끝이다.
-    // 떼어내지 않으면 마지막 발언 카드에 끼어 「맞아요/아니에요」가 붙는다.
-    let 맺음글 = '';
-    if (parts.length > 1) {
-      const 끝 = parts[parts.length - 1], k = 끝.indexOf('\n\n〔좌장〕');
-      if (k >= 0) { 맺음글 = 끝.slice(k + 2).trim(); parts[parts.length - 1] = 끝.slice(0, k); }
-    }
-    // [절 제목] 줄은 문항 덩이에서 뽑아 제 칸(눈썹)으로 세운다 — 꼬리에 끼면 채점 칸이 어색하다
-    const 절제목류 = t => t.charAt(0) === '[' && t.charAt(t.length - 1) === ']';
-    // 발언 한 줄을 그리는 일은 전역 발언줄() 하나가 한다 — 여기서 따로 그리다가
-    // 이름 바꾸기(축→책사 이름)가 무료 의논에만 안 먹은 적이 있다(2026-08-30).
-    // 화자를 덩이 너머로 기억한다 — 같은 책사가 이어 말하면 얼굴을 다시 안 세운다.
-    let 앞화자 = null;
-    const 문단화 = (chunk, 뽑힌) => chunk.split('\n').map(t => {
-      t = t.trim(); if (!t) return '';
-      if (절제목류(t)) { 뽑힌.push(t.slice(1, -1)); 앞화자 = null; return ''; }
-      const mm = t.match(발언자류), who = mm ? mm[2] : null;
-      const 새 = !!who && who !== 앞화자;
-      if (who) 앞화자 = who;
-      return 발언줄(t, 새);
-    }).join('');
-    const 머리 = parts[0] || '';
-    let 밀린 = [];
-    const html = ['<div class="nx-diag">' + 문단화(머리, 밀린) + '</div>'];
-    // 홈에서는 앞부분만 — 전문과 채점은 전용 탭이 한다.
-    // 스무 발언을 홈에 다 펴면 첫 화면이 마흔여섯 화면이 된다(2026-08-30 실측 37,600px).
-    const 홈맛보기 = (whereTag === 'home');
-    const 보일수 = 홈맛보기 ? 5 : parts.length - 1;
-    parts.slice(1, 1 + 보일수).forEach((chunk, i) => {
-      const 이번 = [];
-      const 본문 = 문단화(chunk, 이번);
-      밀린.forEach(h => html.push('<p class="hero-eyebrow" style="margin:20px 4px 2px">' + esc(h) + '</p>'));
-      밀린 = 이번;
-      html.push('<div class="nx-diag" style="margin-top:10px">' + 본문 + '</div>');
-    });
-    if (홈맛보기) {
-      // 「이어서 읽기」 단추를 여기서 안 세운다(2026-09-12). 맛보기는 150px 로 잘려 있어서
-      // 이 단추가 잘린 안쪽에 묻혀 있었고, 바깥의 「열 사람의 의논 다 읽기」와 가는 곳이 같았다.
-      // 같은 자리로 가는 단추가 둘이면 그게 곧 꼬인 길이다. 바깥 것 하나만 남긴다.
-      el.innerHTML = html.join('');
-      return;   // 맺음은 홈에서 보이지 않는다 — 다 읽으신 분께만 나오는 말이다
-    }
-    // 회의를 맺는 말. 채점 알약을 달지 않는다 — 좌장은 판정하지 않고 앉힌다.
-    if (맺음글) html.push('<div class="nx-diag gm-close" style="margin-top:16px">' + 발언줄(맺음글) + '</div>');
-    // 「다음 물음은 하나 — 그래서 언제인가」 상자는 뺐다(2026-09-04 밤 사장님 「책사단 의논에서 이거 삭제」). 다음 해·언제는 안 판다.
-    // 로그인은 여기서 청한다 — 의논을 다 읽은 사람에게는 잃을 것이 생겼다.
-    // 없는 이득을 지어내지 않는다. 실제로 되는 것만 적는다.
-    if (비로그인()) {
-      html.push('<div class="nx-diag" style="margin-top:12px">'
-        + '<p class="nx-diag-k">이걸 남겨 둘까요</p>'
-        + '<p>지금 이 의논은 <b>이 기기에만</b> 있습니다. 브라우저를 정리하시면 사라집니다.'
-        + ' 카카오로 남겨 두시면 폰을 바꾸셔도 그대로 열립니다.</p>'
-        + '<button class="btn kakao" id="gmKeep"><span>💬</span>카카오로 남겨 두기</button></div>');
-    }
-    el.innerHTML = html.join('');
-    const kp = el.querySelector('#gmKeep');
-    if (kp) kp.onclick = () => { try { ChaeksaCloud.signInWith('kakao'); } catch (e) { openSettings(); } };
-  }
+  // 의논(간명서) 굽기 · 기다림 · 그리기(간명예열 · mountGanmyeong · #gmBody)는 들어가는 화면이 없어 10-02 개편 3묶음에서 지웠다. 무료 화면은 LLM 을 부르지 않는다.
 
 
   // ── 너의 재물 스토리 — 연애 스토리와 같은 틀, 잣대만 돈 ──
@@ -2769,8 +1885,16 @@
   const 개발자화면 = (() => { try { return new URLSearchParams(location.search).get('dev') === '1'; } catch (e) { return false; } })();
   function openSettings() {
     renderCloud();
+    // 10-02 개편 3묶음 「내 결제」 — 로그인했으면 열 때마다 내 주문을 새로 읽어 줄마다 보인다(pay.js 내결제 · index.html #myPayList, #cloudIn 안).
+    try {
+      const C0 = window.ChaeksaCloud, P0 = window.ChaeksaPay;
+      if (C0 && C0.enabled && C0.enabled() && C0.signedIn() && P0 && P0.내결제) P0.내결제($('myPayList'));
+    } catch (e) {}
     document.querySelectorAll('#settings .devonly').forEach(el => el.classList.toggle('hide', !개발자화면));
-    const s = (AI && AI.settings) ? AI.settings() : {}; $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; $('settings').classList.remove('hide');
+    // 개발용 칸 값은 ai.js 가 읽는다. ai.js 는 탭별 꾸러미 ai 에 있어서, ?dev=1 로 설정을 열 때 아직 없으면 받은 뒤 채운다.
+    const 칸채우기 = () => { const A = AI(), s = (A && A.settings) ? A.settings() : {}; $('apiKey').value = s.apiKey || ''; $('proxyUrl').value = s.proxyUrl || ''; };
+    칸채우기(); $('settings').classList.remove('hide');
+    if (개발자화면 && !AI()) 꾸러미받기('ai').then(칸채우기, () => {});
   }
   $('btnSettings').onclick = openSettings;
   // 상단 「로그인」 — 카카오 단추 하나만 있는 작은 창(10-02). 예전에는 설정 창을 열어 개발용 칸 · 비밀번호 칸이 먼저 보였다.
@@ -2795,11 +1919,12 @@
   };
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
   $('btnSaveSettings').onclick = () => {
-    if (!AI || !AI.settings) { $('settings').classList.add('hide'); return; }   // ai.js 를 못 받았으면 저장할 것이 없다
-    const cur = AI.settings();
-    AI.saveSettings({ apiKey: $('apiKey').value.trim(), tier: cur.tier || 'balanced', proxyUrl: $('proxyUrl').value.trim() });
+    const A = AI();
+    if (!A || !A.settings) { $('settings').classList.add('hide'); return; }   // ai.js 를 못 받았으면 저장할 것이 없다
+    const cur = A.settings();
+    A.saveSettings({ apiKey: $('apiKey').value.trim(), tier: cur.tier || 'balanced', proxyUrl: $('proxyUrl').value.trim() });
     $('settings').classList.add('hide');
-    if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); loadAiBrief(); renderProfileCard(); }
+    if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); }
   };
   $('btnReset').onclick = () => {
     if (!confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) return;
@@ -2816,54 +1941,14 @@
     location.reload();
   };
 
-  /** 오늘이 어느 계절인가 — 삽화 파일 이름에 쓴다 (달 기준, 삽화 대장과 같은 규칙) */
-  function 계절이름() {
-    return ['winter', 'winter', 'spring', 'spring', 'spring', 'summer',
-            'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'][today.getMonth()];
-  }
   /** 오늘이 한 해의 몇 번째 날인가 — 장면 변주를 날마다 돌리는 데 쓴다 */
   function 날번호() {
     const t0 = new Date(today.getFullYear(), 0, 0);
     return Math.floor((today - t0) / 86400000);
   }
-  /** 오늘 쓸 회의 장면. 있는 것 중 첫 번째를 골라 알려준다(없으면 부르지 않는다).
-   *  변주(-2·-3)를 날마다 돌린다 — 매일 같은 그림이면 다시 올 이유가 하나 준다. */
-  function 회의장면(고르면) {
-    if (!window.CHAEKSA_ART) return;
-    const s0 = 계절이름(), v = window.CHAEKSA_ART;
-    // 계절마다 몇 벌인지는 config.js 가 안다. 적힌 게 없으면 그 계절 그림은 없는 것이다 — 부르지 않는다
-    // (2026-09-22 — 지운 그림을 「없으면 1벌」로 쳐서 첫 화면마다 404 가 났다).
-    const n = (window.CHAEKSA_COUNCIL_VAR && window.CHAEKSA_COUNCIL_VAR[s0]) || 0;
-    if (!n) return;
-    const i = 날번호() % n;
-    const 벌 = i ? '-' + (i + 1) : '';
-    // 예전엔 마지막 후보가 love-open 이었다. 그건 **원국이 바뀌기 전** 그림이라
-    // (서양 고딕 저택·낯선 남자 얼굴) 첫 화면에 스치기만 해도 세계가 어긋난다.
-    // 회의 장면이 없으면 아무것도 안 건다 — 없는 것보다 어긋난 것이 나쁘다.
-    const 후보 = ['art/council-' + s0 + 벌 + '.webp?v=' + v];
-    if (벌) 후보.push('art/council-' + s0 + '.webp?v=' + v);
-    (function 다음(i) {
-      if (i >= 후보.length) return;
-      const im = new Image();
-      im.onload = () => 고르면(후보[i]);
-      im.onerror = () => 다음(i + 1);
-      im.src = 후보[i];
-    })(0);
-  }
-  // 장면()(첫 의논 카드 위의 회의 그림 한 컷)은 renderChong 과 함께 걷었다(2026-09-12). 회의장면()은 랜딩이 그대로 쓴다.
   // ───── 랜딩 ─────
   function showLanding() {
-    const tf = E.dateFortune(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    if ($('lpGanji')) $('lpGanji').textContent = f.pillar(tf.day) + '일';   // 09-25 오늘 간지 칸은 첫 화면에서 걷음
-    if ($('lpGanjiKo')) $('lpGanjiKo').textContent = f.pillarKo(tf.day) + ' · ' + f.stemElem(tf.day.stem) + '의 날';
-    // 첫 화면은 글이 아니라 장면이다 — 오늘의 계절에 맞는 삽화를 깐다.
-    // 그림이 없으면 class 를 안 붙여 옛 글자 히어로로 돌아간다(안전한 되돌림).
-    // 2026-09-22 — 예전엔 그림이 있는지 보기 전에 scene 부터 붙여서, 그림을 지운 뒤로 첫 화면이 그림 빠진 남색 상자였다.
-    // 이제 그림을 **실제로 받은 뒤에만** 장면을 깐다. 그 전까지는 글자 첫 화면이다.
-    const hero = $('lpHero');
-    if (hero && window.CHAEKSA_ART && !hero.querySelector('.lp-cuts')) {
-      회의장면(u => { hero.style.setProperty('--hero-art', 'url("' + u + '")'); hero.classList.add('scene'); });
-    }
+    // 오늘 간지 칸(#lpGanji)과 계절 회의 그림(회의장면 · config.js CHAEKSA_COUNCIL_VAR)은 화면에서 걷은 뒤 코드만 남아 있던 것을 10-02 개편 3묶음에서 지웠다.
     // 랜딩의 열 사람 도열(#lpCorps)은 2026-09-12 걷었다.
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
@@ -2933,6 +2018,8 @@
       if (!그사람만 && !나있음() && 사람폼열기('me', tab, true)) return;
       도착(); return;
     }
+    // 10-02 탭별 꾸러미 — 생년월일을 넣는 동안 그 탭 파일을 미리 받아 둔다(저장하고 나면 바로 열리게). 받지 못해도 그 탭을 열 때 다시 받는다.
+    try { 꾸러미받기(tab).catch(() => {}); } catch (e) {}
     if (그사람만 && 사람폼열기('them', tab, true)) return;
     입력준비(tab);
     enterOrLogin();
@@ -2959,7 +2046,7 @@
       띠.innerHTML = 카드 ? '친구가 보낸 <b>「' + escP(머리.이름) + '」</b>' + josa(머리.이름, '이에요', '예요').slice(머리.이름.length) + '. 내 생년월일시를 넣으면 나도 바로 볼 수 있어요.' : '';
     }
   }
-  // 10-02 입력 칸을 그만두고 나갈 때(「← 처음으로」 · 로고 · 폰 「뒤로」) — 들고 있던 갈 곳과 단추 말 · 맨 위 모양을 내려놓는다.
+  // 10-02 입력 칸을 그만두고 나갈 때(「← 홈」 · 로고 · 폰 「뒤로」) — 들고 있던 갈 곳과 단추 말 · 맨 위 모양을 내려놓는다.
   // 안 그러면 나중에 「내 생년월일 저장해 두기」로 들어와 저장해도 그때 고른 콘텐츠로 끌려간다.
   function 입력접기() {
     try { sessionStorage.removeItem(가는곳키); sessionStorage.removeItem(가는칸키); } catch (e) {}
@@ -2979,8 +2066,9 @@
     if (회m) { if (tab === 'jeongtong' && profile) { try { sessionStorage.setItem('chaeksa.jtVn', JSON.stringify({ a: 궁합입력(profile) })); } catch (e) {} location.href = 'ssom-vn.html?h=' + 회m[1]; } return; }
     // 10-02 접힌 장(<details>) 안의 칸이면 펼친 채 내려간다 — 홈 물음 칸 「돈 · 일 · 건강 · 사람 사이」 → 정통사주 N장(jtChN, 「근거 보기」 안의 접힌 장).
     // 탭 내용은 go() 뒤에 그려지기도 한다(정통사주 장은 그린 뒤에야 생김) — 칸이 생길 때까지 0.2초마다 4초 동안 찾는다.
+    // 10-02 탭별 꾸러미 — 그 탭 파일이 아직 오는 중이면 다 온 뒤부터 센다(느린 망에서 4초를 파일 받는 데 다 쓰지 않게). 홈 칸(이번 주 등)은 기다리지 않는다.
     if (곳) { let n = 0; const 찾기 = () => { const t = $(곳); if (!t || t.classList.contains('hide') || !t.offsetParent && t.tagName !== 'DETAILS') { if (++n < 20) setTimeout(찾기, 200); return; }
-      for (let d = t; d; d = d.parentElement) if (d.tagName === 'DETAILS') d.open = true; setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }; setTimeout(찾기, 0); }
+      for (let d = t; d; d = d.parentElement) if (d.tagName === 'DETAILS') d.open = true; setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }; (tab === 'home' ? Promise.resolve() : 꾸러미받기(tab).catch(() => {})).then(() => setTimeout(찾기, 0)); }
     // 그 사람이 아직 없으면 바로 그 사람 폼을 연다(궁합 둘)
     // 10-02 사용설명서는 「나」 아닌 사람이 하나라도 있으면 된다(그 사람만 넣어 둔 손님은 그 사람이 보는 사람이다). 궁합 둘은 보는 사람 말고 한 사람 더.
     if ((tab === 'ssom' || tab === 'chongnon' || tab === 'pair') && People()) {
@@ -3004,12 +2092,6 @@
   const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (그림[g.value] || 그림.F) + '.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
   // 첫 만남 입력 칸의 컷(#fcCut)은 10-02 걷었다(맨 위 그림 .fc-art 가 대신한다). 그 사람 칸(#pfCut)만 성별로 바뀐다.
   if ($('pfG')) $('pfG').addEventListener('change', () => { if (사람폼누구 !== 'me') 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); });   // 10-02 내 칸은 콘텐츠 표지 그대로
-  // 관문이 서 있을 때만 「로그인하고…」로 덮어쓴다. 내려 놓고 이 문구가 남으면
-  // 일어나지도 않을 로그인을 랜딩이 계속 약속한다.
-  // (버튼 문구 대입은 index.html 과 바이트까지 같아 죽은 코드라 지웠다.)
-  if (손님() && $('lpStartHint')) {
-    $('lpStartHint').textContent = '로그인하고 생년월일시만 넣으면 1분 안에 간명서가 나옵니다.';
-  }
 
   // ───── 외부 브리지 (consult.js에서 사용) ─────
   window.ChaeksaApp = {

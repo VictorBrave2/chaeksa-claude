@@ -8,18 +8,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1263">
+<link rel="stylesheet" href="style.css?v=49407658c7">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
-  .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
-  .doc p{font-size:14.5px;line-height:1.85;color:var(--ink2)}
-  .mark{font-size:40px;line-height:1}
-  .btn{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:11px;
-       text-decoration:none;font-size:14px;font-weight:700}
+  .doc h1{font-family:var(--serif);font-size:var(--t5);margin:18px 0 8px}
+  .doc p{font-size:var(--t2);line-height:1.85;color:var(--ink2)}
+  .mark{font-size:var(--t7);line-height:1}
+  .btn{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:var(--r2);
+       text-decoration:none;font-size:var(--t2);font-weight:700}
   .btn.go{background:var(--accent);color:#fff}
   /* 보조 단추는 바탕을 걷는다 — 전역 .btn 의 금색 통에 회색 글씨가 묻혔다(pay-done 과 같은 풀이) */
   .btn.sub{background:transparent;box-shadow:none;color:var(--ink2)}
-  .warn{font-size:12.5px;color:var(--ink3);margin-top:18px}
+  .warn{font-size:var(--t1);color:var(--ink3);margin-top:18px}
 </style>
 </head>
 <body>
@@ -31,15 +31,15 @@
   <p id="backBuyNote" hidden></p>
   <p id="backBuy" hidden><a class="btn go" id="backBuyA" href="./">다시 결제하러 가기</a></p>
   <p id="backApply" hidden><a class="btn go" href="taekil-apply.html">신청서로 돌아가 다시 결제하기</a></p>
-  <p><a class="btn go" id="backHome" href="./">책사로 돌아가기</a></p>
+  <p><a class="btn go" id="backHome" href="./">← 홈</a></p>
   <p><a class="btn sub" id="mailQ" href="mailto:dl4431@naver.com?subject=%5B%EC%B1%85%EC%82%AC%5D%20%EA%B2%B0%EC%A0%9C%20%EB%AC%B8%EC%9D%98">메일로 문의하기</a></p>
 </div>
 
-<script src="config.js?v=1263"></script>
-<script src="cloud.js?v=1263"></script>
-<script src="pay.js?v=1263"></script>
-<script src="yaksok.js?v=1263"></script>
-<script src="oryu.js?v=1263"></script>
+<script src="config.js?v=085d614551"></script>
+<script src="cloud.js?v=b538926f88"></script>
+<script src="pay.js?v=2829f4fc9c"></script>
+<script src="yaksok.js?v=642528e0a0"></script>
+<script src="oryu.js?v=431856193b"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -64,10 +64,10 @@
   }
 
   // 출산택일이면 신청서로 돌려보낸다 — 적은 것은 이 기기에 남아 있어 그대로 채워진다(2026-09-11 검토:
-  // 첫 방문자는 「책사로 돌아가기」로 가면 신청 페이지로 가는 길이 없다). 창을 닫아 취소하면 토스가
+  // 첫 방문자는 「← 홈」으로 가면 신청 페이지로 가는 길이 없다). 창을 닫아 취소하면 토스가
   // orderId 를 붙이지 않으므로, 이 기기에 신청서 초안이 있는지로도 가린다.
   // 카카오는 늘 orderId 를 붙여 오므로 주문번호로만 가린다(연애 상품을 그만뒀는데 택일 신청서로 보내지 않게).
-  // 10-02 연애 두 상품을 그만두거나 막혔으면 그 화면으로 돌려보낸다 — 전에는 「책사로 돌아가기」(홈)뿐이라 사려던 화면을 다시 찾아야 했다.
+  // 10-02 연애 두 상품을 그만두거나 막혔으면 그 화면으로 돌려보낸다 — 전에는 「← 홈」뿐이라 사려던 화면을 다시 찾아야 했다.
   // 주문번호 앞부분이 상품이다(ck_love_full_ · ck_love_pair_). 돌아가면 고른 사람 · 넣어 둔 생년월일은 그대로다(pair.js 고른키 · 저장된 사람).
   var 연애곳 = /^ck_love_pair_/.test(orderId || '') ? ['pair', './#pair'] : /^ck_love_full_/.test(orderId || '') ? ['love', './#love'] : null;
   if (연애곳) {

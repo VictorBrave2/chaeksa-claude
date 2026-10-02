@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>탭별 꾸러미 시험</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}#stage iframe{width:390px;height:640px;border:1px solid #ccc;margin-top:12px}</style></head>
+<body><div id="out">시험하는 중이에요… (탭을 하나씩 열어 봐요 — 1분쯤 걸려요)</div><div id="stage"></div>
+<script>
+// 탭별 꾸러미 시험(10-02 개편 3묶음 「빠르기」 — index.html 의 처음 받는 줄 · template#kkureomi · app.js 「탭별 꾸러미」).
+//   가 표 꼴 — 처음 줄과 꾸러미 줄이 겹치지 않고 · 파일이 다 있고 · 판정 엔진 여덟 줄은 늘 함께 · 분야 표(bunya.js)의 열린 콘텐츠 파일이 그 탭 꾸러미에 있다
+//   나 첫 화면(넣어 둔 사람 없음) — 처음 줄만 받는다 · 처음 줄 압축 합이 300KB 아래
+//   다 탭마다 열기 — 지어낸 두 사람(나 · 그 사람)을 넣고 탭을 하나씩 열어, 그려지고 · 오류 상자 · 「불러오는 중」이 남지 않고 · 그 탭 꾸러미 밖 파일을 받지 않는다
+//   라 연애 · 사용설명서 — 이 두 화면은 열면 계산 서버를 불러서 열지 않는다. 꾸러미만 받아 모듈이 서는지 본다
+// 시험하는 동안 이 브라우저의 책사 저장값(chaeksa.*)을 잠시 비우고 지어낸 사람으로 바꾼다 — 끝나면(멈춰도) 그대로 되돌린다.
+// 로그인 표(chaeksa.auth)도 그동안 빠진다 — 시험 화면이 서버와 동기화해 지어낸 사람을 계정에 올리지 않게.
+// 개발 서버(localhost)에서 돌린다. 배포 묶음에서는 빠진다(.github/workflows/pages.yml).
+(async () => {
+  const out = document.getElementById('out'), stage = document.getElementById('stage');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const 줄들 = []; let 통과 = 0, 실패 = 0;
+  const 글로 = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
+  const 봄 = (이름, 실제, 기대) => { const a = 글로(실제), b = 글로(기대), ok = a === b; ok ? 통과++ : 실패++; 줄들.push('<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + esc(이름) + (ok ? '' : ' — 기대 ' + esc(b) + ' · 실제 ' + esc(String(a).slice(0, 400))) + '</h2>'); };
+  const 머리 = (s) => 줄들.push('<h3>' + esc(s) + '</h3>');
+  const 없음목록 = (xs) => (xs.length ? xs.join(', ') : '0');
+  const 받기 = async (f) => { const r = await fetch(f + (f.includes('?') ? '&' : '?') + 'nocache=' + Date.now(), { cache: 'no-store' }); return r.ok ? r.text() : null; };
+  const 겹침 = (xs) => { const s = new Set(), d = new Set(); xs.forEach((x) => (s.has(x) ? d.add(x) : s.add(x))); return Array.from(d); };
+  const 이름만 = (s) => String(s).split('?')[0];
+  const 쉼 = (ms) => new Promise((r) => setTimeout(r, ms));
+  const 기다림 = async (조건, ms) => { const 끝 = Date.now() + ms; while (Date.now() < 끝) { try { if (조건()) return true; } catch (e) {} await 쉼(150); } try { return !!조건(); } catch (e) { return false; } };
+  // 파일 이름은 ?v= 를 떼고 견준다 — 이 쪽을 tools_bust.py PAGES 에 넣어 이름 뒤에 ?v= 가 붙어도 그대로 돈다.
+  const 판정여덟 = ['saenggeuk.js', 'gise.js', 'panjeong.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'gyeokguk.js', 'classic.js'].map(이름만);
+
+  // 책사 저장값 — 시험 전 그대로 적어 두었다가 되돌린다
+  const 저장 = {};
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('chaeksa.') === 0) 저장[k] = localStorage.getItem(k); }
+  const 비우기 = () => Object.keys(localStorage).filter((k) => k.indexOf('chaeksa.') === 0).forEach((k) => localStorage.removeItem(k));
+  let 되돌림 = false;
+  const 되돌리기 = () => { if (되돌림) return; 되돌림 = true; stage.innerHTML = ''; 비우기(); Object.keys(저장).forEach((k) => localStorage.setItem(k, 저장[k])); };
+  window.addEventListener('pagehide', 되돌리기);
+
+  try {
+    머리('가. 표 꼴');
+    const 첫 = await 받기('index.html');
+    const doc = new DOMParser().parseFromString(첫 || '', 'text/html');
+    const 틀 = doc.getElementById('kkureomi');
+    봄('가1 index.html 에 꾸러미 표(template#kkureomi)가 있다', !!(틀 && 틀.content), true);
+    if (!틀 || !틀.content) throw new Error('꾸러미 표가 없어 그만둠');
+    const 모두 = (틀.getAttribute('data-all') || '').split(/\s+/).filter(Boolean);
+    const 줄 = Array.from(틀.content.querySelectorAll('script[src]')).map((s) => ({ src: s.getAttribute('src'), 탭: (s.getAttribute('data-for') || '').split(/\s+/).filter(Boolean) }));
+    const 처음 = Array.from(doc.querySelectorAll('script[src]')).map((s) => s.getAttribute('src'));
+    const 처음이름 = 처음.map(이름만), 줄이름 = 줄.map((r) => 이름만(r.src));
+    const 꾸러미 = (t) => 줄.filter((r) => 모두.includes(t) || r.탭.includes(t)).map((r) => 이름만(r.src));
+    봄('가2 처음 줄과 꾸러미 줄이 겹치지 않고 · 꾸러미 줄에 같은 파일이 두 번 없다', [없음목록(처음이름.filter((f) => 줄이름.includes(f))), 없음목록(겹침(줄이름))], ['0', '0']);
+    봄('가3 꾸러미 줄마다 ?v= 가 붙었다(tools_bust.py)', 없음목록(줄.filter((r) => !/\?v=/.test(r.src)).map((r) => r.src)), '0');
+    const 없는 = [];
+    for (const f of 처음.concat(줄.map((r) => r.src))) { if ((await 받기(f)) == null) 없는.push(이름만(f)); }
+    봄('가4 처음 줄 · 꾸러미 줄 파일이 다 있다(' + (처음.length + 줄.length) + '개)', 없음목록(없는), '0');
+    const 탭들 = ['home', 'love', 'pair', 'taekil', 'jeongtong', 'chongnon', 'ssom', 'sheet', 'gunghap'];
+    봄('가5 판정 엔진 여덟 줄은 늘 함께 받는다(하나라도 받는 꾸러미는 여덟 다)', 없음목록(탭들.concat('ai').filter((t) => { const k = 꾸러미(t), n = 판정여덟.filter((f) => k.includes(f)).length; return n && n !== 8; })), '0');
+    봄('가6 처음 줄에는 판정 엔진 여덟 줄이 없다(첫 화면은 판정을 쓰지 않는다)', 없음목록(판정여덟.filter((f) => 처음이름.includes(f))), '0');
+    // 분야 표 — 열린 콘텐츠의 파일(bunya.js 콘텐츠 「파일」)이 처음 줄이나 그 탭 꾸러미에 있어야 그 탭을 열었을 때 모듈이 선다
+    await new Promise((ok, no) => { const s = document.createElement('script'); s.src = 처음.find((x) => 이름만(x) === 이름만('bunya.js')); s.onload = ok; s.onerror = no; document.body.appendChild(s); });
+    const B = window.ChaeksaBunya, 탭있음 = new Set(Array.from(doc.querySelectorAll('.tab[data-tab]')).map((t) => t.getAttribute('data-tab')));
+    const 빠진 = [];
+    ((B && B.콘텐츠) || []).filter((c) => c.상태 === '열림' && 탭있음.has(c.탭)).forEach((c) => (c.파일 || []).forEach((f) => { if (!처음이름.includes(f) && !꾸러미(c.탭).includes(f)) 빠진.push(c.키 + ':' + f); }));
+    봄('가7 분야 표의 열린 콘텐츠 파일이 처음 줄이나 그 탭 꾸러미에 있다', 없음목록(빠진), '0');
+
+    머리('나. 첫 화면 — 처음 줄만');
+    if (window.CompressionStream) {
+      const 압축 = async (t) => (await new Response(new Blob([t]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()).byteLength;
+      let 합 = 0; for (const f of 처음) 합 += await 압축((await 받기(f)) || '');
+      봄('나1 처음 받는 스크립트 ' + 처음.length + '개 압축 합 ' + Math.round(합 / 1024) + 'KB — 300KB 아래', 합 < 300 * 1024, true);
+    } else 봄('나1 이 브라우저는 압축 크기를 못 잰다(CompressionStream 없음) — 크롬에서 돌려 주세요', 'x', 'o');
+    const 열기 = async (src) => {
+      stage.innerHTML = '';
+      const f = document.createElement('iframe');
+      const 로드 = new Promise((ok) => { f.onload = ok; });
+      f.src = src; stage.appendChild(f);
+      await 로드;
+      const w = f.contentWindow;
+      await 기다림(() => w.ChaeksaReady, 15000);
+      return w;
+    };
+    const 받은js = (w) => {
+      const 바닥 = w.location.pathname.replace(/[^/]*$/, '');
+      return w.performance.getEntriesByType('resource').map((e) => new URL(e.name, w.location.href)).filter((u) => u.origin === w.location.origin && /\.js$/.test(u.pathname) && !/\/sw\.js$/.test(u.pathname))
+        .map((u) => (u.pathname.indexOf(바닥) === 0 ? u.pathname.slice(바닥.length) : u.pathname));
+    };
+    비우기();
+    const w0 = await 열기('index.html');
+    await 쉼(1500);
+    봄('나2 첫 화면이 섰다(앱 준비 표시 · 분류 칸)', [!!w0.ChaeksaReady, !!(w0.document.querySelector('[data-home-cats]') && w0.document.querySelector('[data-home-cats]').children.length)], [true, true]);
+    봄('나3 첫 화면(넣어 둔 사람 없음)은 처음 줄 밖 파일을 받지 않는다', 없음목록(Array.from(new Set(받은js(w0))).filter((f) => !처음이름.includes(f))), '0');
+
+    머리('다. 탭마다 열기 — 지어낸 두 사람');
+    const 생 = (y, m, d, h, mi, g) => ({ year: y, month: m, day: d, hour: h, minute: mi, gender: g, solarCorrection: true, calendar: 'solar', place: 'KR:서울', placeName: '서울', longitude: 126.98, tzOffset: null });
+    const 사람들 = [
+      { id: 'kk-me', name: '지어낸 나', relation: '나', isSelf: true, birth: 생(1992, 3, 14, 9, 30, 'F'), createdAt: Date.now() },
+      { id: 'kk-you', name: '지어낸 그 사람', relation: '그 사람', isSelf: false, birth: 생(1990, 8, 2, 21, 10, 'M'), createdAt: Date.now() },
+    ];
+    비우기();
+    localStorage.setItem('chaeksa.people', JSON.stringify(사람들));
+    localStorage.setItem('chaeksa.activePerson', 'kk-me');
+    localStorage.setItem('chaeksa.chongnonWho', 'kk-you');   // 정통궁합 · 웹툰궁합이 고른 그 사람
+    const $w = (w, id) => w.document.getElementById(id);
+    const 그려짐 = {
+      home: (w) => !!(w.document.querySelector('[data-home-cats]') && w.document.querySelector('[data-home-cats]').children.length) && !!w.ChaeksaKkureomi && w.ChaeksaKkureomi.왔나('home') && !!w.ChaeksaTypecard,
+      taekil: (w) => $w(w, 'tkSim').children.length > 0,
+      jeongtong: (w) => $w(w, 'jtOut').children.length > 0,
+      chongnon: (w) => $w(w, 'gcTabOut').children.length > 0,
+      ssom: (w) => $w(w, 'ssTabOut').children.length > 0,
+      sheet: (w) => Array.from($w(w, 'shPick').options).some((o) => o.value === 'kk-you'),
+      gunghap: (w) => Array.from($w(w, 'ghPick').options).some((o) => o.value === 'kk-you'),
+    };
+    let 마지막 = null;
+    for (const t of Object.keys(그려짐)) {
+      const w = await 열기(t === 'home' ? 'index.html' : 'index.html#' + t);
+      const 탭 = () => w.document.querySelector('.tab[data-tab="' + t + '"]');
+      await 기다림(() => 탭() && !탭().classList.contains('hide') && (그려짐[t](w) || 탭().querySelector('.kk-err')), 25000);
+      const el = 탭();
+      봄('다 ' + t + ' — 열리고 그려진다 · 오류 상자 없음 · 「불러오는 중」이 남지 않음',
+        [!!(el && !el.classList.contains('hide') && 그려짐[t](w)), !!(el && el.querySelector('.kk-err')), !!(el && el.querySelector('.kk-wait'))], [true, false, false]);
+      const 허용 = new Set(처음이름.concat(꾸러미('home'), t === 'home' ? [] : 꾸러미(t)));
+      봄('다 ' + t + ' — 그 탭 꾸러미(+ 홈 설명서 꾸러미) 밖 파일을 받지 않는다', 없음목록(Array.from(new Set(받은js(w))).filter((f) => !허용.has(f))), '0');
+      마지막 = w;
+    }
+
+    머리('라. 연애 · 사용설명서 — 꾸러미만(화면은 계산 서버를 불러서 열지 않는다)');
+    봄('라1 사용설명서 꾸러미는 연애 꾸러미를 품는다(사용설명서가 연애 모듈을 쓴다)', 없음목록(꾸러미('love').filter((f) => !꾸러미('pair').includes(f))), '0');
+    let 섬 = [false, false];
+    try { await 마지막.ChaeksaKkureomi.받기('pair'); 섬 = [!!마지막.ChaeksaLoveView, !!마지막.ChaeksaPairView]; } catch (e) { 섬 = ['못 받음: ' + (e && e.message), false]; }
+    봄('라2 꾸러미 pair 를 받으면 연애 · 사용설명서 모듈이 선다', 섬, [true, true]);
+  } catch (e) {
+    봄('시험이 멈춤: ' + (e && e.message), 'x', 'o');
+  } finally {
+    되돌리기();
+  }
+  out.innerHTML = '<p id="sum">' + 통과 + ' 통과 · ' + 실패 + ' 실패</p>' + 줄들.join('');
+})().catch((e) => { document.getElementById('out').textContent = '시험이 멈췄어요: ' + (e && e.message); });
+</script></body></html>

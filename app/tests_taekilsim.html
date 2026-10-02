@@ -8,7 +8,7 @@
 <div id="out"></div><div id="tkSim" style="display:none"></div>
 <script src="config.js"></script><script src="places.js"></script><script src="astro.js"></script><script src="lunar.js"></script><script src="engine.js"></script>
 <script src="saenggeuk.js?t=74"></script><script src="gise.js?t=74"></script><script src="panjeong.js?t=74"></script><script src="typecard.js?t=63"></script><script src="gyeokguk.js?v=1220"></script><script src="classic.js?t=2"></script>
-<script src="gwanjeom.js?t=74"></script><script src="taekilsim.js?t=74"></script>
+<script src="gwanjeom.js?t=74"></script><script src="yaksok.js?t=74"></script><script src="taekilsim.js?t=74"></script>
 <script>
 const E = ChaeksaEngine, P = ChaeksaPanjeong, W = ChaeksaGwanjeom, S = ChaeksaTaekilSim;
 const out = document.getElementById('out'); let 통과 = 0, 실패 = 0;
@@ -99,6 +99,22 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
   if (w.원두.이름 !== '화' || w.멈춤.이름 !== '토' || w.까닭 !== '떨어짐' || w.막는.map(x => E.STEMS[x.stem]).join('') !== '壬') 문제.push('庚寅 壬午 戊午 丁巳 → ' + w.원두.이름 + '…' + w.멈춤.이름 + ' ' + w.까닭);
   w = ChaeksaGise.원류(mk('辛卯 辛卯 丙子 甲午'));         // 「以木为源头，五行无土，不能流至金」
   if (w.원두.이름 !== '목' || w.멈춤.이름 !== '화' || w.까닭 !== '없음') 문제.push('辛卯 辛卯 丙子 甲午 → ' + w.원두.이름 + '…' + w.멈춤.이름 + ' ' + w.까닭);
+  return 문제;
+});
+검사('다리(10-02 개편 3묶음) — 시뮬레이터 끝 비교 상자의 받는 것 · 견본 · 신청 한 줄이 장부 택일 줄 그대로, 신청 단추는 창구 주소대로', () => {
+  const Y = window.ChaeksaYaksok; if (!Y) return 'yaksok.js 가 안 실렸다';
+  const box = document.getElementById('tkSim'); S.render(box, { date: '2026-12-20' });
+  const vs = box.querySelector('.tk-vs'), r = Y.줄('taekil'), 문제 = [];
+  if (!vs || !r) return '비교 상자 또는 장부 택일 줄이 없다';
+  const 목록 = Array.from(vs.querySelectorAll('li')).map(li => li.textContent);
+  if (JSON.stringify(목록) !== JSON.stringify(Y.받는것목록('taekil'))) 문제.push('받는 것이 장부와 다르다: ' + 목록.join(' / '));
+  if (!vs.textContent.includes(r.상품이름)) 문제.push('상품이름이 없다');
+  if (!r.견본 || !vs.querySelector('a[href^="' + r.견본 + '"]')) 문제.push('견본 보기 단추가 없다(장부 견본 ' + r.견본 + ')');
+  if (!vs.textContent.includes(Y.신청글('taekil'))) 문제.push('신청 한 줄이 장부 신청글이 아니다');
+  const 단추 = vs.querySelector('#tkApply'), 폼 = String(window.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
+  if (!단추) 문제.push('신청 단추가 없다');
+  else if (폼 ? 단추.getAttribute('href') !== 폼 : !/^taekil-apply\.html/.test(단추.getAttribute('href'))) 문제.push('신청 단추 길 ' + 단추.getAttribute('href') + ' · 창구 ' + 폼);
+  if (/\d[\d,]*\s?원/.test(vs.textContent)) 문제.push('값을 손으로 적었다(값은 상품표에서): ' + vs.textContent.match(/\d[\d,]*\s?원/)[0]);
   return 문제;
 });
 (async () => {

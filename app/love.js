@@ -151,8 +151,8 @@
     box.innerHTML = '<section class="card lv-wait"><h3 class="doc-h">나에게 나온 장 ' + 장.차례.length + '개 · 글 ' + 저장.items.length + '개</h3>'
       + '<p class="hint" style="margin:0 0 4px">아래 장면들을 하나씩 내 글로 쓰고 있어요. 다 쓰면 이 자리가 장마다 그림과 글로 바뀌어요.</p>'
       + 장.차례.map(function (sec, i) {
-        return '<p class="lv-t" style="margin:14px 0 4px">' + (i + 1) + '장 · ' + esc(sec) + ' <span style="font-weight:400;font-size:12.5px;color:var(--ink3)">글 ' + 장.묶음[sec].length + '개</span></p>'
-          + '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:var(--ink3)">'
+        return '<p class="lv-t" style="margin:14px 0 4px">' + (i + 1) + '장 · ' + esc(sec) + ' <span style="font-weight:400;font-size:var(--t1);color:var(--ink3)">글 ' + 장.묶음[sec].length + '개</span></p>'
+          + '<ul style="margin:0;padding-left:18px;font-size:var(--t2);line-height:1.7;color:var(--ink3)">'
           + 장.묶음[sec].map(function (it) { return '<li>' + esc(it.q) + '</li>'; }).join('') + '</ul>';
       }).join('') + '</section>';
   }
@@ -193,6 +193,8 @@
 
   // 상품 약속 장부(yaksok.js) — 무엇을 받나 · 미리 보는 것 · 만드는 시간 · 결제하면 받는 것은 장부 한 곳에서 읽는다(10-02). 여기에 손으로 적지 않는다.
   function 장부() { return global.ChaeksaYaksok || null; }
+  // 결제 상자 맨 아래 「책사 소개」 길(10-02 개편 3묶음) — 결제 전에 누가 만들고 어떻게 계산하는지 스스로 확인하게. 새 탭이라 보던 결과는 그대로다.
+  var 소개길 = '<p class="hint" style="margin:10px 0 0;text-align:center"><a href="about.html" target="_blank" rel="noopener" style="color:var(--ink3)">누가 만들고 어떻게 계산하나요? — 책사 소개 →</a></p>';
   function 약(키) { var Y = 장부(); return (Y && Y.줄(키)) || {}; }
   function 화면이름() { var Y = 장부(); return (Y && Y.이름('love')) || '사랑할 때만 나오는 당신'; }   // 문의 메일 제목에 싣는 화면 이름
   // 결제 단계에서 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈은 빠지지 않았어요 · 다시 하기 · 문의하기. 그 파일이 없으면 예전처럼 한 줄.
@@ -339,13 +341,14 @@
       + (만듦 ? '<p style="margin:0 0 10px">' + esc(만듦) + '</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
-      + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 그때 만들어 바로 열리는 디지털 콘텐츠입니다. '
+      + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 그때 만들어 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다. 만들지 못하면 전액 환불됩니다.</p>'
-      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
+      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:var(--t1);line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="lvAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용과, 생년월일시를 이 콘텐츠를 만드는 데 쓰는 것에 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a> · <a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a>)</span></label>'
       + '<button class="btn" id="lvBuy" type="button" style="width:100%">출시 기념가 9,900원 결제하고 내 것 받기</button>'
-      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div></section>';
+      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div>'
+      + 소개길 + '</section>';
     var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), 막힘칸 = box.querySelector('#lvPayErr'), P = global.ChaeksaPay;
     if (P && P.product) P.product('love_full').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
@@ -401,13 +404,14 @@
       + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었고, 봉인을 풀면 이 자리에서 바로 보여요.</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 풀리는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.filter(Boolean).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
-      + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:12.5px;line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
+      + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
-      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
+      + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:var(--t1);line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="lvAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
       + '<button class="btn" id="lvBuy" type="button" style="width:100%">출시 기념가 9,900원 결제하고 봉인 풀기</button>'
-      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div></section>';
+      + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div>'
+      + 소개길 + '</section>';
     var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), 막힘칸 = box.querySelector('#lvPayErr'), P = global.ChaeksaPay;
     // 서버가 준 결제 열쇠가 없으면 단추를 잠그고 서버에 묻는다. 로그인 전이면 단추는 그대로 두고(누르면 로그인), 돌아와서 묻는다.
     var C1 = global.ChaeksaCloud;

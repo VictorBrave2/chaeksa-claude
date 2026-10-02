@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""배포 시 정적 파일에 ?v=N 을 붙여 브라우저 캐시를 확실히 갱신한다.
-   sw.js 의 캐시 이름(chaeksa-vN)과 버전을 맞춘다."""
+"""배포 시 정적 파일에 ?v=지문(그 파일 내용의 sha1 앞 10자, 10-02 개편 3묶음)을 붙여 바뀐 파일만 브라우저가 새로 받게 한다.
+   --bump 는 sw.js 의 캐시 이름(chaeksa-vN)을 올린다 — 서비스 워커 파일이 바뀌어야 브라우저가 새 일꾼을 받는다."""
 import io, os, re, sys, subprocess
 
 # 윈도에서 이 콘솔은 기본이 cp949 라, 검사 결과에 「—」 같은 글자가 있으면
@@ -35,32 +35,63 @@ if new != cur:
 # 결제 화면 셋이 config·cloud·pay.js 를 버전 없이 불러서, pay.js 를 고쳐도 재방문자는
 # 옛 파일을 물고 있었다 — 상품 그림이 결제 화면에만 안 뜬 게 그것이다(2026-09-11).
 # 스크립트를 부르는 페이지를 새로 만들면 여기에 넣어야 한다.
-PAGES = ['index.html', 'read.html', 'jt-wongo-view.html', 'tests_jt.html', 'pay.html', 'pay-done.html', 'pay-fail.html', 'taekil.html', 'taekil-apply.html', 'taekil-sim.html', 'myeongsik.html', 'jeongtong.html', 'gunghap-chongnon.html', 'ssom.html', 'ssom-vn.html', 'ssom-wongo-view.html', 'tests_ssom.html', 'tests_byeonhwa.html', 'tests_bunya.html', 'tests_yaksok.html']
+PAGES = ['index.html', 'read.html', 'jt-wongo-view.html', 'tests_jt.html', 'pay.html', 'pay-done.html', 'pay-fail.html', 'taekil.html', 'taekil-apply.html', 'taekil-sim.html', 'taekil-sample.html', 'myeongsik.html', 'love.html', 'pair.html', 'jeongtong.html', 'gunghap-chongnon.html', 'ssom.html', 'ssom-vn.html', 'ssom-wongo-view.html', 'tests_ssom.html', 'tests_byeonhwa.html', 'tests_bunya.html', 'tests_yaksok.html', 'about.html']
+# 10-02 개편 3묶음 「빠르기」 — ?v= 뒤는 이제 배포 번호가 아니라 **그 파일 내용의 지문**(sha1 앞 10자)이다.
+# 전에는 배포마다 모든 파일의 ?v= 가 함께 올라서, 파일 하나만 고쳐도 다시 온 손님이 스크립트 전부(1.2MB)를 다시 받았다.
+# 이제 바뀐 파일만 주소가 바뀐다. 서비스 워커(sw.js)는 지문 붙은 주소를 캐시에서 먼저 꺼낸다 — 같은 지문은 언제나 같은 내용이라서.
+# 그러니 **파일을 고친 뒤에는 꼭 이 도구를 다시 돌리고 올린다**(고친 뒤 지문을 안 붙이고 올리면, 다시 온 손님은 옛 내용을 계속 본다).
+# 줄 끝(CRLF/LF)만 다른 것은 같은 내용으로 본다. 파일이 없으면 지문 대신 배포 번호(서비스 워커는 숫자 ?v= 를 네트워크 먼저로 받는다).
+import hashlib
+def 지문(f):
+    try:
+        b = open(os.path.join(APP, f), 'rb').read()
+    except OSError:
+        return None
+    return hashlib.sha1(b.replace(b'\r\n', b'\n')).hexdigest()[:10]
+VER = {f: (지문(f) or str(new)) for f in FILES}
+
 pages, tagged = {}, 0
 for pg in PAGES:
     p = os.path.join(APP, pg)
     h = io.open(p, encoding='utf-8').read()
     for f in FILES:
-        h = re.sub(r'(["\'])' + re.escape(f) + r'(\?v=\d+)?\1',
-                   lambda m: '%s%s?v=%d%s' % (m.group(1), f, new, m.group(1)), h)
+        h, n = re.subn(r'(["\'])' + re.escape(f) + r'(\?v=[0-9a-z]+)?\1',
+                       lambda m: '%s%s?v=%s%s' % (m.group(1), f, VER[f], m.group(1)), h)
+        tagged += n
     io.open(p, 'w', encoding='utf-8').write(h)
     pages[pg] = h
-    tagged += len(re.findall(r'\?v=%d' % new, h))
-print('version', new)
+print('version', new, '(서비스 워커 판 · 파일 ?v= 는 내용 지문)')
 print('tagged:', tagged, '(%s)' % ' · '.join(PAGES))
 
 # -- 빠진 파일을 잡는다 --
-# FILES 목록에 안 적힌 스크립트는 ?v= 가 안 올라가고, URL 이 안 바뀌니
+# FILES 목록에 안 적힌 스크립트는 ?v= 가 안 바뀌고, URL 이 안 바뀌니
 # 브라우저가 영원히 옛 파일을 물고 있는다. 2026-08-28 gyeokguk.js 가 그랬다.
-_pat_v  = re.compile(r'src=.([A-Za-z0-9_.-]+\.js)\?v=(\d+)')
-_pat_no = re.compile(r'src=.([A-Za-z0-9_.-]+\.js)(?!\?)')
-_missed, _notag = [], []
+# (10-02 mun/all.js 처럼 폴더 안 파일도 본다 — 전에는 / 가 든 이름을 못 읽어 검사에서 빠졌다.)
+_pat_v  = re.compile(r'src=.([A-Za-z0-9_./-]+\.js)\?v=([0-9a-z]+)')
+_pat_no = re.compile(r'src=.([A-Za-z0-9_./-]+\.js)(?!\?)')
+_missed, _notag, _gone = [], [], []
 for pg, h in pages.items():
-    _missed += [(pg, m.group(1), m.group(2)) for m in _pat_v.finditer(h) if int(m.group(2)) != new]
+    _missed += [(pg, m.group(1), m.group(2)) for m in _pat_v.finditer(h) if m.group(2) != VER.get(m.group(1))]
     _notag  += [(pg, m.group(1)) for m in _pat_no.finditer(h)]
-if _missed or _notag:
+    # 10-02 탭별 꾸러미 — index.html 의 template 줄은 탭을 열 때 받는다. 파일을 지우고 줄을 남기면 그 탭이 손님 앞에서 「불러오지 못했어요」가 된다.
+    _gone   += [(pg, m.group(1)) for m in re.finditer(r'src=.([A-Za-z0-9_./-]+\.js)', h) if not os.path.exists(os.path.join(APP, m.group(1)))]
+if _missed or _notag or _gone:
     print()
-    print('!! 버전이 안 올라간 스크립트가 있습니다 - FILES 목록에 넣으세요')
-    for pg, f, v in _missed: print('   %-14s %-28s ?v=%s  (현재 %d)' % (pg, f, v, new))
+    print('!! 지문이 안 붙었거나 없는 스크립트가 있습니다 - FILES 목록에 넣거나, 지운 파일이면 그 쪽(index.html 은 template 줄까지)에서도 빼세요')
+    for pg, f, v in _missed: print('   %-14s %-28s ?v=%s  (지금 내용 %s)' % (pg, f, v, VER.get(f, '목록에 없음')))
     for pg, f in _notag:     print('   %-14s %-28s ?v= 없음' % (pg, f))
+    for pg, f in _gone:      print('   %-14s %-28s 파일이 없음' % (pg, f))
     sys.exit(1)
+
+# -- 상품 소개 쪽 · 미리보기 그림 · 사이트맵 (10-02 개편 3묶음) --
+# 소개 쪽 다섯(love · pair · ssom · gunghap-chongnon · jeongtong.html)을 상품 약속 장부 · 분야 표에서, 글 미리보기(cards/og/*.jpg) ·
+# 홈 미리보기(og-home-3.jpg)를 그 쪽 제목 · 삽화에서, 사이트맵을 공개 쪽 목록 · git 기록에서 다시 만든다. 바뀐 것만 쓴다.
+# 장부 한 칸을 고치면 배포 때 소개 쪽도 같이 바뀐다 — 소개 쪽을 손으로 고치지 않는다. 자세한 것은 tools_sogae.py 머리.
+import tools_sogae
+try:
+    _sogae = tools_sogae.build(ver=new)
+except Exception as e:
+    print()
+    print('!! 소개 쪽 · 미리보기 · 사이트맵을 만들지 못했습니다 — python tools_sogae.py 로 까닭을 보세요:', e)
+    sys.exit(1)
+print('소개 쪽 · 미리보기 · 사이트맵:', ('바뀜 %d — %s' % (len(_sogae), ' · '.join(_sogae))) if _sogae else '그대로')

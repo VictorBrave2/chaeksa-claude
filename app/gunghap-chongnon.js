@@ -9,7 +9,7 @@
  */
 (function (global) {
   'use strict';
-  const E = global.ChaeksaEngine, Q = global.ChaeksaGunghapGwanjeom, PL = global.ChaeksaPlaces;
+  const E = global.ChaeksaEngine, Q = global.ChaeksaGunghapGwanjeom;
   if (!E || !Q) return;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 오행말 = ['목', '화', '토', '금', '수'];
@@ -111,37 +111,6 @@
     box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#gcCh' + a.dataset.ch); if (d) d.open = true; }));
   }
 
-  function 세우기() {
-    const box = document.getElementById('gcOut'), f = document.getElementById('gcForm');
-    if (!box || !f) return;
-    const q = (id) => document.getElementById(id);
-    ['gcPlaceA', 'gcPlaceB'].forEach(id => { if (PL && q(id)) q(id).innerHTML = PL.options(); });
-    // 앱에 이미 넣어 둔 내 생년월일이 있으면 「나」 칸을 미리 채운다
-    let p = null; try { p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); } catch (e) {}
-    if (p && p.year) {
-      q('gcDateA').value = p.year + '-' + String(p.month).padStart(2, '0') + '-' + String(p.day).padStart(2, '0');
-      if (!p.noTime && p.hour != null && p.hour !== '') q('gcTimeA').value = String(p.hour).padStart(2, '0') + ':' + String(p.minute || 0).padStart(2, '0');
-      else if (q('gcNoTimeA')) q('gcNoTimeA').checked = true;
-      q('gcGA').value = p.gender === 'M' ? 'M' : 'F';
-    }
-    const 잠금 = (n) => { const c = q('gcNoTime' + n); if (c) q('gcTime' + n).disabled = c.checked; };
-    ['A', 'B'].forEach(n => { const c = q('gcNoTime' + n); if (c) { c.addEventListener('change', () => 잠금(n)); 잠금(n); } });
-    const 읽기 = (n) => {
-      const [y, m, d] = (q('gcDate' + n).value || '').split('-').map(Number);
-      const [hh, mi] = (q('gcTime' + n).value || '12:00').split(':').map(Number);
-      if (!y || !m || !d) return null;
-      const 모름 = !!(q('gcNoTime' + n) && q('gcNoTime' + n).checked);
-      const 곳 = PL ? PL.resolve(q('gcPlace' + n).value) : { lon: 126.98, tzOffset: null };
-      return { year: y, month: m, day: d, hour: 모름 ? null : hh, minute: 모름 ? 0 : (mi || 0), gender: q('gcG' + n).value || null, longitude: 곳.lon, tzOffset: 곳.tzOffset };
-    };
-    f.onsubmit = (e) => {
-      e.preventDefault();
-      const a = 읽기('A'), b = 읽기('B');
-      if (!a || !b) return;
-      그리기(box, a, b);
-      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 세우기); else 세우기();
+  // 따로 열던 궁합총론 쪽(gunghap-chongnon.html)의 입력 칸(#gcForm)을 세우던 코드는 10-02 개편 3묶음에서 지웠다 — 그 쪽은 이제 앱(?go=chongnon)으로 넘기기만 한다. 그리기는 app.js 가 부른다.
   global.ChaeksaGunghapChongnon = { 그리기 };
 })(window);

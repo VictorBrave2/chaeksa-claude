@@ -8,23 +8,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1263">
+<link rel="stylesheet" href="style.css?v=49407658c7">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
-  .doc h1{font-family:var(--serif);font-size:24px;margin:18px 0 8px}
-  .doc p{font-size:14.5px;line-height:1.85;color:var(--ink2)}
-  .mark{font-size:40px;line-height:1}
-  .box{margin:26px 0;padding:18px 20px;border-radius:14px;background:var(--accent-soft);
+  .doc h1{font-family:var(--serif);font-size:var(--t5);margin:18px 0 8px}
+  .doc p{font-size:var(--t2);line-height:1.85;color:var(--ink2)}
+  .mark{font-size:var(--t7);line-height:1}
+  .box{margin:26px 0;padding:18px 20px;border-radius:var(--r2);background:var(--accent-soft);
        border:1px solid var(--accent-line);text-align:left}
-  .row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:5px 0}
+  .row{display:flex;justify-content:space-between;gap:12px;font-size:var(--t2);padding:5px 0}
   .row span:first-child{color:var(--ink3)}
   .row span:last-child{color:var(--ink);font-weight:700;text-align:right}
-  .btn{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:11px;
-       text-decoration:none;font-size:14px;font-weight:700}
+  .btn{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:var(--r2);
+       text-decoration:none;font-size:var(--t2);font-weight:700}
   .btn.go{background:var(--accent);color:#fff}
   /* 버튼 셋이 모두 금색 통으로 보이고 보조 버튼 글씨가 묻혔다(2026-09-11 캡처) — 보조는 바탕을 걷는다 */
   .btn.sub{background:transparent;box-shadow:none;color:var(--ink2)}
-  .warn{font-size:12.5px;color:var(--ink3);margin-top:18px}
+  .warn{font-size:var(--t1);color:var(--ink3);margin-top:18px}
   /* 신청서(.intake) 모양은 style.css — 신청 페이지(taekil-apply)와 같이 쓴다 */
 </style>
 </head>
@@ -35,11 +35,11 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=1263"></script>
-<script src="cloud.js?v=1263"></script>
-<script src="pay.js?v=1263"></script>
-<script src="yaksok.js?v=1263"></script>
-<script src="oryu.js?v=1263"></script>
+<script src="config.js?v=085d614551"></script>
+<script src="cloud.js?v=b538926f88"></script>
+<script src="pay.js?v=2829f4fc9c"></script>
+<script src="yaksok.js?v=642528e0a0"></script>
+<script src="oryu.js?v=431856193b"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -64,8 +64,8 @@
       + '<p>' + esc(msg) + '</p>'
       + (code ? '<p class="warn">코드 ' + esc(code) + '</p>' : '')
       + '<p class="warn">돈이 빠져나갔는데 이 화면이 보인다면 아래로 알려주세요. 바로 확인해 돌려드립니다.</p>'
-      + (돌아갈 ? '<p><a class="btn go" href="' + 돌아갈 + '">보던 화면으로 돌아가기</a></p><p><a class="btn sub" href="./">책사 처음으로</a></p>'
-               : '<p><a class="btn go" href="./">책사로 돌아가기</a></p>')
+      + (돌아갈 ? '<p><a class="btn go" href="' + 돌아갈 + '">보던 화면으로 돌아가기</a></p><p><a class="btn sub" href="./">← 홈</a></p>'
+               : '<p><a class="btn go" href="./">← 홈</a></p>')
       + '<p><a class="btn sub" href="' + esc(메일) + '">메일로 문의하기 (dl4431@naver.com)</a></p>');
   }
 
@@ -189,7 +189,7 @@
           + '<div class="box">'
           +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
           +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
-          +   '<div class="row"><span>주문번호</span><span style="font-size:11.5px">' + esc(orderId) + '</span></div>'
+          +   '<div class="row"><span>주문번호</span><span style="font-size:var(--t1)">' + esc(orderId) + '</span></div>'
           + '</div>'
           + (code === 'taekil' ? '<div id="taekil-slot"></div>' : '')
           + '<p><a class="btn go" href="mailto:dl4431@naver.com?subject=' + encodeURIComponent('[책사] 결제 기록 확인 ' + orderId) + '">메일로 알리기</a></p>'
@@ -211,8 +211,10 @@
         + '<div class="box">'
         +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
         +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
-        +   '<div class="row"><span>주문번호</span><span style="font-size:11.5px">' + esc(orderId) + '</span></div>'
+        +   '<div class="row"><span>주문번호</span><span style="font-size:var(--t1)">' + esc(orderId) + '</span></div>'
         + '</div>'
+        // 10-02 개편 3묶음 — 이 주문번호는 이 화면에만 한 번 보였다. 설정 창 「내 결제」(app.js · pay.js 내결제)에서 언제든 다시 본다.
+        + '<p class="warn" style="margin-top:-12px">이 주문번호는 홈 화면 맨 위 오른쪽 「설정」 → 「내 결제」에서 언제든 다시 볼 수 있어요.</p>'
         + (code === 'taekil'
             ? '<p>출산택일은 <b>사람이 직접 계산</b>합니다.</p><div id="taekil-slot"></div>'
             : 연애
@@ -222,7 +224,7 @@
                 + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
         + (시험 && 카카오 ? '<p><button class="btn sub" id="testRefund" type="button">이 시험 결제 취소하기(검수 계정)</button></p><p class="warn" id="testRefundMsg"></p>' : '')
-        + '<p><a class="btn sub" href="./">책사로 돌아가기</a></p>');
+        + '<p><a class="btn sub" href="./">← 홈</a></p>');
       // 10-01 시험 결제의 취소(환불) 길도 끝까지 시험한다 — 서버(krefund)가 검수 계정만 받는다.
       var 취소 = document.getElementById('testRefund');
       if (취소) 취소.onclick = function () {

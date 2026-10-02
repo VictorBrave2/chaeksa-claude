@@ -66,7 +66,7 @@
     paragraphs.push(`오늘은 <b>${E.fmt.pillar(tf.day)}(${E.fmt.pillarKo(tf.day)})</b>일. 오늘 오는 것은 <b>${오는것(godDay)}</b>입니다.`);
     if (rel) paragraphs.push(rel.text);
     paragraphs.push((helpful ? `오늘 들어오는 ${dayElem} 기운은 내 사주에 도움이 되는 쪽이라 전체적으로 순풍입니다. ` : `오늘 ${dayElem} 기운은 내게 꼭 필요한 기운은 아니라 무리하지 않는 게 좋습니다. `));
-    paragraphs.push(`<span style="color:var(--ink3);font-size:14px">이달은 ${오는것(godMonth)}, 올해는 ${오는것(godYear)} 쪽입니다. 집중이 잘 되는 시간대는 ${ELEM_HOURS[a.yongCandidates[0]]}.</span>`);
+    paragraphs.push(`<span style="color:var(--ink3);font-size:var(--t2)">이달은 ${오는것(godMonth)}, 올해는 ${오는것(godYear)} 쪽입니다. 집중이 잘 되는 시간대는 ${ELEM_HOURS[a.yongCandidates[0]]}.</span>`);
     // 「오늘 할 하나」(g.act)도 감성 표였다 — 여섯 눈의 요약으로 바꾼다(chaeksadan.육안). 없으면 비운다.
     let action = '';
     try { const D = global.ChaeksaDan; if (D && D.육안) { const 눈 = D.육안(result, date || new Date(), '오늘'); if (눈.length) action = D.육안요약(눈); } } catch (e) {}

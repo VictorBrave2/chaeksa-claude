@@ -22,7 +22,8 @@
   const BASE = 'https://chaeksa.kr';
   // 이 파일이 몇 판인지(?v=). 결제가 막혔을 때 문구 뒤에 붙인다 — 캡처 한 장으로 「옛 화면이 떠 있던 것」과
   // 「새 코드의 문제」를 가른다(2026-09-11: 고친 뒤에도 같은 오류를 다시 받았는데 운영 코드로는 재현되지 않았다).
-  const 판 = ((document.currentScript && document.currentScript.src || '').match(/[?&]v=(\d+)/) || [])[1] || '';
+  // 10-02 개편 3묶음 — ?v= 는 이제 숫자 판이 아니라 파일 내용 지문(tools_bust.py)이라 영문 · 숫자를 다 읽는다.
+  const 판 = ((document.currentScript && document.currentScript.src || '').match(/[?&]v=([0-9a-z]+)/) || [])[1] || '';
 
   // 상품 그림(결제 화면 pay.html 의 정사각 칸) · 상품 설명 · 결제하는 자리는 10-02 부터 상품 약속 장부(yaksok.js) 한 곳에 있다 —
   // 상품마다 서로 다른 그림 한 장(토스 심사 「같은 그림을 반복해 쓰면」 떨어뜨림, 2026-09-11). products 표에 상품을 새로 넣으면 장부에 한 줄.
@@ -399,6 +400,73 @@
   /** 화면에 적을 값 — 「출시 기념가 9,900원」 또는 「99,000원」. 상품 줄(products 표)을 받는다. */
   const 값 = (p) => (p && 값이름[p.code] ? 값이름[p.code] + ' ' : '') + won(p && p.amount);
 
+  // ── 내 결제(10-02 개편 3묶음) ──
+  // 주문번호는 결제 완료 화면(pay-done)에서 한 번만 보였고 다시 볼 곳이 없었다. 설정 창 「내 결제」(index.html #myPayList · app.js openSettings)가
+  // 로그인한 본인 주문(my_orders — 행 수준 보안으로 본인 것만, 2년 안)을 줄마다 보인다: 상품 · 값 · 결제한 날 · 주문번호 · 언제까지 보나 · 환불 문의.
+  // 상품 이름 · 보관(「N년 동안」) · 만드는 때는 상품 약속 장부(yaksok.js)에서 읽는다 — 장부에 없는 옛 상품은 주문에 적힌 이름만.
+  // 결제를 끝내지 않은 것(open · failed)은 산 것이 아니라 뺀다. 환불한 것(canceled — 환불만 이 상태로 바뀐다, migrate-33)은 「환불했어요」로 남긴다.
+  // 환불 문의 메일에는 주문번호 · 상품 · 결제한 날 · 값만 싣는다 — 생년월일 · 누구 것인지 가리는 표시(note)는 싣지 않는다.
+  const 날짜글 = (d) => d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
+  /** my_orders 줄 → 화면 줄 [{id, 이름, 값, 날, 기간, 자리, 영수증, 메일, 환불됨}]. 지금(Date)은 시험용 — 없으면 지금. */
+  function 내결제줄(rows, 지금) {
+    const Y = global.ChaeksaYaksok, now = 지금 || new Date();
+    return (Array.isArray(rows) ? rows : []).filter((r) => r && (r.status === 'paid' || r.status === 'canceled')).map((r) => {
+      const id = String(r.id || '');
+      const code = r.product || (id.match(/^ck_([a-z_]+?)_\d{14}_/) || [])[1] || '';
+      const 줄 = (Y && Y.줄 && Y.줄(code)) || null;
+      const 이름 = (줄 && 줄.상품이름) || r.name || code || '상품';
+      const at = new Date(r.paidAt || r.at), 날 = isNaN(at) ? null : at;
+      const 환불됨 = r.status === 'canceled';
+      const 해 = 줄 && 줄.보관 ? Number((String(줄.보관).match(/(\d+)\s?년\s?동안/) || [])[1] || 0) : 0;
+      let 기간 = '', 자리 = '';
+      if (환불됨) 기간 = '환불했어요.';
+      else if (해 && 날) {
+        const 끝 = new Date(날.getTime()); 끝.setFullYear(끝.getFullYear() + 해);
+        const 남은 = Math.ceil((끝 - now) / 864e5);
+        if (남은 > 0) { 기간 = 날짜글(끝) + '까지 볼 수 있어요 · ' + 남은 + '일 남았어요.'; 자리 = 줄.자리 || ''; }
+        else 기간 = '볼 수 있는 기간(결제한 날부터 ' + 해 + '년)이 끝났어요.';
+      } else if (줄 && !줄.보관 && Y.만듦글) 기간 = Y.만듦글(code);   // 출산택일 — 「결제가 확인되면 … 메일로 보내 드려요(보통 2~3일).」
+      const 값글 = r.amount ? won(r.amount) : '';
+      const 본문 = ['주문번호: ' + id, '상품: ' + 이름, '결제한 날: ' + (날 ? 날짜글(날) : '-'), '값: ' + (값글 || '-'), '',
+        (환불됨 ? '궁금한 것을 아래에 적어 주세요.' : '환불을 원하시거나 결제에 대해 궁금한 것을 아래에 적어 주세요.'), ''];
+      const 메일 = 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent('[책사] ' + (환불됨 ? '결제 문의 ' : '환불 문의 ') + id)
+        + '&body=' + encodeURIComponent(본문.join('\r\n'));
+      return { id, 이름, 값: 값글, 날: 날 ? 날짜글(날) : '', 기간, 자리,
+               영수증: /^https:\/\//.test(r.receipt || '') ? r.receipt : '', 메일, 환불됨 };
+    });
+  }
+  /** box 에 내 결제 목록을 그린다. rows = mine() 결과(null 이면 「못 불러왔어요」 — 산 게 없다는 말과 가른다). */
+  function 내결제그리기(box, rows, 지금) {
+    if (!box) return;
+    if (rows === null) {
+      box.innerHTML = '<p class="hint" style="margin:0">결제 기록을 불러오지 못했어요. 인터넷 연결을 확인하고 설정을 다시 열어 주세요. '
+        + '계속 안 되면 ' + 글(문의메일) + ' 으로 알려 주세요.</p>';
+      return;
+    }
+    const 줄들 = 내결제줄(rows, 지금);
+    if (!줄들.length) {
+      box.innerHTML = '<p class="hint" style="margin:0">이 계정으로 결제한 것이 없어요. 다른 계정으로 결제하셨다면 그 계정으로 로그인해 주세요.</p>';
+      return;
+    }
+    const 단추 = (href, 말, 새창) => '<a class="btn-ghost" style="text-decoration:none" href="' + 글(href) + '"'
+      + (새창 ? ' target="_blank" rel="noopener"' : '') + '>' + 글(말) + '</a>';
+    box.innerHTML = 줄들.map((x) => '<div class="my-pay-row" data-order="' + 글(x.id) + '" style="padding:10px 0;border-top:1px solid var(--line)">'
+      + '<p style="margin:0;font-size:var(--t2);line-height:1.6;color:var(--ink)"><b>' + 글(x.이름) + '</b>' + (x.값 ? ' · ' + 글(x.값) : '') + '</p>'
+      + '<p class="hint" style="margin:2px 0 0">' + (x.날 ? 글(x.날) + ' 결제 · ' : '') + '주문번호 <span style="user-select:all;word-break:break-all">' + 글(x.id) + '</span></p>'
+      + (x.기간 ? '<p class="hint" style="margin:2px 0 0">' + 글(x.기간) + '</p>' : '')
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">'
+      + (x.자리 ? 단추(x.자리, '보러 가기') : '') + (x.영수증 ? 단추(x.영수증, '영수증', true) : '')
+      + 단추(x.메일, x.환불됨 ? '문의하기' : '환불 문의') + '</div></div>').join('')
+      + '<p class="hint" style="margin:10px 0 0">「환불 문의」를 누르면 주문번호를 적어 둔 메일이 열려요(' + 글(문의메일) + '). '
+      + '<a href="terms.html#refund" target="_blank" rel="noopener" style="color:var(--accent)">환불 규정</a></p>';
+  }
+  /** 설정 창 「내 결제」 — 열 때마다 my_orders 를 새로 읽는다(결제 직후 · 환불 뒤에도 맞게). 로그인 전이면 빈 목록. */
+  async function 내결제(box) {
+    if (!box) return;
+    box.innerHTML = '<p class="hint" style="margin:0">결제 기록을 불러오는 중…</p>';
+    내결제그리기(box, await mine());
+  }
+
   // ── 결제한 것을 판독한다 ──
   // 무료 화면이 렌더될 때 「이 사람이 이걸 샀는가」를 동기로 물을 수 있어야 한다.
   // 그래서 앱이 뜰 때 paidLoad() 로 한 번 받아 두고, paidFor() 는 그 캐시만 읽는다.
@@ -619,5 +687,5 @@
     문의메일,
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서 };
+  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서 };
 })(window);
