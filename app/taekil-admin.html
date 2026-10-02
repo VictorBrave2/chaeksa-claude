@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>출산택일 사장님 목록 · 책사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=0acd0d1535">
+<style>
+  .doc{max-width:960px;margin:0 auto;padding:20px 16px 90px}
+  .doc > h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:0 0 10px}
+  .adm-switch{margin:0 0 14px;padding:12px 14px;border:1px solid var(--accent-line);border-radius:var(--r2);background:var(--accent-soft)}
+  .adm-switch p{font-size:var(--t2);line-height:1.75;color:var(--ink2);margin:0}
+  .adm-switch .btn{width:auto;display:inline-block;padding:9px 14px}
+  .adm-filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+  .adm-filters button{padding:8px 12px;border-radius:var(--r3);border:1px solid var(--line2);background:var(--bg2);color:var(--ink2);font-size:var(--t1);cursor:pointer;font-family:var(--sans)}
+  .adm-filters button.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft);font-weight:700}
+  .adm-tools{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+  .adm-tools .btn{width:auto;display:inline-block;margin:0;padding:9px 14px}
+  .adm-row{border:1px solid var(--line);border-radius:var(--r2);background:var(--card);margin:0 0 8px}
+  .adm-sum{display:block;width:100%;text-align:left;padding:12px 14px;border:0;background:transparent;cursor:pointer;color:var(--ink);font-family:var(--sans)}
+  .adm-sum b{display:inline;font-size:var(--t2);margin-left:6px}
+  .adm-meta{display:block;font-size:var(--t1);line-height:1.6;color:var(--ink3);margin-top:4px}
+  .adm-st{display:inline-block;font-size:var(--t1);font-weight:700;padding:2px 9px;border-radius:var(--r3);background:var(--bg2);border:1px solid var(--line2);color:var(--ink2)}
+  .adm-st.st-held{border-color:var(--accent2);color:var(--accent)}
+  .adm-st.st-blocked{border-color:#b4534f;color:#b4534f}
+  .adm-st.st-ready{background:var(--seal-bg);color:var(--seal-ink);border-color:transparent}
+  .adm-detail{padding:4px 14px 14px;border-top:1px solid var(--line)}
+  .adm-detail h4{font-size:var(--t2);margin:16px 0 6px;color:var(--ink)}
+  .adm-acts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+  .adm-acts .btn{width:auto;display:inline-block;margin:0;padding:8px 12px;text-decoration:none}
+  .adm-acts .btn[disabled]{opacity:.45;cursor:default}
+  .adm-msg{font-size:var(--t2);line-height:1.7;color:var(--ink2);margin:6px 0}
+  .adm-msg.bad{color:#b4534f}
+  .adm-box{margin:8px 0}
+  .adm-box textarea{width:100%;min-height:120px;box-sizing:border-box}
+  .adm-pre{white-space:pre-wrap;word-break:break-all;font-size:12px;line-height:1.6;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r1);padding:10px;max-height:420px;overflow:auto}
+  .adm-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .adm-two{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .adm-copy{width:100%;min-height:240px;box-sizing:border-box}
+  #admManualBox{margin:0 0 14px}
+</style>
+</head>
+<body>
+<!-- 출산택일 자동 보고서 — 사장님 목록(10-02 설계서 「3) 사장님 흐름」). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
+     실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super'(server/migrate-36) — 이 쪽의 가림은 편의다. 움직임은 taekil-admin.js. -->
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./#taekil">← 출산택일</a></div>
+<div class="doc">
+  <h1>출산택일 보고서 — 사장님 목록</h1>
+  <div id="admGate"><p class="hint">불러오는 중…</p></div>
+  <div id="admMain" hidden>
+    <div class="adm-switch" id="admSwitch"></div>
+    <div class="adm-tools">
+      <button type="button" class="btn small" id="admManual">대신 넣기(네이버폼 신청)</button>
+      <button type="button" class="btn ghost small" id="admReload">새로고침</button>
+    </div>
+    <div id="admManualBox" hidden></div>
+    <div class="adm-filters" id="admFilters"></div>
+    <div id="admRows"></div>
+  </div>
+</div>
+
+<script src="config.js?v=5870f86d7c"></script>
+<script src="cloud.js?v=b538926f88"></script>
+<script src="usage.js?v=3282ea377a"></script>
+<script src="pay.js?v=8d17b71c6d"></script>
+<script src="places.js?v=c37e825f17"></script>
+<script src="taekil-read.js?v=6e9dc526e5"></script>
+<script src="myeongsik-card.js?v=4fc56b2857"></script>
+<script src="taekil-report.js?v=1a4c5d81b5"></script>
+<script src="taekil-admin.js?v=ff7907226b"></script>
+<!-- 명식 카드를 그릴 때만 차례대로 싣는 시뮬레이터 엔진 사슬 — 비공개 서버 vendor 와 같은 차례(places 는 위에서 이미 실었다) -->
+<template id="tkChain">
+<script src="places.js?v=c37e825f17"></script>
+<script src="astro.js?v=c0bb3fa175"></script>
+<script src="lunar.js?v=9d5b6391f1"></script>
+<script src="engine.js?v=5e229af245"></script>
+<script src="saenggeuk.js?v=fe0683a9e6"></script>
+<script src="gise.js?v=d0f879078e"></script>
+<script src="panjeong.js?v=b80b485f4b"></script>
+<script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=cc88b5f18e"></script>
+<script src="gwanjeom.js?v=29b898c413"></script>
+<script src="taekilsim.js?v=7dbea57b14"></script>
+</template>
+<script>
+(function () {
+  var m = '';
+  try { m = localStorage.getItem('chaeksa.theme') || 'auto'; } catch (e) { m = 'auto'; }
+  var h = new Date().getHours();
+  var night = m === 'night' || (m === 'auto' && (h < 6 || h >= 18));
+  document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
+  try { if (window.ChaeksaCloud && ChaeksaCloud.captureRedirect) ChaeksaCloud.captureRedirect(); } catch (e) {}
+  try { localStorage.removeItem('chaeksa.return'); } catch (e) {}
+  if (window.ChaeksaTaekilAdmin) ChaeksaTaekilAdmin.시작();
+  else document.getElementById('admGate').innerHTML = '<p>화면 파일을 불러오지 못했어요. 새로고침해 주세요.</p>';
+})();
+</script>
+</body>
+</html>

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=49407658c7">
+<link rel="stylesheet" href="style.css?v=0acd0d1535">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:var(--t5);margin:18px 0 8px}
@@ -35,10 +35,14 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=085d614551"></script>
+<script src="config.js?v=5870f86d7c"></script>
 <script src="cloud.js?v=b538926f88"></script>
-<script src="pay.js?v=2829f4fc9c"></script>
+<script src="usage.js?v=3282ea377a"></script>
+<script src="pay.js?v=8d17b71c6d"></script>
 <script src="yaksok.js?v=642528e0a0"></script>
+<!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
+<script src="places.js?v=c37e825f17"></script>
+<script src="taekil-read.js?v=6e9dc526e5"></script>
 <script src="oryu.js?v=431856193b"></script>
 <script>
 (function () {
@@ -86,7 +90,7 @@
       + '<div class="box" style="margin:14px 0 10px">'
       +   줄('출산 예정 기간', d.range) + 줄('태어날 지역', d.place)
       +   줄('아이 성별', d.sex === '모름' ? '아직 몰라요' : d.sex)
-      +   줄('앞세우는 것', F.앞세움이름(d.first)) + '</div>'
+      +   줄('원하시는 방향', F.앞세움이름(d.first)) + '</div>'
       + '<p class="lead">고칠 것이 생기면 주문번호와 함께 메일로 알려 주세요 — ' + esc(F.문의메일) + '</p></div>';
   }
 
@@ -105,6 +109,7 @@
       + '<p class="msg" id="i_msg"></p></form>';
     var f = document.getElementById('intake'), msg = document.getElementById('i_msg'), send = document.getElementById('i_send');
     F.켜기(f);
+    if (F.읽기켜기) F.읽기켜기(f);   // 칸마다 「이렇게 읽었어요」(10-02)
     // 막혔을 때는 손님 탓처럼 들리지 않게, 영어 코드 없이 — 적은 것은 그대로 있고 메일로도 보낼 수 있다고.
     var 못보냄 = function (r, d) {
       msg.className = 'msg bad';
@@ -123,13 +128,86 @@
       d.consent = 앞선동의 || { data: true, at: new Date().toISOString() };
       send.disabled = true; send.textContent = '보내는 중…';
       msg.className = 'msg'; msg.textContent = '';
-      ChaeksaPay.intake(orderId, d).then(function (r) {
+      ChaeksaPay.intake(orderId, F.신청서(d)).then(function (r) {
         // already = 이 주문에 이미 신청서가 붙어 있다(migrate-25 가 덮어쓰기를 막는다) — 접수된 것으로 본다.
         if (r && (r.ok || r.reason === 'already')) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); return; }
         send.disabled = false; send.textContent = '신청서 보내기';
         못보냄(r, d);
       });
     });
+  }
+
+  // ── 출산택일 자동 보고서(10-02 설계서 2-4) ─────────────────────
+  // 켜는 날(config.js CHAEKSA_TAEKIL_AUTO = 1) · 검수 계정 · 이 기기에서 결제창을 열 때 신청서가 붙은 주문이면 이 길로 간다.
+  // 로그인돼 있으면 비공개 서버에 만들기를 부르고(ChaeksaPay.taekil.make) 6초마다 「내 출산택일」(my_taekil)로 상태를 본다.
+  // 로그인이 안 된 브라우저로 돌아왔으면(카카오톡 안 브라우저 등) 「내 보고서」로 안내한다 — 신청서는 이미 주문에 붙어 있다.
+  // 창을 닫아도 된다 — 「내 보고서」(taekil-report.html)가 결제됐는데 안 만든 주문을 보면 다시 부른다. 그 밖의 손님은 아래 접수(지금 길) 그대로.
+  function 검수() { try { return !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) { return false; } }
+  function 자동길(orderId) {
+    return window.CHAEKSA_TAEKIL_AUTO === 1 || 검수() || !!(F && F.자동붙음 && F.자동붙음(orderId));
+  }
+  function 자동만들기(orderId) {
+    var 자리 = document.getElementById('taekil-slot'), T = ChaeksaPay.taekil;
+    if (!자리 || !T) return;
+    var 주소 = T.주소(orderId);
+    var 칸 = function (머리, 글, 아래) {
+      자리.innerHTML = '<div class="intake"><h2>' + esc(머리) + '</h2>' + (글 || []).map(function (s) { return '<p class="lead">' + esc(s) + '</p>'; }).join('') + (아래 || '') + '</div>';
+    };
+    var 가기 = function (말) { return '<p><a class="btn go" href="' + esc(주소) + '">' + esc(말) + '</a></p>'; };
+    var 로그인 = false;
+    try { 로그인 = !!(window.ChaeksaCloud && ChaeksaCloud.signedIn && ChaeksaCloud.signedIn()); } catch (e) { 로그인 = false; }
+    if (!로그인) {
+      칸('보고서는 「내 보고서」에서 이어서 만들어요', ['로그인하면 「내 보고서」에서 이어서 만들어요. 신청서는 이미 이 주문에 붙어 있어요.'], 가기('로그인하고 보고서 보기'));
+      return;
+    }
+    if (F && F.자동붙음 && F.자동붙음(orderId)) F.초안지움();   // 신청서가 주문에 붙었고 결제도 끝났다 — 이 기기의 초안은 이제 지운다
+    var 시작 = Date.now(), 째깍 = null, 만듦 = false, 끝 = false;
+    var 만드는중 = function () { 칸('여덟 글자를 연산하는 중이에요', ['보통 1~2분 걸려요. 이 창을 닫아도 돼요 — 다 되면 「내 보고서」에서 열려요.'], 가기('내 보고서로 가기')); };
+    var 마침 = function (st, 말) {
+      if (끝) return; 끝 = true; clearTimeout(째깍);
+      if (st === 'ready') { 칸('보고서가 열렸어요', [], 가기('보고서 열기')); return; }
+      if (st === 'checking') { 칸('책사가 한 번 더 확인하고 있어요', [T.상태말.checking], 가기('내 보고서로 가기')); return; }
+      if (st === 'canceled') { 칸('환불된 주문이에요', [T.상태말.canceled]); return; }
+      if (st === 'no_intake') { 칸('신청서가 아직 이 주문에 붙지 않았어요', ['「내 보고서」에서 이 기기에 적어 두신 신청서를 붙이거나, 주문번호와 함께 ' + F.문의메일 + ' 으로 알려 주세요.'], 가기('내 보고서로 가기')); return; }
+      칸('보고서를 아직 만들지 못했어요', [말 || '잠시 뒤 「내 보고서」에서 다시 봐 주세요.', '결제는 그대로 있어요. 계속 안 되면 ' + F.문의메일 + ' 으로 주문번호를 알려 주세요.'], 가기('내 보고서로 가기'));
+    };
+    var 보기 = function () {
+      clearTimeout(째깍);
+      if (끝) return;
+      if (Date.now() - 시작 > 8 * 60 * 1000) { 마침('', '오래 걸리고 있어요.'); return; }
+      T.mine().then(function (rows) {
+        if (끝) return;
+        var x = Array.isArray(rows) ? rows.filter(function (r) { return r && r.id === orderId; })[0] : null;
+        var st = x && x.state;
+        if (st === 'todo' && !만듦) { 만들기(); return; }
+        if (st === 'no_intake' && !만듦) {
+          // 다른 길로 결제했으면 이 기기의 초안을 붙여 본다(붙으면 만든다)
+          var d = F.초안();
+          if (d && !F.빈칸(d).length) {
+            만듦 = true;
+            ChaeksaPay.intake(orderId, F.신청서(d)).then(function (r) {
+              if (r && (r.ok || r.reason === 'already')) { F.초안지움(); 만듦 = false; 보기(); } else 마침('no_intake');
+            });
+            return;
+          }
+          마침('no_intake'); return;
+        }
+        if (st === 'ready' || st === 'checking' || st === 'canceled') { 마침(st); return; }
+        째깍 = setTimeout(보기, 6000);   // making · todo(만들기 부른 뒤) · 아직 못 읽음 — 6초 뒤 다시 본다
+      });
+    };
+    var 만들기 = function () {
+      만듦 = true; 만드는중();
+      T.make(orderId).then(function (r) {
+        if (끝) return;
+        if (r && r.ok) { 마침(r.state === 'ready' ? 'ready' : 'checking'); return; }
+        if (r && r.reason === 'busy') { 보기(); return; }
+        마침('', r && r.message);
+      });
+      째깍 = setTimeout(보기, 6000);
+    };
+    만드는중();
+    보기();
   }
 
   function 접수(orderId) {
@@ -140,7 +218,7 @@
     var d = F.초안();
     if (d && !F.빈칸(d).length) {
       자리.innerHTML = '<div class="intake"><p class="lead">신청서를 이 주문에 붙이고 있습니다…</p></div>';
-      ChaeksaPay.intake(orderId, d).then(function (r) {
+      ChaeksaPay.intake(orderId, F.신청서(d)).then(function (r) {
         if (r && (r.ok || r.reason === 'already')) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); }
         else 양식(자리, orderId, r || { reason: 'db' });   // 초안은 남아 있어 양식에 그대로 채워진다
       });
@@ -201,6 +279,7 @@
       // 돌아가면 그 화면이 서버에 산 것을 확인하고 바로 만들기 시작한다(love.js 열고시작 · pair.js 만들기). 만드는 시간은 상품 약속 장부(yaksok.js) 그대로.
       // 시험 결제(검수 계정)는 「시험 결제 취소하기」를 누를 수 있게 저절로 넘어가지 않는다. 「여기 머물기」를 누르면 멈춘다. 승인 · 금액 확인은 위 그대로다.
       var 연애 = code === 'love_full' || code === 'love_pair';
+      var 자동택일 = code === 'taekil' && 자동길(orderId);   // 10-02 자동 보고서 길(위 자동만들기 머리 주석)
       var Y = window.ChaeksaYaksok, 약 = (Y && Y.줄(code)) || {}, 저절로 = 연애 && !시험;
       var 이어서 = '돌아가면 ' + (code === 'love_pair' ? '고른 그 사람의 생년월일시로' : '내 생년월일시로') + ' 바로 만들기 시작해요. '
         + (약.시간 || '조금') + ' 걸리니 다 될 때까지 그 화면을 그대로 두세요.' + (r.already ? ' 이미 만든 것이 있으면 그대로 열려요.' : '');
@@ -216,7 +295,7 @@
         // 10-02 개편 3묶음 — 이 주문번호는 이 화면에만 한 번 보였다. 설정 창 「내 결제」(app.js · pay.js 내결제)에서 언제든 다시 본다.
         + '<p class="warn" style="margin-top:-12px">이 주문번호는 홈 화면 맨 위 오른쪽 「설정」 → 「내 결제」에서 언제든 다시 볼 수 있어요.</p>'
         + (code === 'taekil'
-            ? '<p>출산택일은 <b>사람이 직접 계산</b>합니다.</p><div id="taekil-slot"></div>'
+            ? (자동택일 ? '<div id="taekil-slot"></div>' : '<p>출산택일은 <b>사람이 직접 계산</b>합니다.</p><div id="taekil-slot"></div>')
             : 연애
               ? '<p class="warn" id="goSay">' + (저절로 ? '3초 뒤에 저절로 넘어가요.' : '') + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>'
                 + (저절로 ? '<p id="stayRow"><button class="btn sub" id="stay" type="button">여기 머물기</button></p>' : '')
@@ -234,7 +313,7 @@
           if (!(x && x.ok)) 취소.disabled = false;
         }).catch(function (e) { document.getElementById('testRefundMsg').textContent = String(e && e.message || e); 취소.disabled = false; });
       };
-      if (code === 'taekil') 접수(orderId);
+      if (code === 'taekil') { if (자동택일) 자동만들기(orderId); else 접수(orderId); }
       if (저절로) {
         var 남은 = 3, 말 = document.getElementById('goSay'), 머물 = document.getElementById('stay');
         var 째깍 = setInterval(function () {

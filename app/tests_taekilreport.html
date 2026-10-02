@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>출산택일 보고서 화면 검사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css?v=0acd0d1535">
+<style>body{font:14px/1.7 system-ui;margin:20px;max-width:960px}h2.r{margin:18px 0 6px;font-size:15px}.ok{color:#1a7f37}.no{color:#b42318}pre{background:#f4f4f4;padding:8px;overflow:auto;font-size:12px;white-space:pre-wrap}#stage{margin-top:30px;padding-top:10px;border-top:1px solid #ddd}</style>
+</head><body>
+<h1>출산택일 보고서 화면 검사(10-02 설계서 ⑤)</h1>
+<p>보고서 그리기(taekil-report.js) · 신청서 묶기와 막기(pay.js 주문서) · 내 결제 줄 · 명식 카드(myeongsik-card.js)를 지어낸 보고서 하나로 본다.
+보고서 본문은 비공개 서버가 짓는다 — 여기 보고서는 그 꼴만 흉내 낸 것(지어낸 값)이다. 유료 본문이 새는지는 Supabase 함수(migrate-36 Run 뒤 시험)가 막는다.</p>
+<div id="out"></div>
+<div id="stage"></div>
+<script src="config.js?v=5870f86d7c"></script>
+<script src="places.js?v=c37e825f17"></script><script src="astro.js?v=c0bb3fa175"></script><script src="lunar.js?v=9d5b6391f1"></script><script src="engine.js?v=5e229af245"></script>
+<script src="saenggeuk.js?v=fe0683a9e6"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=b80b485f4b"></script><script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=cc88b5f18e"></script><script src="gwanjeom.js?v=29b898c413"></script><script src="taekilsim.js?v=7dbea57b14"></script>
+<script src="taekil-read.js?v=6e9dc526e5"></script><script src="yaksok.js?v=642528e0a0"></script><script src="pay.js?v=8d17b71c6d"></script>
+<script src="myeongsik-card.js?v=4fc56b2857"></script><script src="taekil-report.js?v=1a4c5d81b5"></script>
+<script id="tests">
+(function () {
+  const V = window.ChaeksaTaekilReport, P = window.ChaeksaPay, MC = window.ChaeksaMyeongsikCard;
+  const out = document.getElementById('out'); let 통과 = 0, 실패 = 0; const 실패목록 = [];
+  const 쓰기 = (이름, 문제) => {
+    const ok = !문제.length; ok ? 통과++ : (실패++, 실패목록.push(이름 + '\n  ' + 문제.join('\n  ')));
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    out.insertAdjacentHTML('beforeend', '<h2 class="r ' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + esc(이름) + '</h2>' + (ok ? '' : '<pre>' + esc(문제.join('\n')) + '</pre>'));
+  };
+  function 검사(이름, fn) { let 문제 = []; try { const r = fn(); if (r) 문제 = [].concat(r).filter(Boolean); } catch (e) { 문제 = [e.message + '\n' + e.stack]; } 쓰기(이름, 문제); }
+  const J = (v) => JSON.stringify(v);
+  const 셈 = (s, w) => s.split(w).length - 1;
+  if (!V || !P) { 쓰기('파일이 실렸다', ['ChaeksaTaekilReport 또는 ChaeksaPay 가 없다']); window.시험결과 = { 통과, 실패, 실패목록 }; return; }
+
+  // 지어낸 보고서 — 비공개 lib/taekil-report.js 의 꼴(칸 id · 노드 k)만 흉내 낸다. 값은 지어냈다.
+  const 보고서 = {
+    v: 'taekil-report-0.1', order: ['greet', 'readback', 'verdict', 'block', 'alldays', 'receipt', 'zzz'],
+    card: { place: 'KR:서울', g: 'M' }, cards: [{ slot: '2027-04-12T08:32', label: '1번 — 으뜸' }],
+    greet: { head: '', body: [{ k: 'p', t: '안녕하세요.' }, { k: 'p', t: '<img src=x onerror=alert(1)>' }] },
+    readback: { head: '이렇게 읽었어요', body: [{ k: 'read', 칸: 'range', 이름: '출산 예정 기간', 말: '2027년 4월 12일(월) ~ 16일(금), 5일', 못읽음: false },
+      { k: 'read', 칸: 'place', 이름: '태어날 지역', 말: '목록에서 찾지 못했어요', 못읽음: true }, { k: 'nope', t: '모르는 노드' }] },
+    verdict: { head: '먼저 결론부터', body: [{ k: 'b', t: '으뜸 — 1번 · 4월 12일(월) · 오전 7시 33분 ~ 9시 32분' }] },
+    block: { head: '권하는 곳', body: [{ k: 'p', t: '곳마다 같은 차례로 적었어요.' }], items: [{ 번호: 1, head: '■ 1번 · 4월 12일(월)', body: [
+      { k: 'p', t: '까닭 — 지어낸 줄', part: '까닭' }, { k: 'card', i: 0, part: '카드' },
+      { k: 'pillars', part: '명식', 한자: '時 壬辰 · 日 辛酉 · 月 甲辰 · 年 丁未', 읽기: '지어낸 읽기', 글자: [{ 자: '壬', 자리: '時干', 말: '時干 임수(壬) — 지어낸 뜻' }] },
+      { k: 'han', part: '자평', 고전: '자평진전', 꼴: '원문', 글: '財輕比重', 뜻: '지어낸 뜻풀이' },
+      { k: 'p', t: '대운(10년마다 바뀌는 운) — 남아 기준이에요.', part: '대운' }, { k: 'list', items: ['2~11살 지어낸 대운', '12~21살 지어낸 대운'], part: '대운' },
+      { k: 'p', t: '병원 시간 — 지어낸 줄', part: '병원' }] }] },
+    alldays: { head: '날짜별로 전부', 접힘: true, body: [{ k: 'fold', head: '날짜별로 펼쳐 보기', body: [{ k: 'list', items: ['4월 12일(월)', '자 00:00~01:32 · 지어낸 줄'] }] }] },
+    receipt: { head: '결제 · 다시 보는 곳', body: [{ k: 'p', t: '주문번호 — ck_taekil_20261002120000_test0001' }] },
+    zzz: { head: '없는 칸', body: [{ k: 'p', t: '그리면 안 된다' }] },
+  };
+
+  검사('그리기 — 칸 차례 · 머리 · 모르는 칸 · 모르는 노드는 그리지 않는다', () => {
+    const h = V.그리기(보고서), 문제 = [];
+    const 칸들 = Array.from(h.matchAll(/data-sec="([a-z_]+)"/g)).map((m) => m[1]);
+    if (J(칸들) !== J(['greet', 'readback', 'verdict', 'block', 'alldays', 'receipt', 'zzz'])) 문제.push('칸 ' + J(칸들));
+    ['이렇게 읽었어요', '먼저 결론부터', '권하는 곳', '결제 · 다시 보는 곳', '■ 1번 · 4월 12일(월)'].forEach((t) => { if (h.indexOf(t) < 0) 문제.push('없음: ' + t); });
+    if (h.indexOf('모르는 노드') >= 0) 문제.push('모르는 노드를 그렸다');
+    return 문제;
+  });
+  검사('그리기 — 글은 모두 이스케이프(보고서 안 꺾쇠가 태그가 되지 않는다)', () => {
+    const h = V.그리기(보고서);
+    return [h.indexOf('<img') >= 0 ? '<img> 가 그대로 나갔다' : '', h.indexOf('&lt;img src=x onerror=alert(1)&gt;') < 0 ? '이스케이프된 글이 없다' : ''];
+  });
+  검사('그리기 — 접어 두는 것: 「날짜별로 전부」 칸 · 덩어리 속 대운 목록(첫 줄은 펴 둔다)', () => {
+    const h = V.그리기(보고서), 문제 = [];
+    if (!/<details class="tkr-sec tkr-foldsec" data-sec="alldays">/.test(h)) 문제.push('접힘 칸이 details 가 아니다');
+    const i = h.indexOf('대운(10년마다'), j = h.indexOf('대운 목록 펼쳐 보기'), k = h.indexOf('2~11살 지어낸 대운');
+    if (!(i >= 0 && j > i && k > j)) 문제.push('대운 접기 차례 ' + J([i, j, k]));
+    if (h.indexOf('<details class="tkr-fold"><summary>대운') < 0) 문제.push('대운 목록이 접히지 않았다');
+    return 문제;
+  });
+  검사('그리기 — 이렇게 읽었어요(못 읽은 칸 표시) · 원문과 뜻 · 명식 한자 · 카드 자리', () => {
+    const h = V.그리기(보고서), 문제 = [];
+    const 읽은칸 = (h.match(/class="tkr-read( bad)?"/g) || []).length;
+    if (읽은칸 !== 2 || 셈(h, 'class="tkr-read bad"') !== 1) 문제.push('읽은 칸 ' + 읽은칸);
+    if (h.indexOf('<p class="tkr-han-t" lang="zh-Hant">財輕比重</p>') < 0) 문제.push('원문 줄');
+    if (h.indexOf('時 壬辰 · 日 辛酉') < 0) 문제.push('명식 한자');
+    if (셈(h, 'data-card="0"') !== 1) 문제.push('카드 자리');
+    return 문제;
+  });
+  검사('화면 글 — 네 축 이름 · 조 번호 · 「당신」이 없다(그리기 바깥 글 포함)', () => {
+    const h = V.그리기(보고서) + Object.values(P.taekil.상태말).join(' ') + V.글로(보고서), 문제 = [];
+    [/실단/, /\d{1,3}조/, /당신/, /법전/].forEach((rx) => { const m = h.match(rx); if (m) 문제.push(m[0]); });
+    return 문제;
+  });
+  검사('반응 단추가 없다(결과 화면에 맞아요 · 아니에요 금지)', () => {
+    const h = V.그리기(보고서);
+    return /<button|맞아요|아니에요/.test(h) ? ['그리기에 단추 · 반응 말이 있다'] : [];
+  });
+  검사('글로 — 메일에 붙일 글(꺾쇠 태그 없음 · 칸 머리 · 카드는 이름표만)', () => {
+    const t = V.글로(보고서), 문제 = [];
+    if (/<\/?[a-z]/i.test(t.replace('<img src=x onerror=alert(1)>', ''))) 문제.push('태그가 섞였다');
+    ['[이렇게 읽었어요]', '· 출산 예정 기간 — 2027년 4월 12일(월) ~ 16일(금), 5일', '(명식 카드 — 1번 — 으뜸)', '자평진전 원문 — 財輕比重', '[결제 · 다시 보는 곳]'].forEach((s) => { if (t.indexOf(s) < 0) 문제.push('없음: ' + s); });
+    if (t.indexOf('그리면 안 된다') < 0) 문제.push('order 에 적힌 칸은 글로에도 실린다(그리기와 같은 차례)');
+    return 문제;
+  });
+
+  const F = P.주문서;
+  const 견본 = { mail: 'parent@example.com', range: '2027년 4월 12일 ~ 16일', hospital: '', place: '서울', sex: '남아', time: '오전 7시 ~ 밤 9시', weekend: false,
+    first: '재물', have: '2027년 4월 14일 오전 10시', father: '1984년 1월 25일 양력', mother: '1987년 4월 14일 양력', siblings: '', wish: '', ask: '' };
+  검사('신청서 묶기 — 원문 그대로 + 「이렇게 읽었어요」 줄 · 8000자 한도 안', () => {
+    const it = F.신청서(견본), 문제 = [];
+    if (J(it.원문) !== J(견본)) 문제.push('원문이 바뀌었다');
+    if (!it.읽은 || !Array.isArray(it.읽은.줄) || it.읽은.줄.length < 11) 문제.push('읽은 줄 ' + J(it.읽은 && it.읽은.줄 && it.읽은.줄.length));
+    const 긴 = F.신청서(Object.assign({}, 견본, { wish: '가'.repeat(1500), ask: '나'.repeat(1500), hospital: '다'.repeat(200), have: '라'.repeat(200) }));
+    if (JSON.stringify(긴).length > 8000) 문제.push('긴 신청서가 한도를 넘는다 ' + JSON.stringify(긴).length);
+    return 문제;
+  });
+  검사('신청서 막기 — 기간 · 곳을 못 읽음 · 31일 넘음 · 가족 날짜를 못 읽음 · 빈 메일(오늘 기준 앞날만)', () => {
+    const 문제 = [];
+    const 앞해 = new Date().getFullYear() + 1;
+    const 좋은 = Object.assign({}, 견본, { range: 앞해 + '년 4월 12일 ~ 16일' });
+    if (F.빈칸(좋은).length) 문제.push('좋은 신청서를 막았다 ' + J(F.빈칸(좋은)));
+    [[{ place: '어딘가 시골' }, '태어날 지역'], [{ range: 앞해 + '년 3월 1일 ~ 4월 10일' }, '출산 예정 기간'], [{ father: '잘 모르겠는데 90년대' }, '아버지'], [{ mail: '' }, '메일 주소']]
+      .forEach(([바꿈, 말]) => { const 빈 = F.빈칸(Object.assign({}, 좋은, 바꿈)); if (!빈.some((x) => x.indexOf(말) === 0)) 문제.push(J(바꿈) + ' 를 안 막았다 → ' + J(빈)); });
+    const 빈곳 = F.빈칸(Object.assign({}, 좋은, { place: '' }));
+    if (빈곳.filter((x) => x.indexOf('태어날 지역') === 0).length !== 1) 문제.push('빈 곳을 두 번 적었다 ' + J(빈곳));
+    return 문제;
+  });
+  검사('신청서 칸 — 「원하시는 방향」(앞세우신 말 없음) · 칸마다 읽은 줄 자리', () => {
+    const h = F.틀(), 문제 = [];
+    if (h.indexOf('원하시는 방향') < 0 || /앞세우/.test(h)) 문제.push('칸 이름');
+    ['range', 'place', 'time', 'father', 'mother', 'siblings', 'count'].forEach((k) => { if (h.indexOf('data-read="' + k + '"') < 0) 문제.push('읽은 줄 자리 없음 ' + k); });
+    return 문제;
+  });
+  검사('결제 — buy(code, note, pv, intake) · 사유 no_intake · ChaeksaPay.taekil 묶음', () => {
+    const 문제 = [], T = P.taekil;
+    if (P.buy.length !== 4) 문제.push('buy 인자 ' + P.buy.length);
+    if (P.say({ reason: 'no_intake' }).indexOf('신청서') < 0) 문제.push('no_intake 말');
+    ['mine', 'view', 'make', 'adminList', 'adminRelease', 'adminRedo', 'adminIntake', 'adminManual', 'adminNote', 'adminAuto', '주소', '사슬싣기'].forEach((k) => { if (typeof T[k] !== 'function') 문제.push('없음 ' + k); });
+    ['todo', 'no_intake', 'making', 'checking', 'ready', 'canceled'].forEach((k) => { if (!T.상태말[k]) 문제.push('상태말 없음 ' + k); });
+    if (T.주소('ck_taekil_1&x') !== 'taekil-report.html?o=ck_taekil_1%26x') 문제.push('주소 ' + T.주소('ck_taekil_1&x'));
+    return 문제;
+  });
+  검사('내 결제 — 출산택일 줄은 「보러 가기」가 그 주문 보고서 쪽 · 환불한 줄은 없음', () => {
+    const 문제 = [], d = document.createElement('div');
+    const 지금 = new Date('2026-10-02T12:00:00+09:00');
+    P.내결제그리기(d, [{ id: 'ck_taekil_20261002120000_abcd1234', product: 'taekil', status: 'paid', amount: 99000, paidAt: '2026-10-02T03:00:00Z' },
+      { id: 'ck_taekil_20261001120000_abcd9999', product: 'taekil', status: 'canceled', amount: 99000, paidAt: '2026-10-01T03:00:00Z' }], 지금);
+    const 줄 = d.querySelectorAll('.my-pay-row');
+    if (줄.length !== 2) 문제.push('줄 ' + 줄.length);
+    const a = 줄[0] && Array.from(줄[0].querySelectorAll('a')).find((x) => x.textContent === '보러 가기');
+    if (!a || a.getAttribute('href') !== 'taekil-report.html?o=ck_taekil_20261002120000_abcd1234') 문제.push('보러 가기 ' + (a && a.getAttribute('href')));
+    if (줄[1] && Array.from(줄[1].querySelectorAll('a')).some((x) => x.textContent === '보러 가기')) 문제.push('환불한 줄에 보러 가기');
+    return 문제;
+  });
+  검사('명식 카드 — 엔진으로 그린다 · 보고서용 앞말(msc-)', () => {
+    if (!MC) return ['myeongsik-card.js 가 없다'];
+    const h = MC.html({ slot: '2027-04-12T08:32', label: '1번 — 으뜸', place: 'KR:서울', g: 'M', pre: 'msc-' }), 문제 = [];
+    if (!h) return ['카드가 비었다(엔진 사슬)'];
+    if (h.indexOf('4월 12일(월) 07:33 ~ 09:32') < 0) 문제.push('시각 창');
+    if (/class="(card|gan|ji|god|eye|badge)[ "]/.test(h)) 문제.push('앞말 없는 클래스');
+    if (MC.html({ slot: 'x', place: 'KR:서울' }) !== null) 문제.push('틀린 시각에 null 이 아니다');
+    return 문제;
+  });
+
+  // 눈으로 보는 판 — 아래에 그려 둔다(카드는 엔진으로 채운다)
+  const st = document.getElementById('stage');
+  st.innerHTML = '<h2 class="r">아래는 지어낸 보고서를 그린 모양(눈으로 보기)</h2>' + V.그리기(보고서);
+  V.카드채우기(st, 보고서).then((n) => {
+    쓰기('카드채우기 — 카드 자리 하나를 그렸다', n === 1 ? [] : ['그린 카드 ' + n]);
+    out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
+    window.시험결과 = { 통과, 실패, 실패목록 };
+  });
+})();
+</script>
+</body></html>

@@ -438,6 +438,10 @@
   const 궁합고름키 = 'chaeksa.chongnonWho';
   let 궁합그사람 = (() => { try { return localStorage.getItem(궁합고름키) || null; } catch (e) { return null; } })();
   let 궁합그린것 = '', 궁합넘김 = null;
+  // 출산택일 탭 맨 위 두 문(10-02) — 지금 연 칸을 이 탭(sessionStorage)에 적어 두는 이름 · 처음 여는 칸을 정했나 · 다른 곳에서 「보고서 신청」으로 들어올 때 열 칸.
+  // go() 가 택일문달기()를 부르니 go() 보다 위에 둔다(TDZ). 칸 규칙은 아래 택일문달기 옆 주석.
+  const 택일칸키 = 'chaeksa.tkDoor';
+  let 택일칸정함 = false, 택일원함 = null;
 
   // 홈은 보던 자리를 기억한다 (2026-09-12 사장님 「콘텐츠 들어갔다가 뒤로가면 스크롤 다시
   // 내려야하는게 너무 불편해」). 표지를 눌러 들어갔다 「← 홈」 으로 돌아오면 그 표지 앞에 선다.
@@ -591,6 +595,7 @@
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
+    if (tab === 'taekil') 택일문달기();   // 10-02 맨 위 두 문 — 탭 파일(꾸러미)을 기다리기 전에 칸부터 정한다
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.pick ? 분류탭(b.dataset.pick, b.dataset.go).indexOf(tab) >= 0 : b.dataset.go === tab));
     // 탭 위의 열 책사 한마디(renderChorus)는 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
     if (tab !== 'home') 본표시(tab); else { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
@@ -639,7 +644,7 @@
     if (tab === 'chongnon') { try { renderChongnon(); } catch (e) { try { console.warn('궁합총론 탭:', e); } catch (x) {} } }
     if (tab === 'gunghap') renderGunghap();
     if (tab === 'sheet') renderSheet();
-    if (tab === 'taekil') wireTaekil();
+    if (tab === 'taekil') { wireTaekil(); 택일내보고서(); }
     // 궁합총론 13장 링크로 건너왔으면 거기서 보던 그 사람을 이 장에서도 골라 둔다 — 첫 사람으로 바뀌어 있으면 엉뚱한 사람을 보게 된다.
     if (궁합넘김) {
       const id = 궁합넘김; 궁합넘김 = null;
@@ -1466,6 +1471,73 @@
     setTimeout(() => { btn.innerHTML = old; }, 2600);
   }
 
+  // ───── 출산택일 탭 맨 위 두 문(10-02 사장님 「출산택일 메뉴를 최상단 보고서 신청과 시뮬레이터로 나누고」) ─────
+  // 「← 홈」 바로 밑 문 둘(index.html .tk-doors — 보고서 신청 · 시뮬레이터). 누르면 아래 칸(data-tk-pane)만 바뀐다 — 쪽을 옮기지 않고 주소도 #taekil 그대로.
+  // 처음 여는 칸 — 이 쪽을 연 뒤 탭을 처음 켤 때 한 번만 정한다(그 뒤로는 손님이 고른 칸 그대로):
+  //   ① 지금 주소에 d=YYYY-MM-DD 나 월별 글 꼬리표(from=…-m12 · …-gt12)가 있으면 시뮬레이터 — taekilsim.js 첫날()과 같은 꼴이고, 시뮬레이터가 그 날 · 그 달로 연다
+  //   ② 이 탭(sessionStorage)에서 마지막에 연 칸
+  //   ③ 이 탭에 남은 글 꼬리표(landing.js 가 남긴 chaeksa.from)가 월별 글이면 시뮬레이터 — 시뮬레이터도 이 꼬리표로 그 달을 연다
+  //   ④ 그 밖은 보고서 신청
+  // 「보고서 신청」으로 들어오는 길(홈 출산택일 줄 「신청하기 →」)은 택일원함 = 'report' 로 칸을 정해 두고 온다.
+  // 시뮬레이터 끝 신청 단추(taekilsim.js 다리)는 탭 안이면 data-tk-door="report" 를 달고 나온다 — 여기서 받아 보고서 칸으로 바꾸고 맨 위로 올린다.
+  function 택일첫칸() {
+    const 달글 = (t) => { const m = /-(?:m|gt)(\d{1,2})$/.exec(t || ''); return !!m && +m[1] >= 1 && +m[1] <= 12; };
+    try { const q = new URLSearchParams(location.search); if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('d') || '') || 달글(q.get('from'))) return 'sim'; } catch (e) {}
+    let 앞 = '', 꼬리 = '';
+    try { 앞 = sessionStorage.getItem(택일칸키) || ''; 꼬리 = sessionStorage.getItem('chaeksa.from') || ''; } catch (e) {}
+    if (앞 === 'sim' || 앞 === 'report') return 앞;
+    return 달글(꼬리) ? 'sim' : 'report';
+  }
+  function 택일문열기(칸) {
+    const el = document.querySelector('.tab[data-tab="taekil"]'); if (!el) return;
+    칸 = 칸 === 'sim' ? 'sim' : 'report';
+    el.querySelectorAll('.tk-door').forEach(b => { const 이것 = b.dataset.tkDoor === 칸; b.classList.toggle('on', 이것); b.setAttribute('aria-pressed', 이것 ? 'true' : 'false'); });
+    el.querySelectorAll('[data-tk-pane]').forEach(p => p.classList.toggle('hide', p.dataset.tkPane !== 칸));
+    try { sessionStorage.setItem(택일칸키, 칸); } catch (e) {}
+  }
+  function 택일문달기() {
+    const el = document.querySelector('.tab[data-tab="taekil"]'); if (!el) return;
+    if (!el.dataset.tkWired) {
+      el.dataset.tkWired = '1';
+      el.addEventListener('click', (e) => {
+        const d = e.target && e.target.closest ? e.target.closest('[data-tk-door]') : null;
+        if (!d || !el.contains(d)) return;
+        const 문 = d.classList.contains('tk-door');
+        if (!문 && (e.ctrlKey || e.metaKey || e.shiftKey)) return;   // 새 창으로 열기는 단추에 적힌 주소 그대로
+        e.preventDefault();
+        택일문열기(d.dataset.tkDoor);
+        if (!문) window.scrollTo({ top: 0 });   // 시뮬레이터 끝에서 눌렀으면 맨 위(문 · 보고서 칸 첫머리)로
+      });
+    }
+    const 칸 = 택일원함 || (택일칸정함 ? null : 택일첫칸());
+    택일원함 = null; 택일칸정함 = true;
+    if (칸) 택일문열기(칸);
+  }
+
+  // ───── 출산택일 「내 보고서」(10-02 설계서 ⑤ · 2-5) ─────
+  // 보고서 신청 칸 맨 위(index.html #tkMine). 로그인했고 출산택일 주문이 있는 계정에만 보인다 — 상태는 my_taekil(server/migrate-36, 본문 없이 상태만).
+  // 줄을 누르면 그 주문의 보고서 쪽(taekil-report.html?o=)으로 간다. 결제됐는데 아직 안 만든 주문이면 그 쪽이 만들기를 부른다(창을 닫았다 와도 이어진다).
+  // 검수 계정(super)에게는 사장님 목록 · 사이트 신청서(시험 결제) 길을 함께 단다. 탭을 열 때마다 새로 읽는다(만드는 중 → 열림이 바로 보이게).
+  function 택일내보고서() {
+    const box = $('tkMine'), T = window.ChaeksaPay && ChaeksaPay.taekil;
+    if (!box || !T) return;
+    let 수퍼 = false;
+    try { 수퍼 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) { 수퍼 = false; }
+    const 딱지 = { todo: '만들기 →', no_intake: '신청서 붙이기 →', making: '만드는 중', checking: '확인 중', ready: '보고서 열기 →', canceled: '환불됨' };
+    const 날 = (s) => { const d = new Date(s); return isNaN(d) ? '' : d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 결제'; };
+    T.mine().then(rows => {
+      const xs = Array.isArray(rows) ? rows : [];
+      if (!xs.length && !수퍼) { box.classList.add('hide'); box.innerHTML = ''; return; }
+      box.innerHTML = '<div class="tk-mine"><h3>내 보고서</h3>'
+        + (xs.length ? xs.map(x => '<a class="tk-mine-row" href="' + escP(T.주소(x.id)) + '"><span><b>' + escP(x.range || '출산택일 보고서') + '</b>'
+            + '<span>' + escP([날(x.paidAt), T.상태말[x.state] || ''].filter(Boolean).join(' · ')) + '</span></span><i>' + escP(딱지[x.state] || '보기 →') + '</i></a>').join('')
+          : '<p class="hint" style="margin:0">이 계정으로 결제한 출산택일 보고서가 없어요.</p>')
+        + (수퍼 ? '<p class="hint" style="margin:10px 0 0">검수 계정 — <a href="taekil-admin.html">사장님 목록 →</a> · <a href="taekil-apply.html">사이트 신청서로 시험하기 →</a></p>' : '')
+        + '</div>';
+      box.classList.remove('hide');
+    }).catch(() => {});
+  }
+
   function wireTaekil() {
     const a = $('btnTaekMail'); if (!a || a.dataset.wired) return;
     a.dataset.wired = '1';
@@ -1819,6 +1891,7 @@
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; window.현재질문 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
     [top, box].forEach(el => { if (el) el.querySelectorAll('[data-fi]').forEach(b => { b.onclick = () => 열기(이야기[+b.dataset.fi]); }); });
     box.querySelectorAll('.wt-free button[data-i]').forEach(b => { b.onclick = () => 열기(타일[+b.dataset.i]); });
+    box.querySelectorAll('.wt-taekil').forEach(a => a.addEventListener('click', () => { 택일원함 = 'report'; }));   // 10-02 「신청하기 →」는 택일 탭의 보고서 신청 칸으로
     box.querySelectorAll('.qg-q').forEach(b => { b.onclick = () => {
       const g = b.dataset.g, k = b.dataset.k || null;
       if (g === '둘 사이') { 본표시('gunghap'); go('gunghap'); return; }

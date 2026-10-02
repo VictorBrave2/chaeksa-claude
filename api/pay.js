@@ -31,6 +31,7 @@
  *   PAY_RETURN_BASE         결제 뒤 돌아올 곳. 비우면 https://chaeksa.kr (로컬 시험 때만 http://localhost:8791)
  *   PAY_HOOK_SECRET         서버 열쇠(migrate-23). 이게 있어야 결제완료를 적는다
  *   PAY_TEST_OPEN           1 이면 시험 모드 카카오 결제를 아무나 열 수 있다(비우면 super 계정만)
+ *   TAEKIL_AUTO             1 이면 출산택일 kopen 에 신청서(body.intake)가 꼭 있어야 한다(자동 보고서를 켜는 날 — 화면 config.js CHAEKSA_TAEKIL_AUTO 와 같이)
  *   TOSS_SECRET_KEY · TOSS_CLIENT_KEY   토스(비밀 · 공개 짝)
  *   ALLOWED_ORIGIN          예: https://chaeksa.kr
  *   service_role 키는 쓰지 않는다. 쓰는 것은 anon · 사용자 JWT · 서버 열쇠 셋뿐이다.
@@ -225,11 +226,27 @@ module.exports = async (req, res) => {
       }
 
       const product = String(body.product || '');
+      // 출산택일 신청서(10-02 자동 보고서 설계서 2-2 · ⑤) — 화면이 「원문 + 읽은 값」을 body.intake 로 보낸다.
+      // 결제창을 열기 **전에** 이 주문에 붙인다. 카카오톡에서 결제하고 로그인 안 된 브라우저로 돌아와도(kconfirm 은 로그인 없이 승인)
+      // 신청서는 이미 주문에 있다. order_intake(migrate-25)는 열린(open) 주문도 받고 한 번만 붙인다(already).
+      // TAEKIL_AUTO=1(자동 보고서를 켠 날)이면 택일 주문은 신청서가 꼭 있어야 연다 — 신청서 없는 결제를 만들지 않는다.
+      const 신청서 = product === 'taekil' && body.intake && typeof body.intake === 'object' && !Array.isArray(body.intake) ? body.intake : null;
+      if (product === 'taekil' && !신청서 && env('TAEKIL_AUTO') === '1') return res.status(400).json({ ok: false, reason: 'no_intake' });
+      if (신청서 && JSON.stringify(신청서).length > 8000) return res.status(400).json({ ok: false, reason: 'no_intake' });
       const o = await rpc('order_open', {
         p_product: product,
         p_note: body.note ? String(body.note).slice(0, 500) : null,
       }, token);
       if (!o || !o.ok) return res.status(400).json(o || { ok: false, reason: 'db' });
+      if (신청서) {
+        const it = await rpc('order_intake', { p_order: o.orderId, p_intake: 신청서 }, token).catch(() => ({ ok: false, reason: 'db' }));
+        if (!(it && (it.ok || it.reason === 'already'))) {
+          // 붙이지 못했다 — 주문을 실패로 닫고(아직 결제사가 안 붙은 열린 주문이라 order_failed 가 닫는다) 결제창을 열지 않는다.
+          await rpc('order_failed', { p_order: o.orderId, p_code: 'NO_INTAKE',
+                                      p_message: String((it && it.reason) || 'db').slice(0, 60) }, token).catch(() => {});
+          return res.status(400).json({ ok: false, reason: 'no_intake' });
+        }
+      }
 
       const uid = jwtSub(token);
       if (!uid) return res.status(401).json({ ok: false, reason: 'unauthenticated' });

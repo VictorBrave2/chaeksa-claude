@@ -106,7 +106,7 @@
      굵기 목록은 글 · 택일 쪽 67곳과 같게 맞췄다 — 같은 주소라 쪽을 옮겨도 다시 받지 않는다. 걷은 Serif 600 은 쓰는 곳이 없었다(style.css 의 600 넷은 모두 Sans). -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=49407658c7">
+<link rel="stylesheet" href="style.css?v=0acd0d1535">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 칸 표 맨 앞(love) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
@@ -290,11 +290,24 @@
       <div id="pairBox"></div>
     </div>
 
-    <!-- 1:1 택일 상담 안내 -->
+    <!-- 출산택일 — 맨 위 두 문(10-02 사장님 「출산택일 메뉴를 최상단 보고서 신청과 시뮬레이터로 나누고」).
+         「← 홈」 바로 밑 문 둘(보고서 신청 · 시뮬레이터)을 누르면 아래 칸(data-tk-pane)만 바뀐다 — 쪽을 옮기지 않고 주소도 #taekil 그대로(탭 주소는 탭 이름만 받는다).
+         처음 여는 칸 · 문 누름 · 시뮬레이터 끝 신청 단추는 app.js 택일문달기가 받는다. 스크립트가 없으면 보고서 신청 칸이 보인다.
+         블로그 링크 · 「이 날 가족에게 보내기」는 그대로 taekil-sim.html(시뮬레이터 한 쪽)로 간다. -->
     <div class="tab hide" data-tab="taekil">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <!-- 출산택일 시뮬레이터(60·63조, 09-17) — 판정엔진 + 출산택일 관점 = 이 화면. taekilsim.js 가 채운다. -->
-      <div id="tkSim"></div>
+      <!-- 문 글 — 값은 products 표에서 받아 채운다(app.js wireTaekil). 적어 둔 값은 못 받았을 때만 보인다. -->
+      <div class="tk-doors" role="group" aria-label="출산택일 — 보고서 신청 · 시뮬레이터">
+        <button type="button" class="tk-door on" data-tk-door="report" aria-controls="tkPaneReport" aria-pressed="true"><b>보고서 신청</b><span data-price="taekil">99,000원</span></button>
+        <button type="button" class="tk-door" data-tk-door="sim" aria-controls="tkPaneSim" aria-pressed="false"><b>시뮬레이터</b><span>무료</span></button>
+      </div>
+      <div id="tkPaneSim" data-tk-pane="sim" class="hide">
+        <!-- 출산택일 시뮬레이터(60·63조, 09-17) — 판정엔진 + 출산택일 관점 = 이 화면. taekilsim.js 가 채운다. -->
+        <div id="tkSim"></div>
+      </div>
+      <div id="tkPaneReport" data-tk-pane="report">
+      <!-- 「내 보고서」 목록 자리(10-02 설계서 ⑤) — 로그인했고 택일 주문이 있는 계정에만 보인다(app.js 택일내보고서 · my_taekil). 검수 계정에는 사장님 목록 · 사이트 신청서 길도 단다. -->
+      <div id="tkMine" class="hide"></div>
       <section class="card">
         <h2>擇 · 출산택일 보고서</h2>
         <p class="hint" style="margin:0 0 14px">카드와 콘텐츠는 전부 자동 계산이지만, 택일은 <b>사람이 직접 봅니다.</b> 되돌릴 수 없는 결정이기 때문입니다.</p>
@@ -333,7 +346,7 @@
           <p>· 아버지·어머니 생년월일시 (양력/음력, 아는 만큼)</p>
           <p>· 아이 성별, 형제자매가 있으면 그 생년월일</p>
           <p>· <b>수술 가능한 시간대</b> — 이걸 모르면 일요일 새벽처럼 병원에서 못 잡는 시각을 골라 드리게 됩니다.</p>
-          <p>· <b>무엇을 가장 앞세우고 싶으신지</b> — 남은 시각 가운데 어느 쪽을 권할지가 이 한 마디로 달라집니다.</p>
+          <p>· <b>원하시는 방향</b>(두루 무난 · 재물 · 자리 · 건강 · 공부 · 가족 화목) — 남은 시각 가운데 어느 쪽을 권할지가 이 한 마디로 달라집니다.</p>
           <p class="sub">모르는 칸은 비워두셔도 됩니다. 아는 만큼으로도 보고서는 나옵니다.</p>
         </div>
 
@@ -347,6 +360,7 @@
         <p class="hint" style="margin-top:10px">개업·이전·계약 등 다른 택일도 같은 방식으로 봐드립니다.</p>
         <p class="hint" style="margin-top:10px"><a href="taekil.html">출산택일을 어떻게 보는지 자세히 →</a></p>
       </section>
+      </div>
     </div>
 
     <!-- 독립 콘텐츠: 열두 달 흐름 -->
@@ -512,7 +526,7 @@
   <button data-go="jeongtong"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg><span>내 사주</span></button>
   <button data-pick="love" data-go="love" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>연애</span></button>
   <button data-pick="match" data-go="chongnon" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>궁합</span></button>
-  <!-- 출산택일 — 사주 없이 읽는 탭(시뮬레이터 + 보고서 신청). -->
+  <!-- 출산택일 — 사주 없이 읽는 탭(맨 위 두 문: 보고서 신청 · 시뮬레이터). -->
   <button data-go="taekil"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><circle cx="12" cy="15" r="1.6"/></svg><span>출산택일</span></button>
 </nav>
 
@@ -671,7 +685,7 @@
 </script>
 <!-- 처음에 받는 스크립트 — 첫 화면 · 입력 칸 · 홈(분류 칸 · 물음 칸 · 이번 주) · 아래 메뉴 · 결제 · 로그인이 쓰는 것만(10-02 개편 3묶음 「빠르기」).
      차례는 옛 index.html 차례 그대로다(엔진 순서 그대로). 나머지는 아래 「탭별 꾸러미」에 있다가 그 탭을 열 때 받는다. -->
-<script src="config.js?v=085d614551"></script>
+<script src="config.js?v=5870f86d7c"></script>
 <script src="track.js?v=fd7357e815"></script>
 <script src="cloud.js?v=b538926f88"></script>
 <script src="usage.js?v=3282ea377a"></script>
@@ -686,12 +700,12 @@
 <script src="byeonhwa.js?v=5008ee2370"></script>
 <script src="yaksok.js?v=642528e0a0"></script>
 <script src="oryu.js?v=431856193b"></script>
-<script src="bunya.js?v=4997f91d48"></script>
+<script src="bunya.js?v=8dd0cf469e"></script>
 <script src="home-cats.js?v=4c12671548"></script>
 <script src="home-ask.js?v=e164731e7b"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
-<script src="pay.js?v=2829f4fc9c"></script>
+<script src="pay.js?v=8d17b71c6d"></script>
 <!-- 탭별 꾸러미 표 — app.js 가 돌 때 읽으므로 app.js 보다 위에 둔다(10-02: 아래에 두었더니 연애 · 사용설명서 · 웹툰궁합 파일을 못 받음) -->
 <template id="kkureomi" data-all="sheet gunghap">
 <script src="saenggeuk.js?v=fe0683a9e6" data-for="home jeongtong chongnon ssom taekil"></script>
@@ -738,14 +752,14 @@
 <script src="ssom-card-mal.js?v=3cf87062b3" data-for="jeongtong ssom"></script>
 <script src="ssom.js?v=3d8eb60a96" data-for="ssom"></script>
 <script src="gunghap-chongnon.js?v=64cbd4c726" data-for="chongnon"></script>
-<script src="taekilsim.js?v=ca3ee0ffb1" data-for="taekil"></script>
+<script src="taekilsim.js?v=7dbea57b14" data-for="taekil"></script>
 <script src="stories.js?v=45565bd4ef" data-for=""></script>
 <script src="tongbyeon.js?v=5d0b4798fc" data-for="ai"></script>
 <script src="rules-wealth-love.js?v=32bd56cc51" data-for="ai"></script>
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=b0d720a7e0"></script>
+<script src="app.js?v=6c5702eb2a"></script>
 <script src="landing.js?v=0b15594920"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

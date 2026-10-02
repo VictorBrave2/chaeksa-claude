@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=49407658c7">
+<link rel="stylesheet" href="style.css?v=0acd0d1535">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:var(--t2);color:var(--ink3);text-decoration:none}
@@ -119,10 +119,27 @@
   </div>
 </div>
 
-<script src="config.js?v=085d614551"></script>
+<script src="config.js?v=5870f86d7c"></script>
 <script src="track.js?v=fd7357e815"></script>
 <script src="cloud.js?v=b538926f88"></script>
-<script src="pay.js?v=2829f4fc9c"></script>
+<script src="usage.js?v=3282ea377a"></script>
+<script src="pay.js?v=8d17b71c6d"></script>
+<!-- 10-02 신청서 칸 밑 「이렇게 읽었어요」 — 읽개는 places 표의 이름만 받는다(모르는 곳을 서울로 바꾸지 않는다). 비공개 서버가 같은 파일로 다시 읽는다. -->
+<script src="places.js?v=c37e825f17"></script>
+<script src="taekil-read.js?v=6e9dc526e5"></script>
+<!-- 기간 · 곳이 읽히면 「두 고전에 걸리지 않는 시각 N곳」을 미리 세려고 그때만 차례대로 싣는 시뮬레이터 엔진 사슬(places 는 위에서 이미 실었다) -->
+<template id="tkChain">
+<script src="astro.js?v=c0bb3fa175"></script>
+<script src="lunar.js?v=9d5b6391f1"></script>
+<script src="engine.js?v=5e229af245"></script>
+<script src="saenggeuk.js?v=fe0683a9e6"></script>
+<script src="gise.js?v=d0f879078e"></script>
+<script src="panjeong.js?v=b80b485f4b"></script>
+<script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=cc88b5f18e"></script>
+<script src="gwanjeom.js?v=29b898c413"></script>
+<script src="taekilsim.js?v=7dbea57b14"></script>
+</template>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -172,8 +189,13 @@
 
   var F = window.ChaeksaPay && ChaeksaPay.주문서;
   if (!F) { send.disabled = true; say('신청서를 불러오지 못했습니다. 새로고침해 주세요.', true); return; }
+  // 10-02 자동 보고서(설계서 2-2 · 2-6) — 검수 계정(super)에게는 네이버폼 창구가 열려 있어도 사이트 신청서를 보인다(시험 결제로 끝까지 해 본다).
+  // 자동 = 켜는 날(config.js CHAEKSA_TAEKIL_AUTO = 1) 또는 검수 계정. 그때만 아래 「자동 보고서」 문구 · 단추 글을 쓴다 — 그 전에는 지금 문구가 사실이다.
+  var 검수 = false;
+  try { 검수 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) { 검수 = false; }
+  var 자동 = window.CHAEKSA_TAEKIL_AUTO === 1 || 검수;
   // 결제창이 열리기 전에는 네이버폼으로 받는다(config.js CHAEKSA_TAEKIL_INTAKE_URL). 결제 양식은 접고 창구만 보인다.
-  if (window.CHAEKSA_TAEKIL_INTAKE_URL) {
+  if (window.CHAEKSA_TAEKIL_INTAKE_URL && !검수) {
     var alt = document.getElementById('intakeAlt');
     alt.hidden = false;
     document.getElementById('intakeAltGo').href = window.CHAEKSA_TAEKIL_INTAKE_URL;
@@ -189,10 +211,20 @@
     return;
   }
   // 여기부터는 결제창이 열린 길이다 — 위 세 걸음 · 첫 줄을 그 길대로 바꾼다(값 글자는 아래 state 가 채운다).
-  document.getElementById('lede').textContent = '아래 신청서를 적고 결제하시면, 사람이 직접 계산해 보고서를 메일로 보내 드립니다.';
-  document.getElementById('steps').innerHTML = '<li><b>① 신청서</b>이 페이지에서 아는 만큼</li>'
-    + '<li><b>② 결제</b><span data-price="taekil">99,000원</span></li>'
-    + '<li><b>③ 메일로 받기</b>보통 2~3일</li>';
+  if (자동) {
+    // 자동 보고서 문구(켜는 날 손님에게 — 작가 검수 대상). 날짜 · 시각은 엔진이 고르고, 다 되면 「내 보고서」에서 연다.
+    document.getElementById('lede').textContent = '아래 신청서를 적고 결제하시면, 여덟 글자를 연산해 만든 보고서를 「내 보고서」에서 바로 보실 수 있어요.';
+    document.getElementById('steps').innerHTML = '<li><b>① 신청서</b>이 쪽에서 아는 만큼</li>'
+      + '<li><b>② 결제</b><span data-price="taekil">99,000원</span></li>'
+      + '<li><b>③ 내 보고서</b>결제한 카카오 계정으로</li>';
+    if (검수 && window.CHAEKSA_TAEKIL_AUTO !== 1) document.getElementById('lede').insertAdjacentHTML('afterend',
+      '<p class="loginmsg" style="color:var(--ink3)">검수 계정 — 자동 보고서 길을 시험하는 중이에요. 손님에게는 아직 네이버폼이 보여요.</p>');
+  } else {
+    document.getElementById('lede').textContent = '아래 신청서를 적고 결제하시면, 사람이 직접 계산해 보고서를 메일로 보내 드립니다.';
+    document.getElementById('steps').innerHTML = '<li><b>① 신청서</b>이 페이지에서 아는 만큼</li>'
+      + '<li><b>② 결제</b><span data-price="taekil">99,000원</span></li>'
+      + '<li><b>③ 메일로 받기</b>보통 2~3일</li>';
+  }
   document.getElementById('fields').innerHTML = F.틀();
   document.getElementById('agreeDataText').innerHTML = F.동의문;
 
@@ -201,6 +233,8 @@
   try { localStorage.removeItem('chaeksa.return'); } catch (e) {}
 
   F.켜기(form);
+  // 칸마다 「이렇게 읽었어요」 · 기간 · 곳이 읽히면 「두 고전에 걸리지 않는 시각 N곳」(0곳이면 결제를 막는다 — 가족 · 병원 거르기 전 값)
+  var 영곳 = false;   // 아래 맨 끝에서 읽기켜기를 단다(단추 상태 값들이 정해진 뒤)
 
   if (막로그인) {
     // 동의 체크는 칸이 아니라 초안에 없다 — 로그인하러 떠나기 전에 잠시 적어 둔 것을 되살린다.
@@ -231,10 +265,12 @@
   // 묻는 말에 계정 메일을 적으려고 계정 정보만 받아 둔다 — 메일 칸은 채우지 않는다(위 막로그인).
   if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
   function 단추() {
-    send.disabled = busy || !열림;
+    send.disabled = busy || !열림 || 영곳;
+    var 끝말 = 자동 ? ' 결제하고 보고서 받기' : ' 결제하고 신청하기';
     send.textContent = busy ? '결제창을 여는 중…'
       : !열림 ? '지금은 온라인 신청을 받을 수 없습니다'
-      : 로그인됨() ? (금액 ? 금액 + ' 결제하고 신청하기' : '결제하고 신청하기') : '카카오로 로그인하고 계속하기';
+      : 영곳 ? '기간을 넓혀 주세요'
+      : 로그인됨() ? (금액 ? 금액 + 끝말 : 끝말.trim()) : '카카오로 로그인하고 계속하기';
     document.getElementById('whyLogin').hidden = !열림 || 로그인됨();
   }
 
@@ -275,7 +311,7 @@
         if (빈.length) { say('비어 있거나 틀린 칸이 있습니다 — ' + 빈.join(' · '), true); return; }
         if (!agreeData.checked) { say('신청서 내용 이용에 동의해 주셔야 붙일 수 있습니다.', true); return; }
         d.consent = { data: true, refund: !!agree.checked, at: new Date().toISOString() };
-        ChaeksaPay.intake(o.id, d).then(function (r) {
+        ChaeksaPay.intake(o.id, F.신청서(d)).then(function (r) {
           if (r && (r.ok || r.reason === 'already')) {
             F.초안지움(); F.보냄기록(o.id, d); say('');
             box.innerHTML = '<b>그 주문에 신청서를 붙였습니다.</b> 보고서는 이 주소로 보내 드립니다 — ' + esc(d.mail);
@@ -291,6 +327,7 @@
     사건('pay');   // 깔때기 ④ 결제 단추 누름 — 앱 안 단추(pay.js 누르면)와 같은 사건. 여기는 buy() 를 바로 불러서 따로 센다.
     var d = F.값(form), 빈 = F.빈칸(d);
     if (빈.length) { say('비어 있거나 틀린 칸이 있습니다 — ' + 빈.join(' · '), true); return; }
+    if (영곳) { say('이 기간에는 두 고전에 걸리지 않는 시각이 없어요. 기간을 넓혀 주세요.', true); return; }
     if (!agreeData.checked || !agree.checked) { say('동의 두 가지에 체크해 주셔야 결제할 수 있습니다.', true); return; }
     // 동의한 사실을 신청서와 함께 남긴다 — 결제 뒤 화면이 이 초안을 그대로 주문에 붙인다.
     d.consent = { data: true, refund: true, at: new Date().toISOString() };
@@ -308,8 +345,9 @@
       if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 주문은 이 계정에 남아요.')) return;
     }
     busy = true; 단추(); say('');
-    // 결제창에서 결제하면 결제 뒤 화면으로 넘어가고, 거기서 이 신청서가 그 주문에 붙는다.
-    ChaeksaPay.buy('taekil', null).then(function (r) {
+    // 신청서(적은 그대로 + 「이렇게 읽었어요」)는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake, 10-02).
+    // 카카오톡에서 결제하고 로그인 안 된 브라우저로 돌아와도 신청서는 이미 주문에 있다. 결제 뒤 화면은 붙은 것을 확인만 한다.
+    ChaeksaPay.buy('taekil', null, null, F.신청서(d)).then(function (r) {
       busy = false; 단추();
       if (r && r.ok === false && !r.closed) say(r.message || '결제창을 열지 못했습니다.', true);
     }).catch(function (err) { busy = false; 단추(); say(String((err && err.message) || err), true); });
@@ -321,6 +359,7 @@
     busy = false; 단추();
     try { localStorage.removeItem('chaeksa.return'); } catch (x) {}
   });
+  F.읽기켜기(form, { 셈: function (n) { 영곳 = n === 0; 단추(); } });
   단추();
 })();
 </script>

@@ -126,6 +126,40 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
   }
   const ok = !문제.length; ok ? 통과++ : 실패++;
   out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + '63조 — 관점과 화면은 엔진 문 말고 다른 판정기를 직접 두드리지 않는다</h2>' + (ok ? '' : '<pre>' + 문제.join('\n') + '</pre>'));
+  // 서버와 같은 답(10-02 설계서 ②) — 같은 고정 묶음(지어낸 기간 넷)을 이 브라우저 사슬로 돌린 지문이
+  // 비공개 서버 health 의 taekil.지문(lib/taekil-engine.js 지문())과 같아야 초록이다. 엔진을 고치고 비공개 쪽을 안 맞췄으면 여기서 빨개진다.
+  {
+    const 문제 = [], 서버주소 = 'https://chaeksa-behavior-core.vercel.app/api/health';
+    const 묶음 = [['2027-04-12', 5, 'M', 'KR:서울'], ['2026-11-02', 7, 'F', 'KR:부산'], ['2027-01-18', 14, 'M', 'KR:대구'], ['2027-03-10', 3, 'F', 'AB:뉴욕']];
+    let s = '', 지문 = '', 서버 = null;
+    try {
+      for (const [첫, n, g, p] of 묶음) {
+        const [y, m, d] = 첫.split('-').map(Number), 곳 = ChaeksaPlaces.resolve(p);
+        for (let i = 0; i < n; i++) {
+          const t = new Date(Date.UTC(y, m - 1, d + i)), Y = t.getUTCFullYear(), M = t.getUTCMonth() + 1, D = t.getUTCDate();
+          const h = S.하루(Y, M, D, g, p);
+          s += JSON.stringify([Y, M, D, '일월화수목금토'[t.getUTCDay()], h]);
+          h.rows.filter(r => r.본 && r.본.없음).forEach(r => {
+            const c = Math.floor((r.시작 + r.끝) / 2);
+            const R = E.calc({ year: Y, month: M, day: D, hour: Math.floor(c / 60), minute: c % 60, gender: g, longitude: 곳.lon, tzOffset: 곳.tzOffset });
+            s += JSON.stringify(W.대운(R, g));
+          });
+        }
+      }
+      const 해시 = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+      지문 = Array.from(new Uint8Array(해시)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+    } catch (e) { 문제.push('브라우저 지문을 못 냈다: ' + e.message); }
+    try {
+      const j = await fetch(서버주소, { cache: 'no-store' }).then(r => r.json());
+      서버 = j && j.taekil;
+      if (!서버 || !서버.지문) 문제.push('비공개 서버 health 에 taekil 지문이 없다' + (서버 && 서버.오류 ? '(' + 서버.오류 + ')' : '(비공개 서버 배포 전이면 배포 뒤 다시)'));
+    } catch (e) { 문제.push('비공개 서버에 닿지 못했다(' + 서버주소 + '): ' + e.message); }
+    if (지문 && 서버 && 서버.지문 && 지문 !== 서버.지문) 문제.push('브라우저 ' + 지문 + ' · 서버 ' + 서버.지문 + ' — 공개 엔진과 비공개 vendor 가 다르다(비공개 저장소 node tools/sync-vendor.js --check)');
+    const ok = !문제.length; ok ? 통과++ : 실패++;
+    out.insertAdjacentHTML('beforeend', '<h2 class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓ ' : '✗ ') + '서버와 같은 답 — 브라우저 사슬 지문 ' + (지문 || '?')
+      + ' = 비공개 서버 지문 ' + ((서버 && 서버.지문) || '?') + (서버 && 서버.commit ? ' (서버 엔진 커밋 ' + 서버.commit.slice(0, 7) + (서버.dirty ? ' · 커밋 전 판' : '') + ')' : '') + '</h2>'
+      + (ok ? '' : '<pre>' + 문제.join('\n') + '</pre>'));
+  }
   out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
 })();
 </script>

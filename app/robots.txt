@@ -20,6 +20,9 @@ User-agent: Bingbot
 Disallow: /tests_
 Disallow: /*-wongo-view
 Disallow: /myeongsik.html
+# 출산택일 자동 보고서(10-02) — 사장님 목록 · 주문마다 보는 보고서 쪽(로그인한 본인만 열린다). 화면 안에도 noindex 가 붙어 있다.
+Disallow: /taekil-admin
+Disallow: /taekil-report
 # (10-02 개편 3묶음) jeongtong.html 막음은 걷었다 — 넘김 쪽이던 것이 정통사주 소개 쪽이 됐다(tools_sogae.py). 검색에 나와야 하는 쪽이다.
 Disallow: /tools/
 # 그 밖의 공개 글은 전부 연다

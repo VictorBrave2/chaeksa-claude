@@ -135,14 +135,18 @@
     unverified: '결제 확인이 늦어지고 있습니다. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.',
     no_provider: '지금은 그 결제 수단을 쓸 수 없습니다.',
     test_only: '결제를 시험하는 중이라 아직 살 수 없습니다. 곧 열립니다.',
+    // 10-02 출산택일 — 결제창을 열기 전에 신청서를 주문에 붙이지 못했다(api/pay.js kopen). 결제는 되지 않았다.
+    no_intake: '신청서를 주문에 붙이지 못해 결제창을 열지 않았어요. 결제는 되지 않았어요. 칸을 확인하고 한 번 더 눌러 주세요.',
   };
   const say = (r) => REASON[r && r.reason] || (r && r.message) || '결제를 진행하지 못했습니다.';
 
   /**
    * 산다. 성공하면 결제창이 뜨고 이 페이지는 떠난다 — 그래서 돌아오는 값이 없다.
    * 막힌 경우에만 { ok:false, message } 로 돌아온다.
+   * intake(10-02 출산택일) — 신청서(주문서.신청서() 꼴). 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake).
+   * 붙으면 이 기기에 「이 주문에 신청서가 붙었다」를 적어 둔다(결제 뒤 화면이 자동 보고서 길로 간다).
    */
-  async function buy(code, note, pv) {
+  async function buy(code, note, pv, intake) {
     // 「준비 안 됨」을 캐시에서 믿지 않는다. 키가 들어가기 전에 연 앱은 그 답을 들고 있어서,
     // 키가 들어온 뒤에도 새로고침 전까지 결제가 안 됐다(2026-09-11). 준비 안 됨이면 한 번 더 묻는다.
     let st = await state();
@@ -158,8 +162,9 @@
       // 서버가 주문을 열고(금액은 DB) 카카오 결제창 주소를 받아 온다. tid 는 서버 · DB 에만 있다.
       // 팝업을 쓰지 않고 페이지째 간다 — 토스와 같은 전체 이동이라 인앱 브라우저에서도 막히지 않는다.
       // 폰이면 모바일 주소(카카오톡이 열린다), 아니면 PC 주소(QR · 카카오톡 알림).
-      const o = await post({ action: 'kopen', product: code, note: note || null });
-      if (!o || !o.ok) return { ok: false, message: say(o) };
+      const o = await post(Object.assign({ action: 'kopen', product: code, note: note || null }, intake ? { intake } : {}));
+      if (!o || !o.ok) return { ok: false, message: say(o), reason: o && o.reason };
+      if (intake && code === 'taekil') 붙음적기(o.orderId, intake);
       const 폰 = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
       const 주소 = 폰 ? (o.mobile || o.pc) : (o.pc || o.mobile);
       if (!주소) return { ok: false, message: '카카오페이 결제창을 열지 못했습니다.' };
@@ -169,7 +174,15 @@
 
     // ── 여기부터 토스 ──
     // 주문은 결제 직전에 연다 — 아래 두 갈래가 각자 부른다.
-    const 주문열기 = () => post({ action: 'open', product: code, note: note || null });
+    // 출산택일 신청서(intake)는 주문을 연 바로 뒤 붙인다(카카오 kopen 과 같은 뜻 — 붙지 않으면 결제창을 열지 않는다).
+    const 주문열기 = async () => {
+      const o = await post({ action: 'open', product: code, note: note || null });
+      if (!(o && o.ok && intake && code === 'taekil')) return o;
+      const r = await 붙이기(o.orderId, intake);
+      if (!(r && (r.ok || r.reason === 'already'))) return { ok: false, reason: 'no_intake' };
+      붙음적기(o.orderId, intake);
+      return o;
+    };
 
     let Toss;
     try { Toss = await loadSdk(); } catch (e) { return { ok: false, message: e.message }; }
@@ -373,6 +386,18 @@
     }
   }
 
+  // buy() 안에서는 인자 이름 intake 가 위 함수를 가린다 — 그 안에서는 이 이름으로 부른다.
+  function 붙이기(orderId, data) { return intake(orderId, data); }
+  /** kopen · open 에서 신청서가 그 주문에 붙었다 — 이 기기에 적어 둔다(결제 뒤 화면이 자동 보고서 길로 가는 표시). 초안은 결제가 끝난 뒤 지운다. */
+  // auto 표시는 자동 보고서 길(켜는 날 CHAEKSA_TAEKIL_AUTO = 1 · 검수 계정)일 때만 단다 — 그 밖의 손님은 결제 뒤에도 지금 길(접수) 그대로.
+  function 붙음적기(orderId, it) {
+    const d = (it && it.원문) || it || {};
+    let auto = global.CHAEKSA_TAEKIL_AUTO === 1;
+    try { const U = global.ChaeksaUsage; if (U && U.plan && U.plan() === 'super') auto = true; } catch (_) {}
+    try { localStorage.setItem('chaeksa.taekil.sent', JSON.stringify({ orderId, at: Date.now(), auto,
+      data: { mail: d.mail, range: d.range, place: d.place, sex: d.sex, first: d.first } })); } catch (_) {}
+  }
+
   /** 내 주문 목록. 로그인 안 했으면 빈 배열. */
   async function mine() {
     const C = global.ChaeksaCloud;
@@ -419,6 +444,8 @@
       const 환불됨 = r.status === 'canceled';
       const 해 = 줄 && 줄.보관 ? Number((String(줄.보관).match(/(\d+)\s?년\s?동안/) || [])[1] || 0) : 0;
       let 기간 = '', 자리 = '';
+      // 10-02 출산택일 — 보고서는 주문마다 「내 보고서」 쪽(taekil-report.html?o=)에서 본다. 만드는 때 글은 지금 장부 그대로(켜는 날 장부와 함께 바꾼다).
+      if (code === 'taekil' && !환불됨) 자리 = 'taekil-report.html?o=' + encodeURIComponent(id);
       if (환불됨) 기간 = '환불했어요.';
       else if (해 && 날) {
         const 끝 = new Date(날.getTime()); 끝.setFullYear(끝.getFullYear() + 해);
@@ -565,31 +592,39 @@
   const 앞세움 = [['무난', '두루 무난하게'], ['재물', '재물'], ['자리', '자리(직업·지위)'],
                  ['건강', '건강'], ['학업', '공부'], ['가족', '가족 화목']];
   const 성별 = [['남아', '남아'], ['여아', '여아'], ['모름', '아직 몰라요']];
+  // 「이렇게 읽었어요」 한 줄 자리(10-02 설계서 2-2) — 칸 밑에 둔다. 읽개(taekil-read.js)가 있는 쪽에서만 채운다(주문서.읽기켜기).
+  const 읽줄 = (k) => '<p class="tk-read" data-read="' + k + '" hidden></p>';
+  // 칸 id → 신청서 열쇠(값() · 켜기 · 채우기가 같이 쓴다)
+  const 칸짝 = { i_mail: 'mail', i_range: 'range', i_hosp: 'hospital', i_place: 'place', i_time: 'time',
+                i_have: 'have', i_dad: 'father', i_mom: 'mother', i_sib: 'siblings', i_wish: 'wish', i_ask: 'ask' };
+  let _사슬 = null;   // 시뮬레이터 엔진 사슬을 늦게 싣는 약속(신청서 미리 셈 · 보고서 명식 카드) — 한 번만
   const 주문서 = {
     /** 칸들만 돌려준다. 감싸는 form·제목·보내기 단추는 쓰는 쪽이 둔다(신청 페이지는 사이에 동의 칸이 있다). */
     틀() {
       return 칸('i_mail', '결과를 받으실 메일 주소', true, 'name@example.com', true)
-        + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일')
-        + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요')
+        + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일') + 읽줄('range') + 읽줄('due')
+        + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요') + 읽줄('hospital')
         + '<p class="hint">날짜는 의사가 정합니다. 병원이 말한 범위 안에서만 봅니다.</p>'
         // 이미 받아 둔 택일을 교차검증하러 오는 분이 많다(택일상담 — 두 건 다 그 경로였다).
         // 묻지 않는 것은 「어디서」 받았는지다. 「무엇을」 받았는지는 적어 주시면 비교해 드린다.
-        + 칸('i_have', '이미 받아 두신 날짜·시간', false, '있으면 — 예) 10월 8일 오전 10시')
+        + 칸('i_have', '이미 받아 두신 날짜·시간', false, '있으면 — 예) 10월 8일 오전 10시') + 읽줄('have')
         + '<p class="hint">받으신 날짜가 틀렸다고 하지 않습니다. 저희 기준으로는 어떻게 나오는지 나란히 보여 드립니다.</p>'
-        + 칸('i_place', '태어날 지역', true, '예) 경기도 성남 — 시·군까지면 됩니다')
+        + 칸('i_place', '태어날 지역', true, '예) 경기도 성남 — 시·군까지면 됩니다') + 읽줄('place')
         + 고르기('i_sex', '아이 성별', 성별)
-        + 칸('i_time', '수술 가능한 시간대', false, '예) 평일 09시 ~ 19시')
+        + 칸('i_time', '수술 가능한 시간대', false, '예) 평일 09시 ~ 19시') + 읽줄('time')
         + '<div class="check"><input type="checkbox" id="i_weekend">'
         +   '<label for="i_weekend" style="margin:0">주말도 가능해요</label></div>'
-        + 고르기('i_first', '가장 앞세우고 싶은 것', 앞세움)
-        + 칸('i_dad', '아버지 생년월일시', false, '예) 1994년 12월 10일 오후 3시 10분 · 양력')
-        + 칸('i_mom', '어머니 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력')
-        + 칸('i_sib', '형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력')
+        // 10-02 사장님 「앞세우신 ✗ → 원하시는 방향 ○」 — 칸 이름만 바꾼다. 고르는 보기는 그대로.
+        + 고르기('i_first', '원하시는 방향', 앞세움)
+        + 칸('i_dad', '아버지 생년월일시', false, '예) 1994년 12월 10일 오후 3시 10분 · 양력') + 읽줄('father')
+        + 칸('i_mom', '어머니 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력') + 읽줄('mother')
+        + 칸('i_sib', '형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력') + 읽줄('siblings')
         + '<p class="hint">가족 정보는 아이와 가족이 서로 부딪히는 날을 걸러 내는 데만 씁니다. 모르시면 비워 두셔도 보고서는 나옵니다.</p>'
         + '<label for="i_wish">바라는 점</label>'
         + '<textarea id="i_wish" maxlength="1500" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
         + '<label for="i_ask">궁금한 점</label>'
-        + '<textarea id="i_ask" maxlength="1500"></textarea>';
+        + '<textarea id="i_ask" maxlength="1500"></textarea>'
+        + 읽줄('count');
     },
     값(root) {
       const v = (id) => { const el = root.querySelector('#' + id); return el ? String(el.value || '').trim() : ''; };
@@ -605,13 +640,124 @@
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((d && d.mail) || '')) 빈.push('메일 주소');
       if (!(d && d.range)) 빈.push('출산 예정 기간');
       if (!(d && d.place)) 빈.push('태어날 지역');
+      // 10-02 설계서 2-2 — 읽개가 실린 쪽이면 「못 읽은 것」도 막는다: 기간 · 곳을 못 읽음 · 기간이 31일을 넘음 · 지난 날짜 ·
+      // 가족 칸에 글은 있는데 날짜를 못 읽음. 빈 칸은 위에서 이미 셌다(같은 칸을 두 번 적지 않는다).
+      const 읽 = 주문서.읽기(d);
+      if (읽) 읽.줄.forEach((z) => {
+        if (!z.막힘 || ((z.칸 === 'range' || z.칸 === 'place') && !(d && d[z.칸]))) return;
+        빈.push(z.이름 + '(' + z.말 + ')');
+      });
       return 빈;
+    },
+    /** 읽개(taekil-read.js · places.js)가 실린 쪽이면 신청서를 읽은 값, 아니면 null. 판정은 없다 — 날짜 · 곳 · 시각 글을 값으로 읽기만. */
+    읽기(d, 오늘) {
+      const R = global.ChaeksaTaekilRead;
+      if (!R || !R.읽기 || !global.ChaeksaPlaces) return null;
+      try { return R.읽기(d || {}, 오늘 ? { 오늘 } : undefined); } catch (_) { return null; }
+    },
+    /** 주문에 붙일 신청서 — 적은 그대로(원문) + 「이렇게 읽었어요」 줄(읽은). 서버는 원문만 다시 읽는다(읽은 값은 사장님 확인용).
+     *  order_intake 한도(8000자) 안으로 — 넘으면 읽은 줄을 뺀다. */
+    신청서(d) {
+      const 원문 = Object.assign({}, d || {});
+      const 읽 = 주문서.읽기(원문);
+      const out = { 원문 };
+      if (읽) out.읽은 = { 판: 읽.판, 오늘: 읽.오늘, 줄: 읽.줄.map((z) => ({ 칸: z.칸, 말: String(z.말 || '').slice(0, 160), 막힘: !!z.막힘 })) };
+      if (JSON.stringify(out).length > 7600) delete out.읽은;
+      return out;
+    },
+    /** 칸마다 밑에 「이렇게 읽었어요」 한 줄을 단다(적을 때마다 다시 읽는다). 읽개가 없는 쪽이면 아무것도 안 한다.
+     *  opt.셈 = (n) => … 이면 기간 · 곳이 읽힐 때 시뮬레이터 엔진으로 「두 고전에 걸리지 않는 시각」 수를 미리 센다(가족 · 병원 거르기 전).
+     *  센 값은 root.dataset.cands 에도 남긴다(0 이면 결제를 막는 쪽이 읽는다). 엔진 사슬은 쪽의 template#tkChain 에서 늦게 싣는다. */
+    읽기켜기(root, opt) {
+      if (!root || !주문서.읽기({})) return;
+      opt = opt || {};
+      let 째깍 = null, 셈열쇠 = '', 셈차 = 0;
+      const 줄칸 = (k) => root.querySelector('.tk-read[data-read="' + k + '"]');
+      const 그리기 = () => {
+        const d = 주문서.값(root), r = 주문서.읽기(d);
+        if (!r) return;
+        const 본칸 = {};
+        r.줄.forEach((z) => { 본칸[z.칸] = z; });
+        ['range', 'hospital', 'have', 'place', 'time', 'father', 'mother', 'siblings', 'due'].forEach((k) => {
+          const el = 줄칸(k); if (!el) return;
+          const z = 본칸[k], 적음 = k === 'due' ? !!z : !!String(d[k] || '').trim();
+          el.hidden = !(z && 적음);
+          if (el.hidden) return;
+          el.textContent = '이렇게 읽었어요 — ' + z.말;
+          el.classList.toggle('bad', !!z.막힘);
+        });
+        const 셈칸 = 줄칸('count');
+        if (!셈칸 || !opt.셈) return;
+        const 됨 = r.기간 && r.곳 && !r.줄.some((z) => (z.칸 === 'range' || z.칸 === 'place') && z.막힘);
+        if (!됨) { 셈칸.hidden = true; 셈열쇠 = ''; delete root.dataset.cands; opt.셈(null); return; }
+        const 열쇠 = r.기간.첫날 + '|' + r.기간.끝날 + '|' + r.곳.값;
+        if (열쇠 === 셈열쇠) return;
+        셈열쇠 = 열쇠; const 차 = ++셈차;
+        셈칸.hidden = false; 셈칸.classList.remove('bad'); 셈칸.textContent = '이 기간을 미리 세는 중…';
+        주문서.미리셈(r.기간, r.곳.값).then((n) => {
+          if (차 !== 셈차) return;   // 그 사이 칸이 또 바뀌었다
+          if (n == null) { 셈칸.hidden = true; delete root.dataset.cands; opt.셈(null); return; }
+          root.dataset.cands = String(n);
+          셈칸.classList.toggle('bad', n === 0);
+          셈칸.textContent = n === 0
+            ? '이 기간에는 두 고전에 걸리지 않는 시각이 없어요. 기간을 넓혀 주세요.'
+            : '이 기간에 두 고전에 걸리지 않는 시각이 ' + n + '곳 있어요(가족 · 병원 시간으로 거르기 전).';
+          opt.셈(n);
+        });
+      };
+      const 곧 = () => { clearTimeout(째깍); 째깍 = setTimeout(그리기, 250); };
+      root.addEventListener('input', 곧);
+      root.addEventListener('change', 곧);
+      root.addEventListener('click', (e) => { if (e.target && e.target.closest && e.target.closest('.seg button')) 곧(); });
+      그리기();
+    },
+    /** 기간 안 모든 날 모든 시각에서 두 고전에 걸리지 않는 시각 수(시뮬레이터 엔진 ChaeksaTaekilSim.하루 그대로 — 판정은 엔진이 한다).
+     *  성별은 이 셈에 쓰이지 않아 남아로 센다. 엔진을 못 실으면 null. */
+    async 미리셈(기간, 곳값) {
+      if (!(await 주문서.사슬싣기())) return null;
+      try {
+        const S = global.ChaeksaTaekilSim, 풀 = (s) => s.split('-').map(Number);
+        const [y0, m0, d0] = 풀(기간.첫날), [y1, m1, d1] = 풀(기간.끝날);
+        let n = 0;
+        for (let t = Date.UTC(y0, m0 - 1, d0), 끝 = Date.UTC(y1, m1 - 1, d1); t <= 끝; t += 864e5) {
+          const x = new Date(t);
+          await new Promise((ok) => setTimeout(ok, 0));   // 하루씩 숨을 돌린다 — 긴 기간에 화면이 굳지 않게
+          n += S.하루(x.getUTCFullYear(), x.getUTCMonth() + 1, x.getUTCDate(), 'M', 곳값).rows.filter((r) => r.본 && r.본.없음).length;
+        }
+        return n;
+      } catch (_) { return null; }
+    },
+    /** 시뮬레이터 엔진 사슬(places → … → taekilsim)을 쪽의 template#tkChain 차례대로 늦게 싣는다. 이미 있으면 바로 true. */
+    사슬싣기() {
+      if (global.ChaeksaTaekilSim && global.ChaeksaTaekilSim.하루 && global.ChaeksaEngine) return Promise.resolve(true);
+      if (_사슬) return _사슬;
+      const t = document.getElementById('tkChain');
+      if (!t || !t.content) return Promise.resolve(false);
+      const 이름 = (s) => String(s || '').split('?')[0];
+      const 있음 = new Set(Array.from(document.querySelectorAll('script[src]')).map((s) => 이름(s.getAttribute('src'))));
+      const srcs = Array.from(t.content.querySelectorAll('script[src]')).map((s) => s.getAttribute('src')).filter((s) => !있음.has(이름(s)));
+      _사슬 = srcs.reduce((p, src) => p.then(() => new Promise((ok, no) => {
+        const s = document.createElement('script'); s.src = src; s.async = false;
+        s.onload = ok; s.onerror = () => no(new Error(src)); document.head.appendChild(s);
+      })), Promise.resolve()).then(() => !!(global.ChaeksaTaekilSim && global.ChaeksaTaekilSim.하루)).catch(() => { _사슬 = null; return false; });
+      return _사슬;
+    },
+    /** 받은 신청서(원문)를 칸에 그대로 채운다 — 사장님 목록 「신청서 고치기 · 대신 넣기」. 초안은 건드리지 않는다. */
+    채우기(root, d) {
+      d = d || {};
+      Object.keys(칸짝).forEach((id) => { const el = root.querySelector('#' + id); if (el) el.value = d[칸짝[id]] == null ? '' : String(d[칸짝[id]]); });
+      const w = root.querySelector('#i_weekend'); if (w) w.checked = !!d.weekend;
+      [['i_sex', 'sex'], ['i_first', 'first']].forEach(([id, 열쇠]) => {
+        const box = root.querySelector('#' + id); if (!box) return;
+        const 켬 = (v) => { box.dataset.v = v || ''; box.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); };
+        켬(d[열쇠] || '');
+        if (!box.dataset.wiredFill) { box.dataset.wiredFill = '1'; box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => 켬(b.dataset.v))); }
+      });
     },
     /** 초안을 칸에 채우고, 고르는 칸을 켜고, 적을 때마다 초안을 남긴다. */
     켜기(root) {
       const 채울 = 주문서.초안() || {};
-      const 짝 = { i_mail: 'mail', i_range: 'range', i_hosp: 'hospital', i_place: 'place', i_time: 'time',
-                  i_have: 'have', i_dad: 'father', i_mom: 'mother', i_sib: 'siblings', i_wish: 'wish', i_ask: 'ask' };
+      const 짝 = 칸짝;
       Object.keys(짝).forEach((id) => {
         const el = root.querySelector('#' + id);
         if (el && 채울[짝[id]]) el.value = 채울[짝[id]];
@@ -660,6 +806,8 @@
     보냄기록: (orderId, d) => 쓰기(보낸키, { orderId, at: Date.now(),
       data: { mail: d.mail, range: d.range, place: d.place, sex: d.sex, first: d.first } }),
     최근보냄: () => 읽기(보낸키),
+    /** 이 기기에서 결제창을 열 때 신청서가 이 주문에 붙었나(buy 의 intake — 10-02 자동 보고서 길). */
+    자동붙음(orderId) { const j = 읽기(보낸키); return !!(j && j.auto && j.orderId === orderId && Date.now() - (j.at || 0) < 30 * 24 * 3600 * 1000); },
     /** 저장이 막힌 이유를 손님 말로. 영어 코드를 그대로 보이지 않는다. */
     이유(r) {
       return ({ unauthenticated: '로그인이 풀렸습니다 — 다시 로그인한 뒤 보내 주세요',
@@ -678,7 +826,7 @@
         '태어날 지역: ' + d.place,
         '아이 성별: ' + (d.sex || '미정'),
         '수술 가능한 시간대: ' + (d.time || '-') + (d.weekend ? ' · 주말 가능' : ''),
-        '가장 앞세우고 싶은 것: ' + (주문서.앞세움이름(d.first) || '-'),
+        '원하시는 방향: ' + (주문서.앞세움이름(d.first) || '-'),
         '아버지: ' + (d.father || '-'), '어머니: ' + (d.mother || '-'), '형제자매: ' + (d.siblings || '-'),
         '바라는 점: ' + (d.wish || '-'), '궁금한 점: ' + (d.ask || '-')];
       return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청서 ' + orderId)
@@ -687,5 +835,73 @@
     문의메일,
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서 };
+  // ── 출산택일 자동 보고서(10-02 설계서 ⑤) ─────────────────────────
+  // 만들기는 비공개 서버(/api/taekil-report — 엔진 · 고르기 · AI 두 칸 · 누락 검사)가 하고, 보관 · 상태 · 보기는 Supabase 함수(server/migrate-36)로만 닿는다.
+  // 보고서 표(taekil_reports)는 손님이 REST 로 읽지 못한다 — 손님은 taekil_view 로, 열렸을(ready) 때만 본문을 받는다.
+  // 이 파일엔 판정 · 고르기 · 문장 틀이 없다. 상태 이름은 migrate-36 머리 주석 「손님」 그대로: todo · no_intake · making · checking · ready · canceled.
+  const TK_API = 'https://chaeksa-behavior-core.vercel.app/api/taekil-report';
+  async function 택일함수(name, args) {
+    const C = global.ChaeksaCloud, cfg = global.CHAEKSA_SUPABASE;
+    let tok = null;
+    try { tok = C && C.token ? await C.token() : null; } catch (_) { tok = null; }
+    if (!tok || !cfg) return { ok: false, reason: 'login' };
+    try {
+      const r = await fetch(cfg.url + '/rest/v1/rpc/' + name, {
+        method: 'POST',
+        headers: { apikey: cfg.anonKey, authorization: 'Bearer ' + tok, 'content-type': 'application/json' },
+        body: JSON.stringify(args || {}),
+      });
+      if (r.status === 404) return { ok: false, reason: 'missing' };   // migrate-36 을 돌리기 전
+      if (!r.ok) return { ok: false, reason: r.status === 401 || r.status === 403 ? 'login' : 'db' };
+      return await r.json();
+    } catch (_) { return { ok: false, reason: 'network' }; }
+  }
+  const taekil = {
+    /** 내 출산택일 주문들 [{ id, name, paidAt, range, state, openedAt }] — 로그인 안 했으면 [], 못 물어봤으면 null. */
+    async mine() {
+      const C = global.ChaeksaCloud;
+      if (!C || !C.signedIn || !C.signedIn()) return [];
+      const j = await 택일함수('my_taekil', {});
+      return Array.isArray(j) ? j : null;
+    },
+    /** 보고서 한 벌. 손님은 { ok, orderId, state, report? } — report 는 ready 일 때만. 검수 계정은 사장님 몫 전부(손님눈 = true 면 손님이 받을 것만). */
+    view: (orderId, 손님눈) => 택일함수('taekil_view', { p_order: String(orderId || ''), p_as_customer: !!손님눈 }),
+    /** 보고서를 만든다(비공개 서버 — 보통 1~2분). 'M-' 로 시작하는 id 는 수기 줄(검수 계정만). → { ok:true, state } | { ok:false, reason, message } */
+    async make(id) {
+      const C = global.ChaeksaCloud;
+      let tok = null;
+      try { tok = C && C.token ? await C.token() : null; } catch (_) { tok = null; }
+      if (!tok) return { ok: false, reason: 'login', message: '로그인해 주세요.' };
+      const body = /^M-/.test(String(id || '')) ? { manualId: String(id) } : { orderId: String(id || '') };
+      try {
+        const r = await fetch(TK_API, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok }, body: JSON.stringify(body) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) return { ok: true, state: j.state || 'held' };
+        return { ok: false, status: r.status, reason: j.reason || '', message: j.error || '잠시 뒤 다시 해 주세요.' };
+      } catch (_) {
+        return { ok: false, reason: 'network', message: '연결이 끊겼어요. 잠시 뒤 다시 해 주세요.' };
+      }
+    },
+    // 사장님 목록(taekil-admin.html) — 함수 안에서 검수 계정(ai_plan() = 'super')인지 본다. 화면이 가리는 것은 편의일 뿐이다.
+    adminList: (filter) => 택일함수('taekil_admin_list', { p_filter: filter || null, p_limit: 200 }),
+    adminRelease: (id) => 택일함수('taekil_admin_release', { p_order: id }),
+    adminRedo: (id) => 택일함수('taekil_admin_redo', { p_order: id }),
+    adminIntake: (id, it) => 택일함수('taekil_admin_intake', { p_order: id, p_intake: it }),
+    adminManual: (it, note) => 택일함수('taekil_admin_manual', { p_intake: it, p_note: note || null }),
+    adminNote: (id, note) => 택일함수('taekil_admin_note', { p_order: id, p_note: note || '' }),
+    adminAuto: (on) => 택일함수('taekil_admin_auto', { p_on: on == null ? null : !!on }),
+    /** 손님 눈의 상태 → 화면 한 줄(작가 검수 대상) */
+    상태말: {
+      todo: '결제가 확인됐어요. 이제 보고서를 만들어요.',
+      no_intake: '결제는 됐는데 신청서가 아직 이 주문에 붙지 않았어요.',
+      making: '여덟 글자를 연산하는 중이에요.',
+      checking: '책사가 한 번 더 확인한 뒤 「내 보고서」에서 열려요.',
+      ready: '보고서가 열렸어요.',
+      canceled: '환불된 주문이라 보고서가 닫혔어요.',
+    },
+    주소: (id) => 'taekil-report.html?o=' + encodeURIComponent(String(id || '')),
+    사슬싣기: () => 주문서.사슬싣기(),
+  };
+
+  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil };
 })(window);

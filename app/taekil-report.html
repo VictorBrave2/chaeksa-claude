@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>내 출산택일 보고서 · 책사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=0acd0d1535">
+<style>
+  .doc{max-width:660px;margin:0 auto;padding:22px 16px 90px}
+  .doc > h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:0 0 6px}
+  .doc > .sub{font-size:var(--t2);line-height:1.75;color:var(--ink3);margin:0 0 6px}
+  .fine{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:var(--t1);line-height:1.85;color:var(--ink3)}
+  .fine a{color:var(--ink3)}
+</style>
+</head>
+<body>
+<!-- 출산택일 「내 보고서」(10-02 설계서 ⑤ · 2-4 · 2-5). 주소 taekil-report.html?o=<주문번호>. 검색에 안 나오게 noindex · robots.txt.
+     로그인 → taekil_view(server/migrate-36) → 상태대로 그린다. 본문은 보고서가 열렸을(ready) 때만 받는다 — 남의 주문 · 로그인 전 · 확인 중에는 본문이 오지 않는다.
+     결제됐는데 아직 안 만든 주문(todo)이면 이 자리에서 비공개 서버(/api/taekil-report)를 불러 만든다 — 창을 닫았다 다시 와도 이어진다.
+     그리기는 taekil-report.js(사장님 목록과 같이 쓴다) · 명식 카드는 myeongsik-card.js + 아래 template 의 시뮬레이터 엔진 사슬(늦게 싣는다). -->
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
+<div class="doc">
+  <h1>출산택일 보고서</h1>
+  <p class="sub" id="sub"></p>
+  <div id="tkr"><p class="hint">불러오는 중…</p></div>
+  <div class="fine">
+    <p>문의 — <a href="mailto:dl4431@naver.com">dl4431@naver.com</a> · <a href="./#taekil">출산택일로 돌아가기</a></p>
+  </div>
+</div>
+
+<script src="config.js?v=5870f86d7c"></script>
+<script src="cloud.js?v=b538926f88"></script>
+<script src="usage.js?v=3282ea377a"></script>
+<script src="pay.js?v=8d17b71c6d"></script>
+<script src="myeongsik-card.js?v=4fc56b2857"></script>
+<script src="taekil-report.js?v=1a4c5d81b5"></script>
+<!-- 명식 카드를 그릴 때만 차례대로 싣는 시뮬레이터 엔진 사슬 — 비공개 서버 vendor 와 같은 차례(sync-vendor ORDER, 신청서 읽개는 뺀다) -->
+<template id="tkChain">
+<script src="places.js?v=c37e825f17"></script>
+<script src="astro.js?v=c0bb3fa175"></script>
+<script src="lunar.js?v=9d5b6391f1"></script>
+<script src="engine.js?v=5e229af245"></script>
+<script src="saenggeuk.js?v=fe0683a9e6"></script>
+<script src="gise.js?v=d0f879078e"></script>
+<script src="panjeong.js?v=b80b485f4b"></script>
+<script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=cc88b5f18e"></script>
+<script src="gwanjeom.js?v=29b898c413"></script>
+<script src="taekilsim.js?v=7dbea57b14"></script>
+</template>
+<script>
+(function () {
+  var m = '';
+  try { m = localStorage.getItem('chaeksa.theme') || 'auto'; } catch (e) { m = 'auto'; }
+  var h = new Date().getHours();
+  var night = m === 'night' || (m === 'auto' && (h < 6 || h >= 18));
+  document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
+
+  var out = document.getElementById('tkr'), sub = document.getElementById('sub');
+  var P = window.ChaeksaPay, T = P && P.taekil, V = window.ChaeksaTaekilReport, C = window.ChaeksaCloud;
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+  var 문의 = 'dl4431@naver.com';
+  function 그림(html) { out.innerHTML = html; }
+  function 상자(머리, 글들, 아래) {
+    return '<div class="tkr-state"><h2>' + esc(머리) + '</h2>' + (글들 || []).map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') + (아래 || '') + '</div>';
+  }
+  if (!T || !V) { 그림(상자('보고서를 불러오지 못했어요', ['새로고침해 주세요. 계속 안 되면 ' + 문의 + ' 으로 알려 주세요.'])); return; }
+
+  // 로그인에서 돌아왔으면 토큰을 받아 둔다. 로그인 복귀 주소에는 ?o= 가 없어서(cloud.js 는 경로만 돌려받는다) 떠나기 전에 적어 둔 주문번호를 잇는다.
+  try { if (C && C.captureRedirect) C.captureRedirect(); } catch (e) {}
+  try { localStorage.removeItem('chaeksa.return'); } catch (e) {}   // 여기로 바로 돌아왔으면 첫 화면이 대신 돌려보낼 일이 없다
+  var q = new URLSearchParams(location.search), o = q.get('o') || '', 키 = 'chaeksa.tkReport';
+  var 꼴 = /^(?:M-)?[A-Za-z0-9_-]{3,100}$/;
+  if (!o) {
+    try {
+      var j = JSON.parse(localStorage.getItem(키) || 'null');
+      if (j && Date.now() - (j.at || 0) < 30 * 60 * 1000 && 꼴.test(j.o || '')) { o = j.o; history.replaceState(null, '', location.pathname + '?o=' + encodeURIComponent(o)); }
+    } catch (e) {}
+  }
+  try { localStorage.removeItem(키); } catch (e) {}
+  var 손님눈 = q.get('as') === 'customer';   // 검수 계정의 「손님 눈으로 보기」 — 손님이 받을 것만, 처음 연 때는 적지 않는다
+
+  function 로그인됨() { try { return !!(C && C.signedIn && C.signedIn()); } catch (e) { return false; } }
+  function 로그인하러() {
+    try { localStorage.setItem(키, JSON.stringify({ o: o, at: Date.now() })); } catch (e) {}
+    try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, at: Date.now() })); } catch (e) {}
+    try { C.signInWith('kakao'); } catch (e) { 그림(상자('로그인을 열지 못했어요', [String((e && e.message) || e)])); }
+  }
+  function 로그인화면(글) {
+    그림(상자('로그인하면 보고서가 열려요', [글 || '결제하신 카카오 계정으로 로그인해 주세요. 보고서는 그 계정에 보관돼요.'],
+      '<button type="button" class="btn kakao" id="go"><span class="seal">話</span>카카오로 로그인</button>'));
+    document.getElementById('go').onclick = 로그인하러;
+  }
+  if (!꼴.test(o)) {
+    그림(상자('주문번호가 없어요', ['출산택일 탭 「내 보고서」나 설정 「내 결제」의 「보러 가기」로 들어와 주세요.'], '<a class="btn" href="./#taekil">출산택일로 가기</a>'));
+    return;
+  }
+  sub.textContent = '주문번호 ' + o;
+  if (!로그인됨()) { 로그인화면(); return; }
+
+  // ── 만들기 · 기다리기 ──
+  var 만들었음 = false, 기다림 = null, 시작 = Date.now(), 한도 = 8 * 60 * 1000;
+  function 만드는중(말) {
+    그림(상자('여덟 글자를 연산하는 중이에요', [말 || '보통 1~2분 걸려요. 이 창을 닫아도 돼요 — 다 되면 출산택일 탭 「내 보고서」에서 열려요.']));
+  }
+  function 기다리기() {
+    clearTimeout(기다림);
+    if (Date.now() - 시작 > 한도) { 그림(상자('오래 걸리고 있어요', ['잠시 뒤 출산택일 탭 「내 보고서」에서 다시 봐 주세요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요.'], '<a class="btn" href="./#taekil">출산택일로 가기</a>')); return; }
+    기다림 = setTimeout(function () { 불러오기(true); }, 6000);
+  }
+  function 만들기() {
+    if (만들었음) { 기다리기(); return; }
+    만들었음 = true; 만드는중();
+    T.make(o).then(function (r) {
+      if (r && r.ok) { clearTimeout(기다림); 불러오기(true); return; }
+      if (r && r.reason === 'busy') { 기다리기(); return; }   // 다른 창에서 만드는 중 — 기다린다
+      if (r && r.reason === 'login') { 로그인화면('로그인이 끝났어요. 다시 로그인하면 이어서 만들어요.'); return; }
+      clearTimeout(기다림);
+      그림(상자('보고서를 만들지 못했어요', [(r && r.message) || '잠시 뒤 다시 해 주세요.', '결제는 그대로 있어요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요.'],
+        '<button type="button" class="btn ghost" id="again">다시 해 보기</button>'));
+      document.getElementById('again').onclick = function () { 만들었음 = false; 불러오기(); };
+    });
+    기다리기();
+  }
+
+  // 신청서가 아직 이 주문에 안 붙었다 — 이 기기에 남은 초안이 있으면 붙이고 만든다(결제창을 다른 길로 연 경우).
+  function 신청서없음() {
+    var F = P.주문서, d = F && F.초안();
+    var 됨 = d && !F.빈칸(d).length;
+    그림(상자('신청서가 아직 이 주문에 붙지 않았어요', [됨 ? '이 기기에 적어 두신 신청서가 있어요. 이 주문에 붙이면 바로 만들어요.' : '주문번호와 함께 ' + 문의 + ' 으로 알려 주시면 이어서 만들어 드려요.'],
+      됨 ? '<button type="button" class="btn" id="attach">이 신청서를 붙이고 만들기</button><p class="hint">기간 · ' + esc(d.range) + ' / 지역 · ' + esc(d.place) + '</p>'
+         : '<a class="btn ghost" href="mailto:' + 문의 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청서 ' + o) + '">메일로 알리기</a>'));
+    var a = document.getElementById('attach');
+    if (a) a.onclick = function () {
+      a.disabled = true;
+      P.intake(o, F.신청서(d)).then(function (r) {
+        if (r && (r.ok || r.reason === 'already')) { F.초안지움(); 불러오기(); return; }
+        a.disabled = false;
+        그림(상자('신청서를 붙이지 못했어요', [F.이유(r) + '. 주문번호와 함께 ' + 문의 + ' 으로 알려 주세요.']));
+      });
+    };
+  }
+
+  var 그렸음 = false;
+  function 보고서(r, 머리글) {
+    clearTimeout(기다림);
+    if (그렸음) return;   // 기다리던 물음과 만들기 답이 겹쳐 와도 한 번만 그린다
+    그렸음 = true;
+    그림((머리글 || '') + V.그리기(r.report));
+    V.카드채우기(out, r.report);
+  }
+
+  // ── 불러오기 — 상태대로 그린다 ──
+  function 불러오기(조용히) {
+    if (!조용히) 그림('<p class="hint">불러오는 중…</p>');
+    T.view(o, 손님눈).then(function (r) {
+      clearTimeout(기다림);
+      if (그렸음) return;
+      if (!r || r.ok === false) {
+        var 까닭 = r && r.reason;
+        if (까닭 === 'login') { 로그인화면('로그인이 끝났어요. 다시 로그인해 주세요.'); return; }
+        if (까닭 === 'not_found') { 그림(상자('이 주문을 찾지 못했어요', ['결제하신 카카오 계정으로 로그인했는지 확인해 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>')); return; }
+        if (까닭 === 'expired') { 그림(상자('볼 수 있는 기간이 끝났어요', ['결제한 날부터 2년이 지났어요.'])); return; }
+        if (까닭 === 'not_paid') { 그림(상자('결제가 확인되지 않은 주문이에요', ['결제가 끝난 주문만 볼 수 있어요.'])); return; }
+        if (조용히 && (까닭 === 'network' || 까닭 === 'db')) { 기다리기(); return; }
+        그림(상자('보고서를 불러오지 못했어요', ['잠시 뒤 새로고침해 주세요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요.']));
+        return;
+      }
+      // 검수 계정 — 사장님 몫(본문 · 빠진 칸)을 받는다. 손님에게 열렸는지와 상관없이 보고서를 보여 주되, 손님 상태를 위에 적는다.
+      if (r.admin) {
+        var 띠 = '<div class="tkr-banner">검수 계정으로 보는 중 — 표 상태 ' + esc(r.view || '-') + ' · 손님 눈 ' + esc(r.cstate || '-')
+          + (r.missing && r.missing.length ? ' · 빠진 칸 ' + r.missing.length : '') + ' · <a href="taekil-admin.html">사장님 목록</a> · <a href="?o=' + encodeURIComponent(o) + '&amp;as=customer">손님 눈으로 보기</a></div>';
+        if (r.report) { 보고서(r, 띠); return; }
+        if (r.view === 'making') { 그림(띠); 만드는중(); 기다리기(); return; }
+        if (r.view === 'todo') { 만들기(); return; }
+        그림(띠 + 상자('아직 만든 보고서가 없어요', ['상태 ' + (r.view || '-') + ' — 사장님 목록에서 만들 수 있어요.']));
+        return;
+      }
+      var st = r.state;
+      if (st === 'ready' && r.report) { 보고서(r); return; }
+      if (st === 'todo') { 만들기(); return; }
+      if (st === 'making') { 만드는중(); 기다리기(); return; }
+      if (st === 'no_intake') { 신청서없음(); return; }
+      if (st === 'canceled') { 그림(상자('환불된 주문이에요', [T.상태말.canceled])); return; }
+      // checking — 확인 중(사장님 확인 대기 · 막힘 · 만들 횟수를 다 씀)
+      그림(상자('책사가 한 번 더 확인하고 있어요', [T.상태말.checking, '확인이 끝나면 이 주소와 출산택일 탭 「내 보고서」에서 열려요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>'));
+    });
+  }
+  불러오기();
+})();
+</script>
+</body>
+</html>

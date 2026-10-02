@@ -940,6 +940,58 @@ details.fold[open] > summary::after { content: " ▾"; }
 .tk-vs-go .btn{flex:1 1 0;width:auto;min-width:0;margin:0;display:block;box-sizing:border-box;text-align:center;text-decoration:none;color:var(--seal-ink)}
 .tk-vs-go .btn.ghost{color:var(--ink2)}
 .tk-vs .tk-note{margin:8px 0 0}
+/* 출산택일 탭 맨 위 두 문(10-02) — 보고서 신청 · 시뮬레이터. 2열 큰 단추, 누르면 아래 칸만 바뀐다(app.js 택일문달기). 고른 문은 인장색 */
+.tk-doors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 var(--s2)}
+.tk-door{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;padding:12px 8px;margin:0;
+  border:1px solid var(--line2);border-radius:var(--r2);background:var(--bg2);color:var(--ink2);font-family:var(--sans);text-align:center;cursor:pointer;transition:.15s}
+.tk-door b{font-size:var(--t3);font-weight:700;color:inherit}
+.tk-door span{font-size:var(--t2);color:var(--ink3)}
+.tk-door:hover{border-color:var(--accent2)}
+.tk-door.on{background:var(--seal-bg);border-color:transparent;color:var(--seal-ink);box-shadow:var(--shadow-lift)}
+.tk-door.on span{color:var(--seal-ink)}
+.tk-door:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+/* 출산택일 자동 보고서(10-02 설계서 ⑤) — 신청서 칸 밑 「이렇게 읽었어요」 · 택일 탭 「내 보고서」 · 보고서 쪽(taekil-report.html) · 사장님 목록(taekil-admin.html) */
+.intake .tk-read{font-size:var(--t1);line-height:1.6;color:var(--ink2);margin:5px 0 0;word-break:keep-all;overflow-wrap:anywhere}
+.intake .tk-read.bad{color:#b4534f}
+.tk-mine{margin:0 0 var(--s2);padding:14px 16px;border:1px solid var(--accent-line);border-radius:var(--r2);background:var(--accent-soft)}
+.tk-mine h3{font-family:var(--serif);font-size:var(--t4);margin:0 0 6px;color:var(--ink)}
+.tk-mine-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.tk-mine-row:first-of-type{border-top:0}
+.tk-mine-row b{display:block;font-size:var(--t2);line-height:1.5}
+.tk-mine-row span{display:block;font-size:var(--t1);color:var(--ink3);line-height:1.5}
+.tk-mine-row i{flex:none;font-style:normal;font-size:var(--t1);font-weight:700;color:var(--accent)}
+.tkr{word-break:keep-all;overflow-wrap:anywhere}
+.tkr-sec{margin:26px 0 0}
+.tkr-h{font-family:var(--serif);font-size:var(--t5);line-height:1.4;margin:0 0 10px;color:var(--ink)}
+details.tkr-foldsec>summary.tkr-h{cursor:pointer;font-size:var(--t4)}
+details.tkr-foldsec>summary.tkr-h::after{content:" — 펼쳐 보기";font-family:var(--sans);font-size:var(--t1);font-weight:400;color:var(--accent)}
+details.tkr-foldsec[open]>summary.tkr-h::after{content:""}
+.tkr p{font-size:var(--t3);line-height:1.85;color:var(--ink2);margin:0 0 8px}
+.tkr .tkr-b{font-weight:700;color:var(--ink)}
+.tkr-ul{margin:0 0 10px;padding-left:1.2em}
+.tkr-ul li{font-size:var(--t2);line-height:1.8;color:var(--ink2);margin:2px 0}
+.tkr-read{display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:var(--t2);line-height:1.65}
+.tkr-read-k{flex:0 0 9.5em;color:var(--ink3)}
+.tkr-read-v{color:var(--ink)}
+.tkr-read.bad .tkr-read-v{color:#b4534f}
+.tkr-item{margin:14px 0;padding:16px 14px 8px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card)}
+.tkr-item h3{font-family:var(--serif);font-size:var(--t4);line-height:1.45;margin:0 0 10px;color:var(--ink)}
+.tkr-han{margin:6px 0 12px;padding:10px 12px;border-left:3px solid var(--accent-line);background:var(--accent-soft);border-radius:0 var(--r1) var(--r1) 0}
+.tkr-han figcaption{font-size:var(--t1);color:var(--ink3)}
+.tkr .tkr-han-t{font-family:var(--serif);font-size:var(--t4);color:var(--ink);margin:4px 0 2px;letter-spacing:.02em}
+.tkr .tkr-han-m{font-size:var(--t2);margin:0}
+.tkr-pil{margin:4px 0 10px}
+.tkr .tkr-pil-h{font-family:var(--serif);font-size:var(--t4);color:var(--ink);letter-spacing:.04em;margin:0 0 2px}
+details.tkr-fold{margin:4px 0 10px}
+details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);padding:6px 0}
+.tkr .tkr-cardwait{font-size:var(--t1);color:var(--ink3);padding:10px 12px;border:1px dashed var(--line2);border-radius:var(--r1)}
+.tkr-state{margin:18px 0;padding:18px 16px;border:1px solid var(--accent-line);border-radius:var(--r2);background:var(--accent-soft)}
+.tkr-state h2{font-family:var(--serif);font-size:var(--t5);margin:0 0 8px;color:var(--ink)}
+.tkr-state p{font-size:var(--t2);line-height:1.8;color:var(--ink2);margin:0 0 6px}
+.tkr-state .btn{display:block;margin-top:10px;text-align:center;text-decoration:none}
+.tkr-banner{margin:0 0 14px;padding:10px 12px;border-radius:var(--r1);border:1px dashed var(--line2);font-size:var(--t1);line-height:1.7;color:var(--ink3)}
+.tkr-banner a{color:var(--accent)}
+@media (max-width:420px){.tkr-read{flex-direction:column;gap:0}.tkr-read-k{flex:none}.tkr-item{padding:14px 11px 6px}}
 @media (max-width:420px){.tk-form{grid-template-columns:1fr 1fr}.tk-form label:first-child{grid-column:1 / -1}}
 
 /* ── 정통사주(jeongtong.js) — 앱 탭과 jeongtong.html 이 같이 쓴다 (2026-09-21) ── */

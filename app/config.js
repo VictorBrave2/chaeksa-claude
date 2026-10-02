@@ -36,6 +36,11 @@ window.CHAEKSA_ART = '20260913d';   // 09-12 밤 이야기 표지 11장 도착 �
 //   · pay.html 아래 「출산택일 — 사람이 계산해 …」 문단 · marketing/붙여넣기-출산택일비용.html 「신청은 이렇게 합니다」 절(고친 뒤 tools_jeongbon.py 로 taekil-price.html 다시 만들기).
 // 비우기 전에 카카오 시험 키로 택일 결제를 끝까지 한 번 해 본다(결제사는 서버 PAY_PROVIDERS 가 정한다).
 window.CHAEKSA_TAEKIL_INTAKE_URL = 'https://naver.me/FdqTMrhq';
+// 출산택일 자동 보고서(10-02 설계서 ⑤ · ⑥) — 0 이면 손님 화면은 지금 길(위 네이버폼 · 「사람이 직접」 문구) 그대로이고,
+// 사이트 신청서 · 결제 뒤 「만드는 중」 · 「내 보고서」 자동 길은 검수 계정(super)에게만 열린다(시험 결제로 끝까지 해 본다).
+// 켜는 날(카카오 운영 키가 들어오고 시험 결제 ⑦ 이 초록인 날) 한 번에: 위 INTAKE_URL 을 '' · 이 값을 1 · 서버 Vercel TAEKIL_AUTO=1 ·
+// 장부(yaksok.js 택일 줄 만듦 · 시간 · 환불) · 약관 · 처리방침 · taekil.html FAQ · pay-done 문구(⑥). 그 전에는 지금 문구가 사실이다.
+window.CHAEKSA_TAEKIL_AUTO = 0;
 // 카카오 링크 공유(09-26 사장님 「사진이랑 링크를 같이」) — 카카오 디벨로퍼스 > 앱 > 앱 키 > **JavaScript 키**(공개돼도 되는 키, 도메인으로 막힌다).
 // 플랫폼 > Web 에 https://chaeksa.kr 이 등록돼 있어야 한다. 비어 있으면 브라우저 공유(그림만 + 링크 클립보드)로 돌아간다.
 window.CHAEKSA_KAKAO_JS_KEY = 'a31b2496dcc8d26fb0ea9f5fe0e8ff0a';
