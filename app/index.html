@@ -310,15 +310,15 @@
       <div id="tkMine" class="hide"></div>
       <section class="card">
         <h2>擇 · 출산택일 보고서</h2>
-        <p class="hint" style="margin:0 0 14px">카드와 콘텐츠는 전부 자동 계산이지만, 택일은 <b>사람이 직접 봅니다.</b> 되돌릴 수 없는 결정이기 때문입니다.</p>
-        <!-- 신청 단추는 맨 위 이것 하나다(10-02). 전에는 「보고서 신청하기」 둘 · 「먼저 물어보기(문의서)」가 따로 있었는데 셋 다 같은 네이버폼으로 갔다.
-             글은 지금 길(네이버폼 → 답장 메일 → 결제 → 메일 보고서)대로 적어 둔다. config.js CHAEKSA_TAEKIL_INTAKE_URL 이 비면
-             (결제창이 열리는 날) app.js wireTaekil 이 단추를 사이트 신청서로 돌리고 세 걸음 글도 결제 길로 바꾼다. -->
-        <a class="btn" id="btnTaekGo" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none;margin:0 0 12px"><span class="seal">擇</span> <span id="taekGoLabel">네이버폼으로 신청하기</span> — <span data-price="taekil">99,000원</span></a>
+        <p class="hint" style="margin:0 0 14px">택일은 되돌릴 수 없는 결정이라, 엔진이 계산한 보고서를 <b>책사가 한 번 더 확인한 뒤</b> 열어 드립니다.</p>
+        <!-- 신청 단추는 맨 위 이것 하나다 — 사이트 신청서(taekil-apply.html)로 간다(10-02 「켜는 날」 · 바깥 신청 폼은 걷었다).
+             세 걸음 = 신청서 → 결제 → 「내 보고서」. 처음 몇 건은 사장님이 확인한 뒤 내보내므로(app_flags.taekil_auto_release '0') 「바로 열린다」고 적지 않는다.
+             결제가 아직 시험 모드인 동안 일반 손님에게는 신청서 쪽이 결제 단추 대신 「결제는 곧 열려요」 + 메일 신청을 보인다(pay.js 곧열림). -->
+        <a class="btn" id="btnTaekGo" href="taekil-apply.html" style="display:block;text-align:center;text-decoration:none;margin:0 0 12px"><span class="seal">擇</span> <span id="taekGoLabel">보고서 신청하기</span> — <span data-price="taekil">99,000원</span></a>
         <div class="doc" id="taekSteps" style="margin:0 0 18px">
-          <p><b>①</b> 네이버폼에 아는 만큼 적어 보내 주세요.</p>
-          <p><b>②</b> 답장 메일로 값과 결제 방법을 알려 드립니다.</p>
-          <p><b>③</b> 결제가 확인되면 보통 2~3일 안에 보고서를 메일로 보내 드립니다.</p>
+          <p><b>①</b> 이 사이트 신청서에 아는 만큼 적어 주세요.</p>
+          <p><b>②</b> 그 자리에서 결제하시면 됩니다.</p>
+          <p><b>③</b> 엔진이 계산하고 책사가 한 번 더 확인한 뒤, 「내 보고서」에서 보고서를 열어 드립니다. 보통 2~3일 안입니다.</p>
         </div>
         <!-- 견본(10-02 개편 3묶음 「출산택일 한 길」) — 99,000원 보고서를 결제 전에 눈으로 보게. 지어낸 가족으로 만든 보고서 앞부분. -->
         <p class="hint" style="margin:-6px 0 18px"><a href="taekil-sample.html?from=tab">보고서 견본 먼저 보기 — 지어낸 가족으로 만든 앞부분 →</a></p>
@@ -328,7 +328,7 @@
           <p><b>1. 원국</b> — 후보 기간의 모든 날 모든 시각에서 궁통보감 · 자평진전 두 고전에 걸리는 것이 없는 시각만 남깁니다.</p>
           <p><b>2. 대운과 가족</b> — 아이 성별에 맞는 평생 흐름(대운)을 얹고, 부모 · 형제와 부딪히는 날을 뺍니다.</p>
           <p><b>3. 시각</b> — 수술 가능한 시간대(보통 평일 09~17시) 안에서, 병원에 말할 시계 시각까지 적습니다.</p>
-          <p class="sub">점수로 줄을 세우지 않습니다. 남은 시각 가운데 어느 쪽을 권할지는, 부모님이 앞세우실 것을 여쭙고 사람이 정합니다.</p>
+          <p class="sub">점수로 줄을 세우지 않습니다. 남은 시각은 정해 둔 차례로 권합니다 — 두 고전이 으뜸으로 치는 시각을 맨 앞에, 그다음은 흠이 적은 곳 · 원하시는 방향(신청서에서 여쭙니다) · 예정일에 가까운 곳 순서입니다.</p>
         </div>
 
         <h3 class="doc-h">근거를 문서로 드립니다</h3>
@@ -351,12 +351,10 @@
         </div>
 
         <!-- 금액 글자는 products 표에서 받아 채운다(app.js wireTaekil). 적어 둔 값은 못 받았을 때만 보인다. -->
-        <p class="hint" style="margin:16px 0 10px"><b>출산택일 보고서 — <span data-price="taekil">99,000원</span></b>. 부가세 포함, 따로 붙는 수수료는 없습니다. 작업을 시작하기 전에는 이유를 묻지 않고 전액 돌려드립니다.</p>
-        <p class="hint" id="taekAskLine" style="margin:0 0 10px">먼저 물어보실 것이 있으면 네이버폼에 같이 적어 보내 주세요. 답장 메일을 보시고 결제하실지 정하시면 됩니다.</p>
-        <p class="hint" id="taekFormNote" style="margin:0 0 10px">네이버폼에 적어주신 것은 <b>검토에만 쓰고 답변 뒤에 지웁니다.</b></p>
+        <p class="hint" style="margin:16px 0 10px"><b>출산택일 보고서 — <span data-price="taekil">99,000원</span></b>. 부가세 포함, 따로 붙는 수수료는 없습니다. 보고서를 처음 열어 보시기 전에는 이유를 묻지 않고 전액 돌려드립니다.</p>
         <button class="btn kakao hide" id="btnTaekKakao"><span class="seal">話</span>카카오톡으로 문의하기</button>
         <p class="hint hide" id="taekKakaoNote" style="margin-top:10px">누르시면 <b>위 양식이 복사</b>되고 채팅창이 열립니다. 붙여넣고 아는 만큼만 채워 보내주세요.</p>
-        <p class="hint" style="margin-top:10px">단추가 안 열리거나 메일이 편하시면 <a id="btnTaekMail" href="#">메일로 보내 주셔도 됩니다 →</a></p>
+        <p class="hint" style="margin-top:10px">먼저 물어보실 것이 있거나 메일이 편하시면 <a id="btnTaekMail" href="#">신청서를 메일로 보내 주셔도 됩니다 →</a></p>
         <p class="hint" style="margin-top:10px">개업·이전·계약 등 다른 택일도 같은 방식으로 봐드립니다.</p>
         <p class="hint" style="margin-top:10px"><a href="taekil.html">출산택일을 어떻게 보는지 자세히 →</a></p>
       </section>
@@ -685,8 +683,8 @@
 </script>
 <!-- 처음에 받는 스크립트 — 첫 화면 · 입력 칸 · 홈(분류 칸 · 물음 칸 · 이번 주) · 아래 메뉴 · 결제 · 로그인이 쓰는 것만(10-02 개편 3묶음 「빠르기」).
      차례는 옛 index.html 차례 그대로다(엔진 순서 그대로). 나머지는 아래 「탭별 꾸러미」에 있다가 그 탭을 열 때 받는다. -->
-<script src="config.js?v=5870f86d7c"></script>
-<script src="track.js?v=fd7357e815"></script>
+<script src="config.js?v=af44d49dc8"></script>
+<script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=b538926f88"></script>
 <script src="usage.js?v=3282ea377a"></script>
 <script src="places.js?v=c37e825f17"></script>
@@ -698,14 +696,14 @@
 <script src="sipseong-byeonhwa.js?v=cc11120d20"></script>
 <script src="byeonhwa-jogak.js?v=ade331ebee"></script>
 <script src="byeonhwa.js?v=5008ee2370"></script>
-<script src="yaksok.js?v=642528e0a0"></script>
+<script src="yaksok.js?v=dac0b835a3"></script>
 <script src="oryu.js?v=431856193b"></script>
 <script src="bunya.js?v=8dd0cf469e"></script>
 <script src="home-cats.js?v=4c12671548"></script>
 <script src="home-ask.js?v=e164731e7b"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
-<script src="pay.js?v=8d17b71c6d"></script>
+<script src="pay.js?v=a6ada83304"></script>
 <!-- 탭별 꾸러미 표 — app.js 가 돌 때 읽으므로 app.js 보다 위에 둔다(10-02: 아래에 두었더니 연애 · 사용설명서 · 웹툰궁합 파일을 못 받음) -->
 <template id="kkureomi" data-all="sheet gunghap">
 <script src="saenggeuk.js?v=fe0683a9e6" data-for="home jeongtong chongnon ssom taekil"></script>
@@ -752,14 +750,14 @@
 <script src="ssom-card-mal.js?v=3cf87062b3" data-for="jeongtong ssom"></script>
 <script src="ssom.js?v=3d8eb60a96" data-for="ssom"></script>
 <script src="gunghap-chongnon.js?v=64cbd4c726" data-for="chongnon"></script>
-<script src="taekilsim.js?v=7dbea57b14" data-for="taekil"></script>
+<script src="taekilsim.js?v=e2b12e27a5" data-for="taekil"></script>
 <script src="stories.js?v=45565bd4ef" data-for=""></script>
 <script src="tongbyeon.js?v=5d0b4798fc" data-for="ai"></script>
 <script src="rules-wealth-love.js?v=32bd56cc51" data-for="ai"></script>
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=6c5702eb2a"></script>
+<script src="app.js?v=fe12bd92aa"></script>
 <script src="landing.js?v=0b15594920"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

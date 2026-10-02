@@ -79,7 +79,7 @@
       (<a href="taekil-solar-time.html">왜 진태양시로 보나요</a>)</li>
     <li><b>하루가 바뀌는 때</b> — 밤 11시(자시)에 바뀌어요. (<a href="why-day-starts-11pm.html">왜 하루는 밤 11시에 시작하나요</a>)</li>
     <li><b>어디서 계산하나</b> — 정통사주 · 정통궁합 · 웹툰궁합 · 출산택일 시뮬레이터는 내 폰 · PC 안에서 계산해요.
-      연애 쪽 두 가지는 책사가 직접 만든 계산법으로 서버에서 계산하고, 출산택일 보고서는 사람이 직접 계산해요.</li>
+      연애 쪽 두 가지는 책사가 직접 만든 계산법으로 서버에서 계산해요. 출산택일 보고서도 엔진이 서버에서 계산하고, 책사가 한 번 더 확인한 뒤 「내 보고서」에서 열어 드려요.</li>
   </ul>
 
   <h2>무엇이 무료고, 무엇이 값을 받나요?</h2>
@@ -101,7 +101,8 @@
       내 것을 보는 쪽은 폰 · PC 어디서나 같은 결과를 보여 드리려고 내 생년월일시를 서버에 따로 보관하고,
       그 사람 것을 보는 쪽은 그 사람 생년월일시를 계산하는 동안에만 쓰고 저장하지 않아요.
       글을 쓰는 AI(Anthropic, 미국)에는 생년월일시와 이름을 보내지 않아요.</li>
-    <li><b>출산택일 신청서</b> — 보고서를 만들고 보내 드리는 데만 써요.</li>
+    <li><b>출산택일 신청서</b> — 보고서를 만들어 드리는 데만 써요. 계산하려고 계산 서버(Vercel, 미국)로 보내고,
+      글을 쓰는 AI(Anthropic, 미국)에는 가족 생년월일시 · 메일 주소 · 병원 이름을 보내지 않아요. 보고서는 2년 동안 보관하고, 탈퇴하면 바로 지워요.</li>
     <li><b>결제</b> — 카카오페이가 처리해요. 카드 · 계좌 정보는 책사가 받지 않아요.</li>
     <li><b>방문 숫자</b> — 몇 분이 어디서 오셨는지 숫자만 세요. IP · 기기 정보 · 넣은 생년월일은 남기지 않고, 90일이 지나면 지워요.</li>
     <li><b>광고 · 판매</b> — 넣은 정보로 광고하지 않고, 팔지 않고, 남에게 넘기지 않아요.</li>
@@ -128,11 +129,11 @@
   document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
 })();
 </script>
-<script src="config.js?v=5870f86d7c"></script>
-<script src="track.js?v=fd7357e815"></script>
+<script src="config.js?v=af44d49dc8"></script>
+<script src="track.js?v=4520244637"></script>
 <script src="bunya.js?v=8dd0cf469e"></script>
-<script src="yaksok.js?v=642528e0a0"></script>
-<script src="pay.js?v=8d17b71c6d"></script>
+<script src="yaksok.js?v=dac0b835a3"></script>
+<script src="pay.js?v=a6ada83304"></script>
 <script>
 // 「무엇이 무료고, 무엇이 값을 받나요」 — 상품 약속 장부(yaksok.js)를 읽어 그린다. 상품 말은 이 쪽에 적지 않는다.
 // 파는 것: 장부 차례 · 무료: 코드가 없는 줄. 이름 · 한 줄은 장부(없으면 분야 표 bunya.js), 딱지의 값 자리는 상품표(products)에서 채운다.

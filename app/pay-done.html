@@ -35,11 +35,11 @@
   <p>창을 닫지 말고 잠시만 기다려 주세요.</p>
 </div>
 
-<script src="config.js?v=5870f86d7c"></script>
+<script src="config.js?v=af44d49dc8"></script>
 <script src="cloud.js?v=b538926f88"></script>
 <script src="usage.js?v=3282ea377a"></script>
-<script src="pay.js?v=8d17b71c6d"></script>
-<script src="yaksok.js?v=642528e0a0"></script>
+<script src="pay.js?v=a6ada83304"></script>
+<script src="yaksok.js?v=dac0b835a3"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=c37e825f17"></script>
 <script src="taekil-read.js?v=6e9dc526e5"></script>
@@ -85,8 +85,8 @@
   function 받음(d) {
     var 줄 = function (k, v) { return v ? '<div class="row"><span>' + k + '</span><span>' + esc(v) + '</span></div>' : ''; };
     return '<div class="intake"><h2>신청이 접수됐습니다</h2>'
-      + '<p class="lead">보고서는 이 주소로 보내 드립니다 — <b>' + esc(d.mail) + '</b></p>'
-      + '<p class="lead">보통 2~3일 걸리고, 길어지면 미리 알려 드립니다.</p>'
+      + '<p class="lead">엔진이 계산하고 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요. 보통 2~3일 안이에요.</p>'
+      + '<p class="lead">늦어지거나 여쭐 것이 있으면 이 주소로 연락드려요 — <b>' + esc(d.mail) + '</b></p>'
       + '<div class="box" style="margin:14px 0 10px">'
       +   줄('출산 예정 기간', d.range) + 줄('태어날 지역', d.place)
       +   줄('아이 성별', d.sex === '모름' ? '아직 몰라요' : d.sex)
@@ -99,10 +99,10 @@
     // 없으면(다른 길로 결제) 여기서 같은 말로 동의를 받는다 — 건강과 이어진 내용이라 따로 받아야 한다(검토).
     var 앞선동의 = (F.초안() || {}).consent || null;
     자리.innerHTML = '<form class="intake" id="intake" novalidate><h2>신청서</h2>'
-      + '<p class="lead">아래를 적어 보내 주시면 이 주문과 함께 제게 옵니다. 결과는 적어 주신 메일로 보내 드립니다 — '
-      +   '보통 2~3일, 길어지면 미리 알려 드립니다.</p>'
+      + '<p class="lead">아래를 적어 보내 주시면 이 주문에 붙습니다. 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요 — '
+      +   '보통 2~3일 안이에요.</p>'
       + F.틀()
-      + '<p class="hint">적어 주신 내용은 보고서를 만들고 보내 드리는 데만 쓰고, 이 주문 기록과 함께 보관합니다. '
+      + '<p class="hint">적어 주신 내용은 보고서를 만들어 드리는 데만 쓰고, 이 주문 기록과 함께 보관합니다. '
       +   '부모님·형제자매의 정보는 그분들께 알린 뒤 적어 주세요.</p>'
       + (앞선동의 ? '' : '<label class="agree"><input type="checkbox" id="agreeData"><span>' + F.동의문 + '</span></label>')
       + '<button type="submit" class="send" id="i_send">신청서 보내기</button>'
@@ -162,7 +162,7 @@
     }
     if (F && F.자동붙음 && F.자동붙음(orderId)) F.초안지움();   // 신청서가 주문에 붙었고 결제도 끝났다 — 이 기기의 초안은 이제 지운다
     var 시작 = Date.now(), 째깍 = null, 만듦 = false, 끝 = false;
-    var 만드는중 = function () { 칸('여덟 글자를 연산하는 중이에요', ['보통 1~2분 걸려요. 이 창을 닫아도 돼요 — 다 되면 「내 보고서」에서 열려요.'], 가기('내 보고서로 가기')); };
+    var 만드는중 = function () { 칸('여덟 글자를 연산하는 중이에요', ['보통 1~2분 걸려요. 이 창을 닫아도 돼요 — 다 만들면 책사가 한 번 더 확인한 뒤 「내 보고서」에서 열어 드려요.'], 가기('내 보고서로 가기')); };
     var 마침 = function (st, 말) {
       if (끝) return; 끝 = true; clearTimeout(째깍);
       if (st === 'ready') { 칸('보고서가 열렸어요', [], 가기('보고서 열기')); return; }
@@ -295,7 +295,7 @@
         // 10-02 개편 3묶음 — 이 주문번호는 이 화면에만 한 번 보였다. 설정 창 「내 결제」(app.js · pay.js 내결제)에서 언제든 다시 본다.
         + '<p class="warn" style="margin-top:-12px">이 주문번호는 홈 화면 맨 위 오른쪽 「설정」 → 「내 결제」에서 언제든 다시 볼 수 있어요.</p>'
         + (code === 'taekil'
-            ? (자동택일 ? '<div id="taekil-slot"></div>' : '<p>출산택일은 <b>사람이 직접 계산</b>합니다.</p><div id="taekil-slot"></div>')
+            ? '<div id="taekil-slot"></div>'   // 10-02 「켜는 날」 — 자동 보고서 길(자동만들기)이 이 자리를 채운다. 옛 접수 길도 같은 자리
             : 연애
               ? '<p class="warn" id="goSay">' + (저절로 ? '3초 뒤에 저절로 넘어가요.' : '') + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>'
                 + (저절로 ? '<p id="stayRow"><button class="btn sub" id="stay" type="button">여기 머물기</button></p>' : '')

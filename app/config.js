@@ -25,22 +25,15 @@ window.CHAEKSA_SUPABASE = {
 window.CHAEKSA_ART = '20260913d';   // 09-12 밤 이야기 표지 11장 도착 — 값이 곧 캐시 버전
 // 돌아온 사람 세기 (docs/29 여덟). server/migrate-16 을 Supabase 에서 돌린 **뒤에** 1 로.
 // 먼저 켜면 모르는 열이라며 방문 기록 전체가 거절된다.
-// 출산택일 신청 창구(2026-09-15 사장님 「출산택일 자체가 토스결제해야 넘어가지잖아」). 결제창이 열리기 전에는
-// 신청서를 네이버폼으로 받고 값 안내는 답장 메일로 한다.
-// 결제 여는 날의 한 줄(10-02 개편 3묶음 「출산택일 한 길」) — 카카오페이가 운영 모드로 바뀌어 사이트에서 택일 결제가 되는 날
-// 아래 값을 '' 로 비우면 「신청서 한 장 + 결제」 흐름이 켜진다. 저절로 바뀌는 곳:
-//   taekil-apply.html(네이버폼 상자 → 신청서 · 결제 단추 · 첫 줄 · 세 걸음) · taekil.html(단추 이름 · 세 걸음 · 신청 문단 — 장부 신청글 · 만듦글)
-//   · 택일 탭(app.js wireTaekil: 단추 · 세 걸음 · 문의 줄) · 시뮬레이터 끝(taekilsim.js 다리: 단추 · 신청 한 줄) · taekil-sample.html 단추
-//   · pay.html 「무엇을 사나」(장부 신청글).
-// 그날 손으로 고칠 곳(정적 글이라 스크립트가 못 바꾼다): taekil.html 머리 FAQ 「어떻게 신청하나요」(JSON-LD) · taekil-apply.html meta description
-//   · pay.html 아래 「출산택일 — 사람이 계산해 …」 문단 · marketing/붙여넣기-출산택일비용.html 「신청은 이렇게 합니다」 절(고친 뒤 tools_jeongbon.py 로 taekil-price.html 다시 만들기).
-// 비우기 전에 카카오 시험 키로 택일 결제를 끝까지 한 번 해 본다(결제사는 서버 PAY_PROVIDERS 가 정한다).
-window.CHAEKSA_TAEKIL_INTAKE_URL = 'https://naver.me/FdqTMrhq';
-// 출산택일 자동 보고서(10-02 설계서 ⑤ · ⑥) — 0 이면 손님 화면은 지금 길(위 네이버폼 · 「사람이 직접」 문구) 그대로이고,
-// 사이트 신청서 · 결제 뒤 「만드는 중」 · 「내 보고서」 자동 길은 검수 계정(super)에게만 열린다(시험 결제로 끝까지 해 본다).
-// 켜는 날(카카오 운영 키가 들어오고 시험 결제 ⑦ 이 초록인 날) 한 번에: 위 INTAKE_URL 을 '' · 이 값을 1 · 서버 Vercel TAEKIL_AUTO=1 ·
-// 장부(yaksok.js 택일 줄 만듦 · 시간 · 환불) · 약관 · 처리방침 · taekil.html FAQ · pay-done 문구(⑥). 그 전에는 지금 문구가 사실이다.
-window.CHAEKSA_TAEKIL_AUTO = 0;
+// 출산택일 신청 창구 — 바깥 신청 폼 주소였다. 10-02 사장님 「네이버폼 어쩌고 없애야할듯」(10-02 네이버폼 걷음) — 비워 두고, 읽던 곳
+// (택일 탭 · taekil.html · taekil-apply.html · taekil-sample.html · 시뮬레이터 끝 · 장부 신청글)의 바깥 폼 갈래도 걷었다. 신청은 사이트 신청서 하나다.
+// 되살리지 않는다 — 다시 바깥 폼을 쓰려면 화면 글 · 약관 · 처리방침부터 같이 고친다(tools_check.py 7 · tests_yaksok.html 이 「걷은 약속」으로 막는다).
+window.CHAEKSA_TAEKIL_INTAKE_URL = '';
+// 출산택일 자동 보고서(10-02 설계서 ⑤ · ⑥ 「켜는 날」) — 1: 신청서(taekil-apply.html) → 결제 → 엔진이 만들고 → 책사가 확인(app_flags.taekil_auto_release '0' 동안은
+// 사장님 목록에서 「내보내기」를 눌러야 열림) → 손님 「내 보고서」. 읽는 곳: pay-done.html 자동길 · pay.js 붙음적기 · taekil-apply.html.
+// 카카오페이 운영 키가 들어오기 전(결제사가 모두 시험 모드)에는 일반 손님에게 결제 단추 대신 「결제는 곧 열려요」 + 메일 신청을 보인다 —
+// 갈림은 pay.js 곧열림 한 곳(검수 계정과 운영 키가 들어온 날은 저절로 결제 단추). 서버(Vercel 공개 프록시) TAEKIL_AUTO=1 은 사장님 몫.
+window.CHAEKSA_TAEKIL_AUTO = 1;
 // 카카오 링크 공유(09-26 사장님 「사진이랑 링크를 같이」) — 카카오 디벨로퍼스 > 앱 > 앱 키 > **JavaScript 키**(공개돼도 되는 키, 도메인으로 막힌다).
 // 플랫폼 > Web 에 https://chaeksa.kr 이 등록돼 있어야 한다. 비어 있으면 브라우저 공유(그림만 + 링크 클립보드)로 돌아간다.
 window.CHAEKSA_KAKAO_JS_KEY = 'a31b2496dcc8d26fb0ea9f5fe0e8ff0a';

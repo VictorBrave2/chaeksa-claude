@@ -251,8 +251,8 @@
   <section class="buy" id="sampleBuy">
     <p><a href="taekil.html">출산택일 보고서 안내 보기 →</a></p>
   </section>
-  <!-- 신청 단추 — taekil.html 과 같은 길: 네이버폼 창구(config.js CHAEKSA_TAEKIL_INTAKE_URL)가 열려 있으면 네이버폼으로 바로, 비면 사이트 신청서. -->
-  <a class="btn cta" data-taekil-go href="./taekil-apply.html?from=sample">보고서 신청하기</a>
+  <!-- 신청 단추 — taekil.html 과 같은 길: 사이트 신청서(10-02 네이버폼 걷음). -->
+  <a class="btn cta" href="./taekil-apply.html?from=sample">보고서 신청하기</a>
   <a class="btn ghost cta" href="taekil-sim.html?d=2027-04-12&amp;from=sample">이 견본의 날짜를 시뮬레이터로 직접 보기 — 무료</a>
 
   <p class="fine">
@@ -263,10 +263,10 @@
 <script>
 (function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();
 </script>
-<script src="config.js?v=5870f86d7c"></script>
-<script src="track.js?v=fd7357e815"></script>
-<script src="yaksok.js?v=642528e0a0"></script>
-<script src="pay.js?v=8d17b71c6d"></script>
+<script src="config.js?v=af44d49dc8"></script>
+<script src="track.js?v=4520244637"></script>
+<script src="yaksok.js?v=dac0b835a3"></script>
+<script src="pay.js?v=a6ada83304"></script>
 <script>
 (function () {
   // 보고서에서 받으시는 것 — 장부(yaksok.js) 택일 줄을 읽어 그린다. 값 자리는 상품표(products)가 채운다(값채우기).
@@ -280,14 +280,6 @@
       + 줄글(Y.만듦글('taekil')) + 줄글(r.환불) + 줄글(Y.신청글('taekil'));
     Y.값채우기(box);
   }
-  // 신청 단추 — 네이버폼 창구가 열려 있으면 네이버폼으로 바로 보낸다(누름은 신청 페이지와 같은 사건 naverform). 비면 사이트 신청서 그대로.
-  var 폼 = String(window.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
-  Array.prototype.forEach.call(document.querySelectorAll('[data-taekil-go]'), function (a) {
-    if (!폼) return;
-    a.textContent = '네이버폼으로 신청하기';
-    a.href = 폼; a.target = '_blank'; a.rel = 'noopener';
-    a.addEventListener('click', function () { try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('naverform'); } catch (e) {} });
-  });
 })();
 </script>
 </body>

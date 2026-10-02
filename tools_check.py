@@ -461,6 +461,11 @@ YAKSOK_NUM = {   # 갈래: (꼴, 보는 파일) — about.html(10-02 개편 3묶
 # 장부 글을 그대로 담는 것은 만든 쪽이라서 아래 「장부 글을 그대로 옮겨 적었다」 확인에서는 뺀다. tests_yaksok.html 도 같은 목록.
 SOGAE_PAGES = ['love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html']
 YAKSOK_FILES += [f for f in SOGAE_PAGES if f not in YAKSOK_FILES]
+# 10-02 「켜는 날」(출산택일 신청 = 사이트 신청서 → 결제 → 「내 보고서」) — 바깥 신청 폼 · 「사람이 직접」 · 「작업 전 전액 환불」 같은 걷은 약속이
+# 택일 쪽 어디에도 다시 들어오지 않게 출산택일 쪽 전부(월별 · 궁통보감 · 질문 글 · 신청 · 견본 · 보고서 · 사장님 목록)와 택일 스크립트도 본다.
+# 걷은 약속만 본다 — 숫자(시간 · 질문 수 · 보관 해)는 위 YAKSOK_NUM 목록 그대로. tests_yaksok.html 은 월별 쪽을 빼고 같은 목록을 본다.
+TAEKIL_PAGES = sorted(f for f in os.listdir(APP) if re.match(r'taekil-[a-z0-9-]+\.html$', f)) if os.path.isdir(APP) else []
+YAKSOK_FILES += [f for f in TAEKIL_PAGES + ['taekilsim.js', 'taekil-admin.js', 'taekil-report.js'] if f not in YAKSOK_FILES]
 for _pat, _files in YAKSOK_NUM.values():
     _files += [f for f in SOGAE_PAGES if f not in _files]
 YAKSOK_MUST =['탭', '상품이름', '단위', '한줄', '딱지', '받는것', '환불', '자리', '그림']

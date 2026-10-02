@@ -117,6 +117,9 @@ def transform(body, slug):
     b = b.replace('<h3>', '<h2>').replace('</h3>', '</h2>')
     # 사이트 안 링크 — 꼬리표는 site-*, 신청은 사이트 신청 페이지.
     # 다른 글 · 시뮬레이터로 가는 링크도 site-* 로 — blog-* 를 달면 검색으로 읽은 사람이 블로그 손님으로 세어진다(09-22 growth-4).
+    # 10-02 바깥 신청 폼을 걷고 블로그 원고도 사이트 신청서로 잇는다 — 그 신청 링크는 사이트 판에서 단추로(아래 옛 폼 주소 바꾸기와 같은 꼴).
+    b = re.sub(r'<a href="https://chaeksa\.kr/taekil-apply\.html\?from=blog-[a-z0-9-]+"><b>(보고서 신청서 →|보고서 신청하기 →)</b></a>',
+               lambda m: '<a class="btn" href="taekil-apply.html?from=' + slug + '">' + m.group(1) + '</a>', b)
     b = re.sub(r'https://chaeksa\.kr/\?from=blog-([a-z0-9-]+)', r'./?from=site-\1', b)
     b = re.sub(r'https://chaeksa\.kr/([a-z0-9-]+\.html)\?from=blog-([a-z0-9-]+)',
                lambda m: sim_href(slug, m.group(2)) if m.group(1) == 'taekil-sim.html' else f'{m.group(1)}?from=site-{m.group(2)}', b)

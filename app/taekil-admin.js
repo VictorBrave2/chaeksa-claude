@@ -8,7 +8,7 @@
  *   나누기 — 검수 대기 · 막힘 · 결제됐는데 안 만듦 · 만드는 중 · 열림 · 환불
  *   줄 — 결제일 · 기간 · 지역 · 성별 · 결제 모드(운영 · 시험 · 수기) · 상태 · 빠진 칸 수 · 손님이 처음 연 때
  *   줄을 누르면 — 단추 · 빠진 칸 · 신청서 원문과 「이렇게 읽었어요」 · 엔진판 · 만든 시각 · 토큰 · 걸린 시간 · 차례 비교 · 손님이 볼 보고서(앞 판과 나란히)
- *   단추 — 만들기 · 내보내기 · 다시 만들기 · 신청서 고치기 · 메일 쓰기 · 메일용 글 복사 · 메모 · 손님 눈으로 보기 / 대신 넣기(네이버폼 신청 → 수기 줄)
+ *   단추 — 만들기 · 내보내기 · 다시 만들기 · 신청서 고치기 · 메일 쓰기 · 메일용 글 복사 · 메모 · 손님 눈으로 보기 / 대신 넣기(메일 · 전화로 받은 신청 → 수기 줄)
  */
 (function (global) {
   'use strict';
@@ -255,7 +255,7 @@
   /** 신청서 칸을 그 자리에 펼친다 — 손님 신청서와 같은 칸 · 같은 「이렇게 읽었어요」. */
   function 신청서틀(p, 채울, 단추글, 메모) {
     p.innerHTML = '<form class="intake" novalidate>' + F.틀()
-      + (메모 ? '<label for="admManNote">메모(사장님만 봐요 — 네이버폼 접수 번호 등)</label><textarea id="admManNote" maxlength="4000"></textarea>' : '')
+      + (메모 ? '<label for="admManNote">메모(사장님만 봐요 — 받은 메일 제목 · 날짜 등)</label><textarea id="admManNote" maxlength="4000"></textarea>' : '')
       + '<button type="submit" class="send">' + esc(단추글) + '</button><p class="msg"></p></form>';
     const f = p.querySelector('form');
     F.채우기(f, 채울 || {});
@@ -286,13 +286,13 @@
     if (!p.hidden) { p.hidden = true; return; }
     p.hidden = false;
     const f = 신청서틀(p, {}, '수기 줄 만들고 보고서 만들기', true);
-    p.insertAdjacentHTML('afterbegin', '<p class="hint">네이버폼으로 들어온 신청을 같은 칸에 옮겨 적어요. 같은 엔진 · 같은 누락 검사로 만들고, 손님에게는 열리지 않아요 — 확인한 뒤 「메일용 글 복사」로 메일에 붙여요.</p>');
+    p.insertAdjacentHTML('afterbegin', '<p class="hint">메일 · 전화로 받은 신청을 같은 칸에 옮겨 적어요. 같은 엔진 · 같은 누락 검사로 만들고, 손님 「내 보고서」에는 열리지 않아요 — 확인한 뒤 「메일용 글 복사」로 메일에 붙여요.</p>');
     f.onsubmit = (e) => {
       e.preventDefault();
       const d = F.값(f), 막 = 막힘말(d), msg = f.querySelector('.msg');
       if (!d.range || !d.place) { msg.textContent = '출산 예정 기간과 태어날 지역은 꼭 적어 주세요.'; return; }
       if (막.length && !confirm('아직 못 읽는 칸이 있어요.\n\n' + 막.join('\n') + '\n\n그래도 넣을까요? (만들면 「막힘」으로 남아요)')) return;
-      const it = F.신청서(d); it.출처 = 'naverform';
+      const it = F.신청서(d); it.출처 = 'naverform';   // 수기 줄 표시 — 값 이름은 옛것 그대로 둔다(비공개 서버가 읽을 수 있다). 지금은 메일 · 전화로 받은 신청
       msg.textContent = '수기 줄을 만드는 중…';
       T.adminManual(it, (f.querySelector('#admManNote') || {}).value || '').then((r) => {
         if (!(r && r.ok && r.id)) { msg.textContent = '넣지 못했어요: ' + 이유말(r); return; }

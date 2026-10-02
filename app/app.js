@@ -1428,9 +1428,9 @@
   // 2026-08-30 「카카오로 물어보기도 다 치우자」 — 비워두면 카카오 버튼이 스스로 숨고
   // 메일만 남는다(그렇게 만들어 두었다). 10-02 사장님 「카톡책사 삭제」 — 책사 카카오톡 채널은 쓰지 않는다.
   const KAKAO_CHANNEL = '';
-  // 택일 신청 창구(네이버폼) 주소는 config.js CHAEKSA_TAEKIL_INTAKE_URL 한 곳에만 둔다(10-02 — 여기 따로 적어 둔 같은 주소를 걷었다).
+  // 택일 신청은 사이트 신청서(taekil-apply.html) 하나다(10-02 네이버폼 걷음 — 바깥 신청 폼 주소 · 갈래를 걷었다).
   // 2026-09-10 까지 이 탭의 유일한 창구가 mailto: 하나였다 — 모바일에서 메일 앱이 안 잡히면 눌러도 아무 일이 안 나서
-  // 블로그에서 오는 사람(거의 모바일)에게는 사실상 창구가 없었다. 그래서 신청 단추는 네이버폼(또는 사이트 신청서)이고 메일은 곁길이다.
+  // 블로그에서 오는 사람(거의 모바일)에게는 사실상 창구가 없었다. 그래서 신청 단추는 사이트 신청서이고 메일은 곁길이다.
 
   const KAKAO_CHAT = (() => {
     const v = String(KAKAO_CHANNEL || '').trim();
@@ -1546,25 +1546,11 @@
     if (window.ChaeksaPay && ChaeksaPay.product) ChaeksaPay.product('taekil').then(p => {
       if (p) document.querySelectorAll('[data-price="taekil"]').forEach(el => { el.textContent = ChaeksaPay.won(p.amount); });
     }).catch(() => {});
-    a.href = 'mailto:dl4431@naver.com?subject='
-      + encodeURIComponent('[책사] 출산택일 상담 문의')
-      + '&body=' + encodeURIComponent(TAEK_FORM);
-
-    // 신청 단추는 하나다(10-02). 네이버폼 창구가 열려 있으면 네이버폼으로 바로 보내고(화면 글이 그 길로 적혀 있다),
-    // 창구 주소가 비면(결제창이 열리는 날 config.js 에서 지운다) 사이트 신청서(taekil-apply.html — 신청서 + 결제)로 돌리고
-    // 세 걸음 글도 결제 길로 바꾼다. 네이버폼 단추 누름은 신청 페이지와 같은 사건(naverform)으로 센다.
-    const go = $('btnTaekGo'), 폼 = String(window.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
-    if (go && 폼) {
-      go.href = 폼; go.target = '_blank'; go.rel = 'noopener';
-      go.addEventListener('click', () => { try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('naverform'); } catch (e) {} });
-    } else if (go) {
-      go.href = 'taekil-apply.html'; go.removeAttribute('target');
-      if ($('taekGoLabel')) $('taekGoLabel').textContent = '보고서 신청하기';
-      if ($('taekSteps')) $('taekSteps').innerHTML = '<p><b>①</b> 신청서에 아는 만큼 적고</p>'
-        + '<p><b>②</b> 그 자리에서 결제하시면</p>'
-        + '<p><b>③</b> 보통 2~3일 안에 보고서를 메일로 보내 드립니다.</p>';
-      ['taekAskLine', 'taekFormNote'].forEach(id => { if ($(id)) $(id).classList.add('hide'); });
-    }
+    // 메일 신청 — 신청서와 같은 칸 이름(pay.js 주문서.신청메일, 제목 「[책사] 출산택일 신청」 · 본문은 칸 이름만). 결제 모듈이 없으면 옛 양식.
+    const 주문서 = window.ChaeksaPay && ChaeksaPay.주문서;
+    a.href = 주문서 && 주문서.신청메일 ? 주문서.신청메일()
+      : 'mailto:dl4431@naver.com?subject=' + encodeURIComponent('[책사] 출산택일 신청') + '&body=' + encodeURIComponent(TAEK_FORM);
+    // 신청 단추(#btnTaekGo)는 사이트 신청서(taekil-apply.html)로 간다 — 주소 · 세 걸음 글은 index.html 정적 글 그대로(10-02 네이버폼 걷음).
 
     const k = $('btnTaekKakao');
     if (!k || !KAKAO_CHAT) return;

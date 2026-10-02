@@ -2,9 +2,9 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>약속 장부 시험</title>
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}.info{color:#a60}</style></head>
 <body><div id="out">시험하는 중이에요…</div><div id="stage" hidden></div>
-<script src="config.js?v=5870f86d7c"></script>
+<script src="config.js?v=af44d49dc8"></script>
 <script src="bunya.js?v=8dd0cf469e"></script>
-<script src="yaksok.js?v=642528e0a0"></script>
+<script src="yaksok.js?v=dac0b835a3"></script>
 <script src="love.js?v=f6663152b9"></script>
 <script src="pair.js?v=5440340f55"></script>
 <script src="home-cats.js?v=4c12671548"></script>
@@ -42,7 +42,11 @@
   const 아는조건 = ['장한줄'];
   // 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
   const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'taekil-sample.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html',
-    'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'home-cats.js?v=4c12671548', 'app.js?v=6c5702eb2a', 'pay.js?v=8d17b71c6d', 'gunghap-gwanjeom.js?v=7cdb63d9d0', 'bunya.js?v=8dd0cf469e', 'about.html'];
+    'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'home-cats.js?v=4c12671548', 'app.js?v=fe12bd92aa', 'pay.js?v=a6ada83304', 'gunghap-gwanjeom.js?v=7cdb63d9d0', 'bunya.js?v=8dd0cf469e', 'about.html',
+    // 10-02 「켜는 날」 — 바깥 신청 폼 · 「사람이 직접」 · 「작업 전 전액 환불」 같은 걷은 약속이 출산택일 쪽에 다시 들어오지 않게(tools_check.py 7) 은 월별 · 궁통보감 쪽까지 taekil-*.html 전부를 본다)
+    'taekil-price.html', 'taekil-sim.html', 'taekil-report.html', 'taekil-admin.html', 'taekil-why-different.html', 'taekil-cesarean-date.html', 'taekil-how-to-choose.html',
+    'taekil-verify.html', 'taekil-fate-vs-timing.html', 'taekil-doctor-schedule.html', 'taekil-solar-time.html', 'taekil-lunar-december.html',
+    'taekilsim.js?v=e2b12e27a5', 'taekil-admin.js?v=a966df461b', 'taekil-report.js?v=760a344c52'];
   // about.html(10-02 개편 3묶음 책사 소개) — 상품 말은 장부에서 읽는다. 손으로 쓴 숫자가 끼면 여기서 잡는다(tools_check.py 7)과 같은 목록)
   const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=4c12671548', 'about.html'];
   const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=f6663152b9', 'pair.js?v=5440340f55', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=7cdb63d9d0', 'home-cats.js?v=4c12671548', 'about.html'];
@@ -56,7 +60,7 @@
     머리('가. 장부 꼴');
     봄('가1 전역 ChaeksaYaksok 이 있다', !!(Y && T && T.콘텐츠), true);
     if (!Y) throw new Error('yaksok.js 가 실리지 않았다');
-    const 소스 = await 받기('yaksok.js?v=642528e0a0');
+    const 소스 = await 받기('yaksok.js?v=dac0b835a3');
     const 시작 = '/*장부 시작*/', 끝 = '/*장부 끝*/';
     봄('가2 장부 시작 · 장부 끝 표시가 한 번씩', [String(소스).split(시작).length - 1, String(소스).split(끝).length - 1], [1, 1]);
     let 파싱 = null; try { 파싱 = JSON.parse(소스.slice(소스.indexOf(시작) + 시작.length, 소스.indexOf(끝))); } catch (e) { 파싱 = null; }
@@ -179,8 +183,10 @@
     봄('라5 약관(terms.html)에 앱에서 만드는 상품의 만드는 시간이 장부 그대로 있다', 파는.filter((k) => /분/.test(T.콘텐츠[k].시간 || '') && !(글['terms.html'] || '').includes(T.콘텐츠[k].시간)), []);
     {
       // 스스로 시험 — 옛 문장을 일부러 넣으면 빨간불이 켜지는가
-      const 가짜 = { 'pay.html': '결제하면 「맞아요 / 아니에요」를 누를 수 있어요. 최대 30장.', 'terms.html': '결제한 뒤 5분쯤이면 만들어져요. 질문 5개는 무료. 2년 동안 보관.' };
-      봄('라6 옛 문장을 넣으면 걸린다(걷은 약속 · 시간 · 질문 수 · 보관 해)', [걷은찾기(가짜).length, 찾기(시간꼴, 가짜['terms.html']).filter((x) => !허용.시간.has(x)), 찾기(질문꼴, 가짜['terms.html']).filter((x) => !허용.질문.has(x)), 찾기(해꼴, 가짜['terms.html']).filter((x) => !허용.해.has(x))], [2, ['5분쯤'], ['질문5개'], ['2년동안']]);
+      // 10-02 출산택일 보고서 보관이 「2년 동안」이 되어 가짜 보관 해는 3년으로 · 걷은 약속은 옛 출산택일 신청 말(네이버폼 · 사람이 직접 · 작업 전 전액 환불)도 넣어 본다
+      const 가짜 = { 'pay.html': '결제하면 「맞아요 / 아니에요」를 누를 수 있어요. 최대 30장.', 'terms.html': '결제한 뒤 5분쯤이면 만들어져요. 질문 5개는 무료. 3년 동안 보관.',
+        'taekil.html': '네이버폼에 적어 보내 주시면 사람이 직접 계산해 드려요. 작업 전 전액 환불.' };
+      봄('라6 옛 문장을 넣으면 걸린다(걷은 약속 · 시간 · 질문 수 · 보관 해)', [걷은찾기(가짜).length, 찾기(시간꼴, 가짜['terms.html']).filter((x) => !허용.시간.has(x)), 찾기(질문꼴, 가짜['terms.html']).filter((x) => !허용.질문.has(x)), 찾기(해꼴, 가짜['terms.html']).filter((x) => !허용.해.has(x))], [5, ['5분쯤'], ['질문5개'], ['3년동안']]);
     }
 
     머리('마. 한 사실은 한 곳 — 장부 글을 다른 파일에 옮겨 적지 않았다');

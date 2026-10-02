@@ -182,7 +182,7 @@ def main(path, y, mo):
     p(f'<p>세 권이 본 것을 한자리에 모은 글은 <a href="https://chaeksa.kr/taekil-{y}-{mo:02d}.html?from=blog-gt{mo}"><b>왜 {y}년 {mo}월 출산택일은 이 시각인가요</b></a>에 있습니다.</p>')
     p(f'<p><a href="https://chaeksa.kr/taekil-sim.html?from=blog-gt{mo}"><b>chaeksa.kr 출산택일 시뮬레이터</b></a>에 날짜를 넣으면 시각마다 세 권이 본 것이 따로 나옵니다. 회원가입 없이 무료입니다.</p>')
     p('<p>부모님 사주와 담당 선생님 시간까지 넣어 보시려면 신청서로 받습니다.</p>')
-    p('<p><a href="https://naver.me/FdqTMrhq"><b>naver.me/FdqTMrhq</b></a></p>')
+    p(f'<p><a href="https://chaeksa.kr/taekil-apply.html?from=blog-gt{mo}"><b>보고서 신청하기 →</b></a></p>')   # 10-02 바깥 신청 폼을 걷고 사이트 신청서로
     p(f'<p class="tag">#{mo}월출산택일 #궁통보감 #조후용신 #출산택일 #제왕절개택일 #{y}년{mo}월 #사주 #만세력 #왜 #택일</p>')
     out = 틀[:a] + '<div id="doc">\n    ' + '\n\n    '.join(P) + '\n  ' + 틀[b:]
     out = re.sub(r'<title>[^<]*</title>', f'<title>붙여넣기 · 궁통보감으로 본 {y}년 {mo}월</title>', out, 1)

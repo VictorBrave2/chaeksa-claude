@@ -111,9 +111,10 @@ const 하루 = S.하루(2026, 12, 18, 'M', 'KR:서울');
   if (!vs.textContent.includes(r.상품이름)) 문제.push('상품이름이 없다');
   if (!r.견본 || !vs.querySelector('a[href^="' + r.견본 + '"]')) 문제.push('견본 보기 단추가 없다(장부 견본 ' + r.견본 + ')');
   if (!vs.textContent.includes(Y.신청글('taekil'))) 문제.push('신청 한 줄이 장부 신청글이 아니다');
-  const 단추 = vs.querySelector('#tkApply'), 폼 = String(window.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
+  // 신청 단추는 사이트 신청서 하나다(10-02 바깥 신청 폼 걷음) — 새 창 · 바깥 주소로 가지 않는다.
+  const 단추 = vs.querySelector('#tkApply');
   if (!단추) 문제.push('신청 단추가 없다');
-  else if (폼 ? 단추.getAttribute('href') !== 폼 : !/^taekil-apply\.html/.test(단추.getAttribute('href'))) 문제.push('신청 단추 길 ' + 단추.getAttribute('href') + ' · 창구 ' + 폼);
+  else if (!/^taekil-apply\.html/.test(단추.getAttribute('href')) || 단추.getAttribute('target')) 문제.push('신청 단추 길 ' + 단추.getAttribute('href'));
   if (/\d[\d,]*\s?원/.test(vs.textContent)) 문제.push('값을 손으로 적었다(값은 상품표에서): ' + vs.textContent.match(/\d[\d,]*\s?원/)[0]);
   return 문제;
 });

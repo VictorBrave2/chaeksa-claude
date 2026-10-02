@@ -67,17 +67,14 @@
   // 시뮬레이터 끝 — 보고서와 무엇이 다른지 두 줄 + 견본 · 신청(10-02 개편 3묶음 「출산택일 한 길」).
   // 전에는 「보고서 신청하기」 단추 하나뿐이라, 무료로 하루씩 본 것과 값을 내고 받는 보고서가 무엇이 다른지 몰랐다.
   // 보고서 쪽 말(상품이름 · 받는 것 · 신청 길 · 견본 주소)은 상품 약속 장부(yaksok.js 택일 줄), 값은 상품표(products)에서 읽는다 — 여기 손으로 적지 않는다.
-  // 장부가 없는 화면(시험 쪽)이면 신청 단추만 남는다. 신청 단추는 taekil.html 과 같은 길이다 — 네이버폼 창구(config.js CHAEKSA_TAEKIL_INTAKE_URL)가
-  // 열려 있으면 네이버폼으로 바로, 비면(결제창이 열리는 날) 사이트 신청서(taekil-apply.html)로. 아래 한 줄(장부 신청글)도 같이 바뀐다.
+  // 장부가 없는 화면(시험 쪽)이면 신청 단추만 남는다. 신청 단추는 taekil.html 과 같은 길 — 사이트 신청서(taekil-apply.html, 10-02 네이버폼 걷음).
   // 출산택일 탭 안(10-02 맨 위 두 문 — 보고서 신청 · 시뮬레이터)이면 신청 단추는 쪽을 옮기지 않고 「보고서 신청」 칸으로 바꿔 주기만 한다:
   // data-tk-door="report" 를 달면 app.js(택일문달기)가 받아 칸을 바꾼다. 주소(href)는 스크립트가 못 받을 때 갈 길로 그대로 둔다.
   // taekil-sim.html(시뮬레이터 한 쪽)은 탭이 아니라 지금처럼 신청 쪽으로 간다.
   function 다리(탭안) {
     const Y = global.ChaeksaYaksok, r = Y && Y.줄 ? Y.줄('taekil') : null;
-    const 폼 = String(global.CHAEKSA_TAEKIL_INTAKE_URL || '').trim();
-    const 신청 = '<a class="btn small" id="tkApply" href="' + esc(폼 || 'taekil-apply.html?from=sim') + '"'
-      + (탭안 ? ' data-tk-door="report"' : 폼 ? ' target="_blank" rel="noopener"' : '') + '>'
-      + (폼 && !탭안 ? '네이버폼으로 신청하기' : '보고서 신청하기') + '</a>';
+    const 신청 = '<a class="btn small" id="tkApply" href="taekil-apply.html?from=sim"'
+      + (탭안 ? ' data-tk-door="report"' : '') + '>보고서 신청하기</a>';
     if (!r) return '<div class="tk-vs tk-vs-go">' + 신청 + '</div>';
     return '<div class="tk-vs">'
       + '<p class="tk-vs-h">시뮬레이터와 보고서는 이렇게 달라요</p>'
@@ -113,8 +110,6 @@
     const q = (id) => box.querySelector('#' + id);
     q('tkG').value = 성별; q('tkPlace').value = 곳값;
     try { global.ChaeksaYaksok && global.ChaeksaYaksok.값채우기(box); } catch (e) {}
-    const 신청단추 = q('tkApply');
-    if (신청단추 && 신청단추.target === '_blank') 신청단추.addEventListener('click', () => { try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('naverform'); } catch (e) {} });
     function 그리기() {
       const [y, m, d] = 날.split('-').map(Number);
       if (!y || !m || !d) return;
