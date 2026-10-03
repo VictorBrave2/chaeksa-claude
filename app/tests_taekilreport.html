@@ -15,7 +15,7 @@
 <script src="saenggeuk.js?v=fe0683a9e6"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=b80b485f4b"></script><script src="gyeokguk.js?v=63f811f535"></script>
 <script src="classic.js?v=cc88b5f18e"></script><script src="gwanjeom.js?v=29b898c413"></script><script src="taekilsim.js?v=e2b12e27a5"></script>
 <script src="taekil-read.js?v=4c31c70a7c"></script><script src="yaksok.js?v=c7cb589870"></script><script src="pay.js?v=654bb7eca5"></script>
-<script src="myeongsik-card.js?v=4fc56b2857"></script><script src="taekil-report.js?v=760a344c52"></script>
+<script src="myeongsik-card.js?v=4fc56b2857"></script><script src="taekil-report.js?v=f68945fab8"></script>
 <script id="tests">
 (function () {
   const V = window.ChaeksaTaekilReport, P = window.ChaeksaPay, MC = window.ChaeksaMyeongsikCard;
@@ -86,6 +86,17 @@
   검사('반응 단추가 없다(결과 화면에 맞아요 · 아니에요 금지)', () => {
     const h = V.그리기(보고서);
     return /<button|맞아요|아니에요/.test(h) ? ['그리기에 단추 · 반응 말이 있다'] : [];
+  });
+  검사('블로그글 — 블로그 업로드용: 이렇게 읽었어요 · 궁금하다고 하신 것 · 결제 칸 · 명식 한자 줄은 빼고, 카드는 그림 주소 또는 [그림 N] 자리', () => {
+    const 블 = Object.assign({}, 보고서, { order: ['greet', 'readback', 'verdict', 'block', 'ask', 'alldays', 'receipt'],
+      ask: { head: '궁금하다고 하신 것', body: [{ k: 'p', t: '손님 사연이 담긴 지어낸 줄' }] } });
+    const h = V.블로그글(블, null), 문제 = [];
+    ['이렇게 읽었어요', '목록에서 찾지 못했어요', '손님 사연이 담긴 지어낸 줄', '주문번호', '날짜별로 펼쳐 보기', '時 壬辰'].forEach((s) => { if (h.indexOf(s) >= 0) 문제.push('실렸다: ' + s); });
+    ['먼저 결론부터', '■ 1번 · 4월 12일(월)', '까닭 — 지어낸 줄', '자평진전 원문 — 財輕比重', '[그림 1 — 1번 — 으뜸 · 01.png 를 여기에]'].forEach((s) => { if (h.indexOf(s) < 0) 문제.push('없음: ' + s); });
+    if (/<img src=x/.test(h) || h.indexOf('&lt;img src=x') < 0) 문제.push('이스케이프 안 됨');
+    const 주 = V.블로그글(블, (i) => 'https://chaeksa.kr/cards/consult-x/' + String(i + 1).padStart(2, '0') + '.png');
+    if (주.indexOf('<img src="https://chaeksa.kr/cards/consult-x/01.png"') < 0 || 주.indexOf('[그림 1') >= 0) 문제.push('그림 주소 모드');
+    return 문제;
   });
   검사('글로 — 메일에 붙일 글(꺾쇠 태그 없음 · 칸 머리 · 카드는 이름표만)', () => {
     const t = V.글로(보고서), 문제 = [];

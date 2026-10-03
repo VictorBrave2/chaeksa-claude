@@ -177,6 +177,7 @@
     단('intake', '신청서 고치기', !환불);
     단('mail', '메일 쓰기', !!(s.mail && /@/.test(s.mail)));
     단('copy', '메일용 글 복사', 만듦);
+    단('blog', '블로그용 글', 만듦);
     단('note', '메모', true);
     const 손님눈 = '<a class="btn ghost small" href="taekil-report.html?o=' + encodeURIComponent(id) + '&amp;as=customer" target="_blank" rel="noopener">손님 눈으로 보기</a>';
     const 빠진 = (a.missing || []), 문제 = ((a.meta && a.meta.문제) || []).slice(0, 20);
@@ -236,6 +237,7 @@
       else 손복사(id, 글);
       return;
     }
+    if (act === 'blog') { 블로그칸(id, a); return; }
     if (act === 'note') { 메모칸(id, a); return; }
     if (act === 'intake') { 고치기칸(id, a); }
   }
@@ -244,6 +246,62 @@
     const p = 판칸(id); if (!p) return;
     p.innerHTML = '<p class="hint">복사가 막혀서 아래에 펼쳤어요 — 전부 골라 복사해 주세요.</p><textarea class="adm-copy" readonly></textarea>';
     const t = p.querySelector('textarea'); t.value = 글; t.focus(); t.select();
+  }
+  /** 네이버 블로그 업로드용(10-04 사장님 「네이버블로그 업로드용 하나 · 고객 전달용 보고서 하나」) — 본문은 taekil-report.js 블로그글(사연 · 이렇게 읽었어요 · 결제 칸 뺌),
+   *  명식 카드는 이 줄에 그려진 카드를 그림(PNG)으로 받는다(html2canvas — 받을 때만 싣는다). 붙여넣은 글의 [그림 N] 자리에 받은 그림을 놓는다. */
+  function 블로그칸(id, a) {
+    const p = 판칸(id); if (!p) return;
+    const 글 = V.블로그글(a.report, null);
+    const s = 원문(a.intake) || {}, 해들 = ['father', 'mother', 'siblings'].map((k) => String(s[k] || '')).join(' ').match(/(?:19|20)\d{2}/g) || [];
+    const 맨글 = 글.replace(/<[^>]+>/g, ' '), 샘 = 해들.filter((y) => 맨글.indexOf(y) >= 0);
+    p.innerHTML = '<p class="hint">네이버 블로그에 올릴 글이에요 — 「이렇게 읽었어요」 · 「궁금하다고 하신 것」(손님 사연) · 결제 칸은 뺐어요. '
+      + '① 「본문 복사」 → 블로그 글쓰기에 붙여넣기 ② 「카드 그림 받기」로 받은 01.png … 을 [그림 N] 줄 자리에 끌어다 놓고 그 줄은 지워요.</p>'
+      + (샘.length ? '<p class="adm-msg bad">가족 생년(' + esc(샘.join(' · ')) + ')이 글에 보여요 — 올리기 전에 확인해 주세요.</p>' : '')
+      + '<div class="adm-acts"><button type="button" class="btn small" data-blog="copy">본문 복사</button><button type="button" class="btn ghost small" data-blog="pics">카드 그림 받기</button></div>'
+      + '<p class="adm-msg" data-blog="msg" role="status"></p><div class="adm-blog tkr">' + 글 + '</div>';
+    const 말 = (t) => { const m = p.querySelector('[data-blog="msg"]'); if (m) m.textContent = t; };
+    p.querySelector('[data-blog="copy"]').onclick = () => {
+      const 맨 = p.querySelector('.adm-blog'), 글자 = 맨 ? 맨.innerText : '';
+      const 됨 = () => 말('본문을 복사했어요. 블로그 글쓰기에 붙여넣으세요.');
+      try {
+        if (navigator.clipboard && global.ClipboardItem) {
+          navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([글], { type: 'text/html' }), 'text/plain': new Blob([글자], { type: 'text/plain' }) })]).then(됨, () => 손복사(id, 글자));
+          return;
+        }
+      } catch (e) {}
+      손복사(id, 글자);
+    };
+    p.querySelector('[data-blog="pics"]').onclick = () => 카드그림받기(id, a, 말);
+  }
+  function html2canvas싣기() {
+    if (global.html2canvas) return Promise.resolve(global.html2canvas);
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = () => (global.html2canvas ? res(global.html2canvas) : rej(new Error('html2canvas 없음')));
+      s.onerror = () => rej(new Error('그림 도구를 불러오지 못했어요'));
+      document.head.appendChild(s);
+    });
+  }
+  async function 카드그림받기(id, a, 말) {
+    const el = 줄칸(id), 판 = el && el.querySelector('[data-rep="now"]');
+    const 자리 = 판 ? Array.from(판.querySelectorAll('[data-card]')) : [];
+    const 카드들 = 자리.map((x) => ({ i: Number(x.dataset.card), el: x.firstElementChild })).filter((x) => x.el && !x.el.classList.contains('tkr-cardwait'));
+    if (!카드들.length) { 말('아래 「손님이 볼 보고서」에 카드가 아직 안 그려졌어요. 잠시 뒤 다시 눌러 주세요.'); return; }
+    말('카드 그림을 만드는 중…');
+    let h2c; try { h2c = await html2canvas싣기(); } catch (e) { 말(String(e.message || e)); return; }
+    const 받음 = new Set();
+    for (const c of 카드들) {
+      if (받음.has(c.i)) continue; 받음.add(c.i);
+      try {
+        const cv = await h2c(c.el, { scale: 2, backgroundColor: '#ffffff', logging: false });
+        const 링 = document.createElement('a');
+        링.download = String(c.i + 1).padStart(2, '0') + '.png'; 링.href = cv.toDataURL('image/png');
+        document.body.appendChild(링); 링.click(); 링.remove();
+        await new Promise((r) => setTimeout(r, 400));
+      } catch (e) { 말('그림 ' + (c.i + 1) + '을 만들지 못했어요: ' + String(e.message || e)); return; }
+    }
+    말('카드 그림 ' + 받음.size + '장을 받았어요(내려받기 폴더 01.png …). 브라우저가 「여러 파일 내려받기」를 물으면 허용해 주세요.');
   }
   function 메모칸(id, a) {
     const p = 판칸(id); if (!p) return;

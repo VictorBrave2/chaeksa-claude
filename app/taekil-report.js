@@ -115,5 +115,38 @@
     return 줄.join('\n');
   }
 
-  global.ChaeksaTaekilReport = { 차례, 그리기, 카드채우기, 글로, esc };
+  /** 보고서 한 벌 → 네이버 블로그 업로드용 본문 html(10-04 사장님 「네이버블로그 업로드용 하나 · 고객 전달용 보고서 하나」).
+   *  옛 상담 답글 붙여넣기 틀(marketing/cards/상담-…/붙여넣기.html)의 #doc 꼴. 개인정보 빼기(09-25 「블로그에도 게시 — 개인정보는 드러나지 않게」):
+   *  「이렇게 읽었어요」 · 「궁금하다고 하신 것」(손님 사연) · 결제 칸 · 「그 밖에」 · 「날짜별로 전부」 · 관점 칸은 싣지 않고, 목록의 「원하시는 방향」 줄 · 명식 한자 줄(카드 그림이 대신)도 뺀다.
+   *  그림(i, card) → 그림 주소(chaeksa.kr/cards/…) 또는 null — null 이면 「[그림 N]」 자리 줄을 둔다(사장님이 받은 그림을 그 자리에 놓는다). */
+  const 블로그칸 = ['greet', 'verdict', 'asked', 'block', 'summary', 'excluded', 'method', 'clock', 'close'];
+  function 블로그글(rep, 그림) {
+    if (!rep || typeof rep !== 'object') return '';
+    const 번 = (i) => String(i + 1).padStart(2, '0');
+    const 노드 = (n) => {
+      if (!n || typeof n !== 'object') return '';
+      if (n.k === 'p') return '<p>' + esc(n.t) + '</p>';
+      if (n.k === 'b') return '<p><b>' + esc(n.t) + '</b></p>';
+      if (n.k === 'list') { const xs = 글들(n.items).filter((t) => !/^원하시는 방향/.test(String(t))); return xs.length ? '<p>' + xs.map(esc).join('<br>') + '</p>' : ''; }
+      if (n.k === 'han') return '<blockquote><p>' + esc(n.고전 + ' ' + n.꼴 + ' — ' + n.글) + '<br>' + esc(n.뜻) + '</p></blockquote>';
+      if (n.k === 'fold') return (n.head ? '<p><b>' + esc(n.head) + '</b></p>' : '') + (Array.isArray(n.body) ? n.body : []).map(노드).join('');
+      if (n.k === 'card') {
+        const i = Number(n.i), c = (Array.isArray(rep.cards) ? rep.cards : [])[i]; if (!c) return '';
+        const 주소 = typeof 그림 === 'function' ? 그림(i, c) : null;
+        return 주소 ? '<p class="card-img"><img src="' + esc(주소) + '" alt="' + esc(c.label) + ' 명식" style="max-width:100%;height:auto"></p>'
+          : '<p class="blog-pic">[그림 ' + (i + 1) + ' — ' + esc(c.label) + ' · ' + 번(i) + '.png 를 여기에]</p>';
+      }
+      return '';   // read · pillars · 모르는 노드는 싣지 않는다
+    };
+    const 칸 = (id) => {
+      const s = rep[id]; if (!s || typeof s !== 'object') return '';
+      let h = (s.head ? '<h3>' + esc(s.head) + '</h3>' : '') + (Array.isArray(s.body) ? s.body : []).map(노드).join('');
+      (Array.isArray(s.items) ? s.items : []).forEach((it) => { h += '<hr>' + (it && it.head ? '<h3>' + esc(it.head) + '</h3>' : '') + ((it && it.body) || []).map(노드).join(''); });
+      return h;
+    };
+    const order = (Array.isArray(rep.order) && rep.order.length ? rep.order : 차례).filter((id) => 블로그칸.includes(id));
+    return order.map(칸).filter(Boolean).join('<hr>');
+  }
+
+  global.ChaeksaTaekilReport = { 차례, 그리기, 카드채우기, 글로, 블로그글, 블로그칸, esc };
 })(window);
