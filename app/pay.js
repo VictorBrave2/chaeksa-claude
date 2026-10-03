@@ -399,7 +399,7 @@
       const a = 꼬리.querySelector('.pay-login');
       if (a) a.onclick = (e) => {
         e.preventDefault();
-        if (로그인) 로그인(); else if (C && C.signInWith) C.signInWith('kakao');
+        if (로그인) 로그인(); else if (C && C.로그인고르기) C.로그인고르기(); else if (C && C.signInWith) C.signInWith('kakao');
       };
       return { ok: false, reason: 'unauthenticated' };
     }

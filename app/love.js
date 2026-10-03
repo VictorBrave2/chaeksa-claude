@@ -364,7 +364,7 @@
       if (!P || !P.buy) { say.textContent = '결제 화면을 불러오지 못했어요. 새로고침해 주세요.'; return; }
       if (!(C && C.signedIn && C.signedIn())) {   // 산 것을 그 카카오 계정에 매어 두어야 다른 기기에서도 열린다
         try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: '#love', pick: null, at: Date.now() })); } catch (e) {}
-        try { C.signInWith('kakao'); } catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} say.textContent = '로그인 창을 열지 못했어요. 잠시 뒤 다시 해 주세요.'; }
+        try { C.로그인고르기 ? C.로그인고르기() : C.signInWith('kakao'); } catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} say.textContent = '로그인 창을 열지 못했어요. 잠시 뒤 다시 해 주세요.'; }
         return;
       }
       try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('pay'); } catch (e) {}   // 깔때기 ④ 결제 단추 누름
@@ -439,7 +439,7 @@
       if (!P || !P.buy) { say.textContent = '결제 화면을 불러오지 못했어요. 새로고침해 주세요.'; return; }
       if (!(C && C.signedIn && C.signedIn())) {   // 산 것을 그 카카오 계정에 매어 두어야 다른 기기에서도 열린다
         try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: '#love', pick: null, at: Date.now() })); } catch (e) {}
-        try { C.signInWith('kakao'); } catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} say.textContent = '로그인 창을 열지 못했어요. 잠시 뒤 다시 해 주세요.'; }
+        try { C.로그인고르기 ? C.로그인고르기() : C.signInWith('kakao'); } catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} say.textContent = '로그인 창을 열지 못했어요. 잠시 뒤 다시 해 주세요.'; }
         return;
       }
       if (!열쇠) { say.textContent = '결제를 준비하는 중이에요. 잠시 뒤 다시 눌러 주세요.'; return; }   // 서버 열쇠 없이는 결제를 열지 않는다

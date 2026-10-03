@@ -155,7 +155,8 @@
   }
   function 로그인하러(pick) {
     try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: '#pair', pick: pick ? ['pairPick', pick] : null, at: Date.now() })); } catch (e) {}
-    try { global.ChaeksaCloud.signInWith('kakao'); return true; } catch (e) { 지우기('chaeksa.return'); return false; }
+    // 10-03 네이버가 켜졌으면 고르기(cloud.js 로그인고르기)
+    try { const C = global.ChaeksaCloud; if (C.로그인고르기) C.로그인고르기(); else C.signInWith('kakao'); return true; } catch (e) { 지우기('chaeksa.return'); return false; }
   }
 
   // 단계(또는 맛보기) 하나를 글 머리 띠로 — 그림은 장마다 삽화가 맡는다. love.js 가 없으면 글 머리로.

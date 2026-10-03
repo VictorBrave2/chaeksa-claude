@@ -451,6 +451,8 @@ nav button{position:relative}
 /* ───── 로그인 / 동기화 ───── */
 .btn.kakao{background:#FEE500;color:#191600;box-shadow:0 3px 12px rgba(254,229,0,.25)}
 .btn.kakao span{margin-right:7px}
+.btn.naver{background:#03C75A;color:#fff;box-shadow:0 3px 12px rgba(3,199,90,.22)}   /* 10-03 네이버 로그인 */
+.btn.naver span{margin-right:7px;font-weight:900}
 .mailfold{margin-top:12px}
 .mailfold summary{font-size:var(--t2);color:var(--ink3);cursor:pointer;list-style:none;padding:6px 0}
 .mailfold summary::-webkit-details-marker{display:none}

@@ -893,7 +893,7 @@
       const 칸 = 고르는칸[t], 사람 = 칸 && $(칸) ? $(칸).value : '';
       localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, hash: 해시, pick: 사람 ? [칸, 사람] : null, at: Date.now() }));
     } catch (e) {}
-    try { ChaeksaCloud.signInWith('kakao'); }
+    try { ChaeksaCloud.로그인고르기 ? ChaeksaCloud.로그인고르기() : ChaeksaCloud.signInWith('kakao'); }   // 10-03 네이버가 켜졌으면 고르기
     catch (e) { try { localStorage.removeItem('chaeksa.return'); } catch (x) {} openSettings(); }
   }
   /** 앱 안 결제 단추. 이 기기에서 시작하지 않은 로그인(cloud.js hold)이면 결제 전에 어느 계정인지 한 번 묻는다(2026-09-22) —
@@ -1978,6 +1978,17 @@
     if (!C || !C.enabled || !C.enabled()) { closeLogin(); openSettings(); return; }   // 서버 준비 전 — 설정 창이 「아직 준비 중」을 말한다
     try { C.signInWith('kakao'); } catch (e) { closeLogin(); openSettings(); cloudMsg(e.message); }
   };
+  // 10-03 네이버 로그인 — 켜졌을 때(config CHAEKSA_NAVER_LOGIN · 시험 탭 ?naverlogin=1)만 단추와 「같은 방법으로」 안내를 보인다.
+  try {
+    const C0 = window.ChaeksaCloud, 켜짐 = !!(C0 && C0.네이버켜짐 && C0.네이버켜짐());
+    if ($('btnNaverLogin')) $('btnNaverLogin').classList.toggle('hide', !켜짐);
+    if ($('loginSameWay')) $('loginSameWay').classList.toggle('hide', !켜짐);
+  } catch (e) {}
+  if ($('btnNaverLogin')) $('btnNaverLogin').onclick = () => {
+    const C = window.ChaeksaCloud;
+    if (!C || !C.enabled || !C.enabled()) { closeLogin(); openSettings(); return; }
+    try { C.signInWith('naver'); } catch (e) { closeLogin(); openSettings(); cloudMsg(e.message); }
+  };
   $('btnCloseSettings').onclick = () => $('settings').classList.add('hide');
   $('btnSaveSettings').onclick = () => {
     const A = AI();
@@ -2048,7 +2059,7 @@
   const 손님 = () => 관문먼저 && 비로그인();
   function enterOrLogin() {
     if (손님()) {
-      try { ChaeksaCloud.signInWith('kakao'); } catch (e) { showForm(); }
+      try { ChaeksaCloud.로그인고르기 ? ChaeksaCloud.로그인고르기() : ChaeksaCloud.signInWith('kakao'); } catch (e) { showForm(); }
       return;
     }
     showForm();
@@ -2293,7 +2304,7 @@
     if (C.onAskUpload) C.onAskUpload(() => 올릴지묻기(false));
     const bk = $('btnKakao'), bg = null /* 구글 로그인 삭제(2026-09-15 사장님) */, bm = $('btnMail'),
           bs = $('btnSyncNow'), bo = $('btnLogout');
-    if (bk) bk.onclick = () => { try { C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };
+    if (bk) bk.onclick = () => { try { C.로그인고르기 ? C.로그인고르기() : C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };   // 10-03 네이버가 켜졌으면 고르기
     if (bg) bg.onclick = () => { try { C.signInWith('google'); } catch (e) { cloudMsg(e.message); } };
     if (bm) bm.onclick = async () => {
       const v = $('loginEmail').value.trim();

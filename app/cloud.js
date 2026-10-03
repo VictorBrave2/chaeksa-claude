@@ -142,13 +142,62 @@
   };
   function signOut() { clearSession(); localStorage.removeItem(SKEY); 신청지움(); }
 
-  /** 카카오·구글 등 소셜 로그인 — Supabase가 대신 처리하고 토큰을 주소에 붙여 돌려보낸다.
-   *  네이버는 Supabase가 지원하지 않아 넣지 않았다. */
+  /** 카카오 · 네이버 소셜 로그인 — Supabase가 대신 처리하고 토큰을 주소에 붙여 돌려보낸다.
+   *  네이버(10-03 사장님 「네이버로 로그인하기 만들자」)는 Supabase 기본 공급자가 아니라 사용자 지정 공급자 custom:naver 로 붙인다 —
+   *  Supabase 대시보드에 네이버 앱 열쇠를 넣고, 사용자 정보는 우리 다리(api/naver-userinfo.js)가 한 겹 벗겨 준다. */
+  const 공급자 = { kakao: 'kakao', naver: 'custom:naver' };
   function signInWith(provider) {
     if (!enabled()) throw new Error('서버 동기화가 아직 설정되지 않았습니다.');
     const back = encodeURIComponent(location.origin + location.pathname);
     로그인표시('oauth');
-    location.href = CFG.url + '/auth/v1/authorize?provider=' + provider + '&redirect_to=' + back;
+    location.href = CFG.url + '/auth/v1/authorize?provider=' + encodeURIComponent(공급자[provider] || provider) + '&redirect_to=' + back;
+  }
+
+  /** 네이버 로그인을 보이나 — config.js CHAEKSA_NAVER_LOGIN 이 1 이면 모두에게.
+   *  아니면 주소에 ?naverlogin=1 을 달고 연 그 탭에서만(설정을 마친 뒤 사장님이 먼저 시험하는 길). */
+  function 네이버켜짐() {
+    if (global.CHAEKSA_NAVER_LOGIN === 1) return true;
+    try {
+      if (/[?&]naverlogin=1(?:&|$)/.test(location.search)) sessionStorage.setItem('chaeksa.naverlogin', '1');
+      return sessionStorage.getItem('chaeksa.naverlogin') === '1';
+    } catch (e) { return false; }
+  }
+
+  /**
+   * 로그인 고르기(10-03) — 네이버가 켜져 있으면 카카오 · 네이버 두 단추를 띄우고, 아니면 곧바로 카카오로 간다.
+   * 결제 상자 · 신청서 · 보고서 쪽처럼 「로그인이 필요해요」 자리에서 signInWith('kakao') 대신 부른다.
+   * 돌아올 자리(chaeksa.return)는 부르는 쪽이 먼저 적는다(지금처럼). 그냥 닫으면 아무 데도 가지 않는다.
+   * 서버가 준비 안 됐으면 signInWith 처럼 던진다 — 부르는 쪽의 try/catch 가 그대로 받는다.
+   */
+  function 로그인고르기() {
+    if (!네이버켜짐()) return signInWith('kakao');
+    if (!enabled()) throw new Error('서버 동기화가 아직 설정되지 않았습니다.');
+    const 있던 = document.getElementById('chaeksaLoginPick');
+    if (있던) 있던.remove();
+    const 판 = document.createElement('div');
+    판.id = 'chaeksaLoginPick';
+    판.setAttribute('role', 'dialog'); 판.setAttribute('aria-modal', 'true'); 판.setAttribute('aria-label', '로그인');
+    판.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,10,20,.55)';
+    const 단추 = 'display:block;width:100%;margin:0 0 10px;padding:14px;border:0;border-radius:12px;font:inherit;font-weight:700;font-size:16px;cursor:pointer';
+    판.innerHTML = '<div style="width:100%;max-width:360px;background:var(--card,#fff);color:var(--ink,#222);border-radius:16px;padding:22px 18px 12px;box-shadow:0 10px 40px rgba(0,0,0,.3)">'
+      + '<h3 style="margin:0 0 6px;font-size:18px">로그인</h3>'
+      + '<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:var(--ink2,#555)">산 것과 넣어 둔 사람은 로그인한 계정에 남아요. 다음에도 <b>같은 방법</b>으로 로그인해 주세요.</p>'
+      + '<button type="button" data-pv="kakao" style="' + 단추 + ';background:#FEE500;color:#191600">카카오로 계속하기</button>'
+      + '<button type="button" data-pv="naver" style="' + 단추 + ';background:#03C75A;color:#fff">네이버로 계속하기</button>'
+      + '<button type="button" data-close style="' + 단추 + ';background:none;color:var(--ink3,#888);font-weight:400">닫기</button>'
+      + '</div>';
+    const 닫기 = () => { try { 판.remove(); } catch (e) {} document.removeEventListener('keydown', 키); };
+    const 키 = (e) => { if (e.key === 'Escape') 닫기(); };
+    판.addEventListener('click', (e) => {
+      if (e.target === 판 || (e.target.closest && e.target.closest('[data-close]'))) return 닫기();
+      const b = e.target.closest && e.target.closest('[data-pv]');
+      if (!b) return;
+      닫기();
+      try { signInWith(b.getAttribute('data-pv')); } catch (err) { alert(String((err && err.message) || err)); }
+    });
+    document.addEventListener('keydown', 키);
+    document.body.appendChild(판);
+    try { 판.querySelector('[data-pv="kakao"]').focus(); } catch (e) {}
   }
 
   /** 로그인(카카오·매직링크)에서 돌아왔을 때 주소에 붙은 토큰을 받아 저장.
@@ -401,7 +450,7 @@
   }
 
   global.ChaeksaCloud = {
-    enabled, signedIn, email, sendMagicLink, signInWithPassword, signInWith, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
+    enabled, signedIn, email, sendMagicLink, signInWithPassword, signInWith, 로그인고르기, 네이버켜짐, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
     pull, push, pushSoon, removePerson, session, token,
     uploadHold, localStuff, mustAskUpload, answerUpload, onAskUpload,
   };
