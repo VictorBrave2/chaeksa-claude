@@ -56,7 +56,7 @@ def 카드넣기(P, y, mo, 자리들, 으뜸인가, 꼬리='', 라벨=None):
     made = tools_card.찍기(폴더, 'KR:서울', slots, labels, None, 이름들=[f'{i + 1:02d}' for i in range(len(slots))])
     for i, ((d, r), path) in enumerate(zip(자리들, made)):
         P.append(f'<p class="card-img"><img src="https://chaeksa.kr/cards/{달}/{os.path.basename(path)}" alt="{y}년 {mo}월 {d["d"]}일 {r["창"]} 명식 — {r["일주"]}일 {r["시주"]}시" style="max-width:100%;height:auto"></p>')
-    P.append(f'<p class="alt">그림 {len(made)}장 — 네이버에 그림이 안 따라오면 app/cards/{달}/ 폴더의 파일을 이 자리에 순서대로 끌어다 놓으세요.</p>')
+    # 10-04 사장님 「그림 3장 어쩌고를 지워줘」 — 「네이버에 그림이 안 따라오면 …」 안내 줄을 걷음(그림은 chaeksa.kr 주소로 따라온다)
 
 def main(path, y, mo):
     D = json.load(io.open(path, encoding='utf-8'))

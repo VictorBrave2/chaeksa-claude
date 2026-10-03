@@ -407,8 +407,8 @@ def 짜기(a):
         if not n:
             return []
         url = 'https://chaeksa.kr/cards/consult-%s/%s.png' % (a.name, n)
-        return ['<p class="card-img"><img src="%s" alt="%s" style="max-width:100%%;height:auto"></p>' % (url, html.escape(설명)),
-                '<p class="alt">그림 %d — 네이버에 그림이 안 따라오면 app/cards/consult-%s/%s.png 를 이 자리에 끌어다 놓으세요.</p>' % (int(n), a.name, n)]
+        return ['<p class="card-img"><img src="%s" alt="%s" style="max-width:100%%;height:auto"></p>' % (url, html.escape(설명))]
+        # 10-04 사장님 「그림 3장 어쩌고를 지워줘」 — 「네이버에 그림이 안 따라오면 …」 안내 줄을 걷음(그림은 chaeksa.kr 주소로 따라온다)
 
     첫날, 끝날 = days[0], days[-1]
     기간 = '%s ~ %s' % (날말(첫날), 날말(끝날) if 끝날['m'] != 첫날['m'] else '%d일(%s)' % (끝날['d'], 끝날['요일']))
