@@ -75,7 +75,9 @@
     丙丑: [['己','甲',20,'一派己土不見甲乙 假傷官 名利虛浮']],
     丁寅: [['甲','庚',30,'一派甲木無庚制之 非貧即夭'], ['壬癸','庚',20,'一派壬癸無庚 必主窮困']],
     丁卯: [['乙','甲',20,'盡是乙木不見一甲 因貪致禍'], ['壬癸','戊',30,'一派水無戊制 貧苦無依']],
-    丁辰: [['壬','戊己',30,'支成水局加壬透 殺重身輕 必夭折']],
+    // 10-04 사장님 「내 명식(壬申 甲辰 丁卯 庚子)에 궁통보감은 수국을 지으면 불리하다고 했다」 — 원문 조건은 「지지 水局 완비 + 壬 투출 + 戊己 없음」.
+    // 예전엔 「천간 壬 둘」로 옮겨 이 명식에서 안 걸리고 국 근사로 대신 걸렸다. 다섯째 칸 = 지지 국 조건(국 · 투출 수).
+    丁辰: [['壬','戊己',30,'支成水局加壬透 殺重身輕 必夭折',{국:4,투:1}]],
     丁巳: [['丙','壬癸',20,'四柱多丙 奪了丁光 貧苦']],
     丁未: [['壬癸','甲',20,'水局見水透干 溼木不能引丁 平人']],
     丁申: [['庚','壬',20,'一派庚金 財多身弱 富屋貧人']],
@@ -170,13 +172,17 @@
     // 실측: 丙壬乙壬(一派壬水로 -30)인데 화면은 「거슬리는 것은 금입니다,
     // 그것이 무리를 이루고 있어」라고 말했다 — 천간에 금이 한 글자도 없다.
     // 재지 않은 것을 잰 것처럼 말하는 자리라 이 집에서 제일 큰 잘못이다.
-    let deduct = 0, why = '', 원인글자 = '', 원인오행 = '';
+    let deduct = 0, why = '', 원인글자 = '', 원인오행 = '', 원인국 = -1;
+    const br = ['year', 'month', 'day', 'hour'].filter(k => p[k]).map(k => p[k].branch);
+    const SAMHAP = [[8, 0, 4, 4], [11, 3, 7, 0], [2, 6, 10, 1], [5, 9, 1, 3]];  // [지지3, 국오행]
+    const 국완비 = (el) => SAMHAP.some(g => g[3] === el && g.slice(0, 3).every(b => br.includes(b)));
     if (rules) {
-      for (const [bad, save, pt, src] of rules) {
+      for (const [bad, save, pt, src, 지] of rules) {
         const 걸린 = cheon.filter(ch => bad.includes(ch));
-        if (걸린.length < 2) continue;
+        if (걸린.length < (지 ? 지.투 : 2)) continue;
+        if (지 && !국완비(지.국)) continue;
         if (save && save.split('').some(ch => cheon.includes(ch))) continue;
-        if (pt > deduct) { deduct = pt; why = src; 원인글자 = 걸린.join(''); }
+        if (pt > deduct) { deduct = pt; why = src; 원인글자 = 걸린.join(''); 원인국 = 지 ? 지.국 : -1; }
       }
     } else {
       const cnt = (el) => cheon.filter(ch => E.STEM_ELEM[STEM_IDX[ch]] === el).length;
@@ -190,8 +196,6 @@
     // 支成火局 僧道" 급 경고가 이 그림이다. 완비 국만 본다(반합은 42%가 걸려 남발).
     // 실측: 완비 국 3.8%, 그중 이 규칙이 잡는 맹점 0.4%. 칸별 원문 전사가 아닌
     // 일반 근사임을 밝힌다.
-    const br = ['year', 'month', 'day', 'hour'].filter(k => p[k]).map(k => p[k].branch);
-    const SAMHAP = [[8, 0, 4, 4], [11, 3, 7, 0], [2, 6, 10, 1], [5, 9, 1, 3]];  // [지지3, 국오행]
     for (const g of SAMHAP) {
       if (!g.slice(0, 3).every(b => br.includes(b))) continue;
       const el = g[3];
@@ -201,7 +205,7 @@
       if (30 > deduct) {
         deduct = 30; why = '지지 ' + '목화토금수'[el] + '국 완비, 일간 피극(국 근사)';
         원인글자 = '';                       // 지지 국이라 천간 글자가 없다 — 오행으로만 말한다
-        원인오행 = '목화토금수'[el];
+        원인오행 = '목화토금수'[el]; 원인국 = el;
       }
     }
     if (deduct) score = Math.max(0, score - deduct);
@@ -215,6 +219,7 @@
     return { need, aux: aux.join(''), cheon: cheon.join(''), hasMain, hasAux,
              기신: (deduct ? 원인 : 관계식기신) || '없음',
              기신글자: 원인글자,             // 하늘에 실제로 있는 글자. 없으면 빈 문자열
+             기신국: 원인국 >= 0 ? SAMHAP.find(g => g[3] === 원인국).slice(0, 3).map(i => BR_CH[i]).join('') : '',  // 지지에 다 모인 국(예: 申子辰). 없으면 빈 문자열
              기신무리: !!deduct && !!원인,
              감점: deduct, 사유: why, score };
   }
