@@ -51,6 +51,15 @@
       return (j.app_metadata && j.app_metadata.plan) || null;
     } catch (e) { return null; }
   }
+  /** 시험 결제창을 볼 계정인가 — super(사장님) 또는 review(결제사 심사관용, 10-04). plan() 은 review 를 free 로 본다(쓰임 한도 표에 없는 등급). */
+  function 시험계정() {
+    const C = global.ChaeksaCloud;
+    try {
+      if (!C || !C.enabled() || !C.signedIn()) return false;
+      const s = C.session(), p = jwtPlan(s) || (s && s.user && s.user.app_metadata && s.user.app_metadata.plan);
+      return p === 'super' || p === 'review';
+    } catch (e) { return false; }
+  }
   function plan() {
     const C = global.ChaeksaCloud;
     if (!C || !C.enabled()) return 'free';          // 서버 미설정(개발 중)에는 무료로 본다
@@ -119,5 +128,5 @@
     };
   }
 
-  global.ChaeksaUsage = { PLANS, COST, NAMES, plan, period, limit, used, left, can, record, cost, blockedMessage, state };
+  global.ChaeksaUsage = { PLANS, COST, NAMES, plan, 시험계정, period, limit, used, left, can, record, cost, blockedMessage, state };
 })(window);

@@ -132,6 +132,17 @@ async function isSuper(userToken) {
   return p === 'super';
 }
 
+/** 시험 결제창을 열어 줄 계정인가 — super(사장님) 또는 review(결제사 심사관용 메일 계정, 10-04 사장님 「심사관이 못 열어볼텐데?」).
+ *  review 는 시험 결제만 연다 — 환불 · 사장님 목록은 여전히 isSuper. 등급은 Supabase 가 서명한 app_metadata.plan(chaeksa-behavior-core/sql-review-account.sql). */
+async function 시험계정(userToken) {
+  if (!userToken) return false;
+  if (await isSuper(userToken)) return true;
+  const r = await fetch(`${sbUrl()}/auth/v1/user`, { headers: { apikey: sbAnon(), authorization: `Bearer ${userToken}` } }).catch(() => null);
+  if (!r || !r.ok) return false;
+  const u = await r.json().catch(() => null);
+  return !!(u && u.app_metadata && u.app_metadata.plan === 'review');
+}
+
 /* 결제는 돈이 오가므로 '장애 시 통과'가 없다 — 확인 못 하면 승인하지 않는다.
  * api/chat.js 의 결제 확인(llm_gate, 2026-09-12)도 같은 쪽이다: 확인 못 하면 LLM 을 부르지 않는다. */
 
@@ -173,7 +184,7 @@ const tossOn = () => providers().some((p) => p.id === 'toss');
 /** 시험 모드 결제를 이 사람에게 열지 않는가 — 돈이 안 빠진 「결제완료」로 유료 본문이 열리면 안 된다.
  *  super 계정(사장님 확인용)이거나 PAY_TEST_OPEN=1 이면 연다. 카카오 · 네이버 · 토스가 같은 문을 쓴다. */
 async function 시험막힘(mode, token) {
-  return mode === 'test' && env('PAY_TEST_OPEN') !== '1' && !(await isSuper(token));
+  return mode === 'test' && env('PAY_TEST_OPEN') !== '1' && !(await 시험계정(token));
 }
 
 /** 네이버페이 한 번 부르기. 던지지 않는다. 승인 · 취소는 오래 걸릴 수 있어(문서: 60초) 55초에서 끊는다 — 끊기면 { net:true }(모름). */
@@ -328,7 +339,7 @@ module.exports = async (req, res) => {
       if (!env('PAY_HOOK_SECRET')) return res.status(503).json({ ok: false, reason: 'not_ready' });   // 열쇠 없이는 결제완료를 못 적는다
       // 시험 모드는 손님에게 열지 않는다 — 돈이 안 빠진 「결제완료」로 유료 본문이 열리면 안 된다.
       // super 계정(사장님 확인용)이거나 PAY_TEST_OPEN=1 일 때만 연다.
-      if (k.mode === 'test' && env('PAY_TEST_OPEN') !== '1' && !(await isSuper(token))) {
+      if (k.mode === 'test' && env('PAY_TEST_OPEN') !== '1' && !(await 시험계정(token))) {
         return res.status(403).json({ ok: false, reason: 'test_only' });
       }
 

@@ -13,7 +13,8 @@ let 순번 = 0, 네이버답 = [], 네이버부름 = [];
 const SUPER = 'tok-super', GUEST = 'tok-guest';
 const 토큰 = (sub) => 'x.' + Buffer.from(JSON.stringify({ sub })).toString('base64url') + '.y';
 const 사람 = { [토큰('u-super')]: 'super', [토큰('u-guest')]: 'guest' };
-const T_SUPER = 토큰('u-super'), T_GUEST = 토큰('u-guest');
+const T_SUPER = 토큰('u-super'), T_GUEST = 토큰('u-guest'), T_REVIEW = 토큰('u-review');   // 10-04 결제사 심사관 계정(app_metadata.plan = 'review')
+const 등급 = { [T_REVIEW]: 'review' };
 const 상품 = { taekil: { name: '출산택일 보고서', amount: 99000 }, love_full: { name: '전체판', amount: 9900 } };
 const HOOK = 'hook-secret';
 
@@ -68,6 +69,7 @@ global.fetch = async (url, opt = {}) => {
   if (url.includes('/rest/v1/products')) return res(200, [{ code: 'taekil', name: '출산택일 보고서', amount: 99000 }]);
   const m = url.match(/\/rest\/v1\/rpc\/([a-z_]+)/);
   if (m) return res(200, rpc(m[1], JSON.parse(opt.body || '{}'), (opt.headers.authorization || '').replace(/^Bearer /, '')));
+  if (url.endsWith('/auth/v1/user')) { const t = (opt.headers.authorization || '').replace(/^Bearer /, ''); return 등급[t] ? res(200, { app_metadata: { plan: 등급[t] } }) : res(200, { app_metadata: {} }); }
   if (url.includes('paygate.naver.com')) {
     const body = Object.fromEntries(new URLSearchParams(opt.body));
     네이버부름.push({ url, body, headers: opt.headers });
@@ -110,6 +112,12 @@ const 성공답 = (orderId, 금액, pid) => ({ j: { code: 'Success', body: { pay
   const 직접 = rpc('order_open', { p_product: 'love_full' }, T_GUEST);
   const tc = await 부름('POST', { action: 'confirm', orderId: 직접.orderId, paymentKey: 'pk', amount: 9900 }, T_GUEST);
   봄('토스 confirm 손님(시험 키) → test_only', tc.code === 403 && tc.j.reason === 'test_only', tc);
+
+  // 2-1. 심사관 계정(review) — 시험 결제창은 열리고(카카오페이 · 토스 심사관이 메일 계정으로 결제창까지), 환불은 여전히 super 만
+  const rv = await 부름('POST', { action: 'nopen', product: 'taekil', intake: { a: 1 } }, T_REVIEW);
+  봄('nopen 심사관(review) → 200', rv.code === 200 && rv.j.ok, rv);
+  const rvr = await 부름('POST', { action: 'nrefund', orderId: rv.j.orderId }, T_REVIEW);
+  봄('nrefund 심사관(review) → forbidden', rvr.code === 403 && rvr.j.reason === 'forbidden', rvr);
 
   // 3. 네이버 nopen(검수 계정)
   const no = await 부름('POST', { action: 'nopen', product: 'taekil', intake: { a: 1 } }, T_SUPER);

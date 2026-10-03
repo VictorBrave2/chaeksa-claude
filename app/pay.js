@@ -77,7 +77,7 @@
     // 검수 계정은 셋 다 본다(네이버 · 토스 시험 결제를 끝까지 시험하는 자리).
     if (!st.testOpen) {
       let 수퍼 = false;
-      try { const U = global.ChaeksaUsage; 수퍼 = !!(U && U.plan && U.plan() === 'super'); } catch (e) {}
+      try { const U = global.ChaeksaUsage; 수퍼 = !!(U && (U.시험계정 ? U.시험계정() : (U.plan && U.plan() === 'super'))); } catch (e) {}   // 10-04 심사관 계정(review)도
       if (!수퍼) pv = pv.some((p) => p.mode === 'live') ? pv.filter((p) => p.mode === 'live') : pv.slice(0, 1);
     }
     return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
@@ -96,7 +96,7 @@
     if (st.testOpen) return false;
     const pv = await providers();
     if (pv.some((p) => p.mode !== 'test')) return false;
-    try { const U = global.ChaeksaUsage; if (U && U.plan && U.plan() === 'super') return false; } catch (e) {}
+    try { const U = global.ChaeksaUsage; if (U && (U.시험계정 ? U.시험계정() : (U.plan && U.plan() === 'super'))) return false; } catch (e) {}   // 사장님 · 심사관(review)은 시험 결제창까지
     return true;
   }
   /**
