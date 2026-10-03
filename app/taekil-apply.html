@@ -115,11 +115,11 @@
   </div>
 </div>
 
-<script src="config.js?v=af44d49dc8"></script>
+<script src="config.js?v=f0cac82ec3"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=b538926f88"></script>
 <script src="usage.js?v=3282ea377a"></script>
-<script src="pay.js?v=a6ada83304"></script>
+<script src="pay.js?v=223a451b94"></script>
 <!-- 10-02 신청서 칸 밑 「이렇게 읽었어요」 — 읽개는 places 표의 이름만 받는다(모르는 곳을 서울로 바꾸지 않는다). 비공개 서버가 같은 파일로 다시 읽는다. -->
 <script src="places.js?v=1350b96148"></script>
 <script src="taekil-read.js?v=6e9dc526e5"></script>
@@ -254,15 +254,14 @@
     } catch (e) {}
     return Promise.resolve(옛복사(t));
   }
+  // 10-03 카카오페이 가맹 심사 회신 — 「결제하기 버튼을 누르는 데까지 구현돼야 심사 가능」. 동의 두 칸과 결제 단추는 그대로 두고(누르면 서버가
+  // test_only 로 돌려보내 「심사 중」 말이 뜬다) 알림과 메일 신청을 덧붙인다. 10-02 에는 단추와 동의 칸을 숨기고 메일 신청만 보였다.
   function 곧열림그리기() {
-    곧 = true;
-    // hidden 속성은 .intake .agree{display:flex} 가 이긴다 — 줄 모양을 직접 끈다
-    ['agreeRow', 'agreeDataRow', 'i_send'].forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; });
     say(''); 단추();
     var box = document.getElementById('soonPay');
     box.hidden = false;
     box.innerHTML = '<p style="margin:0 0 6px"><b>결제는 곧 열려요.</b></p>'
-      + '<p style="margin:0 0 12px">열리면 이 자리에서 바로 결제하실 수 있어요. 열리기 전에는 위 신청서를 메일(' + esc(F.문의메일) + ')로 보내 주셔도 돼요. 답장으로 이어서 안내해 드려요.</p>'
+      + '<p style="margin:0 0 12px">지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요. 열리기 전에는 위 신청서를 메일(' + esc(F.문의메일) + ')로 보내 주셔도 돼요. 답장으로 이어서 안내해 드려요.</p>'
       + '<a class="btn" id="soonMail" href="' + esc(F.신청메일()) + '" style="display:block;margin:0 0 8px;text-align:center;text-decoration:none;color:var(--seal-ink)">메일로 신청서 보내기 →</a>'
       + '<button type="button" class="btn ghost" id="soonCopy" style="display:block;width:100%;margin:0">신청서 내용 복사</button>'
       + '<p id="soonSay" style="margin:8px 0 0;font-size:var(--t1)">위에 적으신 내용을 복사해 메일 본문에 붙여 넣으시면 돼요. 메일 앱이 안 열리면 ' + esc(F.문의메일) + ' 으로 보내 주세요.</p>';
@@ -286,7 +285,7 @@
     }
     금액 = ChaeksaPay.won(p.amount);
     document.querySelectorAll('[data-price="taekil"]').forEach(function (el) { el.textContent = 금액; });
-    // 결제가 아직 시험 모드면(일반 손님) 결제 단추 대신 「곧 열려요」 + 메일 신청 — 위 곧열림그리기
+    // 결제가 아직 시험 모드면(일반 손님) 결제 단추는 그대로 두고 「곧 열려요」 + 메일 신청을 덧붙인다 — 위 곧열림그리기(10-03)
     return Promise.resolve(ChaeksaPay.곧열림 ? ChaeksaPay.곧열림() : false).catch(function () { return false; }).then(function (아직) {
       if (아직) { 곧열림그리기(); return; }
       단추();

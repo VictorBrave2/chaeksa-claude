@@ -80,16 +80,16 @@
     return true;
   }
   /**
-   * 값 단추 자리(wrap — 청약철회 안내 · [필수] 칸 · 값 단추 · 안내 줄을 감싼 칸)를 「곧 열려요」로 바꾼다.
-   * 연애 속의 나(love.js)와 사용설명서(pair.js)가 상자를 그린 뒤 부른다. 바꿨으면 true.
-   * 10-02 사장님 「카톡책사 삭제」 — 카카오톡 채널 추가 단추는 걷었다.
+   * 값 단추 자리(wrap — 청약철회 안내 · [필수] 칸 · 값 단추 · 안내 줄을 감싼 칸) 맨 위에 「결제는 곧 열려요」 한 줄을 단다.
+   * 연애 속의 나(love.js)와 사용설명서(pair.js)가 상자를 그린 뒤 부른다. 달았으면 true.
+   * 10-02 에는 단추 자리를 통째로 이 말로 바꿨다. 10-03 카카오페이 가맹 심사 회신(「결제하기 버튼을 누르는 데까지 구현돼야 심사 가능」)에 맞춰
+   * 단추는 그대로 두고 알림만 단다 — 누르면 서버가 test_only 로 돌려보내고 REASON.test_only 말이 뜬다. 운영 키가 들어오면 이 줄도 저절로 안 붙는다.
    */
   async function 곧열림자리(wrap) {
     let 곧 = false;
     try { 곧 = await 곧열림(); } catch (e) { 곧 = false; }
-    if (!곧 || !wrap || !wrap.isConnected || wrap.querySelector('[data-busy]')) return false;
-    wrap.innerHTML = '<p style="margin:0 0 4px"><b>결제는 곧 열려요.</b></p>'
-      + '<p style="margin:0">열리면 이 자리에서 바로 결제하고 볼 수 있어요.</p>';
+    if (!곧 || !wrap || !wrap.isConnected || wrap.querySelector('[data-soon]')) return false;
+    wrap.insertAdjacentHTML('afterbegin', '<p data-soon style="margin:0 0 10px"><b>결제는 곧 열려요.</b> 지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요.</p>');
     return true;
   }
 
@@ -134,7 +134,7 @@
     bad_request: '결제 정보가 올바르지 않습니다. 처음부터 다시 결제해 주세요.',
     unverified: '결제 확인이 늦어지고 있습니다. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.',
     no_provider: '지금은 그 결제 수단을 쓸 수 없습니다.',
-    test_only: '결제를 시험하는 중이라 아직 살 수 없습니다. 곧 열립니다.',
+    test_only: '카카오페이 가맹 심사 중이라 아직 결제창이 열리지 않습니다. 심사가 끝나는 대로 열립니다.',
     // 10-02 출산택일 — 결제창을 열기 전에 신청서를 주문에 붙이지 못했다(api/pay.js kopen). 결제는 되지 않았다.
     no_intake: '신청서를 주문에 붙이지 못해 결제창을 열지 않았어요. 결제는 되지 않았어요. 칸을 확인하고 한 번 더 눌러 주세요.',
   };
