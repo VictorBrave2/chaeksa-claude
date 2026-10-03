@@ -303,6 +303,9 @@ module.exports = async (req, res) => {
     res.json = (j) => {
       if (j && j.ok === false) {
         try { console.log('[pay막힘] ' + JSON.stringify({ action, product: body.product || null, status: 코드, reason: j.reason || null, pg: j.code || null, msg: String(j.message || '').slice(0, 120) })); } catch (_) {}
+      } else {
+        // 된 것도 한 줄 — 시험 결제를 단계마다 따라가려고(열림 → 승인 → 환불). 금액 · 시험/운영 · 이미 된 것인지만.
+        try { console.log('[pay됨] ' + JSON.stringify({ action, product: body.product || (j && j.product) || null, status: 코드, amount: (j && j.amount) || null, mode: (j && j.payMode) || null, already: !!(j && j.already) })); } catch (_) {}
       }
       return 원json(j);
     };
