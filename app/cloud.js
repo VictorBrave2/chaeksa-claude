@@ -14,6 +14,7 @@
   const SKEY = 'chaeksa.sync';                    // 마지막 동기화 시각
   const PAT  = 'chaeksa.profileAt';               // 이 기기에서 원국을 마지막으로 고친 시각
   const GONE = 'chaeksa.people.gone';             // 이 기기에서 지웠는데 서버에서 아직 못 지운 사람 id
+  const PGONE = 'chaeksa.profile.gone';           // 마지막 사람을 지웠는데 서버 원국 칸(profiles)을 아직 못 비운 표시(10-04)
   const ts = (v) => { const t = Date.parse(v || ''); return isNaN(t) ? 0 : t; };
 
   const enabled = () => !!(CFG.url && CFG.anonKey);
@@ -55,7 +56,10 @@
       try { const j = await res.json(); msg = j.msg || j.message || j.error_description || j.error || msg; } catch (e) {}
       throw new Error(msg);
     }
-    return res.status === 204 ? null : res.json();
+    // 201 · 200 이라도 본문이 비어 있을 수 있다(저장 upsert 는 본문 없이 201) — 빈 본문을 json() 으로 읽으면 던져서 성공을 실패로 셌다(10-04 시험에서 찾음).
+    if (res.status === 204) return null;
+    const t = await res.text();
+    return t ? JSON.parse(t) : null;
   }
 
   /** 만료 5분 전이면 갱신 */
@@ -290,9 +294,12 @@
     if (보류) return { changed: false, hold: 보류 };
     let changed = false;
 
+    // 10-04 사장님 「지우기 하고 새로고침하면 다시 불러와 지는데」 — 마지막 사람을 지우면 이 기기 원국 칸이 비고, 그러면 아래가
+    // 서버 원국을 「이 기기엔 없다」며 도로 받아 사람이 되살아났다. 비우다 만 표시가 있으면 먼저 비우고, 못 비웠으면 받지 않는다.
+    if (localStorage.getItem(PGONE) && !localStorage.getItem(PKEY)) await clearProfile().catch(() => {});
     const rows = await api('/rest/v1/profiles?select=*');
     const remote = rows && rows[0];
-    if (remote) {
+    if (remote && !localStorage.getItem(PGONE)) {
       const localAt = ts(localStorage.getItem(PAT));      // 이 기기의 마지막 수정 시각
       const remoteAt = ts(remote.updated_at);
       const hasLocal = !!localStorage.getItem(PKEY);
@@ -353,6 +360,7 @@
 
     const p = jget(PKEY, null);
     if (p) {
+      localStorage.removeItem(PGONE);   // 새 원국을 넣었다 — 비우다 만 표시는 이 올림으로 덮인다
       const aiKey = `chaeksa.profile.ai.${p.year}${p.month}${p.day}.${p.hour}.${p.gender}`;
       await api('/rest/v1/profiles?on_conflict=id', {
         method: 'POST',
@@ -418,6 +426,24 @@
     if (left.length) jset(GONE, left); else localStorage.removeItem(GONE);
     return !left.length;
   }
+  /** 서버 원국 칸(profiles)을 비운다 — 마지막 사람을 지웠을 때(10-04). 표시를 먼저 남기고, 비우면 지운다.
+   *  못 비웠으면(오프라인 · 로그아웃 · 묻는 중) 표시가 남아 다음 동기화 때 다시 비우고, 그 사이 pull 은 원국을 받지 않는다. */
+  async function clearProfile() {
+    localStorage.setItem(PGONE, new Date().toISOString());
+    if (!enabled() || !signedIn() || uploadHold()) return false;
+    try {
+      const s = await freshSession();
+      const uid = s && s.user && s.user.id ? s.user.id : (await me()).id;
+      await api('/rest/v1/profiles?on_conflict=id', {
+        method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates' },
+        body: JSON.stringify([{ id: uid, name: null, birth: {}, ai_profile: null, updated_at: new Date().toISOString() }]),
+      });
+      if (!signedIn()) return false;   // 토큰이 풀려 익명으로 나갔으면 비운 걸로 치지 않는다
+      localStorage.removeItem(PGONE);
+      return true;
+    } catch (e) { return false; }
+  }
   /** 이 기기에서 지운 사람을 서버에서도 지운다. 실패해도 던지지 않는다(앱은 그대로 간다). */
   async function removePerson(id) {
     if (!id) return false;
@@ -437,6 +463,7 @@
     localStorage.removeItem(SKEY);
     localStorage.removeItem(PAT);
     localStorage.removeItem(GONE);
+    localStorage.removeItem(PGONE);
     신청지움();
     return true;
   }
@@ -462,7 +489,7 @@
 
   global.ChaeksaCloud = {
     enabled, signedIn, email, 계정표시, sendMagicLink, signInWithPassword, signInWith, 로그인고르기, 네이버켜짐, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
-    pull, push, pushSoon, removePerson, session, token,
+    pull, push, pushSoon, removePerson, clearProfile, session, token,
     uploadHold, localStuff, mustAskUpload, answerUpload, onAskUpload,
   };
 })(window);

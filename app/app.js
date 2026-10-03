@@ -117,6 +117,8 @@
     // 옛 한 사람 칸(chaeksa.profile)도 지운다 — 남겨 두면 다시 열 때 되살아난다(부팅이 그 칸을 읽는다).
     if (!P.list().length) {
       localStorage.removeItem(KEY); profile = null;
+      // 서버 원국 칸도 비운다 — 안 그러면 다음 동기화가 「이 기기엔 원국이 없다」며 서버 것을 도로 받아 사람이 되살아난다(10-04)
+      try { if (window.ChaeksaCloud && ChaeksaCloud.clearProfile) ChaeksaCloud.clearProfile().catch(() => {}); } catch (e) {}
       $('app').classList.add('hide'); $('nav').classList.add('hide');
       renderPeopleBtn(); showLanding();
       return;
