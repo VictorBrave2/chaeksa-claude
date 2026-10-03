@@ -294,6 +294,20 @@ module.exports = async (req, res) => {
   body = body || {};
   const action = String(body.action || '');
 
+  // 10-03 「카카오페이가 잘 안되네」 — 막힌 POST 가 왜 막혔는지 서버에 남는 것이 없었다(Vercel 기록엔 400 숫자뿐).
+  // 막힌 답마다 한 줄: 무엇을(action) · 상품 · 상태 · 이유 · 결제사 코드 · 결제사 말. 주문번호 · 토큰 · 생년월일 · 신청서는 남기지 않는다.
+  {
+    const 원상태 = res.status.bind(res), 원json = res.json.bind(res);
+    let 코드 = 200;
+    res.status = (c) => { 코드 = c; return 원상태(c); };
+    res.json = (j) => {
+      if (j && j.ok === false) {
+        try { console.log('[pay막힘] ' + JSON.stringify({ action, product: body.product || null, status: 코드, reason: j.reason || null, pg: j.code || null, msg: String(j.message || '').slice(0, 120) })); } catch (_) {}
+      }
+      return 원json(j);
+    };
+  }
+
   const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
   // kconfirm · kfail 은 로그인 없이도 받는다 — 카카오톡에서 결제한 뒤 로그인 안 된 브라우저로 돌아올 수 있다.
   // 승인에 필요한 것은 (a) DB 에만 있는 tid (b) 결제한 사람만 받는 pg_token (c) 서버 열쇠라, 세션이 없어도 안전하다.

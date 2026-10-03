@@ -118,7 +118,7 @@
 <script src="config.js?v=f0cac82ec3"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=b538926f88"></script>
-<script src="pay.js?v=4cd7dbe44a"></script>
+<script src="pay.js?v=c565091a07"></script>
 <script src="yaksok.js?v=dac0b835a3"></script>
 <script>
 (function () {
@@ -287,10 +287,14 @@
       var box = document.createElement('div'); box.className = 'soon';
       box.innerHTML = '<p><b>시험 결제(검수 계정에만 보여요)</b> — 돈이 빠지지 않아요. 결제창을 끝까지 지나 돌아오는지, 돌아온 화면의 「시험 결제 취소하기」까지 봅니다.</p>'
         + '<p style="margin:8px 0 0">결제사 — ' + 시험사.map(function (p, i) {
-            return '<label style="margin-right:12px;white-space:nowrap"><input type="radio" name="testPv" value="' + esc(p.id) + '"' + (i ? '' : ' checked') + '> ' + esc(p.name) + '</label>';
+            // style.css input{width:100%} 이 라디오를 늘인다(10-03 사장님 화면) — 직접 푼다.
+            return '<label style="display:inline-flex;align-items:center;gap:4px;margin:0 12px 0 0;white-space:nowrap;cursor:pointer">'
+              + '<input type="radio" name="testPv" value="' + esc(p.id) + '"' + (i ? '' : ' checked') + ' style="width:auto;margin:0;padding:0;flex:none;accent-color:var(--accent)">'
+              + esc(p.name) + '</label>';
           }).join('') + '</p>'
         + 산것.map(function (p) { return '<button class="cta" type="button" data-test="' + esc(p.code) + '" style="margin-top:8px">' + esc(p.name) + ' 시험 결제</button>'; }).join('')
-        + '<p style="margin:10px 0 0">출산택일은 <a href="taekil-apply.html"><b>신청 쪽</b></a>에서 신청서를 적고 결제 단추 위 「결제 수단」을 골라 시험해 주세요.</p>';
+        // .soon a 는 단추 모양(배경 · 글자색)이라 글 속 링크가 안 보였다(10-03) — 보통 링크로 푼다.
+        + '<p style="margin:10px 0 0">출산택일은 <a href="taekil-apply.html" style="display:inline;padding:0;background:none;color:var(--accent);text-decoration:underline"><b>신청 쪽</b></a>에서 신청서를 적고 결제 단추 위 「결제 수단」을 골라 시험해 주세요.</p>';
       list.parentNode.insertBefore(box, list.nextSibling);
       var 칠하기 = function () {
         Array.prototype.forEach.call(box.querySelectorAll('button[data-test]'), function (b) {

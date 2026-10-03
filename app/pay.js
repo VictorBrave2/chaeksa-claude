@@ -129,7 +129,9 @@
     const 칸 = '<div data-pvpick role="radiogroup" aria-label="결제 수단" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px">'
       + '<span style="font-size:var(--t1);color:var(--ink2)">결제 수단</span>'
       + pv.map((p) => '<label style="display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--r1);font-size:var(--t1);cursor:pointer">'
-        + '<input type="radio" name="' + 이름 + '" value="' + p.id + '"' + (p.id === wrap.dataset.pv ? ' checked' : '') + '>' + p.name + '</label>').join('')
+        // style.css 의 input{width:100%;padding…} 이 라디오에도 걸려 칸이 줄 폭을 다 먹는다(10-03 사장님 화면) — 직접 푼다.
+        + '<input type="radio" name="' + 이름 + '" value="' + p.id + '"' + (p.id === wrap.dataset.pv ? ' checked' : '')
+        + ' style="width:auto;margin:0;padding:0;flex:none;accent-color:var(--accent)">' + p.name + '</label>').join('')
       + '</div>';
     const 단추 = wrap.querySelector('button');
     if (단추) 단추.insertAdjacentHTML('beforebegin', 칸); else wrap.insertAdjacentHTML('beforeend', 칸);
