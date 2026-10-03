@@ -6,7 +6,11 @@
 그래서 블로그판은 그 세 칸을 빼고, 그 자리에 사이트 표로 가는 줄 하나를 둔다 — 블로그 손님이 사이트로 넘어오는 길도 된다(1단계 잣대).
 사이트 정본(app/taekil-YYYY-MM.html)은 지금처럼 전부 싣는다(tools_jeongbon 이 marketing/붙여넣기-N월출산택일.html 을 읽는다 — 그 파일은 안 건드린다).
 
-  python tools_blogshort.py            → 2026-10 ~ 2027-08 열한 달: marketing/블로그-N월출산택일.html
+10-04 사장님 「블로그용에 만들어준 카드가 복붙하면 이미지로 등록이 안 되어서 수동으로 붙여넣기 해야 하니까 블로그용 글에서 카드를 비워줘」 —
+블로그판에는 명식 카드(<p class="card-img">)를 싣지 않는다. 카드는 사장님이 app/cards/YYYY-MM(-gungtong)/ 의 그림을 손으로 넣는다. 사이트 정본은 카드 그대로.
+궁통보감 편도 같은 까닭으로 블로그판(카드만 뺀 것)을 따로 낸다.
+
+  python tools_blogshort.py            → 2026-10 ~ 2027-08 열한 달: marketing/블로그-N월출산택일.html · 블로그-N월궁통보감.html
   python tools_blogshort.py 2026 11    → 그 달만
 """
 import io, os, re, sys
@@ -15,6 +19,16 @@ except Exception: pass
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MONTHS = [(2026, 10), (2026, 11), (2026, 12), (2027, 1), (2027, 2), (2027, 3), (2027, 4), (2027, 5), (2027, 6), (2027, 7), (2027, 8)]
 글자 = lambda h: len(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', h)))
+
+카드꼴 = re.compile(r'[ \t]*<p class="card-img">.*?</p>[ \t]*\r?\n?', re.S)
+def 카드걷기(s): return 카드꼴.sub('', s)
+
+def 궁통(y, mo):
+    src = os.path.join(ROOT, 'marketing', f'붙여넣기-{mo}월궁통보감.html')
+    s = 카드걷기(io.open(src, encoding='utf-8').read()).replace('<title>붙여넣기', '<title>블로그판', 1)
+    out = os.path.join(ROOT, 'marketing', f'블로그-{mo}월궁통보감.html')
+    io.open(out, 'w', encoding='utf-8', newline='').write(s)
+    print(f'{y}-{mo:02d}  궁통보감 블로그판(카드 뺌)  ({os.path.basename(out)})')
 
 def 짧게(y, mo):
     src = os.path.join(ROOT, 'marketing', f'붙여넣기-{mo}월출산택일.html')
@@ -34,6 +48,7 @@ def 짧게(y, mo):
     s = re.sub(r'(<hr>\s*){2,}', '<hr>\n\n    ', s)   # 걷은 자리에 남은 겹친 줄
     # 머리 띠의 이름(붙여넣기 → 블로그판)
     s = s.replace('<title>붙여넣기', '<title>블로그판', 1)
+    s = 카드걷기(s)
     out = os.path.join(ROOT, 'marketing', f'블로그-{mo}월출산택일.html')
     io.open(out, 'w', encoding='utf-8', newline='').write(s)
     전, 후 = 글자(io.open(src, encoding='utf-8').read()), 글자(s)
@@ -41,4 +56,5 @@ def 짧게(y, mo):
 
 if __name__ == '__main__':
     a = sys.argv[1:]
-    for y, mo in ([(int(a[0]), int(a[1]))] if len(a) >= 2 else MONTHS): 짧게(y, mo)
+    for y, mo in ([(int(a[0]), int(a[1]))] if len(a) >= 2 else MONTHS):
+        짧게(y, mo); 궁통(y, mo)
