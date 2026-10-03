@@ -294,6 +294,7 @@
           }).join('') + '</p>'
         + 산것.map(function (p) { return '<button class="cta" type="button" data-test="' + esc(p.code) + '" style="margin-top:8px">' + esc(p.name) + ' 시험 결제</button>'; }).join('')
         // .soon a 는 단추 모양(배경 · 글자색)이라 글 속 링크가 안 보였다(10-03) — 보통 링크로 푼다.
+        + '<p class="msg" id="testSay" style="margin:10px 0 0"></p>'   // 10-03 「누르면 멈춰」 — 막힌 까닭이 쪽 맨 위에 떠서 안 보였다. 단추 바로 밑에 적는다.
         + '<p style="margin:10px 0 0">출산택일은 <a href="taekil-apply.html" style="display:inline;padding:0;background:none;color:var(--accent);text-decoration:underline"><b>신청 쪽</b></a>에서 신청서를 적고 결제 단추 위 「결제 수단」을 골라 시험해 주세요.</p>';
       list.parentNode.insertBefore(box, list.nextSibling);
       var 칠하기 = function () {
@@ -307,11 +308,13 @@
       칠하기();
       Array.prototype.forEach.call(box.querySelectorAll('button[data-test]'), function (b) {
         b.addEventListener('click', function () {
-          var code = b.getAttribute('data-test'); b.disabled = true;
+          var code = b.getAttribute('data-test'), 말칸 = document.getElementById('testSay'), 원래 = b.textContent;
+          b.disabled = true; b.textContent = '결제창을 여는 중…'; 말칸.textContent = ''; 말칸.className = 'msg';
+          var 막힘 = function (t) { b.disabled = false; b.textContent = 원래; 말칸.textContent = t; 말칸.className = 'msg bad'; };
           ChaeksaPay.buy(code, 표시[code], 고른).then(function (r) {
             if (r && r.ok) return;   // 결제창으로 넘어간다
-            b.disabled = false; say((r && r.message) || '시험 결제를 열지 못했어요.', true);
-          }).catch(function (e) { b.disabled = false; say(String(e && e.message || e), true); });
+            막힘((r && r.message) || '시험 결제를 열지 못했어요.');
+          }).catch(function (e) { 막힘(String(e && e.message || e)); });
         });
       });
     }).catch(function () {});
