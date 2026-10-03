@@ -118,7 +118,7 @@
 <script src="config.js?v=f0cac82ec3"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=b538926f88"></script>
-<script src="pay.js?v=19e668992f"></script>
+<script src="pay.js?v=4cd7dbe44a"></script>
 <script src="yaksok.js?v=dac0b835a3"></script>
 <script>
 (function () {
@@ -269,22 +269,42 @@
   };
   if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
 
-  // 10-01 시험 결제 — 카카오페이가 시험 모드일 때, 검수 계정(super)에게만 보인다. 상품 셋을 결제창 끝까지 시험한다(돈 안 빠짐).
+  // 10-01 시험 결제 — 결제사가 시험 모드일 때, 검수 계정(super)에게만 보인다. 결제창을 끝까지 지나 돌아오는지 본다(돈 안 빠짐).
   // 검수 계정은 콘텐츠가 이미 다 열려 잠금 상자가 안 나오므로 여기서 산다. 사람 · 쌍 상품은 아무것도 안 여는 시험 표시로 — 결제 흐름만 본다.
+  // 10-03 사장님 「내 계정이 슈퍼 계정이라 바로 넘어가버려」 — 카카오만 되던 것을 시험 모드 결제사 모두(카카오 · 네이버 · 토스)로.
+  //   위에서 결제사를 고르고 상품 단추를 누른다. 출산택일은 신청서가 붙어야 하므로 신청 쪽(결제 수단 칸이 있다)으로 보낸다.
   function 시험판(pv, 상품) {
-    var 시험 = (pv || []).some(function (p) { return p.id === 'kakao' && p.mode === 'test'; });
-    if (!시험 || !window.ChaeksaCloud || !ChaeksaCloud.signedIn()) return;
-    ChaeksaCloud.api('/rest/v1/rpc/ai_plan', { method: 'POST', body: '{}' }).then(function (g) {
-      if (g !== 'super') return;
-      var 표시 = { taekil: null, love_full: 'love_full:' + new Array(33).join('0'), love_pair: 'love_pair:' + new Array(33).join('0') };
+    if (!window.ChaeksaCloud || !ChaeksaCloud.signedIn()) return;
+    // 손님용 목록(pv)은 시험 결제사를 하나만 남긴다 — 검수 계정 시험판은 서버가 켠 것 전부(ChaeksaPay.모든결제사)에서 고른다.
+    var 시험사 = [];
+    Promise.all([ChaeksaCloud.api('/rest/v1/rpc/ai_plan', { method: 'POST', body: '{}' }),
+                 ChaeksaPay.모든결제사 ? ChaeksaPay.모든결제사() : Promise.resolve(pv || [])]).then(function (x) {
+      var g = x[0]; 시험사 = (x[1] || []).filter(function (p) { return p.mode === 'test'; });
+      if (g !== 'super' || !시험사.length) return;
+      var 표시 = { love_full: 'love_full:' + new Array(33).join('0'), love_pair: 'love_pair:' + new Array(33).join('0') };
+      var 고른 = 시험사[0].id;
+      var 산것 = 상품.filter(function (p) { return p.code !== 'taekil'; });
       var box = document.createElement('div'); box.className = 'soon';
-      box.innerHTML = '<p><b>시험 결제(검수 계정에만 보여요)</b> — 돈이 빠지지 않아요. 결제창을 끝까지 지나 돌아오는지만 봅니다.</p>'
-        + 상품.map(function (p) { return '<button class="cta kakao" type="button" data-test="' + esc(p.code) + '" style="margin-top:8px">' + esc(p.name) + ' 시험 결제</button>'; }).join('');
+      box.innerHTML = '<p><b>시험 결제(검수 계정에만 보여요)</b> — 돈이 빠지지 않아요. 결제창을 끝까지 지나 돌아오는지, 돌아온 화면의 「시험 결제 취소하기」까지 봅니다.</p>'
+        + '<p style="margin:8px 0 0">결제사 — ' + 시험사.map(function (p, i) {
+            return '<label style="margin-right:12px;white-space:nowrap"><input type="radio" name="testPv" value="' + esc(p.id) + '"' + (i ? '' : ' checked') + '> ' + esc(p.name) + '</label>';
+          }).join('') + '</p>'
+        + 산것.map(function (p) { return '<button class="cta" type="button" data-test="' + esc(p.code) + '" style="margin-top:8px">' + esc(p.name) + ' 시험 결제</button>'; }).join('')
+        + '<p style="margin:10px 0 0">출산택일은 <a href="taekil-apply.html"><b>신청 쪽</b></a>에서 신청서를 적고 결제 단추 위 「결제 수단」을 골라 시험해 주세요.</p>';
       list.parentNode.insertBefore(box, list.nextSibling);
+      var 칠하기 = function () {
+        Array.prototype.forEach.call(box.querySelectorAll('button[data-test]'), function (b) {
+          b.className = 'cta' + (고른 === 'kakao' ? ' kakao' : 고른 === 'naver' ? ' naver' : '');
+        });
+      };
+      Array.prototype.forEach.call(box.querySelectorAll('input[name="testPv"]'), function (i) {
+        i.addEventListener('change', function () { if (i.checked) { 고른 = i.value; 칠하기(); } });
+      });
+      칠하기();
       Array.prototype.forEach.call(box.querySelectorAll('button[data-test]'), function (b) {
         b.addEventListener('click', function () {
           var code = b.getAttribute('data-test'); b.disabled = true;
-          ChaeksaPay.buy(code, 표시[code], 'kakao').then(function (r) {
+          ChaeksaPay.buy(code, 표시[code], 고른).then(function (r) {
             if (r && r.ok) return;   // 결제창으로 넘어간다
             b.disabled = false; say((r && r.message) || '시험 결제를 열지 못했어요.', true);
           }).catch(function (e) { b.disabled = false; say(String(e && e.message || e), true); });

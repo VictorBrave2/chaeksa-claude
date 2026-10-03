@@ -62,6 +62,13 @@
   const products = async () => (await state()).products || [];
   const product = async (code) => (await products()).find((p) => p.code === code) || null;
   /** 보일 결제사 [{id, mode, name}] — 서버가 정한 순서. 옛 서버(providers 없음)면 키가 있을 때 토스 하나. */
+  /** 서버가 켠 결제사 전부(손님에게 숨기는 것 없이). buy 가 고른 결제사를 찾을 때 · 검수 계정 시험판(pay.html)이 쓴다 —
+   *  시험 결제사를 손님이 골라도 서버(test_only)가 막는다. */
+  const 모든결제사 = async () => {
+    const st = await state();
+    const pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
+    return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
+  };
   const providers = async () => {
     const st = await state();
     let pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
@@ -206,7 +213,8 @@
     if (!st.ready) return { ok: false, message: REASON.not_ready };
 
     // 결제사를 고른다. 안 넘기면 서버가 준 첫째(지금은 카카오페이). 서버가 안 보이는 결제사는 부르지 않는다.
-    const 결제사 = await providers();
+    // 고른 결제사가 있으면 서버가 켠 것 전부에서 찾는다(검수 계정 시험판은 화면에서 숨긴 시험 결제사도 고른다 — 서버가 다시 가린다).
+    const 결제사 = pv ? await 모든결제사() : await providers();
     const 고른 = pv ? 결제사.find((p) => p.id === pv) : 결제사[0];
     if (!고른) return { ok: false, message: REASON.no_provider };
 
@@ -1018,5 +1026,5 @@
     사슬싣기: () => 주문서.사슬싣기(),
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil };
+  global.ChaeksaPay = { state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil };
 })(window);
