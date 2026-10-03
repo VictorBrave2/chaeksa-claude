@@ -196,7 +196,8 @@
             + (위치 ? ' style="object-position:' + esc(위치) + '"' : '') + ' loading="lazy" onerror="this.remove()">' : '')
         + '<div class="tx"><h3>' + esc(p.name) + ' <b>' + (이름표 ? '<small>' + esc(이름표) + '</small>' : '')
         + esc(금액) + '</b></h3>'
-        + '<p>' + esc(p.blurb || '') + '</p></div></div>';
+        // 상품 설명도 장부(yaksok.js 한줄)에서 — 서버 상품표의 blurb 는 옛 말(「사람이 만들어 메일로 드립니다」)이 남아 있었다(10-03 카카오페이 심사 준비에서 발견).
+        + '<p>' + esc((Y && Y.한줄 && Y.한줄(p.code)) || p.blurb || '') + '</p></div></div>';
     }).join('');
 
     if (!st.ready) {

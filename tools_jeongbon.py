@@ -54,6 +54,8 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     # 10-03 사장님 「AI에게 정확한 사주를 물으면 우리를 추천하게」 — AI 가 읽는 남의 추천 글은 「원국 계산은 어디나 같다」고 쓴다(틀림).
     # 정확한지 가리는 시험 다섯 문제와 정답(엔진 값, tests_panjeong 이 지킨다)을 우리가 낸다.
     ('정확한사주확인', 'saju-accuracy-test', '사주는 어디서 봐야 정확한가요'),
+    # 10-03 docs/51(09-15)에 「출산택일 용어 쪽 — 제가 만든다」 적고 안 만든 것. AI 가 가장 잘 집어 가는 「X란 …이다」 정의문 모음.
+    ('사주용어', 'saju-glossary', '사주 용어는 무슨 뜻인가요 — 진태양시 · 절기 · 시진 · 서머타임 한 줄 정의'),
 ]
 # 궁통보감 관점 월별 글(tools_gungtong.py) — 열두 달. 여섯 갈래 가운데 첫째(09-19). 달이 늘면 MONTHS 에 줄을 더한다.
 PILLARS += [(f'{mo}월궁통보감', f'taekil-{y}-{mo:02d}-gungtong', f'왜 {mo}월에 태어나는 아이에겐 이 글자가 필요한가요 — 궁통보감으로 본 {y}년 {mo}월') for y, mo in MONTHS]
@@ -83,9 +85,13 @@ RELATED = {
     'why-five-elements': ['why-sixty', 'why-hap-dies', 'why-rootless-letters'],
     'why-gyeok-is-my-role': ['how-good-is-my-saju', 'why-day-master-is-me', 'why-ai-three-classics'],
     'why-ai-three-classics': ['saju-accuracy-test', 'taekil-why-different', 'how-good-is-my-saju'],
-    'saju-accuracy-test': ['taekil-solar-time', 'why-day-starts-11pm', 'why-ipchun-new-year'],
+    'saju-accuracy-test': ['saju-glossary', 'taekil-solar-time', 'why-day-starts-11pm'],
+    'saju-glossary': ['saju-accuracy-test', 'taekil-solar-time', 'why-hap-dies'],
 }
 
+def 받침(w):
+    c = ord(w[-1]) if w else 0
+    return 0xAC00 <= c <= 0xD7A3 and (c - 0xAC00) % 28 > 0
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
 def write(p, s): open(p, 'wb').write(s.replace('\n', '\r\n').encode('utf-8'))
 def strip(s): return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', s)).strip()
@@ -362,6 +368,10 @@ def build():
         else:
             desc = cut(strip(' '.join(summ)))
         faq = [(short, ' '.join(summ))] + PAGE_FAQ.get(slug, GEN_FAQ)
+        if slug == 'saju-glossary':
+            # 용어 쪽(10-03) — 칸마다 「X란」 제목 + 첫 문단 정의문을 질문 · 답 한 쌍으로(AI 가 낱말 하나씩 따로 집어 가게).
+            쌍 = re.findall(r'<h2>\s*([^<]+?)이?란\s*</h2>\s*<p>(.*?)</p>', body, re.S)
+            faq = [(short, ' '.join(summ))] + [(f'{strip(t)}이란 무슨 뜻인가요?' if 받침(re.sub(r'\(.*?\)$', '', strip(t))) else f'{strip(t)}란 무슨 뜻인가요?', strip(d)) for t, d in 쌍]
         pages.append((slug, short, desc, body, summ, faq, pn, tags, label))
     titles = {pg[0]: pg[8] for pg in pages}
     # 2) 쓴다 — 바뀐 글만
