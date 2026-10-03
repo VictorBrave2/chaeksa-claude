@@ -4,7 +4,7 @@
 <body><div id="out">시험하는 중이에요…</div><div id="stage" hidden></div>
 <script src="config.js?v=e0fee3d288"></script>
 <script src="bunya.js?v=8dd0cf469e"></script>
-<script src="yaksok.js?v=dac0b835a3"></script>
+<script src="yaksok.js?v=c7cb589870"></script>
 <script src="love.js?v=97ef5eb110"></script>
 <script src="pair.js?v=4d22fcf937"></script>
 <script src="home-cats.js?v=ea9671f89f"></script>
@@ -60,7 +60,7 @@
     머리('가. 장부 꼴');
     봄('가1 전역 ChaeksaYaksok 이 있다', !!(Y && T && T.콘텐츠), true);
     if (!Y) throw new Error('yaksok.js 가 실리지 않았다');
-    const 소스 = await 받기('yaksok.js?v=dac0b835a3');
+    const 소스 = await 받기('yaksok.js?v=c7cb589870');
     const 시작 = '/*장부 시작*/', 끝 = '/*장부 끝*/';
     봄('가2 장부 시작 · 장부 끝 표시가 한 번씩', [String(소스).split(시작).length - 1, String(소스).split(끝).length - 1], [1, 1]);
     let 파싱 = null; try { 파싱 = JSON.parse(소스.slice(소스.indexOf(시작) + 시작.length, 소스.indexOf(끝))); } catch (e) { 파싱 = null; }
