@@ -235,6 +235,37 @@ let 통과 = 0, 실패 = 0;
       + (o && o.차이 ? '<details><summary>차이 사건</summary><pre>' + (o.차이.목록.join('\n') || '(없음)') + '\n범위 ' + o.차이.범위.무리.join('·') + ' · 지속 ' + o.차이.지속.기간 + '</pre></details>' : ''));
   });
 }
+// ── 책사 다섯 문제(10-03, saju-accuracy-test.html) — 글에 공개한 정답이 엔진과 같은지. 엔진을 고쳐 여기가 빨개지면 글도 같이 고친다.
+{
+  const 문제들 = [
+    ['해 시각 — 2000-02-10 13:40 서울', [2000, 2, 10, 13, 40], '庚辰 戊寅 戊戌 戊午'],
+    ['1987 서머타임 — 1987-08-01 14:30 서울', [1987, 8, 1, 14, 30], '丁卯 丁未 壬午 丙午'],
+    ['1950년대 표준시 + 서머타임 — 1958-07-15 13:10 서울', [1958, 7, 15, 13, 10], '戊戌 己未 癸巳 戊午'],
+    ['밤 11시 — 2027-02-10 23:40 서울', [2027, 2, 10, 23, 40], '丁未 壬寅 庚申 丁亥'],
+    ['입춘 — 2026-02-04 04:50 서울', [2026, 2, 4, 4, 50], '乙巳 己丑 己酉 丙寅'],
+  ];
+  let html = '<h2>책사 다섯 문제(10-03) — 공개 글 정답 = 엔진</h2><ul>';
+  문제들.forEach(([이름, [y, m, d, h, mi], 정답]) => {
+    const r = E.calc({ year: y, month: m, day: d, hour: h, minute: mi, gender: 'M', longitude: 126.98 });
+    const 값 = ['year', 'month', 'day', 'hour'].map(k => S[r.pillars[k].stem] + B[r.pillars[k].branch]).join(' ');
+    const ok = 값 === 정답; ok ? 통과++ : 실패++;
+    html += '<li style="color:' + (ok ? 'green' : 'red') + '">' + 이름 + ' → ' + 값 + (ok ? '' : ' (글의 정답 ' + 정답 + ')') + '</li>';
+  });
+  // 한국 표준시 · 서머타임 표 — 바뀌는 해만 30분 간격으로 브라우저 시간대 자료(IANA Asia/Seoul)와 대조. 겹치는 시각은 둘 중 하나면 맞음.
+  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', timeZoneName: 'longOffset' });
+  const icu = t => { const s = fmt.formatToParts(new Date(t)).find(p => p.type === 'timeZoneName').value; const x = s.match(/GMT([+-])(\d\d):(\d\d)/); return x ? (x[1] === '-' ? -1 : 1) * (+x[2] + +x[3] / 60) : 9; };
+  let 어긋남 = [], 칸 = 0;
+  for (const [y0, y1] of [[1908, 1912], [1945, 1962], [1986, 1989]]) {
+    for (let w = Date.UTC(y0, y0 === 1908 ? 3 : 0, y0 === 1908 ? 1 : 1, 1); w < Date.UTC(y1, 0, 1); w += 1800e3) {
+      const 맞는 = [8.5, 9, 9.5, 10].filter(o => icu(w - o * 3600e3) === o); if (!맞는.length) continue;
+      const t = new Date(w), e = E.kstOffsetHours(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate(), t.getUTCHours()); 칸++;
+      if (!맞는.includes(e)) 어긋남.push(t.toISOString().slice(0, 16) + ' 엔진 ' + e + ' / IANA ' + 맞는);
+    }
+  }
+  const ok = !어긋남.length; ok ? 통과++ : 실패++;
+  html += '<li style="color:' + (ok ? 'green' : 'red') + '">한국 표준시 · 서머타임 세 시기 — IANA 와 ' + 칸 + '칸 대조, 어긋남 ' + 어긋남.length + (어긋남.length ? ' (' + 어긋남.slice(0, 5).join(' · ') + ')' : '') + '</li></ul>';
+  out.insertAdjacentHTML('beforeend', html);
+}
 out.insertAdjacentHTML('afterbegin', '<p><b>' + 통과 + ' 통과 · ' + 실패 + ' 실패</b></p>');
 // ── 질문 생성기(docs/37) — 시험 사주 A 에 오늘 서는 질문. 격자 전체 수도 같이.
 {

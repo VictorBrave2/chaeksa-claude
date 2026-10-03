@@ -80,9 +80,19 @@
   // 정통사주 한 줄 카드(docs/87 4절): 「당신은 {격말}이에요.」 + 격 컷. 받은 사람 링크 ?go=jeongtong&from=card-jt
   const 격컷 = { 정관: 'jeonggwan', 편관: 'pyeongwan', 정재: 'jeongjae', 편재: 'pyeonjae', 정인: 'jeongin', 편인: 'pyeonin', 식신: 'siksin', 상관: 'sanggwan', 비견: 'bigyeon', 겁재: 'geopjae', 건록: 'bigyeon', 양인: 'geopjae' };
   function 정통재기(R) { const J = global.ChaeksaJtWebtoon; if (!J || !J.사람) return null; const s = J.사람(R), 말 = (J.격말 || {})[s.격] || ''; const M = global.ChaeksaSsomCardMal || {}; const 한줄 = (M.정통격 || {})[s.격] || ''; if (!한줄) return null; return { 격: s.격, 격말: 말, 컷: 'jt-g-' + (격컷[s.격] || 'jeonggwan') + '-' + (R.input && R.input.gender === 'F' ? 'f' : 'm'), 한줄, 단추: M.단추 || {}, 꼬리: M.꼬리 || '' }; }
+  // 10-03 네 기둥 한 줄 — 「사주는 어디서 봐야 정확한가요」(saju-accuracy-test.html)의 책사 다섯 문제를 여기 넣고 정답과 바로 대 보게.
+  // 글의 정답과 같은 꼴(丁未년 壬寅월 庚申일 丁亥시)로 적고, 무엇으로 셈했는지(해 시각) 붙인다. 시를 모르면 시주는 「모름」.
+  function 네기둥줄(R) {
+    const E = global.ChaeksaEngine, P = R && R.pillars; if (!E || !P || !P.day) return '';
+    const 글 = (k, 끝) => P[k] ? E.STEMS[P[k].stem] + E.BRANCHES[P[k].branch] + 끝 : '시 모름';
+    const c = R.corrected, 시있음 = !!P.hour && c && c.hh != null;
+    const 때 = h => h < 6 ? '새벽 ' + h : h < 12 ? '오전 ' + h : h === 12 ? '낮 12' : h < 18 ? '오후 ' + (h - 12) : '밤 ' + (h - 12);
+    const 셈 = !시있음 ? '' : (R.input && R.input.solarCorrection === false) ? ' · 시계 시각으로 셈' : ' · 해 시각 ' + 때(c.hh) + '시 ' + c.mm + '분으로 셈';
+    return '<p class="hint" style="margin:6px 0 0;text-align:center">네 기둥 — ' + 글('year', '년') + ' ' + 글('month', '월') + ' ' + 글('day', '일') + ' ' + 글('hour', '시') + 셈 + '</p>';
+  }
   function 정통카드(R) {
     const r = 정통재기(R); if (!r) return '';
-    return '<div class="card ss-card" id="jtCard"><img class="ss-card-cut" src="art/' + r.컷 + '-s.webp" alt=""><p class="ss-card-lead">' + esc(r.한줄) + '</p>'
+    return '<div class="card ss-card" id="jtCard"><img class="ss-card-cut" src="art/' + r.컷 + '-s.webp" alt=""><p class="ss-card-lead">' + esc(r.한줄) + '</p>' + 네기둥줄(R)
       + '<div class="ss-card-btns"><button type="button" class="btn ghost small" id="jtCardShare">카톡으로 보내기</button><button type="button" class="btn ghost small" id="jtCardSave">이미지로 저장</button></div></div>';
   }
   async function 정통그리기(canvas, R, 이름) {

@@ -63,18 +63,25 @@
     return { y: year, m: month, d: day, hh: Math.floor(totalMin / 60), mm: totalMin % 60 };
   }
 
-  // 한국 표준시 오프셋(시간). 역사적 UTC+8:30 구간과 1987~88 서머타임 반영.
+  // 한국 서머타임(일광절약시간) 세 시기 — [시작 날짜, 시작 시, 끝 날짜, 끝 시], 그때 한국 시계 기준.
+  // 시작 시각부터 끝 시각 직전까지 한 시간 앞당겨졌다. 되돌리는 날 겹치는 한 시간은 서머타임 쪽으로 읽는다.
+  // 10-03 IANA 시간대 자료(Asia/Seoul, 2026b)와 1905~2000년 30분 간격으로 대조해 겹치는 한 시간 말고는 다 맞음.
+  // 예전에는 1987~88 만 넣어서 1948~51 · 1955~60 여름에 태어난 사람의 시주가 한 시진 밀릴 수 있었다.
+  const SUMMER_TIME = [
+    [19480601, 0, 19480913, 0], [19490403, 0, 19490911, 0], [19500401, 0, 19500910, 0], [19510506, 0, 19510909, 0],
+    [19550505, 0, 19550909, 0], [19560520, 0, 19560930, 0], [19570505, 0, 19570922, 0], [19580504, 0, 19580921, 0],
+    [19590503, 0, 19590920, 0], [19600501, 0, 19600918, 0],
+    [19870510, 2, 19871011, 3], [19880508, 2, 19881009, 3],
+  ];
+  // 한국 표준시 오프셋(시간). 역사적 UTC+8:30 구간(1908~11 · 1954~61)과 서머타임 세 시기 반영.
   function kstOffsetHours(y, m, d, hh) {
     const n = y * 10000 + m * 100 + d;
-    if (n >= 19080401 && n <= 19111231) return 8.5;
-    if (n >= 19540321 && n <= 19610809) return 8.5;
-    // 서머타임(일광절약시간) 1987.5.10 02:00 ~ 10.11 03:00, 1988.5.8 02:00 ~ 10.9 03:00
-    if ((y === 1987 && n >= 19870510 && n <= 19871011) || (y === 1988 && n >= 19880508 && n <= 19881009)) {
-      if (n === 19870510 && hh < 2) return 9; if (n === 19871011 && hh >= 3) return 9;
-      if (n === 19880508 && hh < 2) return 9; if (n === 19881009 && hh >= 3) return 9;
-      return 10;
-    }
-    return 9;
+    let base = 9;
+    if (n >= 19080401 && n <= 19111231) base = 8.5;
+    if (n >= 19540321 && n <= 19610809) base = 8.5;
+    const k = n * 100 + hh;
+    for (const [a, ah, b, bh] of SUMMER_TIME) if (k >= a * 100 + ah && k < b * 100 + bh) return base + 1;
+    return base;
   }
 
   // ───────── 태양 황경: astro.js(VSOP87, 분 단위 정확) 우선, 없으면 Meeus 간이식 ─────────
@@ -772,5 +779,5 @@
     return Math.round(((lon - 135) * 4 + eot) * 10) / 10;
   }
 
-  global.ChaeksaEngine = { calc, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, branchRels, resolveBranches, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
+  global.ChaeksaEngine = { calc, kstOffsetHours, dateFortune, currentDaeun, tenGod, fmt, solarOffsetMin, NATAL_WEIGHT, siding, STRENGTH_LABEL, strengthOf, isHap, natalHap, samhapOf, stemPower, hwaOf, forks, branchRels, resolveBranches, unseong, power, UNSEONG, UNSEONG_POWER, STEMS, BRANCHES, ELEM, STEM_ELEM, BRANCH_ELEM, STEM_YANG, TEN_GODS, HIDDEN, STEMS_KO, BRANCHES_KO };
 })(typeof window !== 'undefined' ? window : globalThis);
