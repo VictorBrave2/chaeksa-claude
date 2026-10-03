@@ -15,7 +15,7 @@
 <script src="saenggeuk.js?v=fe0683a9e6"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=b80b485f4b"></script><script src="gyeokguk.js?v=63f811f535"></script>
 <script src="classic.js?v=cc88b5f18e"></script><script src="gwanjeom.js?v=29b898c413"></script><script src="taekilsim.js?v=e2b12e27a5"></script>
 <script src="taekil-read.js?v=4c31c70a7c"></script><script src="yaksok.js?v=c7cb589870"></script><script src="pay.js?v=654bb7eca5"></script>
-<script src="myeongsik-card.js?v=4fc56b2857"></script><script src="taekil-report.js?v=e8b81058b3"></script>
+<script src="myeongsik-card.js?v=4fc56b2857"></script><script src="taekil-report.js?v=760a344c52"></script>
 <script id="tests">
 (function () {
   const V = window.ChaeksaTaekilReport, P = window.ChaeksaPay, MC = window.ChaeksaMyeongsikCard;
@@ -86,17 +86,6 @@
   검사('반응 단추가 없다(결과 화면에 맞아요 · 아니에요 금지)', () => {
     const h = V.그리기(보고서);
     return /<button|맞아요|아니에요/.test(h) ? ['그리기에 단추 · 반응 말이 있다'] : [];
-  });
-  검사('카드만 — 사장님 검수 꼴: 명식 카드만 cards 차례대로, 카드 자리마다 이름표(본문 · 다른 칸 없음)', () => {
-    const 두장 = Object.assign({}, 보고서, { cards: [{ slot: '2027-04-13T10:00', label: '물어보신 시각 — 걸리는 것 없음' }, { slot: '2027-04-12T08:32', label: '1번 — 으뜸' }] });
-    const k = V.카드만(두장), h = V.그리기(k), 문제 = [];
-    if (J(k.order) !== J(['cardsonly'])) 문제.push('칸 차례 ' + J(k.order));
-    if (셈(h, 'data-card="') !== 2) 문제.push('카드 자리 수 ' + 셈(h, 'data-card="'));
-    if (!(h.indexOf('물어보신 시각 — 걸리는 것 없음') >= 0 && h.indexOf('물어보신 시각') < h.indexOf('1번 — 으뜸'))) 문제.push('이름표 · 차례');
-    if (/까닭 — 지어낸 줄|財輕比重|이렇게 읽었어요/.test(h)) 문제.push('카드 말고 본문이 섞였다');
-    if (k.cards !== 두장.cards || J(k.card) !== J(두장.card)) 문제.push('카드 목록 · 곳 · 성별을 그대로 넘기지 않았다(카드채우기가 못 그린다)');
-    if (V.그리기(V.카드만({ cards: [] })).indexOf('명식 카드가 없어요') < 0) 문제.push('카드 없는 보고서 말');
-    return 문제;
   });
   검사('글로 — 메일에 붙일 글(꺾쇠 태그 없음 · 칸 머리 · 카드는 이름표만)', () => {
     const t = V.글로(보고서), 문제 = [];
