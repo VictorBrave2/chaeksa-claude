@@ -689,7 +689,7 @@
   const 쓰기 = (k, v) => {
     try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (_) {}
   };
-  const 칸 = (id, 이름, 꼭, 예, 메일) => '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
+  const 칸글 = (id, 이름, 꼭, 예, 메일) => '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
     + '<input id="' + id + '"' + (메일 ? ' type="email" autocomplete="email" inputmode="email"' : '')
     + ' maxlength="200" placeholder="' + 글(예) + '">';
   const 고르기 = (id, 이름, 갈래) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '">'
@@ -704,11 +704,133 @@
   const 칸짝 = { i_mail: 'mail', i_range: 'range', i_hosp: 'hospital', i_place: 'place', i_time: 'time',
                 i_have: 'have', i_dad: 'father', i_mom: 'mother', i_sib: 'siblings', i_wish: 'wish', i_ask: 'ask' };
   let _사슬 = null;   // 시뮬레이터 엔진 사슬을 늦게 싣는 약속(신청서 미리 셈 · 보고서 명식 카드) — 한 번만
+  // ── 신청서 고르개(10-04 사장님 「출산택일 정보입력이 너무 불편한데?」) ─────────────────────────────
+  // 손님은 날짜 · 시각 · 지역을 고르기만 한다(달력 · 목록). 고른 값은 원래 글 칸(숨김)에 읽개(taekil-read.js)가 읽는 글로 적어 넣는다 —
+  // 값() · 초안 · 주문 원문 · 비공개 서버는 그대로다(서버는 원문 글만 다시 읽는다). 고르개로 못 적는 것은 「직접 적기」로 글 칸을 연다.
+  // 받은 글(초안 · 사장님 목록 신청서 고치기)은 읽개로 풀어 고르개에 다시 채운다. 못 풀면 글 칸을 연 채로 둔다(적은 글을 잃지 않게).
+  const 두 = (n) => String(n).padStart(2, '0');
+  const 날글 = (iso) => { const [y, m, d] = String(iso).split('-').map(Number); return y + '년 ' + m + '월 ' + d + '일'; };
+  const 시글 = (hm) => { const [h, mi] = String(hm).split(':').map(Number); return h + '시 ' + mi + '분'; };
+  const 분시 = (분) => 두(Math.floor(분 / 60)) + ':' + 두(분 % 60);
+  const 올해 = () => new Date().getFullYear();
+  const 옵션 = (xs, 빈말) => '<option value="">' + 글(빈말) + '</option>' + xs.map((x) => '<option value="' + 글(x[0]) + '">' + 글(x[1]) + '</option>').join('');
+  const 시각들30 = () => { const o = []; for (let m = 5 * 60; m <= 23 * 60 + 30; m += 30) o.push([분시(m), (m < 720 ? '오전 ' : '오후 ') + ((Math.floor(m / 60) + 11) % 12 + 1) + '시' + (m % 60 ? ' 30분' : '')]); return o; };
+  const 해들 = (a, b) => { const o = []; for (let y = b; y >= a; y--) o.push([String(y), y + '년']); return o; };
+  const 달들 = () => Array.from({ length: 12 }, (_, i) => [String(i + 1), (i + 1) + '월']);
+  const 날들 = () => Array.from({ length: 31 }, (_, i) => [String(i + 1), (i + 1) + '일']);
+  const 생일줄 = (시각) => '<div class="tkp-row"><select data-k="y" aria-label="태어난 해">' + 옵션(해들(1940, 올해()), '해') + '</select>'
+    + '<select data-k="m" aria-label="달">' + 옵션(달들(), '월') + '</select><select data-k="d" aria-label="날">' + 옵션(날들(), '일') + '</select>'
+    + '<select data-k="cal" aria-label="양력 음력"><option value="양력">양력</option><option value="음력">음력</option><option value="윤달">음력 윤달</option></select></div>'
+    + (시각 ? '<div class="tkp-row"><input type="time" data-k="t" aria-label="태어난 시각"><label class="tk-chk"><input type="checkbox" data-k="tno"> 시각 몰라요</label></div>' : '');
+  const 고르개틀 = {
+    range: () => '<div class="tkp-row"><input type="date" data-k="a" aria-label="시작"><span>~</span><input type="date" data-k="b" aria-label="끝"></div>'
+      + '<span class="tk-sub">예정일(아시면)</span><div class="tkp-row"><input type="date" data-k="due" aria-label="예정일"></div>',
+    dates: () => '<div class="tk-list" data-item="date"></div><button type="button" class="tk-add">+ 날짜 더하기</button>',
+    slots: () => '<div class="tk-list" data-item="slot"></div><button type="button" class="tk-add">+ 날짜 · 시각 더하기</button>',
+    place: () => {
+      const PL = global.ChaeksaPlaces; if (!PL || !PL.KOREA) return '';
+      const 큰 = PL.KOREA.slice(0, 8), 그밖 = PL.KOREA.slice(8), 밖 = PL.ABROAD || [];
+      const 묶 = (이름, xs) => '<optgroup label="' + 글(이름) + '">' + xs.map((c) => '<option value="' + 글(c[0]) + '">' + 글(c[0]) + '</option>').join('') + '</optgroup>';
+      return '<div class="tkp-row"><select data-k="p" aria-label="태어날 지역"><option value="">고르세요</option>' + 묶('큰 도시', 큰) + 묶('그 밖의 도시', 그밖) + (밖.length ? 묶('해외', 밖) : '') + '</select></div>'
+        + '<span class="tk-sub">목록에 없으면 가장 가까운 도시를 고르세요 — 시각 차이는 몇 분 안쪽이에요.</span>';
+    },
+    time: () => '<div class="tkp-row"><select data-k="a" aria-label="몇 시부터">' + 옵션(시각들30(), '몇 시부터') + '</select><span>~</span>'
+      + '<select data-k="b" aria-label="몇 시까지">' + 옵션(시각들30(), '몇 시까지') + '</select></div><span class="tk-sub">모르시면 비워 두세요 — 시간 제한 없이 봐요.</span>',
+    birth: () => 생일줄(true),
+    sibs: () => '<div class="tk-list" data-item="sib"></div><button type="button" class="tk-add">+ 형제자매 더하기</button>',
+  };
+  const 항목틀 = {
+    date: () => '<div class="tkp-row tk-item"><input type="date" data-k="d" aria-label="날짜"><button type="button" class="tk-del" aria-label="지우기">×</button></div>',
+    slot: () => '<div class="tkp-row tk-item"><input type="date" data-k="d" aria-label="날짜"><input type="time" data-k="t" aria-label="시각"><button type="button" class="tk-del" aria-label="지우기">×</button></div>',
+    sib: () => '<div class="tk-item">' + 생일줄(false).replace('<div class="tkp-row">', '<div class="tkp-row"><button type="button" class="tk-del" aria-label="지우기" style="order:9">×</button>') + '</div>',
+  };
+  // 칸 id → 고르개 꼴 · 최대 줄 수
+  const 고르개짝 = { i_range: 'range', i_hosp: 'dates', i_have: 'slots', i_place: 'place', i_time: 'time', i_dad: 'birth', i_mom: 'birth', i_sib: 'sibs' };
+  const 최대 = { dates: 4, slots: 3, sibs: 3 };
+  /** 고르개 하나의 값 → 읽개가 읽는 글. 다 안 골랐으면 ''. */
+  function 고른글(box) {
+    const 꼴 = box.dataset.pick, k = (el, 이름) => { const x = el.querySelector('[data-k="' + 이름 + '"]'); return x ? (x.type === 'checkbox' ? x.checked : String(x.value || '')) : ''; };
+    const 생일 = (el, 시각) => {
+      const y = k(el, 'y'), m = k(el, 'm'), d = k(el, 'd'), cal = k(el, 'cal') || '양력';
+      if (!(y && m && d)) return '';
+      const 날 = cal === '양력' ? y + '년 ' + m + '월 ' + d + '일 양력' : '음력 ' + y + '년 ' + (cal === '윤달' ? '윤' : '') + m + '월 ' + d + '일';
+      if (!시각) return 날;
+      return 날 + (k(el, 'tno') ? ' 태어난 시 모름' : (k(el, 't') ? ' ' + 시글(k(el, 't')) : ''));
+    };
+    if (꼴 === 'range') {
+      const a = k(box, 'a'), b = k(box, 'b'), due = k(box, 'due');
+      if (!a && !b) return '';
+      const [s, e] = a && b && b < a ? [b, a] : [a || b, b || a];
+      return 날글(s) + (e !== s ? ' ~ ' + 날글(e) : '') + (due ? ' (예정일 ' + 날글(due) + ')' : '');
+    }
+    if (꼴 === 'dates') return Array.from(box.querySelectorAll('.tk-item')).map((el) => k(el, 'd')).filter(Boolean).map(날글).join(', ');
+    if (꼴 === 'slots') return Array.from(box.querySelectorAll('.tk-item')).filter((el) => k(el, 'd')).map((el) => 날글(k(el, 'd')) + (k(el, 't') ? ' ' + 시글(k(el, 't')) : '')).join(', ');
+    if (꼴 === 'place') return k(box, 'p');
+    if (꼴 === 'time') { const a = k(box, 'a'), b = k(box, 'b'); return a && b ? 시글(a) + ' ~ ' + 시글(b) : ''; }
+    if (꼴 === 'birth') return 생일(box, true);
+    if (꼴 === 'sibs') return Array.from(box.querySelectorAll('.tk-item')).map((el) => 생일(el, false)).filter(Boolean).join(', ');
+    return '';
+  }
+  /** 글 → 고르개(읽개로 푼다). 다 풀었으면 true — 글이 있는데 못 풀었으면 false(글 칸을 열어 둔다). */
+  function 글을고르개로(box, 글값) {
+    const R = global.ChaeksaTaekilRead, 꼴 = box.dataset.pick, t = String(글값 || '').trim();
+    const 놓 = (el, 이름, v) => { const x = el.querySelector('[data-k="' + 이름 + '"]'); if (!x) return; if (x.type === 'checkbox') x.checked = !!v; else { if (x.tagName === 'SELECT' && v && !Array.from(x.options).some((o) => o.value === String(v))) x.insertAdjacentHTML('beforeend', '<option value="' + 글(v) + '">' + 글(v) + '</option>'); x.value = v == null ? '' : String(v); } };
+    const 줄수 = (n) => { const L = box.querySelector('.tk-list'); if (!L) return []; L.innerHTML = ''; for (let i = 0; i < Math.max(1, n); i++) L.insertAdjacentHTML('beforeend', 항목틀[L.dataset.item]()); return Array.from(L.querySelectorAll('.tk-item')); };
+    const 생일놓 = (el, g, 시각) => { 놓(el, 'y', g.y); 놓(el, 'm', g.m); 놓(el, 'd', g.d); 놓(el, 'cal', g.윤달 ? '윤달' : g.달력); if (시각) { 놓(el, 't', g.시 ? 두(g.시.h) + ':' + 두(g.시.mi) : ''); 놓(el, 'tno', !g.시); } };
+    if (!t) { box.querySelectorAll('input,select').forEach((x) => { if (x.type === 'checkbox') x.checked = false; else if (x.dataset.k === 'cal') x.value = '양력'; else x.value = ''; }); 줄수(1); return true; }
+    if (!R) return false;
+    try {
+      if (꼴 === 'range') { const r = R.기간(t); if (!r.값) return false; 놓(box, 'a', r.값.첫날); 놓(box, 'b', r.값.끝날); const 예 = R.예정일찾기([['range', t]], { 근처: r.값.첫날 }); 놓(box, 'due', 예 ? 예.날 : ''); return true; }
+      if (꼴 === 'dates') { const r = R.날짜들(t); if (r.못읽음 || !(r.값 || []).length) return false; 줄수(r.값.length).forEach((el, i) => 놓(el, 'd', r.값[i])); return true; }
+      if (꼴 === 'slots') { const r = R.시각들(t); if (r.못읽음 || !(r.값 || []).length) return false; 줄수(r.값.length).forEach((el, i) => { 놓(el, 'd', r.값[i].날); 놓(el, 't', r.값[i].분 != null ? 분시(r.값[i].분) : ''); }); return true; }
+      if (꼴 === 'place') { const r = R.곳(t); if (!r.값 || r.해외 && !box.querySelector('option[value="' + r.이름 + '"]')) return false; 놓(box, 'p', r.이름); return box.querySelector('[data-k="p"]').value === r.이름; }
+      if (꼴 === 'time') { const r = R.시간대(t); if (!r.값) return !r.못읽음 && false; 놓(box, 'a', 분시(r.값.시작)); 놓(box, 'b', 분시(r.값.끝)); return true; }
+      if (꼴 === 'birth') { const r = R.생일들(t); if (r.못읽음 || r.목록.length !== 1) return false; 생일놓(box, r.목록[0], true); return true; }
+      if (꼴 === 'sibs') { const r = R.생일들(t); if (r.못읽음 || !r.목록.length) return false; 줄수(r.목록.length).forEach((el, i) => 생일놓(el, r.목록[i], false)); return true; }
+    } catch (_) { return false; }
+    return false;
+  }
+  /** 칸 하나를 고르개로 감싼다 — 고르개 · 숨긴 글 칸 · 「직접 적기」. */
+  function 고르개칸(id, 이름, 꼭, 예) {
+    const 꼴 = 고르개짝[id], 속 = 고르개틀[꼴] ? 고르개틀[꼴]() : '';
+    if (!속) return 칸글(id, 이름, 꼭, 예);
+    return '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
+      + '<div class="tk-pick" data-pick="' + 꼴 + '" data-for="' + id + '">' + 속 + '</div>'
+      + '<div class="tk-raw" hidden><input id="' + id + '" maxlength="200" placeholder="' + 글(예) + '"></div>'
+      + '<button type="button" class="tk-rawbtn" data-for="' + id + '">직접 적기</button>';
+  }
+  /** 고르개를 켠다 — 고르면 글 칸에 적고 input 을 띄운다(초안 · 「이렇게 읽었어요」가 그대로 돈다). 글 칸의 지금 값으로 고르개를 채운다. */
+  function 고르개켜기(root) {
+    root.querySelectorAll('.tk-pick').forEach((box) => {
+      const raw = root.querySelector('#' + box.dataset.for); if (!raw) return;
+      const 싸개 = raw.closest('.tk-raw'), 단추 = root.querySelector('.tk-rawbtn[data-for="' + box.dataset.for + '"]');
+      const 글칸 = (열) => { box.hidden = 열; if (싸개) 싸개.hidden = !열; if (단추) 단추.textContent = 열 ? '고르기로 돌아가기' : '직접 적기'; };
+      const 적기 = () => { const t = 고른글(box); if (raw.value !== t) { raw.value = t; raw.dispatchEvent(new Event('input', { bubbles: true })); } };
+      box._다시 = () => 글칸(!글을고르개로(box, raw.value));
+      if (!box.dataset.wired) {
+        box.dataset.wired = '1';
+        const L = box.querySelector('.tk-list');
+        if (L && !L.children.length) L.insertAdjacentHTML('beforeend', 항목틀[L.dataset.item]());
+        box.addEventListener('change', (e) => { e.stopPropagation(); 적기(); });
+        box.addEventListener('input', (e) => { e.stopPropagation(); if (e.target && e.target.type !== 'time' && e.target.type !== 'date') 적기(); });
+        box.addEventListener('click', (e) => {
+          const 더 = e.target.closest('.tk-add'), 지 = e.target.closest('.tk-del');
+          if (더 && L) { if (L.children.length < (최대[box.dataset.pick] || 3)) L.insertAdjacentHTML('beforeend', 항목틀[L.dataset.item]()); return; }
+          if (지 && L) { const it = 지.closest('.tk-item'); if (L.children.length > 1) it.remove(); else it.querySelectorAll('input,select').forEach((x) => { if (x.dataset.k === 'cal') x.value = '양력'; else x.value = ''; }); 적기(); }
+        });
+        if (단추) 단추.addEventListener('click', () => { if (box.hidden) { box._다시(); } else 글칸(true); });
+      }
+      box._다시();
+    });
+  }
+
   const 주문서 = {
-    /** 칸들만 돌려준다. 감싸는 form·제목·보내기 단추는 쓰는 쪽이 둔다(신청 페이지는 사이에 동의 칸이 있다). */
-    틀() {
+    /** 칸들만 돌려준다. 감싸는 form·제목·보내기 단추는 쓰는 쪽이 둔다(신청 페이지는 사이에 동의 칸이 있다).
+     *  opt.글로 = true 면 고르개 없이 글 칸만(사장님 목록 — 메일 · 전화로 받은 글을 그대로 붙여 넣는 자리). */
+    틀(opt) {
+      const 칸 = opt && opt.글로 ? 칸글 : 고르개칸;
       // 10-02 자동 보고서 — 보고서는 「내 보고서」에서 연다. 메일은 확인 · 연락용이라 칸 이름도 그 말로.
-      return 칸('i_mail', '연락받으실 메일 주소', true, 'name@example.com', true)
+      return 칸글('i_mail', '연락받으실 메일 주소', true, 'name@example.com', true)
         + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일') + 읽줄('range') + 읽줄('due')
         + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요') + 읽줄('hospital')
         + '<p class="hint">날짜는 의사가 정합니다. 병원이 말한 범위 안에서만 봅니다.</p>'
@@ -854,6 +976,7 @@
       d = d || {};
       Object.keys(칸짝).forEach((id) => { const el = root.querySelector('#' + id); if (el) el.value = d[칸짝[id]] == null ? '' : String(d[칸짝[id]]); });
       const w = root.querySelector('#i_weekend'); if (w) w.checked = !!d.weekend;
+      고르개켜기(root);
       [['i_sex', 'sex'], ['i_first', 'first']].forEach(([id, 열쇠]) => {
         const box = root.querySelector('#' + id); if (!box) return;
         const 켬 = (v) => { box.dataset.v = v || ''; box.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); };
@@ -870,6 +993,7 @@
         if (el && 채울[짝[id]]) el.value = 채울[짝[id]];
       });
       const w = root.querySelector('#i_weekend'); if (w) w.checked = !!채울.weekend;
+      고르개켜기(root);   // 초안 글을 고르개에 풀어 채운다(못 풀면 그 칸은 글 칸을 연 채로)
       if (!채울.mail) {   // 로그인한 계정에 메일이 있으면 미리 채운다(카카오 로그인은 없을 수 있다)
         try {
           const C = global.ChaeksaCloud, em = C && typeof C.email === 'function' && C.email();

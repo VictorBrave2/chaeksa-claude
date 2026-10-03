@@ -312,7 +312,7 @@
   }
   /** 신청서 칸을 그 자리에 펼친다 — 손님 신청서와 같은 칸 · 같은 「이렇게 읽었어요」. */
   function 신청서틀(p, 채울, 단추글, 메모) {
-    p.innerHTML = '<form class="intake" novalidate>' + F.틀()
+    p.innerHTML = '<form class="intake" novalidate>' + F.틀({ 글로: true })   // 사장님 목록은 받은 글을 그대로 붙여 넣는 자리 — 고르개 없이 글 칸
       + (메모 ? '<label for="admManNote">메모(사장님만 봐요 — 받은 메일 제목 · 날짜 등)</label><textarea id="admManNote" maxlength="4000"></textarea>' : '')
       + '<button type="submit" class="send">' + esc(단추글) + '</button><p class="msg"></p></form>';
     const f = p.querySelector('form');

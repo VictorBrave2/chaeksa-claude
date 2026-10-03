@@ -341,6 +341,16 @@ nav button span{white-space:nowrap}
 }
 .sheet h3{font-family:var(--serif)}
 .seg{display:flex;gap:6px;margin-top:6px}
+/* 출산택일 신청서 고르개(10-04 「정보입력이 너무 불편」) — 달력 · 목록으로 고른다. 글 칸은 숨기고 「직접 적기」로 연다. */
+.tk-pick .tkp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.tk-pick .tkp-row>input,.tk-pick .tkp-row>select{flex:1 1 110px;width:auto;min-width:0;margin:0}
+.tk-pick .tkp-row>span{flex:0 0 auto;color:var(--ink3)}
+.tk-pick .tk-sub{display:block;font-size:var(--t1);color:var(--ink3);margin-top:6px}
+.tk-pick .tk-chk{display:flex;align-items:center;gap:6px;flex:0 0 auto;font-size:var(--t2);color:var(--ink2);margin:0}
+.tk-pick .tk-chk input{width:auto;margin:0}
+.tk-pick .tk-item+.tk-item{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.tk-pick .tk-add,.tk-rawbtn{display:inline-block;width:auto;background:none;border:0;padding:6px 0;margin-top:4px;color:var(--accent);font-size:var(--t1);cursor:pointer;font-family:var(--sans)}
+.tk-pick .tk-del{flex:0 0 auto;width:auto;background:none;border:1px solid var(--line2);border-radius:var(--r2);padding:8px 12px;color:var(--ink3);cursor:pointer}
 .seg button{flex:1;padding:10px;border-radius:var(--r2);border:1px solid var(--line2);background:var(--bg2);color:var(--ink2);font-size:var(--t2);cursor:pointer;font-family:var(--sans)}
 .seg button.on{border-color:var(--accent2);color:var(--accent);background:var(--accent-soft);font-weight:700}
 footer{font-size:var(--t1);color:var(--ink3);text-align:center;margin-top:34px;line-height:1.85;letter-spacing:.02em;position:relative;z-index:1}
