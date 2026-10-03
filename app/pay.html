@@ -40,6 +40,7 @@
   .cta + .cta{margin-top:10px}
   /* 카카오페이 단추 — 카카오 노랑(#FEE500) 바탕에 검은 글씨. 공식 로고 파일은 개발자센터에서 받아 넣는다(아직 글자만). */
   .cta.kakao{background:#FEE500;color:#191919}
+  .cta.naver{background:#03C75A;color:#fff}
   .item h3 b small{font-size:var(--t1);font-weight:700;color:var(--accent);margin-right:4px}
   .msg{margin-top:14px;font-size:var(--t2);line-height:1.75;color:var(--ink3);text-align:center}
   .msg.bad{color:#b4534f}
@@ -117,7 +118,7 @@
 <script src="config.js?v=f0cac82ec3"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=b538926f88"></script>
-<script src="pay.js?v=223a451b94"></script>
+<script src="pay.js?v=d4052fabb5"></script>
 <script src="yaksok.js?v=dac0b835a3"></script>
 <script>
 (function () {
@@ -211,7 +212,9 @@
       결제사 = pv || [];
       if (!결제사.length) return;
       ctas.innerHTML = 결제사.map(function (p) {
-        return '<button class="cta' + (p.id === 'kakao' ? ' kakao' : '') + '" data-pv="' + esc(p.id) + '" disabled>결제하기</button>';
+        // 10-03 결제사가 둘 이상이면 단추마다 이름을 단다(「카카오페이로 결제하기」).
+        return '<button class="cta' + (p.id === 'kakao' ? ' kakao' : p.id === 'naver' ? ' naver' : '') + '" data-pv="' + esc(p.id) + '" disabled>'
+          + (결제사.length > 1 ? esc(p.name) + '로 결제하기' : '결제하기') + '</button>';
       }).join('');
       var 이름칸 = document.getElementById('pgname');
       if (이름칸) 이름칸.textContent = 결제사.map(function (p) { return p.name; }).join(' · ');

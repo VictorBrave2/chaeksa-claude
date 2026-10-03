@@ -1,12 +1,14 @@
-/* 책사 결제 — 브라우저 쪽 (카카오페이 · 토스페이먼츠 v2)
+/* 책사 결제 — 브라우저 쪽 (카카오페이 · 네이버페이 · 토스페이먼츠 v2)
  *
  * 여기서 하는 일은 셋뿐이다.
  *   1) /api/pay 에 주문을 열어달라고 한다 (금액은 서버가 정한다 — 우리는 못 정한다)
- *   2) 결제창으로 간다 — 카카오페이는 서버가 받아 준 주소로 페이지째 이동, 토스는 결제창을 띄운다
+ *   2) 결제창으로 간다 — 카카오페이는 서버가 받아 준 주소로 페이지째 이동, 네이버페이는 네이버 SDK 가 결제창으로 데려가고,
+ *      토스는 결제창을 띄운다
  *   3) 돌아온 자리(pay-done.html)에서 승인을 서버에 부탁한다
  *
  * 어느 결제사를 보일지는 서버가 정한다(GET 의 providers, Vercel PAY_PROVIDERS). 2026-10-01 부터 카카오페이가 먼저이고,
- * 토스 단추는 PAY_PROVIDERS 에 toss 가 있을 때만 나온다.
+ * 네이버페이 · 토스 단추는 PAY_PROVIDERS 에 naver · toss 가 있고 키가 들어왔을 때만 나온다. 둘 이상이면 값 단추 위에
+ * 「결제 수단」 칸(결제사칸)이 생기고, 손님이 고른 것으로 결제한다(10-03 사장님 「네이버 카카오 토스 테스트 API로 연결은 다 해두자」).
  *
  * **가격을 이 파일에 안 적는다.** 값은 서버의 products 표에서 받아온다.
  * 두 벌이 있으면 반드시 어긋난다 — 이 프로젝트에서 여러 번 겪은 실패다.
@@ -30,7 +32,10 @@
   // 값 앞에 붙는 말. 값 자체는 products 표에만 있다 — 여기는 이름표뿐이다.
   // 「출시 기념가 9,900원」처럼만 쓴다. 줄 그은 정가는 보이지 않는다(10-01 사장님).
   const 값이름 = { love_full: '출시 기념가', love_pair: '출시 기념가' };
-  const 결제사이름 = { kakao: '카카오페이', toss: '토스페이먼츠' };
+  const 결제사이름 = { kakao: '카카오페이', naver: '네이버페이', toss: '토스페이먼츠' };
+  // 네이버페이 SDK — 문서: 「반드시 이 주소로 불러 쓴다(내려받아 두면 고친 것이 안 들어온다)」.
+  const NAVER_SDK = 'https://nsp.pay.naver.com/sdk/js/naverpay.min.js';
+  let _nsdk = null;
 
   let _state = null;          // GET 결과 캐시. 한 화면에서 여러 번 그리므로 한 번만 받는다
   let _stateWait = null;      // 받는 중인 약속 — 앱 부팅 · 홈 딱지 값 · 결제 상자가 거의 동시에 물어도 GET 은 한 번(10-02)
@@ -59,7 +64,14 @@
   /** 보일 결제사 [{id, mode, name}] — 서버가 정한 순서. 옛 서버(providers 없음)면 키가 있을 때 토스 하나. */
   const providers = async () => {
     const st = await state();
-    const pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
+    let pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
+    // 운영 결제사가 하나라도 있으면, 손님(검수 계정 아님 · 시험을 연 날 아님)에게는 시험 결제사를 안 보인다 —
+    // 눌러도 서버가 test_only 로 막는 단추라서(10-03). 모두 시험이면 그대로 둔다(곧열림 알림이 뜬다).
+    if (!st.testOpen && pv.some((p) => p.mode === 'live')) {
+      let 수퍼 = false;
+      try { const U = global.ChaeksaUsage; 수퍼 = !!(U && U.plan && U.plan() === 'super'); } catch (e) {}
+      if (!수퍼) pv = pv.filter((p) => p.mode === 'live');
+    }
     return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
   };
 
@@ -86,11 +98,50 @@
    * 단추는 그대로 두고 알림만 단다 — 누르면 서버가 test_only 로 돌려보내고 REASON.test_only 말이 뜬다. 운영 키가 들어오면 이 줄도 저절로 안 붙는다.
    */
   async function 곧열림자리(wrap) {
+    결제사칸(wrap).catch(() => {});   // 결제사가 둘 이상이면 「결제 수단」 칸도 여기서 단다(love.js · pair.js 가 이 함수 하나만 부른다)
     let 곧 = false;
     try { 곧 = await 곧열림(); } catch (e) { 곧 = false; }
     if (!곧 || !wrap || !wrap.isConnected || wrap.querySelector('[data-soon]')) return false;
     wrap.insertAdjacentHTML('afterbegin', '<p data-soon style="margin:0 0 10px"><b>결제는 곧 열려요.</b> 지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요.</p>');
     return true;
+  }
+
+  /**
+   * 결제 수단 고르기(10-03) — 결제사가 둘 이상이면 값 단추 바로 위에 「결제 수단」 칸을 단다. 고른 것은 wrap.dataset.pv.
+   * 하나뿐이면 칸 없이 그 하나를 wrap.dataset.pv 에 적는다. 부르는 쪽은 buy(…, 고른결제사(wrap)).
+   */
+  async function 결제사칸(wrap) {
+    if (!wrap || !wrap.isConnected || wrap.querySelector('[data-pvpick]')) return;
+    let pv = [];
+    try { pv = await providers(); } catch (e) { pv = []; }
+    if (!wrap.isConnected || !pv.length || wrap.querySelector('[data-pvpick]')) return;
+    if (!pv.some((p) => p.id === wrap.dataset.pv)) wrap.dataset.pv = pv[0].id;
+    if (pv.length < 2) return;
+    const 이름 = 'pv' + Math.random().toString(36).slice(2, 8);
+    const 칸 = '<div data-pvpick role="radiogroup" aria-label="결제 수단" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px">'
+      + '<span style="font-size:var(--t1);color:var(--ink2)">결제 수단</span>'
+      + pv.map((p) => '<label style="display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--r1);font-size:var(--t1);cursor:pointer">'
+        + '<input type="radio" name="' + 이름 + '" value="' + p.id + '"' + (p.id === wrap.dataset.pv ? ' checked' : '') + '>' + p.name + '</label>').join('')
+      + '</div>';
+    const 단추 = wrap.querySelector('button');
+    if (단추) 단추.insertAdjacentHTML('beforebegin', 칸); else wrap.insertAdjacentHTML('beforeend', 칸);
+    wrap.querySelectorAll('[data-pvpick] input').forEach((i) => i.addEventListener('change', () => { if (i.checked) wrap.dataset.pv = i.value; }));
+  }
+  /** 결제사칸에서 고른 결제사 id. 칸이 없으면 null(buy 가 서버가 준 첫째로 간다). */
+  const 고른결제사 = (wrap) => (wrap && wrap.dataset && wrap.dataset.pv) || null;
+
+  /** 네이버페이 SDK — 결제할 때만 부른다. 못 불러오면 다음에 다시 시도하게 약속을 버린다. */
+  function loadNaver() {
+    if (_nsdk) return _nsdk;
+    _nsdk = new Promise((ok, no) => {
+      if (global.Naver && global.Naver.Pay) return ok(global.Naver);
+      const s = document.createElement('script');
+      s.src = NAVER_SDK;
+      s.onload = () => (global.Naver && global.Naver.Pay ? ok(global.Naver) : no(new Error('네이버페이 결제 모듈을 불러오지 못했습니다')));
+      s.onerror = () => { _nsdk = null; no(new Error('네이버페이 결제 모듈을 불러오지 못했습니다')); };
+      document.head.appendChild(s);
+    });
+    return _nsdk;
   }
 
   /** 토스 SDK 는 결제할 때만 필요하다. 앱 첫 화면을 2MB 로 무겁게 만들 이유가 없다. */
@@ -169,6 +220,31 @@
       const 주소 = 폰 ? (o.mobile || o.pc) : (o.pc || o.mobile);
       if (!주소) return { ok: false, message: '카카오페이 결제창을 열지 못했습니다.' };
       global.location.href = 주소;
+      return { ok: true };   // 페이지가 떠난다
+    }
+
+    if (고른.id === 'naver') {
+      // 서버가 주문을 열고(금액은 DB) 결제창에 넘길 값을 준다. 결제창은 네이버 SDK 가 연다(openType 기본 page — 페이지째 이동).
+      // 결제창의 금액은 브라우저가 들고 가지만, 돈은 승인(nconfirm) 때 빠지고 그때 서버가 네이버 응답의 금액 · 주문번호를 DB 와 맞춘다.
+      const o = await post(Object.assign({ action: 'nopen', product: code, note: note || null }, intake ? { intake } : {}));
+      if (!o || !o.ok) return { ok: false, message: say(o), reason: o && o.reason };
+      if (intake && code === 'taekil') 붙음적기(o.orderId, intake);
+      let N;
+      try { N = await loadNaver(); } catch (e) {
+        await post({ action: 'nfail', orderId: o.orderId, code: 'SDK', message: e.message }, true).catch(() => {});
+        return { ok: false, message: e.message };
+      }
+      try {
+        const oPay = N.Pay.create({ mode: o.naver.mode, clientId: o.naver.clientId, chainId: o.naver.chainId, payType: 'normal' });
+        oPay.open({
+          merchantPayKey: o.orderId, merchantUserKey: o.userKey, productName: o.name, productCount: 1,
+          totalPayAmount: o.amount, taxScopeAmount: o.amount, taxExScopeAmount: 0, returnUrl: o.returnUrl,
+          productItems: [{ categoryType: 'ETC', categoryId: 'ETC', uid: code, name: o.name, payReferrer: 'ETC', count: 1 }],
+        });
+      } catch (e) {
+        await post({ action: 'nfail', orderId: o.orderId, code: 'SDK', message: String((e && e.message) || e) }, true).catch(() => {});
+        return { ok: false, message: '네이버페이 결제창을 열지 못했습니다.' };
+      }
       return { ok: true };   // 페이지가 떠난다
     }
 
@@ -359,6 +435,21 @@
   /** 카카오페이 전액 환불 — 사장님(super) 계정만 된다(서버가 가린다). 다른 계정은 { ok:false, reason:'forbidden' }. */
   async function krefund(orderId) {
     return await post({ action: 'krefund', orderId });
+  }
+
+  /** 네이버페이 착지(pay-done.html?pv=naver … resultCode=Success&paymentId=…)에서 부른다. 로그인이 없어도 된다. 여기서 돈이 빠진다. */
+  async function nconfirm(q) {
+    const out = await post({ action: 'nconfirm', orderId: q.orderId, paymentId: q.paymentId }, true);
+    if (!out || !out.ok) return { ok: false, message: say(out), code: out && out.code };
+    return out;
+  }
+  /** 네이버페이 결제창에서 그만뒀거나 실패했을 때(resultCode 가 Success 가 아님) — 승인을 안 불렀으니 돈은 안 빠졌다. */
+  async function nfail(q) {
+    return await post({ action: 'nfail', orderId: q.orderId, code: q.code, message: q.message }, true);
+  }
+  /** 네이버페이 전액 환불 — 사장님(super) 계정만(서버가 가린다). */
+  async function nrefund(orderId) {
+    return await post({ action: 'nrefund', orderId });
   }
 
   /**
@@ -926,5 +1017,5 @@
     사슬싣기: () => 주문서.사슬싣기(),
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, buy, confirm, markFailed, kconfirm, kfail, krefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil };
+  global.ChaeksaPay = { state, ready, products, product, providers, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil };
 })(window);

@@ -1,4 +1,4 @@
-/* 책사 결제 — 카카오페이 · 토스페이먼츠 승인 (Vercel 서버리스, Node 런타임)
+/* 책사 결제 — 카카오페이 · 네이버페이 · 토스페이먼츠 승인 (Vercel 서버리스, Node 런타임)
  *
  * 왜 서버가 필요한가:
  *   결제창이 닫혔다고 돈이 들어온 게 아니다. **승인** 을 서버가 비밀키로
@@ -15,8 +15,22 @@
  *   5) krefund   사장님(super) 전용 → 카카오 cancel(전액) → order_pg_canceled
  *   시험 모드(dev 키 · TC CID)면 kopen 은 super 계정 또는 PAY_TEST_OPEN=1 일 때만 열린다.
  *
- * 흐름 — 토스(그대로. PAY_PROVIDERS 에 toss 가 있을 때만 열린다 — confirm 도 마찬가지)
+ * 흐름 — 네이버페이 (2026-10-03, 사장님이 붙여 준 문서: 결제창 호출 · 단건 결제 승인 · 단건 결제 취소. server/migrate-37)
+ *   1) nopen     브라우저 → 여기 → order_open(금액은 DB) → order_pg_ready(provider naver · pg_tid 자리표 np_주문번호)
+ *                → 결제창에 넘길 값(clientId · chainId · 금액 · 돌아올 주소 · 사용자 키)을 돌려준다.
+ *                네이버페이는 결제창을 브라우저 SDK(Naver.Pay.open)가 연다 — 금액을 브라우저가 들고 가므로 승인 때 DB 와 꼭 맞춘다.
+ *   2) 결제창    네이버 → 돌아올 주소(pay-done.html?pv=naver&orderId=…)에 resultCode · paymentId 를 붙여 돌려보낸다.
+ *                **돈은 아직 안 빠졌다** — 우리 서버가 승인(apply)을 불러야 빠진다. resultCode 가 Success 가 아니면 nfail.
+ *   3) nconfirm  pay-done → 여기 → order_pg_get → 네이버 apply(paymentId) → 응답의 merchantPayKey = 주문번호 · totalPayAmount = DB 금액
+ *                대조 → order_pg_paid(pg_aid = 네이버 결제번호). 어긋나면 곧바로 전액 취소. 멱등 열쇠는 결제번호마다 하나(새로고침 · 재시도에 같은 답).
+ *   4) nfail     결제창에서 그만뒀거나 실패 — 승인을 안 불렀으니 돈은 안 빠졌다. 열린 네이버 주문만 닫는다.
+ *   5) nrefund   사장님(super) 전용 → 네이버 cancel(전액, 남은 금액 0 대조) → order_pg_canceled
+ *   시험 모드(NAVERPAY_MODE 가 production 이 아니면)는 카카오와 같이 super 계정 또는 PAY_TEST_OPEN=1 일 때만 열린다.
+ *
+ * 흐름 — 토스(PAY_PROVIDERS 에 toss 가 있을 때만 열린다 — confirm 도 마찬가지)
  *   open → 토스 결제창 → confirm(order_check 로 **금액 대조** → 토스 승인 → order_paid) / fail(order_failed)
+ *   10-03 시험 키(test_…)면 open · confirm 도 super 계정 또는 PAY_TEST_OPEN=1 일 때만 — 카카오 kopen 과 같은 문.
+ *   (전에는 토스 쪽에 이 문이 없어서, 토스를 시험 키로 켜면 누구나 가짜 카드로 유료 본문을 열 수 있었다.)
  *
  * 금액 위변조
  *   토스: 결제창의 amount 는 브라우저가 들고 있으므로 **DB 의 orders.amount 와 대조**한다.
@@ -32,7 +46,10 @@
  *   PAY_HOOK_SECRET         서버 열쇠(migrate-23). 이게 있어야 결제완료를 적는다
  *   PAY_TEST_OPEN           1 이면 시험 모드 카카오 결제를 아무나 열 수 있다(비우면 super 계정만)
  *   TAEKIL_AUTO             1 이면 출산택일 kopen 에 신청서(body.intake)가 꼭 있어야 한다(자동 보고서를 켜는 날 — 화면 config.js CHAEKSA_TAEKIL_AUTO 와 같이)
- *   TOSS_SECRET_KEY · TOSS_CLIENT_KEY   토스(비밀 · 공개 짝)
+ *   TOSS_SECRET_KEY · TOSS_CLIENT_KEY   토스(비밀 · 공개 짝). test_ 로 시작하면 시험
+ *   NAVERPAY_CLIENT_ID · NAVERPAY_CLIENT_SECRET · NAVERPAY_CHAIN_ID   네이버페이 센터가 준 값(셋 다 있어야 켜진다)
+ *   NAVERPAY_MODE           production 이면 운영, 그 밖(비움)은 개발(시험 — 돈이 안 빠진다)
+ *   NAVERPAY_API_BASE       (보통 비움) API 주소를 바꿔야 할 때만. 비우면 개발 dev-pay.paygate.naver.com · 운영 pay.paygate.naver.com
  *   ALLOWED_ORIGIN          예: https://chaeksa.kr
  *   service_role 키는 쓰지 않는다. 쓰는 것은 anon · 사용자 JWT · 서버 열쇠 셋뿐이다.
  *
@@ -56,6 +73,20 @@ const KP_PAID = 'SUCCESS_PAYMENT';                                              
 // 이름이 틀려도 주문이 open 으로 남을 뿐, 돈이 빠진 주문을 실패로 적는 일은 없다.
 const KP_DEAD = ['QUIT_PAYMENT', 'FAIL_AUTH_PASSWORD', 'FAIL_PAYMENT'];
 // 시간이 지났다는 것만으로는 주문을 닫지 않는다 — 늘 카카오에 묻는다(돈이 빠진 주문을 실패로 적는 길을 없앤다).
+
+// ── 네이버페이 주소 · 머리 (여기 한 곳만 고치면 된다) ──────────────────────
+// 확인한 것(2026-10-03, 사장님이 붙여 준 네이버페이 개발 문서): 승인 POST {도메인}/naverpay-partner/naverpay/payments/v2.2/apply/payment ·
+//   취소 POST {도메인}/naverpay-partner/naverpay/payments/v1/cancel · 본문 x-www-form-urlencoded · 머리 X-Naver-Client-Id ·
+//   X-Naver-Client-Secret · X-NaverPay-Chain-Id · X-NaverPay-Idempotency-Key · 개발 도메인 dev-pay.paygate.naver.com · 시간 60초 ·
+//   응답 { code, message, body:{ paymentId, detail:{ merchantPayKey, totalPayAmount, admissionState, primaryPayMeans, … } } }.
+// **확인 못 한 것**: 운영 도메인(pay.paygate.naver.com 으로 짐작 — 운영 키를 넣는 날 네이버페이 센터 안내와 대조, 다르면
+//   NAVERPAY_API_BASE 로 바꾼다) · 멱등 열쇠의 글자 수 한도(64자 안으로 쓴다) · 서버 IP 등록이 필요한지.
+const NP_BASE = { test: 'https://dev-pay.paygate.naver.com', live: 'https://pay.paygate.naver.com' };
+const NP_PATH = { apply: '/naverpay-partner/naverpay/payments/v2.2/apply/payment', cancel: '/naverpay-partner/naverpay/payments/v1/cancel' };
+const NP_TID = (orderId) => 'np_' + orderId;   // 주문을 열 때 pg_tid 에 적는 자리표(네이버 결제번호는 결제창 뒤에 생긴다)
+// 승인 · 취소가 「아직 모른다」인 답 — 주문을 닫지 않고 다시 묻게 둔다.
+const NP_PENDING = ['AlreadyOnGoing', 'MaintenanceOngoing', 'FaultCheckOngoing', 'AlreadyComplete', 'PreCancelNotComplete'];
+const crypto = require('crypto');
 
 // 환경변수에 눈에 안 보이는 문자가 섞여 헤더 조립이 통째로 죽은 전례가 두 번 있다
 // (api/chat.js 주석 참고). URL·키·JWT 는 어차피 ASCII 만 유효하다.
@@ -115,18 +146,76 @@ function kConf() {
   return null;
 }
 
-/** 보일 결제사 — PAY_PROVIDERS 순서대로, 키가 들어온 것만. 비우면 카카오만(토스 단추는 숨는다). */
+/** 네이버페이 설정. 셋(클라이언트 id · 비밀 · 체인 id)이 다 있어야 켜진다. NAVERPAY_MODE=production 이면 운영. */
+function nConf() {
+  const id = env('NAVERPAY_CLIENT_ID'), secret = env('NAVERPAY_CLIENT_SECRET'), chain = env('NAVERPAY_CHAIN_ID');
+  if (!id || !secret || !chain) return null;
+  const live = env('NAVERPAY_MODE') === 'production';
+  return { id, secret, chain, mode: live ? 'live' : 'test', sdkMode: live ? 'production' : 'development',
+           base: (env('NAVERPAY_API_BASE') || NP_BASE[live ? 'live' : 'test']).replace(/\/+$/, '') };
+}
+const tossMode = () => (/^live_/.test(env('TOSS_SECRET_KEY')) ? 'live' : 'test');
+
+/** 보일 결제사 — PAY_PROVIDERS 순서대로, 키가 들어온 것만. 비우면 카카오만(토스 · 네이버 단추는 숨는다). */
 function providers() {
   const want = (process.env.PAY_PROVIDERS || 'kakao').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
   const out = [];
   for (const id of want) {
     if (out.some((p) => p.id === id)) continue;
     if (id === 'kakao') { const k = kConf(); if (k) out.push({ id: 'kakao', mode: k.mode }); }
-    if (id === 'toss' && READY()) out.push({ id: 'toss', mode: /^live_/.test(env('TOSS_SECRET_KEY')) ? 'live' : 'test' });
+    if (id === 'naver') { const n = nConf(); if (n) out.push({ id: 'naver', mode: n.mode }); }
+    if (id === 'toss' && READY()) out.push({ id: 'toss', mode: tossMode() });
   }
   return out;
 }
 const tossOn = () => providers().some((p) => p.id === 'toss');
+
+/** 시험 모드 결제를 이 사람에게 열지 않는가 — 돈이 안 빠진 「결제완료」로 유료 본문이 열리면 안 된다.
+ *  super 계정(사장님 확인용)이거나 PAY_TEST_OPEN=1 이면 연다. 카카오 · 네이버 · 토스가 같은 문을 쓴다. */
+async function 시험막힘(mode, token) {
+  return mode === 'test' && env('PAY_TEST_OPEN') !== '1' && !(await isSuper(token));
+}
+
+/** 네이버페이 한 번 부르기. 던지지 않는다. 승인 · 취소는 오래 걸릴 수 있어(문서: 60초) 55초에서 끊는다 — 끊기면 { net:true }(모름). */
+async function naver(path, params, idem) {
+  const n = nConf();
+  if (!n) return { net: false, ok: false, status: 0, j: {} };
+  const ac = new AbortController();
+  const 끊기 = setTimeout(() => ac.abort(), 55000);
+  let r, j = {};
+  try {
+    r = await fetch(n.base + NP_PATH[path], {
+      method: 'POST', signal: ac.signal,
+      headers: { 'X-Naver-Client-Id': n.id, 'X-Naver-Client-Secret': n.secret, 'X-NaverPay-Chain-Id': n.chain,
+                 'X-NaverPay-Idempotency-Key': String(idem).slice(0, 64),
+                 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString(),
+    });
+    j = await r.json().catch(() => ({}));
+  } catch (_) { return { net: true, ok: false, status: 0, j: {} }; }
+  finally { clearTimeout(끊기); }
+  return { net: false, ok: r.ok, status: r.status, j: j || {} };
+}
+const nCode = (j) => String((j && j.code) || '');
+const nMsg = (j) => String((j && j.message) || '');
+
+/** 주문을 열고(출산택일이면 신청서까지 붙여) 돌려준다 — 카카오 kopen 과 같은 몸통(네이버 nopen 이 쓴다). */
+async function 주문열기(product, body, token) {
+  const 신청서 = product === 'taekil' && body.intake && typeof body.intake === 'object' && !Array.isArray(body.intake) ? body.intake : null;
+  if (product === 'taekil' && !신청서 && env('TAEKIL_AUTO') === '1') return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };
+  if (신청서 && JSON.stringify(신청서).length > 8000) return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };
+  const o = await rpc('order_open', { p_product: product, p_note: body.note ? String(body.note).slice(0, 500) : null }, token);
+  if (!o || !o.ok) return { ok: false, status: 400, json: o || { ok: false, reason: 'db' } };
+  if (신청서) {
+    const it = await rpc('order_intake', { p_order: o.orderId, p_intake: 신청서 }, token).catch(() => ({ ok: false, reason: 'db' }));
+    if (!(it && (it.ok || it.reason === 'already'))) {
+      await rpc('order_failed', { p_order: o.orderId, p_code: 'NO_INTAKE',
+                                  p_message: String((it && it.reason) || 'db').slice(0, 60) }, token).catch(() => {});
+      return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };
+    }
+  }
+  return { ok: true, o };
+}
 
 /** 카카오페이 한 번 부르기. 던지지 않는다 — 네트워크가 끊기면 { net:true }. */
 async function kakao(path, body) {
@@ -208,7 +297,8 @@ module.exports = async (req, res) => {
   const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
   // kconfirm · kfail 은 로그인 없이도 받는다 — 카카오톡에서 결제한 뒤 로그인 안 된 브라우저로 돌아올 수 있다.
   // 승인에 필요한 것은 (a) DB 에만 있는 tid (b) 결제한 사람만 받는 pg_token (c) 서버 열쇠라, 세션이 없어도 안전하다.
-  const 로그인없이 = action === 'kconfirm' || action === 'kfail';
+  // nconfirm · nfail 도 같다 — 승인에는 결제한 사람만 받는 paymentId 와 서버 열쇠가 필요하고, 응답의 주문번호 · 금액을 DB 와 맞춘다.
+  const 로그인없이 = action === 'kconfirm' || action === 'kfail' || action === 'nconfirm' || action === 'nfail';
   if (!token && !로그인없이) return res.status(401).json({ ok: false, reason: 'unauthenticated' });
 
   try {
@@ -438,11 +528,140 @@ module.exports = async (req, res) => {
         saveWarning: saved && saved.ok ? null : (saved && saved.reason) || 'save_failed' });
     }
 
+    // ════ 네이버페이 (PAY_PROVIDERS 에 naver 가 있고 키 셋이 들어왔을 때만) ═══════════
+
+    // ── N1. 주문을 열고 결제창에 넘길 값을 준다 ──
+    if (action === 'nopen') {
+      const n = nConf();
+      if (!n || !providers().some((p) => p.id === 'naver')) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (!env('PAY_HOOK_SECRET')) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (await 시험막힘(n.mode, token)) return res.status(403).json({ ok: false, reason: 'test_only' });
+      const product = String(body.product || '');
+      const op = await 주문열기(product, body, token);
+      if (!op.ok) return res.status(op.status).json(op.json);
+      const o = op.o;
+      const uid = jwtSub(token);
+      if (!uid) return res.status(401).json({ ok: false, reason: 'unauthenticated' });
+      const put = await srvUser('order_pg_ready', { p_order: o.orderId, p_provider: 'naver', p_tid: NP_TID(o.orderId) }, token)
+        .catch(() => ({ ok: false, reason: 'db' }));
+      if (!put || !put.ok) return res.status(400).json({ ok: false, reason: (put && put.reason) || 'db' });
+      // 돌아올 주소에는 주문번호 · pv 만 싣는다. **생년월일 · 신청서는 절대 싣지 않는다.**
+      // 사용자 키 — 계정 id 를 그대로 주지 않는다(네이버 문서: 개인 식별 불가한 값). 서버 열쇠를 섞은 해시 앞 40자.
+      return res.status(200).json({
+        ok: true, orderId: o.orderId, amount: o.amount, name: o.name, product,
+        naver: { clientId: n.id, chainId: n.chain, mode: n.sdkMode },
+        userKey: crypto.createHash('sha256').update(uid + '|' + env('PAY_HOOK_SECRET')).digest('hex').slice(0, 40),
+        returnUrl: `${returnBase()}/pay-done.html?pv=naver&orderId=${encodeURIComponent(o.orderId)}`,
+      });
+    }
+
+    // ── N2. 승인 — 여기서 돈이 빠진다 ──
+    if (action === 'nconfirm') {
+      const n = nConf();
+      if (!n) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      const orderId = String(body.orderId || '').slice(0, 64);
+      const paymentId = String(body.paymentId || '').slice(0, 50);
+      if (!orderId || !/^[A-Za-z0-9_-]{4,50}$/.test(paymentId)) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      const o = await srv('order_pg_get', { p_order: orderId }).catch(() => ({ ok: false, reason: 'db' }));
+      if (!o || !o.ok) return res.status(400).json(o || { ok: false, reason: 'db' });
+      if (o.status === 'paid') {
+        // 착지 페이지 새로고침. 같은 결제번호면 성공으로 답하고 네이버를 다시 부르지 않는다.
+        if (o.aid && o.aid !== paymentId) return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+        return res.status(200).json({ ok: true, already: true, name: o.name, amount: o.amount, receipt: null, payMode: o.pay_mode || null });
+      }
+      if (o.provider !== 'naver' || o.tid !== NP_TID(orderId)) {
+        return res.status(400).json(o.status === 'open' ? { ok: false, reason: 'bad_request' } : { ok: false, reason: 'closed', status: o.status });
+      }
+      if (o.status !== 'open') return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+      const 늦음 = (msg) => res.status(502).json({ ok: false, reason: 'unverified', code: null,
+        message: msg || '결제 확인이 늦어지고 있습니다. 잠시 뒤 이 화면을 새로고침해 주세요. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.' });
+
+      const ar = await naver('apply', { paymentId }, 'ap_' + paymentId);
+      if (ar.net || ar.status === 0 || ar.status >= 500) return 늦음();
+      const code = nCode(ar.j), d = ar.j && ar.j.body && ar.j.body.detail;
+      if (code === 'Success' && d) {
+        const 금액 = Number(d.totalPayAmount);
+        const 어긋남 = String(d.merchantPayKey || '') !== orderId || 금액 !== o.amount
+          || (d.paymentId && String(d.paymentId) !== paymentId) || (d.admissionState && d.admissionState !== 'SUCCESS');
+        if (어긋남) {
+          // 있어서는 안 되는 일(브라우저가 금액 · 주문번호를 바꿨다) — 곧바로 전액 돌려주고 사람이 볼 자리로 남긴다.
+          const c = await naver('cancel', { paymentId, cancelAmount: Number.isFinite(금액) ? 금액 : 0, cancelReason: 'AMOUNT_MISMATCH',
+            cancelRequester: '2', taxScopeAmount: Number(d.taxScopeAmount) || 0, taxExScopeAmount: Number(d.taxExScopeAmount) || 0 }, 'cx_' + paymentId);
+          const 돌려줌 = ['Success', 'CancelNotComplete', 'AlreadyCanceled'].includes(nCode(c.j));
+          const fc = 돌려줌 ? 'AMOUNT_MISMATCH' : 'AMOUNT_MISMATCH_UNCANCELED', msg = `네이버 ${금액} · 주문 ${o.amount} · ${paymentId}`;
+          await srv('order_pg_failed', { p_order: orderId, p_code: fc, p_message: msg }).catch(() => {});
+          await srv('order_pg_note', { p_order: orderId, p_tid: o.tid, p_code: fc, p_message: msg }).catch(() => {});
+          return res.status(400).json({ ok: false, reason: 'amount_mismatch', expected: o.amount });
+        }
+        const saved = await srv('order_pg_paid', {
+          p_order: orderId, p_tid: o.tid, p_aid: paymentId,
+          p_method: d.primaryPayMeans ? String(d.primaryPayMeans) : (Number(d.npointPayAmount) > 0 ? 'NPOINT' : null),
+          p_mode: n.mode,
+        }).catch(() => ({ ok: false, reason: 'save_failed' }));
+        const ok = !!(saved && saved.ok);
+        if (!ok) {
+          // 돈은 빠졌는데 기록이 안 됐다. 새로고침하면 같은 멱등 열쇠로 같은 답이 와서 다시 적는다.
+          await srv('order_pg_note', { p_order: orderId, p_tid: o.tid, p_code: 'SAVE_FAILED',
+            p_message: `네이버 승인됨 · 기록 실패(${(saved && saved.reason) || 'save_failed'}) · ${paymentId}` }).catch(() => {});
+        }
+        return res.status(200).json({ ok: true, saved: ok, name: o.name, amount: o.amount, payMode: n.mode,
+          method: d.primaryPayMeans || null, approvedAt: d.admissionYmdt || null, receipt: null,
+          saveWarning: ok ? null : 'SAVE_FAILED' });
+      }
+      // 「아직 모른다」 — 진행 중 · 점검 · 이미 완료(다른 열쇠로 승인된 것)는 닫지 않는다. 이미 완료는 사장님이 볼 자리로 남긴다.
+      if (!code || NP_PENDING.includes(code)) {
+        if (code === 'AlreadyComplete') {
+          await srv('order_pg_note', { p_order: orderId, p_tid: o.tid, p_code: 'NAVER_ALREADY_COMPLETE',
+            p_message: `네이버 「이미 결제 완료」 · ${paymentId} — 네이버페이 센터에서 확인 후 맞출 것` }).catch(() => {});
+        }
+        return 늦음(code === 'MaintenanceOngoing' || code === 'FaultCheckOngoing'
+          ? '네이버페이 점검 중이라 결제를 마치지 못했습니다. 돈은 빠지지 않았습니다. 잠시 뒤 다시 시도해 주세요.' : null);
+      }
+      // 네이버가 결제가 안 됐다고 확답했다(Fail · TimeExpired · OwnerAuthFail · 잔고 부족 등) — 돈은 안 빠졌다.
+      await srv('order_pg_failed', { p_order: orderId, p_code: code, p_message: nMsg(ar.j) || code }).catch(() => {});
+      return res.status(400).json({ ok: false, reason: 'naver', code, message: nMsg(ar.j) || '결제 승인에 실패했습니다.' });
+    }
+
+    // ── N3. 결제창에서 그만뒀다 / 실패했다 — 승인을 안 불렀으니 돈은 안 빠졌다. 열린 네이버 주문만 닫는다. ──
+    if (action === 'nfail') {
+      const orderId = String(body.orderId || '').slice(0, 64);
+      if (!orderId) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      const o = await srv('order_pg_get', { p_order: orderId }).catch(() => null);
+      if (!o || !o.ok || o.status !== 'open' || o.provider !== 'naver') return res.status(200).json({ ok: true, kept: true });
+      const rc = String(body.code || '').replace(/[^A-Za-z]/g, '').slice(0, 40);
+      await srv('order_pg_failed', { p_order: orderId, p_code: rc === 'UserCancel' ? 'USER_CANCEL' : ('NAVER_' + (rc || 'FAIL')),
+                                     p_message: String(body.message || '').slice(0, 200) }).catch(() => {});
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── N4. 환불(사장님 전용) — 네이버 전액 취소가 된 뒤에만 주문을 canceled 로 적는다 ──
+    if (action === 'nrefund') {
+      if (!(await isSuper(token))) return res.status(403).json({ ok: false, reason: 'forbidden' });
+      if (!nConf()) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      const orderId = String(body.orderId || '').slice(0, 64);
+      if (!orderId) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      const o = await srv('order_pg_get', { p_order: orderId }).catch(() => ({ ok: false, reason: 'db' }));
+      if (!o || !o.ok) return res.status(400).json(o || { ok: false, reason: 'db' });
+      if (o.provider !== 'naver' || !o.aid) return res.status(400).json({ ok: false, reason: 'bad_request' });
+      if (o.status !== 'paid') return res.status(400).json({ ok: false, reason: 'closed', status: o.status });
+      const c = await naver('cancel', { paymentId: o.aid, cancelAmount: o.amount, cancelReason: '가맹점 환불',
+        cancelRequester: '2', taxScopeAmount: o.amount, taxExScopeAmount: 0, doCompareRest: 1, expectedRestAmount: 0 }, 'cx_' + o.aid);
+      const cc = nCode(c.j);
+      if (!['Success', 'CancelNotComplete', 'AlreadyCanceled'].includes(cc)) {
+        return res.status(c.net ? 502 : 400).json({ ok: false, reason: 'naver', code: cc || null,
+          message: nMsg(c.j) || (c.net ? '네이버페이에 닿지 못했습니다.' : '환불에 실패했습니다.') });
+      }
+      const saved = await srv('order_pg_canceled', { p_order: orderId, p_tid: o.tid }).catch(() => ({ ok: false, reason: 'save_failed' }));
+      return res.status(200).json({ ok: true, orderId, amount: o.amount, saved: !!(saved && saved.ok), code: cc,
+        saveWarning: saved && saved.ok ? null : (saved && saved.reason) || 'save_failed' });
+    }
+
     // ════ 토스페이먼츠 (PAY_PROVIDERS 에 toss 가 있을 때만) ═══════════════
 
     // ── 1. 주문을 연다 ──
     if (action === 'open') {
       if (!READY() || !tossOn()) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (await 시험막힘(tossMode(), token)) return res.status(403).json({ ok: false, reason: 'test_only' });
       const out = await rpc('order_open', {
         p_product: String(body.product || ''),
         p_note: body.note ? String(body.note).slice(0, 500) : null,
@@ -468,6 +687,9 @@ module.exports = async (req, res) => {
     if (action === 'confirm') {
       const secret = env('TOSS_SECRET_KEY');
       if (!secret || !tossOn()) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      // 10-03 시험 키면 승인도 super · PAY_TEST_OPEN 만 — order_open 은 브라우저가 직접 부를 수 있어(기본 결제사 toss)
+      // open 만 막으면 직접 연 주문을 시험 카드로 「결제완료」로 만드는 뒷문이 남는다.
+      if (await 시험막힘(tossMode(), token)) return res.status(403).json({ ok: false, reason: 'test_only' });
 
       const orderId = String(body.orderId || '');
       const paymentKey = String(body.paymentKey || '');

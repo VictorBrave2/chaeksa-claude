@@ -375,7 +375,7 @@
         var k = 올바른열쇠(r && r.payKey);
         if (!k) throw new Error('결제를 준비하지 못했어요. 새로고침해 주세요.');
         btn.textContent = '결제창을 여는 중…';
-        return P.buy('love_full', k, 'kakao');
+        return P.buy('love_full', k, (P.고른결제사 && P.고른결제사(box.querySelector('#lvBuyWrap'))) || 'kakao');   // 10-03 결제 수단 칸에서 고른 것
       }).catch(function (e) { return { ok: false, message: String((e && e.message) || e) }; })
         .then(function (r) {
           if (!btn.isConnected) return;
@@ -447,7 +447,7 @@
       var 원래 = btn.textContent;
       btn.dataset.label = 원래; btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = '결제창을 여는 중…'; say.textContent = '';
       // 결제창으로 넘어가면 이 아래는 대개 안 돈다. 돌아왔다면 막힌 것이거나 창을 닫은 것이다(pay.js 누르면과 같은 처리).
-      Promise.resolve().then(function () { return P.buy('love_full', 열쇠, 'kakao'); })
+      Promise.resolve().then(function () { return P.buy('love_full', 열쇠, (P.고른결제사 && P.고른결제사(box.querySelector('#lvBuyWrap'))) || 'kakao'); })
         .catch(function (e) { return { ok: false, message: String((e && e.message) || e) }; })
         .then(function (r) {
           delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;

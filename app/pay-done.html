@@ -38,7 +38,7 @@
 <script src="config.js?v=f0cac82ec3"></script>
 <script src="cloud.js?v=b538926f88"></script>
 <script src="usage.js?v=3282ea377a"></script>
-<script src="pay.js?v=223a451b94"></script>
+<script src="pay.js?v=d4052fabb5"></script>
 <script src="yaksok.js?v=dac0b835a3"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=1350b96148"></script>
@@ -51,7 +51,9 @@
   var night = m === 'night' || (m === 'auto' && (h < 6 || h >= 18));
   document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
 
-  var q = new URLSearchParams(location.search);
+  // 네이버페이는 돌아올 주소(?pv=naver&orderId=…) 뒤에 resultCode · paymentId 를 붙인다. 이미 ?가 있는데도 ?로 이어 붙이면
+  // orderId 가 「주문번호?resultCode=…」로 읽히므로, 둘째 ? 부터는 & 로 읽는다(주문번호 · 결제번호에는 ? 가 없다).
+  var q = new URLSearchParams(location.search.replace(/\?/g, function (m, i) { return i === 0 ? '?' : '&'; }));
   var out = document.getElementById('out');
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g,
     function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); };
@@ -227,12 +229,22 @@
     양식(자리, orderId, null);
   }
 
-  // 어느 결제사에서 돌아왔나. 카카오페이는 우리가 돌아올 주소에 pv=kakao 를 붙여 두었다(api/pay.js kopen).
-  // 카카오: ?pv=kakao&orderId=…&pg_token=…   토스: ?paymentKey=…&orderId=…&amount=…
-  var 카카오 = q.get('pv') === 'kakao';
+  // 어느 결제사에서 돌아왔나. 카카오페이 · 네이버페이는 우리가 돌아올 주소에 pv 를 붙여 두었다(api/pay.js kopen · nopen).
+  // 카카오: ?pv=kakao&orderId=…&pg_token=…   네이버: ?pv=naver&orderId=…&resultCode=…&paymentId=…   토스: ?paymentKey=…&orderId=…&amount=…
+  var 카카오 = q.get('pv') === 'kakao', 네이버 = q.get('pv') === 'naver';
   var paymentKey = q.get('paymentKey'), orderId = q.get('orderId'), amount = q.get('amount');
-  var pgToken = q.get('pg_token');
-  if (카카오 ? (!orderId || !pgToken) : (!paymentKey || !orderId || !amount)) {
+  var pgToken = q.get('pg_token'), 네이버결과 = q.get('resultCode'), 네이버번호 = q.get('paymentId');
+  // 네이버페이에서 그만뒀거나 막혔다(resultCode 가 Success 가 아님) — 승인을 부르지 않았으니 돈은 안 빠졌다. 주문을 닫고 실패 쪽으로.
+  if (네이버 && orderId && 네이버결과 && 네이버결과 !== 'Success') {
+    var 그만 = 네이버결과 === 'UserCancel';
+    Promise.resolve(ChaeksaPay.nfail ? ChaeksaPay.nfail({ orderId: orderId, code: 네이버결과, message: q.get('resultMessage') || '' }) : null)
+      .catch(function () {}).then(function () {
+        location.replace('pay-fail.html?pv=naver&why=' + (그만 ? 'cancel' : 'fail') + '&orderId=' + encodeURIComponent(orderId)
+          + (그만 ? '' : '&code=' + encodeURIComponent(네이버결과)));
+      });
+    return;
+  }
+  if (카카오 ? (!orderId || !pgToken) : 네이버 ? (!orderId || !네이버번호) : (!paymentKey || !orderId || !amount)) {
     // 결제창을 거치지 않고 이 주소를 직접 연 경우다.
     fail('결제 정보가 없습니다. 결제 화면을 거치지 않고 열린 주소 같습니다.');
     return;
@@ -241,9 +253,12 @@
   // 승인은 서버가 한다. 여기서는 부탁만 하고 결과를 그린다 —
   // 이 요청이 끝나야 결제가 끝난 것이고, 그전까지는 돈이 잡혀만 있다.
   // 카카오는 로그인 없이도 승인된다(카카오톡에서 결제하고 다른 브라우저로 돌아온 경우) — 주문은 원래 계정에 붙는다.
+  // 네이버도 로그인 없이 승인된다 — 결제번호(paymentId)는 결제한 사람만 받고, 서버가 네이버 응답의 주문번호 · 금액을 DB 와 맞춘다.
   var 승인 = 카카오
     ? ChaeksaPay.kconfirm({ orderId: orderId, pgToken: pgToken })
-    : ChaeksaPay.confirm({ paymentKey: paymentKey, orderId: orderId, amount: amount });
+    : 네이버
+      ? ChaeksaPay.nconfirm({ orderId: orderId, paymentId: 네이버번호 })
+      : ChaeksaPay.confirm({ paymentKey: paymentKey, orderId: orderId, amount: amount });
   승인
     .then(function (r) {
       if (!r || !r.ok) { fail(r && r.message || '승인에 실패했습니다.', r && r.code); return; }
@@ -302,13 +317,13 @@
               : '<p>결제하신 내용이 앱에서 열렸습니다.'
                 + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
-        + (시험 && 카카오 ? '<p><button class="btn sub" id="testRefund" type="button">이 시험 결제 취소하기(검수 계정)</button></p><p class="warn" id="testRefundMsg"></p>' : '')
+        + (시험 && (카카오 || 네이버) ? '<p><button class="btn sub" id="testRefund" type="button">이 시험 결제 취소하기(검수 계정)</button></p><p class="warn" id="testRefundMsg"></p>' : '')
         + '<p><a class="btn sub" href="./">← 홈</a></p>');
       // 10-01 시험 결제의 취소(환불) 길도 끝까지 시험한다 — 서버(krefund)가 검수 계정만 받는다.
       var 취소 = document.getElementById('testRefund');
       if (취소) 취소.onclick = function () {
         취소.disabled = true;
-        ChaeksaPay.krefund(orderId).then(function (x) {
+        (네이버 ? ChaeksaPay.nrefund(orderId) : ChaeksaPay.krefund(orderId)).then(function (x) {
           document.getElementById('testRefundMsg').textContent = x && x.ok ? '취소됐습니다(시험). 주문이 「취소」로 바뀌었습니다.' : '취소하지 못했습니다: ' + ((x && (x.message || x.code)) || '알 수 없음');
           if (!(x && x.ok)) 취소.disabled = false;
         }).catch(function (e) { document.getElementById('testRefundMsg').textContent = String(e && e.message || e); 취소.disabled = false; });

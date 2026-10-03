@@ -98,6 +98,7 @@
       <span>[필수] 보고서를 처음 열어 본 뒤에는 청약철회가 제한될 수 있다는 점에 동의합니다. 열어 보기 전에는 언제든,
         보고서를 만들지 못해도 전액 환불됩니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span>
     </label>
+    <div id="pvPick"></div><!-- 10-03 결제 수단 칸(결제사가 둘 이상일 때만 pay.js 결제사칸이 채운다) -->
     <button type="submit" class="send" id="i_send">신청하기</button>
     <!-- 10-02 결제가 아직 열리지 않았을 때(pay.js 곧열림) 결제 단추 · 결제 동의 대신 이 자리가 보인다 — 메일 신청 · 신청서 내용 복사 -->
     <div class="already" id="soonPay" hidden></div>
@@ -119,7 +120,7 @@
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=b538926f88"></script>
 <script src="usage.js?v=3282ea377a"></script>
-<script src="pay.js?v=223a451b94"></script>
+<script src="pay.js?v=d4052fabb5"></script>
 <!-- 10-02 신청서 칸 밑 「이렇게 읽었어요」 — 읽개는 places 표의 이름만 받는다(모르는 곳을 서울로 바꾸지 않는다). 비공개 서버가 같은 파일로 다시 읽는다. -->
 <script src="places.js?v=1350b96148"></script>
 <script src="taekil-read.js?v=6e9dc526e5"></script>
@@ -285,6 +286,7 @@
     }
     금액 = ChaeksaPay.won(p.amount);
     document.querySelectorAll('[data-price="taekil"]').forEach(function (el) { el.textContent = 금액; });
+    if (ChaeksaPay.결제사칸) ChaeksaPay.결제사칸(document.getElementById('pvPick')).catch(function () {});   // 10-03 결제 수단 칸
     // 결제가 아직 시험 모드면(일반 손님) 결제 단추는 그대로 두고 「곧 열려요」 + 메일 신청을 덧붙인다 — 위 곧열림그리기(10-03)
     return Promise.resolve(ChaeksaPay.곧열림 ? ChaeksaPay.곧열림() : false).catch(function () { return false; }).then(function (아직) {
       if (아직) { 곧열림그리기(); return; }
@@ -355,7 +357,7 @@
     busy = true; 단추(); say('');
     // 신청서(적은 그대로 + 「이렇게 읽었어요」)는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake, 10-02).
     // 카카오톡에서 결제하고 로그인 안 된 브라우저로 돌아와도 신청서는 이미 주문에 있다. 결제 뒤 화면은 붙은 것을 확인만 한다.
-    ChaeksaPay.buy('taekil', null, null, F.신청서(d)).then(function (r) {
+    ChaeksaPay.buy('taekil', null, (ChaeksaPay.고른결제사 && ChaeksaPay.고른결제사(document.getElementById('pvPick'))) || null, F.신청서(d)).then(function (r) {
       busy = false; 단추();
       if (r && r.ok === false && !r.closed) say(r.message || '결제창을 열지 못했습니다.', true);
     }).catch(function (err) { busy = false; 단추(); say(String((err && err.message) || err), true); });

@@ -307,7 +307,7 @@
       try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('pay'); } catch (e) {}
       var 원래 = btn.textContent;
       btn.dataset.label = 원래; btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = '결제창을 여는 중…'; say.textContent = '';
-      Promise.resolve().then(function () { return P.buy('love_pair', 열쇠, 'kakao'); })
+      Promise.resolve().then(function () { return P.buy('love_pair', 열쇠, (P.고른결제사 && P.고른결제사(box.querySelector('#prBuyWrap'))) || 'kakao'); })   // 10-03 결제 수단 칸
         .catch(function (e) { return { ok: false, message: String((e && e.message) || e) }; })
         .then(function (r) {
           delete btn.dataset.busy; btn.disabled = false; btn.textContent = 원래;

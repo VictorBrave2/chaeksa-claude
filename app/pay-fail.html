@@ -37,7 +37,7 @@
 
 <script src="config.js?v=f0cac82ec3"></script>
 <script src="cloud.js?v=b538926f88"></script>
-<script src="pay.js?v=223a451b94"></script>
+<script src="pay.js?v=d4052fabb5"></script>
 <script src="yaksok.js?v=dac0b835a3"></script>
 <script src="oryu.js?v=431856193b"></script>
 <script>
@@ -50,7 +50,8 @@
   var q = new URLSearchParams(location.search);
   var code = q.get('code'), message = q.get('message'), orderId = q.get('orderId');
   // 카카오페이는 돌아올 주소에 pv=kakao 와 why(cancel = 손님이 그만둠 · fail = 결제가 안 됨)를 붙여 두었다(api/pay.js kopen).
-  var 카카오 = q.get('pv') === 'kakao', why = q.get('why') === 'cancel' ? 'cancel' : 'fail';
+  // 네이버페이도 같은 꼴로 보낸다(pay-done.html 이 resultCode 를 보고 why 를 붙여 여기로 옮긴다, 10-03).
+  var 카카오 = q.get('pv') === 'kakao' || q.get('pv') === 'naver', why = q.get('why') === 'cancel' ? 'cancel' : 'fail';
 
   if (카카오) {
     document.getElementById('h').textContent = why === 'cancel' ? '결제를 그만두셨습니다' : '결제가 되지 않았습니다';
