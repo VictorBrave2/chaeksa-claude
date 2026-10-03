@@ -8,7 +8,7 @@
 <p>신청서 글을 값으로 읽기만 한다(판정 없음). 기준 오늘은 2026-10-02 로 박는다. 서버도 같은 파일(비공개 vendor/taekil-read.js)로 읽고,
 비공개 저장소 tests/taekil-parity.js 가 이 쪽의 시험을 서버 사슬로 그대로 다시 돌린다 — 이 쪽 시험을 고치면 거기서도 같이 돈다.</p>
 <div id="out"></div>
-<script src="places.js?v=1350b96148"></script><script src="taekil-read.js?v=6e9dc526e5"></script>
+<script src="places.js?v=1350b96148"></script><script src="taekil-read.js?v=4c31c70a7c"></script>
 <script>
 (function () {
   const R = window.ChaeksaTaekilRead, PL = window.ChaeksaPlaces, o = { 오늘: '2026-10-02' };
@@ -175,6 +175,17 @@
     if (R.읽기(Object.assign({}, 견본, { weekend: true }), o).주말 !== true) 문제.push('주말 칸을 못 읽었다');
     const 병예 = R.읽기(Object.assign({}, 견본, { hospital: '4월 13일, 예정일 4월 20일', wish: '' }), o);
     if (J(병예.병원날) !== J(['2027-04-13']) || 병예.예정일 !== '2027-04-20') 문제.push('병원 날짜 칸의 예정일 ' + J([병예.병원날, 병예.예정일]));
+    return 문제;
+  });
+  검사('신청서 — 바라는 점 · 궁금한 점에 적은 날짜는 기간 안의 날만 「물어보신 날」로 읽는다(가족 생일 · 예정일은 안 듦)', () => {
+    const 문제 = [];
+    const r = R.읽기(Object.assign({}, 견본, { have: '', wish: '첫째는 2025년 7월 24일생이에요. 예정일은 4월 20일이에요',
+      ask: '4월 13일이 좋아 보이는데 시간이 고민이에요. 4월 15일 오후 2시는 어떤가요?' }), o);
+    if (J(r.물어본) !== J([{ 날: '2027-04-13', 분: null }, { 날: '2027-04-15', 분: 840 }])) 문제.push('글에 적은 날짜 ' + J(r.물어본));
+    if (!r.줄.some((z) => z.칸 === 'askdate')) 문제.push('「이렇게 읽었어요」에 글에서 읽은 날짜 줄이 없다');
+    const 겹 = R.읽기(Object.assign({}, 견본, { ask: '4월 14일이 괜찮을까요?' }), o);   // 이미 받아 둔 날(4월 14일 오전 10시)과 같은 날 — 또 넣지 않는다
+    if (J(겹.물어본) !== J([{ 날: '2027-04-14', 분: 600 }])) 문제.push('받아 둔 날과 겹침 ' + J(겹.물어본));
+    if (R.읽기(견본, o).줄.some((z) => z.칸 === 'askdate')) 문제.push('기간 밖 예정일만 적었는데 글 날짜 줄이 생겼다');
     return 문제;
   });
 
