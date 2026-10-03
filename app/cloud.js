@@ -30,6 +30,17 @@
   function clearSession() { localStorage.removeItem(AKEY); }
   const signedIn = () => !!(session() && session().access_token);
   const email = () => (session() && session().user && session().user.email) || null;
+  /** 어느 방법으로 · 누구로 로그인했나(10-03 네이버 로그인) — 설정 창에 「네이버 · 별명 · 메일」로 보인다.
+   *  카카오 · 네이버 계정은 따로라(산 것도 따로) 지금 어느 쪽인지 보여야 한다. 네이버 검수의 「제공 정보 활용처」(별명 · 이메일)도 이 자리다. */
+  function 계정표시() {
+    const u = session() && session().user;
+    if (!u) return null;
+    const am = u.app_metadata || {}, um = u.user_metadata || {};
+    const pv = String(am.provider || '');
+    const 방법 = /naver/.test(pv) ? '네이버' : pv === 'kakao' ? '카카오' : pv === 'email' ? '이메일' : '';
+    const 이름 = um.nickname || um.name || um.full_name || um.preferred_username || um.user_name || '';
+    return { 방법, 이름: String(이름).slice(0, 30), 메일: u.email || '' };
+  }
 
   async function api(path, opts = {}) {
     const s = await freshSession();
@@ -450,7 +461,7 @@
   }
 
   global.ChaeksaCloud = {
-    enabled, signedIn, email, sendMagicLink, signInWithPassword, signInWith, 로그인고르기, 네이버켜짐, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
+    enabled, signedIn, email, 계정표시, sendMagicLink, signInWithPassword, signInWith, 로그인고르기, 네이버켜짐, signOut, deleteAccount, captureRedirect, refusedLogin, me, api,
     pull, push, pushSoon, removePerson, session, token,
     uploadHold, localStuff, mustAskUpload, answerUpload, onAskUpload,
   };

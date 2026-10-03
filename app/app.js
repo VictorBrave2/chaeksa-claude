@@ -2203,7 +2203,12 @@
         if (p === 'super') grade = ' · 책사(전체 열람)';
         else if (p === 'member') grade = ' · 구독';
       } catch (e) {}
-      $('cloudWho').textContent = (C.email() || '로그인됨') + grade;
+      // 10-03 어느 방법으로 · 누구로 들어왔는지(「네이버 · 별명 · 메일」) — 카카오 · 네이버 계정은 따로다.
+      let 누구 = null;
+      try { 누구 = C.계정표시 ? C.계정표시() : null; } catch (e) { 누구 = null; }
+      const 계정글 = 누구 && 누구.방법 ? 누구.방법 + '로 로그인' + (누구.이름 ? ' · ' + 누구.이름 : '') + (누구.메일 ? ' · ' + 누구.메일 : '')
+        : (C.email() || '로그인됨');
+      $('cloudWho').textContent = 계정글 + grade;
       const at = localStorage.getItem('chaeksa.sync');
       const 보류 = C.uploadHold ? C.uploadHold() : null;
       $('cloudWhen').textContent = (at && !보류 ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '')
