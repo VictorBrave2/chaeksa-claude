@@ -30,7 +30,9 @@
     marry: { 키: 'ssom', 탭: 'ssom', 곳: '단계:결혼', 글: '결혼을 생각할 때 우리 둘은?' },
     day: { 키: 'taekil', 탭: 'taekil', 글: '제왕절개 날짜 · 시각 고르기' },
   };
-  var 앞 = ['love'];   // 맨 앞에 설 분류(landing.js 가 온 길에 따라 바꿀 수 있다 — 앞바꾸기)
+  // 맨 앞에 설 분류(landing.js 가 온 길에 따라 바꿀 수 있다 — 앞바꾸기).
+  // 10-04 전략 — 아이(출산택일)가 첫 칸, 연애가 둘째. 블로그 · 검색으로 오는 사람 대부분이 출산택일을 찾아오고, 첫 매출도 출산택일에서 낸다.
+  var 앞 = ['child', 'love'];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 성별() { try { var p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); return p && p.gender === 'M' ? 'm' : 'f'; } catch (e) { return 'f'; } }
@@ -87,7 +89,8 @@
     });
     el.innerHTML = '<div class="cats">' + 그림들 + '</div>'
       + (물음들 ? '<p class="cats-h">이런 물음은 여기서 바로 답해요</p><div class="cats-q">' + 물음들 + '</div>' : '')
-      + (곧.length ? '<p class="cats-soon">곧 열려요 · ' + 곧.map(esc).join(' · ') + '</p>' : '');
+      // 10-04 전략 — 빈 선반(「곧 열려요 · …」)은 보이지 않는다. 손님 수가 적을 때 고를 것이 많으면 아무것도 안 고른다(곧 목록은 그리지 않고 버린다).
+      + '';
     if (Y) Y.값채우기(el);
     el.querySelectorAll('a[data-tab]').forEach(function (a) {
       a.onclick = function (e) {
