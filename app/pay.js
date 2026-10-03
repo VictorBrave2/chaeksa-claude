@@ -65,12 +65,13 @@
   const providers = async () => {
     const st = await state();
     let pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
-    // 운영 결제사가 하나라도 있으면, 손님(검수 계정 아님 · 시험을 연 날 아님)에게는 시험 결제사를 안 보인다 —
-    // 눌러도 서버가 test_only 로 막는 단추라서(10-03). 모두 시험이면 그대로 둔다(곧열림 알림이 뜬다).
-    if (!st.testOpen && pv.some((p) => p.mode === 'live')) {
+    // 손님(검수 계정 아님 · 시험을 연 날 아님)에게는 눌러도 서버가 test_only 로 막는 시험 결제사를 늘어놓지 않는다(10-03).
+    //   운영 결제사가 하나라도 있으면 → 운영 결제사만.  모두 시험이면 → 첫째(심사 중인 결제사, 지금 카카오페이) 하나만 — 곧열림 알림이 뜬다.
+    // 검수 계정은 셋 다 본다(네이버 · 토스 시험 결제를 끝까지 시험하는 자리).
+    if (!st.testOpen) {
       let 수퍼 = false;
       try { const U = global.ChaeksaUsage; 수퍼 = !!(U && U.plan && U.plan() === 'super'); } catch (e) {}
-      if (!수퍼) pv = pv.filter((p) => p.mode === 'live');
+      if (!수퍼) pv = pv.some((p) => p.mode === 'live') ? pv.filter((p) => p.mode === 'live') : pv.slice(0, 1);
     }
     return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
   };
