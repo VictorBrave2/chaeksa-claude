@@ -103,7 +103,8 @@
   function 사람지우기(id) {
     const P = People(), p = P.get(id);
     if (!p) return;
-    if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다. 계속할까요?`)) return;
+    const 마지막 = P.list().length <= 1;
+    if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다.${마지막 ? ' 넣어 둔 사람이 없어져 첫 화면으로 돌아가요.' : ''} 계속할까요?`)) return;
     const 지운사람 = p.id;
     P.remove(id);
     $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
@@ -111,6 +112,14 @@
     if (window.ChaeksaCloud) {
       try { if (ChaeksaCloud.removePerson) ChaeksaCloud.removePerson(지운사람).catch(() => {}); } catch (e) {}
       ChaeksaCloud.pushSoon();
+    }
+    // 10-04 사장님 「고치기 옆에 삭제가 없어졌어」 — 한 사람만 있어도 지운다. 마지막 사람이면 첫 화면(생년월일 넣기)으로.
+    // 옛 한 사람 칸(chaeksa.profile)도 지운다 — 남겨 두면 다시 열 때 되살아난다(부팅이 그 칸을 읽는다).
+    if (!P.list().length) {
+      localStorage.removeItem(KEY); profile = null;
+      $('app').classList.add('hide'); $('nav').classList.add('hide');
+      renderPeopleBtn(); showLanding();
+      return;
     }
     start(P.toProfile(P.active()));
   }
@@ -124,9 +133,9 @@
           <span>${esc(p.relation)}${p.isSelf ? '' : ''} · ${p.birth.year}.${p.birth.month}.${p.birth.day}${p.birth.hour == null ? ' (시간 모름)' : ''}</span>
         </button>
         <button class="btn-ghost" data-id="${p.id}" data-a="edit" aria-label="수정">고치기</button>
-        ${P.list().length > 1 ? `<button class="btn-ghost pr-del" data-id="${p.id}" data-a="del" aria-label="지우기">지우기</button>` : ''}
+        <button class="btn-ghost pr-del" data-id="${p.id}" data-a="del" aria-label="지우기">지우기</button>
       </div>`).join('') || '<p class="hint">아직 등록된 사람이 없습니다.</p>';
-    // 09-25 사장님 「프로필 선택에 고치기도 좋지만 삭제도 필요함」 — 줄마다 지우기. 마지막 한 사람은 못 지운다(고치기 폼과 같은 규칙).
+    // 09-25 사장님 「프로필 선택에 고치기도 좋지만 삭제도 필요함」 — 줄마다 지우기. 10-04 마지막 한 사람도 지운다(첫 화면으로).
     $('peopleList').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.a === 'pick') { P.setActive(b.dataset.id); $('peopleSheet').classList.add('hide'); start(P.toProfile(P.active())); }
       else if (b.dataset.a === 'del') 사람지우기(b.dataset.id);
@@ -210,7 +219,7 @@
     if ($('pfPlace')) $('pfPlace').value = b.place || 'KR:서울';
     // 10-02 태어난 곳은 접어 둔다(「더 정확하게(선택)」). 서울이 아닌 사람을 고칠 때만 펼쳐서 보여 준다.
     if ($('pfMore') && $('pfPlace')) $('pfMore').open = !!$('pfPlace').value && $('pfPlace').value !== 'KR:서울';
-    $('pfDelete').classList.toggle('hide', !p || P.list().length <= 1);
+    $('pfDelete').classList.toggle('hide', !p);   // 10-04 마지막 한 사람도 지울 수 있다
     사람폼모양(모양 || null);
     $('personForm').classList.remove('hide');
     updatePfConv();
