@@ -56,6 +56,10 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     ('정확한사주확인', 'saju-accuracy-test', '사주는 어디서 봐야 정확한가요'),
     # 10-03 docs/51(09-15)에 「출산택일 용어 쪽 — 제가 만든다」 적고 안 만든 것. AI 가 가장 잘 집어 가는 「X란 …이다」 정의문 모음.
     ('사주용어', 'saju-glossary', '사주 용어는 무슨 뜻인가요 — 진태양시 · 절기 · 시진 · 서머타임 한 줄 정의'),
+    # 10-04 사장님 「블로그 글이나 작성하자」 — 실제 손님이 묻는 꼴(날만 받음 · 성별 모름 · 첫째가 있음)을 만든 예로(워크플로 wf_d00d936d-c07 · wf_8d11cfe1-6d7)
+    ('날짜만받았을때', 'taekil-one-day-time', '병원에서 날짜만 받았을 때, 출산 시간은 어떻게 고르나요'),
+    ('아들딸택일', 'taekil-son-or-daughter', '아들과 딸은 출산택일 결과가 다른가요'),
+    ('첫째와부딪히는날', 'taekil-first-child', '첫째 아이와 부딪히지 않는 출산 날짜는 어떻게 고르나요'),
 ]
 # 궁통보감 관점 월별 글(tools_gungtong.py) — 열두 달. 여섯 갈래 가운데 첫째(09-19). 달이 늘면 MONTHS 에 줄을 더한다.
 PILLARS += [(f'{mo}월궁통보감', f'taekil-{y}-{mo:02d}-gungtong', f'왜 {mo}월에 태어나는 아이에겐 이 글자가 필요한가요 — 궁통보감으로 본 {y}년 {mo}월') for y, mo in MONTHS]
@@ -63,6 +67,9 @@ PILLARS += [(f'{mo}월궁통보감', f'taekil-{y}-{mo:02d}-gungtong', f'왜 {mo}
 # 같이 읽으면 좋은 글 — 주제가 가까운 글 셋(09-22 점검: 질문 글이 들어오는 링크 하나뿐인 막다른 길이었다).
 # 월별 · 궁통보감 글은 아래 related() 가 같은 달 짝을 붙인다. 없는 slug 는 건너뛴다.
 RELATED = {
+    'taekil-one-day-time': ['taekil-first-child', 'taekil-doctor-schedule', 'taekil-solar-time'],
+    'taekil-son-or-daughter': ['taekil-fate-vs-timing', 'taekil-one-day-time', 'taekil-how-to-choose'],
+    'taekil-first-child': ['taekil-one-day-time', 'taekil-how-to-choose', 'taekil-son-or-daughter'],
     'taekil-why-different': ['why-ai-three-classics', 'taekil-verify', 'taekil-how-to-choose'],
     'taekil-cesarean-date': ['taekil-doctor-schedule', 'taekil-solar-time', 'taekil-how-to-choose'],
     'taekil-how-to-choose': ['taekil-cesarean-date', 'taekil-verify', 'taekil-fate-vs-timing'],
