@@ -2309,7 +2309,15 @@
     if (C.onAskUpload) C.onAskUpload(() => 올릴지묻기(false));
     const bk = $('btnKakao'), bg = null /* 구글 로그인 삭제(2026-09-15 사장님) */, bm = $('btnMail'),
           bs = $('btnSyncNow'), bo = $('btnLogout');
-    if (bk) bk.onclick = () => { try { C.로그인고르기 ? C.로그인고르기() : C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };   // 10-03 네이버가 켜졌으면 고르기
+    // 10-03 설정 창 — 카카오 단추는 카카오로 곧바로, 네이버가 켜졌으면 네이버 단추를 따로 보인다(사장님 「설정엔 카카오밖에 없네」).
+    if (bk) bk.onclick = () => { try { C.signInWith('kakao'); } catch (e) { cloudMsg(e.message); } };
+    const bn = $('btnNaver');
+    if (bn) {
+      let 켜짐 = false;
+      try { 켜짐 = !!(C.네이버켜짐 && C.네이버켜짐()); } catch (e) {}
+      bn.classList.toggle('hide', !켜짐);
+      bn.onclick = () => { try { C.signInWith('naver'); } catch (e) { cloudMsg(e.message); } };
+    }
     if (bg) bg.onclick = () => { try { C.signInWith('google'); } catch (e) { cloudMsg(e.message); } };
     if (bm) bm.onclick = async () => {
       const v = $('loginEmail').value.trim();
