@@ -190,11 +190,14 @@
       + 신청서칸(a)
       + (a.meta ? '<h4>기록</h4><ul class="tkr-ul">' + 기록줄(a).map((t) => '<li>' + esc(t) + '</li>').join('') + '</ul>' + 차례비교(a)
         + (a.meta.ai_input ? '<details class="tkr-fold"><summary>AI 에 보낸 글 보기(가족 생년월일 · 메일 · 병원 이름이 없어야 해요)</summary><pre class="adm-pre">' + esc(a.meta.ai_input) + '</pre></details>' : '') : '')
-      + (만듦 ? '<h4>손님이 볼 보고서</h4>' + (a.prevReport
+      // 10-04 사장님 검수 꼴 — 제안한 순서대로 명식 카드를 보고 맞다 · 틀리다를 따진다. 카드를 먼저 펴 두고, 보고서 전문은 접어 둔다.
+      + (만듦 ? '<h4>명식 카드 — 제안한 순서</h4><div data-rep="cards">' + V.그리기(V.카드만(a.report)) + '</div>'
+        + '<details class="tkr-fold"><summary>손님이 볼 보고서 전체</summary>' + (a.prevReport
         ? '<div class="adm-cols adm-two"><div><p class="hint">앞 판(다시 만들기 전)</p><div data-rep="prev">' + V.그리기(a.prevReport) + '</div></div><div><p class="hint">지금 판</p><div data-rep="now">' + V.그리기(a.report) + '</div></div></div>'
-        : '<div data-rep="now">' + V.그리기(a.report) + '</div>')
+        : '<div data-rep="now">' + V.그리기(a.report) + '</div>') + '</details>'
         : (a.prevReport ? '<details class="tkr-fold"><summary>앞 판 보기(다시 만들기 전)</summary><div data-rep="prev">' + V.그리기(a.prevReport) + '</div></details>' : ''));
-    const 판 = d.querySelector('[data-rep="now"]'), 앞 = d.querySelector('[data-rep="prev"]');
+    const 판 = d.querySelector('[data-rep="now"]'), 앞 = d.querySelector('[data-rep="prev"]'), 카 = d.querySelector('[data-rep="cards"]');
+    if (카) V.카드채우기(카, a.report);
     if (판) V.카드채우기(판, a.report);
     if (앞) V.카드채우기(앞, a.prevReport);
     d.querySelectorAll('[data-act]').forEach((b) => { b.onclick = () => 누름(id, b.dataset.act, a, b); });

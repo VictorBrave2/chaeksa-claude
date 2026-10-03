@@ -115,5 +115,15 @@
     return 줄.join('\n');
   }
 
-  global.ChaeksaTaekilReport = { 차례, 그리기, 카드채우기, 글로, esc };
+  /** 명식 카드만, 제안한 차례대로 — 사장님 검수 꼴(10-04 「제안한 순서대로 명식카드를 보고 맞다 틀리다를 따지는 것」).
+   *  카드 차례 = 보고서 cards 차례(물어보신 시각 → 1번 → 2번 …). 칸 id 는 'cardsonly'(rep.cards 는 카드 목록이라 칸 이름으로 못 쓴다). */
+  function 카드만(rep) {
+    const cards = rep && Array.isArray(rep.cards) ? rep.cards : [];
+    const body = [];
+    cards.forEach((c, i) => { body.push({ k: 'b', t: String((c && c.label) || (i + 1) + '번') }); body.push({ k: 'card', i }); });
+    if (!body.length) body.push({ k: 'p', t: '명식 카드가 없어요 — 권하는 곳이 없는 보고서예요.' });
+    return { v: rep && rep.v, order: ['cardsonly'], card: rep && rep.card, cards, cardsonly: { head: '', body } };
+  }
+
+  global.ChaeksaTaekilReport = { 차례, 그리기, 카드채우기, 글로, 카드만, esc };
 })(window);
