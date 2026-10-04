@@ -54,11 +54,48 @@
     h += '<p class="note">계산 — 자미두수 해마다 운(《紫微斗數全書》 卷三)과 사주 십성 변화로 셉니다. 「맞아요 · 아니에요」는 계산을 다듬는 데만 씁니다(생일은 저장하지 않아요).</p>';
     $('out').innerHTML = h;
   }
+  // 10-05 사장님 「맞아요를 실시간 현황판으로 — 리뷰 시스템」 「만든 나보다 이용자 리뷰를 더 믿는다」.
+  //   들어오자마자 보이게 입력 칸 위에. 아니에요도 그대로 센다(맞아요만 고르면 거짓 현황판). 후기는 맞아요 누른 사람만 한 줄.
+  var 몇전 = function (t) { var m = Math.max(0, Math.round((Date.now() - new Date(t).getTime()) / 60000)); return m < 1 ? '방금' : m < 60 ? m + '분 전' : m < 1440 ? Math.round(m / 60) + '시간 전' : Math.round(m / 1440) + '일 전'; };
+  var 칸이름 = { b: '가장 힘들었을 해', c: '일이 잘 풀렸을 해' };
+  var 판섬 = false;   // 서버에 후기 표가 서기 전(사장님 SQL 전)에는 후기 칸도 안 연다
+  async function 현황판() {
+    try {
+      var r = await fetch(API + '/api/when-board', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      if (!r.ok) return;
+      판섬 = true;
+      var d = await r.json(), 줄 = function (k) { var x = d[k] || {}, 맞 = (x.first || 0) + (x.fixed || 0);
+        return '<div class="row2"><span>' + 칸이름[k] + '</span><span><b>맞아요 ' + 맞 + '명</b>' + (x.fixed ? ' (시각 고쳐서 ' + x.fixed + ')' : '') + ' · 아니에요 ' + (x.miss || 0) + '명</span></div>'; };
+      var h = '<div class="bd"><span class="live">● 실시간</span><h2>' + (d.people ? '지금까지 ' + d.people + '명이 지나온 해를 맞춰 봤어요' : '아직 맞춰 본 사람이 없어요 — 첫 번째로 맞춰 보세요') + '</h2>';
+      if (d.people) h += 줄('b') + 줄('c');
+      if (d.reviews && d.reviews.length) h += '<ul>' + d.reviews.map(function (x) { return '<li>「' + esc(x.text) + '」<small>' + (x.y ? x.y + '년' + (x.age != null ? '(' + x.age + '세)' : '') + ' · ' : '') + 칸이름[x.kind] + ' 맞아요 · ' + 몇전(x.at) + '</small></li>'; }).join('') + '</ul>';
+      $('board').innerHTML = h + '</div>';
+    } catch (e) {}
+  }
+  현황판(); setInterval(function () { if (!document.hidden) 현황판(); }, 30000);
+  function 후기칸(box) {
+    if (!판섬) return;
+    if (box.nextElementSibling && box.nextElementSibling.classList.contains('rv')) return;
+    var d = document.createElement('form'); d.className = 'rv';
+    d.innerHTML = '<input maxlength="80" placeholder="그해 무슨 일이 있었나요? 한 줄 후기(선택)"><button type="submit">남기기</button>';
+    box.parentNode.insertBefore(d, box.nextSibling);
+    d.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var id = box.getAttribute('data-id'), k = id.charAt(0), P = 판들[+id.slice(1)] || {}, h = k === 'b' ? P.바닥 : P.맑음, t = d.querySelector('input').value.trim();
+      if (t.length < 2) return;
+      try {
+        var r = await fetch(API + '/api/when-board', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ review: { runId: run, kind: k, y: h ? h.y : null, age: h ? h.나이 : null, text: t } }) });
+        var j = await r.json().catch(function () { return {}; });
+        if (!r.ok) { alert(j.error || '남기지 못했어요.'); return; }
+        d.outerHTML = '<div class="rv-ok">고마워요. 후기가 위 현황판에 올라갔어요.</div>'; 현황판();
+      } catch (err) { alert('연결이 잠깐 끊겼어요.'); }
+    });
+  }
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('.btns button'); if (!b) return;
     var box = b.parentNode, v = b.getAttribute('data-v');
     남기기(box.getAttribute('data-id'), v);
-    if (v === 'yes') { b.classList.add('on'); return; }
+    if (v === 'yes') { b.classList.add('on'); 후기칸(box); setTimeout(현황판, 1500); return; }
     if (판들.length > 1) { 지금판 = (지금판 + 1) % 판들.length; 그리기(); window.scrollTo(0, $('out').offsetTop - 10); }
   });
   // 10-05 사장님 「이용자 정보 입력은 프로필로 가지고 와야지」 — 이 기기에 넣어 둔 사람(people.js)이 있으면 고르기만 하고 곧장 본다.
