@@ -1,5 +1,6 @@
 /* 「언제 나아지나」 화면 — 그리기만 한다. 계산은 비공개 서버 /api/when(lib/when.js), 여기엔 판정 · 규칙이 없다.
  * 받는 것: { 올해, 판들: [{ 말, 때, 띠: [{y, 등급}], 지금, 숨통{y, 등급, 왜}, 최고, 바닥{y, 나이, 말}, 맑음{y, 나이, 말} }] } — 판 셋 = 알려 준 시각 · 한 시진 앞 · 뒤.
+ * 10-05 사장님 「무료로 공개해」 — 해마다 표 · 앞으로 24달 · 조심할 해와 할 일까지 전부 보여 준다.
  * 「아니에요」 → 다음 판으로 다시 맞춘다. 「맞아요 · 아니에요」는 /api/love-feedback 에 run 「when-…」 · id(b · c + 판 번호)로 남긴다(맞춤 비율 — 생일은 보내지 않는다).
  */
 (function () {
@@ -36,10 +37,20 @@
     h += '<div class="sec">그래서, 언제 나아지나</div><div class="big">';
     if (P.바닥) h += '<p>지금은 <b>' + P.바닥.y + '년</b>에 닿았던 바닥을 지나는 중입니다.</p>';
     if (P.숨통 && !(P.최고 && P.최고.y === P.숨통.y)) h += '<p><b>' + P.숨통.y + '년</b>, 처음으로 막힘보다 풀림이 많아집니다.<small>왜 그때? — ' + esc(P.숨통.왜) + '</small></p>';
-    if (P.최고) h += '<p><b>' + P.최고.y + '년</b>, 앞으로 가장 좋은 해입니다.</p>';
+    if (P.최고) h += '<p><b>' + P.최고.y + '년</b>, 앞으로 가장 좋은 해입니다.' + (P.최고왜 ? '<small>왜 그때? — ' + esc(P.최고왜) + '</small>' : '') + '</p>';
+    if (P.할일) h += '<p>지금 할 일 — <b>' + esc(P.할일) + '</b></p>';
     if (!P.숨통 && !P.최고) h += '<p>앞으로 10년 안에 막힘이 확 줄어드는 해가 뚜렷하지 않습니다. 해마다 표에서 가장 덜 막히는 해를 보세요.</p>';
     h += '</div>';
-    h += '<div class="lock"><b>더 보기(곧 열려요)</b><br>· 해마다 — 사주 · 자미두수 · 결론을 나란히<br>· 앞으로 24달 — 달마다 좋음 · 보통 · 조심<br>· 조심할 해와 그해 하지 말 일</div>';
+    if (P.조심) h += '<div class="sec">조심할 해</div><div class="card"><div class="k">막힘이 가장 몰리는 해</div><div class="y">' + P.조심.y + '년 <small>' + P.조심.나이 + '세</small></div><p>' + esc(P.조심.말) + (P.조심.할일.length ? '<br><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div>';
+    var 칩 = function (k) { return '<span class="chip c-' + k + '">' + k + '</span>'; };
+    h += '<div class="sec">해마다 — 사주 · 자미두수 · 결론</div><div class="card tw"><table class="t3"><thead><tr><th>해</th><th>사주</th><th>자미두수</th><th>결론</th></tr></thead><tbody>'
+      + (P.해들 || []).map(function (x) { return '<tr class="' + (x.y === 올해 ? 'now' : x.y < 올해 ? 'past' : '') + '"><td>' + x.y + '<br><small>' + x.나이 + '세</small></td><td>' + x.사주.map(esc).join('<br>') + (x.대운바뀜 ? '<br><small>10년 운 바뀜</small>' : '') + '</td><td>'
+        + (x.풀.length ? '<span class="g">+' + x.풀.map(esc).join(' +') + '</span>' : '') + (x.풀.length && x.막.length ? '<br>' : '') + (x.막.length ? '<span class="b">−' + x.막.map(esc).join(' −') + '</span>' : '') + (!x.풀.length && !x.막.length ? '—' : '')
+        + '</td><td>' + 칩(x.등급) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    h += '<div class="sec">앞으로 24달 — 사주 · 자미두수 · 결론</div><div class="card tw"><table class="t3"><thead><tr><th>달</th><th>사주</th><th>자미두수</th><th>결론</th></tr></thead><tbody>'
+      + (P.달들 || []).map(function (a, i) { return '<tr><td>' + (i === 0 || a.m === 1 ? a.y + '<br>' : '') + a.m + '월</td><td>' + a.사주.map(esc).join('<br>') + '</td><td>' + esc(a.자리) + ' 자리'
+        + (a.좋은.length ? '<br><span class="g">' + a.좋은.map(esc).join(' · ') + '</span>' : '') + (a.나쁜.length ? '<br><span class="b">' + a.나쁜.map(esc).join(' · ') + '</span>' : '')
+        + '</td><td>' + 칩(a.등급) + (a.몸돈 ? '<br><small>몸 · 돈 함께</small>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
     h += '<p class="note">계산 — 자미두수 해마다 운(《紫微斗數全書》 卷三)과 사주 십성 변화로 셉니다. 「맞아요 · 아니에요」는 계산을 다듬는 데만 씁니다(생일은 저장하지 않아요).</p>';
     $('out').innerHTML = h;
   }
