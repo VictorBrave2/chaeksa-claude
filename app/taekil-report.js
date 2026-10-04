@@ -8,6 +8,8 @@
  * 접어 두는 것(설계서 ⑤): 「날짜별로 전부」 · 「어떻게 골랐나」(칸의 접힘) · 덩어리 속 대운 목록.
  * 명식 카드는 이 자리에서 그린다(myeongsik-card.js + 시뮬레이터 엔진 사슬) — 서버는 그림을 못 찍는다.
  * 결과 화면에 반응 단추(맞아요 · 아니에요)는 두지 않는다(10-02).
+ * 근거는 부록으로(10-05 사장님 「부록으로 보내는 게 맞다 — PDF도 소책자도」): 원문(han) · 명식 한자(pillars) · AI 근거 목록(part 'AI근거')은
+ * 본문 자리에 「원문 · 근거 → 부록 N」 한 줄만 남기고 보고서 끝 「부록 — 원문과 근거」에 번호 차례로 모은다. 본문이 끊기지 않게.
  */
 (function (global) {
   'use strict';
@@ -35,16 +37,26 @@
       case 'pillars': return '<div class="tkr-pil"><p class="tkr-pil-h" lang="zh-Hant">' + esc(n.한자) + '</p><p>' + esc(n.읽기) + '</p>'
         + ((Array.isArray(n.글자) && n.글자.length) ? '<details class="tkr-fold"><summary>글자마다 뜻 보기</summary><ul class="tkr-ul">'
           + n.글자.map((x) => '<li>' + esc(x && x.말) + '</li>').join('') + '</ul></details>' : '') + '</div>';
-      case 'fold': return '<details class="tkr-fold"><summary>' + esc(n.head) + '</summary>' + 몸(n.body, rep) + '</details>';
+      case 'fold': return '<details class="tkr-fold"><summary>' + esc(n.head) + '</summary>' + 몸(n.body, rep, n.head) + '</details>';
       default: return '';
     }
   }
-  /** 노드 목록 → html. 덩어리 속 대운(part '대운')은 첫 줄만 펴 두고 나머지(목록)를 접는다. */
-  function 몸(body, rep) {
+  /** 근거 노드인가 — 부록으로 보낼 것 */
+  const 근거인가 = (n) => !!n && (n.k === 'han' || n.k === 'pillars' || (n.k === 'list' && n.part === 'AI근거'));
+  let 부록 = null;   // 그리기 한 번 동안만 쓰는 부록 모음 [{ 곳, html }]
+  /** 노드 목록 → html. 덩어리 속 대운(part '대운')은 첫 줄만 펴 두고 나머지(목록)를 접는다. 이어진 근거 노드는 한 번호로 부록에 보낸다. */
+  function 몸(body, rep, 곳) {
     const xs = Array.isArray(body) ? body : [];
     let out = '';
     for (let i = 0; i < xs.length; i++) {
       const n = xs[i];
+      if (부록 && 근거인가(n)) {
+        let h = 노드(n, rep);
+        while (i + 1 < xs.length && 근거인가(xs[i + 1])) h += 노드(xs[++i], rep);
+        부록.push({ 곳: 곳 || '', html: h });
+        out += '<p class="tkr-ref">원문 · 근거 → 부록 ' + 부록.length + '</p>';
+        continue;
+      }
       if (n && n.part === '대운') {
         out += 노드(n, rep);
         const 묶음 = [];
@@ -59,9 +71,9 @@
   /** 칸 하나 → html */
   function 칸(id, s, rep) {
     if (!s || typeof s !== 'object') return '';
-    let 속 = 몸(s.body, rep);
+    let 속 = 몸(s.body, rep, s.head);
     if (Array.isArray(s.items)) 속 += s.items.map((it) => '<article class="tkr-item"' + (it && it.번호 != null ? ' data-no="' + esc(it.번호) + '"' : '') + '>'
-      + (it && it.head ? '<h3>' + esc(it.head) + '</h3>' : '') + 몸(it && it.body, rep) + '</article>').join('');
+      + (it && it.head ? '<h3>' + esc(it.head) + '</h3>' : '') + 몸(it && it.body, rep, it && it.head) + '</article>').join('');
     if (s.접힘) return '<details class="tkr-sec tkr-foldsec" data-sec="' + esc(id) + '"><summary class="tkr-h">' + esc(s.head || '') + '</summary>' + 속 + '</details>';
     return '<section class="tkr-sec" data-sec="' + esc(id) + '">' + (s.head ? '<h2 class="tkr-h">' + esc(s.head) + '</h2>' : '') + 속 + '</section>';
   }
@@ -69,7 +81,13 @@
   function 그리기(rep) {
     if (!rep || typeof rep !== 'object') return '';
     const order = (Array.isArray(rep.order) && rep.order.length ? rep.order : 차례).filter(칸이름);
-    return '<div class="tkr">' + order.map((id) => 칸(id, rep[id], rep)).join('') + '</div>';
+    부록 = [];
+    const 끝 = order.filter((id) => id === 'close' || id === 'receipt'), 앞 = order.filter((id) => !끝.includes(id));
+    const 본문 = 앞.map((id) => 칸(id, rep[id], rep)).join(''), 맺 = 끝.map((id) => 칸(id, rep[id], rep)).join('');
+    const 모음 = 부록; 부록 = null;
+    const 부록칸 = 모음.length ? '<section class="tkr-sec tkr-appx" data-sec="appendix"><h2 class="tkr-h">부록 — 원문과 근거</h2>'
+      + 모음.map((x, i) => '<div class="tkr-appx-i"><p class="tkr-appx-h">부록 ' + (i + 1) + (x.곳 ? ' · ' + esc(x.곳) : '') + '</p>' + x.html + '</div>').join('') + '</section>' : '';
+    return '<div class="tkr">' + 본문 + 부록칸 + 맺 + '</div>';
   }
 
   /** 명식 카드 자리를 채운다 — 시뮬레이터 엔진 사슬을 늦게 싣고(쪽의 template#tkChain) myeongsik-card.js 로 그린다. 못 그리면 이름표만 남긴다. */

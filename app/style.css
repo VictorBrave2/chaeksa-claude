@@ -988,6 +988,10 @@ details.tkr-foldsec[open]>summary.tkr-h::after{content:""}
 .tkr-read.bad .tkr-read-v{color:#b4534f}
 .tkr-item{margin:14px 0;padding:16px 14px 8px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card)}
 .tkr-item h3{font-family:var(--serif);font-size:var(--t4);line-height:1.45;margin:0 0 10px;color:var(--ink)}
+.tkr .tkr-ref{font-size:var(--t1);color:var(--ink3);margin:2px 0 10px}
+.tkr-appx-i{margin:0 0 14px;padding-top:8px;border-top:1px dashed var(--line)}
+.tkr .tkr-appx-h{font-size:var(--t1);color:var(--ink3);margin:0 0 4px}
+@media print{.tkr-appx{break-before:page;page-break-before:always}}
 .tkr-han{margin:6px 0 12px;padding:10px 12px;border-left:3px solid var(--accent-line);background:var(--accent-soft);border-radius:0 var(--r1) var(--r1) 0}
 .tkr-han figcaption{font-size:var(--t1);color:var(--ink3)}
 .tkr .tkr-han-t{font-family:var(--serif);font-size:var(--t4);color:var(--ink);margin:4px 0 2px;letter-spacing:.02em}
