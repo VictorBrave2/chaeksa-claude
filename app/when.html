@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>언제 나아지나 — 지금 힘든 시기가 언제 끝나는지 · 책사</title>
+<meta name="description" content="지금 힘든 시기가 언제 끝나나요? 지나온 해를 먼저 맞춰 보고, 앞으로 나아지는 해와 가장 좋은 해를 짚어 드려요.">
+<meta name="robots" content="noindex,nofollow">
+<!-- 10-05 「언제 나아지나」 — 사장님 검수 전이라 검색에 안 올린다(noindex). 계산은 비공개 서버(/api/when)가 하고, 이 쪽은 그리기만 한다.
+     무료 칸만: 해마다 색 띠 · 지나온 해 둘(맞아요 · 아니에요 — 아니에요면 한 시진 앞 · 뒤로 다시 맞춘다) · 한 줄 답 · 나아지는 해의 「왜」. -->
+<script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=19)))?'night':'day');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4efe6;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#1f1d1a}
+[data-theme=night] body{background:#16171c;color:#ece6da}
+.wrap{max-width:440px;margin:0 auto;padding:22px 18px 48px}
+h1{font-family:"Noto Serif KR",serif;font-size:23px;margin:6px 0 8px;line-height:1.4}
+.sub{color:#6f685d;font-size:14.5px;margin:0 0 18px;line-height:1.65}
+[data-theme=night] .sub{color:#b3ab9c}
+.sec{font-size:13px;color:#b5412c;letter-spacing:.06em;margin:26px 0 8px}
+.card{background:#fffdf9;border:1px solid #e3dbcd;border-radius:12px;padding:14px 16px;margin:10px 0}
+[data-theme=night] .card{background:#20222a;border-color:#33363f}
+.card .k{font-size:12px;color:#857f74}.card .y{font-size:24px;margin:2px 0 6px}.card .y small{font-size:13px;color:#857f74}
+.card p{margin:0;font-size:14.5px;line-height:1.65}
+label{display:block;font-size:13px;color:#6f685d;margin:12px 0 4px}
+input,select{width:100%;font-size:16px;padding:10px 12px;border:1px solid #cfc8bb;border-radius:8px;background:#fff;color:#1f1d1a}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.seg{display:flex;gap:8px}.seg label{flex:1;margin:0;text-align:center;border:1px solid #cfc8bb;border-radius:8px;padding:10px;cursor:pointer;color:#4a453e}
+.seg input{display:none}.seg input:checked+span{font-weight:700;color:#b5412c}
+.go{display:block;width:100%;margin-top:18px;padding:14px;border:0;border-radius:10px;background:#1f1d1a;color:#f4efe6;font-size:16px;cursor:pointer}
+.err{color:#b5412c;font-size:13.5px;margin-top:10px;min-height:1em}
+.strip{display:flex;gap:2px}.cell{flex:1;height:34px;border-radius:3px;position:relative}
+.cell span{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:9px;color:#857f74}.cell.now{outline:2px solid #1f1d1a;outline-offset:1px}
+.legend{display:flex;gap:12px;margin-top:22px;font-size:12px;color:#4a453e;flex-wrap:wrap}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.btns{display:flex;gap:8px;margin-top:10px}.btns button{flex:1;padding:9px;border:1px solid #cfc8bb;border-radius:8px;background:transparent;font-size:13.5px;color:#4a453e;cursor:pointer}
+.btns button.on{background:#1f1d1a;color:#f4efe6;border-color:#1f1d1a}
+.big{background:#1f1d1a;color:#f4efe6;border-radius:14px;padding:18px;margin:14px 0}.big p{margin:8px 0;font-size:15px;line-height:1.7}.big b{color:#f0c9a8}
+.big small{display:block;margin-top:4px;font-size:12.5px;color:#d9cdb8;line-height:1.6}
+.redo{background:#fff4dc;border:1px solid #ecd49b;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6;margin:10px 0;color:#4a453e}
+.lock{border:1px dashed #cfc8bb;border-radius:12px;padding:16px;margin:14px 0;color:#6f685d;font-size:14px;line-height:1.7}
+.lock b{color:#1f1d1a}[data-theme=night] .lock b{color:#ece6da}
+.note{font-size:12px;color:#857f74;line-height:1.6;margin-top:22px}
+.foot{font-size:11.5px;color:#857f74;line-height:1.7;margin-top:32px}.foot a{color:#857f74}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="sec">책사 · 언제 나아지나</div>
+  <h1>지금 많이 힘드신가요?<br>언제 나아지는지 보여 드릴게요</h1>
+  <p class="sub">자미두수로 「언제 · 어느 자리」를, 사주로 「무엇이」를 봅니다. 먼저 지나온 해 두 개를 맞춰 보세요. 맞으면 앞으로 올 해도 같은 계산입니다.</p>
+
+  <form id="f" class="card">
+    <label>태어난 날(양력)</label>
+    <div class="row"><input id="y" type="number" inputmode="numeric" placeholder="1990" min="1920" max="2025" required><input id="m" type="number" inputmode="numeric" placeholder="월" min="1" max="12" required><input id="d" type="number" inputmode="numeric" placeholder="일" min="1" max="31" required></div>
+    <label>태어난 시각 — 모르면 볼 수 없어요(자미두수는 시각이 있어야 서요)</label>
+    <input id="t" type="time" required>
+    <label>성별</label>
+    <div class="seg"><label><input type="radio" name="g" value="M" checked><span>남</span></label><label><input type="radio" name="g" value="F"><span>여</span></label></div>
+    <label>태어난 곳</label>
+    <select id="p"></select>
+    <button class="go" type="submit">언제 나아지나 보기</button>
+    <div class="err" id="err"></div>
+  </form>
+
+  <div id="out"></div>
+
+  <p class="foot"><a href="./">책사 처음으로</a> · <a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
+  유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>
+  대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+</main>
+<script src="config.js?v=1306"></script>
+<script src="track.js?v=1306"></script>
+<script src="places.js?v=1306"></script>
+<script src="when.js?v=1306"></script>
+</body>
+</html>
