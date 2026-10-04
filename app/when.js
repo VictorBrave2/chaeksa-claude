@@ -1,7 +1,7 @@
 /* 「언제 나아지나」 화면 — 그리기만 한다. 계산은 비공개 서버 /api/when(lib/when.js), 여기엔 판정 · 규칙이 없다.
  * 받는 것: { 올해, 판들: [{ 말, 때, 띠: [{y, 등급}], 지금, 숨통{y, 등급, 왜}, 최고, 바닥{y, 나이, 말}, 맑음{y, 나이, 말} }] } — 판 셋 = 알려 준 시각 · 한 시진 앞 · 뒤.
  * 10-05 사장님 「무료로 공개해」 — 해마다 표 · 앞으로 24달 · 조심할 해와 할 일까지 전부 보여 준다.
- * 「아니에요」 → 다음 판으로 다시 맞춘다. 「맞아요 · 아니에요」는 /api/love-feedback 에 run 「when-…」 · id(b · c + 판 번호)로 남긴다(맞춤 비율 — 생일은 보내지 않는다).
+ * 「아니에요」 → 다음 판으로 다시 맞춘다. 「맞아요 · 아니에요」는 /api/when-board 에 서버가 준 열쇠(표 — 생년월일에서 만든 되돌릴 수 없는 값)와 칸(b · c + 판 번호)으로 남긴다. 한 사람 = 생년월일 하나라 새로고침해 다시 눌러도 늘지 않는다(10-05 2판).
  */
 (function () {
   'use strict';
@@ -9,13 +9,14 @@
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var 색 = { 좋음: '#2f6b4f', 나아짐: '#8fb79d', 버팀: '#d9cdb8', 힘듦: '#b5412c' };
-  var run = 'when-' + Math.random().toString(36).slice(2, 12);
+  var 표 = '';   // /api/when 이 준 사람 열쇠
   var 판들 = [], 지금판 = 0, 올해 = 0;
 
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
 
   function 남기기(id, v) {
-    try { fetch(API + '/api/love-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ runId: run, id: id, value: v }) }); } catch (e) {}
+    if (!표) return;
+    try { fetch(API + '/api/when-board', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vote: { t: 표, qid: id, value: v } }) }).then(function () { 현황판(); }, function () {}); } catch (e) {}
   }
   function 카드(머, h) {
     if (!h) return '';
@@ -84,7 +85,7 @@
       var id = box.getAttribute('data-id'), k = id.charAt(0), P = 판들[+id.slice(1)] || {}, h = k === 'b' ? P.바닥 : P.맑음, t = d.querySelector('input').value.trim();
       if (t.length < 2) return;
       try {
-        var r = await fetch(API + '/api/when-board', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ review: { runId: run, kind: k, y: h ? h.y : null, age: h ? h.나이 : null, text: t } }) });
+        var r = await fetch(API + '/api/when-board', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ review: { t: 표, kind: k, y: h ? h.y : null, age: h ? h.나이 : null, text: t } }) });
         var j = await r.json().catch(function () { return {}; });
         if (!r.ok) { alert(j.error || '남기지 못했어요.'); return; }
         d.outerHTML = '<div class="rv-ok">고마워요. 후기가 위 현황판에 올라갔어요.</div>'; 현황판();
@@ -95,7 +96,7 @@
     var b = e.target.closest && e.target.closest('.btns button'); if (!b) return;
     var box = b.parentNode, v = b.getAttribute('data-v');
     남기기(box.getAttribute('data-id'), v);
-    if (v === 'yes') { b.classList.add('on'); 후기칸(box); setTimeout(현황판, 1500); return; }
+    if (v === 'yes') { b.classList.add('on'); 후기칸(box); return; }
     if (판들.length > 1) { 지금판 = (지금판 + 1) % 판들.length; 그리기(); window.scrollTo(0, $('out').offsetTop - 10); }
   });
   // 10-05 사장님 「이용자 정보 입력은 프로필로 가지고 와야지」 — 이 기기에 넣어 둔 사람(people.js)이 있으면 고르기만 하고 곧장 본다.
@@ -155,7 +156,7 @@
       var r = await fetch(API + '/api/when', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var j = await r.json();
       if (!r.ok) { $('err').textContent = j.error || '계산하지 못했어요.'; return; }
-      판들 = j.판들 || []; 올해 = j.올해; 지금판 = 0; $('err').textContent = '';
+      판들 = j.판들 || []; 표 = j.표 || ''; 올해 = j.올해; 지금판 = 0; $('err').textContent = '';
       그리기(); if (!그대로) window.scrollTo(0, $('out').offsetTop - 10);
       try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('when_view'); } catch (e2) {}
     } catch (err) { $('err').textContent = '연결이 잠깐 끊겼어요. 다시 눌러 주세요.'; }
