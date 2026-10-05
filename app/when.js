@@ -47,6 +47,19 @@
     if (!벌써 && !P.숨통 && !P.최고) h += '<p>' + esc(틀('없음', {})) + '</p>';
     h += '</div>';
     if (P.할일) h += '<div class="sec">' + esc(화('할일머리', '지금 할 일')) + '</div><div class="card"><p><b>' + esc(P.할일) + '</b></p></div>';
+    // 10-05 사장님 「자미두수에서 뾰족한 부분을 짚어 줄 순 없어?」 — 명반에서 가장 크게 흔들리는 곳(막힘별 · 흉별 둘 이상)과 터지는 해
+    var V = T.뾰족 || {}, V틀 = function (k, v) { return String((V.틀 || {})[k] || '').replace(/\{([^{}]+)\}/g, function (_, n) { return v[n] == null ? '' : v[n]; }); };
+    if (P.뾰족 && P.뾰족.length && V.자리) {
+      h += '<div class="sec">' + esc((V.틀 || {}).머리 || '내 삶에서 가장 크게 흔들리는 곳') + '</div>';
+      P.뾰족.forEach(function (x, i) {
+        var 말 = V.자리[x.곳]; if (!말) return;
+        var 해들 = x.지난.map(function (z) { return z.y + '년(' + z.나이 + '세)'; }).join(' · ');
+        h += '<div class="card sharp"><p class="q">' + esc(V틀(i ? '둘째' : '첫줄', { 이름: 말.이름 })) + '</p><p>' + esc(말.뾰족) + '</p>'
+          + '<p class="why">' + x.까닭.map(function (k) { return esc((V.까닭 || {})[k] || ''); }).join(' ') + '</p>'
+          + (해들 ? '<p>' + esc(V틀('지난', { 해들: 해들, 터짐: 말.터짐 })) + (x.지난.some(function (z) { return z.나이 < 20; }) ? ' ' + esc(V틀('어릴때', {})) : '') + '</p>' : '')
+          + '<p><b>' + esc(x.다음 ? V틀('다음', { y: x.다음.y, 나이: x.다음.나이, 터짐: 말.터짐 }) : V틀('없음', {})) + '</b></p></div>';
+      });
+    }
     if (P.조심) h += '<div class="sec">' + esc(화('조심머리', '조심할 해')) + '</div><div class="card"><p>' + esc(틀('조심', P.조심)) + (P.조심.할일.length ? '</p><p style="margin-top:8px"><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div>';
     var 띠 = '<div class="strip">' + P.띠.map(function (x) { return '<div class="cell' + (x.y === 올해 ? ' now' : '') + '" style="background:' + 색[x.등급] + '" title="' + x.y + ' ' + x.등급 + '"><span>' + String(x.y).slice(2) + '</span></div>'; }).join('') + '</div>'
       + '<div class="legend">' + ['힘듦', '버팀', '나아짐', '좋음'].map(function (k) { return '<span><i style="background:' + 색[k] + '"></i>' + k + '</span>'; }).join('') + '</div>';
