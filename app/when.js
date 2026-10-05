@@ -8,7 +8,7 @@
   var API = 'https://chaeksa-behavior-core.vercel.app';
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
-  var 색 = { 좋음: '#2f6b4f', 나아짐: '#8fb79d', 버팀: '#d9cdb8', 힘듦: '#b5412c' };
+  var 색 = { 좋음: 'var(--g3)', 나아짐: 'var(--g2)', 버팀: 'var(--g1)', 힘듦: 'var(--g0)' };   // 사이트 공통 등급 색(style.css)
   var 표 = '';   // /api/when 이 준 사람 열쇠
   var 판들 = [], 지금판 = 0, 올해 = 0;
 
