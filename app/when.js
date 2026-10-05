@@ -55,15 +55,22 @@
     h += '<div class="card">' + 띠 + '</div>';
     if (P.바닥 && P.바닥.사주말) h += '<p class="why">' + P.바닥.y + '년 — ' + esc(P.바닥.사주말) + '</p>';
     if (P.맑음 && P.맑음.사주말) h += '<p class="why">' + P.맑음.y + '년 — ' + esc(P.맑음.사주말) + '</p>';
+    // 10-05 사장님 「사주 길흉판단 · 자미두수 길흉판단이 들어가야」 — 칸마다 두 눈의 판단(길 · 평 · 흉 · 변화)을 먼저, 결론 아래 두 눈이 같은지
+    var 판칩 = function (k) { return k && k !== '—' ? '<span class="chip p-' + k + '">' + k + '</span>' : '<span class="chip p-평">—</span>'; };
+    var 두눈말 = function (x) { return x.두눈 === '같음' ? '<br><small class="same">두 눈 같음</small>' : x.두눈 === '엇갈림' ? '<br><small class="diff">엇갈림</small>' : ''; };
+    var 자미칸 = function (풀, 막) { return (풀.length ? '<br><span class="g">+' + 풀.map(esc).join(' +') + '</span>' : '') + (막.length ? '<br><span class="b">−' + 막.map(esc).join(' −') + '</span>' : ''); };
+    h += '<p class="why">' + esc(화('표설명', '사주와 자미두수가 그해 · 그달을 각각 길 · 평 · 흉으로 봅니다. 결론은 자미두수 해마다 운으로 세고, 두 눈이 같은 해엔 「두 눈 같음」을 붙였어요.')) + '</p>';
     h += '<div class="card tw"><table class="t3"><thead><tr><th>해</th><th>사주</th><th>자미두수</th><th>결론</th></tr></thead><tbody>'
-      + (P.해들 || []).map(function (x) { return '<tr class="' + (x.y === 올해 ? 'now' : x.y < 올해 ? 'past' : '') + '"><td>' + x.y + '<br><small>' + x.나이 + '세</small></td><td>' + x.사주.map(esc).join('<br>') + (x.대운바뀜 ? '<br><small>10년 운 바뀜</small>' : '') + '</td><td>'
-        + (x.풀.length ? '<span class="g">+' + x.풀.map(esc).join(' +') + '</span>' : '') + (x.풀.length && x.막.length ? '<br>' : '') + (x.막.length ? '<span class="b">−' + x.막.map(esc).join(' −') + '</span>' : '') + (!x.풀.length && !x.막.length ? '—' : '')
-        + '</td><td>' + 칩(x.등급) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      + (P.해들 || []).map(function (x) { return '<tr class="' + (x.y === 올해 ? 'now' : x.y < 올해 ? 'past' : '') + '"><td>' + x.y + '<br><small>' + x.나이 + '세</small></td>'
+        + '<td>' + 판칩(x.사판) + (x.사왜 ? '<br><small>' + esc(x.사왜) + '</small>' : '') + (x.대운바뀜 ? '<br><small>10년 운 바뀜</small>' : '') + '</td>'
+        + '<td>' + 판칩(x.자판) + 자미칸(x.풀, x.막) + '</td>'
+        + '<td>' + 칩(x.등급) + 두눈말(x) + '</td></tr>'; }).join('') + '</tbody></table></div>';
     h += '<div class="card tw"><table class="t3"><thead><tr><th>달</th><th>사주</th><th>자미두수</th><th>결론</th></tr></thead><tbody>'
-      + (P.달들 || []).map(function (a, i) { return '<tr><td>' + (i === 0 || a.m === 1 ? a.y + '<br>' : '') + a.m + '월</td><td>' + a.사주.map(esc).join('<br>') + '</td><td>' + esc(a.자리)
-        + (a.좋은.length ? '<br><span class="g">' + a.좋은.map(esc).join(' · ') + '</span>' : '') + (a.나쁜.length ? '<br><span class="b">' + a.나쁜.map(esc).join(' · ') + '</span>' : '')
-        + '</td><td>' + 칩(a.등급) + (a.몸돈 ? '<br><small>몸 · 돈 함께</small>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
-    h += '<p class="note">계산 — 자미두수 해마다 운(《紫微斗數全書》 卷三)과 사주 십성 변화로 셉니다. 「맞아요 · 아니에요」는 계산을 다듬는 데만 씁니다(생일은 저장하지 않아요).</p></details>';
+      + (P.달들 || []).map(function (a, i) { return '<tr><td>' + (i === 0 || a.m === 1 ? a.y + '<br>' : '') + a.m + '월</td>'
+        + '<td>' + 판칩(a.사판) + (a.사왜 ? '<br><small>' + esc(a.사왜) + '</small>' : '') + '</td>'
+        + '<td>' + 판칩(a.자판) + '<br><small>' + esc(a.자리) + ' 자리</small>' + 자미칸(a.좋은, a.나쁜) + '</td>'
+        + '<td>' + 칩(a.등급) + 두눈말(a) + (a.몸돈 ? '<br><small>몸 · 돈 함께</small>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    h += '<p class="note">계산 — 자미두수 해마다 운(《紫微斗數全書》 卷三), 사주는 판정엔진이 그해 · 그달 운이 원국의 틀을 깨는지 · 막아 주는지 · 바꾸는지로 봅니다. 「맞아요 · 아니에요」는 계산을 다듬는 데만 씁니다(생일은 저장하지 않아요).</p></details>';
     $('out').innerHTML = h;
   }
   // 10-05 사장님 「맞아요를 실시간 현황판으로 — 리뷰 시스템」 「만든 나보다 이용자 리뷰를 더 믿는다」.
