@@ -48,16 +48,20 @@
     h += '</div>';
     if (P.할일) h += '<div class="sec">' + esc(화('할일머리', '지금 할 일')) + '</div><div class="card"><p><b>' + esc(P.할일) + '</b></p></div>';
     // 10-05 사장님 「자미두수에서 뾰족한 부분을 짚어 줄 순 없어?」 — 명반에서 가장 크게 흔들리는 곳(막힘별 · 흉별 둘 이상)과 터지는 해
+    // 10-05 사장님 「내가 말해 준 사건들에 판단이 침몰된 것 같은데?」 — 흔들리는 해의 일은 그해 판단이 고른다(합치지 않고 고르기만):
+    //   한쪽 길 · 한쪽 흉 = 중립 / 흉이 있으면 흉 / 길이 있으면 길 / 나머지 중립. 지나온 해를 묶어 물을 땐 중립.
+    var 갈래 = function (x) { if (!x) return '중립'; var a = x.사판, b = x.자판; if ((a === '길' && b === '흉') || (a === '흉' && b === '길')) return '중립'; if (a === '흉' || b === '흉') return '흉'; if (a === '길' || b === '길') return '길'; return '중립'; };
+    var 해찾기 = function (y) { return (P.해들 || []).find(function (z) { return z.y === y; }); };
     var V = T.뾰족 || {}, V틀 = function (k, v) { return String((V.틀 || {})[k] || '').replace(/\{([^{}]+)\}/g, function (_, n) { return v[n] == null ? '' : v[n]; }); };
     if (P.뾰족 && P.뾰족.length && V.자리) {
-      h += '<div class="sec">' + esc((V.틀 || {}).머리 || '내 삶에서 가장 크게 흔들리는 곳') + '</div>';
+      h += '<div class="sec">' + esc((V.틀 || {}).머리 || '내 삶에서 가장 크게 흔들리는 곳') + '</div>' + ((V.틀 || {}).둘째 ? '<p class="why">' + esc(V.틀.둘째) + '</p>' : '');
       P.뾰족.forEach(function (x, i) {
         var 말 = V.자리[x.곳]; if (!말) return;
         var 해들 = x.지난.map(function (z) { return z.y + '년(' + z.나이 + '세)'; }).join(' · ');
-        h += '<div class="card sharp"><p class="q">' + esc(V틀(i ? '둘째' : '첫줄', { 이름: 말.이름 })) + '</p><p>' + esc(말.뾰족) + '</p>'
+        h += '<div class="card sharp"><p class="q">' + esc(V틀(i ? '둘째머리' : '첫줄', { 이름: 말.이름 })) + '</p><p>' + esc(말.뾰족) + '</p>'
           + '<p class="why">' + x.까닭.map(function (k) { return esc((V.까닭 || {})[k] || ''); }).join(' ') + '</p>'
-          + (해들 ? '<p>' + esc(V틀('지난', { 해들: 해들, 터짐: 말.터짐 })) + (x.지난.some(function (z) { return z.나이 < 20; }) ? ' ' + esc(V틀('어릴때', {})) : '') + '</p>' : '')
-          + '<p><b>' + esc(x.다음 ? V틀('다음', { y: x.다음.y, 나이: x.다음.나이, 터짐: 말.터짐 }) : V틀('없음', {})) + '</b></p></div>';
+          + (해들 ? '<p>' + esc(V틀('지난', { 해들: 해들, 중립: 말.중립 })) + (x.지난.some(function (z) { return z.나이 < 20; }) ? ' ' + esc(V틀('어릴때', { 해들: x.지난.filter(function (z) { return z.나이 < 20; }).map(function (z) { return z.y + '년(' + z.나이 + '세)'; }).join(' · ') })) : '') + '</p>' : '')
+          + '<p><b>' + esc(x.다음 ? V틀('다음', { y: x.다음.y, 나이: x.다음.나이, 사건: 말[갈래(해찾기(x.다음.y))] }) : V틀('없음', {})) + '</b></p></div>';
       });
     }
     if (P.조심) h += '<div class="sec">' + esc(화('조심머리', '조심할 해')) + '</div><div class="card"><p>' + esc(틀('조심', P.조심)) + (P.조심.할일.length ? '</p><p style="margin-top:8px"><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div>';
@@ -75,7 +79,7 @@
     // 10-05 사장님 「여기서 짚어 줘야지 — 길흉 판단 + 뾰족한 사건」 — 해마다 한 덩어리: 사주 · 자미두수 판단과 그해 무슨 일, 크게 흔들리는 해는 그 자리 일까지
     var V2 = (T.뾰족 || {}).자리 || {};
     h += '<div class="yrs">' + (P.해들 || []).map(function (x) {
-      var 흔 = (x.흔들림 || []).map(function (k) { var m = V2[k]; return m ? '<div class="yr-sharp">크게 흔들리는 해 — ' + esc(m.이름) + '<br><span>' + esc(m.터짐) + '</span></div>' : ''; }).join('');
+      var 흔 = (x.흔들림 || []).map(function (k) { var m = V2[k]; return m ? '<div class="yr-sharp">' + esc(V틀('해칸', { 이름: m.이름 }) || '크게 흔들리는 해 — ' + m.이름) + '<br><span>' + esc(m[갈래(x)]) + '</span></div>' : ''; }).join('');
       return '<div class="yr' + (x.y === 올해 ? ' now' : x.y < 올해 ? ' past' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + x.y + '</b> <small>' + x.나이 + '세' + (x.y === 올해 ? ' · 올해' : '') + (x.대운바뀜 ? ' · 10년 운 바뀜' : '') + '</small></div>'
         + '<div class="yr-l"><span class="yr-k">사주</span>' + 판칩(x.사판) + (x.사왜 ? ' <small>' + esc(x.사왜) + '</small>' : '') + (x.사사건 ? '<div class="yr-e">그해 ' + esc(x.사사건) + '</div>' : '') + '</div>'
         + '<div class="yr-l"><span class="yr-k">자미두수</span>' + 판칩(x.자판) + (x.자사건 ? '<div class="yr-e">그해 ' + esc(x.자사건) + '</div>' : '') + '</div>'
