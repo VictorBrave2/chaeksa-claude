@@ -72,10 +72,15 @@
     var 판칩 = function (k) { return k && k !== '—' ? '<span class="chip p-' + k + '">' + k + '</span>' : '<span class="chip p-평">—</span>'; };
     var 자미칸 = function (풀, 막) { return (풀.length ? '<br><span class="g">+' + 풀.map(esc).join(' +') + '</span>' : '') + (막.length ? '<br><span class="b">−' + 막.map(esc).join(' −') + '</span>' : ''); };
     h += '<p class="why">' + esc(화('표설명', '사주와 자미두수가 그해 · 그달을 각각 길 · 평 · 흉으로 봅니다. 두 관점을 합치지 않고 나란히 둡니다.')) + '</p>';
-    h += '<div class="card tw"><table class="t3"><thead><tr><th>해</th><th>사주</th><th>자미두수</th></tr></thead><tbody>'
-      + (P.해들 || []).map(function (x) { return '<tr class="' + (x.y === 올해 ? 'now' : x.y < 올해 ? 'past' : '') + '"><td>' + x.y + '<br><small>' + x.나이 + '세</small></td>'
-        + '<td>' + 판칩(x.사판) + (x.사왜 ? '<br><small>' + esc(x.사왜) + '</small>' : '') + (x.대운바뀜 ? '<br><small>10년 운 바뀜</small>' : '') + '</td>'
-        + '<td>' + 판칩(x.자판) + 자미칸(x.풀, x.막) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    // 10-05 사장님 「여기서 짚어 줘야지 — 길흉 판단 + 뾰족한 사건」 — 해마다 한 덩어리: 사주 · 자미두수 판단과 그해 무슨 일, 크게 흔들리는 해는 그 자리 일까지
+    var V2 = (T.뾰족 || {}).자리 || {};
+    h += '<div class="yrs">' + (P.해들 || []).map(function (x) {
+      var 흔 = (x.흔들림 || []).map(function (k) { var m = V2[k]; return m ? '<div class="yr-sharp">크게 흔들리는 해 — ' + esc(m.이름) + '<br><span>' + esc(m.터짐) + '</span></div>' : ''; }).join('');
+      return '<div class="yr' + (x.y === 올해 ? ' now' : x.y < 올해 ? ' past' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + x.y + '</b> <small>' + x.나이 + '세' + (x.y === 올해 ? ' · 올해' : '') + (x.대운바뀜 ? ' · 10년 운 바뀜' : '') + '</small></div>'
+        + '<div class="yr-l"><span class="yr-k">사주</span>' + 판칩(x.사판) + (x.사왜 ? ' <small>' + esc(x.사왜) + '</small>' : '') + (x.사사건 ? '<div class="yr-e">그해 ' + esc(x.사사건) + '</div>' : '') + '</div>'
+        + '<div class="yr-l"><span class="yr-k">자미두수</span>' + 판칩(x.자판) + (x.자사건 ? '<div class="yr-e">그해 ' + esc(x.자사건) + '</div>' : '') + '</div>'
+        + 흔 + '</div>';
+    }).join('') + '</div>';
     h += '<div class="card tw"><table class="t3"><thead><tr><th>달</th><th>사주</th><th>자미두수</th></tr></thead><tbody>'
       + (P.달들 || []).map(function (a, i) { return '<tr><td>' + (i === 0 || a.m === 1 ? a.y + '<br>' : '') + a.m + '월</td>'
         + '<td>' + 판칩(a.사판) + (a.사왜 ? '<br><small>' + esc(a.사왜) + '</small>' : '') + '</td>'
