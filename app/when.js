@@ -81,10 +81,16 @@
         + '<div class="yr-l"><span class="yr-k">자미두수</span>' + 판칩(x.자판) + (x.자사건 ? '<div class="yr-e">그해 ' + esc(x.자사건) + '</div>' : '') + '</div>'
         + 흔 + '</div>';
     }).join('') + '</div>';
-    h += '<div class="card tw"><table class="t3"><thead><tr><th>달</th><th>사주</th><th>자미두수</th></tr></thead><tbody>'
-      + (P.달들 || []).map(function (a, i) { return '<tr><td>' + (i === 0 || a.m === 1 ? a.y + '<br>' : '') + a.m + '월</td>'
-        + '<td>' + 판칩(a.사판) + (a.사왜 ? '<br><small>' + esc(a.사왜) + '</small>' : '') + '</td>'
-        + '<td>' + 판칩(a.자판) + '<br><small>' + esc(a.자리) + ' 자리</small>' + 자미칸(a.좋은, a.나쁜) + (a.몸돈 ? '<br><small>몸 · 돈 함께</small>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    // 10-05 사장님 「24달도 같은 방식으로」 — 달마다 한 덩어리: 사주 판단 · 그달 일 / 자미두수 판단 · 움직이는 자리 · 그달 일 / 크게 흔들리는 자리가 움직이는 달
+    var 달말 = T.달 || {};
+    h += '<div class="sec">' + esc(화('달머리', '앞으로 24달')) + '</div><div class="yrs">' + (P.달들 || []).map(function (a, i) {
+      var 자 = V2[a.곳] || {}, 일 = (달말[a.곳] || {})[a.등급] || '';
+      var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">크게 흔들리는 자리가 움직이는 달 — ' + esc(자.이름) + '</div>' : '';
+      return '<div class="yr' + (i === 0 ? ' now' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + a.y + '년 ' + a.m + '월</b>' + (i === 0 ? ' <small>이번 달</small>' : '') + '</div>'
+        + '<div class="yr-l"><span class="yr-k">사주</span>' + 판칩(a.사판) + (a.사왜 ? ' <small>' + esc(a.사왜) + '</small>' : '') + (a.사사건 ? '<div class="yr-e">그달 ' + esc(a.사사건) + '</div>' : '') + '</div>'
+        + '<div class="yr-l"><span class="yr-k">자미두수</span>' + 판칩(a.자판) + (자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '') + (일 ? '<div class="yr-e">그달 ' + esc(일) + '</div>' : '') + '</div>'
+        + 흔 + '</div>';
+    }).join('') + '</div>';
     h += '<p class="note">계산 — 자미두수 해마다 운(《紫微斗數全書》 卷三), 사주는 판정엔진이 그해 · 그달 운이 원국의 틀을 깨는지 · 막아 주는지 · 바꾸는지로 봅니다. 「맞아요 · 아니에요」는 계산을 다듬는 데만 씁니다(생일은 저장하지 않아요).</p></details>';
     $('out').innerHTML = h;
   }
