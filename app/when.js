@@ -26,8 +26,10 @@
     var P = 판들[지금판]; if (!P) return;
     var 띠 = '<div class="strip">' + P.띠.map(function (h) { return '<div class="cell' + (h.y === 올해 ? ' now' : '') + '" style="background:' + 색[h.등급] + '" title="' + h.y + ' ' + h.등급 + '"><span>' + String(h.y).slice(2) + '</span></div>'; }).join('') + '</div>'
       + '<div class="legend">' + ['힘듦', '버팀', '나아짐', '좋음'].map(function (k) { return '<span><i style="background:' + 색[k] + '"></i>' + k + '</span>'; }).join('') + '</div>';
+    // 10-05 사장님 「나아짐 두 번 나오는 것 고쳐」 — 지금이 이미 나아짐 · 좋음이면 「나아지는 해」를 또 말하지 않는다
+    var 벌써 = !!(P.지금 && (P.지금.등급 === '나아짐' || P.지금.등급 === '좋음'));
     var 한줄 = '<b>지금 ' + esc(P.지금 ? P.지금.등급 : '') + '</b>'
-      + (P.숨통 && !(P.최고 && P.최고.y === P.숨통.y) ? ' → <b>' + P.숨통.y + '년 나아짐</b>' : '')
+      + (!벌써 && P.숨통 && !(P.최고 && P.최고.y === P.숨통.y) ? ' → <b>' + P.숨통.y + '년 나아짐</b>' : '')
       + (P.최고 ? ' → <b>' + P.최고.y + '년 좋음</b>' : '');
     var h = '';
     if (지금판 > 0 && P.때) h += '<div class="redo">태어난 시각이 조금 다를 수 있어요. <b>' + esc(P.말) + '(' + P.때.month + '월 ' + P.때.day + '일 ' + P.때.hour + '시 ' + P.때.minute + '분)</b>으로 다시 맞춰 봤어요.</div>';
@@ -36,11 +38,12 @@
     h += 카드('가장 힘들었을 해', P.바닥) + (P.바닥 ? '<div class="btns" data-id="b' + 지금판 + '"><button data-v="yes">맞아요</button><button data-v="no">아니에요</button></div>' : '');
     h += 카드('일이 잘 풀렸을 해', P.맑음) + (P.맑음 ? '<div class="btns" data-id="c' + 지금판 + '"><button data-v="yes">맞아요</button><button data-v="no">아니에요</button></div>' : '');
     h += '<div class="sec">그래서, 언제 나아지나</div><div class="big">';
-    if (P.바닥) h += '<p>지금은 <b>' + P.바닥.y + '년</b>에 닿았던 바닥을 지나는 중입니다.</p>';
-    if (P.숨통 && !(P.최고 && P.최고.y === P.숨통.y)) h += '<p><b>' + P.숨통.y + '년</b>, 처음으로 막힘보다 풀림이 많아집니다.<small>왜 그때? — ' + esc(P.숨통.왜) + '</small></p>';
+    if (벌써) h += '<p><b>' + 올해 + '년</b>, 이미 막힘보다 풀림이 많은 해입니다.</p>';
+    else if (P.바닥) h += '<p>지금은 <b>' + P.바닥.y + '년</b>에 닿았던 바닥을 지나는 중입니다.</p>';
+    if (!벌써 && P.숨통 && !(P.최고 && P.최고.y === P.숨통.y)) h += '<p><b>' + P.숨통.y + '년</b>, 처음으로 막힘보다 풀림이 많아집니다.<small>왜 그때? — ' + esc(P.숨통.왜) + '</small></p>';
     if (P.최고) h += '<p><b>' + P.최고.y + '년</b>, 앞으로 가장 좋은 해입니다.' + (P.최고왜 ? '<small>왜 그때? — ' + esc(P.최고왜) + '</small>' : '') + '</p>';
     if (P.할일) h += '<p>지금 할 일 — <b>' + esc(P.할일) + '</b></p>';
-    if (!P.숨통 && !P.최고) h += '<p>앞으로 10년 안에 막힘이 확 줄어드는 해가 뚜렷하지 않습니다. 해마다 표에서 가장 덜 막히는 해를 보세요.</p>';
+    if (!벌써 && !P.숨통 && !P.최고) h += '<p>앞으로 10년 안에 막힘이 확 줄어드는 해가 뚜렷하지 않습니다. 해마다 표에서 가장 덜 막히는 해를 보세요.</p>';
     h += '</div>';
     if (P.조심) h += '<div class="sec">조심할 해</div><div class="card"><div class="k">막힘이 가장 몰리는 해</div><div class="y">' + P.조심.y + '년 <small>' + P.조심.나이 + '세</small></div><p>' + esc(P.조심.말) + (P.조심.할일.length ? '<br><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div>';
     var 칩 = function (k) { return '<span class="chip c-' + k + '">' + k + '</span>'; };
