@@ -137,7 +137,7 @@
    *  옛 상담 답글 붙여넣기 틀(marketing/cards/상담-…/붙여넣기.html)의 #doc 꼴. 개인정보 빼기(09-25 「블로그에도 게시 — 개인정보는 드러나지 않게」):
    *  「이렇게 읽었어요」 · 「궁금하다고 하신 것」(손님 사연) · 결제 칸 · 「그 밖에」 · 「날짜별로 전부」 · 관점 칸은 싣지 않고, 목록의 「원하시는 방향」 줄 · 명식 한자 줄(카드 그림이 대신)도 뺀다.
    *  그림(i, card) → 그림 주소(chaeksa.kr/cards/…) 또는 null — null 이면 「[그림 N]」 자리 줄을 둔다(사장님이 받은 그림을 그 자리에 놓는다). */
-  const 블로그칸 = ['greet', 'steps', 'verdict', 'asked', 'block', 'summary', 'excluded', 'method', 'clock', 'close'];
+  const 블로그칸 = ['greet', 'steps', 'verdict', 'asked', 'block', 'summary', 'method', 'clock', 'close'];
   function 블로그글(rep, 그림) {
     if (!rep || typeof rep !== 'object') return '';
     const 번 = (i) => String(i + 1).padStart(2, '0');
