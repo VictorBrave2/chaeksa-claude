@@ -1,8 +1,11 @@
-/* 「옛 책이 본 내 머리」 시제품 — 그리기만 한다. 계산은 비공개 서버 /api/brain(옛 책 총명 표지 · 적응력 렌즈 셋 · 남녀 각 12,932명 분포).
- * 10-06 사장님 「진짜냐 가짜냐가 아니라 먼저 당신이 고지능자인지 아닌지 우리가 제시하고 이용자가 맞아요 · 아니요 고르게」 · 「화면 시제품 ㄱㄱ」.
- * 물음 셋 — 옛 책(A) · 생각의 갈래(L1) · 생각의 흐름(L2). 버티는 힘(L3)은 10-06 사장님 「버티는 힘 삭제」로 걷었다.
+/* 「나는 고지능일까」(brain.html) — 그리기만 한다. 계산은 비공개 서버 /api/brain(옛 책 총명 대목 34 · 생각 렌즈 둘 · 남녀 각 12,932명 분포).
+ * 10-06 사장님 「먼저 제시하고 이용자가 맞아요 · 아니요 고르게」 → 「화면 시제품」 → 「컨텐츠로 배포」.
+ * 같은 날 「콘텐츠 자체가 고지능을 가려낼 수 없다는 뜻이네?」 → 「ver1 추천대로 · ver2 내가 정해줄게 · 한 메뉴 안에 두 관점」:
+ *   관점 1(옛 책 대목) — 「고지능이다 / 아니다」 · 높은 편 · 낮은 편 이름표를 걷고, 34개 가운데 몇 개 · 같은 성별에서 얼마나 드문지 · 원문만.
+ *   관점 2 — 사장님이 정의한다. 받기 전까지 그 자리에 메인 생각 렌즈 둘(갈래 · 흐름).
  * 답은 /api/love-feedback 에 run 「brain-<서버가 준 열쇠>」 · id 로 남긴다(생일은 보내지 않는다).
- * 문장 틀은 brain-copy.js(작가 원고). 셋을 하나로 합치지 않는다(사장님 「결론을 합치지 말고 관점만 남겨」).
+ *   id: A2 = 관점 1 물음(10-06 판정을 걷은 뒤 — 옛 물음 「A」는 판정이 맞나였으니 섞지 않는다) · L1 · L2 = 관점 2 렌즈.
+ * 문장 틀은 brain-copy.js(작가 원고). 관점을 하나로 합치지 않는다(사장님 「결론을 합치지 말고 관점만 남겨」).
  */
 (function () {
   'use strict';
@@ -23,35 +26,46 @@
     try { fetch(API + '/api/love-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ runId: 'brain-' + 표, id: id, value: v }) }); } catch (e) {}
   }
   var 단추 = function (id) { return '<div class="btns" data-id="' + id + '"><button data-v="yes">맞아요</button><button data-v="no">아니에요</button></div><p class="why" data-after="' + id + '"></p>'; };
-  var 위치말 = function (p) { return p <= 2 ? 화('고지능', '옛 책 기준으로 고지능 쪽이에요.') : p <= 20 ? 화('높은편', '높은 편이에요.') : p <= 60 ? 화('가운데', '가운데쯤이에요.') : 화('낮은편', '낮은 편이에요.'); };
   var 성별말 = function (g) { return g === 'F' ? '여자' : '남자'; };
   function 표지칸(x) {
     return '<div class="card"><p class="q" lang="zh-Hant">' + esc(x.원문) + '</p><p>' + esc(x.뜻) + '</p><p class="why">' + esc(x.근거) + '<br><small>' + esc(String(x.출처 || '').replace(/ · (docs|jamidusu)\/\S+/g, '')) + '</small></p></div>';
   }
+  var 탭 = '1';
   function 그리기() {
     var R = 결과; if (!R) return;
-    var 옛 = R.옛, 렌 = R.렌즈, h = '';
-    // 첫 줄 — 옛 책 표지 개수와 같은 성별 가운데 위치
-    h += '<div class="big"><p>' + esc(틀(화('첫줄', '옛 책이 꼽은 총명의 표지 {n}개 — 같은 {성별} 가운데 상위 {p}%'), { n: 옛.n, p: 옛.p, 성별: 성별말(R.성별) })) + '</p><p><b>' + esc(위치말(옛.p)) + '</b></p></div>';
-    // A — 옛 책이 총명하다고 한 자리
+    var 옛 = R.옛, 렌 = R.렌즈, 성 = 성별말(R.성별), h = '';
+    h += '<div class="tabs" role="tablist">' + [['1', 화('탭1', '옛 책이 꼽은 총명')], ['2', 화('탭2', '생각하는 방식')]].map(function (t) {
+      return '<button type="button" role="tab" data-tab="' + t[0] + '" aria-selected="' + (탭 === t[0]) + '" class="' + (탭 === t[0] ? 'on' : '') + '">' + esc(t[1]) + '</button>';
+    }).join('') + '</div>';
+    // 관점 1 — 옛 책 대목: 몇 개 · 얼마나 드문가 · 원문(판정 없음)
+    var v = { n: 옛.n, p: 옛.p, q: 옛.q, 성별: 성 };
+    var 첫 = 옛.n ? 틀(화('첫줄', '옛 책이 「총명하다」고 한 대목 34개 가운데 {n}개에 해당해요.'), v) : 틀(화('첫줄0', '옛 책이 「총명하다」고 한 대목 34개 가운데 해당하는 대목이 없어요.'), v);
+    var 드 = !옛.n ? 틀(화('드묾0', '같은 {성별} 가운데 {q}%가 이렇게 하나도 해당하지 않아요.'), v)
+      : 옛.p > 0 ? 틀(화('드묾', '같은 {성별} 가운데 {n}개 이상 해당하는 사람은 {p}%예요.'), v)
+      : 틀(화('드묾없음', '같은 {성별} 표본 가운데 {n}개 넘게 해당하는 사람이 없을 만큼 드물어요.'), v);
+    h += '<div data-pane="1"' + (탭 === '1' ? '' : ' class="hide"') + '>';
+    h += '<div class="big"><p>' + esc(첫) + '</p><p><b>' + esc(드) + '</b></p></div>';
     var 걸 = 옛.사주.concat(옛.자미);
-    h += '<div class="sec">' + esc(화('A머리', '옛 책이 총명하다고 한 자리')) + '</div><p class="why">' + esc(화('A설명', '옛 책 가운데 공부가 아니라 머리 자체를 말한 대목만 골랐어요.')) + '</p>';
-    h += 걸.length ? 걸.map(표지칸).join('') : '<div class="card"><p>' + esc(화('A없음', '옛 책이 꼽은 표지에 걸리는 자리가 없어요.')) + '</p></div>';
+    h += '<div class="sec">' + esc(화('A머리', '옛 책이 총명하다고 한 대목')) + '</div><p class="why">' + esc(화('A설명', '옛 책 가운데 공부가 아니라 머리 자체를 말한 대목만 골랐어요.')) + '</p>';
+    h += 걸.length ? 걸.map(표지칸).join('') : '<div class="card"><p>' + esc(화('A없음', '해당하는 대목이 없어요.')) + '</p></div>';
     var 안 = 옛.안걸린 || [];
     if (안.length) h += '<details class="fold"><summary>' + esc(틀(화('A나머지', '해당하지 않은 대목 {값}개 펼쳐 보기'), { 값: 안.length })) + '</summary>' + 안.map(표지칸).join('') + '</details>';
-    h += '<p class="q2">' + esc(화('A물음', '옛 책 기준 결과가 나에게 맞나요?')) + '</p>' + 단추('A');
-    // B — 렌즈 둘(갈래 · 흐름)
+    h += '<p class="q2">' + esc(화('A물음', '이 대목들이 나를 잘 말하나요?')) + '</p>' + 단추('A2');
+    h += '</div>';
+    // 관점 2 — 사장님 정의 자리(받기 전까지 생각 렌즈 둘)
     var L = (C.렌즈 || {});
     var 렌즈칸 = function (key, id, 값, 값말, 기본이름, 기본설명) {
       var c = L[key] || {}, r = 렌[key];
       return '<div class="card"><div class="k">' + esc(c.이름 || 기본이름) + '</div><div class="y">' + esc(값말) + '</div><p>' + esc(c.설명 || 기본설명) + '</p>'
-        + '<p class="why">' + esc(틀(c.위치 || '같은 {성별}끼리 견주면 상위 {p}%예요.', { p: r.p, 성별: 성별말(R.성별), 값: 값 })) + '</p>'
+        + '<p class="why">' + esc(틀(c.위치 || '같은 {성별}끼리 견주면 상위 {p}%예요.', { p: r.p, 성별: 성, 값: 값 })) + '</p>'
         + '<p class="q2">' + esc(화('B물음', '이 결과가 나에게 맞나요?')) + '</p>' + 단추(id) + '</div>';
     };
-    h += '<div class="sec">' + esc(화('B머리', '생각하는 방식')) + '</div><p class="why">' + esc(화('B설명', '한 가지 일을 몇 갈래로 생각하는지, 하던 생각을 끝까지 이어 가는지 두 가지를 따로 셌어요.')) + '</p>';
-    h += 렌즈칸('재료', 'L1', 렌.재료.값, 렌.재료.값 + '가지', '생각의 재료', '생각을 맡는 자리에 살아 있는 성질이 몇 가지인가 — 많을수록 여러 갈래로 생각해요.');
-    h += 렌즈칸('흐름', 'L2', 렌.흐름.값, 렌.흐름.값 + '단', '흐름', '기운이 낳는 차례로 몇 단 이어지나 — 끊기지 않고 끝까지 이어 생각하는 힘이에요.');
-    h += '<p class="note">' + esc(화('맺음', '이 결과는 옛 책의 관점이에요. 사람 머리를 재는 시험이 아니에요. 맞아요 · 아니에요는 생일 없이 저장돼요.')) + ' <small>(같은 ' + 성별말(R.성별) + ' ' + R.표본.toLocaleString() + '명 사주로 센 분포)</small></p>';
+    h += '<div data-pane="2"' + (탭 === '2' ? '' : ' class="hide"') + '>';
+    h += (화('B머리', '생각하는 방식') === 화('탭2', '생각하는 방식') ? '' : '<div class="sec">' + esc(화('B머리', '생각하는 방식')) + '</div>') + '<p class="why">' + esc(화('B설명', '한 가지 일을 몇 갈래로 생각하는지, 하던 생각을 끝까지 이어 가는지 두 가지를 따로 셌어요.')) + '</p>';
+    h += 렌즈칸('재료', 'L1', 렌.재료.값, 렌.재료.값 + '가지', '생각의 갈래', '생각을 맡는 자리에 살아 있는 성질이 몇 가지인가 — 많을수록 여러 갈래로 생각해요.');
+    h += 렌즈칸('흐름', 'L2', 렌.흐름.값, 렌.흐름.값 + '단', '생각의 흐름', '기운이 낳는 차례로 몇 단 이어지나 — 끊기지 않고 끝까지 이어 생각하는 힘이에요.');
+    h += '</div>';
+    h += '<p class="note">' + esc(화('맺음', '이 결과는 옛 책과 사주로 본 관점이에요. 머리를 재는 시험이 아니에요. 맞아요 · 아니에요는 생일 없이 저장돼요.')) + ' <small>(같은 ' + 성 + ' ' + R.표본.toLocaleString() + '명 사주로 센 분포)</small></p>';
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(화('공유단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(화('공유안내', '')) + '</p></div>';
     $('out').innerHTML = h;
   }
@@ -63,6 +77,14 @@
       var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: 화('공유_title', '옛 책으로 보면, 나는 고지능일까요 — 책사'), text: 화('공유_text', '옛 책이 총명하다고 한 대목으로 내 사주를 봐요. 무료예요.'), url: 주소 }) : '';
       if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : '';
       try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('brain_share'); } catch (e2) {}
+      return;
+    }
+    var tb = e.target.closest && e.target.closest('[data-tab]');
+    if (tb) {
+      탭 = tb.getAttribute('data-tab');
+      Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'), function (x) { var on = x === tb; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-pane]'), function (x) { x.classList.toggle('hide', x.getAttribute('data-pane') !== 탭); });
+      try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('brain_tab' + 탭); } catch (e3) {}
       return;
     }
     var b = e.target.closest && e.target.closest('.btns button'); if (!b) return;
