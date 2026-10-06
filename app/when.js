@@ -68,6 +68,8 @@
     var 띠 = '<div class="strip">' + P.띠.map(function (x) { return '<div class="cell' + (x.y === 올해 ? ' now' : '') + '" style="background:' + 색[x.등급] + '" title="' + x.y + ' ' + x.등급 + '"><span>' + String(x.y).slice(2) + '</span></div>'; }).join('') + '</div>'
       + '<div class="legend">' + ['힘듦', '버팀', '나아짐', '좋음'].map(function (k) { return '<span><i style="background:' + 색[k] + '"></i>' + k + '</span>'; }).join('') + '</div>';
     var 칩 = function (k) { return '<span class="chip c-' + k + '">' + k + '</span>'; };
+    // 10-06 나아갈 길 4 — 답을 본 자리에서 친구에게 보내기(주소만 — 생일 · 결과는 싣지 않는다). 카톡에는 미리보기 그림(cards/og/when.jpg)이 뜬다.
+    h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(화('공유단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg"></p></div>';
     var 판칩 = function (k) { return k && k !== '—' ? '<span class="chip p-' + k + '">' + k + '</span>' : '<span class="chip p-평">—</span>'; };
     // 10-06 사장님 「사주 = 년마다 · 자미두수 = 년마다 · 사주 = 년+월마다 · 자미두수 = 년+월마다 길흉판단 + 예상되는 현상」 — 네 관점마다 판단과 현상을 붙여 둔다.
     //   사주 년 = 원국 + 10년 운 + 그해(입춘) · 사주 년+월 = 그 위에 그달까지 쌓은 판정엔진 층 — 현상은 그 층의 범주를 낸 재료(삶의 중심 · 치는 것 · 막아 주는 것)에서만(서버).
@@ -133,7 +135,15 @@
       } catch (err) { alert('연결이 잠깐 끊겼어요.'); }
     });
   }
-  document.addEventListener('click', function (e) {
+  document.addEventListener('click', async function (e) {
+    var sh = e.target.closest && e.target.closest('[data-share]');
+    if (sh) {
+      var 주소 = 'https://chaeksa.kr/when.html', 말 = $('shareMsg');
+      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: '힘든 때, 언제 끝나나요 — 책사', text: '지나온 해부터 맞혀 보고, 언제 나아지는지 알려 줘요. 무료예요.', url: 주소 }) : '';
+      if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : '';
+      try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('when_share'); } catch (e2) {}
+      return;
+    }
     var sk = e.target.closest && e.target.closest('[data-skip]');
     if (sk) { e.preventDefault(); 단계 = 3; 그리기(); return; }
     var b = e.target.closest && e.target.closest('.btns button'); if (!b) return;
