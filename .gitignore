@@ -36,3 +36,5 @@ app/art/ss-*.png
 # 그림 생성 원본 PNG(exec-*.png, 장당 약 2MB) — 새로 생기는 것은 저장소에 넣지 않는다(10-02 개편 3묶음).
 # 이미 들어간 40장은 원본이라 지우지 않았다. 손님 사이트에는 안 올라간다(.github/workflows/pages.yml 이 배포 묶음에서 뺀다).
 app/art/exec-*.png
+
+marketing/cards/*/그림/
