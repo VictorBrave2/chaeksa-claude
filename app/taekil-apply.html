@@ -103,7 +103,7 @@
     <!-- 10-02 결제가 아직 열리지 않았을 때(pay.js 곧열림) 결제 단추 · 결제 동의 대신 이 자리가 보인다 — 메일 신청 · 신청서 내용 복사 -->
     <div class="already" id="soonPay" hidden></div>
     <p class="msg" id="i_msg"></p>
-    <p class="hint" id="whyLogin" hidden>결제하려면 카카오 로그인이 한 번 필요합니다 — 결제한 것을 그 계정에
+    <p class="hint" id="whyLogin" hidden>결제하려면 카카오 또는 네이버 로그인이 한 번 필요합니다 — 결제한 것을 그 계정에
       매어 두기 때문입니다. 적으신 내용과 동의는 그대로 남습니다.</p>
   </form>
 
@@ -116,7 +116,7 @@
   </div>
 </div>
 
-<script src="config.js?v=e0fee3d288"></script>
+<script src="config.js?v=1dadeed655"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
@@ -175,7 +175,7 @@
   }
   if (로그인오류) {
     try { history.replaceState(null, '', location.pathname); } catch (e) {}
-    로그인안내((로그인오류.code === 'otp_expired' ? '로그인 링크가 만료됐거나 이미 쓴 링크예요.' : '카카오 로그인이 되지 않았어요.') + 다시);
+    로그인안내((로그인오류.code === 'otp_expired' ? '로그인 링크가 만료됐거나 이미 쓴 링크예요.' : '로그인이 되지 않았어요.') + 다시);
   } else {
     try {
       if (!막로그인 && window.ChaeksaCloud && ChaeksaCloud.refusedLogin && ChaeksaCloud.refusedLogin()) 로그인안내('로그인을 마치지 못했어요.' + 다시);

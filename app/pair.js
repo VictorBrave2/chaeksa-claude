@@ -394,7 +394,7 @@
         if (!out.isConnected) return;
         저장 = { runId: r.runId, version: r.version, chapters: r.chapters || [] };
         쓰기(키, 저장); pay.innerHTML = ''; head.innerHTML = ''; intro.innerHTML = '';
-        알림(r.saved ? '이 카카오 계정으로 만든 결과를 불러왔어요.' : 글.done.replace('{n}', 저장.chapters.length));
+        알림(r.saved ? '이 계정으로 만든 결과를 불러왔어요.' : 글.done.replace('{n}', 저장.chapters.length));
         전체(out, 저장, 키, 그이름, 성, 그사람.id);
       }, function (e) {
         if (!out.isConnected) return;

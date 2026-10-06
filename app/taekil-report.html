@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<script src="config.js?v=e0fee3d288"></script>
+<script src="config.js?v=1dadeed655"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=cd1562e4fa"></script>
@@ -91,7 +91,7 @@
     try { if (C.로그인고르기) C.로그인고르기(); else C.signInWith('kakao'); } catch (e) { 그림(상자('로그인을 열지 못했어요', [String((e && e.message) || e)])); }
   }
   function 로그인화면(글) {
-    그림(상자('로그인하면 보고서가 열려요', [글 || '결제하신 카카오 계정으로 로그인해 주세요. 보고서는 그 계정에 보관돼요.'],
+    그림(상자('로그인하면 보고서가 열려요', [글 || '결제하신 계정(카카오 또는 네이버)으로 로그인해 주세요. 보고서는 그 계정에 보관돼요.'],
       '<button type="button" class="btn kakao" id="go"><span class="seal">話</span>카카오로 로그인</button>'));
     document.getElementById('go').onclick = 로그인하러;
   }
@@ -163,7 +163,7 @@
       if (!r || r.ok === false) {
         var 까닭 = r && r.reason;
         if (까닭 === 'login') { 로그인화면('로그인이 끝났어요. 다시 로그인해 주세요.'); return; }
-        if (까닭 === 'not_found') { 그림(상자('이 주문을 찾지 못했어요', ['결제하신 카카오 계정으로 로그인했는지 확인해 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>')); return; }
+        if (까닭 === 'not_found') { 그림(상자('이 주문을 찾지 못했어요', ['결제하신 계정(카카오 또는 네이버)으로 로그인했는지 확인해 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>')); return; }
         if (까닭 === 'expired') { 그림(상자('볼 수 있는 기간이 끝났어요', ['결제한 날부터 2년이 지났어요.'])); return; }
         if (까닭 === 'not_paid') { 그림(상자('결제가 확인되지 않은 주문이에요', ['결제가 끝난 주문만 볼 수 있어요.'])); return; }
         if (조용히 && (까닭 === 'network' || 까닭 === 'db')) { 기다리기(); return; }

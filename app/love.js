@@ -477,7 +477,7 @@
       + '<div id="lvList"></div><div id="lvShare"></div><div id="lvEnd"></div>';   // lvShare = 결과 보내기(산 결과에만)
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps'), 막힘칸 = el.querySelector('#lvErr'), 공유칸 = el.querySelector('#lvShare');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
-    var 기다림말 = '이 카카오 계정으로 지금 만들고 있어요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
+    var 기다림말 = '이 계정으로 지금 만들고 있어요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
     function 알림(msg, err) { clearInterval(timer); steps.hidden = true; st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     // 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈 · 다시 하기 · 문의하기(메일에 화면 이름). 그 파일이 없으면 예전처럼 한 줄(false).
     function 막힘(o, 다시) {
@@ -581,7 +581,7 @@
     function 답받기(msg) {
       초(msg); 밑그림(list, 저장);   // 질문은 다 왔다 — 장 이름 · 장면 목록을 먼저 깔고 기다린다
       return post('/api/love-answers', { runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
-        채우기(r.items, r.saved ? '이 카카오 계정으로 받은 결과를 불러왔어요.' : null, r.paid, r.payKey, r.portrait);
+        채우기(r.items, r.saved ? '이 계정으로 받은 결과를 불러왔어요.' : null, r.paid, r.payKey, r.portrait);
       });
     }
     // 09-30 사장님 「자동뜨게해」 — 이 계정으로 지금 만드는 중이면(새로고침 · 다른 기기) 새로 만들지 않고 10초마다 확인해서 다 되면 바로 띄운다.
@@ -594,9 +594,9 @@
       var 일 = 덜됨 ? 답받기(말) : (초(말), post('/api/love-questions', { consent: true, birth: b }).then(function (r) {
         저장 = { runId: r.runId, sig: r.sig, payKey: 올바른열쇠(r.payKey), items: r.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '', t: '' }; }), fb: {} };
         쓰기(키, 저장); 덜됨 = true;
-        // 이 카카오 계정으로 이미 만든 결과(다른 기기 포함)면 새로 만들지 않고 그대로 꺼내 온다(09-30)
+        // 이 계정으로 이미 만든 결과(다른 기기 포함)면 새로 만들지 않고 그대로 꺼내 온다(09-30)
         // 잠긴 사람은 맛보기만 오므로 빈 배열일 수도 있다 — 배열이면 보관된 답이 있다는 뜻이다(10-01)
-        if (r.saved && Array.isArray(r.answers) && (r.answers.length || r.paid === false)) return 채우기(r.answers, '이 카카오 계정으로 만든 결과를 불러왔어요.', r.paid, r.payKey, r.portrait);
+        if (r.saved && Array.isArray(r.answers) && (r.answers.length || r.paid === false)) return 채우기(r.answers, '이 계정으로 만든 결과를 불러왔어요.', r.paid, r.payKey, r.portrait);
         return 답받기(말);
       }));
       일.then(function () { 지우기(대기키); 기다리는중 = false; t0 = null; }, function (e) {

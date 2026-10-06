@@ -37,7 +37,7 @@ window.CHAEKSA_TAEKIL_AUTO = 1;
 // 네이버 로그인(10-03) — 0 이면 손님에게 안 보인다(주소에 ?naverlogin=1 을 단 탭에서만 보여 사장님이 먼저 시험). 1 이면 모두에게.
 // 켜기 전에: Supabase 사용자 지정 공급자 custom:naver · 네이버 개발자센터 앱(콜백 = Supabase 콜백 주소) · 시험 로그인 한 번 ·
 // 개인정보처리방침에 네이버 로그인 항목 · 장부(yaksok.js)의 「카카오 로그인」 말 · 네이버 로그인 검수(모두에게 열려면).
-window.CHAEKSA_NAVER_LOGIN = 0;
+window.CHAEKSA_NAVER_LOGIN = 1;   // 10-06 네이버 로그인 검수 승인(사장님 메일) — 모두에게 켬
 // 카카오 링크 공유(09-26 사장님 「사진이랑 링크를 같이」) — 카카오 디벨로퍼스 > 앱 > 앱 키 > **JavaScript 키**(공개돼도 되는 키, 도메인으로 막힌다).
 // 플랫폼 > Web 에 https://chaeksa.kr 이 등록돼 있어야 한다. 비어 있으면 브라우저 공유(그림만 + 링크 클립보드)로 돌아간다.
 window.CHAEKSA_KAKAO_JS_KEY = 'a31b2496dcc8d26fb0ea9f5fe0e8ff0a';
