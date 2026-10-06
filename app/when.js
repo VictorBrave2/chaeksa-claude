@@ -54,7 +54,7 @@
     var 해찾기 = function (y) { return (P.해들 || []).find(function (z) { return z.y === y; }); };
     var V = T.뾰족 || {}, V틀 = function (k, v) { return String((V.틀 || {})[k] || '').replace(/\{([^{}]+)\}/g, function (_, n) { return v[n] == null ? '' : v[n]; }); };
     if (P.뾰족 && P.뾰족.length && V.자리) {
-      h += '<div class="sec">' + esc((V.틀 || {}).머리 || '내 삶에서 가장 크게 흔들리는 곳') + '</div>' + ((V.틀 || {}).둘째 ? '<p class="why">' + esc(V.틀.둘째) + '</p>' : '');
+      h += '<div class="sec">' + esc((V.틀 || {}).머리 || '내 삶에서 가장 크게 움직이는 곳') + '</div>' + ((V.틀 || {}).둘째 ? '<p class="why">' + esc(V.틀.둘째) + '</p>' : '');
       P.뾰족.forEach(function (x, i) {
         var 말 = V.자리[x.곳]; if (!말) return;
         var 해들 = x.지난.map(function (z) { return z.y + '년(' + z.나이 + '세)'; }).join(' · ');
@@ -89,7 +89,7 @@
     var 달말 = T.달 || {};
     h += '<div class="sec">' + esc(화('달머리', '앞으로 24달')) + '</div><div class="yrs">' + (P.달들 || []).map(function (a, i) {
       var 자 = V2[a.곳] || {}, 일 = (달말[a.곳] || {})[a.등급] || '';
-      var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">크게 흔들리는 자리가 움직이는 달 — ' + esc(자.이름) + '</div>' : '';
+      var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">큰 움직임이 오는 자리의 달 — ' + esc(자.이름) + '</div>' : '';
       return '<div class="yr' + (i === 0 ? ' now' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + a.y + '년 ' + a.m + '월</b>' + (i === 0 ? ' <small>이번 달</small>' : '') + '</div>'
         + '<div class="yr-l"><span class="yr-k">사주</span>' + 판칩(a.사판) + (a.사왜 ? ' <small>' + esc(a.사왜) + '</small>' : '') + (a.사사건 ? '<div class="yr-e">그달 ' + esc(a.사사건) + '</div>' : '') + '</div>'
         + '<div class="yr-l"><span class="yr-k">자미두수</span>' + 판칩(a.자판) + (자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '') + (일 ? '<div class="yr-e">그달 ' + esc(일) + '</div>' : '') + '</div>'
