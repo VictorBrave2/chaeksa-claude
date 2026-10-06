@@ -163,7 +163,7 @@
   var PP = window.ChaeksaPeople, 사람들 = [];
   function 칸채우기(b) {
     $('y').value = b.year || ''; $('m').value = b.month || ''; $('d').value = b.day || '';
-    $('t').value = b.hour == null ? '' : String(b.hour).padStart(2, '0') + ':' + String(b.minute || 0).padStart(2, '0');
+    $('hh').value = b.hour == null ? '' : b.hour; $('mi').value = b.hour == null ? '' : (b.minute || 0);
     var r = document.querySelector('input[name=g][value=' + (b.gender === 'F' ? 'F' : 'M') + ']'); if (r) r.checked = true;
     if (b.place) { $('p').value = b.place; if ($('p').value !== b.place) $('p').value = 'KR:서울'; }
   }
@@ -175,7 +175,7 @@
     var p = 사람들[i]; if (!p) return;
     Array.prototype.forEach.call(document.querySelectorAll('#who .who button[data-i]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-i') === i); });
     칸채우기(p.birth);
-    if (p.birth.hour == null) { $('out').innerHTML = ''; $('f').classList.remove('hide'); $('err').textContent = '이 분은 태어난 시각이 없어요. 시각을 넣어 주세요.'; $('t').focus(); return; }
+    if (p.birth.hour == null) { $('out').innerHTML = ''; $('f').classList.remove('hide'); $('err').textContent = '이 분은 태어난 시각이 없어요. 시각을 넣어 주세요.'; $('hh').focus(); return; }
     $('f').classList.add('hide');
     보기({ year: p.birth.year, month: p.birth.month, day: p.birth.day, hour: p.birth.hour, minute: p.birth.minute || 0, gender: p.birth.gender === 'F' ? 'F' : 'M', place: p.birth.place || 'KR:서울' }, 처음);
   }
@@ -203,8 +203,10 @@
   }
   $('f').addEventListener('submit', function (e) {
     e.preventDefault();
-    var t = $('t').value.split(':'), g = (document.querySelector('input[name=g]:checked') || {}).value || 'M';
-    var body = { year: +$('y').value, month: +$('m').value, day: +$('d').value, hour: t[0] === '' ? NaN : +t[0], minute: +(t[1] || 0), gender: g, place: $('p').value };
+    // 시 · 분 숫자 칸(10-06 사장님 「시간 입력 바꿔 줘」) — 분은 비우면 0, 시는 0~23 · 분은 0~59 만
+    var 시 = $('hh').value.trim(), 분 = $('mi').value.trim(), g = (document.querySelector('input[name=g]:checked') || {}).value || 'M';
+    var body = { year: +$('y').value, month: +$('m').value, day: +$('d').value, hour: 시 === '' || +시 < 0 || +시 > 23 || +시 % 1 ? NaN : +시, minute: 분 === '' ? 0 : +분, gender: g, place: $('p').value };
+    if (isNaN(body.minute) || body.minute < 0 || body.minute > 59 || body.minute % 1) { $('err').textContent = '분은 0부터 59까지 넣어 주세요.'; return; }
     if (!body.year || !body.month || !body.day || isNaN(body.hour)) { $('err').textContent = '태어난 날과 시각을 다 넣어 주세요.'; return; }
     남겨두기(body);
     보기(body);

@@ -86,7 +86,8 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
     <label>태어난 날(양력)</label>
     <div class="row"><input id="y" type="number" inputmode="numeric" placeholder="1990" min="1920" max="2025" required><input id="m" type="number" inputmode="numeric" placeholder="월" min="1" max="12" required><input id="d" type="number" inputmode="numeric" placeholder="일" min="1" max="31" required></div>
     <label>태어난 시각 — 모르면 볼 수 없어요(자미두수는 시각이 있어야 서요)</label>
-    <input id="t" type="time" required>
+    <!-- 10-06 사장님 「시간 입력 바꿔 줘」 — 폰에서 시계 모양 고르개가 떠서 불편했다. 홈 · 프로필 입력과 같은 시 · 분 숫자 칸 둘로 -->
+    <div class="row"><input id="hh" aria-label="태어난 시" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric" required><input id="mi" aria-label="태어난 분" type="number" placeholder="분" min="0" max="59" inputmode="numeric"></div>
     <label>성별</label>
     <div class="seg"><label><input type="radio" name="g" value="M" checked><span>남</span></label><label><input type="radio" name="g" value="F"><span>여</span></label></div>
     <label>태어난 곳</label>
@@ -107,6 +108,6 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 <script src="places.js?v=1350b96148"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
 <script src="when-copy.js?v=845a8ab1ce"></script>
-<script src="when.js?v=ea0471fddc"></script>
+<script src="when.js?v=bce0e5375e"></script>
 </body>
 </html>
