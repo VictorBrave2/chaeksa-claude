@@ -52,9 +52,19 @@
     h += 렌즈칸('재료', 'L1', 렌.재료.값, 렌.재료.값 + '가지', '생각의 재료', '생각을 맡는 자리에 살아 있는 성질이 몇 가지인가 — 많을수록 여러 갈래로 생각해요.');
     h += 렌즈칸('흐름', 'L2', 렌.흐름.값, 렌.흐름.값 + '단', '흐름', '기운이 낳는 차례로 몇 단 이어지나 — 끊기지 않고 끝까지 이어 생각하는 힘이에요.');
     h += '<p class="note">' + esc(화('맺음', '이 결과는 옛 책의 관점이에요. 사람 머리를 재는 시험이 아니에요. 맞아요 · 아니에요는 생일 없이 저장돼요.')) + ' <small>(같은 ' + 성별말(R.성별) + ' ' + R.표본.toLocaleString() + '명 사주로 센 분포)</small></p>';
+    h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(화('공유단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(화('공유안내', '')) + '</p></div>';
     $('out').innerHTML = h;
   }
-  document.addEventListener('click', function (e) {
+  document.addEventListener('click', async function (e) {
+    // 공유 — 주소 하나만 보낸다(생일 · 결과는 싣지 않음). 「언제 나아지나」와 같은 길(share.js shareLink)
+    var sh = e.target.closest && e.target.closest('[data-share]');
+    if (sh) {
+      var 주소 = 'https://chaeksa.kr/brain.html', 말 = $('shareMsg');
+      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: 화('공유_title', '옛 책으로 보면, 나는 고지능일까요 — 책사'), text: 화('공유_text', '옛 책이 총명하다고 한 대목으로 내 사주를 봐요. 무료예요.'), url: 주소 }) : '';
+      if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : '';
+      try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('brain_share'); } catch (e2) {}
+      return;
+    }
     var b = e.target.closest && e.target.closest('.btns button'); if (!b) return;
     var box = b.parentNode, id = box.getAttribute('data-id'), v = b.getAttribute('data-v');
     남기기(id, v);

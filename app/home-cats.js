@@ -18,7 +18,9 @@
     child: [{ 키: 'taekil', 탭: 'taekil', 그림: 'art/taekil-main.webp', 작은: 'art/taekil-main-s.webp', 크기: [1086, 1448] }],
     match: [{ 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
-    me: [{ 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] }],
+    me: [{ 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] },
+      // 10-06 「옛 책이 본 내 머리」(brain.html) — 사장님 「썸네일 달고 컨텐츠로 배포」. 그림은 편인 칸(혼천의를 짜 맞추는 사람 — 머리 자체)
+      { 키: 'brain', 주소: 'brain.html', 그림: 'art/jt-g-pyeonin-{g}.webp', 작은: 'art/jt-g-pyeonin-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
     time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] },
       { 키: 'week', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}.webp', 작은: 'art/jt-18-ten-years-{g}-s.webp', 크기: [1024, 1536] }],
