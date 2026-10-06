@@ -77,7 +77,7 @@
       + (P.해들 || []).map(function (x) { return '<tr class="' + (x.y === 올해 ? 'now' : x.y < 올해 ? 'past' : '') + '"><td>' + x.y + ' <small>' + x.나이 + '세</small>' + ((x.흔들림 || []).length ? ' <span class="mv" title="크게 움직이는 해">●</span>' : '') + '</td><td>' + 판칩(x.사판) + '</td><td>' + 판칩(x.자판) + '</td></tr>'; }).join('')
       + '</tbody></table><p class="why" style="margin:8px 4px 2px"><span class="mv">●</span> 크게 움직이는 해</p></div>';
     h += '<div class="sec">달마다 — 년 · 년+월</div><div class="card tw"><table class="t3 t4 t5"><thead><tr><th rowspan="2">달</th><th colspan="2">사주</th><th colspan="2">자미두수</th></tr><tr><th><small>년</small></th><th><small>년+월</small></th><th><small>년</small></th><th><small>년+월</small></th></tr></thead><tbody>'
-      + (P.달들 || []).map(function (a, i) { return '<tr class="' + (i === 0 ? 'now' : '') + '"><td>' + (i === 0 || a.m === 1 ? a.y + '.' : '') + a.m + '월' + (a.흔들림 ? ' <span class="mv">●</span>' : '') + '</td><td>' + 판칩(a.사년판) + '</td><td>' + 판칩(a.사판) + '</td><td>' + 판칩(a.자년판) + '</td><td>' + 판칩(a.자판) + '</td></tr>'; }).join('')
+      + (P.달들 || []).map(function (a, i) { return '<tr class="' + (i === 0 ? 'now' : '') + '"><td>' + (i === 0 || a.m === 1 ? '<small>' + a.y + '</small><br>' : '') + a.m + '월' + (a.흔들림 ? ' <span class="mv">●</span>' : '') + '</td><td>' + 판칩(a.사년판) + '</td><td>' + 판칩(a.사판) + '</td><td>' + 판칩(a.자년판) + '</td><td>' + 판칩(a.자판) + '</td></tr>'; }).join('')
       + '</tbody></table><p class="why" style="margin:8px 4px 2px">년 = 그 달이 속한 해의 판단(사주는 입춘, 자미두수는 설로 해가 바뀝니다) · 년+월 = 그해 위에 그달까지 얹은 판단</p></div>';
     h += '<details class="more2"><summary>' + esc(화('더보기2', '그해 · 그달 무슨 일인지 자세히')) + '</summary>';
     h += '<div class="card">' + 띠 + '</div>';
