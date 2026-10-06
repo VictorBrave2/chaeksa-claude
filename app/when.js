@@ -74,13 +74,15 @@
     //   자미두수 년 = 그해 막힘 · 풀림 · 자미두수 년+월 = 그달 자리에 그해 운의 별까지 얹은 판단(설) — 현상은 판단에 맞는 자리의 일. 넷을 합치지 않는다.
     var V2 = (T.뾰족 || {}).자리 || {}, 달말 = T.달 || {};
     var 줄 = function (이름, 칩들, 현상, 덧) { return '<div class="yr-l"><span class="yr-k">' + 이름 + '</span>' + 칩들 + (덧 || '') + (현상 ? '<div class="yr-e">' + 현상 + '</div>' : '') + '</div>'; };
+    // 10-06 사장님 「사주 길 문장 두 줄로 나눠서 보여줘」 — 서버 문장의 줄바꿈을 화면 줄로
+    var 두줄 = function (t) { return String(t).split(/\n/).map(esc).join('<br>'); };
     var 쌍칩 = function (년, 년월) { return '<span class="pk">년</span>' + 판칩(년) + ' <span class="pk">년+월</span>' + 판칩(년월); };
     h += '<details class="more"><summary>' + esc(화('더보기', '길흉 네 가지로 보기 — 사주 · 자미두수, 년 · 년+월')) + '</summary>';
     h += '<div class="card">' + 띠 + '</div>';
     h += '<div class="sec">해마다 — 사주 · 자미두수 (년)</div><div class="yrs">' + (P.해들 || []).map(function (x) {
       var 흔 = (x.흔들림 || []).map(function (k) { var m = V2[k]; return m ? '<div class="yr-sharp">' + esc(V틀('해칸', { 이름: m.이름 })) + '<br><span>' + esc(m[갈래(x)]) + '</span></div>' : ''; }).join('');
       return '<div class="yr' + (x.y === 올해 ? ' now' : x.y < 올해 ? ' past' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + x.y + '</b> <small>' + x.나이 + '세' + (x.y === 올해 ? ' · 올해' : '') + (x.대운바뀜 ? ' · 10년 운 바뀜' : '') + '</small></div>'
-        + 줄('사주 · 년', 판칩(x.사판), x.사현상 ? '그해 ' + esc(x.사현상) : esc(x.사왜 || ''))
+        + 줄('사주 · 년', 판칩(x.사판), x.사현상 ? 두줄('그해 ' + x.사현상) : esc(x.사왜 || ''))
         + 줄('자미두수 · 년', 판칩(x.자판), x.자사건 ? '그해 ' + esc(x.자사건) : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
@@ -88,7 +90,7 @@
       var 자 = V2[a.곳] || {}, 일 = (달말[a.곳] || {})[a.등급] || '';
       var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">큰 움직임이 오는 자리의 달 — ' + esc(자.이름) + '</div>' : '';
       return '<div class="yr' + (i === 0 ? ' now' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + a.y + '년 ' + a.m + '월</b>' + (i === 0 ? ' <small>이번 달</small>' : '') + '</div>'
-        + 줄('사주', 쌍칩(a.사년판, a.사판), a.사현상 ? '그달 ' + esc(a.사현상) : esc(a.사왜 || ''))
+        + 줄('사주', 쌍칩(a.사년판, a.사판), a.사현상 ? 두줄('그달 ' + a.사현상) : esc(a.사왜 || ''))
         + 줄('자미두수', 쌍칩(a.자년판, a.자판), 일 ? '그달 ' + esc(일) : '', 자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
