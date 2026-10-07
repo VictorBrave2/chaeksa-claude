@@ -1152,5 +1152,17 @@
     사슬싣기: () => 주문서.사슬싣기(),
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil };
+  // ── 결혼상대 점검 신청(10-07 작업판 결혼-1 「신청 길 바꿈」) — 사장님 목록(gyeolhon-admin.html)만 ─────────
+  // 접수는 비공개 서버 /api/gyeolhon-apply 가 한다(로그인 없음 · 서버 열쇠). 여기는 검수 계정이 보는 길뿐 —
+  // 함수 안에서 ai_plan() = 'super' 를 본다(비공개 core sql-gyeolhon-apply.sql). 택일함수와 같은 길로 부른다(통신 코드를 두 벌 두지 않는다).
+  const gyeolhon = {
+    /** 최근 200건 배열(검수 계정이 아니면 []). 못 물어봤으면 { ok:false, reason }. */
+    adminList: (filter) => 택일함수('gyeolhon_admin_list', { p_filter: filter || null }),
+    /** 상태(received · paid · sent · canceled, null 이면 그대로) · 메모(null 이면 그대로, 빈 글이면 지움) → { ok:true, row } */
+    adminStatus: (id, status, memo) => 택일함수('gyeolhon_admin_status', { p_id: id, p_status: status || null, p_memo: memo == null ? null : String(memo) }),
+    /** 손님이 지워 달라고 할 때 — 되돌릴 수 없다 → { ok:true, deleted } */
+    adminDelete: (id) => 택일함수('gyeolhon_delete', { p_id: id }),
+  };
+
+  global.ChaeksaPay = { state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon };
 })(window);

@@ -135,6 +135,11 @@
     const 끝 = '<details class="ss-q card"><summary>4. 그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?</summary>' + (맞
       ? '<h4 class="ss-sub">안고 갈 것 — 쉽게 안 바뀌어요</h4>' + 맞.안고.map(t => '<p>' + esc(t) + '</p>').join('') + '<h4 class="ss-sub">맞춰 갈 것 — 말 한마디, 방식 하나로 달라져요</h4>' + 맞.맞춰.map(t => '<p>' + esc(t) + '</p>').join('') + '<p class="ss-why">안고 갈지, 못 안고 갈지는 두 사람이 정해요.</p>'
       : '') + '</details>';
+    // 10-07 결혼상대 점검(작업판 결혼-1, 사장님 10-07 확정 유료) — 웹툰궁합 글 보기 맨 끝 다리. 글은 비공개 page-copy 「다리」.웹툰궁합끝 그대로,
+    // 이름 · 자리는 장부(yaksok.js gyeolhon 줄) — 장부에 줄이 없으면 안 낸다. 생년월일은 주소에 싣지 않는다(링크만). 컷넣기()가 지우지 않는 상자(.ss-bridge).
+    const 결혼다리 = (() => { const Y = global.ChaeksaYaksok, r = Y && Y.줄 ? Y.줄('gyeolhon') : null; if (!r) return '';
+      return '<div class="card ss-bridge"><p>' + esc('두 사람의 연애는 여기까지 봤어요. 결혼까지 생각하신다면, 함께 살아도 되는지와 날짜를 잡을 때 피할 해를 「결혼상대 점검」 보고서로 계산해 드려요 — 사이트에서 바로 신청하고 메일로 PDF를 받아요(49,000원).') + '</p>'
+        + '<a class="btn" href="' + esc(r.자리 || 'gyeolhon.html') + '" style="display:block;text-align:center;text-decoration:none;margin-top:10px">' + esc(Y.이름('gyeolhon')) + ' 보기 →</a></div>'; })();
     // 지금 단계의 질문 여섯
     const 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {};
     // 09-25 사장님 「우리 포지션은 두 사람에 대한 소설을 써 주는 것 — 반응 글은 삭제」: 반응 묻기 · 기록 칸을 끔
@@ -148,8 +153,8 @@
         ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸2(대단(단계, i) || 글들[i] || []) + '</details>').join('')
         : '<div class="card"><p>이 단계는 위 「이 단계 장면으로 보기」로 보세요. 두 사람 웹툰은 누가 와도 다 나와요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');   // 09-27 GPT 지적 2: 「아직 쓰고 있어요」 안 냄
       if (단계 === '시작전') 때 = '';   // 아직 안 만났으니 「처음 만났을 때와 지금」은 없다
-      box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 끝 + 단질;
-      if (대화) box.innerHTML = 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 대화칸(4, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 단질;
+      box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 끝 + 단질 + 결혼다리;
+      if (대화) box.innerHTML = 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 대화칸(4, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 단질 + 결혼다리;
       try { if (global.ChaeksaSsomCard) global.ChaeksaSsomCard.붙이기(box, 나R, 그R, (a && a.name) || ''); } catch (e) {}
       const vt = box.querySelector('#ssVnTop'); if (vt) vt.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html'; };
       const vs = box.querySelector('#ssVnStage'); if (vs) vs.onclick = () => { try { sessionStorage.setItem('chaeksa.ssomVn', JSON.stringify({ a, b, opts })); } catch (e) {} location.href = 'ssom-vn.html?at=stage'; };
@@ -160,8 +165,8 @@
       ? '<h3 class="ss-part">지금 단계의 질문 — 막 썸을 시작했어요</h3>' + 이어 + '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 책사가 한 장씩 들려 드려요</button>'
         + S.질문.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸2(썸글(i) || 원고[i] || []) + 반응칸(i) + '</details>').join('')
       : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>이 조합은 「웹툰궁합 시작하기」 장면으로 보세요. 두 사람 웹툰은 누가 와도 다 나와요.</p></div>';
-    box.innerHTML = 대화 ? 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 대화칸(4, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 질문들
-      : 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 끝 + 질문들;
+    box.innerHTML = (대화 ? 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 대화칸(4, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 질문들
+      : 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 끝 + 질문들) + 결혼다리;
     const 보이기 = (i, r, 적) => {
       const d = box.querySelector('details[data-i="' + i + '"]'); if (!d) return;
       d.querySelectorAll('.ss-r').forEach(x => x.classList.toggle('on', x.dataset.r === r));

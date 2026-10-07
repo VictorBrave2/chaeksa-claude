@@ -16,7 +16,9 @@
     love: [{ 키: 'love', 탭: 'love', 그림: 'art/love-cover.webp', 작은: 'art/love-cover-s.webp', 크기: [1086, 1448] },
       { 키: 'pair', 탭: 'pair', 그림: 'art/story-friend-to-lover.webp', 작은: 'art/story-friend-to-lover-s.webp', 크기: [1024, 1536] }],
     child: [{ 키: 'taekil', 탭: 'taekil', 그림: 'art/taekil-main.webp', 작은: 'art/taekil-main-s.webp', 크기: [1086, 1448] }],
-    match: [{ 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
+    // 10-07 「결혼상대 점검」(gyeolhon.html, 사장님 10-07 확정 유료) — 궁합 칸 맨 앞. 그림은 소개 쪽 머리와 같은 상견례 컷(성별 없음)
+    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
+      { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
     me: [{ 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] },
       // 10-06 「옛 책이 본 내 머리」(brain.html) — 사장님 「썸네일 달고 컨텐츠로 배포」. 그림은 편인 칸(혼천의를 짜 맞추는 사람 — 머리 자체)
@@ -35,8 +37,9 @@
     day: { 키: 'taekil', 탭: 'taekil', 글: '제왕절개 날짜 · 시각 고르기' },
   };
   // 맨 앞에 설 분류(landing.js 가 온 길에 따라 바꿀 수 있다 — 앞바꾸기).
-  // 10-04 전략 — 아이(출산택일)가 첫 칸, 연애가 둘째. 블로그 · 검색으로 오는 사람 대부분이 출산택일을 찾아오고, 첫 매출도 출산택일에서 낸다.
-  var 앞 = ['child', 'love'];
+  // 10-04 전략 — 아이(출산택일)가 첫 칸. 블로그 · 검색으로 오는 사람 대부분이 출산택일을 찾아오고, 첫 매출도 출산택일에서 낸다.
+  // 10-07 결혼상대 점검이 서면서 궁합이 둘째 — 보고서로 파는 둘(출산택일 · 결혼상대 점검)이 첫 줄에 나란히, 그 뒤 연애. 물음 칩 차례(home-ask.js 갈래차례)는 그대로.
+  var 앞 = ['child', 'match', 'love'];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 성별() { try { var p = JSON.parse(localStorage.getItem('chaeksa.profile') || 'null'); return p && p.gender === 'M' ? 'm' : 'f'; } catch (e) { return 'f'; } }

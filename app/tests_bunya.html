@@ -284,13 +284,13 @@
         봄('차6 칩의 바깥 글 주소가 app/ 에 있다(' + 주소들.length + '개)', 없음목록(없는), '0');
       }
       {
-        const ssom = (await 받기('ssom.js?v=3d8eb60a96')) || '', 고름 = (ssom.match(/const 고름칸 = \[([\s\S]*?)\];/) || [])[1] || '';
+        const ssom = (await 받기('ssom.js?v=d24f8d99b7')) || '', 고름 = (ssom.match(/const 고름칸 = \[([\s\S]*?)\];/) || [])[1] || '';
         const 값들 = new Set(Array.from(고름.matchAll(/\['([^']+)', '/g)).map((m) => m[1]));
         const 쓴 = 칩.filter((c) => c.길.단계).map((c) => c.길.단계).concat(A.단계칩.map((s) => s[1]));
         봄('차7 단계 값(칩 · 연애 갈래 단계 칩)이 웹툰궁합 고르는 칸(ssom.js 고름칸) 값 안', [값들.size > 0, 없음목록(쓴.filter((v) => !값들.has(v)))], [true, '0']);
       }
       {
-        const 원 = { jeongtong: (await 받기('jeongtong.js?v=9b6afdadd0')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=64cbd4c726')) || '', app: (await 받기('app.js?v=a079bd2edc')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
+        const 원 = { jeongtong: (await 받기('jeongtong.js?v=9b6afdadd0')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=79e6eb98e1')) || '', app: (await 받기('app.js?v=a079bd2edc')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
         const 곳들 = new Set(칩.map((c) => c.길.곳).filter(Boolean)), 틀린 = [];
         곳들.forEach((s) => {
           if (/^jtCh\d+$/.test(s)) { if (!원.jeongtong.includes("id=\"jtCh' + 번호")) 틀린.push(s); }

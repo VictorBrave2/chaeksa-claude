@@ -86,7 +86,7 @@
   </ul>
 
   <h2>무엇이 무료고, 무엇이 값을 받나요?</h2>
-  <!-- 장부(yaksok.js)에서 읽어 그린다 — 파는 것은 장부 차례대로(이름 · 딱지와 값 · 무엇을 보나 · 결제 전에 보는 것), 무료는 코드가 없는 줄. -->
+  <!-- 장부(yaksok.js)에서 읽어 그린다 — 파는 것은 장부 차례대로(이름 · 딱지와 값 · 무엇을 보나 · 결제 전에 보는 것) + 신청으로 값을 받는 줄, 무료는 코드도 신청도 없는 줄. -->
   <div class="scope" id="scope"><p>목록을 불러오지 못했어요. 새로 고침해 주세요.</p></div>
   <p class="hint" style="margin-top:10px">결제하면 무엇을 받는지 · 언제까지 보는지 · 환불은 <a href="pay.html">유료 상품과 환불</a>에 자세히 적었어요.</p>
 
@@ -135,11 +135,12 @@
 <script src="config.js?v=1dadeed655"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="bunya.js?v=8dd0cf469e"></script>
-<script src="yaksok.js?v=50fd67e865"></script>
-<script src="pay.js?v=cd1562e4fa"></script>
+<script src="yaksok.js?v=383c64a1c6"></script>
+<script src="pay.js?v=6fc7ba5543"></script>
 <script>
 // 「무엇이 무료고, 무엇이 값을 받나요」 — 상품 약속 장부(yaksok.js)를 읽어 그린다. 상품 말은 이 쪽에 적지 않는다.
-// 파는 것: 장부 차례 · 무료: 코드가 없는 줄. 이름 · 한 줄은 장부(없으면 분야 표 bunya.js), 딱지의 값 자리는 상품표(products)에서 채운다.
+// 파는 것: 장부 차례 + 신청으로 값을 받는 줄(코드 없이 신청 칸이 있는 것 — 10-07 결혼상대 점검, 사이트 결제가 아직 아니라 값은 그 쪽에만) · 무료: 코드도 신청도 없는 줄.
+// 이름 · 한 줄은 장부(없으면 분야 표 bunya.js), 딱지의 값 자리는 상품표(products)에서 채운다.
 (function () {
   var Y = window.ChaeksaYaksok, box = document.getElementById('scope');
   if (!Y || !Y.장부 || !box) return;
@@ -157,8 +158,9 @@
       + (파는 && r.견본 ? '<span class="s"><a href="' + esc(r.견본) + '">보고서 견본 보기 →</a></span>' : '')
       + '</li>';
   };
-  var 파는 = (Y.장부.차례 || []).filter(function (k) { return 줄들[k] && 줄들[k].코드; });
-  var 무료 = Object.keys(줄들).filter(function (k) { return !줄들[k].코드; });
+  var 파는 = (Y.장부.차례 || []).filter(function (k) { return 줄들[k] && 줄들[k].코드; })
+    .concat(Object.keys(줄들).filter(function (k) { return !줄들[k].코드 && 줄들[k].신청; }));
+  var 무료 = Object.keys(줄들).filter(function (k) { return !줄들[k].코드 && !줄들[k].신청; });
   box.innerHTML = '<h3>값을 받는 것</h3><ul>' + 파는.map(function (k) { return 칸(k, true); }).join('') + '</ul>'
     + '<h3>무료로 보는 것</h3><ul>' + 무료.map(function (k) { return 칸(k, false); }).join('') + '</ul>';
   Y.값채우기(box);

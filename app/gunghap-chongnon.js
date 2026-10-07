@@ -104,7 +104,9 @@
     });
     안전(13, '더 묻고 싶으면', '', () => {
       const v = Q.장13();
-      return 문단(v.머리) + '<div class="gc-links">' + v.길.map(([t, h]) => '<a href="' + h + '">' + esc(t) + '</a>').join('') + '</div>';
+      // 10-07 결혼상대 점검 다리가 맨 위(관점 장13 결혼 — 장부에 줄이 있을 때만), 그 아래 살아 있는 셋으로 가는 길
+      const 결혼 = v.결혼 ? '<p>' + esc(v.결혼.글) + '</p><div class="gc-links"><a href="' + esc(v.결혼.길) + '">' + esc(v.결혼.이름) + ' →</a></div>' : '';
+      return 결혼 + 문단(v.머리) + '<div class="gc-links">' + v.길.map(([t, h]) => '<a href="' + h + '">' + esc(t) + '</a>').join('') + '</div>';
     });
 
     box.innerHTML = 목차() + out.join('');

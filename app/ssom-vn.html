@@ -64,7 +64,7 @@
 </div>
 <script src="config.js?v=1dadeed655"></script><script src="astro.js?v=c0bb3fa175"></script><script src="lunar.js?v=9d5b6391f1"></script><script src="engine.js?v=e0bd1ab409"></script>
 <script src="saenggeuk.js?v=fe0683a9e6"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="typecard.js?v=606368696f"></script><script src="gyeokguk.js?v=63f811f535"></script>
-<script src="classic.js?v=f45b014bad"></script><script src="samyeong.js?v=ecb3bc160e"></script><script src="jt-webtoon.js?v=e697f9024f"></script><script src="jt-webtoon-2.js?v=101d4055cf"></script><script src="ssom-gwanjeom.js?v=958eca8d96"></script><script src="ssom-baram.js?v=32e36957f2"></script><script src="ssom-daehwa.js?v=a9b812ff5a"></script><script src="ssom-webtoon.js?v=ed827b09b6"></script><script src="ssom-webtoon-2.js?v=a8f555474b"></script><script src="ssom-webtoon-3.js?v=d881c743e1"></script><script src="ssom-wongo.js?v=ee78839025"></script><script src="ssom-dangye.js?v=7122110c14"></script><script src="ssom.js?v=3d8eb60a96"></script>
+<script src="classic.js?v=f45b014bad"></script><script src="samyeong.js?v=ecb3bc160e"></script><script src="jt-webtoon.js?v=e697f9024f"></script><script src="jt-webtoon-2.js?v=101d4055cf"></script><script src="ssom-gwanjeom.js?v=958eca8d96"></script><script src="ssom-baram.js?v=32e36957f2"></script><script src="ssom-daehwa.js?v=a9b812ff5a"></script><script src="ssom-webtoon.js?v=ed827b09b6"></script><script src="ssom-webtoon-2.js?v=a8f555474b"></script><script src="ssom-webtoon-3.js?v=d881c743e1"></script><script src="ssom-wongo.js?v=ee78839025"></script><script src="ssom-dangye.js?v=7122110c14"></script><script src="ssom.js?v=d24f8d99b7"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 지어낸 두 사람 견본으로 연다(실제 사람 생일 아님). 썸 원고가 있는 짝(丁卯 남 × 丙午 여, 같은 원고 열쇠)이어야 장면이 나온다.
@@ -152,7 +152,9 @@
   }
   function 다음단추() {
     멈춤 = true;
-    if (장 + 1 >= 장들.length) { 책사말(mn ? '끝까지 보셨어요. ' + (mn.name || '그 사람') + ' 사용설명서는 여기까지예요.' : jt ? '끝까지 보셨어요. 당신 이야기는 여기까지예요.' : '끝까지 보셨어요. 두 분의 이야기는 여기까지예요.'); return 선택(['처음부터 다시', '목차', '글로 보기'], (t) => t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
+    // 10-07 결혼상대 점검(작업판 결혼-1) — 웹툰궁합 장면 끝에서 가는 다리(사용설명서 · 정통사주 장면에는 없다). 글은 비공개 page-copy 「다리」.웹툰궁합끝 그대로. 생년월일은 주소에 싣지 않는다.
+    const 결혼다리 = !mn && !(jt && jt.a);
+    if (장 + 1 >= 장들.length) { 책사말(mn ? '끝까지 보셨어요. ' + (mn.name || '그 사람') + ' 사용설명서는 여기까지예요.' : jt ? '끝까지 보셨어요. 당신 이야기는 여기까지예요.' : '끝까지 보셨어요. 두 사람의 연애는 여기까지 봤어요. 결혼까지 생각하신다면, 함께 살아도 되는지와 날짜를 잡을 때 피할 해를 「결혼상대 점검」 보고서로 계산해 드려요 — 사이트에서 바로 신청하고 메일로 PDF를 받아요(49,000원).'); return 선택((결혼다리 ? ['결혼상대 점검 보기'] : []).concat(['처음부터 다시', '목차', '글로 보기']), (t) => t === '결혼상대 점검 보기' ? (location.href = 'gyeolhon.html') : t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
     선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
   function 목차() {

@@ -7,21 +7,23 @@
 <meta name="description" content="두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.">
 <!-- 10-07 아직 홈 · 메뉴에 걸지 않았다 — 신청서가 서면 메인이 걸면서 index,follow 로 푼다(견본 쪽 gyeolhon-sample.html 도 같이 — node tools/gyeolhon-sample.js 가 이 쪽 robots 를 따라간다).
      10-07 사장님 「네이버폼으로 받지말고 웹사이트에서 바로」 — 신청서는 사이트 쪽으로 짓는다(작업판 결혼-1 신청 길 바꿈). 아래 주소 상수에 그 쪽 이름(예: 상대 주소)을 넣으면 단추가 선다. -->
-<meta name="robots" content="noindex,follow">
+<meta name="robots" content="index,follow">
 <link rel="canonical" href="https://chaeksa.kr/gyeolhon.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
 <meta property="og:title" content="이 사람과 결혼해도 될까요? — 결혼상대 점검">
 <meta property="og:description" content="두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지.">
 <meta property="og:url" content="https://chaeksa.kr/gyeolhon.html">
-<meta property="og:image" content="https://chaeksa.kr/og.jpg">
+<meta property="og:image" content="https://chaeksa.kr/cards/og/gyeolhon.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- 결혼상대 점검 소개 쪽 — 작업판 결혼-1 5단계 연결(10-07). 값 49,000원(사장님 10-07 확정).
      글은 비공개 core data/gyeolhon-page-copy-v1.json 에서 옮겼다(작가 → 검수). 칸 머리(h2 여섯 · 단추 말)만 화면 담당이 붙였다 — 작가 검수 대상.
      계산 · 원고 · 판정 코드는 이 쪽에 없다(비공개 core 에만). 결론 그림은 보고서와 같다: 같이 = story-propose · 맞춰 = story-marry-talk · 다시 = story-gyeolhon. -->
 <script>
   // 신청 단추가 가는 곳 — 이 한 줄만 고친다(사이트 신청서 쪽 이름 또는 https 주소). 비어 있으면 신청 단추를 숨긴다.
-  var 결혼신청주소 = '';
+  var 결혼신청주소 = 'gyeolhon-apply.html';
 </script>
 <script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,17 +135,17 @@
 
   <h2>신청할 때 적어 주실 것</h2>
   <ul class="dots">
-    <li>두 사람의 생년월일 — 양력인지 음력인지도 적어 주세요</li>
-    <li>두 사람의 태어난 시각 — 모르시면 「모름」이라고 적어 주세요. 열두 칸에 하나씩 모두 넣어 보고, 어느 시냐에 따라 결론이 갈리면 「태어난 시를 알면 답이 정해져요」라고 적어 드려요</li>
+    <li>두 사람의 생년월일 — 양력 · 음력 · 윤달 모두 돼요</li>
+    <li>두 사람의 태어난 시각 — 모르시면 「시간 모름」으로 넣어 주세요. 열두 칸에 하나씩 모두 넣어 보고, 어느 시냐에 따라 결론이 갈리면 「태어난 시를 알면 답이 정해져요」라고 적어 드려요</li>
     <li>두 사람이 태어난 곳 — 시 · 군까지면 돼요. 같은 시계 시각이라도 동쪽과 서쪽은 해가 뜨는 때가 조금씩 달라서, 태어난 시를 그곳 기준으로 맞추는 데 써요</li>
     <li>두 사람의 성별</li>
-    <li>보고서를 받으실 메일 주소와 연락처(카카오톡 아이디나 전화번호)</li>
+    <li>보고서(PDF)를 받으실 메일 주소, 그리고 입금이 확인되지 않을 때 연락드릴 연락처(카카오톡 아이디나 전화번호)</li>
   </ul>
 
   <h2>어떻게 받나요</h2>
   <ol class="steps">
-    <li>신청서에 두 사람의 생년월일 · 태어난 시 · 태어난 곳 · 성별과 연락처를 적어 주세요.</li>
-    <li>적어 주신 연락처로 입금할 계좌를 알려 드려요. 그 계좌로 49,000원을 넣어 주세요.</li>
+    <li>신청서에서 두 사람을 저장된 사람에서 고르거나 새로 넣고(생년월일 · 태어난 시 · 태어난 곳 · 성별), 메일 주소와 연락처를 적어 주세요. 로그인은 필요 없어요.</li>
+    <li>신청하면 바로 접수 번호와 입금 계좌가 화면에 나와요. 그 계좌로 49,000원을 넣어 주세요.</li>
     <li>입금이 확인되면 엔진이 두 사람을 계산하고, 책사가 한 번 더 확인해요.</li>
     <li>보통 2~3일 안에 보고서(PDF)를 적어 주신 메일로 보내 드려요.</li>
   </ol>
