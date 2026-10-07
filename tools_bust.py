@@ -35,7 +35,7 @@ if new != cur:
 # 결제 화면 셋이 config·cloud·pay.js 를 버전 없이 불러서, pay.js 를 고쳐도 재방문자는
 # 옛 파일을 물고 있었다 — 상품 그림이 결제 화면에만 안 뜬 게 그것이다(2026-09-11).
 # 스크립트를 부르는 페이지를 새로 만들면 여기에 넣어야 한다.
-PAGES = ['index.html', 'read.html', 'jt-wongo-view.html', 'tests_jt.html', 'pay.html', 'pay-done.html', 'pay-fail.html', 'taekil.html', 'taekil-apply.html', 'taekil-sim.html', 'taekil-sample.html', 'myeongsik.html', 'love.html', 'pair.html', 'jeongtong.html', 'gunghap-chongnon.html', 'ssom.html', 'ssom-vn.html', 'ssom-wongo-view.html', 'tests_ssom.html', 'tests_byeonhwa.html', 'tests_bunya.html', 'tests_yaksok.html', 'tests_taekilread.html', 'taekil-report.html', 'taekil-admin.html', 'tests_taekilreport.html', 'about.html', 'when.html', 'brain.html']
+PAGES = ['index.html', 'read.html', 'jt-wongo-view.html', 'tests_jt.html', 'pay.html', 'pay-done.html', 'pay-fail.html', 'taekil.html', 'taekil-apply.html', 'taekil-sim.html', 'taekil-sample.html', 'myeongsik.html', 'love.html', 'pair.html', 'jeongtong.html', 'gunghap-chongnon.html', 'ssom.html', 'ssom-vn.html', 'ssom-wongo-view.html', 'tests_ssom.html', 'tests_byeonhwa.html', 'tests_bunya.html', 'tests_yaksok.html', 'tests_taekilread.html', 'taekil-report.html', 'taekil-admin.html', 'tests_taekilreport.html', 'about.html', 'when.html', 'brain.html', 'gyeolhon.html', 'gyeolhon-sample.html']
 # 10-02 개편 3묶음 「빠르기」 — ?v= 뒤는 이제 배포 번호가 아니라 **그 파일 내용의 지문**(sha1 앞 10자)이다.
 # 전에는 배포마다 모든 파일의 ?v= 가 함께 올라서, 파일 하나만 고쳐도 다시 온 손님이 스크립트 전부(1.2MB)를 다시 받았다.
 # 이제 바뀐 파일만 주소가 바뀐다. 서비스 워커(sw.js)는 지문 붙은 주소를 캐시에서 먼저 꺼낸다 — 같은 지문은 언제나 같은 내용이라서.

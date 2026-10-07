@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>이 사람과 결혼해도 될까요? — 결혼상대 점검 · 책사</title>
+<meta name="description" content="두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.">
+<!-- 10-07 아직 홈 · 메뉴에 걸지 않았다 — 신청서가 서면 메인이 걸면서 index,follow 로 푼다(견본 쪽 gyeolhon-sample.html 도 같이 — node tools/gyeolhon-sample.js 가 이 쪽 robots 를 따라간다).
+     10-07 사장님 「네이버폼으로 받지말고 웹사이트에서 바로」 — 신청서는 사이트 쪽으로 짓는다(작업판 결혼-1 신청 길 바꿈). 아래 주소 상수에 그 쪽 이름(예: 상대 주소)을 넣으면 단추가 선다. -->
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://chaeksa.kr/gyeolhon.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="책사">
+<meta property="og:title" content="이 사람과 결혼해도 될까요? — 결혼상대 점검">
+<meta property="og:description" content="두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지.">
+<meta property="og:url" content="https://chaeksa.kr/gyeolhon.html">
+<meta property="og:image" content="https://chaeksa.kr/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 결혼상대 점검 소개 쪽 — 작업판 결혼-1 5단계 연결(10-07). 값 49,000원(사장님 10-07 확정).
+     글은 비공개 core data/gyeolhon-page-copy-v1.json 에서 옮겼다(작가 → 검수). 칸 머리(h2 여섯 · 단추 말)만 화면 담당이 붙였다 — 작가 검수 대상.
+     계산 · 원고 · 판정 코드는 이 쪽에 없다(비공개 core 에만). 결론 그림은 보고서와 같다: 같이 = story-propose · 맞춰 = story-marry-talk · 다시 = story-gyeolhon. -->
+<script>
+  // 신청 단추가 가는 곳 — 이 한 줄만 고친다(사이트 신청서 쪽 이름 또는 https 주소). 비어 있으면 신청 단추를 숨긴다.
+  var 결혼신청주소 = '';
+</script>
+<script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4d0b2415e0">
+<style>
+  /* 사이트 공통(style.css 변수 · 머리 줄 · 「← 홈」 단추)만 쓴다 — 쪽 안에 색을 새로 박지 않는다(10-05 사장님). taekil.html 꼴. */
+  .doc{max-width:660px;margin:0 auto;padding:var(--s3) 18px 90px}
+  .doc .eyebrow{font-size:var(--t1);color:var(--accent);letter-spacing:.06em;margin:0;font-weight:700}
+  .doc h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:6px 0 10px;color:var(--ink)}
+  .doc .lead{font-size:var(--t3);color:var(--ink2);line-height:1.8;margin:0}
+  .doc h2{font-family:var(--serif);font-size:var(--t5);font-weight:700;line-height:1.4;color:var(--ink);margin:var(--s4) 0 var(--s2)}
+  .doc h2::after{display:none}
+  .doc p,.doc li{font-size:var(--t2);line-height:1.85;color:var(--ink2)}
+  .doc b{color:var(--ink)}
+  .doc a{color:var(--accent)}
+  .doc a.btn{color:var(--seal-ink);text-decoration:none}
+  .doc a.btn.ghost{color:var(--ink2)}
+  .doc [hidden]{display:none!important}
+  .hero{margin:var(--s3) 0 0;aspect-ratio:4/3;overflow:hidden;border-radius:var(--r2);background:var(--hero-bg)}
+  .hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+  .ways{display:grid;gap:10px}
+  .way{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px;box-shadow:var(--shadow)}
+  .way img{display:block;width:72px;height:72px;object-fit:cover;object-position:50% 12%;border-radius:var(--r1);background:var(--hero-bg)}
+  .way .t{font-family:var(--serif);font-size:var(--t4);font-weight:700;line-height:1.45;color:var(--ink);margin:0 0 4px}
+  .way p{margin:0}
+  .gets{list-style:none;margin:0;padding:0;counter-reset:g}
+  .gets li{position:relative;padding:12px 0 12px 38px;border-top:1px solid var(--line);counter-increment:g}
+  .gets li:first-child{border-top:0}
+  .gets li::before{content:counter(g);position:absolute;left:0;top:12px;width:26px;height:26px;border-radius:50%;background:var(--seal-bg);color:var(--seal-ink);font-size:var(--t1);font-weight:700;line-height:26px;text-align:center}
+  .why{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;margin:0 0 10px}
+  .why p{margin:0}
+  .note{border-left:3px solid var(--accent-line);background:var(--accent-soft);padding:13px 15px;border-radius:0 var(--r1) var(--r1) 0;margin:14px 0}
+  .note p{margin:0}
+  .note p+p{margin-top:8px}
+  .note .btn{margin-top:12px}
+  .dots{margin:0;padding:0 0 0 18px}
+  .dots li{margin:0 0 8px}
+  .steps{margin:0;padding:0;list-style:none;counter-reset:s}
+  .steps li{position:relative;padding:0 0 12px 30px;counter-increment:s}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;border:1px solid var(--accent-line);color:var(--accent);font-size:var(--t1);font-weight:700;line-height:20px;text-align:center}
+  .price{font-size:var(--t3)!important;color:var(--ink)!important}
+  .price b{font-family:var(--serif);font-size:var(--t5)}
+  .cta{display:block;text-align:center;margin-top:var(--s3)}
+  .foot{font-size:var(--t1)!important;color:var(--ink3)!important;line-height:1.8!important;margin-top:var(--s4)}
+  .doc .foot a{color:var(--ink3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Service","name":"결혼상대 점검 보고서","serviceType":"명리 궁합","areaServed":"KR",
+ "provider":{"@type":"Organization","name":"책사","url":"https://chaeksa.kr/"},
+ "url":"https://chaeksa.kr/gyeolhon.html",
+ "description":"두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.",
+ "offers":{"@type":"Offer","price":"49000","priceCurrency":"KRW"}}
+</script>
+</head>
+<body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a></div>
+<main class="doc">
+  <a class="btn ghost small backhome" href="./" style="display:inline-block;margin-top:0;text-decoration:none">← 홈</a>
+  <p class="eyebrow">결혼상대 점검 보고서</p>
+  <h1>이 사람과 결혼해도 될까요?</h1>
+  <p class="lead">두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.</p>
+  <figure class="hero"><img src="art/story-sanggyeonrye-s.webp" alt="" width="360" height="540"></figure>
+
+  <h2>어떤 답이 나오나요</h2>
+  <div class="ways">
+    <div class="way" data-way="같이">
+      <img src="art/story-propose-s.webp" alt="" width="360" height="540" loading="lazy">
+      <div><p class="t">「같이 가도 돼요」</p><p>두 사람 모두, 상대가 평소 하는 말과 행동이 각자 짝에게 바라던 모습 그대로이고, 꺼내 쓰는 것의 가짓수도 두 개 이상 벌어지지 않을 때 나와요. 흔하지 않아요.</p></div>
+    </div>
+    <div class="way" data-way="맞춰">
+      <img src="art/story-marry-talk-s.webp" alt="" width="360" height="540" loading="lazy">
+      <div><p class="t">「서로 맞춰 가야 하는 사이예요」</p><p>꺼내 쓰는 것의 가짓수는 두 개 이상 벌어지지 않았지만, 한 사람이라도 상대의 말과 행동이 바라던 모습과 다를 때 나와요. 대부분의 짝이 여기에 들고, 무엇을 맞출지와 언제 조심할지를 함께 적어 드려요.</p></div>
+    </div>
+    <div class="way" data-way="다시">
+      <img src="art/story-gyeolhon-s.webp" alt="" width="360" height="540" loading="lazy">
+      <div><p class="t">「날짜를 잡기 전에 다시 생각해 보세요」</p><p>두 사람이 살면서 실제로 꺼내 쓰는 것(돈 · 일 · 배움 같은 것)의 가짓수가 두 개 이상 차이 날 때만 나와요. 하나 차이는 어울릴 수 있어서 여기에 들지 않아요. 가짓수가 두 개 이상 벌어지면 한 사람이 크게 여기는 일을 다른 사람은 작게 여기기 쉬워서, 마음먹고 나눈 이야기도 서로에게 닿지 않아요.</p></div>
+    </div>
+  </div>
+
+  <h2>보고서에 무엇이 들어 있나요</h2>
+  <ol class="gets">
+    <li><b>맨 위 결론 한 줄</b> — 같이 가도 되는지, 서로 맞춰 가야 하는지, 다시 생각해 봐야 하는지. 그리고 결혼 전에 할 일과 날짜를 잡을 때 피할 해</li>
+    <li><b>두 사람이 어울리는 사이인지</b> — 스스로 서는 힘 · 말과 재능 · 돈 · 일과 책임 · 배움, 이 다섯 가운데 각자 살면서 실제로 꺼내 쓰는 것이 몇 가지인지 세어, 그 차이로 봐요</li>
+    <li><b>서로가 바라던 사람인지</b> — 상대가 평소 하는 말과 행동이 내가 짝에게 바라던 모습과 같은지, 두 사람 쪽에서 각각 봐요</li>
+    <li><b>짝에게 바라는 모습이 흔들리는 해</b> — 두 사람 각각 앞으로 20년 가운데, 바라는 모습이 바뀌었다가 돌아오는 해를 연도로 짚어요</li>
+    <li><b>상대가 내 삶에 들어오면</b> — 그 사람을 대표하는 글자 하나를 내 사주에 얹어 보고, 내가 살아가는 모습이 그대로인지 바뀌는지 두 사람 쪽에서 각각 봐요. 결혼 전에 무엇을 맞춰야 할지가 여기서 나와요</li>
+    <li><b>옛 책 네 권</b>(궁통보감 · 자평진전 · 삼명통회 · 연해자평)이 혼인이 깨진다고 본 꼴에 두 사람을 각자 대 보고, 원문을 글자 그대로 실어요. 걸린 꼴이 있으면 풀리는 해도 적어요. 이 칸은 결론에 넣지 않고, 옛 책은 이렇게 봤다는 참고로 둬요</li>
+    <li><b>조심할 해와 옛 책이 꺼린 꼴이 풀리는 해</b>를 한 줄 연표로 모아 드려요 — 결혼 날짜를 잡기 전에 보세요</li>
+  </ol>
+
+  <h2>AI에 묻는 것과 무엇이 다른가요</h2>
+  <div class="why"><p><b>결론은 책사가 미리 정해 둔 기준 하나로만 내요.</b> 그래서 같은 두 사람이면 언제 넣어도 같은 결론이 나와요. AI에 물으면 물을 때마다 답이 달라질 수 있어요.</p></div>
+  <div class="why"><p><b>옛 책 원문은 원본과 글자 하나하나 대조해 그대로 실어요.</b> 원본에서 글자가 깨진 자리는 깨졌다고 적어요. AI는 책에 없는 문장을 원문처럼 내놓기도 해요.</p></div>
+  <div class="why"><p>두 사람 각각 <b>앞으로 20년을 한 해씩 계산해</b>, 바라는 모습이 흔들리는 해와 옛 책이 꺼린 꼴이 풀리는 해를 실제 연도로 짚어요. 태어난 시를 모르면 하루를 두 시간씩 나눈 열두 칸에 하나씩 모두 넣어 보고, 시에 따라 답이 갈리면 갈린다고 그대로 적어요.</p></div>
+
+  <div class="note">
+    <p>어떤 보고서를 받는지, 지어낸 두 사람으로 만든 견본을 먼저 보세요.</p>
+    <a class="btn ghost small" href="gyeolhon-sample.html" style="display:block;text-align:center">보고서 견본 보기 →</a>
+  </div>
+
+  <h2>누가 신청하나요</h2>
+  <ul class="dots">
+    <li>결혼을 앞두고, 이 사람과 함께 살아도 될지 한 번 더 확인하고 싶은 분</li>
+    <li>자녀가 결혼하려는 사람이 마음에 걸리는 부모님 — 자녀와 이야기하실 때 같이 보실 수 있게 적어 드려요</li>
+    <li>같은 성별 두 사람도 똑같이 봐요. 옛 책이 남자 · 여자를 따로 적은 꼴은 각자 자기 성별 쪽으로만 대 봐요</li>
+  </ul>
+
+  <h2>신청할 때 적어 주실 것</h2>
+  <ul class="dots">
+    <li>두 사람의 생년월일 — 양력인지 음력인지도 적어 주세요</li>
+    <li>두 사람의 태어난 시각 — 모르시면 「모름」이라고 적어 주세요. 열두 칸에 하나씩 모두 넣어 보고, 어느 시냐에 따라 결론이 갈리면 「태어난 시를 알면 답이 정해져요」라고 적어 드려요</li>
+    <li>두 사람이 태어난 곳 — 시 · 군까지면 돼요. 같은 시계 시각이라도 동쪽과 서쪽은 해가 뜨는 때가 조금씩 달라서, 태어난 시를 그곳 기준으로 맞추는 데 써요</li>
+    <li>두 사람의 성별</li>
+    <li>보고서를 받으실 메일 주소와 연락처(카카오톡 아이디나 전화번호)</li>
+  </ul>
+
+  <h2>어떻게 받나요</h2>
+  <ol class="steps">
+    <li>신청서에 두 사람의 생년월일 · 태어난 시 · 태어난 곳 · 성별과 연락처를 적어 주세요.</li>
+    <li>적어 주신 연락처로 입금할 계좌를 알려 드려요. 그 계좌로 49,000원을 넣어 주세요.</li>
+    <li>입금이 확인되면 엔진이 두 사람을 계산하고, 책사가 한 번 더 확인해요.</li>
+    <li>보통 2~3일 안에 보고서(PDF)를 적어 주신 메일로 보내 드려요.</li>
+  </ol>
+
+  <h2>값과 환불</h2>
+  <div class="note">
+    <p class="price"><b>49,000원</b> (부가세 포함) — 두 사람을 함께 본 보고서 한 벌이에요.</p>
+    <p>보고서를 받으시기 전에는 이유를 묻지 않고 전액 돌려드려요. 받으신 뒤에는 청약철회가 제한될 수 있어요. 보고서를 만들지 못해도 전액 돌려드려요.</p>
+  </div>
+
+  <div data-apply-box hidden>
+    <a class="btn cta" data-apply href="#">보고서 신청하기</a>
+  </div>
+
+  <p class="foot"><a href="./">책사 처음으로</a> · <a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
+  유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>
+  대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+</main>
+<script src="config.js?v=1dadeed655"></script>
+<script src="track.js?v=4520244637"></script>
+<script>
+  // 신청 단추 — 머리의 결혼신청주소 한 곳만 읽는다. 비었거나 javascript: 주소면 단추 자리째 숨긴 채로 둔다.
+  (function () {
+    var u = (typeof 결혼신청주소 === 'string' ? 결혼신청주소 : '').trim();
+    if (!u || /^javascript:/i.test(u)) return;
+    document.querySelectorAll('[data-apply]').forEach(function (a) { a.href = u; });
+    document.querySelectorAll('[data-apply-box]').forEach(function (b) { b.hidden = false; });
+  })();
+</script>
+</body>
+</html>
