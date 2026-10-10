@@ -50,6 +50,29 @@
     return 이상 + (T.q == null ? '' : ' ' + 틀(글('옛.빈도.꼭'), { n: T.n, q: T.q }));
   }
   var 걸린 = function (x) { return x.걸림 === true; }, 안걸린 = function (x) { return x.걸림 !== true; };
+  // 10-11 운에서 받는 해 — 해마다 「{해}년 — {글자}({글자뜻})」 + 가장 가까운 해를 앞세운 한 줄(작가 misc-copy-1010 「귀받는해」 → 원고 지금.관통.받는해목록). 판정 말 없음.
+  //   한 해에 책임 글자가 둘이면 한 줄에 「 · 」로 잇는다. 글자 · 정관/편관은 서버 책임 칸(10-11~ {천간, 십신, 층}).
+  //   책임 칸이 없는 옛 응답이면 근거 문자열에서 천간 한 자를 꺼내 일간과 견주어 가른다 — 나를 누르는 오행이고 음양이 같으면 편관 · 다르면 정관.
+  var 천간들 = '甲乙丙丁戊己庚辛壬癸';
+  function 관가름(일간, 간) { var a = 천간들.indexOf(일간), b = 천간들.indexOf(간); if (a < 0 || b < 0 || (b >> 1) !== ((a >> 1) + 3) % 5) return ''; return a % 2 === b % 2 ? '편관' : '정관'; }
+  function 책임들(x, 일간) {
+    if (x.책임 && x.책임.length) return x.책임;
+    return (x.글자 || []).map(function (s) { var m = /([甲乙丙丁戊己庚辛壬癸])\(/.exec(String(s)); return m ? { 천간: m[1], 십신: 관가름(일간, m[1]) } : null; }).filter(function (c) { return c && c.십신; });
+  }
+  function 받는해칸(받, 일간, 올해) {
+    var B = (C.지금 && C.지금.관통 && C.지금.관통.받는해목록) || {};
+    if (!B.줄) return '<p>' + esc(틀(글('지금.관통.받는해'), { 해들: 받.map(function (x) { return x.해 + '년'; }).join(' · ') })) + '</p>';
+    var k = B.줄.indexOf('{글자}'), 앞틀 = k < 0 ? B.줄 : B.줄.slice(0, k), 글자틀 = k < 0 ? '' : B.줄.slice(k);
+    var 줄들 = 받.map(function (x) {
+      var 본 = {}, 조각 = 책임들(x, 일간).filter(function (c) { var 키 = c.천간 + c.십신; if (본[키]) return false; 본[키] = 1; return true; })
+        .map(function (c) { return 틀(글자틀, { 글자: c.천간, 글자뜻: c.십신 === '정관' ? B.정관뜻 : B.편관뜻 }); });
+      return 조각.length ? 틀(앞틀, { 해: x.해 }) + 조각.join(' · ') : x.해 + '년';
+    });
+    var 첫 = 받[0].해, 몇 = 첫 - 올해;
+    return '<p class="yr-lead"><b>' + esc(몇 <= 0 ? 틀(B.가까운올해, { 해: 첫 }) : 틀(B.가까운, { 몇: 몇, 해: 첫 })) + '</b></p>'
+      + (B.머리 ? '<p class="why">' + esc(B.머리) + '</p>' : '')
+      + '<ul class="yrs">' + 줄들.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>';
+  }
   function 그리기() {
     var R = 결과; if (!R) return;
     var 옛 = R.옛, 귀 = 옛.귀, 천 = 옛.천, J = R.지금, 성 = 성별말(R.성별), 표본 = R.표본 ? R.표본[R.성별 === 'F' ? '여' : '남'] : null, h = '';
@@ -84,10 +107,10 @@
       + (g.시모름 ? '<p class="why">' + esc(글('지금.그릇넷.시모름')) + '</p>' : '')
       + '<p class="why"><b>' + esc(틀(글('지금.그릇넷.빈도'), { p: g.p })) + '</b></p>'
       + '<details class="fold"><summary>근거 보기</summary><p class="why"><small>' + esc(g.근거) + '</small></p></details></div>';
-    var 해들 = (t.받는해 || []).map(function (x) { return x.해 + '년'; }).join(' · ');
+    var 받 = t.받는해 || [], 일간 = String(R.명식 || '').split(' ')[2] ? String(R.명식).split(' ')[2].charAt(0) : '', 올해 = t.받는해범위 ? t.받는해범위[0] : new Date().getFullYear();
     h += '<div class="card"><div class="k">' + (t.걸림 ? '내 사주에 있음' : '내 사주에 없음') + '</div><div class="y" style="font-size:var(--t4)">' + esc(글('지금.관통.이름')) + '</div>'
       + '<p>' + esc(t.걸림 ? 글('지금.관통.걸림') : 글('지금.관통.없음')) + '</p>'
-      + (t.걸림 ? '' : '<p>' + esc(해들 ? 틀(글('지금.관통.받는해'), { 해들: 해들 }) : 글('지금.관통.받는해없음')) + '</p>')
+      + (t.걸림 ? '' : 받.length ? 받는해칸(받, 일간, 올해) : '<p>' + esc(글('지금.관통.받는해없음')) + '</p>')
       + (t.시모름 ? '<p class="why">' + esc(글('지금.관통.시모름')) + '</p>' : '')
       + '<p class="why"><b>' + esc(틀(글('지금.관통.빈도'), { p: t.p })) + '</b></p>'
       + '<details class="fold"><summary>근거 보기</summary><p class="why"><small>' + esc(t.근거)

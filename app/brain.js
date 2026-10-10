@@ -147,6 +147,17 @@
     $('f').classList.add('hide');
     고르기(먼저);
   }
+  // 처음 넣은 생년월일은 「나」로 남겨 둔다(when.js · gwi.js 와 같은 길, 10-05 「이용자 정보 입력은 프로필로」) — 이미 「나」가 있으면 건드리지 않는다.
+  //   10-10 깔때기 ② 생년월일 넣음(profile)도 people.js add 가 여기서 찍는다.
+  function 남겨두기(body) {
+    try {
+      if (!PP || PP.hasSelf()) return;
+      var pl = window.ChaeksaPlaces && ChaeksaPlaces.resolve ? ChaeksaPlaces.resolve(body.place) : null;
+      var b = { year: body.year, month: body.month, day: body.day, hour: body.hour, minute: body.minute, gender: body.gender, calendar: 'solar', place: body.place };
+      if (pl) { b.placeName = pl.name; b.longitude = pl.lon; b.tzOffset = pl.tzOffset; }
+      PP.add({ name: '', relation: '나', isSelf: true, birth: b });
+    } catch (e) {}
+  }
   $('f').addEventListener('submit', function (e) {
     e.preventDefault();
     // 시 · 분 숫자 칸(10-06 사장님 「시간 입력 바꿔 줘」) — 분은 비우면 0, 시는 0~23 · 분은 0~59 만
@@ -154,6 +165,7 @@
     var body = { year: +$('y').value, month: +$('m').value, day: +$('d').value, hour: 시 === '' || +시 < 0 || +시 > 23 || +시 % 1 ? NaN : +시, minute: 분 === '' ? 0 : +분, gender: g, place: $('p').value };
     if (isNaN(body.minute) || body.minute < 0 || body.minute > 59 || body.minute % 1) { $('err').textContent = '분은 0부터 59까지 넣어 주세요.'; return; }
     if (!body.year || !body.month || !body.day || isNaN(body.hour)) { $('err').textContent = '태어난 날과 시각을 다 넣어 주세요.'; return; }
+    남겨두기(body);
     보기(body);
   });
   async function 보기(body) {

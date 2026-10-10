@@ -3,12 +3,12 @@
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}.info{color:#a60}</style></head>
 <body><div id="out">시험하는 중이에요…</div><div id="stage" hidden></div>
 <script src="config.js?v=1dadeed655"></script>
-<script src="bunya.js?v=8dd0cf469e"></script>
+<script src="bunya.js?v=a8096dcb35"></script>
 <script src="yaksok.js?v=20811a4fd7"></script>
 <script src="love.js?v=4d215402c8"></script>
 <script src="pair.js?v=678b1ffa41"></script>
-<script src="home-cats.js?v=6c3a3f08f6"></script>
-<script src="people.js?v=64424c6e15"></script>
+<script src="home-cats.js?v=b7d3fc1655"></script>
+<script src="people.js?v=608bb7b89c"></script>
 <script>
 // 상품 약속 장부 시험(10-02 개편 2묶음 「상품 약속 장부 한 줄씩 만들고, 모든 화면이 거기서 읽게 하기」).
 //   가 장부 꼴 · 나 값과 「무료」 · 다 화면이 장부를 읽는다(그려 보기 · 장부 한 칸을 바꾸면 같이 바뀐다)
@@ -42,14 +42,14 @@
   const 아는조건 = ['장한줄'];
   // 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
   const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'taekil-sample.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html',
-    'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'home-cats.js?v=6c3a3f08f6', 'app.js?v=a079bd2edc', 'pay.js?v=6fc7ba5543', 'gunghap-gwanjeom.js?v=15beb437bd', 'bunya.js?v=8dd0cf469e', 'about.html',
+    'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'home-cats.js?v=b7d3fc1655', 'app.js?v=457e217e62', 'pay.js?v=6fc7ba5543', 'gunghap-gwanjeom.js?v=15beb437bd', 'bunya.js?v=a8096dcb35', 'about.html',
     // 10-02 「켜는 날」 — 바깥 신청 폼 · 「사람이 직접」 · 「작업 전 전액 환불」 같은 걷은 약속이 출산택일 쪽에 다시 들어오지 않게(tools_check.py 7) 은 월별 · 궁통보감 쪽까지 taekil-*.html 전부를 본다)
     'taekil-price.html', 'taekil-sim.html', 'taekil-report.html', 'taekil-admin.html', 'taekil-why-different.html', 'taekil-cesarean-date.html', 'taekil-how-to-choose.html',
     'taekil-verify.html', 'taekil-fate-vs-timing.html', 'taekil-doctor-schedule.html', 'taekil-solar-time.html', 'taekil-lunar-december.html',
     'taekilsim.js?v=e2b12e27a5', 'taekil-admin.js?v=620244517b', 'taekil-report.js?v=2f267ce7d5'];
   // about.html(10-02 개편 3묶음 책사 소개) — 상품 말은 장부에서 읽는다. 손으로 쓴 숫자가 끼면 여기서 잡는다(tools_check.py 7)과 같은 목록)
-  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=6c3a3f08f6', 'about.html'];
-  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=15beb437bd', 'home-cats.js?v=6c3a3f08f6', 'about.html'];
+  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=b7d3fc1655', 'about.html'];
+  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=15beb437bd', 'home-cats.js?v=b7d3fc1655', 'about.html'];
   const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=4d215402c8', 'pair.js?v=678b1ffa41', 'about.html'];
   // 10-02 개편 3묶음 — 상품 소개 쪽 다섯(tools_sogae.py 가 장부 · 분야 표에서 만든다. tools_check.py SOGAE_PAGES 와 같은 목록). 시간 · 질문 수 · 보관 해도 장부와 같아야 한다.
   const 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
@@ -137,10 +137,11 @@
       }
       {
         // 10-02 다시 온 손님 홈 · 아래 메뉴 — 아래 줄 다섯 칸, 연애 · 궁합은 고르기 창(app.js 고르기창)이 홈 칸 표(ChaeksaHomeCats.묶음) 차례대로 장부 이름 · 홈한줄 · 딱지로 그린다
-        // 10-07 결혼상대 점검(gyeolhon.html, 바깥 쪽 — 탭 없이 주소)이 궁합 묶음 맨 앞. 고르기 창(app.js)은 탭 있는 것만 그리므로 창에는 정통궁합 · 웹툰궁합만
-        봄('다10 아래 줄 고르기 창 — 연애 · 궁합 묶음 = 홈 칸 차례(사용설명서는 연애 쪽 · 결혼상대 점검은 궁합 쪽 맨 앞)', [HC.묶음 ? HC.묶음('love').map((c) => c.탭) : null, HC.묶음 ? HC.묶음('match').map((c) => c.탭 || c.주소) : null], [['love', 'pair'], ['gyeolhon.html', 'chongnon', 'ssom']]);
+        // 10-07 결혼상대 점검(gyeolhon.html, 바깥 쪽 — 탭 없이 주소)이 궁합 묶음 맨 앞. 10-10부터 고르기 창(app.js)은 바깥 쪽 줄도 그린다(누르면 그 쪽) — 궁합 창에 결혼상대 점검이 선다
+        // 10-10 내 사주도 고르기 창(나 분류 — 정통사주 · 고지능 · 귀 · 명반). 결혼상대 점검 줄의 창 한 줄은 홈 칸 표(창)에서
+        봄('다10 아래 줄 고르기 창 — 연애 · 궁합 · 나 묶음 = 홈 칸 차례(사용설명서는 연애 쪽 · 결혼상대 점검은 궁합 쪽 맨 앞, 창 한 줄 있음)', [HC.묶음 ? HC.묶음('love').map((c) => c.탭) : null, HC.묶음 ? HC.묶음('match').map((c) => c.탭 || c.주소) : null, HC.묶음 ? HC.묶음('me').map((c) => c.탭 || c.주소) : null, HC.묶음 ? !!HC.묶음('match')[0].창 : null], [['love', 'pair'], ['gyeolhon.html', 'chongnon', 'ssom'], ['jeongtong', 'brain.html', 'gwi.html', 'myeongban.html'], true]);
         const 첫화면2 = String((await 받기('index.html')) || ''), 아래줄 = (첫화면2.split('<nav id="nav"')[1] || '').split('</nav>')[0];
-        봄('다10 아래 줄 다섯 칸 — 홈 · 출산택일 · 연애(고르기) · 궁합(고르기) · 내 사주(10-04 전략 차례)', Array.from(아래줄.matchAll(/<button\b[^>]*?(?:data-pick="([a-z]+)"[^>]*?)?data-go="([a-z]+)"/g)).map((m) => (m[1] ? m[1] + '>' : '') + m[2]), ['home', 'taekil', 'love>love', 'match>chongnon', 'jeongtong']);
+        봄('다10 아래 줄 다섯 칸 — 홈 · 출산택일 · 연애(고르기) · 궁합(고르기) · 내 사주(고르기, 10-10)(10-04 전략 차례)', Array.from(아래줄.matchAll(/<button\b[^>]*?(?:data-pick="([a-z]+)"[^>]*?)?data-go="([a-z]+)"/g)).map((m) => (m[1] ? m[1] + '>' : '') + m[2]), ['home', 'taekil', 'love>love', 'match>chongnon', 'me>jeongtong']);
         봄('다10 고르기 창 자리(#navPick · #navPickList)가 있다', [/id="navPick"/.test(첫화면2), /id="navPickList"/.test(첫화면2)], [true, true]);
         const 홈 = 첫화면2.split('data-tab="home"')[1] || '', 띠 = 홈.indexOf('id="wkBand"'), 띠끝 = 홈.indexOf('</details>', 띠);
         봄('다11 홈 맨 위 이번 주 띠 — 물음 칩 · 그림 칸보다 위, 이번 주 카드 · 인생 곡선은 띠(접힘) 안',

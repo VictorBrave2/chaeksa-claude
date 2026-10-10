@@ -286,8 +286,7 @@
     } else {
       // 사람을 추가해도 보던 프로필은 그대로 둔다 — 첫 사람일 때만 people.js가 활성화한다
       // 10-02 「나」는 관계가 「나」일 때만 — 전에는 첫 사람이면 무조건 「나」라, 사용설명서에 그 사람부터 넣으면 그 사람이 「나」가 됐다.
-      pendingPick = P.add({ name, relation: rel, isSelf: rel === '나', birth });
-      try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('profile'); } catch (e) {}   // 깔때기 ② 생년월일 넣음
+      pendingPick = P.add({ name, relation: rel, isSelf: rel === '나', birth });   // 깔때기 ② 생년월일 넣음(profile)은 people.js add 가 찍는다(10-10 옮김)
     }
     const 길 = 사람폼길; 사람폼길 = null;   // 10-02 콘텐츠로 들어오다 연 칸(사람폼열기)
     $('personForm').classList.add('hide');
@@ -662,7 +661,7 @@
       try { const e = 고르는칸[tab] ? $(고르는칸[tab]) : null; if (e && [...e.options].some(o => o.value === id)) { e.value = id; if (e.onchange) e.onchange(); } } catch (e) {}
     }
   }
-  // 10-02 아래 줄 다섯 칸 — 홈 · 내 사주 · 출산택일은 곧장 그 탭, 연애 · 궁합(data-pick)은 고르기 창. 창을 못 그리면 data-go 탭으로 곧장.
+  // 10-02 아래 줄 다섯 칸 — 홈 · 출산택일은 곧장 그 탭, 연애 · 궁합 · 내 사주(data-pick)는 고르기 창(10-10 내 사주도 — 나 분류에 고지능 · 귀 · 명반이 서서). 창을 못 그리면 data-go 탭으로 곧장.
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => { if (b.dataset.pick && 고르기창(b.dataset.pick)) return; 돌아가기(b.dataset.go); });
   // ───── 아래 줄 고르기 창(10-02) — 연애 · 궁합을 누르면 그 분류의 콘텐츠를 한 줄씩 견주어 고른다 ─────
   // 무엇이 있나 · 차례 = 홈 분류 칸(home-cats.js 칸 표 → ChaeksaHomeCats.묶음). 창 머리 = 분야 표 큰분야 이름 · 머리(bunya.js).
@@ -676,19 +675,21 @@
   function 고르기창(분류) {
     const HC = window.ChaeksaHomeCats, Y = window.ChaeksaYaksok, B = window.ChaeksaBunya, m = $('navPick'), list = $('navPickList');
     if (!m || !list || !HC || !HC.묶음 || !Y) return false;
-    const 칸들 = HC.묶음(분류).filter(c => c.탭 && document.querySelector('.tab[data-tab="' + c.탭 + '"]'));
+    // 10-10 바깥 쪽(주소가 ….html — 결혼상대 점검 · 고지능 · 귀 · 명반)도 한 줄로 — 전에는 탭 있는 줄만 그려 궁합 창에 결혼상대 점검이 안 보였다. 바깥 쪽 줄은 그 쪽으로 간다.
+    const 칸들 = HC.묶음(분류).filter(c => c.주소 || (c.탭 && document.querySelector('.tab[data-tab="' + c.탭 + '"]')));
     if (!칸들.length) return false;
     const 큰 = ((B && B.큰분야) || []).find(x => x.키 === 분류) || {}, 지금 = 열린탭();
     $('navPickT').textContent = 큰.이름 || '';
     $('navPickS').textContent = 큰.머리 || '';
     $('navPickS').classList.toggle('hide', !큰.머리);
     list.innerHTML = 칸들.map(c => {
-      const 이름 = Y.이름(c.키), 한줄 = Y.홈한줄 ? Y.홈한줄(c.키) : Y.한줄(c.키), 딱지 = Y.딱지html(c.키);
-      return '<button type="button" class="np-row' + (c.탭 === 지금 ? ' on' : '') + '" data-tab="' + escP(c.탭) + '"' + (c.탭 === 지금 ? ' aria-current="page"' : '') + '>'
+      // 한줄 — 홈 칸 표에 창에서 쓸 줄(창)이 있으면 그것, 없으면 장부 홈한줄
+      const 이름 = Y.이름(c.키), 한줄 = c.창 || (Y.홈한줄 ? Y.홈한줄(c.키) : Y.한줄(c.키)), 딱지 = Y.딱지html(c.키), 여기 = !c.주소 && c.탭 === 지금;
+      return '<button type="button" class="np-row' + (여기 ? ' on' : '') + '"' + (c.주소 ? ' data-href="' + escP(c.주소) + '"' : ' data-tab="' + escP(c.탭) + '"') + (여기 ? ' aria-current="page"' : '') + '>'
         + '<b>' + escP(이름) + '</b>' + (한줄 ? '<span class="np-s">' + escP(한줄) + '</span>' : '') + (딱지 ? '<span class="np-t">' + 딱지 + '</span>' : '') + '</button>';
     }).join('');
     try { Y.값채우기(list); } catch (e) {}
-    list.querySelectorAll('.np-row').forEach(b => b.onclick = () => { m.classList.add('hide'); 들어가기(b.dataset.tab); });
+    list.querySelectorAll('.np-row').forEach(b => b.onclick = () => { m.classList.add('hide'); if (b.dataset.href) location.href = b.dataset.href; else 들어가기(b.dataset.tab); });
     m.classList.remove('hide');
     return true;
   }

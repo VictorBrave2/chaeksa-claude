@@ -56,7 +56,8 @@
   function hasSelf() { return list().some(p => p.isSelf); }
   function others() { const a = activeId(); return list().filter(p => p.id !== a); }
 
-  function add(person) {
+  /** 사람 하나 넣기. opt.옮김 — 옛 칸 옮기기(migrate)라 손님이 새로 넣은 게 아니다(깔때기에 안 셈). */
+  function add(person, opt) {
     const arr = list();
     const 관계 = person.relation || (arr.length ? '그 사람' : '나');
     const p = {
@@ -73,6 +74,9 @@
     arr.push(p);
     save(arr);
     if (arr.length === 1) setActive(p.id);
+    // 10-10 깔때기 ② 생년월일 넣음(profile) — 사람을 넣는 길은 모두 여기를 지난다(app.js 사람 추가 · 첫 입력 칸, when · gwi · brain · myeongban · gyeolhon-apply).
+    //   전에는 app.js 사람 추가 창에서만 찍혀 단독 쪽의 첫 입력이 안 셌다. 하루 한 번 · Do Not Track · 로컬 안 셈은 track.js 규칙 그대로.
+    if (!(opt && opt.옮김)) { try { if (global.ChaeksaTrack && global.ChaeksaTrack.event) global.ChaeksaTrack.event('profile'); } catch (e) {} }
     return p.id;
   }
 
@@ -114,13 +118,13 @@
     let moved = false;
     const old = jget(OLD_PROFILE, null);
     if (old && old.year) {
-      add({ name: old.name || '나', relation: '나', isSelf: true, birth: old });
+      add({ name: old.name || '나', relation: '나', isSelf: true, birth: old }, { 옮김: true });
       moved = true;
     }
     const partners = jget(OLD_PARTNERS, []);
     partners.forEach(pt => {
       if (!pt || !pt.year) return;
-      add({ name: pt.name || '이름 없음', relation: '그 사람', isSelf: false, birth: pt });
+      add({ name: pt.name || '이름 없음', relation: '그 사람', isSelf: false, birth: pt }, { 옮김: true });
       moved = true;
     });
     if (moved) localStorage.removeItem(OLD_PARTNERS);

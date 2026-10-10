@@ -17,7 +17,9 @@
       { 키: 'pair', 탭: 'pair', 그림: 'art/story-friend-to-lover.webp', 작은: 'art/story-friend-to-lover-s.webp', 크기: [1024, 1536] }],
     child: [{ 키: 'taekil', 탭: 'taekil', 그림: 'art/taekil-main.webp', 작은: 'art/taekil-main-s.webp', 크기: [1086, 1448] }],
     // 10-07 「결혼상대 점검」(gyeolhon.html, 사장님 10-07 확정 유료) — 궁합 칸 맨 앞. 그림은 소개 쪽 머리와 같은 상견례 컷(성별 없음)
-    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
+    // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
+    //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
+    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '이 사람과 함께 살아도 되는지, 결혼 날짜로 피할 해까지', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
       { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
     me: [{ 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] },
@@ -122,7 +124,7 @@
 
   /** 분류 키(love · match …) → 그 분류의 그림 칸 [{키, 탭, 주소}] — 홈 칸과 같은 차례. 아래 줄 「연애」 · 「궁합」 고르기 창(app.js 고르기창)이 쓴다(10-02).
    *  칸 표가 바뀌면 고르기 창도 같이 바뀐다(한 사실은 한 곳). 그림 칸이 없는 분류면 빈 배열. */
-  function 묶음(b) { return (칸[b] || []).map(function (c) { return { 키: c.키, 탭: c.탭 || null, 주소: c.주소 || null }; }); }
+  function 묶음(b) { return (칸[b] || []).map(function (c) { return { 키: c.키, 탭: c.탭 || null, 주소: c.주소 || null, 창: c.창 || null }; }); }
 
   function 모두() { document.querySelectorAll('[data-home-cats]').forEach(그리기); }
   /** 맨 앞에 설 분류를 바꾸고 다시 그린다 — 블로그 꼬리표로 온 손님(landing.js)에게 온 길의 칸을 앞에.
