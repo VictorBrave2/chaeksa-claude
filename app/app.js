@@ -676,7 +676,9 @@
     const HC = window.ChaeksaHomeCats, Y = window.ChaeksaYaksok, B = window.ChaeksaBunya, m = $('navPick'), list = $('navPickList');
     if (!m || !list || !HC || !HC.묶음 || !Y) return false;
     // 10-10 바깥 쪽(주소가 ….html — 결혼상대 점검 · 고지능 · 귀 · 명반)도 한 줄로 — 전에는 탭 있는 줄만 그려 궁합 창에 결혼상대 점검이 안 보였다. 바깥 쪽 줄은 그 쪽으로 간다.
-    const 칸들 = HC.묶음(분류).filter(c => c.주소 || (c.탭 && document.querySelector('.tab[data-tab="' + c.탭 + '"]')));
+    // 10-11 아래 줄에 「운」 단추가 없어 「언제 나아지나」(when.html)가 아래 메뉴로 닿지 않았다 — 단추를 여섯으로 늘리지 않고 「내 사주」 창 끝에 운 분류의 바깥 쪽 줄만 붙인다(홈으로 돌아가는 「이번 주」 줄은 안 붙임).
+    const 더 = 분류 === 'me' ? HC.묶음('time').filter(c => c.주소) : [];
+    const 칸들 = HC.묶음(분류).concat(더).filter(c => c.주소 || (c.탭 && document.querySelector('.tab[data-tab="' + c.탭 + '"]')));
     if (!칸들.length) return false;
     const 큰 = ((B && B.큰분야) || []).find(x => x.키 === 분류) || {}, 지금 = 열린탭();
     $('navPickT').textContent = 큰.이름 || '';
