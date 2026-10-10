@@ -24,7 +24,9 @@
       // 10-06 「옛 책이 본 내 머리」(brain.html) — 사장님 「썸네일 달고 컨텐츠로 배포」. 그림은 편인 칸(혼천의를 짜 맞추는 사람 — 머리 자체)
       { 키: 'brain', 주소: 'brain.html', 그림: 'art/jt-g-pyeonin-{g}.webp', 작은: 'art/jt-g-pyeonin-{g}-s.webp', 크기: [1024, 1536] },
       // 10-10 「나는 귀한 사람일까」(gwi.html, 작업판 귀-1) — 사장님 「귀 새 뜻으로 쓰고」. 그림은 정관 칸(맡은 자리와 책임 — 옛 책이 귀의 조건으로 본 글자)
-      { 키: 'gwi', 주소: 'gwi.html', 그림: 'art/jt-g-jeonggwan-{g}.webp', 작은: 'art/jt-g-jeonggwan-{g}-s.webp', 크기: [1024, 1536] }],
+      { 키: 'gwi', 주소: 'gwi.html', 그림: 'art/jt-g-jeonggwan-{g}.webp', 작은: 'art/jt-g-jeonggwan-{g}-s.webp', 크기: [1024, 1536] },
+      // 10-10 「내 명반에는 무엇이 적혀 있을까」(myeongban.html, 작업판 자미-1) — 사장님 「자미두수 명판을 두고 글자를 누르면 해석」. 그림은 편관 칸(화면에 둥근 판을 띄워 놓고 들여다보는 컷 — 명반을 짚어 읽는 꼴)
+      { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/jt-g-pyeongwan-{g}.webp', 작은: 'art/jt-g-pyeongwan-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
     time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] },
       { 키: 'week', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}.webp', 작은: 'art/jt-18-ten-years-{g}-s.webp', 크기: [1024, 1536] }],

@@ -83,12 +83,13 @@ ART = {
     'when': 'art/jt-19-return-f.webp',   # 10-06 「언제 나아지나」 카톡 미리보기 — 홈 칸과 같은 그림
     'brain': 'art/jt-g-pyeonin-f.webp',  # 10-06 「옛 책이 본 내 머리」 — 홈 칸과 같은 그림
     'gwi': 'art/jt-g-jeonggwan-f.webp',  # 10-10 「나는 귀한 사람일까」 — 홈 칸과 같은 그림(정관 칸)
+    'myeongban': 'art/jt-g-pyeongwan-f.webp',  # 10-10 「내 명반에는 무엇이 적혀 있을까」 — 홈 칸과 같은 그림(편관 칸)
     'gyeolhon': 'art/story-sanggyeonrye.webp',  # 10-07 「결혼상대 점검」 — 홈 칸 · 소개 쪽 머리와 같은 상견례 컷
 }
 SECTION_ART = {'왜': 'art/jt-g-jeongin-f.webp', '신살': 'art/ss-her.webp', '연애': 'art/love-cover.webp', '출산택일': 'art/taekil-main.webp'}
 DEFAULT_ART = 'art/jt-05-who-f.webp'
 # read.html 밖에서 미리보기를 붙일 쪽 — 쪽 이름: 칸 말(그 쪽이 read.html 의 어느 칸 말을 쓰나)
-EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'gwi': '무료', 'gyeolhon': '결혼상대 점검'}
+EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'gwi': '무료', 'myeongban': '무료', 'gyeolhon': '결혼상대 점검'}
 # read.html 에 걸려 있어도 미리보기를 찍지 않는 쪽 — 출산택일 안내는 출산택일 그림(og.jpg)이 제 표지다
 NO_CARD = {'taekil'}
 
