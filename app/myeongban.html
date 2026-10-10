@@ -18,7 +18,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <!-- 10-10 「명반 — 누르면 해석」(작업판 자미-1) — 사장님 「자미두수 명판을 두고 글자를 누르면 해석해 주는 느낌」 · 「주성 14부터」 · 「추천대로 가고 작가 넘겨서 진행해」(정함 7).
      계산은 비공개 서버(/api/myeongban — 명반 엔진 · 《紫微斗數全書》 판정표 · 움직이는 해)가 하고, 이 쪽은 그리기만 한다. 글은 작가 원고 myeongban-copy.js(쪽 글 + 칸 168).
-     판정 없음 · LLM 없음 · 통설 없음 — 「옛 책은 이 자리를 이렇게 적었어요」까지. 원문은 글자 그대로(권:줄). 생일은 주소에 싣지 않는다(people.js 저장만). 「나는 고지능일까」(brain.html)와 같은 꼴. -->
+     판정 없음 · LLM 없음 · 통설 없음 — 「옛 책은 이 자리를 이렇게 적었어요」까지. 원문은 글자 그대로(권:줄). 생일은 주소에 싣지 않는다(people.js 저장만). 「나는 고지능일까」(brain.html)와 같은 꼴.
+     2판(10-10 작업판 자미-2 · 사장님 「다음판 ㄱㄱ」) — 칸 안의 보좌 8 · 살성 6 · 사화 딱지도 누르면 같은 시트(작가 원고 myeongban-copy-v2 · 칸 216). -->
 <script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,17 +67,26 @@ details.fold{margin:var(--s2) 0}details.fold>summary{font-size:var(--t2);color:v
 .mb-gname{appearance:none;border:0;background:none;padding:2px 2px;margin:-2px -2px 0;font:inherit;font-size:var(--t1);font-weight:700;color:var(--accent);cursor:pointer;line-height:1.3;text-align:left;border-radius:4px;min-height:22px;white-space:nowrap;flex:0 0 auto}
 .mb-gname:active{background:var(--accent-soft)}
 .mb-gname small{display:block;font-size:10px;font-weight:400;color:var(--ink3);font-family:var(--sans);letter-spacing:0}
+.mb-gname{flex:0 1 auto;min-width:0}.mb-gname small{white-space:normal;word-break:keep-all}.mb-ji{white-space:nowrap}   /* 「아랫사람과 동료」가 궁간 · 지지 위로 넘치지 않게(2판에서 고침) */
 .mb-ji{font-size:10px;color:var(--ink3);display:flex;flex-direction:column;align-items:flex-end;gap:1px;min-width:0}
 .mb-tag{display:inline-block;font-size:9px;font-family:var(--sans);color:var(--card);background:var(--accent);border-radius:3px;padding:0 4px;line-height:1.5}
 .mb-stars{display:flex;flex-direction:column;align-items:flex-start;gap:1px;margin:3px 0 2px}
 .mb-star{appearance:none;border:1px solid transparent;background:none;padding:2px 4px;margin:0 -4px;font:inherit;font-size:var(--t2);font-weight:700;color:var(--ink);cursor:pointer;line-height:1.35;border-radius:6px;min-height:24px;display:inline-flex;align-items:baseline;gap:2px;white-space:nowrap}
 .mb-star:hover,.mb-star:focus-visible{border-color:var(--accent-line);background:var(--accent-soft);outline:0}
 .mb-star i{font-style:normal;font-size:9px;color:var(--ink3);font-family:var(--sans)}
-.mb-star em{font-style:normal;font-size:9px;font-family:var(--sans);color:var(--accent);border:1px solid var(--accent-line);border-radius:3px;padding:0 2px;line-height:1.3}
-.mb-star em.gi{background:var(--accent);color:var(--card)}
+/* 2판 — 별 한 줄(별 단추 + 사화 딱지) · 사화 딱지(科 祿 權 忌) · 보좌 · 살성 딱지도 단추. 손가락 크기는 높이 22px 안팎 */
+.mb-srow{display:inline-flex;align-items:center;gap:1px;max-width:100%}
+.mb-srow .mb-star{margin-right:0}
+.mb-hwa{appearance:none;font:inherit;font-style:normal;font-size:10px;font-family:var(--sans);color:var(--accent);background:var(--card);border:1px solid var(--accent-line);border-radius:4px;padding:0 3px;line-height:1.4;min-width:20px;min-height:20px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+em.mb-hwa{cursor:default}
+.mb-hwa.gi{background:var(--accent);color:var(--card);border-color:var(--accent)}
+button.mb-hwa:hover,button.mb-hwa:focus-visible{outline:0;box-shadow:0 0 0 2px var(--accent-line)}
 .mb-empty{font-size:10px;color:var(--ink3);font-family:var(--sans);margin:3px 0 2px;line-height:1.4}
-.mb-sub{font-size:9px;color:var(--ink3);line-height:1.45;font-family:var(--sans);word-break:keep-all;margin-top:auto}
+.mb-sub{font-size:9px;color:var(--ink3);line-height:1.45;font-family:var(--sans);word-break:keep-all;margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:0 2px}
 .mb-sub .sal{color:var(--ink2)}
+.mb-aux{appearance:none;border:1px solid transparent;background:none;font:inherit;font-family:var(--serif);font-size:11px;color:var(--ink3);padding:1px 3px;margin:0 -1px;border-radius:5px;min-height:22px;line-height:1.3;white-space:nowrap;display:inline-flex;align-items:center}
+button.mb-aux{cursor:pointer}
+button.mb-aux:hover,button.mb-aux:focus-visible{border-color:var(--accent-line);background:var(--accent-soft);outline:0}
 .mb-dh{font-size:9px;color:var(--ink3);font-family:var(--sans);line-height:1.4;margin-top:2px;white-space:nowrap}
 .mb-dh.now{color:var(--accent);font-weight:700}
 .mb-center{grid-column:2/4;grid-row:2/4;background:var(--bg2);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8px 10px;gap:4px}
@@ -110,6 +120,7 @@ details.fold{margin:var(--s2) 0}details.fold>summary{font-size:var(--t2);color:v
 .sh-stars{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
 .sh-stars button{appearance:none;border:1px solid var(--accent-line);background:var(--accent-soft);color:var(--ink);font-family:var(--serif);font-size:var(--t3);font-weight:700;padding:10px 14px;border-radius:var(--r2);cursor:pointer;line-height:1.3}
 .sh-stars button small{display:block;font-family:var(--sans);font-size:var(--t1);font-weight:400;color:var(--ink3)}
+.sh-stars.aux button{background:var(--card);font-size:var(--t2);padding:8px 12px}
 body.sh-open{overflow:hidden}
 </style>
 </head>
@@ -151,7 +162,7 @@ body.sh-open{overflow:hidden}
 <script src="people.js?v=64424c6e15"></script>
 <script src="places.js?v=1350b96148"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
-<script src="myeongban-copy.js?v=bd449d0f37"></script>
-<script src="myeongban.js?v=a1eea02eed"></script>
+<script src="myeongban-copy.js?v=34572023f3"></script>
+<script src="myeongban.js?v=6961e84d6f"></script>
 </body>
 </html>
