@@ -157,11 +157,16 @@
   // 10-11 사장님 「글자를 터치했을 때 해석이 없네」 — 조건이 다 맞은 줄(걸림)이 한 갈래에 하나도 없으면 「따로 적지 않았어요」로 비우지 않고,
   //   ① 조건 일부만 정해지는 줄(일부 — 명반만으로는 못 정함) ② 그래도 없으면 조건이 내 명반과 다른 줄(옛 책이 이 자리에 적은 다른 경우)을 딱지를 달아 보인다.
   //   「따로 적지 않았어요」는 이 자리 원고에 그 갈래 줄이 정말 없을 때만.
-  function 갈래칸(갈래줄, 모든줄, 셀, 내, 그리기, 없음말) {
+  // 10-11 사장님 「빈 원고를 너의 추론으로 채워 줘」 — 옛 책이 그 자리에 적지 않은 갈래는 책사 추론(별의 옛 책 성질 × 궁 영역, 작가 원고 myeongban-chuRon-1011)을 「책사 추론」 딱지로 먼저.
+  function 추론of(key) { var A = (window.MYEONGBAN_COPY || {}).추론 || {}; return A[key] || {}; }
+  function 추론html(글들) { return (글들 || []).map(function (t) { return '<p class="mb-line chu"><span class="tag">책사 추론</span>' + esc(t) + '</p>'; }).join(''); }
+  function 갈래칸(갈래줄, 모든줄, 셀, 내, 그리기, 없음말, 추론글) {
     if (갈래줄.length) return 갈래줄.map(그리기).join('');
+    var 추 = 추론html(추론글);
     var 일부id = {}; (셀.일부 || []).forEach(function (x) { 일부id[x.id] = true; });
     var 일부 = 모든줄.filter(function (l) { return (l.규칙 || []).some(function (id) { return 일부id[id]; }) && 밝기맞음(l.밝기, 내); });
-    if (일부.length) return 일부.map(function (l) { return '<p class="mb-line part"><span class="tag">' + esc('명반만으로는 다 못 정해요') + '</span>' + esc(l.글) + '</p>'; }).join('');
+    if (일부.length) return 추 + 일부.map(function (l) { return '<p class="mb-line part"><span class="tag">' + esc('명반만으로는 다 못 정해요') + '</span>' + esc(l.글) + '</p>'; }).join('');
+    if (추) return 추;
     if (모든줄.length) return 모든줄.map(function (l) { return '<p class="mb-line part"><span class="tag">' + esc('내 명반과 조건이 달라요') + '</span>' + esc(l.글) + '</p>'; }).join('');
     return '<p class="mb-none">' + esc(없음말) + '</p>';
   }
@@ -175,6 +180,7 @@
     if (쪽.별 && 쪽.별[별]) h += '<p class="why">' + esc(쪽.별[별].한줄) + '</p>';
     if (셀.빈칸) {
       h += '<div class="sec">' + esc(글('칸.빈칸', '')) + '</div><p class="mb-line">' + esc(원고.빈칸 || 글('칸.빈칸', '')) + '</p>';
+      if (추론of(key).성품 || 추론of(key).일) h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 추론html(추론of(key).성품) + '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 추론html(추론of(key).일);
       if ((셀.짝 || []).length) {
         h += '<p class="why">' + esc(글('칸.빈칸짝', '')) + '</p>' + 셀.짝.map(function (x) {
           var 머리 = (x.짝 || []).join(' · ') + (x.걸림 === '걸림' ? ' — 내 명반에서 걸려요' : x.걸림 === '일부' ? ' — ' + 글('칸.일부', '') : '');
@@ -187,8 +193,8 @@
       var 줄들 = (원고.줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 걸림id[id]; }) && 밝기맞음(l.밝기, 내); });
       var 특 = 줄들.filter(function (l) { return l.갈래 === '특성'; }), 사 = 줄들.filter(function (l) { return l.갈래 !== '특성'; });
       var 원특 = (원고.줄 || []).filter(function (l) { return l.갈래 === '특성'; }), 원사 = (원고.줄 || []).filter(function (l) { return l.갈래 !== '특성'; });
-      h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 갈래칸(특, 원특, 셀, 내, 줄html, 글('칸.특성없음', ''));
-      h += '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 갈래칸(사, 원사, 셀, 내, 줄html, 글('칸.사건없음', ''));
+      h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 갈래칸(특, 원특, 셀, 내, 줄html, 글('칸.특성없음', ''), 추론of(key).성품);
+      h += '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 갈래칸(사, 원사, 셀, 내, 줄html, 글('칸.사건없음', ''), 추론of(key).일);
     }
     // 3판 「두 별이 함께」(서버 칸.짝칸) — 작가 줄은 짝칸 걸림 id 에 이어진 것만, 줄마다 「…과 함께」 이름표. 짝칸이 없으면(v0.2 서버 · 주성 하나) 2판 그대로
     var 짝셀 = 셀.짝칸 || null;
@@ -262,12 +268,13 @@
       if (별글.한줄) h += '<p class="mb-line">' + esc(별글.한줄) + '</p>';
       if (별글.원문) h += '<div class="src"><p class="q" lang="zh-Hant">' + esc(별글.원문) + '</p>' + (별글.줄 ? '<p class="l">' + esc(별글.줄) + '</p>' : '') + '</div>';
       if (줄들.length) h += '<p class="why">' + esc(글('칸.빈칸짝', '')) + '</p>' + 특.concat(사).map(줄html2).join('');
+      if (추론of(key).성품 || 추론of(key).일) h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 추론html(추론of(key).성품) + '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 추론html(추론of(key).일);
     } else {
       if (별글.한줄) h += '<p class="why">' + esc(별글.한줄) + '</p>';
       h += '<p class="why">' + esc(화칸 && 실은 ? 붙은말(실은, 별, '풀이') : 글('칸.머리', '')) + '</p>';
       var 원특2 = (원고.줄 || []).filter(function (l) { return l.갈래 === '특성'; }), 원사2 = (원고.줄 || []).filter(function (l) { return l.갈래 !== '특성'; });
-      h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 갈래칸(특, 원특2, 셀, 내, 줄html2, 글('칸.특성없음', ''));
-      h += '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 갈래칸(사, 원사2, 셀, 내, 줄html2, 글('칸.사건없음', ''));
+      h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 갈래칸(특, 원특2, 셀, 내, 줄html2, 글('칸.특성없음', ''), 추론of(key).성품);
+      h += '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 갈래칸(사, 원사2, 셀, 내, 줄html2, 글('칸.사건없음', ''), 추론of(key).일);
     }
     // 움직이는 해 — 1판과 같다(살성도 1차만 · 사화 칸은 붙은 별의 유년 사화)
     var 해들 = 셀.움직이는해 || [];
