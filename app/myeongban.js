@@ -160,6 +160,21 @@
   // 10-11 사장님 「빈 원고를 너의 추론으로 채워 줘」 — 옛 책이 그 자리에 적지 않은 갈래는 책사 추론(별의 옛 책 성질 × 궁 영역, 작가 원고 myeongban-chuRon-1011)을 「책사 추론」 딱지로 먼저.
   function 추론of(key) { var A = (window.MYEONGBAN_COPY || {}).추론 || {}; return A[key] || {}; }
   function 추론html(글들) { return (글들 || []).map(function (t) { return '<p class="mb-line chu"><span class="tag">책사 추론</span>' + esc(t) + '</p>'; }).join(''); }
+  // 10-11 사장님 「내 명반과 조건이 달라요가 무슨 말이지?」 → 딱지를 그 줄의 실제 조건으로. 서버 안걸림.왜(「거문은 같은 궁이 아님」 꼴)를 조건 꼴로 뒤집고, 밝기로 빠진 줄은 「○○ 자리일 때」.
+  var 밝기짧은 = { '廟': '가장 밝은', '庙': '가장 밝은', '旺': '밝은', '得': '제자리를 얻은', '利': '조금 밝은', '平': '밝지도 어둡지도 않은', '不': '제자리를 못 얻은', '落': '어두운', '陷': '어두운', '闲': '힘이 빠진', '閑': '힘이 빠진' };
+  function 조건말(l, 안왜, 내) {
+    var 왜 = ''; (l.규칙 || []).some(function (id) { if (안왜[id]) { 왜 = 안왜[id]; return true; } return false; });
+    if (왜) {
+      var 조각 = 왜.split(' · ').slice(1).join(' · ') || 왜, m;
+      if ((m = /^(.+?)[은는] 같은 궁이 아님/.exec(조각))) return m[1] + 받침말(m[1], '과', '와') + ' 함께 있을 때';
+      if ((m = /^같은 궁에 (.+?) 없음/.exec(조각))) return '같은 궁에 ' + m[1] + '이 붙을 때';
+      if (/홀로가 아님/.test(조각)) return '이 별이 홀로 있을 때';
+      return '조건: ' + 조각;
+    }
+    if (l.밝기 && !밝기맞음(l.밝기, 내)) { var k = String(l.밝기).charAt(0); return (밝기짧은[k] ? 밝기짧은[k] + ' 자리' : l.밝기 + ' 자리') + '(' + l.밝기 + ')일 때'; }
+    return '다른 조건일 때';
+  }
+  function 받침말(w, 있음, 없음) { var c = String(w).replace(/[^가-힣]/g, '').slice(-1); if (!c) return 없음; return (c.charCodeAt(0) - 0xAC00) % 28 ? 있음 : 없음; }
   function 갈래칸(갈래줄, 모든줄, 셀, 내, 그리기, 없음말, 추론글) {
     if (갈래줄.length) return 갈래줄.map(그리기).join('');
     var 추 = 추론html(추론글);
@@ -167,7 +182,11 @@
     var 일부 = 모든줄.filter(function (l) { return (l.규칙 || []).some(function (id) { return 일부id[id]; }) && 밝기맞음(l.밝기, 내); });
     if (일부.length) return 추 + 일부.map(function (l) { return '<p class="mb-line part"><span class="tag">' + esc('명반만으로는 다 못 정해요') + '</span>' + esc(l.글) + '</p>'; }).join('');
     if (추) return 추;
-    if (모든줄.length) return 모든줄.map(function (l) { return '<p class="mb-line part"><span class="tag">' + esc('내 명반과 조건이 달라요') + '</span>' + esc(l.글) + '</p>'; }).join('');
+    if (모든줄.length) {
+      var 안왜 = {}; (셀.안걸림 || []).forEach(function (x) { if (x.왜) 안왜[x.id] = x.왜; });
+      return '<p class="why"><small>내 명반엔 해당하지 않아요 — 옛 책이 이 자리에서 다른 조건일 때 적은 것이에요.</small></p>'
+        + 모든줄.map(function (l) { return '<p class="mb-line part"><span class="tag">' + esc(조건말(l, 안왜, 내)) + '</span>' + esc(l.글) + '</p>'; }).join('');
+    }
     return '<p class="mb-none">' + esc(없음말) + '</p>';
   }
   function 별시트(key) {
