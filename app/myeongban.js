@@ -134,7 +134,7 @@
       + '<div class="mb-center"><div class="c1">' + esc(글('명반.명궁표시', '명궁') + ' ' + M.명궁지지 + ' · ' + M.오행국) + '</div>'
       + '<div class="c2">' + esc(글('명반.신궁표시', '신궁') + ' ' + M.신궁 + (궁쉬운(M.신궁) ? '(' + 궁쉬운(M.신궁) + ')' : '')) + '</div>'
       + (명식짧게() ? '<div class="c3">' + esc(명식짧게()) + '</div>' : '')
-      + '<div class="c3">' + esc(글('명반.누르기', '')) + '</div></div>'
+      + '<div class="c3 tap">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
       + '</div>';
     h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(글('공유.단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(글('공유.안내', '')) + '</p></div>';
