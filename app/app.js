@@ -188,6 +188,8 @@
     try { sessionStorage.removeItem('chaeksa.goto'); sessionStorage.removeItem('chaeksa.gotoSpot'); } catch (e) {}
   }
 
+  // 10-12 「내 사람들」(saram.html)의 「사람 더 넣기」 — 홈을 #addperson 으로 열면 사람 추가 창을 바로 연다.
+  if (location.hash === '#addperson') setTimeout(() => { try { history.replaceState(null, '', location.pathname + location.search); openPersonForm(null); } catch (e) {} }, 400);
   function openPersonForm(id, 모양) {
     const P = People(); if (!P) return;
     editingId = id || null;
