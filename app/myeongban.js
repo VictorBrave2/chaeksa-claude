@@ -372,18 +372,44 @@
     $('shBack').classList.remove('on'); $('sh').classList.remove('on'); document.body.classList.remove('sh-open');
     setTimeout(function () { if (!$('sh').classList.contains('on')) { $('shBack').classList.add('hide'); $('sh').classList.add('hide'); } }, 230);
   }
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('sh').classList.contains('hide')) 닫기(); });
+  // 10-11 사장님 「궁 누르고 별 눌렀다가 뒤로가기 누르면 궁 누른 화면으로 왔으면 좋겠는데」 — 시트를 쌓는다.
+  //   시트를 열 때마다 브라우저 기록을 한 칸 쌓아, 휴대폰 뒤로가기 = 한 칸 앞 시트(맨 앞이면 닫기). 별 시트가 궁 시트 위에 열렸으면 맨 위에 「← 궁으로」.
+  var 쌓임 = [], 닫는중 = false;
+  function 그리기시트(v) {
+    if (v.t === '별') 별시트(v.k); else 궁시트(v.k);
+    if (쌓임.length > 1) {
+      var 앞 = 쌓임[쌓임.length - 2], 말 = 앞.t === '궁' ? '← ' + 앞.k + (궁쉬운(앞.k) ? '(' + 궁쉬운(앞.k) + ')' + 받침말(궁쉬운(앞.k), '으로', '로') : '으로') : '← 앞으로';
+      $('shBody').insertAdjacentHTML('afterbegin', '<button type="button" class="sh-prev" data-shback="1">' + esc(말) + '</button>');
+    }
+  }
+  function 보이기(v) {
+    쌓임.push(v);
+    try { history.pushState({ mb: 쌓임.length }, ''); } catch (e) {}
+    그리기시트(v);
+  }
+  function 다닫기() {
+    var n = 쌓임.length; 쌓임 = []; 닫기();
+    if (n) { 닫는중 = true; try { history.go(-n); } catch (e) { 닫는중 = false; } }
+  }
+  window.addEventListener('popstate', function () {
+    if (닫는중) { 닫는중 = false; return; }
+    if (!쌓임.length) return;
+    쌓임.pop();
+    if (쌓임.length) 그리기시트(쌓임[쌓임.length - 1]); else 닫기();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('sh').classList.contains('hide')) 다닫기(); });
 
   // 10-11 사장님 「움직이니까 눈에 거슬리는데 한번 터치하면 안 움직이면 좋겠어」 — 명반에서 아무 데나 한 번 누르면 안내 알약이 멈추고, 다음에 와도 멈춰 있다(이 기기에만 기억).
   function 탭본() { try { return localStorage.getItem('chaeksa.mbTapSeen') === '1'; } catch (e) { return false; } }
   document.addEventListener('click', function (e) { if (!(e.target.closest && e.target.closest('#out'))) return; try { localStorage.setItem('chaeksa.mbTapSeen', '1'); } catch (e2) {} Array.prototype.forEach.call(document.querySelectorAll('.mb-center .c3.tap'), function (x) { x.classList.add('still'); }); }, true);
   document.addEventListener('click', async function (e) {
     var t = e.target;
-    if (t === $('shBack') || (t.closest && t.closest('#shX'))) { 닫기(); return; }
+    if (t === $('shBack') || (t.closest && t.closest('#shX'))) { 다닫기(); return; }
+    if (t.closest && t.closest('[data-shback]')) { history.back(); return; }
     var st = t.closest && t.closest('[data-cell]');
-    if (st && 결과) { 별시트(st.getAttribute('data-cell')); return; }
+    if (st && 결과) { 보이기({ t: '별', k: st.getAttribute('data-cell') }); return; }
     var gn = t.closest && t.closest('[data-gung]');
-    if (gn && 결과) { 궁시트(gn.getAttribute('data-gung')); return; }
+    if (gn && 결과) { 보이기({ t: '궁', k: gn.getAttribute('data-gung') }); return; }
     // 공유 — 주소 하나만 보낸다(생일 · 결과는 싣지 않음). brain 과 같은 길(share.js shareLink)
     var sh = t.closest && t.closest('[data-share]');
     if (sh) {
