@@ -32,8 +32,7 @@
       { 키: 'gyeokgi', 주소: 'gyeokgi.html', 그림: 'art/jt-g-siksin-{g}.webp', 작은: 'art/jt-g-siksin-{g}-s.webp', 크기: [1024, 1536] },
       { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/jt-g-pyeongwan-{g}.webp', 작은: 'art/jt-g-pyeongwan-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
-    time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] },
-      { 키: 'week', 탭: 'home', 곳: 'bhCard', 그림: 'art/jt-18-ten-years-{g}.webp', 작은: 'art/jt-18-ten-years-{g}-s.webp', 크기: [1024, 1536] }],
+    time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}.webp', 작은: 'art/jt-g-jeongin-{g}-s.webp', 크기: [1024, 1536] }],
   };
   // 그림 칸 폭 — .wrap(최대 520 · 양옆 18) 안의 2열(사이 10). index.html 머리의 첫 표지 미리 부르기(preload imagesizes)와 같아야 한다.

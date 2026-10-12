@@ -822,6 +822,8 @@
   function 이번주띠(S, lc) {
     const box = $('wkBand'), sum = $('wkSum'), V = window.ChaeksaByeonhwaView;
     if (!box || !sum) return;
+    // 10-12 사장님 「이번 주엔 무엇이 바뀌나 삭제하자 재미가 없네」 — 홈 맨 위 이번 주 띠를 늘 숨긴다(홈 칸에서도 뺐다).
+    box.classList.add('hide'); sum.innerHTML = ''; return;
     let 오늘줄 = '';
     try {
       const 날들 = (S && S.주 && S.주.날들) || [], i = 날들.findIndex(x => x.날짜 === S.오늘);
