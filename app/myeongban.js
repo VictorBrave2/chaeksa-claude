@@ -134,7 +134,7 @@
       + '<div class="mb-center"><div class="c1">' + esc(글('명반.명궁표시', '명궁') + ' ' + M.명궁지지 + ' · ' + M.오행국) + '</div>'
       + '<div class="c2">' + esc(글('명반.신궁표시', '신궁') + ' ' + M.신궁 + (궁쉬운(M.신궁) ? '(' + 궁쉬운(M.신궁) + ')' : '')) + '</div>'
       + (명식짧게() ? '<div class="c3">' + esc(명식짧게()) + '</div>' : '')
-      + '<div class="c3 tap">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
+      + '<div class="c3 tap' + (탭본() ? ' still' : '') + '">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
       + '</div>';
     h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(글('공유.단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(글('공유.안내', '')) + '</p></div>';
@@ -374,6 +374,9 @@
   }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('sh').classList.contains('hide')) 닫기(); });
 
+  // 10-11 사장님 「움직이니까 눈에 거슬리는데 한번 터치하면 안 움직이면 좋겠어」 — 명반에서 아무 데나 한 번 누르면 안내 알약이 멈추고, 다음에 와도 멈춰 있다(이 기기에만 기억).
+  function 탭본() { try { return localStorage.getItem('chaeksa.mbTapSeen') === '1'; } catch (e) { return false; } }
+  document.addEventListener('click', function (e) { if (!(e.target.closest && e.target.closest('#out'))) return; try { localStorage.setItem('chaeksa.mbTapSeen', '1'); } catch (e2) {} Array.prototype.forEach.call(document.querySelectorAll('.mb-center .c3.tap'), function (x) { x.classList.add('still'); }); }, true);
   document.addEventListener('click', async function (e) {
     var t = e.target;
     if (t === $('shBack') || (t.closest && t.closest('#shX'))) { 닫기(); return; }
