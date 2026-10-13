@@ -24,6 +24,8 @@
       + '<div class="tw-btns">' + (끝 ? '<button type="button" data-tw="0">' + esc(C.처음 || '다시 보기') + '</button><a class="tw-go" href="taekil-apply.html">' + esc(C.끝단추 || '날짜 받아 보기') + '</a>'
         : '<button type="button" class="tw-next" data-tw="' + (i + 1) + '">' + esc(C.다음 || '다음') + ' →</button>') + '</div></div>';
   }
-  box.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-tw]'); if (!b) return; i = +b.getAttribute('data-tw'); 그리기(); });
+  // 10-13 효과 재기 — 4장면까지 넘김(tw4) · 「날짜 받아 보기」 누름(twgo). track.js 하루 한 번 꼴.
+  var 잰 = function (k) { try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event(k); } catch (e) {} };
+  box.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.tw-go')) 잰('twgo'); var b = e.target.closest && e.target.closest('[data-tw]'); if (!b) return; i = +b.getAttribute('data-tw'); if (i === 그림.length - 1) 잰('tw4'); 그리기(); });
   그리기();
 })();
