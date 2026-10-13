@@ -63,6 +63,7 @@
  ]}
 ]}
 </script>
+<style>/* 10-13 출산택일 「왜」 네 장면(taekil-why.js) — 한 번 움직이고 멈춤, 손가락으로 넘김 */#twhy{margin:18px 0 22px}.tw-in{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;box-shadow:var(--shadow);animation:twIn .45s ease-out both}.tw-k{margin:0;font-size:12px;color:var(--ink3);letter-spacing:.08em}.tw-h{margin:4px 0 10px;font-family:var(--serif);font-size:1.25rem;font-weight:700;color:var(--ink)}.tw-t{margin:12px 0 0;line-height:1.8;color:var(--ink)}.tw-end{margin:14px 0 0;padding:12px 14px;border-left:3px solid var(--accent);font-family:var(--serif);font-weight:700;line-height:1.7;color:var(--ink)}.tw-art{min-height:120px;display:flex;flex-direction:column;justify-content:center}.tw-ex{margin:6px 0 0;font-size:12px;color:var(--ink3)}.tw-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tw-two small{display:block;font-size:12px;color:var(--ink2);margin-bottom:6px}.tw-pil{display:flex;gap:4px}.tw-gz{flex:1;text-align:center;padding:8px 0;border:1px solid var(--line2);border-radius:8px;font-family:var(--serif);font-size:1.05rem;writing-mode:vertical-rl;letter-spacing:.1em;height:64px;display:flex;align-items:center;justify-content:center}.tw-flip{border-color:var(--accent);color:var(--accent);font-weight:700;animation:twFlip .9s .5s ease-in-out both}.tw-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tw-d{text-align:center;padding:7px 0;border-radius:6px;background:var(--bg2);font-size:13px;color:var(--ink2)}.tw-cal.pick .tw-d{animation:twDim .4s calc(var(--i)*35ms) both}.tw-cal.pick .tw-d.keep{animation:twKeep .5s calc(var(--i)*35ms + .3s) both}.tw-cal.sift .tw-d{animation:twOut .35s calc(var(--i)*60ms + .2s) both}.tw-cal.sift .tw-d.keep{animation:twGlow .6s 1.6s both}.tw-rep p{margin:0 0 8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);animation:twIn .5s both}.tw-rep p+p{animation-delay:.25s}.tw-rep small{color:var(--ink3)}.tw-btns{display:flex;gap:8px;margin-top:14px}.tw-btns button,.tw-go{flex:1;padding:12px;border-radius:999px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:1px solid var(--line2);background:var(--card);color:var(--ink2)}.tw-next,.tw-go{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}[data-theme=night] .tw-next,[data-theme=night] .tw-go{color:#1c1a3c!important}@keyframes twIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes twFlip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}@keyframes twDim{to{opacity:.25}}@keyframes twKeep{from{opacity:.25}to{opacity:1;background:var(--accent-soft);color:var(--accent);font-weight:700}}@keyframes twOut{to{opacity:.12}}@keyframes twGlow{from{opacity:.12}to{opacity:1;background:var(--accent);color:#fff;font-weight:700}}@media (prefers-reduced-motion:reduce){#twhy *{animation-duration:1ms!important;animation-delay:0s!important}}</style>
 </head>
 <body>
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
@@ -70,6 +71,8 @@
   <h1>출산택일<br>제왕절개 좋은 날짜와 시간 고르는 법</h1>
   <p class="lead">사주의 달이 바뀌는 순간(절기)을 날짜가 아니라 분 단위 시각으로 계산해 봅니다.
     무엇이 무료인지 먼저 적어두었습니다.</p>
+
+  <div id="twhy" aria-label="출산택일을 왜 하나 — 네 장면"></div>
 
   <div class="note">
     <p><b>출산 날짜는 의사가 정합니다.</b></p>
@@ -213,6 +216,8 @@
 <script src="track.js?v=4520244637"></script>
 <script>try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('sheet'); } catch (e) {}</script><!-- 10-10 깔때기 ③ 유료 장 엶(sheet) — 유료 소개 · 견본 쪽을 열면 하루 한 번(track.js). 화면은 안 바뀐다 -->
 <script src="yaksok.js?v=fa119a425c"></script>
+<script src="taekil-why-copy.js?v=ab27b77988"></script>
+<script src="taekil-why.js?v=b73e3c33bb"></script>
 <script src="pay.js?v=6fc7ba5543"></script>
 <script>
   // 값은 products 표 한 곳에만 있다. 금액 글자는 표에서 받아 채운다.
