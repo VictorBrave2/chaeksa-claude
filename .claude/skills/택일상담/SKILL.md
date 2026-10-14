@@ -264,14 +264,20 @@ python tools_sangdam_gen.py 짜기 … --order "10-26 유,10-28 미,10-23 신" \
 
 ```
 1  기간 덤프(위 「4. 기간 덤프」 그대로 — 대운 줄 포함)
-2  python tools/consult_tiers.py <consult.json> <곳> <성별>      ← 1 · 2단계 통과 수 + 남은 곳마다 반김 · 걱정 · 귀인 · 신살 꼬리표
+2  python tools/consult_tiers.py <consult.json> <곳> <성별>      ← 1 · 2단계 통과 수 + 남은 곳마다 반김 · 걱정 · 귀인 · 신살(우리끼리 보는 표)
 3  주말 · 병원 시간만 마지막에 대어 권할 곳을 고른다(물어보신 시각이 있으면 함께 넣는다). 부모님 일지는 대지 않는다
 4  node tools/consult_ziwei_lines.js <out.json> <곳> <성별> <시각들…>   ← 고른 곳마다 좋게 · 조심 구절 전부 + 반김 · 걱정
+   node tools/consult_sinsal.js <out.json> <곳> <성별> <시각들…>        ← 귀인 · 신살 이름 · 자리
 5  카드 — 순위를 찍어 한 폴더에
      python tools_card.py <폴더>/순위카드 <곳> "<시각들>" "1등 · 1월 14일(목) 오전 9:40 ~ 11:39,2등 · …" M     ← 사주 명식
      python tools/myeongban_consult.py <라벨 json> <폴더>/순위카드 <곳> M                              ← 자미두수 명반
-   app/cards/consult-<이름>/ 에 r1 · r2 …(사주) · m1 · m2 …(명반)로 복사 → bump · commit · push → 주소 200 확인
-6  블로그 글 한 편(붙여넣기 틀 그대로) → marketing/cards/상담-<이름>/블로그-붙여넣기.html → 폴더를 열어 준다
+   app/cards/consult-<이름>/ 에 새 이름(예: q1 · q2 …(사주) · n1 · n2 …(명반))으로 복사 — 옛 카드 이름을 덮어쓰지 않는다(이미 붙인 글의 그림이 바뀐다) → bump · commit · push → 주소 200 확인
+6  블로그 글 — 글.json 을 채워 도구로 짠다(손으로 HTML 을 쓰지 않는다)
+     python tools/consult_blog.py <글.json> marketing/cards/상담-<이름>/블로그-붙여넣기.html
+   글.json 칸은 references/블로그-예시.json(성남 재문의 네 곳, 10-14 사장님 「잘했어 스킬로 저장해」)을 복사해 바꾼다.
+   고정 문장(세 단계 기준 · 합 · 귀인 · 신살 머리 · 원문 · 받으신 택일 · 면책 · 출산 후)은 도구 안에 있다. 귀인 · 신살 뜻도 도구 안 표(새 이름이면 「뜻더하기」).
+   도구가 멈추는 것: 꼬리표 · 반김 · 걱정 N · 실단 · ** 이 글에 들어감 / 좋게 본 것이 빈 곳 / 뜻 없는 귀인 · 신살 이름
+7  답글 · 블로그 글 · 카드가 한 폴더에 있게 하고 폴더를 열어 준다(SendUserFile 로 글도 보낸다)
 ```
 
 구절 수는 **서버 길흉 표시(`consult_ziwei_lines.js`)로 통일한다.** 판정표(`puli.js`) 한줄의 「좋게 · 조심」은 셈법이 달라 숫자가 어긋난다(같은 1/14 오전이 26 · 13 대 23 · 11).
