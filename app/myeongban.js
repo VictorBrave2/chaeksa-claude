@@ -142,8 +142,14 @@
   }
 
   // ── 누르면 열리는 칸
+  // 4판(10-15 사장님 「명반 화면에도 넣어」) — 서버가 걸림 · 일부 줄마다 붙여 주는 「오늘 말」(옛 구절을 오늘 삶의 일로 옮긴 한 줄, 비공개 대조표 1225줄)을 직역 아래에.
+  //   옮기지 않는 구절(옮긴거리 none)은 문장 자체가 「옛 책은 …고 했다 — 오늘 일로 옮기지 않는다」 꼴이라 머리말 없이, 나머지는 「오늘로 옮기면 — 」을 앞에(머리말은 작가 검수 대상). 서버가 안 주면(옛 판) 아무것도 안 그린다.
+  function 오늘말줄(x) {
+    if (!x || !x.오늘말) return '';
+    return '<p class="t">' + (x.옮긴거리 === 'none' ? '' : esc(글('칸.오늘말머리', '오늘로 옮기면 — '))) + esc(x.오늘말) + '</p>';
+  }
   function 원문칸(x, 일부) {
-    return '<div class="src' + (일부 ? ' part' : '') + '"><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '')
+    return '<div class="src' + (일부 ? ' part' : '') + '"><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + 오늘말줄(x)
       + (일부 && x.왜 ? '<p class="l">' + esc(x.왜) + '</p>' : '') + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
   }
   function 까닭말(k) {
@@ -203,7 +209,7 @@
       if ((셀.짝 || []).length) {
         h += '<p class="why">' + esc(글('칸.빈칸짝', '')) + '</p>' + 셀.짝.map(function (x) {
           var 머리 = (x.짝 || []).join(' · ') + (x.걸림 === '걸림' ? ' — 내 명반에서 걸려요' : x.걸림 === '일부' ? ' — ' + 글('칸.일부', '') : '');
-          return '<div class="src' + (x.걸림 === '걸림' ? '' : ' part') + '"><p class="l">' + esc(머리) + '</p><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
+          return '<div class="src' + (x.걸림 === '걸림' ? '' : ' part') + '"><p class="l">' + esc(머리) + '</p><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + 오늘말줄(x) + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
         }).join('');
       }
     } else {
@@ -248,7 +254,7 @@
   function 짝칸(x, 이름들, 상태) {
     var 걸 = 상태 || x.걸림, 이 = (이름들 || []).map(별이름).join(' · '), 끝 = 걸 === '걸림' ? '내 명반에서 걸려요' : 걸 === '일부' ? 글('칸.일부', '') : '';
     var 머리 = 이 + (이 && 끝 ? ' — ' : '') + 끝;
-    return '<div class="src' + (걸 === '걸림' ? '' : ' part') + '"><p class="l">' + esc(머리) + '</p><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + (상태 === '일부' && x.왜 ? '<p class="l">' + esc(x.왜) + '</p>' : '') + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
+    return '<div class="src' + (걸 === '걸림' ? '' : ' part') + '"><p class="l">' + esc(머리) + '</p><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + 오늘말줄(x) + (상태 === '일부' && x.왜 ? '<p class="l">' + esc(x.왜) + '</p>' : '') + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
   }
   // 「天府와 함께」 — 짝으로 걸린 줄의 이름표(이 궁에 같이 있는 짝 별만)
   function 함께말(이름들) {
