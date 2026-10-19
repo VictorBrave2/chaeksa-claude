@@ -11,8 +11,13 @@ description: 블로그 · 월별 글 담당 — 월별 출산택일 글(종합 �
 - 웹 통설 금지(feedback-no-web-tongseol) · 상담 사례 금지 · 책사 개인 이름 금지.
 - 검사: `tools_form.py`(시진표 시각 · 일주-시주 짝 · 날짜-일주) 막힘 0 이어야 넘긴다. 확인 못 한 숫자를 대지 않는다(feedback-numbers-i-cannot-verify).
 
+- **출산택일 글의 신청 안내(10-04 사장님 「네이버폼+책사웹사이트」)**: 결제가 열리기 전까지 네이버 신청서(https://naver.me/FdqTMrhq)와 책사 웹사이트 신청서(https://chaeksa.kr/taekil-apply.html?from=blog-…)를 둘 다 나란히 — 「두 곳 가운데 편한 곳에서」. 월별 생성기(tools_wolbyeol · tools_gungtong)도 그렇게 낸다.
+- **월별 출산택일 네이버 글은 짧은 판(10-04 사장님 「전체 분석은 인기가 없네 글이 터무니없이 길어서 그런가?」)**: `python tools_blogshort.py` → marketing/블로그-N월출산택일.html(날짜별 전부 세 칸을 걷고 사이트 표 링크 하나). 사이트 정본은 붙여넣기판 그대로 전부. 사장님께 드리는 네이버용은 블로그판. **블로그판에는 명식 카드를 넣지 않는다**(10-04 사장님 「복붙하면 이미지로 등록이 안 되어 수동으로 붙여넣기 하니 카드를 비워줘」 — 궁통보감도 블로그-N월궁통보감.html, 그림은 사장님이 app/cards/ 에서 손으로).
+- **엔진이 바뀌면 월별 글을 다시 뽑는다(10-04 사장님 「10월부터」)**: 공개 엔진 사슬을 node vm 으로 덤프(비공개 core lib/taekil-engine.js 칸세우기 + vendor/manifest.json 차례) → tools_wolbyeol · tools_gungtong → tools_jeongbon. 절기 단락은 옛 글에서 오므로 E.fmt.termsOfYear 와 분까지 대조. 다시 뽑은 달은 사장님께 네이버 다시 붙이기 목록으로.
+
 ## 모두가 지킬 것
 - 목적 한 문장(메모 project-goal-myungri-secretary): 세계 최고 수준의 명리엔진을 보이지 않는 심장으로 넣고, 공주님 한 사람을 위해 존재하는 것처럼 느껴지며 여는 것 자체가 즐거운 여성향 명리 서비스를 만들어 수익화한다. 맡은 일이 이 문장의 어느 조각(엔진 · 한 사람 · 즐거움 · 수익)에 걸리는지 알고 한다.
+- 웹사이트의 길(10-04 전략, `docs/25_전략.md`): 1단계 첫 매출 = 출산택일(잣대: 보고서 첫 결제) → 2단계 사용설명서 공유 고리 → 3단계 다시 오게 → 4단계 넓히기. 앞 단계 잣대를 넘기 전에는 다음 단계 일을 하지 않는다. 사장님의 옛 웹사이트 · 상품 · 진열 지시는 10-04 사장님 「내가 제한 · 제안한 것들은 모두 삭제 및 제외」로 걷었다.
 - 지키는 것은 둘: 법전(docs/19_법전.md)과 Claude 메모리의 피드백 항목(C:/Users/LEE/.claude/projects/C--Users-LEE-Desktop-------/memory/ 의 feedback-*.md). 시작 전에 MEMORY.md 목록을 보고 맡은 일에 걸리는 feedback 메모를 읽는다.
 - 먼저 추론하고 사장님은 검수한다(feedback-reason-first-owner-reviews). 조문을 기다리며 멈추지 않는다.
 - 저장소는 CRLF/LF 가 섞여 있다 — 파일의 원래 줄끝을 지킨다. 한국어 글에 번역투 금지.
