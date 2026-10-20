@@ -19,6 +19,9 @@
   .row{display:flex;justify-content:space-between;gap:12px;font-size:var(--t2);padding:5px 0}
   .row span:first-child{color:var(--ink3)}
   .row span:last-child{color:var(--ink);font-weight:700;text-align:right}
+  /* 10-20 사장님 「주문번호가 2줄로 나오니까 신뢰도가 확 떨어진다」 — 번호는 가운데서 끊지 않는다. 한 줄에 안 들어가면 번호 통째로 다음 줄 오른쪽 */
+  .row.oid{flex-wrap:wrap;row-gap:2px}
+  .row.oid span:last-child{white-space:nowrap;margin-left:auto;font-size:var(--t1);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
   .btn{display:inline-block;margin-top:8px;padding:12px 22px;border-radius:var(--r2);
        text-decoration:none;font-size:var(--t2);font-weight:700}
   .btn.go{background:var(--accent);color:#fff}
@@ -38,11 +41,11 @@
 <script src="config.js?v=1dadeed655"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=6fc7ba5543"></script>
+<script src="pay.js?v=a72415cea6"></script>
 <script src="yaksok.js?v=fa119a425c"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=1350b96148"></script>
-<script src="taekil-read.js?v=4c31c70a7c"></script>
+<script src="taekil-read.js?v=b2175b5326"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script>
 (function () {
@@ -92,7 +95,7 @@
       + '<div class="box" style="margin:14px 0 10px">'
       +   줄('출산 예정 기간', d.range) + 줄('태어날 지역', d.place)
       +   줄('아이 성별', d.sex === '모름' ? '아직 몰라요' : d.sex)
-      +   줄('원하시는 방향', F.앞세움이름(d.first)) + '</div>'
+      +   줄('아이의 성장 방향 · 원하시는 특징', F.앞세움이름(d.first)) + '</div>'
       + '<p class="lead">고칠 것이 생기면 주문번호와 함께 메일로 알려 주세요 — ' + esc(F.문의메일) + '</p></div>';
   }
 
@@ -282,7 +285,7 @@
           + '<div class="box">'
           +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
           +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
-          +   '<div class="row"><span>주문번호</span><span style="font-size:var(--t1)">' + esc(orderId) + '</span></div>'
+          +   '<div class="row oid"><span>주문번호</span><span>' + esc(orderId) + '</span></div>'
           + '</div>'
           + (code === 'taekil' ? '<div id="taekil-slot"></div>' : '')
           + '<p><a class="btn go" href="mailto:dl4431@naver.com?subject=' + encodeURIComponent('[책사] 결제 기록 확인 ' + orderId) + '">메일로 알리기</a></p>'
@@ -305,7 +308,7 @@
         + '<div class="box">'
         +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
         +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
-        +   '<div class="row"><span>주문번호</span><span style="font-size:var(--t1)">' + esc(orderId) + '</span></div>'
+        +   '<div class="row oid"><span>주문번호</span><span>' + esc(orderId) + '</span></div>'
         + '</div>'
         // 10-02 개편 3묶음 — 이 주문번호는 이 화면에만 한 번 보였다. 설정 창 「내 결제」(app.js · pay.js 내결제)에서 언제든 다시 본다.
         + '<p class="warn" style="margin-top:-12px">이 주문번호는 홈 화면 맨 위 오른쪽 「설정」 → 「내 결제」에서 언제든 다시 볼 수 있어요.</p>'

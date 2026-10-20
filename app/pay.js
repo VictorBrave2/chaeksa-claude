@@ -692,12 +692,26 @@
   const 칸글 = (id, 이름, 꼭, 예, 메일) => '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
     + '<input id="' + id + '"' + (메일 ? ' type="email" autocomplete="email" inputmode="email"' : '')
     + ' maxlength="200" placeholder="' + 글(예) + '">';
-  const 고르기 = (id, 이름, 갈래) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '">'
+  const 고르기 = (id, 이름, 갈래, 여럿) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '"' + (여럿 ? ' data-multi="1"' : '') + '>'
     + 갈래.map((g) => '<button type="button" data-v="' + 글(g[0]) + '">' + 글(g[1]) + '</button>').join('') + '</div>';
   // 재물과 자리는 따로 묻는다 — 「재관」이라 해도 재물 쪽인지 관직 쪽인지에 따라 답이 갈린다(택일상담). 둘 다 재관 저울.
   const 앞세움 = [['무난', '두루 무난하게'], ['재물', '재물'], ['자리', '자리(직업·지위)'],
                  ['건강', '건강'], ['학업', '공부'], ['가족', '가족 화목']];
   const 성별 = [['남아', '남아'], ['여아', '여아'], ['모름', '아직 몰라요']];
+  // 고르개 켜기 — 여럿 고르는 칸(data-multi, 10-20 사장님 「아이의 성장방향 및 원하시는 특징 (복수선택)」)은 값이 「재물,건강」처럼 쉼표로 이어진다.
+  // 「두루 무난하게」는 혼자만 — 고르면 나머지가 꺼지고, 다른 것을 고르면 무난이 꺼진다. 누름 = 단추를 눌렀을 때(켜고 끄기), 아니면 값을 그대로 채운다.
+  const 고른것 = (v) => String(v || '').split(',').map((x) => x.trim()).filter(Boolean);
+  const 고르개켬 = (box, v, 누름) => {
+    let 값 = v || '';
+    if (box.dataset.multi === '1' && 누름) {
+      const 지금 = 고른것(box.dataset.v);
+      if (v === '무난') 값 = 지금.includes('무난') ? '' : '무난';
+      else { const 남 = 지금.filter((x) => x !== '무난'); 값 = (남.includes(v) ? 남.filter((x) => x !== v) : 남.concat(v)).join(','); }
+    }
+    box.dataset.v = 값;
+    const 켠 = box.dataset.multi === '1' ? 고른것(값) : [값];
+    box.querySelectorAll('button').forEach((b) => b.classList.toggle('on', 켠.includes(b.dataset.v)));
+  };
   // 「이렇게 읽었어요」 한 줄 자리(10-02 설계서 2-2) — 칸 밑에 둔다. 읽개(taekil-read.js)가 있는 쪽에서만 채운다(주문서.읽기켜기).
   const 읽줄 = (k) => '<p class="tk-read" data-read="' + k + '" hidden></p>';
   // 칸 id → 신청서 열쇠(값() · 켜기 · 채우기가 같이 쓴다)
@@ -844,7 +858,7 @@
         + '<div class="check"><input type="checkbox" id="i_weekend">'
         +   '<label for="i_weekend" style="margin:0">주말도 가능해요</label></div>'
         // 10-02 사장님 「앞세우신 ✗ → 원하시는 방향 ○」 — 칸 이름만 바꾼다. 고르는 보기는 그대로.
-        + 고르기('i_first', '원하시는 방향', 앞세움)
+        + 고르기('i_first', '아이의 성장 방향 · 원하시는 특징 (여러 개 고를 수 있어요)', 앞세움, true)
         + 칸('i_dad', '아버지 생년월일시', false, '예) 1994년 12월 10일 오후 3시 10분 · 양력') + 읽줄('father')
         + 칸('i_mom', '어머니 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력') + 읽줄('mother')
         + 칸('i_sib', '형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력') + 읽줄('siblings')
@@ -979,9 +993,8 @@
       고르개켜기(root);
       [['i_sex', 'sex'], ['i_first', 'first']].forEach(([id, 열쇠]) => {
         const box = root.querySelector('#' + id); if (!box) return;
-        const 켬 = (v) => { box.dataset.v = v || ''; box.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); };
-        켬(d[열쇠] || '');
-        if (!box.dataset.wiredFill) { box.dataset.wiredFill = '1'; box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => 켬(b.dataset.v))); }
+        고르개켬(box, d[열쇠] || '');
+        if (!box.dataset.wiredFill) { box.dataset.wiredFill = '1'; box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => 고르개켬(box, b.dataset.v, true))); }
       });
     },
     /** 초안을 칸에 채우고, 고르는 칸을 켜고, 적을 때마다 초안을 남긴다. */
@@ -1009,12 +1022,8 @@
       };
       [['i_sex', 'sex'], ['i_first', 'first']].forEach(([id, 열쇠]) => {
         const box = root.querySelector('#' + id); if (!box) return;
-        const 켬 = (v) => {
-          box.dataset.v = v || '';
-          box.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
-        };
-        켬(채울[열쇠]);
-        box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { 켬(b.dataset.v); 남김(); }));
+        고르개켬(box, 채울[열쇠]);
+        box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { 고르개켬(box, b.dataset.v, true); 남김(); }));
       });
       root.addEventListener('input', 남김);
       root.addEventListener('change', 남김);
@@ -1050,14 +1059,14 @@
     동의문: '[필수] 건강과 이어진 정보(출산 예정 기간, 병원이 말한 수술 가능 날짜·시간대)와 가족의 생년월일시를 '
       + '출산택일 보고서를 만들어 드리는 데만 쓰는 것에 동의합니다. 동의하지 않으시면 보고서를 만들 수 없습니다. '
       + '(<a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)',
-    앞세움이름: (v) => (앞세움.find((g) => g[0] === v) || [])[1] || '',
+    앞세움이름: (v) => 고른것(v).map((x) => (앞세움.find((g) => g[0] === x) || [])[1]).filter(Boolean).join(' · '),
     메일초안(orderId, d) {
       const 줄 = ['주문번호: ' + orderId, '받으실 메일: ' + d.mail, '출산 예정 기간: ' + d.range,
         '병원이 말한 날짜: ' + (d.hospital || '없음'), '이미 받아 둔 날짜: ' + (d.have || '-'),
         '태어날 지역: ' + d.place,
         '아이 성별: ' + (d.sex || '미정'),
         '수술 가능한 시간대: ' + (d.time || '-') + (d.weekend ? ' · 주말 가능' : ''),
-        '원하시는 방향: ' + (주문서.앞세움이름(d.first) || '-'),
+        '아이의 성장 방향 · 원하시는 특징: ' + (주문서.앞세움이름(d.first) || '-'),
         '아버지: ' + (d.father || '-'), '어머니: ' + (d.mother || '-'), '형제자매: ' + (d.siblings || '-'),
         '바라는 점: ' + (d.wish || '-'), '궁금한 점: ' + (d.ask || '-')];
       return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청서 ' + orderId)
@@ -1072,7 +1081,7 @@
         '병원이 말한 수술 가능 날짜: ' + 값(d.hospital), '이미 받아 두신 날짜·시간: ' + 값(d.have),
         '태어날 지역(시·군): ' + 값(d.place), '아이 성별(남아 · 여아 · 아직 몰라요): ' + 성,
         '수술 가능한 시간대: ' + 값(d.time), '주말도 가능한지: ' + (d.weekend ? '가능해요' : ''),
-        '원하시는 방향(두루 무난 · 재물 · 자리 · 건강 · 공부 · 가족 화목): ' + 주문서.앞세움이름(d.first),
+        '아이의 성장 방향 · 원하시는 특징(두루 무난 · 재물 · 자리 · 건강 · 공부 · 가족 화목, 여러 개 가능): ' + 주문서.앞세움이름(d.first),
         '아버지 생년월일시(양력/음력): ' + 값(d.father), '어머니 생년월일시(양력/음력): ' + 값(d.mother),
         '형제자매 생년월일: ' + 값(d.siblings), '바라는 점: ' + 값(d.wish), '궁금한 점: ' + 값(d.ask)].join('\n');
     },
