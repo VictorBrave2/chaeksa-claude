@@ -362,6 +362,29 @@
     };
   }
 
+  /* ── 결제 알림(10-20) ───────────────────────────────────── */
+  function 알림걸기() {
+    const on = $('admAlertOn'), test = $('admAlertTest'), msg = $('admAlertMsg'), A = P && P.결제알림;
+    if (!on || !A || on.dataset.wired) return; on.dataset.wired = '1';
+    const 말 = { unsupported: '이 브라우저는 알림을 받지 못해요. 휴대폰의 크롬이나 삼성 인터넷에서 열어 주세요.',
+      denied: '알림이 막혀 있어요. 주소창 옆 자물쇠 → 권한 → 알림을 「허용」으로 바꾼 뒤 다시 눌러 주세요.',
+      forbidden: '검수 계정으로 로그인해 주세요.', not_ready: '알림 열쇠가 아직 서버에 없어요 — 메인에게 알려 주세요.',
+      db: 'migrate-38 SQL 을 아직 Run 하지 않았어요.' };
+    const 보임 = (t, 좋음) => { msg.textContent = t; msg.className = 'hint' + (좋음 === false ? ' adm-msg bad' : ''); };
+    on.addEventListener('click', () => {
+      on.disabled = true; 보임('켜는 중…');
+      A.켜기().then((r) => r && r.ok ? 보임('켰어요. 이 휴대폰으로 결제 알림이 와요(켜 둔 기기 ' + (r.count || 1) + '대). 「시험 알림 보내기」로 확인해 보세요.')
+        : 보임(말[r && r.reason] || ('켜지 못했어요 — ' + ((r && r.reason) || '')), false))
+        .catch((e) => 보임('켜지 못했어요 — ' + (e && e.message || e), false)).then(() => { on.disabled = false; });
+    });
+    test.addEventListener('click', () => {
+      test.disabled = true; 보임('보내는 중…');
+      A.시험().then((r) => r && r.ok ? 보임('보냈어요. 몇 초 안에 알림이 오면 끝이에요.')
+        : 보임(r && r.sent && !r.sent.length ? '알림을 켠 기기가 없어요. 먼저 「이 휴대폰으로 결제 알림 받기」를 눌러 주세요.' : (말[r && r.reason] || '보내지 못했어요'), false))
+        .catch(() => 보임('보내지 못했어요', false)).then(() => { test.disabled = false; });
+    });
+  }
+
   /* ── 시작 ─────────────────────────────────────────────── */
   function 목록() {
     const box = $('admRows'); if (box) box.innerHTML = '<p class="hint">불러오는 중…</p>';
@@ -369,7 +392,7 @@
       if (!(r && r.ok)) { if (box) box.innerHTML = '<p class="adm-msg bad">' + esc(이유말(r)) + '</p>'; return; }
       스위치 = { auto: !!r.auto, released: r.released || 0 };
       줄들 = Array.isArray(r.rows) ? r.rows : [];
-      스위치그리기(); 나누기그리기(); 목록그리기();
+      스위치그리기(); 나누기그리기(); 목록그리기(); 알림걸기();
     });
   }
   function 시작() {

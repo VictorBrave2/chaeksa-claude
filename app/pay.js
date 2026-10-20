@@ -1173,5 +1173,25 @@
     adminDelete: (id) => 택일함수('gyeolhon_delete', { p_id: id }),
   };
 
-  global.ChaeksaPay = { state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon };
+  // 10-20 사장님 결제 알림(api/pay.js alertkey · alertsub · alerttest, server/migrate-38) — 사장님 목록에서만 부른다.
+  //   켜기: 알림 허락 → 서버 공개키로 이 기기 구독 → 서버에 주소만 넣는다(최대 3대, 새 기기가 맨 앞). 시험: 지금 알림 하나.
+  const 결제알림 = {
+    async 켜기() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in global) || !('Notification' in global)) return { ok: false, reason: 'unsupported' };
+      const 허락 = await Notification.requestPermission();
+      if (허락 !== 'granted') return { ok: false, reason: 'denied' };
+      const k = await post({ action: 'alertkey' });
+      if (!k || !k.ok || !k.key) return k || { ok: false, reason: 'not_ready' };
+      const raw = atob(k.key.replace(/-/g, '+').replace(/_/g, '/'));
+      const key = new Uint8Array(raw.length); for (let i = 0; i < raw.length; i++) key[i] = raw.charCodeAt(i);
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (sub) { try { await sub.unsubscribe(); } catch (_) {} }   // 9월 아침 알림 때의 옛 구독일 수 있다 — 새 키로 다시
+      sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+      return await post({ action: 'alertsub', sub: { endpoint: sub.endpoint } });
+    },
+    시험: () => post({ action: 'alerttest' }),
+  };
+
+  global.ChaeksaPay = { 결제알림, state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon };
 })(window);

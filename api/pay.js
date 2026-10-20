@@ -132,6 +132,46 @@ async function isSuper(userToken) {
   return p === 'super';
 }
 
+/* ── 사장님 결제 알림(10-20 사장님 「출산택일 결제가 되면 우리가 알 수 있나?」 → 「ㄱㄱ」, server/migrate-38) ──
+ * 결제가 승인되면 사장님 휴대폰(웹 푸시 구독, app_flags 'owner_push_subs')으로 알림 하나를 보낸다.
+ * 내용 없는 푸시(본문 0바이트)라 암호화가 필요 없다 — 알림 글은 app/sw.js 의 push 처리기가 정해 둔 한 줄이다.
+ * 주문번호 · 손님 정보는 보내지 않는다. 열쇠는 Vercel VAPID_PRIVATE_KEY(base64url 32바이트) 하나 — 공개키는 거기서 계산한다.
+ * 알림이 실패해도 결제는 그대로다(3초 안에 끝내고 오류는 삼킨다). */
+const b64u = (buf) => Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+function vapid() {
+  const d = env('VAPID_PRIVATE_KEY');
+  if (!d) return null;
+  try {
+    const ecdh = crypto.createECDH('prime256v1');
+    ecdh.setPrivateKey(Buffer.from(d.replace(/-/g, '+').replace(/_/g, '/'), 'base64'));
+    const pub = ecdh.getPublicKey();   // 65바이트 04|x|y
+    const key = crypto.createPrivateKey({ format: 'jwk', key: { kty: 'EC', crv: 'P-256', d: b64u(ecdh.getPrivateKey()),
+      x: b64u(pub.subarray(1, 33)), y: b64u(pub.subarray(33, 65)) } });
+    return { key, pub: b64u(pub) };
+  } catch (_) { return null; }
+}
+async function 푸시하나(endpoint, v) {
+  const aud = new URL(endpoint).origin;
+  const head = b64u(JSON.stringify({ typ: 'JWT', alg: 'ES256' }));
+  const body = b64u(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: 'mailto:dl4431@naver.com' }));
+  const sig = crypto.sign('sha256', Buffer.from(head + '.' + body), { key: v.key, dsaEncoding: 'ieee-p1363' });
+  const ac = new AbortController(); const t = setTimeout(() => ac.abort(), 3000);
+  try {
+    const r = await fetch(endpoint, { method: 'POST', signal: ac.signal,
+      headers: { TTL: '86400', Urgency: 'high', 'Content-Length': '0', Authorization: `vapid t=${head}.${body}.${b64u(sig)}, k=${v.pub}` } });
+    return r.status;
+  } catch (_) { return 0; } finally { clearTimeout(t); }
+}
+/** 사장님 휴대폰 모두에 알림. 돌려주는 것: [상태 코드…](201 이면 보냄). 없거나 실패면 []. */
+async function 사장님알림() {
+  try {
+    const v = vapid(); if (!v) return [];
+    const l = await srv('owner_alert_list', {}).catch(() => null);
+    const subs = (l && l.ok && Array.isArray(l.subs)) ? l.subs : [];
+    return await Promise.all(subs.slice(0, 3).map((s) => (s && s.endpoint ? 푸시하나(String(s.endpoint), v) : 0)));
+  } catch (_) { return []; }
+}
+
 /** 시험 결제창을 열어 줄 계정인가 — super(사장님) 또는 review(결제사 심사관용 메일 계정, 10-04 사장님 「심사관이 못 열어볼텐데?」).
  *  review 는 시험 결제만 연다 — 환불 · 사장님 목록은 여전히 isSuper. 등급은 Supabase 가 서명한 app_metadata.plan(chaeksa-behavior-core/sql-review-account.sql). */
 async function 시험계정(userToken) {
@@ -330,6 +370,23 @@ module.exports = async (req, res) => {
   if (!token && !로그인없이) return res.status(401).json({ ok: false, reason: 'unauthenticated' });
 
   try {
+    // ════ 사장님 결제 알림(10-20, migrate-38) — 사장님(super) 계정만 ═══════
+    //   alertkey  이 기기를 구독할 공개키 · alertsub  이 기기 구독 넣기(맨 앞, 최대 3) · alerttest  지금 시험 알림 보내기
+    if (action === 'alertkey' || action === 'alertsub' || action === 'alerttest') {
+      if (!(await isSuper(token))) return res.status(403).json({ ok: false, reason: 'forbidden' });
+      const v = vapid();
+      if (!v) return res.status(503).json({ ok: false, reason: 'not_ready' });
+      if (action === 'alertkey') return res.status(200).json({ ok: true, key: v.pub });
+      if (action === 'alertsub') {
+        const ep = String((body.sub && body.sub.endpoint) || '');
+        if (!/^https:\/\//.test(ep) || ep.length > 1500) return res.status(400).json({ ok: false, reason: 'bad_request' });
+        const r = await rpc('owner_alert_sub', { p_sub: JSON.stringify({ endpoint: ep }) }, token).catch(() => null);
+        return res.status(r && r.ok ? 200 : 400).json(r || { ok: false, reason: 'db' });
+      }
+      const st = await 사장님알림();
+      return res.status(200).json({ ok: st.some((x) => x >= 200 && x < 300), sent: st });
+    }
+
     // ════ 카카오페이 ════════════════════════════════════════════════
 
     // ── K1. 주문을 열고 카카오 결제창 주소를 받는다 ──
@@ -437,6 +494,7 @@ module.exports = async (req, res) => {
             p_message: `카카오 승인됨 · 기록 실패(${(saved && saved.reason) || 'save_failed'}) · aid ${j.aid || '-'}` })
             .catch(() => {});
         }
+        await 사장님알림();   // 10-20 사장님 휴대폰 결제 알림(실패해도 결제는 그대로)
         return res.status(200).json({
           ok: true, saved: ok, name: o.name, amount: o.amount,
           payMode: o.pay_mode || k.mode,
@@ -632,6 +690,7 @@ module.exports = async (req, res) => {
           await srv('order_pg_note', { p_order: orderId, p_tid: o.tid, p_code: 'SAVE_FAILED',
             p_message: `네이버 승인됨 · 기록 실패(${(saved && saved.reason) || 'save_failed'}) · ${paymentId}` }).catch(() => {});
         }
+        await 사장님알림();   // 10-20 사장님 휴대폰 결제 알림
         return res.status(200).json({ ok: true, saved: ok, name: o.name, amount: o.amount, payMode: n.mode,
           method: d.primaryPayMeans || null, approvedAt: d.admissionYmdt || null, receipt: null,
           saveWarning: ok ? null : 'SAVE_FAILED' });

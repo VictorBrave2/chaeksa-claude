@@ -9,7 +9,7 @@
  *  그 밖(지문 없는 파일 · 숫자 ?v=) — 네트워크 먼저, 끊겼을 때만 캐시.
  *  캐시에는 제대로 받은 것(r.ok)만 넣는다 — 404 · 오류 쪽이 캐시에 남아 다음에 그것을 보이는 일이 없게.
  */
-const CACHE = 'chaeksa-v1379';          // tools_bust.py --bump 가 올린다 — 이 파일이 바뀌어야 브라우저가 새 일꾼을 받는다
+const CACHE = 'chaeksa-v1380';          // tools_bust.py --bump 가 올린다 — 이 파일이 바뀌어야 브라우저가 새 일꾼을 받는다
 const FILES_CACHE = 'chaeksa-files';    // ① 지문 붙은 파일 — 배포마다 지우지 않는다
 const IMG_CACHE = 'chaeksa-img';        // ② 그림
 const IMG_MAX = 400;
@@ -100,3 +100,21 @@ self.addEventListener('fetch', (e) => {
 });
 
 /* 아침 푸시는 2026-09-14 걷었다(오늘 탭 없음). */
+
+/* 10-20 사장님 결제 알림(api/pay.js 사장님알림 · server/migrate-38) — 사장님(super)이 사장님 목록에서 켠 기기에만 온다.
+ * 서버는 내용 없는 푸시를 보낸다(손님 정보 없음). 누르면 사장님 목록을 연다. */
+self.addEventListener('push', (e) => {
+  e.waitUntil(self.registration.showNotification('책사 — 새 결제가 들어왔어요', {
+    body: '사장님 목록에서 확인하고 보고서를 열어 주세요.',
+    icon: 'icon-192.png', badge: 'icon-192.png', tag: 'chaeksa-pay', renotify: true,
+    data: { url: './taekil-admin.html' },
+  }));
+});
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((ws) => {
+    for (const w of ws) { if (w.url === url && 'focus' in w) return w.focus(); }
+    return self.clients.openWindow(url);
+  }));
+});
