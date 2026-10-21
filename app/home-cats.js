@@ -36,7 +36,12 @@
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
     time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}.webp', 작은: 'art/jt-g-jeongin-{g}-s.webp', 크기: [1024, 1536] }],
+    // 10-22 「무슨 결로 먹고사나」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류 · 그림은 정통사주 15장(일) 컷
+    work: [{ 키: 'ilgyeol', 주소: 'ilgyeol.html', 그림: 'art/jt-15-work-{g}.webp', 작은: 'art/jt-15-work-{g}-s.webp', 크기: [1024, 1536] }],
   };
+  // 10-22 사장님 「유료 콘텐츠들 상단으로」 — 메뉴판 맨 앞은 값을 받는 다섯(이 차례), 그 뒤는 분류 차례 그대로.
+  var 유료차례 = ['taekil', 'gyeolhon', 'ilgyeol', 'love', 'pair'];
+  function 순위(키) { var i = 유료차례.indexOf(키); return i < 0 ? 99 : i; }
   // 그림 칸 폭 — .wrap(최대 520 · 양옆 18) 안의 3열(사이 8) · 넓으면 4열. index.html 머리의 첫 표지 미리 부르기(preload imagesizes)와 같아야 한다.
   var 칸폭 = '(min-width:520px) 115px, calc(33.3vw - 17px)';   // 10-22 메뉴판(폰 3열 · 넓으면 4열) — index.html 머리 미리 부르기(imagesizes)와 같게
   // 정통사주 장으로 가지 않는 물음 칸 — 결혼은 웹툰궁합 「결혼을 생각할 때」 단계(곳 「단계:결혼」 → app.js 도착이 단계를 미리 골라 둔다),
@@ -97,12 +102,14 @@
     if (!el || !global.ChaeksaBunya) return;
     var 큰 = global.ChaeksaBunya.큰분야.slice();
     큰.sort(function (a, b) { var x = 앞.indexOf(a.키), y = 앞.indexOf(b.키); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });
-    var g = 성별(), Y = global.ChaeksaYaksok, 그림들 = '', 물음들 = '', 곧 = [], 차례 = 0;
+    var g = 성별(), Y = global.ChaeksaYaksok, 그림들 = '', 물음들 = '', 곧 = [], 차례 = 0, 조각 = [];
     큰.forEach(function (b) {
-      if (칸[b.키]) { 칸[b.키].forEach(function (c, i) { 그림들 += 그림칸(b, c, i, 차례++, g, Y); }); return; }
+      if (칸[b.키]) { 칸[b.키].forEach(function (c, i) { 조각.push({ b: b, c: c, i: i, n: 조각.length }); }); return; }
       var w = 길[b.키] || 장길(b);
       if (w) 물음들 += 물음칸(b, w, Y); else 곧.push(b.이름);
     });
+    조각.sort(function (x, y) { return (순위(x.c.키) - 순위(y.c.키)) || (x.n - y.n); });   // 유료 다섯 먼저, 나머지는 있던 차례(n)
+    조각.forEach(function (z) { 그림들 += 그림칸(z.b, z.c, z.i, 차례++, g, Y); });
     el.innerHTML = '<div class="cats">' + 그림들 + '</div>'
       + (물음들 ? '<p class="cats-h">이런 물음은 여기서 바로 답해요</p><div class="cats-q">' + 물음들 + '</div>' : '')
       // 10-04 전략 — 빈 선반(「곧 열려요 · …」)은 보이지 않는다. 손님 수가 적을 때 고를 것이 많으면 아무것도 안 고른다(곧 목록은 그리지 않고 버린다).
