@@ -1,4 +1,4 @@
--- migrate-39 · 2026-10-22 「무슨 결로 먹고사나」(진로 보고서, code ilgyeol) — 카카오페이로 판다(사장님 10-21 「지금 걸자 · 카카오페이 연결」).
+-- migrate-39 · 2026-10-22 「나는 뭐해 먹고 살까?」(진로 보고서, code ilgyeol) — 카카오페이로 판다(사장님 10-21 「지금 걸자 · 카카오페이 연결」).
 --
 -- 1) 상품 한 줄 — 값은 여기서만 정한다(앱은 서버 표를 읽는다). 69,000원(사장님 「값 네가 넣어」 · 「만만해 보이고 싶진 않다」 → 메인이 정함).
 -- 2) order_intake(migrate-25)가 출산택일(taekil)만 받던 것을 진로 보고서(ilgyeol)도 받게.
@@ -7,7 +7,7 @@
 
 -- ── 1. 상품 ──
 insert into public.products (code, name, amount, blurb, sort, active)
-values ('ilgyeol', '무슨 결로 먹고사나 — 진로 보고서', 69000,
+values ('ilgyeol', '나는 뭐해 먹고 살까? — 진로 보고서', 69000,
         '한 사람의 사주와 자미두수로 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년을 적은 보고서. 통설로 보면 · 원문으로 보면을 나란히.', 25, true)
 on conflict (code) do update set name = excluded.name, amount = excluded.amount, blurb = excluded.blurb, sort = excluded.sort, active = true;
 

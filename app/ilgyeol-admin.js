@@ -1,4 +1,4 @@
-/* 「무슨 결로 먹고사나」 진로 보고서 — 사장님 목록(ilgyeol-admin.html · 10-22 사장님 결정 「카카오페이로 판다」). 출산택일 목록(taekil-admin.js)을 본떠 결제 주문 목록 꼴로.
+/* 「나는 뭐해 먹고 살까?」 진로 보고서 — 사장님 목록(ilgyeol-admin.html · 10-22 사장님 결정 「카카오페이로 판다」). 출산택일 목록(taekil-admin.js)을 본떠 결제 주문 목록 꼴로.
  *
  * 검수 계정(super)만 쓴다. 화면이 가리는 것은 편의일 뿐이고, 실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super' 다(server/migrate-39 ilgyeol_admin_list).
  * 여기는 함수를 부르고 받은 것을 그리기만 한다 — 결제 · 신청서 붙이기는 신청 쪽(ilgyeol-apply.js → ChaeksaPay.buy → api/pay.js → order_intake)이 이미 했다.
@@ -170,8 +170,8 @@
       return;
     }
     if (act === 'mail') {
-      const 본문 = ['안녕하세요, 책사입니다.', '', '결제해 주신 「무슨 결로 먹고사나」 보고서를 보내 드려요(주문번호 ' + (x.id || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
-      location.href = 'mailto:' + encodeURIComponent(m).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 무슨 결로 먹고사나 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
+      const 본문 = ['안녕하세요, 책사입니다.', '', '결제해 주신 「나는 뭐해 먹고 살까?」 보고서를 보내 드려요(주문번호 ' + (x.id || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
+      location.href = 'mailto:' + encodeURIComponent(m).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 나는 뭐해 먹고 살까? 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
       return;
     }
     if (act === 'sent') {

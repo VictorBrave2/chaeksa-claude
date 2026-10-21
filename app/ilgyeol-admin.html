@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>무슨 결로 먹고사나 보고서 사장님 목록 · 책사</title>
+<title>나는 뭐해 먹고 살까? 보고서 사장님 목록 · 책사</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
@@ -48,12 +48,12 @@
 </style>
 </head>
 <body>
-<!-- 「무슨 결로 먹고사나」 진로 보고서 — 사장님 목록(10-22 사장님 결정 「카카오페이로 판다」). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
+<!-- 「나는 뭐해 먹고 살까?」 진로 보고서 — 사장님 목록(10-22 사장님 결정 「카카오페이로 판다」). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
      실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super'(server/migrate-39 ilgyeol_admin_list) — 이 쪽의 가림은 편의다. 움직임은 ilgyeol-admin.js.
      결제 · 신청서는 신청 쪽(ilgyeol-apply.html → 카카오페이)이 주문에 붙였다. 환불은 결제 완료 화면의 사장님 전액 취소 단추 또는 카카오페이 가맹점관리자 — 여기엔 없다. -->
-<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="ilgyeol.html">← 무슨 결로 먹고사나</a></div>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="ilgyeol.html">← 나는 뭐해 먹고 살까?</a></div>
 <div class="doc">
-  <h1>무슨 결로 먹고사나 보고서 — 사장님 목록</h1>
+  <h1>나는 뭐해 먹고 살까? 보고서 — 사장님 목록</h1>
   <p class="hint">카카오페이로 결제된 주문이 여기 와요. 결제됨 → 「신청 JSON 복사」 → 복사한 JSON 을 파일로 저장해 node tools/livelihood-manual.js &lt;파일&gt; 로 돌리면 runs/livelihood/&lt;주문번호&gt;/보고서.pdf 가 나와요 → 검수 → 「메일 쓰기」로 PDF 보냄 → 「보냄 표시」(이 기기에만 남아요). 환불은 결제 완료 화면의 전액 취소 단추 또는 카카오페이 가맹점관리자에서.</p>
   <div id="admGate"><p class="hint">불러오는 중…</p></div>
   <div id="admMain" hidden>
@@ -69,8 +69,8 @@
 <script src="config.js?v=1dadeed655"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=a2535f2321"></script>
-<script src="ilgyeol-admin.js?v=9aa46af015"></script>
+<script src="pay.js?v=9d8fda9aa7"></script>
+<script src="ilgyeol-admin.js?v=c7aa5e7193"></script>
 <script>
 (function () {
   var m = '';

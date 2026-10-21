@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>「무슨 결로 먹고사나」 보고서는 어떻게 신청하나요? — 책사</title>
+<title>「나는 뭐해 먹고 살까?」 보고서는 어떻게 신청하나요? — 책사</title>
 <meta name="description" content="저장된 사람 한 명을 고르고 메일 주소를 적은 뒤 그 자리에서 결제하시면, 엔진이 계산하고 책사가 한 번 더 확인한 뒤 보통 2~3일 안에 메일로 보고서(PDF)를 보내 드려요.">
 <!-- 10-22 아직 홈 · 소개 쪽에 걸지 않았다 — 메인이 SQL(migrate-39) · 배포 뒤 ilgyeol.html 과 함께 index,follow 로 푼다. -->
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://chaeksa.kr/ilgyeol-apply.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
-<meta property="og:title" content="「무슨 결로 먹고사나」 보고서 신청 — 책사">
+<meta property="og:title" content="「나는 뭐해 먹고 살까?」 보고서 신청 — 책사">
 <meta property="og:description" content="저장된 사람 한 명을 고르고 메일 주소를 적은 뒤 그 자리에서 결제하시면, 책사가 확인한 뒤 보통 2~3일 안에 메일로 보고서(PDF)를 보내 드려요.">
 <meta property="og:url" content="https://chaeksa.kr/ilgyeol-apply.html">
 <meta property="og:image" content="https://chaeksa.kr/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<!-- 「무슨 결로 먹고사나」 신청 쪽 — 10-22 사장님 결정: 카카오페이로 판다(계좌이체 손 신청이 아니라). 흐름은 출산택일 신청 쪽(taekil-apply.html)과 같다 —
+<!-- 「나는 뭐해 먹고 살까?」 신청 쪽 — 10-22 사장님 결정: 카카오페이로 판다(계좌이체 손 신청이 아니라). 흐름은 출산택일 신청 쪽(taekil-apply.html)과 같다 —
      신청서(저장된 사람 한 명 · 메일 · 지금 하는 일) → 로그인(카카오 · 네이버) → 동의 두 칸 → 결제 수단 → 「결제하기」 → 카카오페이 → pay-done.html(접수됐어요 · 메일로 PDF).
      신청서는 결제창을 열 때 서버가 그 주문에 붙인다(ChaeksaPay.buy 의 intake) — 이 쪽에는 접수 화면 · 접수 번호 · 입금 계좌가 없다.
      값(원)은 이 쪽에 적지 않는다 — 서버 상품표(code ilgyeol)에서 읽어 data-price 자리에 붙인다. 움직임은 ilgyeol-apply.js.
@@ -65,9 +65,9 @@
 <body>
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <main class="doc">
-  <a class="back" href="ilgyeol.html">← 무슨 결로 먹고사나 소개</a>
+  <a class="back" href="ilgyeol.html">← 나는 뭐해 먹고 살까? 소개</a>
   <p class="hint" id="ownerBar" hidden style="margin:6px 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r2,14px)">검수 계정 — <a href="ilgyeol-admin.html"><b>사장님 목록 →</b></a></p>
-  <h1>「무슨 결로 먹고사나」 보고서는 어떻게 신청하나요?</h1>
+  <h1>「나는 뭐해 먹고 살까?」 보고서는 어떻게 신청하나요?</h1>
   <p class="lede" id="lede">저장된 사람 한 명을 고르고 메일 주소를 적은 뒤 그 자리에서 결제하시면, 엔진이 계산하고 책사가 한 번 더 확인한 뒤 보통 2~3일 안에 메일로 보고서(PDF)를 보내 드려요.</p>
 
   <ol class="steps" id="steps">
@@ -174,12 +174,12 @@
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=a2535f2321"></script>
+<script src="pay.js?v=9d8fda9aa7"></script>
 <script src="people.js?v=608bb7b89c"></script>
 <script src="places.js?v=1350b96148"></script>
 <script src="astro.js?v=c0bb3fa175"></script>
 <script src="lunar.js?v=9d5b6391f1"></script>
-<script src="ilgyeol-apply.js?v=272be5d715"></script>
+<script src="ilgyeol-apply.js?v=3eaa6a47b9"></script>
 <script>
 // 검수 계정(super)이면 맨 위 띠로 사장님 목록 길을 보인다(화면 편의 — 실제 막음은 DB ai_plan()).
 (function () {

@@ -1173,7 +1173,7 @@
     adminDelete: (id) => 택일함수('gyeolhon_delete', { p_id: id }),
   };
 
-  // ── 「무슨 결로 먹고사나」 진로 보고서(10-22 사장님 결정 — 카카오페이로 판다) — 사장님 목록(ilgyeol-admin.html)만 ─────────
+  // ── 「나는 뭐해 먹고 살까?」 진로 보고서(10-22 사장님 결정 — 카카오페이로 판다) — 사장님 목록(ilgyeol-admin.html)만 ─────────
   // 결제 · 신청서 붙이기는 buy('ilgyeol', null, 결제사, 신청서) → api/pay.js kopen → order_intake 가 한다. 여기는 검수 계정이 결제된 주문을 보는 길뿐 —
   // 함수 안에서 ai_plan() = 'super' 를 본다(server/migrate-39 ilgyeol_admin_list). 택일함수와 같은 길로 부른다(통신 코드를 두 벌 두지 않는다).
   // 계좌이체 손 신청 표(ilgyeol_apply_*)는 쓰지 않는다 — 10-22 사장님 「카카오페이로 판다」.
