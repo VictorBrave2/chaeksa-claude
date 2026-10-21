@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나는 무슨 결로 먹고살까요? — 무슨 결로 먹고사나 · 책사</title>
+<meta name="description" content="한 사람의 생년월일시로 계산해, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요. 직업 이름을 찍어 주는 게 아니라, 어떤 조건의 일이 맞는지와 그 근거를 드려요.">
+<!-- 10-22 홈 카드는 넣지 않는다(홈은 출산택일이 앞) — 메뉴 · llms.txt 에서만 잇는다. 공개용 견본 쪽은 아직 없다. -->
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://chaeksa.kr/ilgyeol.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="책사">
+<meta property="og:title" content="나는 무슨 결로 먹고살까요? — 무슨 결로 먹고사나">
+<meta property="og:description" content="한 사람의 생년월일시로 계산해, 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요.">
+<meta property="og:url" content="https://chaeksa.kr/ilgyeol.html">
+<meta property="og:image" content="https://chaeksa.kr/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 「무슨 결로 먹고사나」 소개 쪽 — 10-21 사장님 결정(보고서를 판다 · 카카오페이). 신청은 ilgyeol-apply.html(신청서를 적고 그 자리에서 결제 — 출산택일과 같은 길).
+     계산 · 원고 · 판정 코드는 이 쪽에 없다(비공개 서버). 값(원)은 서버 상품표(products, code ilgyeol)에서만 읽는다 — 여기 적지 않는다. -->
+<script>
+  // 신청 단추가 가는 곳 — 이 한 줄만 고친다(사이트 신청서 쪽 이름 또는 https 주소). 비어 있으면 신청 단추를 숨긴다.
+  var 일결신청주소 = 'ilgyeol-apply.html';
+</script>
+<script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4d0b2415e0">
+<style>
+  /* 사이트 공통(style.css 변수 · 머리 줄 · 「← 홈」 단추)만 쓴다 — 쪽 안에 색을 새로 박지 않는다(10-05 사장님). gyeolhon.html 꼴. */
+  .doc{max-width:660px;margin:0 auto;padding:var(--s3) 18px 90px}
+  .doc .eyebrow{font-size:var(--t1);color:var(--accent);letter-spacing:.06em;margin:0;font-weight:700}
+  .doc h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:6px 0 10px;color:var(--ink)}
+  .doc .lead{font-size:var(--t3);color:var(--ink2);line-height:1.8;margin:0}
+  .doc h2{font-family:var(--serif);font-size:var(--t5);font-weight:700;line-height:1.4;color:var(--ink);margin:var(--s4) 0 var(--s2)}
+  .doc h2::after{display:none}
+  .doc p,.doc li{font-size:var(--t2);line-height:1.85;color:var(--ink2)}
+  .doc b{color:var(--ink)}
+  .doc a{color:var(--accent)}
+  .doc a.btn{color:var(--seal-ink);text-decoration:none}
+  .doc a.btn.ghost{color:var(--ink2)}
+  .doc [hidden]{display:none!important}
+  /* 결론 두 줄 꼴 보기 */
+  .verdict{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;box-shadow:var(--shadow)}
+  .verdict .k{display:inline-block;font-size:var(--t1);font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:var(--r3);padding:1px 9px;margin:0 0 6px}
+  .verdict .line{font-family:var(--serif);font-size:var(--t4);font-weight:700;line-height:1.55;color:var(--ink);margin:0 0 4px}
+  .verdict .line2{font-size:var(--t2);line-height:1.8;color:var(--ink2);margin:0 0 14px}
+  .verdict .line2:last-child{margin-bottom:0}
+  .verdict .ex{font-size:var(--t1);color:var(--ink3);margin:2px 0 0}
+  .gets{list-style:none;margin:0;padding:0;counter-reset:g}
+  .gets li{position:relative;padding:12px 0 12px 38px;border-top:1px solid var(--line);counter-increment:g}
+  .gets li:first-child{border-top:0}
+  .gets li::before{content:counter(g);position:absolute;left:0;top:12px;width:26px;height:26px;border-radius:50%;background:var(--seal-bg);color:var(--seal-ink);font-size:var(--t1);font-weight:700;line-height:26px;text-align:center}
+  .why{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;margin:0 0 10px}
+  .why p{margin:0}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px}
+  .pair .cell{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r2);padding:12px 14px}
+  .pair .cell .h{font-size:var(--t1);font-weight:700;color:var(--ink3);margin:0 0 6px;letter-spacing:.04em}
+  .pair .cell p{margin:0;font-size:var(--t1);line-height:1.75}
+  @media (max-width:480px){.pair{grid-template-columns:1fr}}
+  .note{border-left:3px solid var(--accent-line);background:var(--accent-soft);padding:13px 15px;border-radius:0 var(--r1) var(--r1) 0;margin:14px 0}
+  .note p{margin:0}
+  .note p+p{margin-top:8px}
+  .note .btn{margin-top:12px}
+  .dots{margin:0;padding:0 0 0 18px}
+  .dots li{margin:0 0 8px}
+  .steps{margin:0;padding:0;list-style:none;counter-reset:s}
+  .steps li{position:relative;padding:0 0 12px 30px;counter-increment:s}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;border:1px solid var(--accent-line);color:var(--accent);font-size:var(--t1);font-weight:700;line-height:20px;text-align:center}
+  .price{font-size:var(--t3)!important;color:var(--ink)!important}
+  .price b{font-family:var(--serif);font-size:var(--t5)}
+  .cta{display:block;text-align:center;margin-top:var(--s3)}
+  .foot{font-size:var(--t1)!important;color:var(--ink3)!important;line-height:1.8!important;margin-top:var(--s4)}
+  .doc .foot a{color:var(--ink3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Service","name":"무슨 결로 먹고사나 — 보고서","serviceType":"명리 진로 보고서","areaServed":"KR",
+ "provider":{"@type":"Organization","name":"책사","url":"https://chaeksa.kr/"},
+ "url":"https://chaeksa.kr/ilgyeol.html",
+ "description":"한 사람의 생년월일시로 계산해, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요."}
+</script>
+<!-- JSON-LD offers(값)는 넣지 않았다 — 값은 사장님이 정함. 정해지면 "offers":{"@type":"Offer","price":"…","priceCurrency":"KRW"} 를 위 JSON-LD 에 더한다. -->
+</head>
+<body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a></div>
+<main class="doc">
+  <a class="btn ghost small backhome" href="./" style="display:inline-block;margin-top:0;text-decoration:none">← 홈</a>
+  <p class="eyebrow">「무슨 결로 먹고사나」 보고서</p>
+  <h1>나는 무슨 결로 먹고살까요?</h1>
+  <p class="lead">한 사람의 생년월일시로 사주 여덟 글자와 자미두수 명반(태어난 때로 열두 칸에 별을 놓아 보는 옛 방법)을 세워, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요. 직업 이름을 찍어 주는 게 아니라, <b>어떤 조건의 일이 맞는지와 그 근거</b>를 드려요.</p>
+
+  <h2>어떤 답이 나오나요</h2>
+  <p>맨 위 결론은 두 줄이에요. 한 줄은 시대가 바뀌어도 바뀌지 않는 줄, 한 줄은 그 조건을 지금 시대의 직업 이름으로 옮긴 줄이에요.</p>
+  <div class="verdict">
+    <span class="k">바뀌지 않는 줄</span>
+    <p class="line">「당신은 ○○한 조건에서 ○○하는 결로 먹고삽니다.」</p>
+    <p class="line2">태어난 때의 여덟 글자에 있는 것 · 없는 것과, 명반 열두 칸 가운데 일 · 돈 · 바깥 활동 · 같이 일하는 사람을 보는 칸에 놓인 별에서만 나와요. 같은 사람이면 언제 넣어도 같은 줄이에요.</p>
+    <span class="k">○○○○년 기준으로 예를 들면</span>
+    <p class="line">「지금 시대의 직업 이름으로 옮기면 ○○ · ○○ 같은 자리입니다.」</p>
+    <p class="line2">윗줄의 조건을 그 해에 있는 직업 이름으로 옮긴 줄이에요. 시대가 바뀌면 이 줄만 다시 써요. 직업 이름은 보고서 어디서나 이 「예를 들어」 칸에만 있고, 그것도 예시일 뿐이에요.</p>
+    <p class="ex">두 줄 아래에 「그래서 할 것」 셋을 적어요 — 지금 바로 할 수 있는 것으로, 각각 어느 조건에서 나왔는지를 붙여서.</p>
+  </div>
+
+  <h2>보고서에 무엇이 들어 있나요</h2>
+  <ol class="gets">
+    <li><b>맨 위 결론 두 줄과 「그래서 할 것」 셋</b> — 바뀌지 않는 줄 하나, 지금 시대의 직업 이름으로 옮긴 줄 하나, 그리고 바로 할 일 셋</li>
+    <li><b>맞는 일의 조건</b> — 사주 여덟 글자 표와 자미두수 명반(열두 칸)을 싣고, 조건 하나하나에 「왜」(어느 글자 · 어느 별에서 나왔는지)와 「예를 들어」(지금 시대의 예시)를 붙여요</li>
+    <li><b>피할 꼴</b> — 여덟 글자에 없는 것, 글자마다 정해 둔 뜻 가운데 「부딪힘」으로 적힌 것, 명반에서 돈 · 일을 보는 칸에 놓인 별로 보아, 맡으면 힘이 빠지는 일의 꼴</li>
+    <li><b>돈이 오는 길 · 같이 일할 사람</b> — 돈이 어떤 길로 들어오는 꼴인지, 사람은 어떻게 맺어야 하는지(동업처럼 몫을 나누는 사이인지, 역할과 약속으로 맺는 사이인지)</li>
+    <li><b>통설로 보면 · 원문으로 보면 · 그래서 책사는</b> — 같은 생년월일시를 일반 AI에 넣으면 나오는 답과, 책사가 옛 책 원문과 엔진으로 본 것을 같은 자리에 나란히 놓고, 어디가 다르고 왜 다른지 적어요</li>
+    <li><b>때 — 앞으로 10년</b> — 한 해씩, 그 해에 새로 들어오는 것을 생각(머리로 깨닫는 쪽)과 몸(실제로 하게 되는 쪽)으로 나눠 적고, 막히는 자리 · 풀리는 자리를 표로 모아요</li>
+    <li><b>한계</b> — 이 보고서가 말할 수 있는 것과 없는 것. 결정은 당신이 해요</li>
+  </ol>
+
+  <h2>AI에 묻는 것과 무엇이 다른가요</h2>
+  <div class="why"><p><b>조건은 여덟 글자와 명반에 있는 것에서만 나와요.</b> 그래서 같은 사람이면 언제 넣어도 같은 조건이 나와요. AI에 물으면 물을 때마다 다른 직업을 댈 수 있어요.</p></div>
+  <div class="why"><p><b>근거로는 책사가 글자마다 뜻을 미리 하나로 정해 둔 표의 문장과, 옛 책 《자미두수전서(紫微斗數全書)》 원문을 글자 그대로 실어요.</b> 원문에 없는 문장을 원문처럼 내놓지 않아요. 책사가 추론해 덧붙인 자리는 그렇다고 적어요.</p></div>
+  <div class="why"><p><b>태어난 곳의 해 시각으로 분 단위까지 맞춰 여덟 글자를 세워요.</b> 생년월일만 넣는 AI는 여기서부터 글자가 다를 수 있어요.</p></div>
+<div class="pair">
+    <div class="cell"><p class="h">통설로 보면</p><p>같은 생년월일시를 일반 AI에 넣고 「무슨 일이 맞나」로 물으면 나오는 답. 떠도는 글의 평균이라 맞는 자리도 있지만, 어느 글자 · 어느 별에서 나왔는지 대지 못해요.</p></div>
+    <div class="cell"><p class="h">원문으로 보면</p><p>같은 물음에 옛 책이 실제로 적은 구절과 책사 엔진이 낸 값. 어디가 어긋나고 왜 어긋나는지를 같은 자리에 나란히 적어요.</p></div>
+  </div>
+
+  <h2>누가 신청하나요</h2>
+  <ul class="dots">
+    <li>진로를 정해야 하는데, 어떤 조건의 일이 나에게 맞는지부터 알고 싶은 분</li>
+    <li>이직 · 창업을 앞두고, 지금 가려는 길이 나에게 맞는지 한 번 더 보고 싶은 분</li>
+    <li>지금 하는 일에서 힘이 빠지는 까닭이 일의 꼴에 있는지 알고 싶은 분</li>
+  </ul>
+
+  <h2>신청할 때 적어 주실 것</h2>
+  <ul class="dots">
+    <li>생년월일 — 양력 · 음력 · 윤달 모두 돼요</li>
+    <li>태어난 시각 — 모르시면 「시간 모름」으로 넣어 주세요. 하루를 두 시간씩 나눈 열두 칸에 하나씩 모두 넣어 보고, 어느 시냐에 따라 조건이 갈리면 「태어난 시를 알면 답이 정해져요」라고 적어 드려요</li>
+    <li>태어난 곳 — 시 · 군까지면 돼요. 같은 시계 시각이라도 동쪽과 서쪽은 해가 뜨는 때가 조금씩 달라서, 태어난 시를 그곳 기준으로 맞추는 데 써요</li>
+    <li>성별</li>
+    <li>보고서(PDF)를 받으실 메일 주소. 결제할 때 카카오 · 네이버 로그인이 한 번 필요해요 — 결제한 것을 그 계정에 매어 두기 때문이에요</li>
+    <li>지금 하는 일 · 바라는 점 — 안 적어도 돼요. 적어 주시면 「예를 들어」 칸을 지금 상황에 가깝게 쓰는 데 참고해요</li>
+  </ul>
+
+  <h2>어떻게 받나요</h2>
+<ol class="steps">
+<li>신청서에서 한 분을 저장된 사람에서 고르거나 새로 넣고(생년월일 · 태어난 시 · 태어난 곳 · 성별), 보고서를 받으실 메일 주소를 적어 주세요.</li>
+<li>그 자리에서 결제하시면 돼요(카카오페이).<span data-price-row hidden> 값은 <b data-price="ilgyeol"></b>이에요.</span></li>
+<li>결제되면 엔진이 여덟 글자와 명반을 계산하고, 책사가 한 번 더 확인해요.</li>
+<li>보통 2~3일 안에 보고서(PDF)를 적어 주신 메일로 보내 드려요.</li>
+</ol>
+<h2 id="feeHead">값과 환불</h2>
+  <div class="note">
+    <p class="price" data-price-row hidden><b data-price="ilgyeol"></b> (부가세 포함, 따로 붙는 수수료 없음) — 한 사람을 본 보고서 한 벌이에요.</p>
+    <p>보고서를 받으시기 전에는 이유를 묻지 않고 전액 돌려드려요. 받으신 뒤에는 청약철회가 제한될 수 있어요. 보고서를 만들지 못해도 전액 돌려드려요.</p>
+<p>결제는 카카오페이(주)를 통해 처리되며, 카드 정보는 책사가 저장하지 않아요.</p>
+  </div>
+
+  <div data-apply-box hidden>
+    <a class="btn cta" data-apply href="#">보고서 신청하기</a>
+  </div>
+
+  <p class="foot"><a href="./">책사 처음으로</a> · <a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="gyeolhon.html">결혼상대 점검</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
+  유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>
+  대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+</main>
+<script src="config.js?v=1dadeed655"></script>
+<script src="track.js?v=4520244637"></script>
+<script src="pay.js?v=a2535f2321"></script>
+<script>
+  // 값은 서버 상품표(products, code ilgyeol) 한 곳에만 있다 — 금액 글자는 표에서 받아 채운다(출산택일 안내 쪽과 같은 꼴). 못 받으면 값 줄은 빈 채로 둔다.
+  if (window.ChaeksaPay) ChaeksaPay.product('ilgyeol').then(function (p) {
+    if (!p) return;
+    document.querySelectorAll('[data-price="ilgyeol"]').forEach(function (el) { el.textContent = ChaeksaPay.won(p.amount); });
+    document.querySelectorAll('[data-price-row]').forEach(function (el) { el.hidden = false; });
+  }).catch(function () {});
+</script>
+<script>try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('sheet'); } catch (e) {}</script><!-- 10-10 깔때기 ③ 유료 장 엶(sheet) — 유료 소개 쪽을 열면 하루 한 번(track.js). 화면은 안 바뀐다 -->
+<script>
+  // 신청 단추 — 머리의 일결신청주소 한 곳만 읽는다. 비었거나 javascript: 주소면 단추 자리째 숨긴 채로 둔다.
+  (function () {
+    var u = (typeof 일결신청주소 === 'string' ? 일결신청주소 : '').trim();
+    if (!u || /^javascript:/i.test(u)) return;
+    document.querySelectorAll('[data-apply]').forEach(function (a) { a.href = u; });
+    document.querySelectorAll('[data-apply-box]').forEach(function (b) { b.hidden = false; });
+  })();
+  </script>
+</body>
+</html>

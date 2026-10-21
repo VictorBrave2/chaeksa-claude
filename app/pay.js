@@ -1173,6 +1173,16 @@
     adminDelete: (id) => 택일함수('gyeolhon_delete', { p_id: id }),
   };
 
+  // ── 「무슨 결로 먹고사나」 진로 보고서(10-22 사장님 결정 — 카카오페이로 판다) — 사장님 목록(ilgyeol-admin.html)만 ─────────
+  // 결제 · 신청서 붙이기는 buy('ilgyeol', null, 결제사, 신청서) → api/pay.js kopen → order_intake 가 한다. 여기는 검수 계정이 결제된 주문을 보는 길뿐 —
+  // 함수 안에서 ai_plan() = 'super' 를 본다(server/migrate-39 ilgyeol_admin_list). 택일함수와 같은 길로 부른다(통신 코드를 두 벌 두지 않는다).
+  // 계좌이체 손 신청 표(ilgyeol_apply_*)는 쓰지 않는다 — 10-22 사장님 「카카오페이로 판다」.
+  const ilgyeol = {
+    /** 결제된 · 환불된 진로 보고서 주문(최근 200건, 최대 500) → { ok:true, rows:[{ id, status:'paid'|'canceled', mode:'live'|'test', amount, paidAt, createdAt, intakeAt, intake, note }] }.
+     *  검수 계정이 아니면 { ok:false, reason:'forbidden' }. 못 물어봤으면 { ok:false, reason }. */
+    adminList: (limit) => 택일함수('ilgyeol_admin_list', { p_limit: limit || 200 }),
+  };
+
   // 10-20 사장님 결제 알림(api/pay.js alertkey · alertsub · alerttest, server/migrate-38) — 사장님 목록에서만 부른다.
   //   켜기: 알림 허락 → 서버 공개키로 이 기기 구독 → 서버에 주소만 넣는다(최대 3대, 새 기기가 맨 앞). 시험: 지금 알림 하나.
   const 결제알림 = {
@@ -1193,5 +1203,5 @@
     시험: () => post({ action: 'alerttest' }),
   };
 
-  global.ChaeksaPay = { 결제알림, state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon };
+  global.ChaeksaPay = { 결제알림, state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon, ilgyeol };
 })(window);
