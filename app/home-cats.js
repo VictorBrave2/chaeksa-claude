@@ -37,8 +37,8 @@
     time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}.webp', 작은: 'art/jt-g-jeongin-{g}-s.webp', 크기: [1024, 1536] }],
   };
-  // 그림 칸 폭 — .wrap(최대 520 · 양옆 18) 안의 2열(사이 10). index.html 머리의 첫 표지 미리 부르기(preload imagesizes)와 같아야 한다.
-  var 칸폭 = '(min-width:520px) 237px, calc(50vw - 23px)';
+  // 그림 칸 폭 — .wrap(최대 520 · 양옆 18) 안의 3열(사이 8) · 넓으면 4열. index.html 머리의 첫 표지 미리 부르기(preload imagesizes)와 같아야 한다.
+  var 칸폭 = '(min-width:520px) 115px, calc(33.3vw - 17px)';   // 10-22 메뉴판(폰 3열 · 넓으면 4열) — index.html 머리 미리 부르기(imagesizes)와 같게
   // 정통사주 장으로 가지 않는 물음 칸 — 결혼은 웹툰궁합 「결혼을 생각할 때」 단계(곳 「단계:결혼」 → app.js 도착이 단계를 미리 골라 둔다),
   // 날 고르기는 출산택일(지금 날을 고르는 콘텐츠는 출산택일뿐이라 글에 그대로 밝힌다).
   var 길 = {

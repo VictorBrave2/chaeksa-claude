@@ -1244,24 +1244,29 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .home-intro .hi-t{margin:0;font-family:var(--serif);font-weight:900;font-size:var(--t5);line-height:1.45;letter-spacing:-.02em;color:var(--ink);word-break:keep-all}
 .home-intro .hi-s{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0 0;padding:0}
 .home-intro .hi-s span{font-size:var(--t1);line-height:1.5;padding:3px 10px;border-radius:var(--r3);background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--ink2);white-space:nowrap}
-.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin:0 0 18px;text-align:left}
+/* 10-22 사장님 「메뉴들이 한눈에 들어와야 · 2개씩 주욱 내리기엔 어지러워」 — 그림 칸을 메뉴판으로: 폰 3열 · 넓으면 4열, 그림은 정사각, 한줄(.s)은 접고 이름 · 딱지만. 열넷이 폰 한 화면에 든다. */
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 8px;margin:0 0 18px;text-align:left}
+@media (min-width:520px){.cats{grid-template-columns:repeat(4,1fr)}}
 .cat{display:flex;flex-direction:column;min-width:0;border-radius:var(--r2);overflow:hidden;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line)}
-.cat .pic{position:relative;display:block;aspect-ratio:3/4;overflow:hidden;background:var(--bg2)}
+.cat .pic{position:relative;display:block;aspect-ratio:1/1;overflow:hidden;background:var(--bg2)}
 .cat .pic img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 25%}
 /* 10-02 표지 글씨 부품 하나 — 홈 그림 칸(.cat)과 연애 · 사용설명서 표지(.lv-cover)가 같이 쓴다(전에는 두 벌을 따로 만들어 딱지 · 제목이 조금씩 달랐다).
    그림 위 아래쪽 어두운 띠 · 왼쪽 위 분류 딱지(.k) · 아래 제목(.n). 큰 표지는 여백 · 제목 크기 · 띠 높이만 다르다(아래 .lv-cover). */
 .cat .pic::after,.lv-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,9,24,.82) 0%,rgba(12,9,24,.42) 26%,rgba(12,9,24,0) 50%);pointer-events:none}
 .cat .k,.lv-cover .k{position:absolute;z-index:2;left:8px;top:8px;font-size:var(--t1);letter-spacing:.08em;padding:1px 8px;border-radius:var(--r3);background:rgba(0,0,0,.42);color:#fff}
+.cat .k{left:6px;top:6px;font-size:10px;letter-spacing:.04em;padding:0 6px}
 .cat .n,.lv-cover .n{position:absolute;z-index:2;left:10px;right:10px;bottom:9px;font-family:var(--serif);font-weight:900;font-size:var(--t3);line-height:1.3;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.7);word-break:keep-all;overflow-wrap:anywhere}
-.cat .s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:7px 10px 0;font-size:var(--t1);line-height:1.42;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.cat .n{left:7px;right:7px;bottom:7px;font-size:var(--t2);line-height:1.25}
+.cat .s{display:none;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:7px 10px 0;font-size:var(--t1);line-height:1.42;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
 .cat .t{display:block;margin:auto 10px 0;padding:5px 0 9px;font-size:var(--t1);line-height:1.45;font-weight:700;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.cat .t{margin:0 7px;padding:5px 0 7px;font-size:11px;line-height:1.35}
 /* 물음 칸 — 그림 칸이 없는 분류(일 · 돈 · 건강 · 사람 사이 · 결혼 · 날 고르기). 누르면 답이 있는 장으로 곧장 */
 .cats-h{margin:0 0 8px;font-size:var(--t2);font-weight:700;color:var(--ink2);text-align:left}
-.cats-q{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px;text-align:left}
-.cat-q{display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 12px;border-radius:var(--r2);text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line)}
-.cat-q .k{font-size:var(--t1);letter-spacing:.06em;color:var(--ink3)}
+.cats-q{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;text-align:left}
+.cat-q{display:inline-flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:2px 8px;min-width:0;padding:7px 11px;border-radius:var(--r3);text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line)}
+.cat-q .k{display:none}
 .cat-q .n{font-size:var(--t2);font-weight:700;line-height:1.4;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
-.cat-q .t{margin-top:auto;padding-top:3px;font-size:var(--t1);line-height:1.45;font-weight:700;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere}
+.cat-q .t{margin:0;padding:0;font-size:11px;line-height:1.4;font-weight:700;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere}
 .cats-soon{margin:0 0 14px;font-size:var(--t1);line-height:1.6;color:var(--ink3);text-align:left;word-break:keep-all}
 /* 10-02 「무엇이 궁금하세요?」(home-ask.js) — 소개 줄 바로 아래. 갈래 줄(옆으로 밀기) · 물음 칩(넷까지 · 나머지는 「더 보기」)
    · 연애 갈래 맨 위 단계 칩 · 아직 답이 없는 물음(접힘 · 「받고 싶어요」). 그림 칸을 첫 화면에서 밀어내지 않게 낮게 짠다. */
