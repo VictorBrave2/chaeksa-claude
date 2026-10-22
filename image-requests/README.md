@@ -1,6 +1,6 @@
 # 삽화 요청 — 책사(chaeksa.kr) × 이미지 생성 담당
 
-2026-10-22 사장님이 정한 협업 길입니다. 이 폴더는 **공개 저장소**(github.com/VictorBrave2/chaeksa-claude)에 있고, 웹사이트(chaeksa.kr)에는 나가지 않습니다(사이트는 `app/` 폴더만 내보냅니다).
+2026-10-22 사장님이 정한 협업 길입니다. 화면 모양(배치 · 색 · 글자 크기)은 `../design-requests/`로 갑니다. 이 폴더는 **공개 저장소**(github.com/VictorBrave2/chaeksa-claude)에 있고, 웹사이트(chaeksa.kr)에는 나가지 않습니다(사이트는 `app/` 폴더만 내보냅니다).
 
 ## 흐름
 
