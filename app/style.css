@@ -1003,7 +1003,7 @@ details.tkr-foldsec[open]>summary.tkr-h::after{content:""}
 .tkr-mb{margin:12px 0 16px}
 .tkr-mb-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;background:var(--line2);border:2px solid var(--line2);border-radius:var(--r1);overflow:hidden}
 .tkr-mb-c{background:var(--card);padding:5px 5px 18px;position:relative;min-width:0;min-height:88px;font-size:var(--t1);line-height:1.35}
-.tkr-mb-c.me{box-shadow:inset 0 0 0 2px var(--accent)}
+.tkr-mb-c.tkr-mb-me{box-shadow:inset 0 0 0 2px var(--accent)}   /* 공통 .me 와 겹치지 않게 이름을 따로(10-22) */
 .tkr-mb-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 4px}
 .tkr-mb-h span{font-weight:700;color:var(--ink)}
 .tkr-mb-h em{font-style:normal;color:var(--accent);font-size:.92em}
@@ -1016,9 +1016,9 @@ details.tkr-foldsec[open]>summary.tkr-h::after{content:""}
 .tkr-mb-d{position:absolute;left:5px;bottom:3px;font-size:.82em;color:var(--ink3)}
 .tkr-mb-e{font-family:var(--sans);font-weight:400;font-size:.8em;color:var(--ink3)}
 .tkr-mb-ctr{grid-column:2/4;grid-row:2/4;background:var(--bg2);padding:8px 10px;display:flex;flex-direction:column;justify-content:center;gap:2px;font-size:var(--t1);color:var(--ink2);line-height:1.5}
-.tkr-mb-ctr p{margin:0}
-.tkr-mb-ctr .tkr-mb-t{font-weight:700;color:var(--ink);font-size:var(--t2)}
-.tkr-mb-cap{font-size:var(--t1);color:var(--ink3);margin:6px 0 0;line-height:1.6}
+.tkr .tkr-mb-ctr p{margin:0;line-height:1.5;font-size:var(--t1);color:var(--ink2)}
+.tkr .tkr-mb-ctr .tkr-mb-t{font-weight:700;color:var(--ink);font-size:var(--t2)}
+.tkr .tkr-mb-cap{font-size:var(--t1);color:var(--ink3);margin:6px 0 0;line-height:1.6}
 @media (max-width:420px){.tkr-mb-c{padding:4px 3px 16px;min-height:80px}.tkr-mb-m{font-size:1em}.tkr-mb-h em{display:none}}
 .tkr-han{margin:6px 0 12px;padding:10px 12px;border-left:3px solid var(--accent-line);background:var(--accent-soft);border-radius:0 var(--r1) var(--r1) 0}
 .tkr-han figcaption{font-size:var(--t1);color:var(--ink3)}
