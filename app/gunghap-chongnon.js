@@ -13,6 +13,7 @@
   if (!E || !Q) return;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 오행말 = ['나무(목)', '불(화)', '흙(토)', '쇠(금)', '물(수)'];
+  const 오행한 = ['목', '화', '토', '금', '수'];   // 명식 칸 이름 「정(화)」 꼴(10-23 사장님 「정(화) 이런 식이 맞지 않냐」) — 「정불(화)」 아님
   const 문단 = (arr) => (arr || []).filter(Boolean).map(t => '<p>' + esc(t) + '</p>').join('');
   const 답칸 = (t) => t ? '<p class="jt-answer">' + esc(t) + '</p>' : '';
   const 흐린 = (arr) => (arr || []).filter(Boolean).map(t => '<p class="jt-yet">' + esc(t) + '</p>').join('');
@@ -23,8 +24,8 @@
       const p = Pp[k];
       if (!p) return 줄 === 'gan' || 줄 === 'ji' ? '<td class="jt-' + 줄 + '" style="color:var(--ink3)">&nbsp;<small>모름</small></td>' : '<td class="jt-god"></td>';
       if (줄 === 'top') return '<td class="jt-god">' + (k === 'day' ? '이 사람' : esc((gods[k] || {}).stem || '')) + '</td>';
-      if (줄 === 'gan') return '<td class="jt-gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' jt-me' : '') + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + 오행말[E.STEM_ELEM[p.stem]] + '</small></td>';
-      if (줄 === 'ji') return '<td class="jt-ji e' + E.BRANCH_ELEM[p.branch] + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + 오행말[E.BRANCH_ELEM[p.branch]] + '</small></td>';
+      if (줄 === 'gan') return '<td class="jt-gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' jt-me' : '') + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + '(' + 오행한[E.STEM_ELEM[p.stem]] + ')' + '</small></td>';
+      if (줄 === 'ji') return '<td class="jt-ji e' + E.BRANCH_ELEM[p.branch] + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + '(' + 오행한[E.BRANCH_ELEM[p.branch]] + ')' + '</small></td>';
       return '<td class="jt-god">' + esc((gods[k] || {}).branch || '') + '</td>';
     };
     const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';

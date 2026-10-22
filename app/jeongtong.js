@@ -12,6 +12,7 @@
   if (!E || !P || !W) return;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 오행말 = ['나무(목)', '불(화)', '흙(토)', '쇠(금)', '물(수)'];
+  const 오행한 = ['목', '화', '토', '금', '수'];   // 명식 칸 이름 「정(화)」 꼴(10-23 사장님 「정(화) 이런 식이 맞지 않냐」) — 「정불(화)」 아님
   // 역학(09-24) — 성패 넷은 자평진전이 매긴 말이다. 우리 판정이 아니라 「옛 책은 이렇게 봤다」로 옮긴다. 길흉은 시대 · 환경이 정한다.
   const 성패뜻 = { 섰다: ['성격 成格', '자평진전은 이 짜임이 섰다고 봤어요 — 좋은 상태예요'], 구제됐다: ['구응 救應', '자평진전은 이 짜임을 해치는 글자가 있지만 다른 글자가 구해 준다고 봤어요 — 좋은 상태예요'], 띠었다: ['기신 있음', '자평진전은 이 짜임이 섰는데 꺼리는 글자가 같이 있다고 봤어요 — 좋은 상태예요'], 깨졌다: ['파격 破格', '자평진전은 이 짜임을 이루는 글자가 다쳐 짜임이 깨졌다고 봤어요 — 나쁜 상태예요'] };
 
@@ -40,8 +41,8 @@
       // 태어난 시간을 모르면 시주(p 가 null)는 칸만 두고 비운다. 글자를 지어 넣지 않는다.
       if (!p) return 줄 === 'gan' || 줄 === 'ji' ? '<td class="jt-' + 줄 + '" style="color:var(--ink3)">&nbsp;<small>모름</small></td>' : '<td class="jt-god"></td>';
       if (줄 === 'top') return '<td class="jt-god">' + (k === 'day' ? '나' : esc((gods[k] || {}).stem || '')) + '</td>';
-      if (줄 === 'gan') return '<td class="jt-gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' jt-me' : '') + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + 오행말[E.STEM_ELEM[p.stem]] + '</small></td>';
-      if (줄 === 'ji') return '<td class="jt-ji e' + E.BRANCH_ELEM[p.branch] + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + 오행말[E.BRANCH_ELEM[p.branch]] + '</small></td>';
+      if (줄 === 'gan') return '<td class="jt-gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' jt-me' : '') + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + '(' + 오행한[E.STEM_ELEM[p.stem]] + ')' + '</small></td>';
+      if (줄 === 'ji') return '<td class="jt-ji e' + E.BRANCH_ELEM[p.branch] + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + '(' + 오행한[E.BRANCH_ELEM[p.branch]] + ')' + '</small></td>';
       return '<td class="jt-god">' + esc((gods[k] || {}).branch || '') + '</td>';
     };
     const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';

@@ -8,7 +8,7 @@
  */
 (function (global) {
   'use strict';
-  const 요일 = '일월화수목금토', 오행말 = ['목', '화', '토', '금', '수'];
+  const 요일 = '일월화수목금토', 오행말 = ['목', '화', '토', '금', '수'], 오행한 = 오행말;   // 칸 이름 「정(화)」 꼴 — 10-23 사장님
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   function html(opt) {
@@ -25,8 +25,8 @@
     const 칸 = (k, 줄) => {
       const p = P[k];
       if (줄 === 'top') return '<td class="' + c('god') + '">' + (k === 'day' ? '나' : esc((gods[k] || {}).stem || '')) + '</td>';
-      if (줄 === 'gan') return '<td class="' + c('gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' me' : '')) + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + 오행말[E.STEM_ELEM[p.stem]] + '</small></td>';
-      if (줄 === 'ji') return '<td class="' + c('ji e' + E.BRANCH_ELEM[p.branch]) + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + 오행말[E.BRANCH_ELEM[p.branch]] + '</small></td>';
+      if (줄 === 'gan') return '<td class="' + c('gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' me' : '')) + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + '(' + 오행한[E.STEM_ELEM[p.stem]] + ')' + '</small></td>';
+      if (줄 === 'ji') return '<td class="' + c('ji e' + E.BRANCH_ELEM[p.branch]) + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + '(' + 오행한[E.BRANCH_ELEM[p.branch]] + ')' + '</small></td>';
       return '<td class="' + c('god') + '">' + esc((gods[k] || {}).branch || '') + '</td>';
     };
     const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';
