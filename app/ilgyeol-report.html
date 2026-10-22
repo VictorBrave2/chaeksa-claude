@@ -18,6 +18,27 @@
   .igr-frame{display:block;width:100%;min-height:60vh;border:1px solid var(--line);border-radius:var(--r2);background:#faf8f3;overflow:hidden}
   .tkr-banner{font-size:var(--t1);line-height:1.7;color:var(--ink3);margin:0 0 10px;padding:8px 12px;border:1px dashed var(--line2);border-radius:var(--r2)}
   .tkr-state .btn{margin-top:10px}
+  /* 「만드는 중」(10-22 사장님 「드라마틱하게 설레게」) — 서버가 실제로 하는 일곱 단계가 차례로 ✓, 진행 막대, 지금 단계 밑에 한 줄 */
+  .igr-wait{margin:18px 0;padding:20px 18px;border:1px solid var(--accent-line);border-radius:var(--r2);background:var(--accent-soft)}
+  .igr-eyebrow{font-size:var(--t1);font-weight:700;color:var(--accent);letter-spacing:.04em;margin:0 0 6px}
+  .igr-wait h2{font-family:var(--serif);font-size:var(--t5);line-height:1.4;margin:0 0 14px;color:var(--ink)}
+  .igr-steps{list-style:none;margin:0;padding:0}
+  .igr-steps li{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);opacity:.45;transition:opacity .5s}
+  .igr-steps li:first-child{border-top:0}
+  .igr-steps li.now,.igr-steps li.done{opacity:1}
+  .igr-steps li i{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line2);margin-top:2px;position:relative;background:var(--card)}
+  .igr-steps li.done i{background:var(--seal-bg);border-color:transparent}
+  .igr-steps li.done i::after{content:'✓';position:absolute;inset:0;color:var(--seal-ink);font-size:13px;font-weight:700;text-align:center;line-height:22px}
+  .igr-steps li.now i{border-color:var(--accent);animation:igrPulse 1.4s ease-in-out infinite}
+  .igr-steps li.now i::after{content:'';position:absolute;left:6px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  @keyframes igrPulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 7px var(--accent-line)}}
+  .igr-steps li span{display:block;min-width:0}
+  .igr-steps li b{display:block;font-size:var(--t2);line-height:1.5;color:var(--ink)}
+  .igr-steps li small{display:none;font-size:var(--t1);line-height:1.65;color:var(--ink3);margin-top:2px}
+  .igr-steps li.now small{display:block}
+  .igr-bar{height:6px;border-radius:3px;background:var(--bg2);border:1px solid var(--line);margin:14px 0 10px;overflow:hidden}
+  .igr-bar b{display:block;height:100%;width:6%;background:var(--accent);transition:width 1s linear}
+  .igr-wait .hint{margin:0}
   .fine{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:var(--t1);line-height:1.85;color:var(--ink3)}
   .fine a{color:var(--ink3)}
 </style>
@@ -26,6 +47,7 @@
 <!-- 「나는 뭐해 먹고 살까?」 손님 결과 쪽(10-22 사장님 「보고서 형식 말고 결제하면 바로 나오게」). 주소 ilgyeol-report.html?o=<주문번호>. 검색에 안 나오게 noindex · robots.txt.
      출산택일 「내 보고서」(taekil-report.html)와 같은 길 — 로그인 → ilgyeol_view(server/migrate-39) → 상태대로 그린다. 본문은 풀이가 열렸을(ready) 때만 받는다.
      결제됐는데 아직 안 만든 주문(todo)이면 이 자리에서 비공개 서버(/api/ilgyeol-report)를 불러 만든다 — 결제 완료 쪽(pay-done)이 3초 뒤 여기로 데려온다. 창을 닫았다 다시 와도 이어진다.
+     「만드는 중」은 서버가 실제로 하는 일곱 단계가 차례로 ✓ 되는 틀(10-22 사장님 「드라마틱하게 설레게」) · 주문번호는 화면에 안 보인다(「전문성이 떨어져 보여」).
      본문은 비공개 서버가 만든 혼자 서는 HTML 한 벌 — iframe(srcdoc)에 그대로 띄우고 높이만 맞춘다(스크립트 없음 · 사이트 CSS 와 섞이지 않게). 「인쇄 · PDF 로 저장」은 그 안을 인쇄한다(A5 인쇄 꼴은 본문 CSS 에 있다). -->
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <div class="doc">
@@ -88,13 +110,42 @@
     그림(상자('주문번호가 없어요', ['소개 쪽 「내 결과」나 홈 설정 「내 결제」의 「보러 가기」로 들어와 주세요.'], '<a class="btn" href="ilgyeol.html">소개 쪽으로 가기</a>'));
     return;
   }
-  sub.textContent = '주문번호 ' + o;
+  sub.textContent = '';   // 주문번호는 보이지 않는다(10-22 사장님 「주문번호가 드러나 있으니까 전문성이 떨어져 보여」) — 설정 「내 결제」에만
   if (!로그인됨()) { 로그인화면(); return; }
 
   // ── 만들기 · 기다리기 ──
   var 만들었음 = false, 기다림 = null, 시작 = Date.now(), 한도 = 8 * 60 * 1000;
+  // 「만드는 중」 — 서버가 실제로 하는 일곱 단계(해 시각 → 여덟 글자 → 명반 → 조건 → 원문 → 열 해 → 글)를 차례로 ✓. 글은 작가 원고(chaeksa-writer, 10-22).
+  // 단계가 바뀌는 때(초)는 짐작이다 — 앞 여섯은 엔진(빠름), 일곱째(글쓰기)가 길어서 다 될 때까지 거기 머문다. 막대는 92% 에서 기다린다.
+  var 기다림글 = {"머리": "태어난 순간으로 돌아가 세우고 있어요", "단계": ["태어난 곳의 해 시각으로 맞추는 중", "네 기둥 여덟 글자를 세우는 중", "자미두수 명반 열두 칸에 별을 놓는 중", "맞는 일의 조건 33가지를 대어 보는 중", "옛 책 원문을 찾아 그 자리에 맞대는 중", "앞으로 10년을 한 해씩 짚는 중", "책사가 결론과 할 것 셋을 쓰는 중"], "풀이": ["해 뜨는 때는 동서로 달라요. 분까지 맞춰야 글자가 안 틀려요", "글자마다 나에게 돈인지 책임인지 배움인지 재능인지를 봐요", "일 · 돈 · 밖으로 나감 · 같이 일할 사람 칸의 별을 봐요", "맞는 일 · 피할 일 · 돈이 오는 길이 여기서 정해져요", "떠도는 말이 아니라 《자미두수전서》가 적은 구절 그대로예요", "해마다 들어오는 것 · 빠지는 것 · 막힘 · 풀림을 적어요", "결론 두 줄 — 바뀌지 않는 줄, 지금 직업 이름으로 옮긴 줄"], "바닥": "보통 1~2분. 닫아도 소개 쪽 「내 결과」 · 홈 설정 「내 결제」에서 이어져요", "다됨": "다 됐어요. 지금 열려요"};
+  var 단계때 = [0, 5, 11, 19, 28, 38, 48], 만든시작 = null, 단계타이머 = null;
   function 만드는중(말) {
-    그림(상자('여덟 글자와 명반을 세우고 글을 쓰는 중이에요', [말|| '보통 1~2분 걸려요. 이 창을 그대로 두시면 다 되는 대로 열려요. 닫아도 돼요 — 소개 쪽 「내 결과」와 홈 설정 「내 결제」에서 이어져요.']));
+    if (!만든시작) 만든시작 = Date.now();
+    if (document.getElementById('igWait')) { 단계갱신(); return; }   // 이미 떠 있으면 다시 그리지 않는다(깜빡임 없이 이어 간다)
+    그림('<div class="igr-wait" id="igWait"><p class="igr-eyebrow">결제가 확인됐어요</p><h2>' + esc(기다림글.머리) + '</h2>'
+      + '<ol class="igr-steps">' + 기다림글.단계.map(function (t, i) { return '<li data-i="' + i + '"><i></i><span><b>' + esc(t) + '</b><small>' + esc(기다림글.풀이[i]) + '</small></span></li>'; }).join('') + '</ol>'
+      + '<div class="igr-bar"><b id="igBar"></b></div>'
+      + '<p class="hint">' + esc(말 || 기다림글.바닥) + '</p></div>');
+    단계갱신();
+  }
+  function 단계갱신() {
+    clearTimeout(단계타이머);
+    var s = (Date.now() - 만든시작) / 1000, 지금 = 0;
+    for (var i = 0; i < 단계때.length; i++) if (s >= 단계때[i]) 지금 = i;
+    var lis = document.querySelectorAll('#igWait .igr-steps li');
+    Array.prototype.forEach.call(lis, function (li, i) { li.className = i < 지금 ? 'done' : i === 지금 ? 'now' : ''; });
+    var bar = document.getElementById('igBar'); if (bar) bar.style.width = Math.min(92, 6 + s * (86 / 120)) + '%';
+    if (lis.length) 단계타이머 = setTimeout(단계갱신, 1000);
+  }
+  /** 다 됐을 때 — 단계를 모두 ✓ 로, 막대 100%, 「다 됐어요」 한 줄 뒤에 풀이를 연다 */
+  function 다됨(then) {
+    clearTimeout(단계타이머);
+    var w = document.getElementById('igWait');
+    if (!w) { then(); return; }
+    Array.prototype.forEach.call(w.querySelectorAll('.igr-steps li'), function (li) { li.className = 'done'; });
+    var bar = document.getElementById('igBar'); if (bar) bar.style.width = '100%';
+    var h = w.querySelector('h2'); if (h) h.textContent = 기다림글.다됨;
+    setTimeout(then, 1100);
   }
   function 기다리기() {
     clearTimeout(기다림);
@@ -121,8 +172,11 @@
     clearTimeout(기다림);
     if (그렸음) return;   // 기다리던 물음과 만들기 답이 겹쳐 와도 한 번만 그린다
     그렸음 = true;
+    다됨(function () { 풀이그리기(r, 머리글); });
+  }
+  function 풀이그리기(r, 머리글) {
     var rep = r.report || {};
-    if (rep.만든날) sub.textContent = '주문번호 ' + o + ' · ' + rep.만든날 + ' 만듦';
+    sub.textContent = (rep.만든날 ? rep.만든날 + ' 만듦 · ' : '') + '이 계정에 2년 동안 남아요';
     그림((머리글 || '') + '<div class="igr-tools"><button type="button" class="btn ghost small" id="print">인쇄 · PDF 로 저장</button>'
       + '<a class="btn ghost small" href="ilgyeol.html">← 소개 쪽</a></div>'
       + '<iframe id="igFrame" class="igr-frame" title="나는 뭐해 먹고 살까? 풀이" scrolling="no"></iframe>');
