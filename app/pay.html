@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>유료 상품 · 값과 환불 · 책사</title>
-<meta name="description" content="책사에서 값을 받는 세 가지 — 출산택일 보고서 · 「사랑할 때만 나오는 당신」 전체판 · SSS급 그 사람 사용설명서. 무엇이 열리는지, 언제까지 볼 수 있는지, 환불은 어떻게 되는지 적었습니다.">
+<meta name="description" content="책사에서 값을 받는 것 — 출산택일 보고서 · 「사랑할 때만 나오는 당신」 전체판 · SSS급 그 사람 사용설명서. 무엇이 열리는지, 언제까지 볼 수 있는지, 환불은 어떻게 되는지 적었습니다.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
@@ -58,7 +58,7 @@
 <body>
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <div class="doc">
-  <h1>책사에서 값을 받는 세 가지</h1>
+  <h1>책사에서 값을 받는 것</h1>
   <!-- 2026-10-01 사장님: 파는 것은 셋 — 출산택일 보고서 99,000 · 「사랑할 때만 나오는 당신」 전체판 · 행동양식 궁합(둘은 출시 기념가).
        나머지(정통사주 · 정통궁합 · 웹툰궁합 · 썸)는 무료다. 값은 여기에 적지 않는다 — products 표 한 곳, 카드가 그린다.
        이 쪽 글은 메인이 사실만 바로잡은 것이다 — 작가(chaeksa-writer) 원고 · 사장님 검수 대상. -->
@@ -69,7 +69,7 @@
     <!-- 10-02 상품마다 무엇을 받나 · 결제 전에 무엇을 보나 · 얼마나 걸리나 · 결제하면 받는 것은 상품 약속 장부(yaksok.js) 한 곳에서 읽어 그린다.
          여기에 손으로 적지 않는다 — 적어 두면 상품을 고칠 때 이 쪽만 옛말로 남는다(10-02 걷은 「맞아요/아니에요」 · 옛 판 30장을 계속 팔았다).
          출산택일 신청 길(사이트 신청서 + 결제 — 10-02 바깥 신청 폼 걷음)도 장부 신청글에서 읽는다. -->
-    <div id="yaksokList"><p style="margin:0">상품 설명을 불러오지 못했습니다. 새로 고침해 주세요.</p></div>
+    <div id="yaksokList"><p style="margin:0">출산택일 보고서 · 결혼상대 점검 보고서 · 나는 뭐해 먹고 살까? · 「사랑할 때만 나오는 당신」 전체판 · SSS급 그 사람 사용설명서. 값은 결제 화면에 적혀 있어요. (설명을 불러오는 중이에요)</p></div>
   </div>
 
   <div id="list"></div>
@@ -88,7 +88,7 @@
     <p class="msg" id="gologin" style="display:none">
       결제하시려면 먼저 로그인이 필요합니다 — 결제한 내용을 그 계정에 매어 두어야
       다른 기기에서도 열리기 때문입니다.
-      <a href="./" style="display:block;margin-top:8px"><b>로그인하러 가기 →</b></a>
+      <a href="./" id="payLogin" style="display:block;margin-top:8px"><b>로그인하러 가기 →</b></a>
     </p>
   </div>
 
@@ -119,8 +119,8 @@
 <script src="config.js?v=71396c29ad"></script>
 <script src="track.js?v=4520244637"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
-<script src="pay.js?v=a7cd8267ce"></script>
-<script src="yaksok.js?v=c24d5d4826"></script>
+<script src="pay.js?v=04aff648af"></script>
+<script src="yaksok.js?v=63264efc4a"></script>
 <script>
 (function () {
   var m = localStorage.getItem('chaeksa.theme') || 'auto';
@@ -342,6 +342,18 @@
 
   refresh();
 })();
+</script>
+<script>
+  // 10-22 점검 — 결제 직전 「로그인하러 가기」가 홈으로 보내 고른 상품이 풀렸다. 그 자리에서 로그인 창을 열고, 돌아오면 이 쪽으로(app.js 가 chaeksa.return 을 읽는다).
+  (function () {
+    var a = document.getElementById('payLogin'); if (!a) return;
+    a.addEventListener('click', function (e) {
+      if (!(window.ChaeksaCloud && (ChaeksaCloud.로그인고르기 || ChaeksaCloud.signInWith))) return;   // 로그인 모듈이 없으면 홈으로(원래 길)
+      e.preventDefault();
+      try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: 'pay.html', at: Date.now() })); } catch (x) {}
+      try { if (ChaeksaCloud.로그인고르기) ChaeksaCloud.로그인고르기(); else ChaeksaCloud.signInWith('kakao'); } catch (x) { location.href = './'; }
+    });
+  })();
 </script>
 </body>
 </html>
