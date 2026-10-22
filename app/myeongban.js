@@ -35,7 +35,12 @@
 
   // 전통 배치 — 지지 → [줄, 칸]. 가운데 2×2(줄 2~3 · 칸 2~3)는 명반 머리.
   var 자리 = { 巳: [1, 1], 午: [1, 2], 未: [1, 3], 申: [1, 4], 辰: [2, 1], 酉: [2, 4], 卯: [3, 1], 戌: [3, 4], 寅: [4, 1], 丑: [4, 2], 子: [4, 3], 亥: [4, 4] };
-  var 밝기짧게 = { 廟: '廟', 旺: '旺', 得地: '得', 利益: '利', 平和: '平', 不得地: '不', 落陷: '陷' };
+  // 10-22 사장님 「명반을 한글로 표현해 한자가 너무 많더라」 — 판의 이름표는 한글(밝기는 이 쪽 밝기 풀이를 줄인 말 · 궁은 궁 이름 + 쉬운 이름 · 지지는 소리)
+  var 밝기짧게 = { 廟: '가장 밝음', 旺: '밝음', 得地: '밝은 쪽', 利益: '조금 밝음', 平和: '보통', 不得地: '제자리 못 얻음', 落陷: '빛 잃음' };
+  var 궁한글 = { 命宮: '명궁', 兄弟: '형제궁', 妻妾: '부처궁', 子女: '자녀궁', 財帛: '재백궁', 疾厄: '질액궁', 遷移: '천이궁', 奴僕: '노복궁', 官祿: '관록궁', 田宅: '전택궁', 福德: '복덕궁', 父母: '부모궁' };
+  var 글자소리 = { 甲: '갑', 乙: '을', 丙: '병', 丁: '정', 戊: '무', 己: '기', 庚: '경', 辛: '신', 壬: '임', 癸: '계', 子: '자', 丑: '축', 寅: '인', 卯: '묘', 辰: '진', 巳: '사', 午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해' };
+  var 소리 = function (t) { return String(t || '').split('').map(function (c) { return 글자소리[c] || c; }).join(''); };
+  var 화한글 = { 化祿: '화록', 化權: '화권', 化科: '화과', 化忌: '화기' };
   var 궁쉬운 = function (g) { return (쪽.궁 && 쪽.궁[g] && 쪽.궁[g].쉬운) || ''; };
   var 별쉬운 = function (s) { return (쪽.별 && 쪽.별[s] && 쪽.별[s].쉬운) || (쪽2.별 && 쪽2.별[s] && 쪽2.별[s].쉬운) || s; };
   // 화면 이름 — 天空 은 「天空(地空)」(2판 정함 ⑤ · 쪽2.천공이름). 나머지는 한자 그대로
@@ -94,7 +99,7 @@
   // 사화 딱지 — 서버 칸 「化X|궁」이 있으면 단추(2판), 없으면 1판처럼 표시만
   function 화딱지(화들, 궁) {
     return (화들 || []).map(function (화) {
-      var k = 화 + '|' + 궁, c = String(화).slice(-1), cls = 'mb-hwa' + (화 === '化忌' ? ' gi' : '');
+      var k = 화 + '|' + 궁, c = 화한글[화] || String(화).slice(-1), cls = 'mb-hwa' + (화 === '化忌' ? ' gi' : '');
       return 결과.칸[k] ? '<button type="button" class="' + cls + '" data-cell="' + esc(k) + '" aria-label="' + esc(화 + ' ' + 별쉬운(화)) + '">' + esc(c) + '</button>' : '<em class="' + cls + '">' + esc(c) + '</em>';
     }).join('');
   }
@@ -102,17 +107,17 @@
     var M = 결과.명반, a = 자리[g.지지] || [1, 1], 사화 = {}, 놓인 = {};
     (g.사화 || []).forEach(function (x) { (사화[x.별] = 사화[x.별] || []).push(x.화); });
     var h = '<div class="mb-cell' + (g.이름 === '命宮' ? ' is-ming' : '') + '" style="grid-area:' + a[0] + '/' + a[1] + '" data-g="' + esc(g.이름) + '">';
-    h += '<div class="mb-gh"><button type="button" class="mb-gname" data-gung="' + esc(g.이름) + '">' + esc(g.이름) + '<small>' + esc(궁쉬운(g.이름)) + '</small></button><span class="mb-ji">' + esc((g.궁간 || '') + g.지지) + (M.신궁 === g.이름 ? '<span class="mb-tag">' + esc(글('명반.신궁표시', '신궁')) + '</span>' : '') + '</span></div>';
+    h += '<div class="mb-gh"><button type="button" class="mb-gname" data-gung="' + esc(g.이름) + '">' + esc(궁한글[g.이름] || g.이름) + '<small>' + esc(궁쉬운(g.이름)) + '</small></button><span class="mb-ji">' + esc(소리((g.궁간 || '') + g.지지)) + (M.신궁 === g.이름 ? '<span class="mb-tag">' + esc(글('명반.신궁표시', '신궁')) + '</span>' : '') + '</span></div>';
     if (g.주성.length) {
       h += '<div class="mb-stars">' + g.주성.map(function (s) {
         놓인[s.이름] = 1;
-        return '<span class="mb-srow"><button type="button" class="mb-star" data-cell="' + esc(s.이름 + '|' + g.이름) + '">' + esc(s.이름) + '<i>' + esc(밝기짧게[s.밝기] || s.밝기 || '') + '</i></button>' + 화딱지(사화[s.이름], g.이름) + '</span>';
+        return '<span class="mb-srow"><button type="button" class="mb-star" data-cell="' + esc(s.이름 + '|' + g.이름) + '">' + esc(별쉬운(s.이름)) + '<i>' + esc(밝기짧게[s.밝기] || s.밝기 || '') + '</i></button>' + 화딱지(사화[s.이름], g.이름) + '</span>';
       }).join('') + '</div>';
     } else h += '<div class="mb-empty">—</div>';
     // 보좌 · 살성 — 서버 칸 「별|궁」이 있으면 단추(2판), 없으면 이름만. 사화가 붙은 보좌는 그 옆에 사화 딱지
     var 딱 = function (s, 살) {
       놓인[s] = 1;
-      var k = s + '|' + g.이름, cls = 'mb-aux' + (살 ? ' sal' : ''), 이 = 별이름(s);
+      var k = s + '|' + g.이름, cls = 'mb-aux' + (살 ? ' sal' : ''), 이 = 별쉬운(s);   // 10-22 한글 이름
       return '<span class="mb-srow">' + (결과.칸[k] ? '<button type="button" class="' + cls + '" data-cell="' + esc(k) + '">' + esc(이) + '</button>' : '<span class="' + cls + ' off">' + esc(이) + '</span>') + 화딱지(사화[s], g.이름) + '</span>';
     };
     var 딱들 = (g.보좌 || []).map(function (s) { return 딱(s, false); }).concat((g.살성 || []).map(function (s) { return 딱(s, true); }));

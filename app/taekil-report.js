@@ -3,7 +3,8 @@
  * 보고서 본문(report)은 비공개 서버(/api/taekil-report)가 엔진 · 고르기 · 누락 검사를 거쳐 보관한 것 그대로다. 여기는 **그리기만** 한다 —
  * 판정 · 고르기 · 차례 · 문장 틀은 이 파일에 없다(공개 저장소에 두지 않는다). 칸 꼴은 비공개 lib/taekil-report.js 머리 주석과 같다:
  *   { v, order: [칸 id…], card: { place, g }, cards: [{ slot, label }], <칸 id>: { head, body: [노드…], items?, 접힘?, 셈? } }
- *   노드 k — p(글) · b(굵은 줄) · list · read(이렇게 읽었어요 한 칸) · card(명식 카드 자리) · han(원문 · 책사 한문 풀이 + 뜻) · pillars(명식 한자) · fold(접힘)
+ *   노드 k — p(글) · b(굵은 줄) · list · read(이렇게 읽었어요 한 칸) · card(명식 카드 자리) · han(원문 · 책사 한문 풀이 + 뜻) · pillars(명식 한자) · fold(접힘) · mb(자미두수 명반 — 10-22)
+ *   p · b 의 작게(글) · list 의 작게(items 와 같은 길이의 배열) — 원문 · 책 이름 · 근거(한자)를 줄 끝 작은 글자로(10-22 사장님 「우리문장~ (원문 작게)」)
  *   모르는 노드 · 모르는 칸은 그리지 않는다. 글은 모두 이스케이프한다.
  * 접어 두는 것(설계서 ⑤): 「날짜별로 전부」 · 「어떻게 골랐나」(칸의 접힘) · 덩어리 속 대운 목록.
  * 명식 카드는 이 자리에서 그린다(myeongsik-card.js + 시뮬레이터 엔진 사슬) — 서버는 그림을 못 찍는다.
@@ -20,13 +21,32 @@
   const 칸이름 = (id) => /^[a-z][a-z0-9_]{0,39}$/.test(String(id || ''));
   const 글들 = (xs) => (Array.isArray(xs) ? xs : []).filter((x) => typeof x === 'string' || typeof x === 'number');
 
+  const 작게 = (s) => (s != null && String(s).trim() ? ' <small class="tkr-won">(' + esc(s) + ')</small>' : '');
+  /** 자미두수 명반 4×4 — 이름표는 서버가 한글로 만들어 보낸다(lib/myeongban-ko). 여기는 자리만 놓는다 */
+  function 명반(n) {
+    const 칸들 = Array.isArray(n.칸) ? n.칸 : [], 자리 = Array.isArray(n.자리) ? n.자리 : ['巳', '午', '未', '申', '辰', null, '酉', '卯', '戌', '寅', '丑', '子', '亥'];
+    const 칸 = (지) => {
+      const c = 칸들.find((x) => x && x.지 === 지);
+      if (!c) return '<div class="tkr-mb-c"></div>';
+      const 별 = (s) => '<span class="tkr-mb-s">' + esc(s.이름) + (s.밝기 ? '<i>' + esc(s.밝기) + '</i>' : '') + (s.화 ? '<b>' + esc(s.화) + '</b>' : '') + '</span>';
+      return '<div class="tkr-mb-c' + (c.나 ? ' me' : '') + '"><div class="tkr-mb-h"><span>' + esc(c.궁) + (c.몸 ? ' · 신궁' : '') + '</span><em>' + esc(c.쉬운) + '</em><small>' + esc(c.지말) + '</small></div>'
+        + '<div class="tkr-mb-m">' + ((c.주성 || []).length ? c.주성.map(별).join('') : '<span class="tkr-mb-e">중심 별 없음</span>') + '</div>'
+        + ((c.보조 || []).length ? '<div class="tkr-mb-a">' + c.보조.map((s) => esc(s.이름) + (s.화 ? '<b>' + esc(s.화) + '</b>' : '')).join(' · ') + '</div>' : '')
+        + (c.대한 ? '<div class="tkr-mb-d">' + esc(c.대한) + '</div>' : '') + '</div>';
+    };
+    const 가운데 = '<div class="tkr-mb-ctr">' + (Array.isArray(n.가운데) ? n.가운데 : []).map((t, i) => (i ? '<p>' : '<p class="tkr-mb-t">') + esc(t) + '</p>').join('') + '</div>';
+    return '<figure class="tkr-mb">' + (n.머리 ? '<figcaption class="tkr-b">' + esc(n.머리) + '</figcaption>' : '')
+      + '<div class="tkr-mb-g">' + 자리.map((지) => (지 ? 칸(지) : 가운데)).join('') + '</div>'
+      + (n.풀이 ? '<p class="tkr-mb-cap">' + esc(n.풀이) + 작게(n.작게) + '</p>' : '') + '</figure>';
+  }
   /** 노드 하나 → html */
   function 노드(n, rep) {
     if (!n || typeof n !== 'object') return '';
     switch (n.k) {
-      case 'p': return '<p>' + esc(n.t) + '</p>';
-      case 'b': return '<p class="tkr-b">' + esc(n.t) + '</p>';
-      case 'list': return '<ul class="tkr-ul">' + 글들(n.items).map((t) => '<li>' + esc(t) + '</li>').join('') + '</ul>';
+      case 'p': return '<p>' + esc(n.t) + 작게(n.작게) + '</p>';
+      case 'b': return '<p class="tkr-b">' + esc(n.t) + 작게(n.작게) + '</p>';
+      case 'list': { const 작 = Array.isArray(n.작게) ? n.작게 : []; return '<ul class="tkr-ul">' + (Array.isArray(n.items) ? n.items : []).map((t, i) => (typeof t === 'string' || typeof t === 'number') ? '<li>' + esc(t) + 작게(작[i]) + '</li>' : '').join('') + '</ul>'; }
+      case 'mb': return 명반(n);
       case 'read': return '<div class="tkr-read' + (n.못읽음 ? ' bad' : '') + '"><span class="tkr-read-k">' + esc(n.이름) + '</span><span class="tkr-read-v">' + esc(n.말) + '</span></div>';
       case 'card': {
         const i = Number(n.i), c = Number.isInteger(i) && rep && Array.isArray(rep.cards) ? rep.cards[i] : null;
@@ -114,8 +134,12 @@
     const 줄 = [];
     const 노드글 = (n) => {
       if (!n || typeof n !== 'object') return;
-      if (n.k === 'p' || n.k === 'b') 줄.push(String(n.t || ''));
-      else if (n.k === 'list') 글들(n.items).forEach((t) => 줄.push('· ' + t));
+      const 끝 = (s) => (s != null && String(s).trim() ? ' (' + s + ')' : '');
+      if (n.k === 'p' || n.k === 'b') 줄.push(String(n.t || '') + 끝(n.작게));
+      else if (n.k === 'list') (Array.isArray(n.items) ? n.items : []).forEach((t, i) => { if (typeof t === 'string' || typeof t === 'number') 줄.push('· ' + t + 끝(Array.isArray(n.작게) ? n.작게[i] : '')); });
+      else if (n.k === 'mb') { if (n.머리) 줄.push(String(n.머리)); (n.가운데 || []).forEach((t) => 줄.push('  ' + t));
+        (n.칸 || []).forEach((c) => 줄.push('· ' + c.궁 + (c.쉬운 ? '(' + c.쉬운 + ')' : '') + ' — ' + ((c.주성 || []).map((s) => s.이름 + (s.밝기 ? ' ' + s.밝기 : '') + (s.화 ? ' ' + s.화 : '')).join(' · ') || '중심 별 없음')
+          + ((c.보조 || []).length ? ' / ' + c.보조.map((s) => s.이름 + (s.화 ? ' ' + s.화 : '')).join(' · ') : '') + (c.대한 ? ' · ' + c.대한 : ''))); }
       else if (n.k === 'read') 줄.push('· ' + n.이름 + ' — ' + n.말);
       else if (n.k === 'card') { const c = (rep.cards || [])[Number(n.i)]; 줄.push('(명식 카드' + (c ? ' — ' + c.label : '') + ')'); }
       else if (n.k === 'han') { 줄.push(n.고전 + ' ' + n.꼴 + ' — ' + n.글); 줄.push('  ' + n.뜻); }
@@ -143,8 +167,8 @@
     const 번 = (i) => String(i + 1).padStart(2, '0');
     const 노드 = (n) => {
       if (!n || typeof n !== 'object') return '';
-      if (n.k === 'p') return '<p>' + esc(n.t) + '</p>';
-      if (n.k === 'b') return '<p><b>' + esc(n.t) + '</b></p>';
+      if (n.k === 'p') return '<p>' + esc(n.t) + 작게(n.작게) + '</p>';
+      if (n.k === 'b') return '<p><b>' + esc(n.t) + '</b>' + 작게(n.작게) + '</p>';
       if (n.k === 'list') { const xs = 글들(n.items).filter((t) => !/^원하시는 방향/.test(String(t))); return xs.length ? '<p>' + xs.map(esc).join('<br>') + '</p>' : ''; }
       if (n.k === 'han') return '<blockquote><p>' + esc(n.고전 + ' ' + n.꼴 + ' — ' + n.글) + '<br>' + esc(n.뜻) + '</p></blockquote>';
       if (n.k === 'fold') return (n.head ? '<p><b>' + esc(n.head) + '</b></p>' : '') + (Array.isArray(n.body) ? n.body : []).map(노드).join('');
