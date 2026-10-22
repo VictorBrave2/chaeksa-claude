@@ -59,7 +59,7 @@ def main():
         print('작업 폴더 그대로 씀:', wt)
     gate = spec.split('/')[0] + '/README.md'
     prompt = ('You are working in a copy of the chaeksa.kr repository. Read ' + gate + ' (the rules for this lane) and then ' + spec +
-              ' (the task). Do the task exactly as the spec says: edit only the files it allows, keep meaning, numbers, code and line endings (CRLF) unchanged, '
+              ' (the task). Do the task exactly as the spec says: edit only the files it allows, keep meaning, numbers and line endings (CRLF) unchanged, change code only where the spec explicitly allows it, '
               'and follow every rule in the README. Do not commit, do not push, do not call any image or paid API. '
               'When finished, write CODEX_REPORT.md at the repository root in Korean: for every changed line give 파일 · 전 → 후 · 까닭, and list separately anything you were unsure about under 「판단 필요」.'
               + (' Extra instruction from the owner: ' + 더 if 더 else ''))
