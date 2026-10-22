@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<script src="config.js?v=d36fb30428"></script>
+<script src="config.js?v=71396c29ad"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=a7cd8267ce"></script>
@@ -120,6 +120,10 @@
       if (r && r.reason === 'busy') { 기다리기(); return; }   // 다른 창에서 만드는 중 — 기다린다
       if (r && r.reason === 'login') { 로그인화면('로그인이 끝났어요. 다시 로그인하면 이어서 만들어요.'); return; }
       clearTimeout(기다림);
+      if (r && r.reason === 'llm_paused') {   // 글쓰기 열쇠 잔액 0(10-22) — 사장님이 충전하면 이어진다. 손님에겐 오류가 아니라 「확인 중」
+        그림(상자('책사가 확인한 뒤 열어 드려요', ['결제는 됐고, 계산도 끝났어요. 글을 쓰는 자리에서 잠시 멈춰 책사가 직접 확인한 뒤 열어 드려요(보통 하루 안).', '열리면 이 주소와 출산택일 탭 「내 보고서」에서 보여요. 급하시면 ' + 문의 + ' 으로 알려 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>'));
+        return;
+      }
       그림(상자('보고서를 만들지 못했어요', [(r && r.message) || '잠시 뒤 다시 해 주세요.', '결제는 그대로 있어요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요.'],
         '<button type="button" class="btn ghost" id="again">다시 해 보기</button>'));
       document.getElementById('again').onclick = function () { 만들었음 = false; 불러오기(); };
