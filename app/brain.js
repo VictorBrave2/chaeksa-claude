@@ -28,8 +28,17 @@
   }
   var 단추 = function (id) { return '<div class="btns" data-id="' + id + '"><button data-v="yes">맞아요</button><button data-v="no">아니에요</button></div><p class="why" data-after="' + id + '"></p>'; };
   var 성별말 = function (g) { return g === 'F' ? '여자' : '남자'; };
+  function 출처말(s) {
+    var 책 = { '窮通寶鑑': '궁통보감', '三命通會': '삼명통회', '紫微斗數全書': '자미두수전서' };
+    var 장 = { '正二月甲木': '정이월 갑목', '十二月甲木': '십이월 갑목', '六月乙木': '유월 을목', '十月乙木': '시월 을목', '十一月乙木': '십일월 을목', '四月丙火': '사월 병화', '十二月丙火': '십이월 병화', '六月之丁': '유월 정화', '三月己土': '삼월 기토', '三夏己土': '여름 석 달 기토', '三秋己土': '가을 석 달 기토', '十二月庚金': '십이월 경금', '八月辛金': '팔월 신금', '十月辛金': '시월 신금' };
+    var 권 = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5 };
+    return String(s || '').replace(/ · (docs|jamidusu)\/\S+/g, '')
+      .replace(/《?(窮通寶鑑|三命通會|紫微斗數全書)》?/g, function (_, 이름) { return 책[이름] + '(' + 이름 + ')'; })
+      .replace(/〈([^〉]+)〉/g, function (m, k) { return 장[k] ? '〈' + 장[k] + '(' + k + ')〉' : m; })
+      .replace(/卷([一二三四五])/g, function (m, n) { return 권[n] + '권(' + m + ')'; });
+  }
   function 표지칸(x) {
-    return '<div class="card"><p class="q" lang="zh-Hant">' + esc(x.원문) + '</p><p>' + esc(x.뜻) + '</p><p class="why">' + esc(x.근거) + '<br><small>' + esc(String(x.출처 || '').replace(/ · (docs|jamidusu)\/\S+/g, '')) + '</small></p></div>';
+    return '<div class="card"><p>' + esc(x.뜻) + '</p><p class="why" lang="zh-Hant"><small>(' + esc(x.원문) + ')</small></p><p class="why">' + esc(x.근거) + '<br><small>' + esc(출처말(x.출처)) + '</small></p></div>';
   }
   var 탭 = '1';
   function 그리기() {

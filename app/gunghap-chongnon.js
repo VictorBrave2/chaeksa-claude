@@ -32,8 +32,8 @@
   }
 
   const 오행줄 = (센) => '<div class="jt-oh">' + 센.map((n, o) => '<span class="e' + o + '"><b>' + 오행말[o] + '</b>' + n + '자</span>').join('') + '</div>';
-  const 원문칸 = (x) => '<blockquote class="jt-q"><p>' + esc(x[0]) + '</p><p>「' + esc(x[1]) + '」</p></blockquote>';
-  const 살칸 = (x) => '<div class="jt-du"><div class="jt-du-h"><b>' + esc(x.이름) + '</b><span>' + esc(x.글[0]) + '</span></div>' + 문단((x.줄 || []).concat([x.글[3]])) + '<blockquote class="jt-q"><p>삼명통회 ' + esc(x.글[1]) + '</p><p>「' + esc(x.글[2]) + '」</p></blockquote></div>';
+  const 원문칸 = (x) => '<blockquote class="jt-q"><p>' + esc(x[0]) + '</p><p><small>「' + esc(x[1]) + '」</small></p></blockquote>';
+  const 살칸 = (x) => '<div class="jt-du"><div class="jt-du-h"><b>' + esc(x.이름) + '</b><span>' + esc(x.글[0]) + '</span></div>' + 문단((x.줄 || []).concat([x.글[3]])) + '<blockquote class="jt-q"><p><small>삼명통회 ' + esc(x.글[1]) + '</small></p><p><small>「' + esc(x.글[2]) + '」</small></p></blockquote></div>';
   const 두칸 = (나, 그, 속나, 속그) => '<div class="gc-two">'
     + '<div class="gc-col"><div class="gc-who">당신</div>' + (속나 || '') + 문단(나) + '</div>'
     + '<div class="gc-col"><div class="gc-who">그 사람</div>' + (속그 || '') + 문단(그) + '</div></div>';
@@ -42,7 +42,7 @@
   const 통설말 = /고들 해요|는 말이 많아요|말도 있어요|따라다녀요|요즘 명리가들|두루 하는 말|통설/;
   const 거름 = (줄) => Array.isArray(줄) ? 줄.filter(t => typeof t !== 'string' || !통설말.test(t)) : 줄;
   function 칸그리기(v0, 속나, 속그) {
-    const v = Object.assign({}, v0, { 머리: 거름(v0.머리), 나: 거름(v0.나), 그: 거름(v0.그), 사이: 거름(v0.사이), 갈림: 거름(v0.갈림), 비움: 거름(v0.비움), 통설: [] });
+    const v = Object.assign({}, v0, { 머리: 거름(v0.머리), 나: 거름(v0.나), 그: 거름(v0.그), 사이: 거름(v0.사이), 갈림: 거름(v0.갈림), 비움: (거름(v0.비움) || []).filter(Boolean), 통설: [] });
     const out = [];
     if (v.답) out.push(답칸(v.답));   // 09-27 장마다 첫 줄 = 1층 답 한 줄(관점이 이미 잰 값에서). 근거는 그 아래 그대로.
     if (v.머리 && v.머리.length) out.push(문단(v.머리));
@@ -51,7 +51,7 @@
     if (v.사이 && v.사이.length) out.push('<h3>두 사람 사이</h3>' + 문단(v.사이));
     if (v.갈림 && v.갈림.length) out.push(문단(v.갈림));
     if (v.통설 && v.통설.length) out.push('<h3>요즘은 이렇게들 말해요</h3>' + 문단(v.통설) + '<p class="jt-yet">' + esc(Q.통설주) + '</p>');
-    if (v.비움 && v.비움.length) out.push('<h3>여기서 안 낸 것</h3>' + 흐린(v.비움));
+    if (v.비움 && v.비움.length) out.push(흐린(v.비움));
     return out.join('');
   }
 
@@ -80,7 +80,7 @@
     안전(4, '각자의 배우자 자리', '각자 어떤 사람에게 끌리나', () => 칸그리기(Q.장4(C)));
     안전(5, '짝을 뜻하는 글자(배우자별)', '짝을 뜻하는 글자가 각자의 사주에 있나', () => 칸그리기(Q.장5(C)));
     안전(6, '서로에게 필요한 기운(계절)', '서로에게 가장 필요한 기운을 상대가 가졌나', () => 칸그리기(Q.장6(C)));
-    안전(7, '그 사람이 곁에 오면', '내 모습이 그대로인가, 바뀌나', () => 칸그리기(Q.장7(C)));
+    안전(7, '그 사람이 곁에 오면', '당신 사주의 큰 줄기가 그대로인가, 바뀌나', () => 칸그리기(Q.장7(C)));
     안전(8, '옛 책이 이름 붙인 글자(신살 · 귀인)', '각자에게 붙는 이름과 상대의 글자가 나에게 어떤 이름이 되나', () => {
       const v = Q.장8(C);
       const 벌 = (x) => (x.살.length || x.귀.length ? x.살.concat(x.귀).map(살칸).join('') : '<p class="jt-yet">책이 꼽은 것 가운데 이 글자들에 있는 것은 없어요.</p>');
@@ -100,7 +100,7 @@
       const v = Q.장12(C);
       return 답칸(v.답) + 문단(v.머리) + v.해들.map(y => '<div class="jt-du"><div class="jt-du-h"><b>' + y.해 + '년</b><span>' + esc(y.간지) + '</span></div>'
         + '<div class="gc-two"><div class="gc-col"><div class="gc-who">당신</div>' + 문단(y.나) + '</div><div class="gc-col"><div class="gc-who">그 사람</div>' + 문단(y.그) + '</div></div></div>').join('')
-        + '<h3>여기서 안 낸 것</h3>' + 흐린(v.비움);
+        + 흐린(v.비움);
     });
     안전(13, '더 묻고 싶으면', '', () => {
       const v = Q.장13();

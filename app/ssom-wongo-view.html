@@ -16,7 +16,7 @@ p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}.g
 <div class="tabs" id="who"></div><div id="out"></div></div>
 <script src="config.js?v=71396c29ad"></script><script src="places.js?v=1350b96148"></script><script src="astro.js?v=c0bb3fa175"></script><script src="lunar.js?v=9d5b6391f1"></script><script src="engine.js?v=e0bd1ab409"></script>
 <script src="saenggeuk.js?v=df8648d564"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="typecard.js?v=606368696f"></script><script src="gyeokguk.js?v=63f811f535"></script>
-<script src="ssom-gwanjeom.js?v=958eca8d96"></script><script src="ssom-dangye.js?v=7122110c14"></script><script src="ssom-webtoon.js?v=1c3129a0d9"></script><script src="ssom-webtoon-2.js?v=93c9b6eed6"></script><script src="ssom-webtoon-3.js?v=60b19b8ecf"></script><script src="ssom-webtoon-check.js?v=16a56d2aca"></script>
+<script src="ssom-gwanjeom.js?v=958eca8d96"></script><script src="ssom-dangye.js?v=f30553f7d0"></script><script src="ssom-webtoon.js?v=22c92234ee"></script><script src="ssom-webtoon-2.js?v=c314d8b44d"></script><script src="ssom-webtoon-3.js?v=8812a3053b"></script><script src="ssom-webtoon-check.js?v=16a56d2aca"></script>
 <script>
 (function () {
   const E = ChaeksaEngine, W = ChaeksaSsomWebtoon, S = ChaeksaSsom, D = ChaeksaSsomDangye || {};
@@ -24,7 +24,7 @@ p{margin:6px 0;line-height:1.7;font-size:15px}.s{font-style:italic;color:#555}.g
   const 여 = E.calc({ year: 1999, month: 12, day: 20, hour: 20, minute: 0, gender: 'F', longitude: 126.98 });
   const 쌍 = [['丁卯 남이 「당신」', 남, 여], ['丙午 여가 「당신」', 여, 남]];
   const esc = (s) => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-  const 제목 = { 둘: ['나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', '우리는 서로 원하는 걸 주고 있을까요?', '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?'], 썸: S.질문 };
+  const 제목 = { 둘: ['나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', '우리는 서로 원하는 걸 주고 있을까요?', '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?'], 썸: S.질문.map(q => q.replace(/^상대는 /, '그 사람은 ')) };
   (D.단계 || []).forEach(d => { if (d.질문) 제목[d.키] = d.질문; });
   const 이름 = { 둘: '두 사람 이야기', 시작전: '시작 전 — 첫인상', 썸: '썸', 초반: '연애 초반', 안정기: '안정기', 결혼: '결혼을 생각할 때', 흔들림: '흔들릴 때', 재회: '헤어진 뒤 — 재회' };
   function 그림(a, b) {

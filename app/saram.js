@@ -17,7 +17,7 @@
   };
   function 이름(p) { return (p.name && p.name !== '이름 없음' ? p.name : '') || p.relation || '이름 없음'; }
   function 명식(p) { try { return E.calc(PP.toProfile(p)); } catch (e) { return null; } }
-  function 바람(R) { try { var k = SS.일지십신(R); return k ? k + ' — ' + ((S.뜻[k] || {}).중심 || '') : ''; } catch (e) { return ''; } }
+  function 바람(R) { try { var k = SS.일지십신(R), 말 = 바람말(k).replace(/^이 사람은 원래 /, '').replace(/이 사람은 /g, '').replace('곁에 두고 싶어 해요', '곁에 두고 싶어요').replace(/^자기 말을/, '내 말을').replace('자기 마음', '내 마음').replace(/^자기를/, '나를'); return 말 ? { 말: 말, 십신: k } : null; } catch (e) { return null; } }
   // 10-12 사장님 「이 컨텐츠의 목적은 새로 만난 사람에 대해 한눈에 알아보기」 · 「이 사람은 원래 이래로 가」 — 카드 한 장 네 줄, 모두 시 없이.
   //   ① 언행 = 앞선 식상(식신 · 상관 · 없음) × 일간 오행 ② 바람 = 일지 본기 십신 ③ 나와 주고받나 = 72조 두 방향 ④ 언제 달라지나 = 72조 ⑨ 일지변질(짝 지지가 오는 해).
   //   문장은 작가 원고 saram-copy.js(비공개 data/saram-card-copy-1012.json).
@@ -28,12 +28,25 @@
     return C.언행[k + '|' + 오행[E.STEM_ELEM[R.pillars.day.stem]]] || '';
   }
   function 바람말(십신) { return C.바람[십신] || ''; }
+  var 띠이름 = { 子: '쥐', 丑: '소', 寅: '범', 卯: '토끼', 辰: '용', 巳: '뱀', 午: '말', 未: '양', 申: '원숭이', 酉: '닭', 戌: '개', 亥: '돼지' };
   function 달라짐(R) {
     var v = null; try { v = SS.일지변질(R); } catch (e) {}
     if (!v || !v.짝) return '';
-    var 올해 = new Date().getFullYear(), b = E.BRANCHES.indexOf(v.짝);
-    for (var y = 올해; y < 올해 + 12; y++) if ((((y - 4) % 12) + 12) % 12 === b) return y + '년(' + v.짝 + '년)엔 바라는 것이 바뀌어요 — ' + 바람말(v.후);
-    return '';
+    var 올해 = new Date().getFullYear(), b = E.BRANCHES.indexOf(v.짝), 띠 = (띠이름[v.짝] || v.짝) + '띠', 말 = 바람말(v.후).replace(/^이 사람은 원래 /, ''), 세 = null;
+    for (var y = 올해; y < 올해 + 12; y++) if ((((y - 4) % 12) + 12) % 12 === b) { 세 = y; break; }
+    if (세 == null) return '';
+    // 72조 ⑦ 대운 = 열 해 · ⑨ 그 운이 지나면 돌아온다 — 짝 글자가 대운으로 오면 그 열 해 동안 바뀌어 있다.
+    //   지금 걸친 대운이거나 다음 짝 해(세운) 이듬해까지 시작하는 대운이면 대운 줄, 아니면 세운 한 해 줄
+    var 대 = ((R.daeun && R.daeun.list) || []).filter(function (d) { return d.branch === b && d.startYear + 9 >= 올해 && d.startYear <= 세 + 1; })[0];
+    if (대) {
+      var 끝 = 대.startYear + 9, 돌 = 끝 + 1, 덧 = '';
+      // 대운이 끝난 이듬해가 짝 해(세운)면 그해까지 바뀐 채로 이어진다(72조 ⑨)
+      if ((((돌 - 4) % 12) + 12) % 12 === b) { 덧 = ' ' + 돌 + '년(' + 띠 + ' 해)까지 한 해 더 이어지고,'; 돌 += 1; }
+      // 짝 해(세운)가 대운 바로 앞 해면 그해부터 이어서 바뀌어 있다
+      if (세 < 대.startYear) return 세 + '년(' + 띠 + ' 해)부터 ' + 끝 + '년까지 바라는 것이 바뀌어 있어요 — ' + 말 + ' ' + 대.startYear + '년부터는 열 해 동안 이어지는 큰 운(대운)에 ' + 띠 + ' 글자가 들어와요.' + 덧 + ' ' + 돌 + '년부터 원래대로 돌아와요.';
+      return 대.startYear + '~' + 끝 + '년에는 열 해 동안 이어지는 큰 운(대운)에 ' + 띠 + ' 글자가 들어와, 바라는 것이 바뀌어 있어요 — ' + 말 + 덧 + ' ' + 돌 + '년부터 원래대로 돌아와요.';
+    }
+    return 세 + '년(' + 띠 + ' 해)에는 바라는 것이 잠시 바뀌어요 — ' + 말 + ' 그해가 지나면 원래대로 돌아와요.';
   }
   function 카드(p, R, r, u) {
     var 주고 = r.나쪽.준다 && r.그쪽.준다 ? '서로 바라는 것을 주고받아요.' : r.나쪽.준다 ? '이 사람은 내가 바라는 것을 줘요. 나는 이 사람이 바라는 것을 못 줘요. 이 사람에게는 위 「바라는 사람」에 적힌 것을 일부러 해 주세요.' : r.그쪽.준다 ? '나는 이 사람이 바라는 것을 줘요. 이 사람은 내가 바라는 것을 못 줘요.' : '서로 바라는 것이 엇갈려요. 이 사람에게는 위 「바라는 사람」에 적힌 것을 일부러 해 주세요.';
@@ -76,7 +89,7 @@
       (칸[r.단계] = 칸[r.단계] || []).push(카드(p, R, r, u));
     });
     $('me').innerHTML = 넣기칸() + '<div class="ring"><span class="me">나</span>' + 다른.map(function (p) { return '<span style="border:1px solid var(--line2);border-radius:999px;padding:8px 14px">' + esc(이름(p)) + '</span>'; }).join('') + '</div>'
-      + (내바람 ? '<p class="why">내가 사람에게 바라는 것: <b>' + esc(내바람) + '</b></p>' : '');
+      + (내바람 ? '<p class="why">내가 사람에게 바라는 것: <b>' + esc(내바람.말) + '</b> <small>(' + esc(내바람.십신) + ')</small></p>' : '');
     if (!다른.length) {
       $('out').innerHTML = '<div class="big"><p>아직 넣어 둔 사람이 없어요. <b>한 사람만</b> 넣어 보세요. 넣는 순간 그 사람과 내가 서로 바라는 것을 주고받는지 나와요.</p></div>';
     } else {

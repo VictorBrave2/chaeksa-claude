@@ -1,18 +1,18 @@
 /* 「내 명반에는 무엇이 적혀 있을까」(myeongban.html) — 그리기만 한다. 계산은 비공개 서버 /api/myeongban(명반 엔진 · 《紫微斗數全書》 판정표 · 움직이는 해 1차).
  * 10-10 사장님 「자미두수 명판을 두고 글자를 누르면 해석해 주는 느낌」 · 「주성 14부터」 · 「추천대로 가고 작가 넘겨서 진행해」(작업판 자미-1 정함 7).
  *   명반 — 열두 궁 네모 판(전통 배치: 巳午未申 윗줄 · 辰 · 酉 양옆 · 卯 · 戌 · 寅丑子亥 아랫줄 · 가운데 2×2 머리). 칸마다 궁 이름(쉬운 말) · 지지 · 주성(밝기) · 보좌 · 살성 · 사화 표시 · 큰 운 띠.
- *   별을 누르면 아래 시트 — 머리(별 · 궁 · 내 밝기) → 작가 줄(서버 걸림 규칙 id 에 이어진 줄만 · 내 밝기 줄만, 밝기 null 줄은 늘) → 움직이는 해 → 「옛 책 원문 보기」 접힘(걸림 글자 그대로 · 권:줄 · 뜻 · 일부는 일부 머리) → 「안 걸린 줄」 접힘 → 맞아요 · 아니에요.
+ *   별을 누르면 아래 시트 — 머리(별 · 궁 · 내 밝기) → 작가 줄(서버 걸림 규칙 id 에 이어진 줄만 · 내 밝기 줄만, 밝기 null 줄은 늘) → 움직이는 해 → 「옛 책 원문 보기」 접힘(걸림 글자 그대로 · 권:줄 · 뜻 · 일부는 일부 머리) → 「안 걸린 줄」 접힘.
  *   빈칸 둘(貪狼|疾厄 · 天梁|福德)은 빈칸 글 + 짝 줄. 궁 이름을 누르면 궁 한 줄 + 그 궁의 별 목록(각각 누르기).
  *   판정 없음(「좋다 · 나쁘다」 안 냄) · LLM 없음 · 통설 없음 · 원문은 글자 그대로.
  * 2판(10-10 작업판 자미-2 · 사장님 「다음판 ㄱㄱ」 · 메인 정함 ①~⑤): 칸 안의 보좌 8 · 살성 6 딱지와 사화 딱지(科 · 祿 · 權 · 忌)도 누른다 — 서버 칸 「文曲|命宮」 · 「化科|命宮」(별종류 · 실은별)이 있을 때만(없으면 1판처럼 이름만).
- *   시트는 1판과 같은 꼴(머리 → 작가 줄 → 움직이는 해 → 원문 접힘 → 안 걸림 접힘 → 맞아요 MB:<별>|<궁>). 작가 줄은 걸림 규칙 id + 걸린 새 짝(일판칸 없는 것) id 에 이어진 것만, 짝으로 걸린 줄엔 이 궁에 같이 있는 짝 별 이름표.
+ *   시트는 1판과 같은 꼴(머리 → 작가 줄 → 움직이는 해 → 원문 접힘 → 안 걸림 접힘). 작가 줄은 걸림 규칙 id + 걸린 새 짝(일판칸 없는 것) id 에 이어진 것만, 짝으로 걸린 줄엔 이 궁에 같이 있는 짝 별 이름표.
  *   빈칸은 빈칸꼴(사화 · 별만 · 나머지) 한 줄 + 별 한 줄(卷一 문답 원문 · 권:줄). 일판칸 짝(주성 칸에 이미 있는 줄)은 「주성 칸에도 있는 줄」 접힘에만(이 궁에 그 짝이 있을 때). 天空 은 화면 이름 「天空(地空)」(쪽2.천공이름).
  *   사화 시트 머리에 어느 별에 붙었는지 한 줄(서버 실은별). 궁 시트 별 목록에 보좌 · 살성 · 사화도. 글은 myeongban-copy.js 쪽2 · 칸 216(작가 원고 myeongban-copy-v2).
  * 3판(10-11 작업판 정리-1 — 남은 조목을 화면에 잇는다 · 서버 v0.3): ① 주성 시트에 「두 별이 함께」 묶음 — 서버 칸.짝칸(그 궁의 두 주성이 함께일 때만 걸리는 줄)의 걸림 id 에 이어진 작가 줄 + 「…과 함께」 이름표.
  *   원문 · 일부 · 안 걸림은 시트의 같은 접힘에 짝 이름표를 달아 넣는다(접힘을 둘로 만들지 않는다). 밝기는 서버가 걸림으로 이미 가렸다(두 별 밝기가 달라 내 밝기로 다시 거르지 않는다).
  *   ② 궁 시트에 궁줄 — 서버 명반.궁[i].궁줄(夾 · 생시 · 띠 · 잡성 · 태양 · 태음 밝기)의 걸림 id 에 이어진 작가 줄, 夾(양옆 궁이 끼는 줄)은 따로 머리. 원문 · 일부 · 안 걸림 접힘.
  *   ③ 응답에 3판 키(칸.짝칸 · 명반.궁[i].궁줄)가 없으면(v0.2 서버) 2판 그대로. 글은 myeongban-copy.js 쪽3 · 짝칸 · 궁줄(작가 원고 myeongban-copy-v3).
- * 답은 /api/love-feedback 에 run 「myeongban-<서버가 준 열쇠>」 · id 「MB:<별>|<궁>」 으로 남긴다(생일은 보내지 않는다 — brain.js 와 같은 길). 자취(track)는 「myeongban」 한 번 — 첫 명반이 그려질 때.
+ * 반응 단추와 답 전송은 걷었다. 자취(track)는 「myeongban」 한 번 — 첫 명반이 그려질 때.
  * 문장은 myeongban-copy.js(작가 원고 myeongban-copy-v1 · v2 · v3). 여기 박힌 짧은 말은 다섯뿐 — 움직이는 해의 까닭 1층 말(큰 운 · 그해의 운 · 그해의 기운 — 작가의 「때」 문장 낱말 그대로) · 별 없는 궁 한 줄 · 짝 줄 「내 명반에서 걸려요」 · 큰 운 띠 「큰 운」 · 짝 이름표 「…와 함께」. */
 (function () {
   'use strict';
@@ -39,15 +39,17 @@
   var 밝기짧게 = { 廟: '가장 밝음', 旺: '밝음', 得地: '꽤 밝음', 利益: '조금 밝음', 平和: '보통', 不得地: '조금 어두움', 落陷: '빛 잃음' };
   var 궁한글 = { 命宮: '명궁', 兄弟: '형제궁', 妻妾: '부처궁', 子女: '자녀궁', 財帛: '재백궁', 疾厄: '질액궁', 遷移: '천이궁', 奴僕: '노복궁', 官祿: '관록궁', 田宅: '전택궁', 福德: '복덕궁', 父母: '부모궁' };
   var 글자소리 = { 甲: '갑', 乙: '을', 丙: '병', 丁: '정', 戊: '무', 己: '기', 庚: '경', 辛: '신', 壬: '임', 癸: '계', 子: '자', 丑: '축', 寅: '인', 卯: '묘', 辰: '진', 巳: '사', 午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해' };
+  var 오행국한글 = { 水二局: '수이국', 木三局: '목삼국', 金四局: '금사국', 土五局: '토오국', 火六局: '화육국' };
   var 소리 = function (t) { return String(t || '').split('').map(function (c) { return 글자소리[c] || c; }).join(''); };
   var 화한글 = { 化祿: '화록', 化權: '화권', 化科: '화과', 化忌: '화기' };
   var 궁쉬운 = function (g) { return (쪽.궁 && 쪽.궁[g] && 쪽.궁[g].쉬운) || ''; };
+  var 궁말 = function (g) { return 궁쉬운(g) + '(' + (궁한글[g] || g) + ')'; };
   var 별쉬운 = function (s) { return (쪽.별 && 쪽.별[s] && 쪽.별[s].쉬운) || (쪽2.별 && 쪽2.별[s] && 쪽2.별[s].쉬운) || s; };
   // 화면 이름 — 天空 은 「天空(地空)」(2판 정함 ⑤ · 쪽2.천공이름). 나머지는 한자 그대로
   var 별이름 = function (s) { return (쪽2.별 && 쪽2.별[s] && 쪽2.별[s].화면이름) || (s === '天空' ? 글2('천공이름.화면', s) : s); };
   var 종류쉬운 = function (k) { return 글2('종류.' + k + '.쉬운', ''); };
-  // 「天府(천부)에 붙은 화과」 — 사화 칸 머리(쪽2.사화칸.머리)
-  var 붙은말 = function (실은, 화, 길) { return 틀2(글2('사화칸.' + (길 || '머리'), '{별}에 붙은 {사화}'), { 별: 별이름(실은) + (별쉬운(실은) !== 실은 ? '(' + 별쉬운(실은) + ')' : ''), 사화: 별쉬운(화) }); };
+  // 「천부에 붙은 화과」 — 사화 칸 머리(쪽2.사화칸.머리)
+  var 붙은말 = function (실은, 화, 길) { return 틀2(글2('사화칸.' + (길 || '머리'), '{별}에 붙은 {사화}'), { 별: 별쉬운(실은), 사화: 별쉬운(화) }); };
   var 궁of = function (이름) { return 결과 ? 결과.명반.궁.filter(function (g) { return g.이름 === 이름; })[0] : null; };
 
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
@@ -56,12 +58,6 @@
   $('sub').textContent = 글('첫줄', '');
   $('hint').textContent = 글('입력.시필요', '');
   $('go').textContent = 글('입력.단추', '내 명반 그리기');
-
-  function 남기기(id, v) {
-    if (!표) return;
-    try { fetch(API + '/api/love-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ runId: 'myeongban-' + 표, id: id, value: v }) }); } catch (e) {}
-  }
-  var 단추 = function (id) { return '<div class="btns" data-id="' + esc(id) + '"><button type="button" data-v="yes">' + esc(글('맞아요.예', '맞아요')) + '</button><button type="button" data-v="no">' + esc(글('맞아요.아니요', '아니에요')) + '</button></div><p class="why after" data-after="' + esc(id) + '"></p>'; };
 
   // 엔진 경계 말 → 작가 경계종류 열쇠(엔진 말은 1층에 내지 않는다 — 작가 원고 경계메모). 모르는 말은 머리 줄만.
   function 경계종류(말) {
@@ -107,7 +103,7 @@
     var M = 결과.명반, a = 자리[g.지지] || [1, 1], 사화 = {}, 놓인 = {};
     (g.사화 || []).forEach(function (x) { (사화[x.별] = 사화[x.별] || []).push(x.화); });
     var h = '<div class="mb-cell' + (g.이름 === '命宮' ? ' is-ming' : '') + '" style="grid-area:' + a[0] + '/' + a[1] + '" data-g="' + esc(g.이름) + '">';
-    h += '<div class="mb-gh"><button type="button" class="mb-gname" data-gung="' + esc(g.이름) + '">' + esc(궁한글[g.이름] || g.이름) + '<small>' + esc(궁쉬운(g.이름)) + '</small></button><span class="mb-ji">' + esc(소리((g.궁간 || '') + g.지지)) + (M.신궁 === g.이름 ? '<span class="mb-tag">' + esc(글('명반.신궁표시', '신궁')) + '</span>' : '') + '</span></div>';
+    h += '<div class="mb-gh"><button type="button" class="mb-gname" data-gung="' + esc(g.이름) + '">' + esc(궁쉬운(g.이름)).replace('과 동료', '과<br>동료') + '<small>' + esc(궁한글[g.이름] || g.이름) + '</small></button><span class="mb-ji">' + esc(소리((g.궁간 || '') + g.지지)) + (M.신궁 === g.이름 ? '<span class="mb-tag">' + esc(글('명반.신궁표시', '신궁')) + '</span>' : '') + '</span></div>';
     if (g.주성.length) {
       h += '<div class="mb-stars">' + g.주성.map(function (s) {
         놓인[s.이름] = 1;
@@ -136,8 +132,8 @@
     var 종류 = []; (M.경계 || []).forEach(function (말) { var k = 경계종류(말); if (k && 종류.indexOf(k) < 0) 종류.push(k); });
     if ((M.경계 || []).length) h += '<div class="mb-edge"><p>' + esc(글('명반.경계', '')) + '</p>' + 종류.map(function (k) { return '<p>' + esc(글('명반.경계종류.' + k, '')) + '</p>'; }).join('') + '</div>';
     h += '<div class="mb" id="mb">' + M.궁.map(궁칸).join('')
-      + '<div class="mb-center"><div class="c1">' + esc(글('명반.명궁표시', '명궁') + ' ' + M.명궁지지 + ' · ' + M.오행국) + '</div>'
-      + '<div class="c2">' + esc(글('명반.신궁표시', '신궁') + ' ' + M.신궁 + (궁쉬운(M.신궁) ? '(' + 궁쉬운(M.신궁) + ')' : '')) + '</div>'
+      + '<div class="mb-center"><div class="c1">' + esc('나를 보는 칸(' + 글('명반.명궁표시', '명궁') + ') — ' + 소리(M.명궁지지) + ' 칸 · 명반의 바탕 ' + (오행국한글[M.오행국] || M.오행국) + '(' + M.오행국 + ')') + '</div>'
+      + '<div class="c2">' + esc(글('명반.신궁표시', '신궁') + ' — ' + 궁말(M.신궁)) + '</div>'
       + (명식짧게() ? '<div class="c3">' + esc(명식짧게()) + '</div>' : '')
       + '<div class="c3 tap' + (탭본() ? ' still' : '') + '">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
       + '</div>';
@@ -178,7 +174,7 @@
     if (왜) {
       var 조각 = 왜.split(' · ').slice(1).join(' · ') || 왜, m;
       if ((m = /^(.+?)[은는] 같은 궁이 아님/.exec(조각))) return m[1] + 받침말(m[1], '과', '와') + ' 함께 있을 때';
-      if ((m = /^같은 궁에 (.+?) 없음/.exec(조각))) return '같은 궁에 ' + m[1] + '이 붙을 때';
+      if ((m = /^같은 궁에 (.+?) 없음/.exec(조각))) return '같은 궁에 ' + m[1] + 받침말(m[1], '이', '가') + ' 붙을 때';
       if (/홀로가 아님/.test(조각)) return '이 별이 홀로 있을 때';
       return '이럴 때: ' + 조각;
     }
@@ -186,6 +182,8 @@
     return '다른 조건일 때';
   }
   function 받침말(w, 있음, 없음) { var c = String(w).replace(/[^가-힣]/g, '').slice(-1); if (!c) return 없음; return (c.charCodeAt(0) - 0xAC00) % 28 ? 있음 : 없음; }
+  // 으로/로 — 받침 없음과 ㄹ 받침은 「로」(일로 · 나로), 나머지 받침은 「으로」(돈으로). 받침말은 과/와 · 이/가에도 써서 ㄹ을 받침으로 쳐야 하니 따로 둔다
+  var 으로 = function (w) { var c = String(w).replace(/[^가-힣]/g, '').slice(-1); if (!c) return '로'; var j = (c.charCodeAt(0) - 0xAC00) % 28; return (j === 0 || j === 8) ? '로' : '으로'; };
   function 갈래칸(갈래줄, 모든줄, 셀, 내, 그리기, 없음말, 추론글) {
     if (갈래줄.length) return 갈래줄.map(그리기).join('');
     var 추 = 추론html(추론글);
@@ -204,8 +202,8 @@
     if (결과.칸[key] && 결과.칸[key].별종류) { 별시트2(key); return; }
     var 별 = key.split('|')[0], 궁 = key.split('|')[1], 셀 = 결과.칸[key] || { 걸림: [], 일부: [], 안걸림: [], 움직이는해: [], 짝: [] }, g = 궁of(궁) || {}, 원고 = 칸글[key] || { 줄: [] };
     var 내 = 셀.내밝기 || ((g.주성 || []).filter(function (s) { return s.이름 === 별; })[0] || {}).밝기 || '', h = '';
-    h += '<p class="sh-k">' + esc(궁 + (궁쉬운(궁) ? '(' + 궁쉬운(궁) + ')' : '') + ' · ' + (g.지지 || '') + (결과.명반.신궁 === 궁 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
-    h += '<p class="sh-t">' + esc(별) + '<small>' + esc(별쉬운(별)) + (내 ? ' · ' + 내 : '') + '</small></p>';
+    h += '<p class="sh-k">' + esc(궁말(궁) + ' · ' + 소리(g.지지) + ' 칸' + (결과.명반.신궁 === 궁 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
+    h += '<p class="sh-t">' + esc(별쉬운(별)) + '<small>' + esc(별 + (내 ? ' · ' + (밝기짧게[내] || 내) : '')) + '</small></p>';
     if (내 && 글('밝기.' + 내, '')) h += '<p class="sh-b">' + esc(글('밝기.' + 내, '')) + ' <small>' + esc(글('칸.밝기머리', '')) + '</small></p>';
     if (쪽.별 && 쪽.별[별]) h += '<p class="why">' + esc(쪽.별[별].한줄) + '</p>';
     if (셀.빈칸) {
@@ -213,7 +211,7 @@
       if (추론of(key).성품 || 추론of(key).일) h += '<div class="sec">' + esc(글('칸.특성머리', '')) + '</div>' + 추론html(추론of(key).성품) + '<div class="sec">' + esc(글('칸.사건머리', '')) + '</div>' + 추론html(추론of(key).일);
       if ((셀.짝 || []).length) {
         h += '<p class="why">' + esc(글('칸.빈칸짝', '')) + '</p>' + 셀.짝.map(function (x) {
-          var 머리 = (x.짝 || []).join(' · ') + (x.걸림 === '걸림' ? ' — 내 명반에 해당해요' : x.걸림 === '일부' ? ' — ' + 글('칸.일부', '') : '');
+          var 머리 = (x.짝 || []).map(별쉬운).join(' · ') + (x.걸림 === '걸림' ? ' — 내 명반에 해당해요' : x.걸림 === '일부' ? ' — ' + 글('칸.일부', '') : '');
           return '<div class="src' + (x.걸림 === '걸림' ? '' : ' part') + '"><p class="l">' + esc(머리) + '</p><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + 오늘말줄(x) + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
         }).join('');
       }
@@ -239,7 +237,7 @@
     h += '<div class="sec">' + esc(글('칸.때머리', '')) + '</div>';
     if (해들.length) {
       h += '<p class="mb-line">' + esc(틀(글('칸.때', ''), { 해들: 해들.map(function (y) { return y.해; }).join(' · ') + '년' })) + '</p>';
-      h += 해들.map(function (y) { return '<p class="yr"><b>' + y.해 + '년</b> <small>' + esc(y.간지 || '') + '</small> — ' + esc((y.까닭 || []).map(까닭말).join(' · ')) + '</p>'; }).join('');
+      h += 해들.map(function (y) { return '<p class="yr"><b>' + y.해 + '년</b> <small>' + esc(y.간지 ? 소리(y.간지) + '년' : '') + '</small> — ' + esc((y.까닭 || []).map(까닭말).join(' · ')) + '</p>'; }).join('');
     }
     if (셀.대한안옴 || !해들.length) h += '<p class="mb-none">' + esc(글('칸.때없음', '')) + '</p>';
     // 옛 책 원문 보기 — 걸림 글자 그대로 · 권:줄 · 판정표 뜻, 일부는 일부 머리 + 까닭. 3판 짝칸(두 별이 함께)은 짝 이름표를 달아 같은 접힘에
@@ -251,28 +249,27 @@
       h += '</details>';
     }
     if ((셀.안걸림 || []).length || 짝안.length) h += '<details class="fold"><summary>' + esc(글('칸.안걸림접힘', '')) + '</summary><p class="why">' + esc(글('칸.안걸림풀이', '')) + '</p>' + (셀.안걸림 || []).map(function (x) { return 원문칸(x, false); }).join('') + 짝안.map(function (x) { return 짝칸(x, 함께들, '안 걸림'); }).join('') + '</details>';
-    h += '<p class="q2">' + esc(글('맞아요.물음', '')) + '</p>' + 단추('MB:' + key) + '<p class="note">' + esc(글('맞아요.맺음', '')) + '</p>';
     열기(h);
   }
   // 짝 원문 칸 — 1판 빈칸 짝 줄과 같은 꼴(짝 별 이름 · 걸림이면 「내 명반에서 걸려요」 · 일부면 일부 머리). 이름들이 비면(걸린 까닭이 이 궁의 짝 별이 아닐 때) 이름 없이
   //   상태 — 3판 짝칸은 걸림 · 일부 · 안걸림 묶음으로 와서 줄에 걸림 칸이 없다(넘긴다). 3판 일부는 원문칸처럼 까닭(왜)도. 2판 부름(상태 없음)은 그대로
   function 짝칸(x, 이름들, 상태) {
-    var 걸 = 상태 || x.걸림, 이 = (이름들 || []).map(별이름).join(' · '), 끝 = 걸 === '걸림' ? '내 명반에 해당해요' : 걸 === '일부' ? 글('칸.일부', '') : '';
+    var 걸 = 상태 || x.걸림, 이 = (이름들 || []).map(별쉬운).join(' · '), 끝 = 걸 === '걸림' ? '내 명반에 해당해요' : 걸 === '일부' ? 글('칸.일부', '') : '';
     var 머리 = 이 + (이 && 끝 ? ' — ' : '') + 끝;
     return '<div class="src' + (걸 === '걸림' ? '' : ' part') + '"><p class="l">' + esc(머리) + '</p><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + 오늘말줄(x) + (상태 === '일부' && x.왜 ? '<p class="l">' + esc(x.왜) + '</p>' : '') + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
   }
-  // 「天府와 함께」 — 짝으로 걸린 줄의 이름표(이 궁에 같이 있는 짝 별만)
+  // 「천부와 함께」 — 짝으로 걸린 줄의 이름표(이 궁에 같이 있는 짝 별만)
   function 함께말(이름들) {
     if (!이름들 || !이름들.length) return '';
     var 끝 = 이름들[이름들.length - 1], b = 받침(별쉬운(끝));
-    return 이름들.map(별이름).join(' · ') + (b == null ? '와' : b ? '과' : '와') + ' 함께';
+    return 이름들.map(별쉬운).join(' · ') + (b == null ? '와' : b ? '과' : '와') + ' 함께';
   }
   // 2판 시트(보좌 · 살성 · 사화) — 1판 별시트와 같은 차례. 셀 = 서버 2판 칸, 원고 = 칸 216
   function 별시트2(key) {
     var 별 = key.split('|')[0], 궁 = key.split('|')[1], 셀 = 결과.칸[key], g = 궁of(궁) || {}, 원고 = 칸글[key] || { 줄: [] };
     var 종 = 셀.별종류, 화칸 = 종 === '사화', 실은 = 셀.실은별 || '', 내 = 셀.내밝기 || '', 별글 = (쪽2.별 && 쪽2.별[별]) || {}, h = '';
-    h += '<p class="sh-k">' + esc(궁 + (궁쉬운(궁) ? '(' + 궁쉬운(궁) + ')' : '') + ' · ' + (g.지지 || '') + (결과.명반.신궁 === 궁 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
-    h += '<p class="sh-t">' + esc(별이름(별)) + '<small>' + esc([별쉬운(별), 종류쉬운(종), 내].filter(Boolean).join(' · ')) + '</small></p>';
+    h += '<p class="sh-k">' + esc(궁말(궁) + ' · ' + 소리(g.지지) + ' 칸' + (결과.명반.신궁 === 궁 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
+    h += '<p class="sh-t">' + esc(별쉬운(별)) + '<small>' + esc([별이름(별), 종류쉬운(종), 밝기짧게[내] || 내].filter(Boolean).join(' · ')) + '</small></p>';
     if (화칸 && 실은) h += '<p class="sh-b">' + esc(붙은말(실은, 별)) + '</p>';
     if (내 && 글('밝기.' + 내, '')) h += '<p class="sh-b">' + esc(글('밝기.' + 내, '')) + ' <small>' + esc(글('칸.밝기머리', '')) + '</small></p>';
     // 종류 한 줄은 살성만(「센 말도 책 이름을 붙여 글자 그대로」 — 센 줄 앞에). 보좌는 머리의 「돕는 별」로 족하고, 사화는 빈칸꼴 · 사화칸 풀이와 겹친다
@@ -311,7 +308,7 @@
     h += '<div class="sec">' + esc(글('칸.때머리', '')) + '</div>';
     if (해들.length) {
       h += '<p class="mb-line">' + esc(틀(글('칸.때', ''), { 해들: 해들.map(function (y) { return y.해; }).join(' · ') + '년' })) + '</p>';
-      h += 해들.map(function (y) { return '<p class="yr"><b>' + y.해 + '년</b> <small>' + esc(y.간지 || '') + '</small> — ' + esc((y.까닭 || []).map(까닭말).join(' · ')) + '</p>'; }).join('');
+      h += 해들.map(function (y) { return '<p class="yr"><b>' + y.해 + '년</b> <small>' + esc(y.간지 ? 소리(y.간지) + '년' : '') + '</small> — ' + esc((y.까닭 || []).map(까닭말).join(' · ')) + '</p>'; }).join('');
     }
     if (셀.대한안옴 || !해들.length) h += '<p class="mb-none">' + esc(글('칸.때없음', '')) + '</p>';
     // 옛 책 원문 보기 — 이 칸 걸림 + 걸린 새 짝, 일부는 일부 머리 아래
@@ -325,29 +322,28 @@
     }
     if ((셀.안걸림 || []).length || 짝안.length) h += '<details class="fold"><summary>' + esc(글('칸.안걸림접힘', '')) + '</summary><p class="why">' + esc(글('칸.안걸림풀이', '')) + '</p>' + (셀.안걸림 || []).map(function (x) { return 원문칸(x, false); }).join('') + 짝안.map(function (x) { return 짝칸(x, x.짝); }).join('') + '</details>';
     if (일판짝.length) h += '<details class="fold"><summary>' + esc(글2('주성칸에도.접힘', '큰 별(주성) 칸에도 있는 줄')) + '</summary><p class="why">' + esc(글2('주성칸에도.풀이', '')) + '</p>' + 일판짝.map(function (x) { return 짝칸(x, x.여기있는짝); }).join('') + '</details>';
-    h += '<p class="q2">' + esc(글('맞아요.물음', '')) + '</p>' + 단추('MB:' + key) + '<p class="note">' + esc(글('맞아요.맺음', '')) + '</p>';
     열기(h);
   }
   function 궁시트(이름) {
     var g = 궁of(이름); if (!g) return;
-    var h = '<p class="sh-k">' + esc((g.궁간 || '') + g.지지 + (결과.명반.신궁 === 이름 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
-    h += '<p class="sh-t">' + esc(이름) + '<small>' + esc(궁쉬운(이름)) + '</small></p>';
+    var h = '<p class="sh-k">' + esc(소리((g.궁간 || '') + g.지지) + ' 칸' + (결과.명반.신궁 === 이름 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
+    h += '<p class="sh-t">' + esc(궁쉬운(이름)) + '<small>' + esc((궁한글[이름] || 이름) + ' · ' + 이름) + '</small></p>';
     if (쪽.궁 && 쪽.궁[이름]) h += '<p class="sh-b">' + esc(쪽.궁[이름].한줄) + '</p>';
     if (결과.명반.신궁 === 이름) h += '<p class="why">' + esc(글('명반.신궁한줄', '')) + '</p>';
     if (g.대한) h += '<p class="why">' + esc('큰 운(대한) ' + g.대한.시작해 + '~' + g.대한.끝해 + '년') + '</p>';
-    if (g.주성.length) h += '<div class="sec">' + esc(글('명반.누르기', '')) + '</div><div class="sh-stars">' + g.주성.map(function (s) { return '<button type="button" data-cell="' + esc(s.이름 + '|' + 이름) + '">' + esc(s.이름) + '<small>' + esc(별쉬운(s.이름) + (s.밝기 ? ' · ' + s.밝기 : '')) + '</small></button>'; }).join('') + '</div>';
+    if (g.주성.length) h += '<div class="sec">' + esc(글('명반.누르기', '')) + '</div><div class="sh-stars">' + g.주성.map(function (s) { return '<button type="button" data-cell="' + esc(s.이름 + '|' + 이름) + '">' + esc(별쉬운(s.이름)) + '<small>' + esc(밝기짧게[s.밝기] || s.밝기 || '') + '</small></button>'; }).join('') + '</div>';
     else h += '<p class="mb-none">이 궁에는 열네 별 가운데 앉은 별이 없어요.</p>';
     // 보좌 · 살성 · 사화 — 서버 2판 칸이 있는 것은 단추(누르면 2판 시트), 없으면 1판처럼 이름만
     var 단추들 = [], 이름만 = [];
     (g.보좌 || []).map(function (s) { return [s, '보좌']; }).concat((g.살성 || []).map(function (s) { return [s, '살성']; })).forEach(function (p) {
       var k = p[0] + '|' + 이름;
-      if (결과.칸[k]) 단추들.push('<button type="button" data-cell="' + esc(k) + '">' + esc(별이름(p[0])) + '<small>' + esc([별쉬운(p[0]), 종류쉬운(p[1])].filter(Boolean).join(' · ')) + '</small></button>');
-      else 이름만.push(별이름(p[0]));
+      if (결과.칸[k]) 단추들.push('<button type="button" data-cell="' + esc(k) + '">' + esc(별쉬운(p[0])) + '<small>' + esc(종류쉬운(p[1])) + '</small></button>');
+      else 이름만.push(별쉬운(p[0]));
     });
     (g.사화 || []).forEach(function (x) {
       var k = x.화 + '|' + 이름;
-      if (결과.칸[k]) 단추들.push('<button type="button" data-cell="' + esc(k) + '">' + esc(x.화) + '<small>' + esc(붙은말(x.별, x.화)) + '</small></button>');
-      else 이름만.push(x.별 + ' ' + x.화);
+      if (결과.칸[k]) 단추들.push('<button type="button" data-cell="' + esc(k) + '">' + esc(별쉬운(x.화)) + '<small>' + esc(붙은말(x.별, x.화)) + '</small></button>');
+      else 이름만.push(별쉬운(x.별) + ' ' + 별쉬운(x.화));
     });
     if (단추들.length) h += (g.주성.length ? '' : '<div class="sec">' + esc(글('명반.누르기', '')) + '</div>') + '<div class="sh-stars aux">' + 단추들.join('') + '</div>';
     if (이름만.length) h += '<p class="why"><small>' + esc(이름만.join(' · ')) + '</small></p>';
@@ -360,9 +356,13 @@
       var 궁줄들 = ((궁줄글[이름] || {}).줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 걸id[id]; }); });
       var 협인줄 = function (l) { return (l.규칙 || []).some(function (id) { return 협id[id]; }); }, 줄p = function (l) { return '<p class="mb-line">' + esc(l.글) + '</p>'; };
       var 그밖 = 궁줄들.filter(function (l) { return !협인줄(l); }), 협줄 = 궁줄들.filter(협인줄);
-      if (그밖.length) h += '<div class="sec">' + esc(머리3('궁줄')) + '</div>' + 그밖.map(줄p).join('');
-      if (협줄.length) h += '<div class="sec">' + esc(머리3('夾')) + '</div>' + 협줄.map(줄p).join('');
       var 궁걸림 = 궁줄.걸림 || [], 궁일부 = 궁줄.일부 || [], 궁안 = 궁줄.안걸림 || [];
+      // 띠별 경고(K3-소기 — 서버가 늘 일부로 낸다)는 궁줄 머리(「태어난 띠와 시, …」) 아래, 일부 딱지와 함께. 때를 확정하지 않는 안내 그대로
+      var 궁일부id = {}; 궁일부.forEach(function (x) { 궁일부id[x.id] = true; });
+      var 띠일부줄 = ((궁줄글[이름] || {}).줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 궁일부id[id] && /^K3-소기-/.test(id); }); });
+      var 띠p = function (l) { return '<p class="mb-line part"><span class="tag">명반만으로는 다 못 정해요</span>' + esc(l.글) + '</p>'; };
+      if (그밖.length || 띠일부줄.length) h += '<div class="sec">' + esc(머리3('궁줄')) + '</div>' + 그밖.map(줄p).join('') + 띠일부줄.map(띠p).join('');
+      if (협줄.length) h += '<div class="sec">' + esc(머리3('夾')) + '</div>' + 협줄.map(줄p).join('');
       if (궁걸림.length || 궁일부.length) {
         h += '<details class="fold"><summary>' + esc(글('칸.원문접힘', '옛 책 원문 보기')) + '</summary><p class="why">' + esc(글('칸.원문머리', '')) + '</p>' + 궁걸림.map(function (x) { return 원문칸(x, false); }).join('');
         if (궁일부.length) h += '<p class="why">' + esc(글('칸.일부', '')) + '</p>' + 궁일부.map(function (x) { return 원문칸(x, true); }).join('');
@@ -389,7 +389,8 @@
   function 그리기시트(v) {
     if (v.t === '별') 별시트(v.k); else 궁시트(v.k);
     if (쌓임.length > 1) {
-      var 앞 = 쌓임[쌓임.length - 2], 말 = 앞.t === '궁' ? '← ' + 앞.k + (궁쉬운(앞.k) ? '(' + 궁쉬운(앞.k) + ')' + 받침말(궁쉬운(앞.k), '으로', '로') : '으로') : '← 앞으로';
+      // 「나(명궁)로」 — 조사는 괄호 앞 낱말(쉬운 이름)에 붙인다
+      var 앞 = 쌓임[쌓임.length - 2], 말 = 앞.t === '궁' ? '← ' + 궁말(앞.k) + 으로(궁쉬운(앞.k) || 궁한글[앞.k] || 앞.k) : '← 앞으로';
       $('shBody').insertAdjacentHTML('afterbegin', '<button type="button" class="sh-prev" data-shback="1">' + esc(말) + '</button>');
     }
   }
@@ -430,13 +431,6 @@
       try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban_share'); } catch (e2) {}
       return;
     }
-    var b = t.closest && t.closest('.btns button'); if (!b) return;
-    var box = b.parentNode, id = box.getAttribute('data-id'), v = b.getAttribute('data-v');
-    남기기(id, v);
-    Array.prototype.forEach.call(box.querySelectorAll('button'), function (x) { x.classList.toggle('on', x === b); });
-    var 뒤 = document.querySelector('[data-after="' + id.replace(/"/g, '\\"') + '"]');
-    if (뒤) 뒤.textContent = v === 'yes' ? 글('맞아요.고마움', '') : 글('맞아요.아니에요뒤', '');
-    try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban_vote'); } catch (e3) {}
   });
 
   // 넣어 둔 생년월일(people.js) — brain 과 같은 길(10-05 사장님 「이용자 정보 입력은 프로필로」). 시 모름은 막는다(명궁이 달과 시로 선다).

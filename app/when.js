@@ -25,6 +25,9 @@
   var T = window.WHEN_COPY || {};
   var 틀 = function (k, v) { return String((T.틀 || {})[k] || '').replace(/\{([^{}]+)\}/g, function (_, n) { return v[n] == null ? '' : v[n]; }); };
   var 화 = function (k, 기본) { return (T.화면 || {})[k] || 기본; };
+  var 소개 = document.querySelector('main.wrap > .sub');
+  if (소개 && (T.화면 || {}).sub) 소개.textContent = T.화면.sub;
+  var 조심말 = function (곳) { return (T.조심할일 || {})[곳] || ''; };
   var 단계 = 1, 아니수 = 0, 답칸 = {};   // 답칸: b · c 에 누른 값
   var 단추 = function (id) { return '<div class="btns" data-id="' + id + '"><button data-v="yes">맞아요</button><button data-v="no">아니에요</button></div>'; };
   var 끝난칸 = function (h, v) { return '<div class="card done"><div class="k">' + (v === 'yes' ? '✓ 맞아요' : v === 'no' ? '아니에요' : '건너뜀') + '</div><p>' + h.y + '년(' + h.나이 + '세) — ' + esc(h.사건) + '</p></div>'; };
@@ -45,7 +48,7 @@
     if (!벌써 && P.숨통 && !(P.최고 && P.최고.y === P.숨통.y)) h += '<p>' + esc(틀('숨통', { y: P.숨통.y, 나이: P.숨통.나이, 왜: P.숨통.왜 })) + '</p>';
     if (P.최고) h += '<p>' + esc(틀('최고', { y: P.최고.y, 나이: P.최고.나이, 사건: P.최고.사건 })) + '</p>';
     if (!벌써 && !P.숨통 && !P.최고) h += '<p>' + esc(틀('없음', {})) + '</p>';
-    h += '</div>';
+    h += '<p class="why">' + esc(화('답출처', '이 답은 자미두수 해마다 운으로 셌어요. 막힘이 없는 해가 여럿이면, 그 가운데 사주에서 그해 들어오는 돈 글자(재성)가 태어날 때 글자 · 10년 운과 가장 많이 겹치는 해를 가장 좋은 해로 골랐어요(같으면 빠른 해). 사주로 본 길흉은 아래 「해마다 · 달마다 자세히 보기」에 따로 있고, 둘이 다르면 다른 대로 보여 드려요.')) + '</p></div>';
     if (P.할일) h += '<div class="sec">' + esc(화('할일머리', '지금 할 일')) + '</div><div class="card"><p><b>' + esc(P.할일) + '</b></p></div>';
     // 10-05 사장님 「자미두수에서 뾰족한 부분을 짚어 줄 순 없어?」 — 명반에서 가장 크게 흔들리는 곳(막힘별 · 흉별 둘 이상)과 터지는 해
     // 10-05 사장님 「내가 말해 준 사건들에 판단이 침몰된 것 같은데?」 — 흔들리는 해의 일은 그해 판단이 고른다(합치지 않고 고르기만):
@@ -57,20 +60,24 @@
       h += '<div class="sec">' + esc((V.틀 || {}).머리 || '내 삶에서 가장 크게 움직이는 곳') + '</div>' + ((V.틀 || {}).둘째 ? '<p class="why">' + esc(V.틀.둘째) + '</p>' : '');
       P.뾰족.forEach(function (x, i) {
         var 말 = V.자리[x.곳]; if (!말) return;
+        var 다음갈래 = 갈래(x.다음 && 해찾기(x.다음.y)), 할일 = x.다음 && 다음갈래 === '흉' ? 조심말(x.곳) : '';
         var 해들 = x.지난.map(function (z) { return z.y + '년(' + z.나이 + '세)'; }).join(' · ');
         h += '<div class="card sharp"><p class="q">' + esc(V틀(i ? '둘째머리' : '첫줄', { 이름: 말.이름 })) + '</p><p>' + esc(말.뾰족) + '</p>'
           + '<p class="why">' + x.까닭.map(function (k) { return esc((V.까닭 || {})[k] || ''); }).join(' ') + '</p>'
           + (해들 ? '<p>' + esc(V틀('지난', { 해들: 해들, 중립: 말.중립 })) + (x.지난.some(function (z) { return z.나이 < 20; }) ? ' ' + esc(V틀('어릴때', { 해들: x.지난.filter(function (z) { return z.나이 < 20; }).map(function (z) { return z.y + '년(' + z.나이 + '세)'; }).join(' · ') })) : '') + '</p>' : '')
-          + '<p><b>' + esc(x.다음 ? V틀('다음', { y: x.다음.y, 나이: x.다음.나이, 사건: 말[갈래(해찾기(x.다음.y))] }) : V틀('없음', {})) + '</b></p></div>';
+          + '<p><b>' + esc(x.다음 ? V틀('다음', { y: x.다음.y, 나이: x.다음.나이, 사건: 말[다음갈래] }) : V틀('없음', {})) + '</b></p>'
+          + (할일 ? '<p><b>' + esc(할일) + '</b></p>' : '') + '</div>';
       });
     }
     if (P.조심) h += '<div class="sec">' + esc(화('조심머리', '조심할 해')) + '</div><div class="card"><p>' + esc(틀('조심', P.조심)) + (P.조심.할일.length ? '</p><p style="margin-top:8px"><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div>';
     var 띠 = '<div class="strip">' + P.띠.map(function (x) { return '<div class="cell' + (x.y === 올해 ? ' now' : '') + '" style="background:' + 색[x.등급] + '" title="' + x.y + ' ' + x.등급 + '"><span>' + String(x.y).slice(2) + '</span></div>'; }).join('') + '</div>'
-      + '<div class="legend">' + ['힘듦', '버팀', '나아짐', '좋음'].map(function (k) { return '<span><i style="background:' + 색[k] + '"></i>' + k + '</span>'; }).join('') + '</div>';
+      + '<div class="legend">' + ['힘듦', '버팀', '나아짐', '좋음'].map(function (k) { return '<span><i style="background:' + 색[k] + '"></i>' + k + '</span>'; }).join('') + '</div>'
+      + '<p class="why">아래 자미두수 「년」 칩은 띠의 좋음과 나아짐을 「좋음」으로, 버팀을 「보통」으로, 힘듦을 「나쁨」으로 묶어 보여 줘요.</p>';
     var 칩 = function (k) { return '<span class="chip c-' + k + '">' + k + '</span>'; };
     // 10-06 나아갈 길 4 — 답을 본 자리에서 친구에게 보내기(주소만 — 생일 · 결과는 싣지 않는다). 카톡에는 미리보기 그림(cards/og/when.jpg)이 뜬다.
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(화('공유단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg"></p></div>';
-    var 판칩 = function (k) { return k && k !== '—' ? '<span class="chip p-' + k + '">' + k + '</span>' : '<span class="chip p-평">—</span>'; };
+    var 판말 = { 길: '좋음', 흉: '나쁨', 평: '보통', 변화: '바뀜' };
+    var 판칩 = function (k) { return k && k !== '—' ? '<span class="chip p-' + k + '">' + esc(판말[k] || k) + '</span>' : '<span class="chip p-평">—</span>'; };
     // 10-06 사장님 「사주 = 년마다 · 자미두수 = 년마다 · 사주 = 년+월마다 · 자미두수 = 년+월마다 길흉판단 + 예상되는 현상」 — 네 관점마다 판단과 현상을 붙여 둔다.
     //   사주 년 = 원국 + 10년 운 + 그해(입춘) · 사주 년+월 = 그 위에 그달까지 쌓은 판정엔진 층 — 현상은 그 층의 범주를 낸 재료(삶의 중심 · 치는 것 · 막아 주는 것)에서만(서버).
     //   자미두수 년 = 그해 막힘 · 풀림 · 자미두수 년+월 = 그달 자리에 그해 운의 별까지 얹은 판단(설) — 현상은 판단에 맞는 자리의 일. 넷을 합치지 않는다.
@@ -90,10 +97,11 @@
     }).join('') + '</div>';
     h += '<div class="sec">' + esc(화('달머리', '달마다 — 년 · 년+월')) + '</div><p class="why">칩이 둘이에요. 앞 칩(년)은 그달이 속한 해 전체로 본 판단, 뒤 칩(년+월)은 그해에 그달 운까지 더해 본 판단이에요. 그달 일도 함께 보여 드려요. 사주는 입춘에, 자미두수는 음력 설에 해가 바뀌어요.</p><div class="yrs">' + (P.달들 || []).map(function (a, i) {
       var 자 = V2[a.곳] || {}, 일 = (달말[a.곳] || {})[a.등급] || '';
+      var 할일 = a.등급 === '조심' ? 조심말(a.곳) : '';
       var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">' + esc(자.이름) + ' 쪽에 큰 움직임이 오는 달</div>' : '';
       return '<div class="yr' + (i === 0 ? ' now' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + a.y + '년 ' + a.m + '월</b>' + (i === 0 ? ' <small>이번 달</small>' : '') + '</div>'
         + 줄('사주', 쌍칩(a.사년판, a.사판), a.사현상 ? 두줄('그달 ' + a.사현상) : esc(a.사왜 || ''))
-        + 줄('자미두수', 쌍칩(a.자년판, a.자판), 일 ? '그달 ' + esc(일) : '', 자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '')
+        + 줄('자미두수', 쌍칩(a.자년판, a.자판), (일 ? '그달 ' + esc(일) : '') + (할일 ? '<br><b>' + esc(할일) + '</b>' : ''), 자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
     h += '<p class="note">계산 — 자미두수는 해마다 바뀌는 운(자미두수전서 셋째 권, 《紫微斗數全書》 卷三)으로, 사주는 그해 · 그달 운이 태어날 때 받은 여덟 글자(원국)의 짜임을 깨는지 · 깨지지 않게 막아 주는지 · 바꾸는지로 봐요. 「맞아요 · 아니에요」는 계산을 다듬는 데만 써요(생일은 저장하지 않아요).</p></details>';
@@ -102,7 +110,7 @@
   // 10-05 사장님 「맞아요를 실시간 현황판으로 — 리뷰 시스템」 「만든 나보다 이용자 리뷰를 더 믿는다」.
   //   들어오자마자 보이게 입력 칸 위에. 아니에요도 그대로 센다(맞아요만 고르면 거짓 현황판). 후기는 맞아요 누른 사람만 한 줄.
   var 몇전 = function (t) { var m = Math.max(0, Math.round((Date.now() - new Date(t).getTime()) / 60000)); return m < 1 ? '방금' : m < 60 ? m + '분 전' : m < 1440 ? Math.round(m / 60) + '시간 전' : Math.round(m / 1440) + '일 전'; };
-  var 칸이름 = { b: '가장 힘들었을 해', c: '일이 잘 풀렸을 해' };
+  var 칸이름 = { b: '최근 5년 중 가장 힘들었을 해', c: '일이 잘 풀렸을 해' };
   var 판섬 = false;   // 서버에 후기 표가 서기 전(사장님 SQL 전)에는 후기 칸도 안 연다
   async function 현황판() {
     try {
