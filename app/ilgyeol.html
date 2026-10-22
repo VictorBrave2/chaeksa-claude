@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>나는 뭐해 먹고 살까? — 진로 보고서 · 책사</title>
-<meta name="description" content="한 사람의 생년월일시로 계산해, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요. 직업 이름을 찍어 주는 게 아니라, 어떤 조건의 일이 맞는지와 그 근거를 드려요.">
-<!-- 10-22 홈 카드는 넣지 않는다(홈은 출산택일이 앞) — 메뉴 · llms.txt 에서만 잇는다. 공개용 견본 쪽은 아직 없다. -->
+<title>나는 뭐해 먹고 살까? · 책사</title>
+<meta name="description" content="한 사람의 생년월일시로 계산해, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 풀어 드려요. 결제하면 바로 화면에서 열려요. 직업 이름을 찍어 주는 게 아니라, 어떤 조건의 일이 맞는지와 그 근거를 드려요.">
+<!-- 10-22 홈 메뉴판 맨 앞줄(유료 다섯)에 걸려 있다. 공개용 견본 쪽은 아직 없다. -->
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://chaeksa.kr/ilgyeol.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
-<meta property="og:title" content="나는 뭐해 먹고 살까? — 진로 보고서">
-<meta property="og:description" content="한 사람의 생년월일시로 계산해, 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요.">
+<meta property="og:title" content="나는 뭐해 먹고 살까?">
+<meta property="og:description" content="한 사람의 생년월일시로 계산해, 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 풀어 드려요. 결제하면 바로 화면에서 열려요.">
 <meta property="og:url" content="https://chaeksa.kr/ilgyeol.html">
 <meta property="og:image" content="https://chaeksa.kr/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<!-- 「나는 뭐해 먹고 살까?」 소개 쪽 — 10-21 사장님 결정(보고서를 판다 · 카카오페이). 신청은 ilgyeol-apply.html(신청서를 적고 그 자리에서 결제 — 출산택일과 같은 길).
+<!-- 「나는 뭐해 먹고 살까?」 소개 쪽 — 10-21 사장님 결정(카카오페이) · 10-22 「보고서 형식 말고 결제하면 바로 나오게」. 신청은 ilgyeol-apply.html(사람 한 명 고르고 그 자리에서 결제) → 결제 뒤 ilgyeol-report.html 이 비공개 서버로 만들어 바로 띄운다. 「내 결과」는 이 쪽 위(my_ilgyeol).
      계산 · 원고 · 판정 코드는 이 쪽에 없다(비공개 서버). 값(원)은 서버 상품표(products, code ilgyeol)에서만 읽는다 — 여기 적지 않는다. -->
 <script>
   // 신청 단추가 가는 곳 — 이 한 줄만 고친다(사이트 신청서 쪽 이름 또는 https 주소). 비어 있으면 신청 단추를 숨긴다.
@@ -74,10 +74,10 @@
   .doc .foot a{color:var(--ink3)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Service","name":"나는 뭐해 먹고 살까? — 보고서","serviceType":"명리 진로 보고서","areaServed":"KR",
+{"@context":"https://schema.org","@type":"Service","name":"나는 뭐해 먹고 살까?","serviceType":"명리 진로 풀이","areaServed":"KR",
  "provider":{"@type":"Organization","name":"책사","url":"https://chaeksa.kr/"},
  "url":"https://chaeksa.kr/ilgyeol.html",
- "description":"한 사람의 생년월일시로 계산해, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요."}
+ "description":"한 사람의 생년월일시로 계산해, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 풀어 드려요. 결제하면 바로 화면에서 열려요."}
 </script>
 <!-- JSON-LD offers(값)는 넣지 않았다 — 값은 사장님이 정함. 정해지면 "offers":{"@type":"Offer","price":"…","priceCurrency":"KRW"} 를 위 JSON-LD 에 더한다. -->
 </head>
@@ -85,9 +85,11 @@
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a></div>
 <main class="doc">
   <a class="btn ghost small backhome" href="./" style="display:inline-block;margin-top:0;text-decoration:none">← 홈</a>
-  <p class="eyebrow">「나는 뭐해 먹고 살까?」 보고서</p>
+  <p class="eyebrow">「나는 뭐해 먹고 살까?」 — 결제하면 바로 열리는 풀이</p>
   <h1>나는 뭐해 먹고 살까?</h1>
-  <p class="lead">한 사람의 생년월일시로 사주 여덟 글자와 자미두수 명반(태어난 때로 열두 칸에 별을 놓아 보는 옛 방법)을 세워, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 보고서로 드려요. 직업 이름을 찍어 주는 게 아니라, <b>어떤 조건의 일이 맞는지와 그 근거</b>를 드려요.</p>
+  <p class="lead">한 사람의 생년월일시로 사주 여덟 글자와 자미두수 명반(태어난 때로 열두 칸에 별을 놓아 보는 옛 방법)을 세워, 그 사람에게 맞는 일의 조건 · 피할 꼴 · 돈이 오는 길 · 같이 일할 사람 · 앞으로 10년의 때를 풀어 드려요. 결제하면 바로 화면에서 열려요. 직업 이름을 찍어 주는 게 아니라, <b>어떤 조건의 일이 맞는지와 그 근거</b>를 드려요.</p>
+
+  <div class="tk-mine" id="igMine" hidden></div>
 
   <h2>어떤 답이 나오나요</h2>
   <p>맨 위 결론은 두 줄이에요. 한 줄은 시대가 바뀌어도 바뀌지 않는 줄, 한 줄은 그 조건을 지금 시대의 직업 이름으로 옮긴 줄이에요.</p>
@@ -101,7 +103,7 @@
     <p class="ex">두 줄 아래에 「그래서 할 것」 셋을 적어요 — 지금 바로 할 수 있는 것으로, 각각 어느 조건에서 나왔는지를 붙여서.</p>
   </div>
 
-  <h2>보고서에 무엇이 들어 있나요</h2>
+  <h2>무엇이 들어 있나요</h2>
   <ol class="gets">
     <li><b>맨 위 결론 두 줄과 「그래서 할 것」 셋</b> — 바뀌지 않는 줄 하나, 지금 시대의 직업 이름으로 옮긴 줄 하나, 그리고 바로 할 일 셋</li>
     <li><b>맞는 일의 조건</b> — 사주 여덟 글자 표와 자미두수 명반(열두 칸)을 싣고, 조건 하나하나에 「왜」(어느 글자 · 어느 별에서 나왔는지)와 「예를 들어」(지금 시대의 예시)를 붙여요</li>
@@ -134,26 +136,25 @@
     <li>태어난 시각 — 모르시면 「시간 모름」으로 넣어 주세요. 하루를 두 시간씩 나눈 열두 칸에 하나씩 모두 넣어 보고, 어느 시냐에 따라 조건이 갈리면 「태어난 시를 알면 답이 정해져요」라고 적어 드려요</li>
     <li>태어난 곳 — 시 · 군까지면 돼요. 같은 시계 시각이라도 동쪽과 서쪽은 해가 뜨는 때가 조금씩 달라서, 태어난 시를 그곳 기준으로 맞추는 데 써요</li>
     <li>성별</li>
-    <li>보고서(PDF)를 받으실 메일 주소. 결제할 때 카카오 · 네이버 로그인이 한 번 필요해요 — 결제한 것을 그 계정에 매어 두기 때문이에요</li>
-    <li>지금 하는 일 · 바라는 점 — 안 적어도 돼요. 적어 주시면 「예를 들어」 칸을 지금 상황에 가깝게 쓰는 데 참고해요</li>
+    <li>결제할 때 카카오 · 네이버 로그인이 한 번 — 결제한 것을 그 계정에 매어 두기 때문이에요. 풀이는 그 계정에 2년 남아 어느 기기에서나 다시 열려요</li>
   </ul>
 
   <h2>어떻게 받나요</h2>
 <ol class="steps">
-<li>신청서에서 한 분을 저장된 사람에서 고르거나 새로 넣고(생년월일 · 태어난 시 · 태어난 곳 · 성별), 보고서를 받으실 메일 주소를 적어 주세요.</li>
+<li>신청 쪽에서 한 분을 저장된 사람에서 고르거나 새로 넣어요(생년월일 · 태어난 시 · 태어난 곳 · 성별).</li>
 <li>그 자리에서 결제하시면 돼요(카카오페이).<span data-price-row hidden> 값은 <b data-price="ilgyeol"></b>이에요.</span></li>
-<li>결제되면 엔진이 여덟 글자와 명반을 계산하고, 책사가 한 번 더 확인해요.</li>
-<li>보통 2~3일 안에 보고서(PDF)를 적어 주신 메일로 보내 드려요.</li>
+<li>결제되면 엔진이 여덟 글자와 명반을 세우고 글을 써요 — 보통 1~2분.</li>
+<li>그 자리에서 바로 열려요. 창을 닫아도 이 쪽 「내 결과」와 홈 설정 「내 결제」에서 2년 동안 다시 열 수 있어요.</li>
 </ol>
 <h2 id="feeHead">값과 환불</h2>
   <div class="note">
-    <p class="price" data-price-row hidden><b data-price="ilgyeol"></b> (부가세 포함, 따로 붙는 수수료 없음) — 한 사람을 본 보고서 한 벌이에요.</p>
-    <p>보고서를 받으시기 전에는 이유를 묻지 않고 전액 돌려드려요. 받으신 뒤에는 청약철회가 제한될 수 있어요. 보고서를 만들지 못해도 전액 돌려드려요.</p>
+    <p class="price" data-price-row hidden><b data-price="ilgyeol"></b> (부가세 포함, 따로 붙는 수수료 없음) — 한 사람을 본 풀이 한 벌이에요.</p>
+    <p>처음 열어 보기 전에는 이유를 묻지 않고 전액 돌려드려요. 연 뒤에는 청약철회가 제한될 수 있어요. 만들지 못해도 전액 돌려드려요.</p>
 <p>결제는 카카오페이(주)를 통해 처리되며, 카드 정보는 책사가 저장하지 않아요.</p>
   </div>
 
   <div data-apply-box hidden>
-    <a class="btn cta" data-apply href="#">보고서 신청하기</a>
+    <a class="btn cta" data-apply href="#">신청하고 바로 보기</a>
   </div>
 
   <p class="foot"><a href="./">책사 처음으로</a> · <a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="gyeolhon.html">결혼상대 점검</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
@@ -162,7 +163,9 @@
 </main>
 <script src="config.js?v=1dadeed655"></script>
 <script src="track.js?v=4520244637"></script>
-<script src="pay.js?v=9d8fda9aa7"></script>
+<script src="cloud.js?v=bee1b9298c"></script>
+<script src="usage.js?v=0c1ca14b01"></script>
+<script src="pay.js?v=4e051e21ca"></script>
 <script>
   // 값은 서버 상품표(products, code ilgyeol) 한 곳에만 있다 — 금액 글자는 표에서 받아 채운다(출산택일 안내 쪽과 같은 꼴). 못 받으면 값 줄은 빈 채로 둔다.
   if (window.ChaeksaPay) ChaeksaPay.product('ilgyeol').then(function (p) {
@@ -170,6 +173,28 @@
     document.querySelectorAll('[data-price="ilgyeol"]').forEach(function (el) { el.textContent = ChaeksaPay.won(p.amount); });
     document.querySelectorAll('[data-price-row]').forEach(function (el) { el.hidden = false; });
   }).catch(function () {});
+</script>
+<script>
+  // 「내 결과」(10-22) — 로그인했고 이 상품 주문이 있는 계정에만 보인다. 상태는 my_ilgyeol(server/migrate-39, 본문 없이 상태만). 줄을 누르면 결과 쪽(ilgyeol-report.html?o=)으로.
+  (function () {
+    var box = document.getElementById('igMine'), P = window.ChaeksaPay, G = P && P.ilgyeol, C = window.ChaeksaCloud;
+    if (!box || !G || !G.mine) return;
+    try { if (C && C.captureRedirect) C.captureRedirect(); } catch (e) {}
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+    var 딱지 = { todo: '만들기 →', no_intake: '문의 →', making: '만드는 중', checking: '확인 중', ready: '풀이 열기 →', canceled: '환불됨' };
+    var 날 = function (s) { var d = new Date(s); return isNaN(d) ? '' : d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 결제'; };
+    var 수퍼 = false; try { 수퍼 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) {}
+    var 수퍼길 = 수퍼 ? '<p class="hint" style="margin:10px 0 0">검수 계정 — <a href="ilgyeol-admin.html">사장님 목록 →</a></p>' : '';
+    G.mine().then(function (rows) {
+      var xs = Array.isArray(rows) ? rows : [];
+      if (!xs.length && !수퍼) return;
+      box.innerHTML = '<h3>내 결과</h3>' + (xs.length ? xs.map(function (x) {
+        return '<a class="tk-mine-row" href="' + esc(G.주소(x.id)) + '"><span><b>' + esc(x.who ? x.who + ' — 나는 뭐해 먹고 살까?' : '나는 뭐해 먹고 살까?') + '</b>'
+          + '<span>' + esc([날(x.paidAt), G.상태말[x.state] || ''].filter(Boolean).join(' · ')) + '</span></span><i>' + esc(딱지[x.state] || '보기 →') + '</i></a>';
+      }).join('') : '<p class="hint" style="margin:0">이 계정으로 결제한 것이 없어요.</p>') + 수퍼길;
+      box.hidden = false;
+    }).catch(function () {});
+  })();
 </script>
 <script>try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('sheet'); } catch (e) {}</script><!-- 10-10 깔때기 ③ 유료 장 엶(sheet) — 유료 소개 쪽을 열면 하루 한 번(track.js). 화면은 안 바뀐다 -->
 <script>

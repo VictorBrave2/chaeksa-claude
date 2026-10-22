@@ -27,6 +27,7 @@ Disallow: /taekil-report
 Disallow: /gyeolhon-admin
 # 「나는 뭐해 먹고 살까?」 신청(10-22) — 사장님 목록. 화면 안에도 noindex 가 붙어 있다.
 Disallow: /ilgyeol-admin
+Disallow: /ilgyeol-report
 # (10-02 개편 3묶음) jeongtong.html 막음은 걷었다 — 넘김 쪽이던 것이 정통사주 소개 쪽이 됐다(tools_sogae.py). 검색에 나와야 하는 쪽이다.
 Disallow: /tools/
 # 그 밖의 공개 글은 전부 연다

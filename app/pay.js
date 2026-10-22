@@ -548,7 +548,7 @@
       let 기간 = '', 자리 = '';
       // 10-02 출산택일 — 보고서는 주문마다 「내 보고서」 쪽(taekil-report.html?o=)에서 본다. 장부 보관(결제일부터 2년)이 들어와도 이 주소를 지킨다
       // (장부 자리는 결제하는 자리 taekil-apply.html 이라 「보러 가기」로 쓰면 신청서로 간다). 기간이 끝나면 보고서 쪽도 닫힌다(my_taekil 2년).
-      const 보고서자리 = code === 'taekil' && !환불됨 ? 'taekil-report.html?o=' + encodeURIComponent(id) : '';
+      const 보고서자리 = 환불됨 ? '' : code === 'taekil' ? 'taekil-report.html?o=' + encodeURIComponent(id) : code === 'ilgyeol' ? 'ilgyeol-report.html?o=' + encodeURIComponent(id) : '';   // 10-22 「나는 뭐해 먹고 살까?」도 주문마다 결과 쪽
       if (환불됨) 기간 = '환불했어요.';
       else if (해 && 날) {
         const 끝 = new Date(날.getTime()); 끝.setFullYear(끝.getFullYear() + 해);
@@ -1098,6 +1098,7 @@
   // 보고서 표(taekil_reports)는 손님이 REST 로 읽지 못한다 — 손님은 taekil_view 로, 열렸을(ready) 때만 본문을 받는다.
   // 이 파일엔 판정 · 고르기 · 문장 틀이 없다. 상태 이름은 migrate-36 머리 주석 「손님」 그대로: todo · no_intake · making · checking · ready · canceled.
   const TK_API = 'https://chaeksa-behavior-core.vercel.app/api/taekil-report';
+  const IG_API = 'https://chaeksa-behavior-core.vercel.app/api/ilgyeol-report';   // 10-22 「나는 뭐해 먹고 살까?」 자동 풀이(결제하면 바로)
   async function 택일함수(name, args) {
     const C = global.ChaeksaCloud, cfg = global.CHAEKSA_SUPABASE;
     let tok = null;
@@ -1173,14 +1174,51 @@
     adminDelete: (id) => 택일함수('gyeolhon_delete', { p_id: id }),
   };
 
-  // ── 「나는 뭐해 먹고 살까?」 진로 보고서(10-22 사장님 결정 — 카카오페이로 판다) — 사장님 목록(ilgyeol-admin.html)만 ─────────
-  // 결제 · 신청서 붙이기는 buy('ilgyeol', null, 결제사, 신청서) → api/pay.js kopen → order_intake 가 한다. 여기는 검수 계정이 결제된 주문을 보는 길뿐 —
-  // 함수 안에서 ai_plan() = 'super' 를 본다(server/migrate-39 ilgyeol_admin_list). 택일함수와 같은 길로 부른다(통신 코드를 두 벌 두지 않는다).
-  // 계좌이체 손 신청 표(ilgyeol_apply_*)는 쓰지 않는다 — 10-22 사장님 「카카오페이로 판다」.
+  // ── 「나는 뭐해 먹고 살까?」(ilgyeol · 10-22 사장님 「보고서 형식 말고 결제하면 바로 나오게」) — 출산택일 자동 보고서와 같은 길 ─────────
+  // 결제 · 신청서 붙이기는 buy('ilgyeol', null, 결제사, 신청서) → api/pay.js kopen → order_intake. 결제 뒤 pay-done 이 3초 뒤 ilgyeol-report.html?o= 로 데려가고,
+  // 그 쪽이 view(상태) → todo 면 make(비공개 서버 /api/ilgyeol-report — 엔진 · LLM 글 · 보관) → ready 면 본문(혼자 서는 HTML)을 받아 띄운다.
+  // DB 함수는 공개 server/migrate-39(ilgyeol_take · _save · my_ilgyeol · ilgyeol_view · ilgyeol_admin_*). 함수 안에서 본인 · super 를 본다. 택일함수와 같은 길로 부른다.
   const ilgyeol = {
-    /** 결제된 · 환불된 진로 보고서 주문(최근 200건, 최대 500) → { ok:true, rows:[{ id, status:'paid'|'canceled', mode:'live'|'test', amount, paidAt, createdAt, intakeAt, intake, note }] }.
-     *  검수 계정이 아니면 { ok:false, reason:'forbidden' }. 못 물어봤으면 { ok:false, reason }. */
-    adminList: (limit) => 택일함수('ilgyeol_admin_list', { p_limit: limit || 200 }),
+    /** 내 주문들 [{ id, name, who, paidAt, state, openedAt }] — 로그인 안 했으면 [], 못 물어봤으면 null. */
+    async mine() {
+      const C = global.ChaeksaCloud;
+      if (!C || !C.signedIn || !C.signedIn()) return [];
+      const j = await 택일함수('my_ilgyeol', {});
+      return Array.isArray(j) ? j : null;
+    },
+    /** 풀이 한 벌. 손님은 { ok, orderId, state, report? } — report 는 ready 일 때만. 검수 계정은 사장님 몫 전부(손님눈 = true 면 손님이 받을 것만). */
+    view: (orderId, 손님눈) => 택일함수('ilgyeol_view', { p_order: String(orderId || ''), p_as_customer: !!손님눈 }),
+    /** 풀이를 만든다(비공개 서버 — 보통 1~2분). → { ok:true, state } | { ok:false, reason, message } */
+    async make(id) {
+      const C = global.ChaeksaCloud;
+      let tok = null;
+      try { tok = C && C.token ? await C.token() : null; } catch (_) { tok = null; }
+      if (!tok) return { ok: false, reason: 'login', message: '로그인해 주세요.' };
+      try {
+        const r = await fetch(IG_API, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok }, body: JSON.stringify({ orderId: String(id || '') }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) return { ok: true, state: j.state || 'held' };
+        return { ok: false, status: r.status, reason: j.reason || '', message: j.error || '잠시 뒤 다시 해 주세요.' };
+      } catch (_) {
+        return { ok: false, reason: 'network', message: '연결이 끊겼어요. 잠시 뒤 다시 해 주세요.' };
+      }
+    },
+    // 사장님 목록(ilgyeol-admin.html) — 함수 안에서 검수 계정(ai_plan() = 'super')인지 본다.
+    adminList: (filter) => 택일함수('ilgyeol_admin_list', { p_filter: filter || null, p_limit: 200 }),
+    adminRelease: (id) => 택일함수('ilgyeol_admin_release', { p_order: id }),
+    adminRedo: (id) => 택일함수('ilgyeol_admin_redo', { p_order: id }),
+    adminNote: (id, note) => 택일함수('ilgyeol_admin_note', { p_order: id, p_note: note || '' }),
+    adminAuto: (on) => 택일함수('ilgyeol_admin_auto', { p_on: on == null ? null : !!on }),
+    /** 손님 눈의 상태 → 화면 한 줄 */
+    상태말: {
+      todo: '결제가 확인됐어요. 이제 풀이를 만들어요.',
+      no_intake: '결제는 됐는데 신청서가 아직 이 주문에 붙지 않았어요.',
+      making: '여덟 글자와 명반을 세우고 글을 쓰는 중이에요.',
+      checking: '책사가 한 번 더 확인한 뒤 열어 드려요(보통 하루 안).',
+      ready: '풀이가 열렸어요.',
+      canceled: '환불된 주문이라 풀이가 닫혔어요.',
+    },
+    주소: (id) => 'ilgyeol-report.html?o=' + encodeURIComponent(String(id || '')),
   };
 
   // 10-20 사장님 결제 알림(api/pay.js alertkey · alertsub · alerttest, server/migrate-38) — 사장님 목록에서만 부른다.

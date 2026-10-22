@@ -1,15 +1,15 @@
 /* 「나는 뭐해 먹고 살까?」 신청 쪽 — 카카오페이 결제(10-22 사장님 결정 · 계좌이체 손 신청이 아니라). 그리기 · 신청서 꾸리기 · 결제창 열기만 한다.
  * 흐름은 출산택일 신청 쪽(taekil-apply.html)과 같다:
- *   사람 한 명(people.js 저장된 사람) · 메일 · 지금 하는 일 → 동의 두 칸 → 로그인(카카오 · 네이버, ChaeksaCloud) → 결제 수단(ChaeksaPay.결제사칸)
- *   → 「결제하기」 = ChaeksaPay.buy('ilgyeol', null, 고른 결제사, 신청서) → 카카오페이 → pay-done.html(접수됐어요 · 책사가 확인한 뒤 메일로 PDF).
+ *   사람 한 명(people.js 저장된 사람) → 동의 두 칸 → 로그인(카카오 · 네이버, ChaeksaCloud) → 결제 수단(ChaeksaPay.결제사칸)
+ *   → 「결제하기」 = ChaeksaPay.buy('ilgyeol', null, 고른 결제사, 신청서) → 카카오페이 → pay-done.html → 3초 뒤 ilgyeol-report.html(비공개 서버가 만들어 바로 띄움 · 10-22 사장님 「결제하면 바로」).
  * 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake — 신청서가 없으면 주문을 열지 않는다).
  *   그래서 이 쪽에는 접수 화면 · 접수 번호 · 입금 계좌 · 연락처 · 입금자 칸이 없다. 결제 뒤는 pay-done 이 맡는다.
  * 값(원)은 코드에 없다 — 서버 상품표(/api/pay products, code ilgyeol)의 amount 를 data-price 자리와 단추에 붙인다. 상품이 없으면 단추를 잠근다.
  * 신청서(intake) 꼴 — 8,000자 안쪽(서버 한도):
  *   { v: 1, product: 'ilgyeol',
  *     person: { name, year, month, day(양력), hour|null, minute|null, gender: 'M'|'F', place, placeName, 음력?: {y, m, d}, 윤달?: true, 시모름?: true },
- *     email, note(지금 하는 일 · 바라는 점, 300자), agreedAt }
- * 초안은 이 기기 localStorage('chaeksa.ilgyeol.draft') 에 사흘 — 고른 사람(id) · 메일 · 지금 하는 일만(생년월일은 people.js 에 이미 있다).
+ *     agreedAt }   — 메일 · 적은 글 칸은 10-22 걷었다(결제하면 바로 화면에 뜨니 받을 메일이 없다). 이름은 풀이에 안 들어간다(이 기기 목록용)
+ * 초안은 이 기기 localStorage('chaeksa.ilgyeol.draft') 에 사흘 — 고른 사람(id)만(생년월일은 people.js 에 이미 있다).
  *   로그인하러 떠났다 돌아오면 그대로 채운다. 동의 체크는 sessionStorage 에 잠시(출산택일 신청 쪽과 같은 방식).
  * 사람 칩은 app.js 사람칩과 같은 꼴(ss-who · ss-wh). 「사람 추가」 창은 홈의 사람 추가 창과 같은 칸 — 시 · 분은 숫자 칸 둘(10-06 「시간 입력 바꿔 줘」).
  * 생년월일은 주소(URL)에 싣지 않는다. 비밀(키 · 계좌) 없음. 판정 코드 없음.
@@ -25,15 +25,14 @@
 
   // ── 글(화면 담당이 출산택일 신청 쪽 말을 이 상품에 맞게 옮김 — 작가 검수 대상) ──
   var T = {
-    단추: { 여는중: '결제창을 여는 중…', 닫힘: '지금은 결제를 받을 수 없습니다', 결제: '결제하기', 결제값: ' 결제하고 보고서 받기', 로그인: '카카오로 로그인하고 계속하기' },
+    단추: { 여는중: '결제창을 여는 중…', 닫힘: '지금은 결제를 받을 수 없습니다', 결제: '결제하기', 결제값: ' 결제하고 바로 보기', 로그인: '카카오로 로그인하고 계속하기' },
     오류: {
       모듈: '결제 모듈을 불러오지 못했어요. 새로고침해 주세요.',
       닫힘: '지금은 결제를 받을 수 없습니다 — ' + 문의메일,
-      사람없음: '보고서를 받을 분을 고르거나 넣어 주세요',
+      사람없음: '풀이를 볼 분을 고르거나 넣어 주세요',
       이름없음: '보고서에서 부를 이름을 적어 주세요',
-      메일: '보고서를 받으실 메일 주소를 다시 봐 주세요 — @ 가 들어간 주소여야 해요',
       동의: '동의 두 가지에 체크해 주셔야 결제할 수 있어요',
-      너무김: '적어 주신 글이 너무 길어요 — 지금 하는 일 · 바라는 점을 줄여 주세요',
+      너무김: '신청서가 너무 길어요 — 사람 이름을 줄여 주세요',
       결제창: '결제창을 열지 못했습니다.'
     },
     로그인: {
@@ -44,14 +43,14 @@
       못마침: '로그인을 마치지 못했어요.',
       남의계정: '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 주문은 이 계정에 남아요.'
     },
-    이미: '최근 결제하신 「나는 뭐해 먹고 살까?」 주문이 있어요 (주문번호 {주문번호}). 보고서는 그때 적으신 메일로 가요 — 다른 분을 보시는 게 아니면 다시 결제하지 않아도 돼요.',
+    이미: '최근 결제하신 「나는 뭐해 먹고 살까?」 주문이 있어요 (주문번호 {주문번호}). 다른 분을 보시는 게 아니면 다시 결제하지 않아도 돼요 — ',
     곧: {
       머리: '결제는 곧 열려요.',
-      몸: '지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요. 열리기 전에는 메일({문의메일})로 신청하셔도 돼요 — 고르신 분의 생년월일시 · 성별 · 태어난 곳과 받으실 메일 주소를 적어 주세요. 답장으로 이어서 안내해 드려요.',
+      몸: '지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요. 열리기 전에는 메일({문의메일})로 신청하셔도 돼요 — 고르신 분의 생년월일시 · 성별 · 태어난 곳을 적어 주세요. 답장으로 이어서 안내해 드려요.',
       단추: '메일로 신청하기 →',
       제목: '[책사] 나는 뭐해 먹고 살까? 신청'
     },
-    이름칸: '보고서에서 부를 이름'
+    이름칸: '이 분을 부를 이름'
   };
   var 채움 = function (s, v) { return String(s == null ? '' : s).replace(/\{([^{}]+)\}/g, function (_, n) { return v && v[n] != null ? v[n] : ''; }); };
 
@@ -102,13 +101,13 @@
     return 날 + ' · ' + 시 + ' · ' + 성 + ' · ' + 곳이름(b);
   }
 
-  // ── 초안(이 기기 · 사흘) — 고른 사람(id) · 메일 · 지금 하는 일. 생년월일은 people.js 에 있다 ──
+  // ── 초안(이 기기 · 사흘) — 고른 사람(id). 생년월일은 people.js 에 있다 ──
   function 초안() {
     var j = 읽기(초안키);
     if (j && (!j.data || Date.now() - (j.at || 0) >= 초안수명)) { 쓰기(초안키, null); return null; }
     return j ? j.data : null;
   }
-  function 초안저장() { 쓰기(초안키, { data: { person: 고름 || '', email: $('email').value.trim(), note: $('note').value.trim() }, at: Date.now() }); }
+  function 초안저장() { 쓰기(초안키, { data: { person: 고름 || '' }, at: Date.now() }); }
 
   // ── 사람 칩(한 분) ──
   function 칩() {
@@ -123,7 +122,6 @@
     }).join('') + '<button type="button" class="ss-wh ss-wh-add" data-add="who">＋ 사람 추가</button></div>';
     if (p) {
       h += '<p class="picked">' + esc(생일말(p.birth)) + ' <button type="button" class="lnk" data-edit="' + esc(p.id) + '">고치기</button></p>';
-      if (!이름(p)) h += '<label for="whoName">' + esc(T.이름칸) + '</label><input id="whoName" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" lang="ko">';
     }
     wrap.innerHTML = h;
   }
@@ -234,7 +232,7 @@
   $('gaNoTime').addEventListener('change', 시간칸);
 
   // ── 신청서(intake) — 주문에 붙는 꼴. 머리 주석의 꼴 그대로. 생년월일은 양력으로, 음력 입력은 따로 적는다 ──
-  function 신청서(p, pn, email, note) {
+  function 신청서(p, pn) {
     var b = p.birth, 시모름 = b.hour == null || b.hour === '';
     var person = {
       name: pn,
@@ -248,19 +246,13 @@
       if (b.lunarInput.leap) person.윤달 = true;
     }
     if (시모름) person.시모름 = true;
-    return { v: 1, product: 상품, person: person, email: email, note: note, agreedAt: new Date().toISOString() };
+    return { v: 1, product: 상품, person: person, agreedAt: new Date().toISOString() };
   }
 
   // ── 초안 채우기 · 적을 때마다 남기기 ──
   (function () {
     var 채울 = 초안() || {};
     if (채울.person && 사람(채울.person)) 고름 = 채울.person;
-    if (채울.email) $('email').value = 채울.email;
-    if (채울.note) $('note').value = 채울.note;
-    // 로그인한 계정에 메일이 있으면 비어 있는 메일 칸을 미리 채운다(카카오 로그인은 메일이 없을 수 있다). 이 기기에서 시작하지 않은 로그인이면 채우지 않는다.
-    if (!$('email').value && 로그인됨() && !남의로그인()) {
-      try { var em = ChaeksaCloud.email(); if (em && /@/.test(em)) $('email').value = em; } catch (e) {}
-    }
     form.addEventListener('input', 초안저장);
     form.addEventListener('change', 초안저장);
   })();
@@ -272,13 +264,8 @@
       sessionStorage.removeItem(동의키);
       if (a) { agreeData.checked = a.charAt(0) === '1'; agree.checked = a.charAt(1) === '1'; }
     } catch (e) {}
-    // 방금 받은 토큰에는 계정 정보가 안 실려 있다 — 불러와서 비어 있는 메일 칸을 계정 메일로 채운다(이 기기에서 시작한 로그인일 때만).
-    try {
-      if (!(ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold())) ChaeksaCloud.me().then(function () {
-        var el = $('email'), em = ChaeksaCloud.email();
-        if (el && !el.value && em && /@/.test(em)) { el.value = em; el.dispatchEvent(new Event('input', { bubbles: true })); }
-      }).catch(function () {});
-    } catch (e) {}
+    // 방금 받은 토큰에는 계정 정보가 안 실려 있다 — 불러와 둔다(남의 로그인을 묻는 말에 계정 메일을 적는다).
+    try { if (!(ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold())) ChaeksaCloud.me().catch(function () {}); } catch (e) {}
     say(T.로그인.됨);
     setTimeout(function () { try { send.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 400);
   }
@@ -298,10 +285,7 @@
   // ── 결제가 아직 열리지 않았을 때(pay.js 곧열림 — 결제사가 모두 시험 모드인 손님) ──
   // 결제 단추 · 동의 두 칸은 그대로 두고(누르면 서버가 돌려보내 「심사 중」 말이 뜬다) 알림과 메일 신청을 덧붙인다. 운영 결제사가 있으면 저절로 안 뜬다.
   function 신청메일() {
-    var p = 사람(고름), 줄 = [
-      '보고서를 받을 분(이름 · 생년월일시 · 성별 · 태어난 곳): ' + (p ? (이름(p) ? 이름(p) + ' · ' : '') + 생일말(p.birth) : ''),
-      '받으실 메일 주소: ' + $('email').value.trim(),
-      '지금 하는 일 · 바라는 점: ' + $('note').value.trim()];
+    var p = 사람(고름), 줄 = ['풀이를 볼 분(이름 · 생년월일시 · 성별 · 태어난 곳): ' + (p ? (이름(p) ? 이름(p) + ' · ' : '') + 생일말(p.birth) : '')];
     return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent(T.곧.제목) + '&body=' + encodeURIComponent(줄.join('\n') + '\n');
   }
   function 곧열림그리기() {
@@ -323,7 +307,7 @@
       if (!o) return;
       var box = $('already');
       box.hidden = false;
-      box.innerHTML = esc(채움(T.이미, { 주문번호: o.id }));
+      box.innerHTML = esc(채움(T.이미, { 주문번호: o.id })) + '<a href="' + esc(ChaeksaPay.ilgyeol && ChaeksaPay.ilgyeol.주소 ? ChaeksaPay.ilgyeol.주소(o.id) : 'ilgyeol-report.html?o=' + encodeURIComponent(o.id)) + '">그 풀이 열기 →</a>';
     }).catch(function () {});
   }
 
@@ -351,13 +335,8 @@
     사건('pay');   // 깔때기 ④ 결제 단추 누름 — 앱 안 단추(pay.js 누르면)와 같은 사건
     var p = 사람(고름);
     if (!p) { say(T.오류.사람없음, true); return; }
-    var pn = 이름(p) || ($('whoName') ? $('whoName').value.trim() : '');
-    if (!pn) { say(T.오류.이름없음, true); try { $('whoName').focus(); } catch (x) {} return; }
-    var email = $('email').value.trim(), note = $('note').value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say(T.오류.메일, true); $('email').focus(); return; }
+    var pn = 이름(p);   // 이름은 풀이에 들어가지 않는다 — 이 기기 사람 목록에서 알아보는 데만(없어도 된다)
     if (!agreeData.checked || !agree.checked) { say(T.오류.동의, true); return; }
-    // 이름이 없던 사람은 적은 이름을 저장해 둔다 — 사이트 어디서나 그 이름
-    try { if (!이름(p)) PP.update(p.id, { name: pn }); } catch (x) {}
     초안저장();
     if (!로그인됨()) {
       // 적은 것(초안)과 동의 체크를 남겨 두고 로그인하러 간다 — 돌아오면 결제만 누르면 되게.
@@ -371,10 +350,10 @@
       var em = ChaeksaCloud.email();
       if (!confirm((em ? em + ' ' : '지금 로그인한 ') + T.로그인.남의계정)) return;
     }
-    var it = 신청서(p, pn, email, note);
+    var it = 신청서(p, pn);
     if (JSON.stringify(it).length > 7600) { say(T.오류.너무김, true); return; }
     busy = true; 단추(); say('');
-    // 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake). 결제 뒤 화면(pay-done)은 「접수됐어요 · 메일로 PDF」만 보인다.
+    // 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake). 결제 뒤 화면(pay-done)이 3초 뒤 결과 쪽(ilgyeol-report.html)으로 데려간다.
     ChaeksaPay.buy(상품, null, (ChaeksaPay.고른결제사 && ChaeksaPay.고른결제사(pvPick)) || null, it).then(function (r) {
       busy = false; 단추();
       if (r && r.ok === false && !r.closed) say(r.message || T.오류.결제창, true);

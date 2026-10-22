@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>나는 뭐해 먹고 살까? 보고서 사장님 목록 · 책사</title>
+<title>나는 뭐해 먹고 살까? 사장님 목록 · 책사</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
@@ -27,6 +27,10 @@
   .adm-st.st-paid{border-color:var(--accent2);color:var(--accent)}
   .adm-st.st-sent{background:var(--seal-bg);color:var(--seal-ink);border-color:transparent}
   .adm-st.st-canceled{color:var(--ink3)}
+  .adm-st.st-ready{background:var(--seal-bg);color:var(--seal-ink);border-color:transparent}
+  .adm-st.st-held,.adm-st.st-todo{border-color:var(--accent2);color:var(--accent)}
+  .adm-st.st-blocked{color:var(--g0);border-color:var(--g0)}
+  .adm-st.st-making{font-style:italic}
   .adm-detail{padding:4px 14px 14px;border-top:1px solid var(--line)}
   .adm-detail h4{font-size:var(--t2);margin:16px 0 6px;color:var(--ink)}
   .adm-acts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
@@ -48,17 +52,18 @@
 </style>
 </head>
 <body>
-<!-- 「나는 뭐해 먹고 살까?」 진로 보고서 — 사장님 목록(10-22 사장님 결정 「카카오페이로 판다」). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
-     실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super'(server/migrate-39 ilgyeol_admin_list) — 이 쪽의 가림은 편의다. 움직임은 ilgyeol-admin.js.
+<!-- 「나는 뭐해 먹고 살까?」 — 사장님 목록(10-22 「카카오페이로 판다」 · 「결제하면 바로 나오게」 — 출산택일 taekil-admin 과 같은 상태 틀). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
+     실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super'(server/migrate-39 ilgyeol_admin_*) — 이 쪽의 가림은 편의다. 움직임은 ilgyeol-admin.js.
      결제 · 신청서는 신청 쪽(ilgyeol-apply.html → 카카오페이)이 주문에 붙였다. 환불은 결제 완료 화면의 사장님 전액 취소 단추 또는 카카오페이 가맹점관리자 — 여기엔 없다. -->
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="ilgyeol.html">← 나는 뭐해 먹고 살까?</a></div>
 <div class="doc">
-  <h1>나는 뭐해 먹고 살까? 보고서 — 사장님 목록</h1>
-  <p class="hint">카카오페이로 결제된 주문이 여기 와요. 결제됨 → 「신청 JSON 복사」 → 복사한 JSON 을 파일로 저장해 node tools/livelihood-manual.js &lt;파일&gt; 로 돌리면 runs/livelihood/&lt;주문번호&gt;/보고서.pdf 가 나와요 → 검수 → 「메일 쓰기」로 PDF 보냄 → 「보냄 표시」(이 기기에만 남아요). 환불은 결제 완료 화면의 전액 취소 단추 또는 카카오페이 가맹점관리자에서.</p>
+  <h1>나는 뭐해 먹고 살까? — 사장님 목록</h1>
+  <p class="hint">카카오페이로 결제된 주문이 여기 와요. 결제되면 손님 화면이 비공개 서버를 불러 풀이를 만들고(보통 1~2분), 검사를 통과하면 바로 열려요(스위치 「결제하면 바로 열기」가 켜짐일 때). 걸린 것(막힘)이나 손님이 두 번 실패한 주문은 여기서 「만들기」 · 「내보내기」. 「다시 만들기」는 손님이 열기 전까지만. 환불은 결제 완료 화면의 전액 취소 단추 또는 카카오페이 가맹점관리자에서.</p>
   <div id="admGate"><p class="hint">불러오는 중…</p></div>
   <div id="admMain" hidden>
     <div class="adm-tools">
       <button type="button" class="btn ghost small" id="admReload">새로고침</button>
+      <button type="button" class="btn ghost small" id="admAuto" hidden>결제하면 바로 열기</button>
     </div>
     <p class="adm-msg" id="admMsg" role="status"></p>
     <div class="adm-filters" id="admFilters"></div>
@@ -69,8 +74,8 @@
 <script src="config.js?v=1dadeed655"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=9d8fda9aa7"></script>
-<script src="ilgyeol-admin.js?v=c7aa5e7193"></script>
+<script src="pay.js?v=4e051e21ca"></script>
+<script src="ilgyeol-admin.js?v=c72cb546bd"></script>
 <script>
 (function () {
   var m = '';
