@@ -170,6 +170,12 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 .intake .send{width:100%;margin-top:20px;padding:15px;border:0;border-radius:var(--r2);cursor:pointer;
               background:var(--seal-bg);color:var(--seal-ink);font-size:var(--t3);font-weight:700;font-family:var(--sans)}
 .intake .send[disabled]{opacity:.5;cursor:default}
+/* 10-22 사장님 「결제 수단을 카카오페이만 남기고 카카오페이 강조」 — 결제사가 하나일 때의 한 줄(pay.js 결제사칸)과 카카오페이 꼴 결제 단추. 노랑은 .btn.kakao 와 같은 브랜드 값 */
+.pv-one{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 4px;font-size:var(--t1);color:var(--ink2)}
+.pv-one .pv-badge{display:inline-flex;align-items:center;padding:7px 13px;border-radius:var(--r1);background:var(--bg2);border:1px solid var(--line);color:var(--ink);font-weight:700;font-size:var(--t2)}
+.pv-one .pv-kakao{background:#FEE500;border-color:#FEE500;color:#191600}
+.pv-one .pv-s{color:var(--ink3)}
+.intake .send.kakao{background:#FEE500;color:#191600;box-shadow:0 3px 12px rgba(254,229,0,.25)}
 .intake .msg{font-size:var(--t2);line-height:1.75;margin:12px 0 0;color:var(--ink3)}
 .intake .msg.bad{color:#b4534f}
 .intake .msg a{color:var(--accent)}

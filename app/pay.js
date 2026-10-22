@@ -74,11 +74,12 @@
     let pv = Array.isArray(st.providers) ? st.providers : (st.ready && st.clientKey ? [{ id: 'toss' }] : []);
     // 손님(검수 계정 아님 · 시험을 연 날 아님)에게는 눌러도 서버가 test_only 로 막는 시험 결제사를 늘어놓지 않는다(10-03).
     //   운영 결제사가 하나라도 있으면 → 운영 결제사만.  모두 시험이면 → 첫째(심사 중인 결제사, 지금 카카오페이) 하나만 — 곧열림 알림이 뜬다.
-    // 검수 계정은 셋 다 본다(네이버 · 토스 시험 결제를 끝까지 시험하는 자리).
+    // 검수 계정도 같다(10-22 사장님 「결제 수단을 카카오페이만 남기고」) — 네이버 · 토스 시험 결제를 끝까지 시험할 때만 주소에 ?pv=all 을 붙인다.
     if (!st.testOpen) {
-      let 수퍼 = false;
+      let 수퍼 = false, 전부 = false;
       try { const U = global.ChaeksaUsage; 수퍼 = !!(U && (U.시험계정 ? U.시험계정() : (U.plan && U.plan() === 'super'))); } catch (e) {}   // 10-04 심사관 계정(review)도
-      if (!수퍼) pv = pv.some((p) => p.mode === 'live') ? pv.filter((p) => p.mode === 'live') : pv.slice(0, 1);
+      try { 전부 = 수퍼 && new URLSearchParams(global.location.search).get('pv') === 'all'; } catch (e) { 전부 = false; }
+      if (!전부) pv = pv.some((p) => p.mode === 'live') ? pv.filter((p) => p.mode === 'live') : pv.slice(0, 1);
     }
     return pv.map((p) => ({ ...p, name: 결제사이름[p.id] || p.id }));
   };
@@ -124,7 +125,15 @@
     try { pv = await providers(); } catch (e) { pv = []; }
     if (!wrap.isConnected || !pv.length || wrap.querySelector('[data-pvpick]')) return;
     if (!pv.some((p) => p.id === wrap.dataset.pv)) wrap.dataset.pv = pv[0].id;
-    if (pv.length < 2) return;
+    // 결제사가 하나면 고를 것이 없다 — 라디오 대신 그 결제사를 또렷이 한 줄(10-22 사장님 「카카오페이 강조」). 꾸밈은 style.css .pv-one.
+    if (pv.length < 2) {
+      const p = pv[0], 한줄 = '<div data-pvpick class="pv-one"><span class="pv-k">결제 수단</span><b class="pv-badge' + (p.id === 'kakao' ? ' pv-kakao' : '') + '">' + p.name + '</b>'
+        + (p.id === 'kakao' ? '<span class="pv-s">카카오페이머니 · 카드</span>' : '') + '</div>';
+      const 단추 = wrap.querySelector('button');
+      if (단추) 단추.insertAdjacentHTML('beforebegin', 한줄); else wrap.insertAdjacentHTML('beforeend', 한줄);
+      try { wrap.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}   // 신청 쪽 단추가 결제사 이름을 붙이게
+      return;
+    }
     const 이름 = 'pv' + Math.random().toString(36).slice(2, 8);
     const 칸 = '<div data-pvpick role="radiogroup" aria-label="결제 수단" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px">'
       + '<span style="font-size:var(--t1);color:var(--ink2)">결제 수단</span>'
