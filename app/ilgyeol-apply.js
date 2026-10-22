@@ -315,7 +315,10 @@
   }
 
   // ── 결제 준비와 값은 서버의 상품표 한 곳에서 받는다. 준비가 안 됐거나 상품이 없으면 단추를 잠근다 ──
-  if (!(window.ChaeksaPay && ChaeksaPay.buy && ChaeksaPay.state)) {
+  if (window.CHAEKSA_LLM_PAUSE) {   // 10-22 글쓰기 열쇠 잔액 0 — 풀이가 못 나가므로 잠시 받지 않는다(config.js CHAEKSA_LLM_PAUSE)
+    열림 = false; T.단추.닫힘 = '지금은 잠시 받지 않아요'; 단추();
+    say('풀이를 쓰는 열쇠를 채우는 동안 결제를 잠시 받지 않아요. 곧 다시 열려요 — 급하시면 ' + 문의메일 + ' 으로 알려 주세요.');
+  } else if (!(window.ChaeksaPay && ChaeksaPay.buy && ChaeksaPay.state)) {
     열림 = false; 단추(); say(T.오류.모듈, true);
   } else {
     ChaeksaPay.state().then(function (st) {
