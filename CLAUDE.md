@@ -55,7 +55,7 @@
 
 - 저장소는 **CRLF**. 파이썬으로 만질 땐 읽고 `\r\n`→`\n`, 쓸 때 되돌린다.
 - 로컬 개발 서버 — `preview_start {name:"chaeksa-app"}` (포트 8791).
-- 배포 — `python tools_bust.py --bump` → commit → push → GitHub Pages(30~60초). 새 JS 파일은 `tools_bust.py` 의 FILES 에 넣어야 `?v=` 가 오른다.
+- 배포 — `python tools_bust.py --bump` → commit → push → GitHub Pages(30~60초). bump 는 화면 글 검사기(비공개 tools/hwamyeon-scan.js — 무작위 명식으로 손님 화면을 그려 「정불(화)」 · 틀린 조사 · {틀} · 엔진 표시를 찾음)가 HARD 0 일 때만 올라간다(10-23 사장님 「이런 걸 내가 하나하나 찾아야 하는 게 말이 안 되는데」). 새 JS 파일은 `tools_bust.py` 의 FILES 에 넣어야 `?v=` 가 오른다.
 - 측정 전에는 서비스워커 해제 + 캐시 삭제부터(옛 엔진을 재게 된다).
 - 워크플로 서브에이전트 스키마 키는 ASCII 만(`^[a-zA-Z0-9_.-]{1,64}$`).
 - 월별 글 — 개발 서버에서 달을 덤프 → `tools_wolbyeol.py`(종합) · `tools_gungtong.py`(궁통보감) → `tools_jeongbon.py`(정본).

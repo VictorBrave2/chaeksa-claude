@@ -39,8 +39,23 @@
     '清': '책임이 맑음(清)', '세운': '그해의 운(세운)', '대운': '큰 흐름의 운(대운)', '원국': '타고난 사주(원국)'
   };
   var 근거낱말식 = new RegExp('(^|[^가-힣一-鿿])(' + Object.keys(근거낱말).sort(function (a, b) { return b.length - a.length; }).join('|') + ')(?=$|[^가-힣一-鿿])', 'g');
+  // 10-23 화면 글 검사기 — 근거 줄의 엔진 표시(→ · ○ · × · 합산 · vs · 엄한 읽기)를 말로 옮긴다. 판정 · 값 · 글자는 그대로, 보이는 말만 바꾼다.
+  var 간소리 = { 甲: '갑', 乙: '을', 丙: '병', 丁: '정', 戊: '무', 己: '기', 庚: '경', 辛: '신', 壬: '임', 癸: '계', 子: '자', 丑: '축', 寅: '인', 卯: '묘', 辰: '진', 巳: '사', 午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해' };
+  var 간끝 = function (c) { var k = 간소리[c]; return k ? (k.charCodeAt(0) - 0xAC00) % 28 : -1; };   // 읽는 소리의 받침 번호(0 없음 · 8 ㄹ)
+  var 간조 = function (c, 있, 없) { return c + (간끝(c) > 0 ? 있 : 없); }, 간로 = function (c) { var j = 간끝(c); return c + (j === 0 || j === 8 ? '로' : '으로'); };
+  function 표시말(s) {
+    var G = '([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥])', 나 = '(나를 뜻하는 글자\\(일간\\)|일간)';
+    return String(s || '')
+      .replace(new RegExp(G + '→' + G + ' 생', 'g'), function (_, a, b) { return 간조(a, '이', '가') + ' ' + 간조(b, '을', '를') + ' 낳음'; })
+      .replace(new RegExp(G + '→' + G + ' 막힘 없이 극', 'g'), function (_, a, b) { return 간조(a, '이', '가') + ' ' + 간조(b, '을', '를') + ' 막힘 없이 침'; })
+      .replace(new RegExp(G + '→' + G + ' 막힘', 'g'), function (_, a, b) { return a + '에서 ' + 간로(b) + ' 가다 막힘'; })
+      .replace(new RegExp(G + '→' + 나 + ' 닿음', 'g'), function (_, a, b) { return 간조(a, '이', '가') + ' ' + b + '에 닿음'; })
+      .replace(new RegExp('\\s*→\\s*' + 나 + ' 닿음', 'g'), ' — $1에 닿음').replace(new RegExp('\\s*→\\s*' + 나 + ' 받음', 'g'), ' — $1가 받음').replace(new RegExp('\\s*→\\s*' + 나 + ' 잡힘', 'g'), ' — $1에 닿기 전에 잡힘')
+      .replace(/\s*→\s*/g, ' — ').replace(/합산/g, '모두 더한 힘').replace(/ vs /g, ' 대 ').replace(/\(엄한 읽기\)/g, '(옛 글을 좁게 읽음)')
+      .replace(/\s*○(?=\()/g, ' 맞음').replace(/\s*×(?=\()/g, ' 안 맞음').replace(/\s*○/g, '(맞음)').replace(/\s*×/g, '(안 맞음)');
+  }
   function 근거말(s) {
-    return String(s || '').replace(/법전\s*\d+조\s*/g, '').replace(/그릇 (\d+(?: · \d+(?![\d\/]))*)/g, '꺼내 쓰는 것 $1가지')
+    return 표시말(String(s || '').replace(/법전\s*\d+조\s*/g, '').replace(/그릇 (\d+(?: · \d+(?![\d\/]))*)/g, '꺼내 쓰는 것 $1가지')
       .replace(/뿌리 없음/g, '힘을 받쳐 주는 아래 글자 없음')
       .replace(/忌\s*[·/]\s*喜\s*는 못 잼/g, '옛 책의 꺼림 · 반김은 재지 않음')
       .replace(/忌\s*는 못 잼/g, '옛 책의 꺼림은 재지 않음').replace(/喜\s*는 못 잼/g, '옛 책의 반김은 재지 않음')
@@ -48,7 +63,7 @@
       .replace(/無印 아님/g, '배움을 뜻하는 위 글자가 있어 이 조건 아님').replace(/無官 아님/g, '책임을 뜻하는 위 글자가 있어 이 조건 아님')
       .replace(근거낱말식, function (_, 앞, 말) { return 앞 + 근거낱말[말]; })
       // 낱말 표는 뒤에 한글이 붙으면 안 바꾼다 — 「천간에 · 지지에」 꼴만 따로(이미 바꾼 「위 글자(천간)」 안은 건드리지 않는다).
-      .replace(/(^|[^(가-힣])(천간|지지)([이은가는])(?![가-힣])/g, function (_, 앞, 말, 조) { return 앞 + (말 === '천간' ? '위 글자(천간)' : '아래 글자(지지)') + (조 === '이' || 조 === '가' ? '가' : '는'); }).replace(/(^|[^(가-힣])천간(?=[에의도])/g, '$1위 글자(천간)').replace(/(^|[^(가-힣])지지(?=[에의도])/g, '$1아래 글자(지지)');
+      .replace(/(^|[^(가-힣])(천간|지지)([이은가는])(?![가-힣])/g, function (_, 앞, 말, 조) { return 앞 + (말 === '천간' ? '위 글자(천간)' : '아래 글자(지지)') + (조 === '이' || 조 === '가' ? '가' : '는'); }).replace(/(^|[^(가-힣])천간(?=[에의도])/g, '$1위 글자(천간)').replace(/(^|[^(가-힣])지지(?=[에의도])/g, '$1아래 글자(지지)'));
   }
   var 출처말 = function (s) { return String(s || '').replace(/ · (docs|jamidusu)\/\S+/g, ''); };
   var 책말 = function (s) { return ({ '三命通會': '삼명통회', '淵海子平': '연해자평', '滴天髓闡微': '적천수천미' })[s] || s; };
@@ -59,7 +74,7 @@
   function 칸(x, 머리) {
     var a = 격글[x.key] || {};
     return '<div class="card hit"><p class="pct">' + esc(머리) + (x.p == null ? '' : ' · 100명 가운데 ' + esc(x.p) + '명') + '</p>'
-      + '<div class="y" style="font-size:var(--t4)">' + esc(x.이름) + '</div>'
+      + '<div class="y" style="font-size:var(--t4)">' + esc(표시말(x.이름)) + '</div>'
       + (a.뜻 ? '<p>' + esc(a.뜻) + '</p>' : '')
       + (x.시 && x.시.length ? '<p class="why">태어난 시가 ' + esc(x.시.map(시말).join(' · ')) + '이면 이 짜임에 들어요.</p>' : '')
       + '<details class="fold"><summary>원문 · 짜임 보기</summary><p class="q" lang="zh-Hant">' + esc(x.원문) + '</p>'

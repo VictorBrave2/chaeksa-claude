@@ -37,8 +37,23 @@
       .replace(/〈([^〉]+)〉/g, function (m, k) { return 장[k] ? '〈' + 장[k] + '(' + k + ')〉' : m; })
       .replace(/卷([一二三四五])/g, function (m, n) { return 권[n] + '권(' + m + ')'; });
   }
+  // 10-23 화면 글 검사기 — 근거 줄의 엔진 표시(→ · ○ · × · 합산 · vs · 엄한 읽기)를 말로 옮긴다. 판정 · 값 · 글자는 그대로, 보이는 말만 바꾼다.
+  var 간소리 = { 甲: '갑', 乙: '을', 丙: '병', 丁: '정', 戊: '무', 己: '기', 庚: '경', 辛: '신', 壬: '임', 癸: '계', 子: '자', 丑: '축', 寅: '인', 卯: '묘', 辰: '진', 巳: '사', 午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해' };
+  var 간끝 = function (c) { var k = 간소리[c]; return k ? (k.charCodeAt(0) - 0xAC00) % 28 : -1; };   // 읽는 소리의 받침 번호(0 없음 · 8 ㄹ)
+  var 간조 = function (c, 있, 없) { return c + (간끝(c) > 0 ? 있 : 없); }, 간로 = function (c) { var j = 간끝(c); return c + (j === 0 || j === 8 ? '로' : '으로'); };
+  function 표시말(s) {
+    var G = '([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥])', 나 = '(나를 뜻하는 글자\\(일간\\)|일간)';
+    return String(s || '')
+      .replace(new RegExp(G + '→' + G + ' 생', 'g'), function (_, a, b) { return 간조(a, '이', '가') + ' ' + 간조(b, '을', '를') + ' 낳음'; })
+      .replace(new RegExp(G + '→' + G + ' 막힘 없이 극', 'g'), function (_, a, b) { return 간조(a, '이', '가') + ' ' + 간조(b, '을', '를') + ' 막힘 없이 침'; })
+      .replace(new RegExp(G + '→' + G + ' 막힘', 'g'), function (_, a, b) { return a + '에서 ' + 간로(b) + ' 가다 막힘'; })
+      .replace(new RegExp(G + '→' + 나 + ' 닿음', 'g'), function (_, a, b) { return 간조(a, '이', '가') + ' ' + b + '에 닿음'; })
+      .replace(new RegExp('\\s*→\\s*' + 나 + ' 닿음', 'g'), ' — $1에 닿음').replace(new RegExp('\\s*→\\s*' + 나 + ' 받음', 'g'), ' — $1가 받음').replace(new RegExp('\\s*→\\s*' + 나 + ' 잡힘', 'g'), ' — $1에 닿기 전에 잡힘')
+      .replace(/\s*→\s*/g, ' — ').replace(/합산/g, '모두 더한 힘').replace(/ vs /g, ' 대 ').replace(/\(엄한 읽기\)/g, '(옛 글을 좁게 읽음)').replace(/\(엔진 표를 따름\)/g, '(책사가 쓰는 밝기 표를 따름)')
+      .replace(/\s*○(?=\()/g, ' 맞음').replace(/\s*×(?=\()/g, ' 안 맞음').replace(/\s*○/g, '(맞음)').replace(/\s*×/g, '(안 맞음)');
+  }
   function 표지칸(x) {
-    return '<div class="card"><p>' + esc(x.뜻) + '</p><p class="why" lang="zh-Hant"><small>(' + esc(x.원문) + ')</small></p><p class="why">' + esc(x.근거) + '<br><small>' + esc(출처말(x.출처)) + '</small></p></div>';
+    return '<div class="card"><p>' + esc(x.뜻) + '</p><p class="why" lang="zh-Hant"><small>(' + esc(x.원문) + ')</small></p><p class="why">' + esc(표시말(x.근거)) + '<br><small>' + esc(출처말(x.출처)) + '</small></p></div>';
   }
   var 탭 = '1';
   function 그리기() {
@@ -75,7 +90,7 @@
       h += (V2.항목 || []).map(function (x) {
         var k = 이름들[x.id] || [x.id, x.id, '', ''];
         return '<div class="card"><div class="k">' + (x.걸림 ? '맞음' : '아님') + '</div><div class="y" style="font-size:var(--t4)">' + esc(화(k[0], k[1])) + '</div>'
-          + '<p>' + esc(화(x.걸림 ? k[2] : k[3], '')) + '</p><p class="why"><small>' + esc(x.근거) + '</small></p></div>';
+          + '<p>' + esc(화(x.걸림 ? k[2] : k[3], '')) + '</p><p class="why"><small>' + esc(표시말(x.근거)) + '</small></p></div>';
       }).join('');
       h += '<p class="q2">' + esc(화('V물음', '이 결과가 실제 나와 맞나요?')) + '</p>' + 단추('V');
     }

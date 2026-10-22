@@ -20,6 +20,17 @@ import tools_jscheck
 if not tools_jscheck.check(APP):
     sys.exit(1)
 
+# 10-23 화면 글 검사기 — 무작위 명식 120개로 손님 화면을 실제로 그려 깨진 글(「정불(화)」 · 틀린 조사 · {틀} · 엔진 표시)을 찾는다.
+# 비공개 저장소에 검사기가 있을 때만 돈다. HARD 가 나오면(끝 코드 1) 여기서 멈춘다 — 버전도 HTML 도 안 건드린다.
+SCAN = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'chaeksa-behavior-core', 'tools', 'hwamyeon-scan.js')
+if os.path.exists(SCAN):
+    r = subprocess.run(['node', SCAN, '--n', '120', '--app', APP], capture_output=True, text=True, encoding='utf-8', errors='replace')
+    if r.returncode == 1:
+        print(r.stdout + r.stderr)
+        print('화면 글 검사에서 HARD 가 나와 배포를 멈춥니다(버전 그대로). 고친 뒤 다시 돌려 주세요.')
+        sys.exit(1)
+    print('화면 글 검사: ' + (r.stdout.strip().splitlines() or ['(출력 없음)'])[-1])
+
 FILES = ['style.css', 'landing-cuts.webp', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'byeonhwa-jogak.js', 'byeonhwa.js', 'love.js', 'pair.js', 'yaksok.js', 'oryu.js', 'bunya.js', 'home-cats.js', 'home-ask.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'taekil-read.js', 'myeongsik-card.js', 'taekil-report.js', 'taekil-admin.js', 'gyeolhon-admin.js', 'gyeolhon-apply.js', 'ilgyeol-admin.js', 'ilgyeol-apply.js', 'gungtong-wonmun.js', 'samyeong.js', 'yeongyeok.js', 'ilju.js', 'jeongtong.js', 'stories.js', 'landing.js',
          'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js',
          'gyeokguk.js', 'chaeksadan.js', 'geunamja.js', 'maeum.js', 'gunghap.js', 'gunghap-gwanjeom.js', 'gunghap-chongnon.js', 'ssom-gwanjeom.js', 'ssom-wongo.js', 'ssom-baram.js', 'ssom-dangye.js', 'ssom-daehwa.js', 'ssom-webtoon.js', 'ssom-webtoon-2.js', 'ssom-webtoon-3.js', 'ssom-webtoon-check.js', 'ssom-score.js', 'ssom-score-mal.js', 'ssom-card.js', 'ssom-card-mal.js', 'ssom.js', 'jt-webtoon.js', 'jt-webtoon-2.js', 'jt-webtoon-check.js', 'jt-webtoon-proto.js', 'sheets.js', 'hwakin.js', 'mun.js', 'mun/all.js', 'jamgeum-mal.js', 'pay.js', 'when.js', 'when-copy.js', 'brain.js', 'brain-copy.js', 'gwi.js', 'gwi-copy.js', 'myeongban.js', 'myeongban-copy.js', 'gyeokgi.js', 'gyeokgi-copy.js', 'saram.js', 'saram-copy.js', 'taekil-why.js', 'taekil-why-copy.js', 'app.js']
