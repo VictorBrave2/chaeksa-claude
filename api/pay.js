@@ -252,9 +252,10 @@ const nMsg = (j) => String((j && j.message) || '');
 
 /** 주문을 열고(출산택일이면 신청서까지 붙여) 돌려준다 — 카카오 kopen 과 같은 몸통(네이버 nopen 이 쓴다). */
 async function 주문열기(product, body, token) {
-  const 신청서 = (product === 'taekil' || product === 'ilgyeol') && body.intake && typeof body.intake === 'object' && !Array.isArray(body.intake) ? body.intake : null;   // 10-21 ilgyeol(진로 보고서)도 신청서를 붙인다
+  const 신청서 = (product === 'taekil' || product === 'ilgyeol' || product === 'gyeolhon') && body.intake && typeof body.intake === 'object' && !Array.isArray(body.intake) ? body.intake : null;   // 10-21 ilgyeol(진로 보고서)도 신청서를 붙인다
   if (product === 'taekil' && !신청서 && env('TAEKIL_AUTO') === '1') return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };
   if (product === 'ilgyeol' && !신청서) return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };   // 진로 보고서는 신청서 없이는 열지 않는다
+  if (product === 'gyeolhon' && !신청서) return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };   // 10-22 결정 25 결혼상대 점검(카카오페이)도 신청서(두 사람 · 메일) 없이는 열지 않는다
   if (신청서 && JSON.stringify(신청서).length > 8000) return { ok: false, status: 400, json: { ok: false, reason: 'no_intake' } };
   const o = await rpc('order_open', { p_product: product, p_note: body.note ? String(body.note).slice(0, 500) : null }, token);
   if (!o || !o.ok) return { ok: false, status: 400, json: o || { ok: false, reason: 'db' } };
@@ -406,9 +407,10 @@ module.exports = async (req, res) => {
       // 결제창을 열기 **전에** 이 주문에 붙인다. 카카오톡에서 결제하고 로그인 안 된 브라우저로 돌아와도(kconfirm 은 로그인 없이 승인)
       // 신청서는 이미 주문에 있다. order_intake(migrate-25)는 열린(open) 주문도 받고 한 번만 붙인다(already).
       // TAEKIL_AUTO=1(자동 보고서를 켠 날)이면 택일 주문은 신청서가 꼭 있어야 연다 — 신청서 없는 결제를 만들지 않는다.
-      const 신청서 = (product === 'taekil' || product === 'ilgyeol') && body.intake && typeof body.intake === 'object' && !Array.isArray(body.intake) ? body.intake : null;   // 10-21 ilgyeol(진로 보고서)도 신청서를 붙인다
+      const 신청서 = (product === 'taekil' || product === 'ilgyeol' || product === 'gyeolhon') && body.intake && typeof body.intake === 'object' && !Array.isArray(body.intake) ? body.intake : null;   // 10-21 ilgyeol(진로 보고서)도 신청서를 붙인다
       if (product === 'taekil' && !신청서 && env('TAEKIL_AUTO') === '1') return res.status(400).json({ ok: false, reason: 'no_intake' });
       if (product === 'ilgyeol' && !신청서) return res.status(400).json({ ok: false, reason: 'no_intake' });   // 10-21 진로 보고서는 신청서 없이는 열지 않는다
+      if (product === 'gyeolhon' && !신청서) return res.status(400).json({ ok: false, reason: 'no_intake' });   // 10-22 결정 25 결혼상대 점검도 신청서 없이는 열지 않는다
       if (신청서 && JSON.stringify(신청서).length > 8000) return res.status(400).json({ ok: false, reason: 'no_intake' });
       const o = await rpc('order_open', {
         p_product: product,

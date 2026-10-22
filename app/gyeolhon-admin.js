@@ -1,4 +1,9 @@
-/* 결혼상대 점검 신청 — 사장님 목록(gyeolhon-admin.html · 10-07 작업판 결혼-1 「신청 길 바꿈」).
+/* 결혼상대 점검 — 사장님 목록(gyeolhon-admin.html).
+ * 10-22 사장님 결정 25 「모든 콘텐츠는 카카오페이」 — 위 목록은 카카오페이 결제 주문(ChaeksaPay.gyeolhon.orders · server/migrate-41 gyeolhon_order_list):
+ *   줄 = { id(주문번호), mode live|test, state received|sent|canceled, amount, paidAt, kind self|parent, who, email, intake, sentAt, note(사장님 메모), gone }
+ *   intake = 신청 쪽이 결제 전에 붙인 { v, product, kind, first, second, email, note, agreedAt } · 사람 = { name, year · month · day(양력), hour|null, minute|null, gender, place, placeName, 음력?: {y,m,d}, 윤달?, 시모름? }
+ *   단추 — 신청 JSON 복사(비공개 tools/gyeolhon-manual.js 꼴) · 메일 쓰기 · 보냄 표시 / 되돌리기(gyeolhon_order_mark) · 메모 · 환불(전액 취소) 화면(pay-done 의 사장님 전액 취소 단추)
+ * 아래 접힘은 옛 계좌이체 신청(10-07 ~ 10-22 · 비공개 sql-gyeolhon-apply.sql) 기록용 — 그 코드는 그대로 둔다.
  *
  * 검수 계정(super)만 쓴다. 화면이 가리는 것은 편의일 뿐이고, 실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super' 다(비공개 core sql-gyeolhon-apply.sql).
  * 여기는 함수를 부르고 받은 것을 그리기만 한다 — 검사 · 저장 · 입금 계좌는 비공개 서버(api/gyeolhon-apply.js)에 있다.
@@ -202,6 +207,175 @@
     });
   }
 
+  /* ══ 카카오페이 결제 주문(10-22 결정 25) ══════════════════════════════ */
+  const 원 = (n) => (P && P.won ? P.won(n) : Number(n || 0).toLocaleString('ko-KR') + '원');
+  const 주문상태 = { received: '접수 — 보낼 것', sent: '보냄', canceled: '환불' };
+  const 주문나누기 = [['', '전부'], ['received', '접수 — 보낼 것'], ['sent', '보냄'], ['canceled', '환불']];
+  const 주문이유 = (r) => ({ forbidden: '검수 계정만 할 수 있어요', login: '로그인이 끝났어요 — 다시 로그인해 주세요', missing: 'server/migrate-41-gyeolhon-product.sql 을 아직 Run 하지 않았어요',
+    not_found: '주문을 찾지 못했어요', network: '인터넷 연결이 끊겼어요', db: '저장소에서 문제가 생겼어요' })[r && r.reason] || (r && r.message) || '되지 않았어요';
+  let 주문지금 = '', 주문들 = [];
+  const 주문펼침 = new Set();
+  const 주문신청서 = (x) => (x && x.intake && typeof x.intake === 'object' && !Array.isArray(x.intake)) ? x.intake : {};
+  const 음력입력 = (p) => (p && p.음력 && typeof p.음력 === 'object' && p.음력.y ? p.음력 : null);
+  const 시각2 = (p) => (p.hour == null || p.시모름 ? '시 모름' : 두(p.hour) + ':' + 두(p.minute || 0));
+  const 생일2 = (p) => {
+    if (!p || p.year == null) return '(생년월일 없음)';
+    let s = p.year + '-' + 두(p.month) + '-' + 두(p.day) + ' ' + 시각2(p);
+    const l = 음력입력(p);
+    if (l) s += ' (음력으로 넣음: ' + l.y + '-' + 두(l.m) + '-' + 두(l.d) + (p.윤달 ? ' 윤달' : '') + ')';
+    return s;
+  };
+  const kv = (k, v) => '<div class="adm-kv"><span>' + esc(k) + '</span><span>' + esc(v) + '</span></div>';
+
+  /** 카카오페이 주문의 신청서(first · second) → 비공개 tools/gyeolhon-manual.js 의 신청.json 꼴 { 나, 그, 손님 }. 이름 · 메일은 넣지 않는다(도구도 버린다). */
+  function 주문신청꼴(x) {
+    const 한사람 = (p) => {
+      p = p && typeof p === 'object' ? p : {};
+      const o = {}, l = 음력입력(p);
+      if (l) { o.year = l.y; o.month = l.m; o.day = l.d; o.음력 = true; o.윤달 = !!p.윤달; }
+      else { o.year = p.year; o.month = p.month; o.day = p.day; }
+      o.hour = p.hour == null || p.시모름 ? null : p.hour; o.minute = o.hour == null ? null : (p.minute || 0);
+      o.gender = p.gender; o.place = p.place || null; o.placeName = p.placeName || '';
+      return o;
+    };
+    const it = 주문신청서(x);
+    return { 나: 한사람(it.first), 그: 한사람(it.second), 손님: it.kind === 'parent' ? '부모' : '본인' };
+  }
+  function 주문수세기() { const c = {}; 주문들.forEach((x) => { c[x.state] = (c[x.state] || 0) + 1; }); return c; }
+  function 주문나누기그리기() {
+    const box = $('ordFilters'); if (!box) return;
+    const c = 주문수세기();
+    box.innerHTML = 주문나누기.map(([k, 말]) => '<button type="button" data-f="' + k + '" class="' + (k === 주문지금 ? 'on' : '') + '">' + esc(말) + ' ' + (k ? (c[k] || 0) : 주문들.length) + '</button>').join('');
+    box.querySelectorAll('button').forEach((b) => { b.onclick = () => { 주문지금 = b.dataset.f; 주문나누기그리기(); 주문목록그리기(); }; });
+  }
+  function 주문요약(x) {
+    const it = 주문신청서(x);
+    return '<span class="adm-st st-' + esc(x.state) + '">' + esc(주문상태[x.state] || x.state || '-') + '</span>'
+      + '<b>' + esc(x.who || '?') + '</b>'
+      + '<span class="adm-meta">' + esc([날(x.paidAt) ? '결제 ' + 날(x.paidAt) : '', x.mode === 'test' ? '시험 결제' : '', 갈래이름[x.kind] || x.kind || '', x.email || it.email || '',
+        x.sentAt ? '보냄 ' + 날(x.sentAt) : '', x.note ? '메모 있음' : '', x.gone ? '탈퇴한 계정' : ''].filter(Boolean).join(' · ')) + '</span>';
+  }
+  function 주문html(x) {
+    const id = 줄id(x.id), 열림 = 주문펼침.has(id);
+    return '<div class="adm-row" data-oid="' + esc(id) + '"><button type="button" class="adm-sum" aria-expanded="' + 열림 + '">' + 주문요약(x) + '</button>'
+      + '<div class="adm-detail"' + (열림 ? '' : ' hidden') + '></div></div>';
+  }
+  function 주문줄칸(id) { return document.querySelector('.adm-row[data-oid="' + 줄id(id) + '"]'); }
+  function 주문목록그리기() {
+    const box = $('ordRows'); if (!box) return;
+    const xs = 주문들.filter((x) => !주문지금 || x.state === 주문지금);
+    box.innerHTML = xs.length ? xs.map(주문html).join('') : '<p class="hint">' + (주문들.length ? '이 나누기에는 줄이 없어요.' : '아직 카카오페이로 결제된 신청이 없어요.') + '</p>';
+    xs.forEach((x) => 주문줄달기(x));
+  }
+  function 주문줄달기(x) {
+    const id = 줄id(x.id), el = 주문줄칸(id); if (!el) return;
+    el.querySelector('.adm-sum').onclick = () => {
+      const d = el.querySelector('.adm-detail'), s = el.querySelector('.adm-sum');
+      if (주문펼침.has(id)) { 주문펼침.delete(id); d.hidden = true; s.setAttribute('aria-expanded', 'false'); return; }
+      주문펼침.add(id); s.setAttribute('aria-expanded', 'true'); 주문자세히(x);
+    };
+    if (주문펼침.has(id)) 주문자세히(x);
+  }
+  function 주문줄새로(row, 말) {
+    const id = 줄id(row.id), i = 주문들.findIndex((y) => 줄id(y.id) === id);
+    if (i >= 0) 주문들[i] = row; else 주문들.unshift(row);
+    const el = 주문줄칸(id);
+    if (el) { const 새 = document.createElement('div'); 새.innerHTML = 주문html(row); el.replaceWith(새.firstChild); 주문줄달기(row); }
+    else 주문목록그리기();
+    주문나누기그리기();
+    if (말) 주문알림(id, 말);
+  }
+  function 주문알림(id, 말, 나쁨) {
+    const el = 주문줄칸(id), m = el && el.querySelector('.adm-msg');
+    if (m) { m.textContent = 말 || ''; m.classList.toggle('bad', !!나쁨); }
+    else if (말) alert(말);
+  }
+  function 주문사람칸(머리, p) {
+    p = p && typeof p === 'object' ? p : {};
+    return '<div class="adm-person"><h4>' + esc(머리) + ' — ' + esc(p.name || '(이름 없음)') + '</h4>'
+      + kv('생년월일시', 생일2(p)) + kv('성별', 성별(p.gender))
+      + kv('태어난 곳', (p.placeName || '(없음)') + (p.place ? ' · ' + p.place : '')) + '</div>';
+  }
+  function 주문자세히(x, 말) {
+    const id = 줄id(x.id), el = 주문줄칸(id); if (!el) return;
+    const d = el.querySelector('.adm-detail'); d.hidden = false;
+    const it = 주문신청서(x), 부모 = it.kind === 'parent', 환불 = x.state === 'canceled', 메일주소 = String(it.email || x.email || '');
+    const 단추 = [];
+    const 단 = (k, 글, 됨) => 단추.push('<button type="button" class="btn ghost small" data-act="' + k + '"' + (됨 ? '' : ' disabled') + '>' + esc(글) + '</button>');
+    단('copy', '신청 JSON 복사', !!(it.first && it.second));
+    단('mail', '메일 쓰기', /@/.test(메일주소));
+    단('sent', '보냄 표시', !환불 && x.state !== 'sent');
+    단('unsent', '보냄 되돌리기', x.state === 'sent');
+    단('note', '메모', true);
+    단추.push('<a class="btn ghost small" href="pay-done.html?pv=kakao&orderId=' + encodeURIComponent(String(x.id || '')) + '&pg_token=used" target="_blank" rel="noopener">'
+      + esc(환불 ? '결제 화면 보기' : '환불(전액 취소) 화면') + '</a>');
+    d.innerHTML = '<div class="adm-acts">' + 단추.join('') + '</div>'
+      + '<p class="adm-msg" role="status">' + esc(말 || '') + '</p>'
+      + '<div class="adm-box" data-pane hidden></div>'
+      + (it.first || it.second
+          ? '<div class="adm-cols">' + 주문사람칸(부모 ? '첫째 분(자녀)' : '첫째 분(본인)', it.first) + 주문사람칸('둘째 분(결혼 상대)', it.second) + '</div>'
+          : '<p class="adm-msg bad">이 주문에는 신청서가 없어요(손님이 계정을 지웠거나 신청서가 붙기 전에 끊겼어요). 손님 메일로 두 분의 생년월일시를 다시 받아야 해요.</p>')
+      + '<h4>연락과 결제</h4>'
+      + kv('메일(PDF 받을 곳)', 메일주소 || '-')
+      + kv('바라는 점', it.note || '(없음)')
+      + kv('동의', 날(it.agreedAt) || '-')
+      + kv('주문번호', String(x.id || ''))
+      + kv('값', 원(x.amount) + (x.mode === 'test' ? ' · 시험 결제(돈이 안 빠졌어요 — 보고서를 만들지 않아요)' : ''))
+      + kv('때', ['결제 ' + (날(x.paidAt) || '-'), x.sentAt ? '보냄 ' + 날(x.sentAt) : '', 환불 ? '환불됨' : ''].filter(Boolean).join(' · '))
+      + (x.gone ? kv('계정', '손님이 탈퇴했어요') : '')
+      + (x.note ? '<h4>메모</h4><p class="adm-memo">' + esc(x.note) + '</p>' : '');
+    d.querySelectorAll('[data-act]').forEach((b) => { b.onclick = () => 주문누름(x, b.dataset.act, b); });
+  }
+  function 주문표시(x, sent, b, 말) {
+    if (b) b.disabled = true;
+    return G.mark(x.id, sent, null).then((r) => {
+      if (r && r.ok && r.row) 주문줄새로(r.row, 말);
+      else { 주문알림(x.id, '바꾸지 못했어요: ' + 주문이유(r), true); if (b) b.disabled = false; }
+    });
+  }
+  function 주문누름(x, act, b) {
+    const id = 줄id(x.id), it = 주문신청서(x), 메일주소 = String(it.email || x.email || '');
+    if (act === 'sent') { if (!confirm('이 손님에게 보고서(PDF)를 메일로 보냈나요?\n\n보냄으로 표시해요.')) return; 주문표시(x, true, b, '보냄으로 표시했어요.'); return; }
+    if (act === 'unsent') { 주문표시(x, false, b, '보냄을 되돌렸어요 — 다시 「접수」예요.'); return; }
+    if (act === 'copy') {
+      const 글 = JSON.stringify(주문신청꼴(x), null, 1), 이름 = String(x.id || '').replace(/^ck_gyeolhon_/, '').slice(0, 14) || '이름';
+      const 됨 = () => 주문알림(id, '신청 JSON 을 복사했어요. 파일로 저장한 뒤 node tools/gyeolhon-manual.js <파일> ' + 이름 + (it.kind === 'parent' ? ' --parent' : '') + ' 로 만들어요.');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(글).then(됨, () => 주문손복사(id, 글));
+      else 주문손복사(id, 글);
+      return;
+    }
+    if (act === 'mail') {
+      const 본문 = ['안녕하세요, 책사입니다.', '', '신청하신 결혼상대 점검 보고서를 보내 드려요(주문번호 ' + String(x.id || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
+      location.href = 'mailto:' + encodeURIComponent(메일주소).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 결혼상대 점검 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
+      return;
+    }
+    if (act === 'note') 주문메모칸(x);
+  }
+  function 주문판칸(id) { const el = 주문줄칸(id); const p = el && el.querySelector('[data-pane]'); if (p) p.hidden = false; return p; }
+  function 주문손복사(id, 글) {
+    const p = 주문판칸(id); if (!p) return;
+    p.innerHTML = '<p class="hint">복사가 막혀서 아래에 펼쳤어요 — 전부 골라 복사해 주세요.</p><textarea class="adm-copy" readonly></textarea>';
+    const t = p.querySelector('textarea'); t.value = 글; t.focus(); t.select();
+  }
+  function 주문메모칸(x) {
+    const p = 주문판칸(x.id); if (!p) return;
+    p.innerHTML = '<label class="hint">손님과 주고받은 것 · 틀린 곳 · 다시 만든 까닭을 적어 둬요(비우고 저장하면 지워요).</label>'
+      + '<textarea class="adm-note" maxlength="4000"></textarea><button type="button" class="btn small">메모 저장</button>';
+    const t = p.querySelector('textarea'); t.value = x.note || '';
+    p.querySelector('button').onclick = () => G.mark(x.id, null, t.value).then((r) => {
+      if (r && r.ok && r.row) 주문줄새로(r.row, '메모를 저장했어요.'); else 주문알림(x.id, '저장하지 못했어요: ' + 주문이유(r), true);
+    });
+  }
+  function 주문목록() {
+    const box = $('ordRows'); if (box) box.innerHTML = '<p class="hint">불러오는 중…</p>';
+    if (!G.orders) { if (box) box.innerHTML = '<p class="adm-msg bad">pay.js 가 옛 판이에요 — 새로고침해 주세요.</p>'; return Promise.resolve(); }
+    return G.orders(null).then((r) => {
+      if (!r || !r.ok || !Array.isArray(r.rows)) { if (box) box.innerHTML = '<p class="adm-msg bad">' + esc(주문이유(r)) + '</p>'; return; }
+      주문들 = r.rows;
+      주문나누기그리기(); 주문목록그리기();
+    });
+  }
+
   /* ── 시작 ─────────────────────────────────────────────── */
   function 목록() {
     const box = $('admRows'); if (box) box.innerHTML = '<p class="hint">불러오는 중…</p>';
@@ -227,9 +401,10 @@
     if (판 !== 'super') { gate.innerHTML = '<p>검수 계정만 열 수 있어요.</p>'; return; }
     gate.innerHTML = '';
     $('admMain').hidden = false;
-    $('admReload').onclick = 목록;
-    목록();
+    $('admReload').onclick = () => { 주문목록(); 목록(); };
+    주문목록();   // 10-22 카카오페이 결제 주문이 먼저
+    목록();   // 옛 계좌이체 신청(접힘)
   }
 
-  global.ChaeksaGyeolhonAdmin = { 시작, 신청꼴 };
+  global.ChaeksaGyeolhonAdmin = { 시작, 신청꼴, 주문신청꼴 };
 })(window);

@@ -1171,7 +1171,8 @@
     사슬싣기: () => 주문서.사슬싣기(),
   };
 
-  // ── 결혼상대 점검 신청(10-07 작업판 결혼-1 「신청 길 바꿈」) — 사장님 목록(gyeolhon-admin.html)만 ─────────
+  // ── 결혼상대 점검 — 10-22 결정 25 「모든 콘텐츠는 카카오페이」: 새 신청은 사이트 결제 주문(buy('gyeolhon', null, 결제사, 신청서) → kopen → order_intake)으로 들어온다(server/migrate-41).
+  //    보고서(PDF)는 사장님이 비공개 tools/gyeolhon-manual.js 로 만들어 메일로 — 자동 만들기 없음. 아래 adminList · adminStatus · adminDelete 는 옛 계좌이체 신청표(10-07 ~ 10-22) 기록용.
   // 접수는 비공개 서버 /api/gyeolhon-apply 가 한다(로그인 없음 · 서버 열쇠). 여기는 검수 계정이 보는 길뿐 —
   // 함수 안에서 ai_plan() = 'super' 를 본다(비공개 core sql-gyeolhon-apply.sql). 택일함수와 같은 길로 부른다(통신 코드를 두 벌 두지 않는다).
   const gyeolhon = {
@@ -1181,6 +1182,18 @@
     adminStatus: (id, status, memo) => 택일함수('gyeolhon_admin_status', { p_id: id, p_status: status || null, p_memo: memo == null ? null : String(memo) }),
     /** 손님이 지워 달라고 할 때 — 되돌릴 수 없다 → { ok:true, deleted } */
     adminDelete: (id) => 택일함수('gyeolhon_delete', { p_id: id }),
+    /** 내 결혼상대 점검 주문들 [{ id, paidAt, amount, state: received|sent|canceled, sentAt, kind, who, email }] — 로그인 안 했으면 [], 못 물어봤으면 null. (my_gyeolhon · migrate-41) */
+    async mine() {
+      const C = global.ChaeksaCloud;
+      if (!C || !C.signedIn || !C.signedIn()) return [];
+      const j = await 택일함수('my_gyeolhon', {});
+      return Array.isArray(j) ? j : null;
+    },
+    /** 사장님 목록(super) — 결제된 주문 { ok, counts, rows } · filter = received | sent | canceled | null */
+    orders: (filter) => 택일함수('gyeolhon_order_list', { p_filter: filter || null, p_limit: 200 }),
+    /** 보냄 표시(sent true) · 되돌리기(false) · 그대로(null) — 메모(null 이면 그대로, '' 이면 지움) → { ok, row } */
+    mark: (id, sent, note) => 택일함수('gyeolhon_order_mark', { p_order: String(id || ''), p_sent: sent == null ? null : !!sent, p_note: note == null ? null : String(note) }),
+    상태말: { received: '접수됐어요 — 책사가 확인한 뒤 메일로 보내 드려요', sent: '메일로 보냈어요', canceled: '환불됐어요' },
   };
 
   // ── 「나는 뭐해 먹고 살까?」(ilgyeol · 10-22 사장님 「보고서 형식 말고 결제하면 바로 나오게」) — 출산택일 자동 보고서와 같은 길 ─────────

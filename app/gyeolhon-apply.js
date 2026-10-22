@@ -1,71 +1,105 @@
-/* 결혼상대 점검 신청 쪽 — 그리기 · 보내기만 한다. 검사 · 저장 · 입금 계좌는 비공개 서버(/api/gyeolhon-apply)에 있다(이 쪽에 계좌 · 판정 코드 없음).
- * 10-07 사장님 「네이버폼으로 받지말고 웹사이트에서 바로 받으면 안되나?」 · 「바로보이는 쪽 ㄱㄱ」 — 접수 화면에 입금 계좌를 바로(서버 응답으로만 받는다).
- * 글은 비공개 core data/gyeolhon-apply-copy-v1.json(작가)에서 그대로 옮겼다 — 아래 T. 토큰 {접수번호} {은행} {계좌번호} {예금주} {입금자} {메일} {문의메일} {날}.
+/* 결혼상대 점검 신청 쪽 — 카카오페이 결제(10-22 사장님 「모든 콘텐츠는 카카오페이 결제」 · 계좌이체 손 신청이 아니라). 그리기 · 신청서 꾸리기 · 결제창 열기만 한다.
+ * 흐름은 「나는 뭐해 먹고 살까?」 신청 쪽(ilgyeol-apply.js)과 같다:
+ *   누가 신청하나(본인 · 부모) → 첫째 분 · 둘째 분(people.js 저장된 사람 · 서로 다른 사람) → 보고서(PDF)를 받을 메일 → 바라는 점(선택) → 동의 두 칸
+ *   → 로그인(카카오 · 네이버, ChaeksaCloud) → 결제 수단(ChaeksaPay.결제사칸) → 「결제하기」 = ChaeksaPay.buy('gyeolhon', null, 고른 결제사, 신청서) → 카카오페이 → pay-done.html.
+ * 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake — 신청서가 없으면 주문을 열지 않는다).
+ *   그래서 이 쪽에는 접수 화면 · 접수 번호 · 입금 계좌 · 입금자 · 연락처 칸이 없다(10-22 걷음). 보고서(PDF)는 책사가 만들어 적은 메일로 보낸다 — 메일 칸은 남긴다.
+ * 값(원)은 코드에 없다 — 서버 상품표(/api/pay products, code gyeolhon)의 amount 를 data-price 자리와 단추에 붙인다. 상품이 없으면 단추를 잠근다.
+ * 신청서(intake) 꼴 — 8,000자 안쪽(서버 한도):
+ *   { v: 1, product: 'gyeolhon', kind: 'self'|'parent',
+ *     first: 사람, second: 사람, email, note(300자), agreedAt }
+ *   사람 = { name, year, month, day(양력), hour|null, minute|null, gender: 'M'|'F', place, placeName, 음력?: {y, m, d}, 윤달?: true, 시모름?: true }
+ *   (ilgyeol-apply.js 의 person 꼴과 같다 — longitude · tzOffset 은 넣지 않는다. 보고서에서는 name 으로 부른다.)
+ * 초안은 이 기기 localStorage('chaeksa.gyeolhon.draft') 에 사흘 — kind · 고른 사람(id) 둘 · 메일 · 바라는 점(생년월일은 people.js 에 이미 있다).
+ *   로그인하러 떠났다 돌아오면 그대로 채운다. 동의 체크는 sessionStorage('chaeksa.gyeolhon.agree') 에 잠시.
  * 두 사람은 사이트 공통 저장된 사람(people.js)에서 고른다(10-05 사장님 「이용자 정보 입력은 프로필로 가지고 와야지」) — 사람 칩은 app.js 사람칩과 같은 꼴(ss-who · ss-wh).
  *   「사람 추가」 창은 홈의 사람 추가 창과 같은 칸(양력 · 음력 · 윤달 · 시간 모름 · 성별 · 태어난 곳) — 시 · 분은 숫자 칸 둘(10-06 「시간 입력 바꿔 줘」).
- * 생년월일은 주소(URL)에 싣지 않는다 — POST 본문으로만. 로그인 없음. 접수한 것은 이 기기 localStorage 에 30일(접수 번호 · 때 · 요약).
- * 보내는 꼴(api/gyeolhon-apply.js): { kind:'self'|'parent', first, second, email, contact, payer, note, agreed:true, hp:'' }
- *   사람 = { name, year, month, day(양력), hour|null, minute, gender, calendar, lunarInput|null, place, placeName, longitude, tzOffset }
- * 받는 꼴: 200 { ok, code, dup, at?, bank:{은행,번호,예금주}|null } · 400 { error }(1층 말) · 503 { error }
+ * 생년월일은 주소(URL)에 싣지 않는다. 비밀(키 · 계좌) 없음. 판정 코드 없음.
  */
 (function () {
   'use strict';
-  var API = 'https://chaeksa-behavior-core.vercel.app/api/gyeolhon-apply';
-  var 문의메일 = 'dl4431@naver.com';
-  var 보관키 = 'chaeksa.gyeolhon.applied', 보관일 = 30;
+  var 상품 = 'gyeolhon', 문의메일 = 'dl4431@naver.com';
+  var 초안키 = 'chaeksa.gyeolhon.draft', 초안수명 = 3 * 24 * 3600 * 1000, 동의키 = 'chaeksa.gyeolhon.agree';
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var 읽기 = function (k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  var 쓰기 = function (k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   var 채움 = function (s, v) { return String(s == null ? '' : s).replace(/\{([^{}]+)\}/g, function (_, n) { return v && v[n] != null ? v[n] : ''; }); };
 
-  // ── 글(작가 원고 gyeolhon-apply-copy-v1 — 고치지 않고 옮김) ──
+  // ── 글 — 손님갈래 · 첫째 · 둘째 · 이름칸은 작가 원고(gyeolhon-apply-copy-v1)에서 그대로. 단추 · 오류 · 로그인 · 이미 · 곧은 ilgyeol-apply 말을 이 상품에 맞게 옮김(작가 검수 대상) ──
   var T = {
     손님갈래: { 머리: '누가 신청하시나요?', 본인: '결혼할 본인이에요', 부모: '자녀의 결혼 상대를 보려는 부모예요' },
     첫째: { 본인: '첫째 분 — 결혼할 본인', 부모: '첫째 분 — 결혼할 자녀',
       도움: '저장된 사람에서 고르세요. 아직 없으면 「사람 추가」로 넣어요 — 태어난 시를 모르면 「시간 모름」, 음력이면 음력 · 윤달 그대로 넣을 수 있어요. 보고서에서는 여기 적힌 이름으로 불러요.' },
     둘째: { 머리: '둘째 분 — 결혼 상대', 도움: '첫째 분과 같은 방법으로 저장된 사람에서 고르거나 「사람 추가」로 넣어요. 첫째 분과 다른 사람이어야 해요.' },
-    접수: {
-      제목: '접수됐어요 — 이제 입금만 하시면 돼요',
-      번호말: '접수 번호 {접수번호}',
-      입금: ['{은행} {계좌번호} (예금주 {예금주})', '49,000원',
-        '입금하실 분 이름은 {입금자} — 통장에 이 이름으로 찍히게 넣어 주세요. 다른 이름으로 넣으셨으면 아래 메일로 접수 번호와 함께 알려 주세요.'],
-      다음: ['입금이 확인되면 엔진이 두 분을 계산하고 책사가 한 번 더 확인해요. 보통 2~3일 안에 {메일} 로 보고서(PDF)를 보내 드려요.',
-        '궁금한 것은 {문의메일} 로 접수 번호와 함께 보내 주세요.',
-        '이 화면은 따로 메일로 보내 드리지 않아요. 접수 번호와 계좌를 찍어 두세요.'],
-      복사단추: '계좌 복사'
-    },
+    단추: { 여는중: '결제창을 여는 중…', 닫힘: '지금은 결제를 받을 수 없습니다', 결제: '결제하기', 결제값: ' 결제하고 신청하기', 카카오: '카카오페이로 {값} 결제하고 신청하기', 로그인: '카카오로 로그인하고 계속하기' },
     오류: {
+      모듈: '결제 모듈을 불러오지 못했어요. 새로고침해 주세요.',
+      닫힘: '지금은 결제를 받을 수 없습니다 — ' + 문의메일,
       사람없음: '첫째 분 · 둘째 분을 고르거나 넣어 주세요',
       같은사람: '첫째 분과 둘째 분이 같은 사람이에요 — 다른 사람을 골라 주세요',
+      이름없음: '보고서에서 부를 이름을 적어 주세요',
       메일: '보고서를 받으실 메일 주소를 다시 봐 주세요 — @ 가 들어간 주소여야 해요',
-      연락처: '연락처를 적어 주세요 — 카카오톡 아이디나 전화번호',
-      입금자: '입금하실 분 이름을 적어 주세요',
-      동의: '개인정보 동의에 표시해 주세요 — 동의가 없으면 보고서를 만들 수 없어요',
-      서버: '잠시 뒤 다시 해 주세요 — 안 되면 {문의메일} 로 알려 주세요',
-      이미: '같은 두 분의 신청이 {날} 에 접수되어 있어요 — 다시 넣지 않아도 돼요'
+      동의: '동의 두 가지에 체크해 주셔야 결제할 수 있어요',
+      너무김: '신청서가 너무 길어요 — 바라는 점을 줄여 주세요',
+      결제창: '결제창을 열지 못했습니다.'
     },
-    이미접수: '이 기기에서 {날} 에 접수한 신청이 있어요 — 접수 번호 {접수번호}'
-  };
-  // 원고에 없는 말(화면 담당이 보탬 — 작가 검수 대상): 계좌가 서버에 아직 없을 때 · 보내는 중 · 복사 결과 · 이름 없는 사람 · 접수 화면 다시 보기
-  var 말덧 = {
-    계좌없음: '입금 계좌는 적어 주신 연락처로 알려 드려요.',
-    보내는중: '접수하고 있어요…',
-    복사됨: '복사했어요. 은행 앱에 붙여 넣으세요.',
-    복사실패: '복사하지 못했어요. 위 계좌를 옮겨 적어 주세요.',
-    이름칸: '보고서에서 부를 이름',
-    이름없음: '보고서에서 부를 이름을 적어 주세요',
-    다시보기: '접수 화면 다시 보기'
+    로그인: {
+      됨: '로그인됐어요. 동의를 확인하시고 결제하시면 돼요.',
+      다시: ' 신청서 아래 로그인 단추를 다시 눌러 주세요.',
+      만료: '로그인 링크가 만료됐거나 이미 쓴 링크예요.',
+      안됨: '로그인이 되지 않았어요.',
+      못마침: '로그인을 마치지 못했어요.',
+      남의계정: '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 주문은 이 계정에 남아요.'
+    },
+    이미: '최근 결제하신 결혼상대 점검 주문이 있어요 (주문번호 {주문번호}). 다른 두 분을 보시는 게 아니면 다시 결제하지 않아도 돼요 — 보고서(PDF)는 그때 적으신 메일로 보내 드려요. 궁금한 것은 {문의메일} 로 주문번호와 함께 보내 주세요.',
+    곧: {
+      머리: '결제는 곧 열려요.',
+      몸: '지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요. 열리기 전에는 메일({문의메일})로 신청하셔도 돼요 — 두 분의 생년월일시 · 성별 · 태어난 곳과 보고서를 받으실 메일을 적어 주세요. 답장으로 이어서 안내해 드려요.',
+      단추: '메일로 신청하기 →',
+      제목: '[책사] 결혼상대 점검 신청'
+    },
+    이름칸: '보고서에서 부를 이름'
   };
 
   var PP = window.ChaeksaPeople, PL = window.ChaeksaPlaces;
   try { if (PP) PP.migrate(); } catch (e) {}
-  var form = $('apply'), send = $('send'), msg = $('msg');
-  var kind = 'self', 고름 = { first: '', second: '' }, busy = false;
+  var form = $('apply'), send = $('send'), msg = $('msg'), agreeData = $('agreeData'), agree = $('agree'), pvPick = $('pvPick');
+  var kind = 'self', 고름 = { first: '', second: '' }, busy = false, 열림 = true, 금액 = '';
   var 칸 = { first: 'firstWrap', second: 'secondWrap' };
 
+  // 계기판 사건(track.js) — 결제 단추 · 메일 신청 단추. track.js 가 없거나 막혀도 신청은 그대로 된다.
+  function 사건(n) { try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event(n); } catch (e) {} }
+  function say(t, bad) {
+    var 판 = window.ChaeksaPay && ChaeksaPay.판;
+    msg.textContent = t ? t + (bad && 판 ? ' (화면 ' + 판 + ')' : '') : '';
+    msg.className = 'msg' + (bad ? ' bad' : '');
+  }
+  var 로그인됨 = function () { return !!(window.ChaeksaCloud && ChaeksaCloud.signedIn && ChaeksaCloud.signedIn()); };
+  // 이 기기에서 시작하지 않은 로그인(cloud.js hold — 남이 보낸 링크일 수 있다)인가. 그러면 메일 칸을 그 계정 메일로 채우지 않고, 결제 전에 어느 계정인지 한 번 묻는다.
+  var 남의로그인 = function () { try { return 로그인됨() && !!(ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold()); } catch (e) { return false; } };
+
+  // ── 로그인에서 돌아온 주소 꼬리(토큰 · 오류)는 맨 먼저 받고 치운다 — 주소에 남기지 않는다(ilgyeol-apply 와 같은 처리) ──
+  var 막로그인 = false;
+  try { 막로그인 = !!(window.ChaeksaCloud && ChaeksaCloud.captureRedirect && ChaeksaCloud.captureRedirect()); } catch (e) {}
+  var 로그인오류 = (function () {
+    var p = new URLSearchParams((location.hash || '').replace(/^#/, '') + '&' + (location.search || '').replace(/^\?/, ''));
+    return p.get('error') ? { code: p.get('error_code') || '' } : null;
+  })();
+  function 로그인안내(t) { var el = $('loginMsg'); if (el) { el.textContent = t || ''; el.hidden = !t; } }
+  if (로그인오류) {
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    로그인안내((로그인오류.code === 'otp_expired' ? T.로그인.만료 : T.로그인.안됨) + T.로그인.다시);
+  } else {
+    try { if (!막로그인 && window.ChaeksaCloud && ChaeksaCloud.refusedLogin && ChaeksaCloud.refusedLogin()) 로그인안내(T.로그인.못마침 + T.로그인.다시); } catch (e) {}
+  }
+  // 여기가 열렸으면 첫 화면이 대신 돌려보낼 일이 없다 — 복귀 표시를 지운다(남으면 나중의 딴 로그인을 끌고 온다).
+  try { localStorage.removeItem('chaeksa.return'); } catch (e) {}
+
+  // ── 사람 · 날짜 말 ──
   function 목록() { try { return PP ? PP.list().filter(function (p) { return p && p.birth && p.birth.year; }) : []; } catch (e) { return []; } }
   function 사람(id) { try { return id && PP ? PP.get(id) : null; } catch (e) { return null; } }
   function 이름(p) { var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }
-  function 날말(iso) { var d = iso ? new Date(iso) : new Date(); if (isNaN(d.getTime())) d = new Date(); return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일'; }
   function 곳이름(b) { if (b.placeName) return b.placeName; try { return PL ? PL.resolve(b.place).name : '서울'; } catch (e) { return '서울'; } }
   function 생일말(b) {
     var 시 = b.hour == null || b.hour === '' ? '시간 모름' : (+b.hour) + '시 ' + (+(b.minute || 0)) + '분';
@@ -75,7 +109,16 @@
     var 성 = b.gender === 'F' ? '여' : b.gender === 'M' ? '남' : '성별 없음';
     return 날 + ' · ' + 시 + ' · ' + 성 + ' · ' + 곳이름(b);
   }
-  function 말(t, bad) { msg.textContent = t || ''; msg.className = 'msg' + (bad ? ' bad' : ''); }
+
+  // ── 초안(이 기기 · 사흘) — kind · 고른 사람(id) 둘 · 메일 · 바라는 점. 생년월일은 people.js 에 있다 ──
+  function 초안() {
+    var j = 읽기(초안키);
+    if (j && (!j.data || Date.now() - (j.at || 0) >= 초안수명)) { 쓰기(초안키, null); return null; }
+    return j ? j.data : null;
+  }
+  function 초안저장() {
+    쓰기(초안키, { data: { kind: kind, first: 고름.first || '', second: 고름.second || '', email: ($('email') && $('email').value) || '', note: ($('note') && $('note').value) || '' }, at: Date.now() });
+  }
 
   // ── 사람 칩(첫째 · 둘째) ──
   function 칩(slot) {
@@ -91,14 +134,14 @@
     }).join('') + '<button type="button" class="ss-wh ss-wh-add" data-add="' + slot + '">＋ 사람 추가</button></div>';
     if (p) {
       h += '<p class="picked">' + esc(생일말(p.birth)) + ' <button type="button" class="lnk" data-edit="' + esc(p.id) + '">고치기</button></p>';
-      if (!이름(p)) h += '<label for="' + slot + 'Name">' + esc(말덧.이름칸) + '</label><input id="' + slot + 'Name" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" lang="ko">';
+      if (!이름(p)) h += '<label for="' + slot + 'Name">' + esc(T.이름칸) + '</label><input id="' + slot + 'Name" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" lang="ko">';
     }
     wrap.innerHTML = h;
   }
   function 둘다() { 칩('first'); 칩('second'); }
   function 갈래그리기() {
     $('firstHead').textContent = T.첫째[kind === 'parent' ? '부모' : '본인'];
-    Array.prototype.forEach.call(form.querySelectorAll('.kind label'), function (l) { var r = l.querySelector('input'); l.classList.toggle('on', !!r && r.value === kind); });
+    Array.prototype.forEach.call(form.querySelectorAll('.kind label'), function (l) { var r = l.querySelector('input'); if (r) r.checked = r.value === kind; l.classList.toggle('on', !!r && r.value === kind); });
   }
   // 본인 손님이면 「나」가 첫째 분(10-05 「나」 먼저). 둘째 분은 손님이 고른다 — 목록 첫 사람으로 멋대로 두지 않는다(app.js 09-13 규칙).
   function 기본고름() {
@@ -110,12 +153,12 @@
   }
   form.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('button'); if (!b) return;
-    if (b.getAttribute('data-pick')) { var w = b.closest('[data-slot]'); if (w) { 고름[w.getAttribute('data-slot')] = b.getAttribute('data-pick'); 둘다(); } return; }
+    if (b.getAttribute('data-pick')) { var w = b.closest('[data-slot]'); if (w) { 고름[w.getAttribute('data-slot')] = b.getAttribute('data-pick'); 둘다(); 초안저장(); } return; }
     if (b.getAttribute('data-add')) { var 슬 = b.getAttribute('data-add'); 사람창열기(null, 슬); return; }
     if (b.getAttribute('data-edit')) { var w2 = b.closest('[data-slot]'); 사람창열기(b.getAttribute('data-edit'), w2 ? w2.getAttribute('data-slot') : 'first'); return; }
   });
   Array.prototype.forEach.call(form.querySelectorAll('input[name=kind]'), function (r) {
-    r.addEventListener('change', function () { kind = r.value === 'parent' ? 'parent' : 'self'; 갈래그리기(); 기본고름(); 둘다(); });
+    r.addEventListener('change', function () { kind = r.value === 'parent' ? 'parent' : 'self'; 갈래그리기(); 기본고름(); 둘다(); 초안저장(); });
   });
 
   // ── 사람 추가 · 고치기 창(홈의 사람 추가 창과 같은 칸 — 이 쪽에서 저장하면 사이트 어디서나 같은 사람) ──
@@ -178,16 +221,16 @@
   }
   function 사람창닫기() { $('gaSheet').classList.add('hide'); 편집 = null; }
   function 사람저장() {
-    var say = function (t) { $('gaMsg').textContent = t; };
+    var 알림 = function (t) { $('gaMsg').textContent = t; };
     var name = $('gaName').value.trim();
-    if (!name) { say(말덧.이름없음 + '.'); $('gaName').focus(); return; }
+    if (!name) { 알림(T.오류.이름없음 + '.'); $('gaName').focus(); return; }
     var sol = 양력();
-    if (!sol) { say('생년월일을 넣어 주세요.'); return; }
-    if (sol.error) { say(sol.error); return; }
+    if (!sol) { 알림('생년월일을 넣어 주세요.'); return; }
+    if (sol.error) { 알림(sol.error); return; }
     var noTime = $('gaNoTime').checked, 시 = $('gaH').value.trim(), 분 = $('gaMi').value.trim();
     if (!noTime) {
-      if (시 === '' || +시 < 0 || +시 > 23 || +시 % 1) { say('태어난 시는 0부터 23까지 넣어 주세요. 모르면 「시간 모름」에 표시해 주세요.'); return; }
-      if (분 !== '' && (+분 < 0 || +분 > 59 || +분 % 1)) { say('분은 0부터 59까지 넣어 주세요.'); return; }
+      if (시 === '' || +시 < 0 || +시 > 23 || +시 % 1) { 알림('태어난 시는 0부터 23까지 넣어 주세요. 모르면 「시간 모름」에 표시해 주세요.'); return; }
+      if (분 !== '' && (+분 < 0 || +분 > 59 || +분 % 1)) { 알림('분은 0부터 59까지 넣어 주세요.'); return; }
     }
     var 곳 = $('gaPlace').value || 'KR:서울', pl = null; try { pl = PL ? PL.resolve(곳) : null; } catch (e) {}
     var birth = {
@@ -201,11 +244,11 @@
     var rel = $('gaRel').value, id;
     try {
       if (편집) { PP.update(편집, { name: name, relation: rel, birth: birth, isSelf: rel === '나' }); id = 편집; }
-      else { id = PP.add({ name: name, relation: rel, isSelf: rel === '나', birth: birth }); try { window.ChaeksaTrack && ChaeksaTrack.event && ChaeksaTrack.event('profile'); } catch (e) {} }
-    } catch (e) { say('저장하지 못했어요. 브라우저의 저장 공간을 확인해 주세요.'); return; }
+      else { id = PP.add({ name: name, relation: rel, isSelf: rel === '나', birth: birth }); 사건('profile'); }
+    } catch (e) { 알림('저장하지 못했어요. 브라우저의 저장 공간을 확인해 주세요.'); return; }
     고름[편집슬롯] = id;
     if (고름.first && 고름.first === 고름.second) 고름[편집슬롯 === 'first' ? 'second' : 'first'] = '';
-    사람창닫기(); 둘다();
+    사람창닫기(); 둘다(); 초안저장();
   }
   $('gaSave').addEventListener('click', 사람저장);
   $('gaCancel').addEventListener('click', 사람창닫기);
@@ -215,90 +258,171 @@
   $('gaLeap').addEventListener('change', 바꿈표);
   $('gaNoTime').addEventListener('change', 시간칸);
 
-  // ── 보내기 ──
-  function 사람꼴(p, 이름덮) {
-    var b = p.birth, pl = null; try { pl = PL ? PL.resolve(b.place || 'KR:서울') : null; } catch (e) {}
-    var 시모름 = b.hour == null || b.hour === '';
-    return {
-      name: 이름덮 || 이름(p),
+  // ── 신청서(intake) — 주문에 붙는 꼴. 머리 주석의 꼴 그대로. 생년월일은 양력으로, 음력 입력은 따로 적는다 ──
+  function 사람꼴(p, pn) {
+    var b = p.birth, 시모름 = b.hour == null || b.hour === '';
+    var person = {
+      name: pn,
       year: +b.year, month: +b.month, day: +b.day,
       hour: 시모름 ? null : +b.hour, minute: 시모름 ? null : +(b.minute || 0),
-      gender: b.gender === 'F' ? 'F' : b.gender === 'M' ? 'M' : null,
-      calendar: b.calendar === 'lunar' ? 'lunar' : 'solar',
-      lunarInput: b.calendar === 'lunar' && b.lunarInput ? { y: +b.lunarInput.y, m: +b.lunarInput.m, d: +b.lunarInput.d, leap: !!b.lunarInput.leap } : null,
-      place: b.place || 'KR:서울',
-      placeName: b.placeName || (pl ? pl.name : '서울'),
-      longitude: typeof b.longitude === 'number' ? b.longitude : (pl ? pl.lon : 126.98),
-      tzOffset: b.tzOffset == null ? (pl && pl.tzOffset != null ? pl.tzOffset : null) : b.tzOffset
+      gender: b.gender === 'F' ? 'F' : 'M',
+      place: b.place || 'KR:서울', placeName: 곳이름(b)
     };
+    if (b.calendar === 'lunar' && b.lunarInput) {
+      person.음력 = { y: +b.lunarInput.y, m: +b.lunarInput.m, d: +b.lunarInput.d };
+      if (b.lunarInput.leap) person.윤달 = true;
+    }
+    if (시모름) person.시모름 = true;
+    return person;
   }
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (busy) return;
-    var f = 사람(고름.first), s = 사람(고름.second);
-    if (!f || !s) { 말(T.오류.사람없음, true); return; }
-    if (f.id === s.id) { 말(T.오류.같은사람, true); return; }
-    var fn = 이름(f) || ($('firstName') ? $('firstName').value.trim() : ''), sn = 이름(s) || ($('secondName') ? $('secondName').value.trim() : '');
-    if (!fn || !sn) { 말(말덧.이름없음, true); return; }
-    var email = $('email').value.trim(), contact = $('contact').value.trim(), payer = $('payer').value.trim(), note = $('note').value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { 말(T.오류.메일, true); $('email').focus(); return; }
-    if (contact.length < 2) { 말(T.오류.연락처, true); $('contact').focus(); return; }
-    if (payer.length < 2) { 말(T.오류.입금자, true); $('payer').focus(); return; }
-    if (!$('agree').checked) { 말(T.오류.동의, true); return; }
-    // 이름이 없던 사람은 적은 이름을 저장해 둔다 — 사이트 어디서나 그 이름
-    try { if (!이름(f)) PP.update(f.id, { name: fn }); if (!이름(s)) PP.update(s.id, { name: sn }); } catch (x) {}
-    var body = { kind: kind, first: 사람꼴(f, fn), second: 사람꼴(s, sn), email: email, contact: contact, payer: payer, note: note, agreed: true, hp: ($('hp') && $('hp').value) || '' };
-    busy = true; send.disabled = true; 말(말덧.보내는중);
-    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { st: r.status, j: j || {} }; }); })
-      .then(function (x) {
-        busy = false; send.disabled = false;
-        if (x.st === 200 && x.j.ok && x.j.code) { 접수(x.j, { 메일: email, 입금자: payer, 첫째: fn, 둘째: sn }); return; }
-        말(x.j.error ? x.j.error : 채움(T.오류.서버, { 문의메일: 문의메일 }), true);
-      })
-      .catch(function () { busy = false; send.disabled = false; 말(채움(T.오류.서버, { 문의메일: 문의메일 }), true); });
-  });
+  function 신청서(f, fn, s, sn, email, note) {
+    return { v: 1, product: 상품, kind: kind, first: 사람꼴(f, fn), second: 사람꼴(s, sn), email: email, note: note, agreedAt: new Date().toISOString() };
+  }
 
-  // ── 접수 화면(같은 쪽에서 바꿔 그림) ──
-  function 옛복사(t) {
-    try { var ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); var ok = document.execCommand('copy'); ta.parentNode.removeChild(ta); return !!ok; } catch (e) { return false; }
-  }
-  function 복사(t) {
-    try { if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).then(function () { return true; }, function () { return 옛복사(t); }); } catch (e) {}
-    return Promise.resolve(옛복사(t));
-  }
-  function 접수(j, v) {
-    var 기록 = { code: String(j.code), at: j.at || new Date().toISOString(), 요약: { kind: kind, 첫째: v.첫째, 둘째: v.둘째, 메일: v.메일, 입금자: v.입금자, bank: j.bank || null } };
-    try { localStorage.setItem(보관키, JSON.stringify(기록)); } catch (e) {}
-    try { if (!j.dup && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('gyeolhon_apply'); } catch (e) {}
-    접수그리기(기록, !!j.dup);
-  }
-  function 접수그리기(기록, 이미) {
-    var b = 기록.요약.bank || null, 메일 = 기록.요약.메일 || '';
-    var v = { 접수번호: 기록.code, 은행: b && b.은행, 계좌번호: b && b.번호, 예금주: b && b.예금주, 입금자: 기록.요약.입금자, 메일: 메일, 문의메일: 문의메일, 날: 날말(기록.at) };
-    var h = '';
-    if (이미) h += '<p class="band">' + esc(채움(T.오류.이미, v)) + '</p>';
-    h += '<h2>' + esc(T.접수.제목) + '</h2><p class="code">' + esc(채움(T.접수.번호말, v)) + '</p>';
-    h += '<div class="pay"><p class="bank">' + esc(b ? 채움(T.접수.입금[0], v) : 말덧.계좌없음) + '</p>'
-      + '<p class="won">' + esc(T.접수.입금[1]) + '</p><p>' + esc(채움(T.접수.입금[2], v)) + '</p>'
-      + (b ? '<button type="button" class="btn ghost small" id="copyBank">' + esc(T.접수.복사단추) + '</button><p class="hint" id="copySay"></p>' : '') + '</div>';
-    h += '<ul class="next">' + T.접수.다음.map(function (s) { return '<li>' + esc(채움(s, v)) + '</li>'; }).join('') + '</ul>';
-    h += '<p class="links"><a href="gyeolhon.html">← 결혼상대 점검 소개</a> · <a href="./">책사 처음으로</a></p>';
-    $('done').innerHTML = h; $('done').hidden = false; form.hidden = true; $('already').hidden = true;
-    try { window.scrollTo(0, 0); } catch (e) {}
-    if (b) $('copyBank').addEventListener('click', function () {
-      복사(b.은행 + ' ' + b.번호).then(function (ok) { $('copySay').textContent = ok ? 말덧.복사됨 : 말덧.복사실패; });
-    });
-  }
-  // 이 기기에서 30일 안에 접수한 것이 있으면 맨 위 띠로 — 같은 두 분을 또 넣지 않게
+  // ── 초안 채우기 · 적을 때마다 남기기 ──
   (function () {
-    var 기록 = null; try { 기록 = JSON.parse(localStorage.getItem(보관키)); } catch (e) {}
-    if (!기록 || !기록.code || !기록.요약 || !(Date.now() - Date.parse(기록.at) < 보관일 * 864e5)) { try { localStorage.removeItem(보관키); } catch (e) {} return; }
-    var el = $('already'); if (!el) return;
-    el.hidden = false;
-    el.innerHTML = '<p>' + esc(채움(T.이미접수, { 날: 날말(기록.at), 접수번호: 기록.code })) + '</p><button type="button" class="btn ghost small" id="showDone">' + esc(말덧.다시보기) + '</button>';
-    $('showDone').addEventListener('click', function () { 접수그리기(기록, false); });
+    var 채울 = 초안() || {};
+    if (채울.kind === 'parent') kind = 'parent';
+    if (채울.first && 사람(채울.first)) 고름.first = 채울.first;
+    if (채울.second && 사람(채울.second) && 채울.second !== 고름.first) 고름.second = 채울.second;
+    if (채울.email && $('email')) $('email').value = String(채울.email).slice(0, 100);
+    if (채울.note && $('note')) $('note').value = String(채울.note).slice(0, 300);
+    form.addEventListener('input', 초안저장);
+    form.addEventListener('change', 초안저장);
   })();
 
-  갈래그리기(); 기본고름(); 둘다();
+  if (막로그인) {
+    // 동의 체크는 초안에 없다 — 로그인하러 떠나기 전에 잠시 적어 둔 것을 되살린다.
+    try {
+      var a = sessionStorage.getItem(동의키) || '';
+      sessionStorage.removeItem(동의키);
+      if (a) { agreeData.checked = a.charAt(0) === '1'; agree.checked = a.charAt(1) === '1'; }
+    } catch (e) {}
+    // 방금 받은 토큰에는 계정 정보가 안 실려 있다 — 불러와서 비어 있는 메일 칸을 계정 메일로 채운다.
+    // 이 기기에서 시작하지 않은 로그인(cloud.js hold)이면 채우지 않는다 — 남이 보낸 링크면 보고서가 그 사람 메일로 간다.
+    try {
+      if (!(ChaeksaCloud.uploadHold && ChaeksaCloud.uploadHold())) ChaeksaCloud.me().then(function () {
+        var el = $('email'), em = ChaeksaCloud.email();
+        if (el && !el.value && em && /@/.test(em)) { el.value = em; el.dispatchEvent(new Event('input', { bubbles: true })); }
+      }).catch(function () {});
+    } catch (e) {}
+    say(T.로그인.됨);
+    setTimeout(function () { try { send.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 400);
+  }
+  // 묻는 말에 계정 메일을 적으려고 계정 정보만 받아 둔다 — 메일 칸은 채우지 않는다.
+  if (남의로그인() && !ChaeksaCloud.email()) { try { ChaeksaCloud.me().catch(function () {}); } catch (e) {} }
+
+  // ── 단추 — 상태 하나로 글과 잠김을 정한다 ──
+  function 단추() {
+    send.disabled = busy || !열림;
+    var 카카오 = !!(pvPick && pvPick.dataset && pvPick.dataset.pv === 'kakao');   // 10-22 사장님 「카카오페이 강조」 — 결제사가 카카오페이면 단추도 카카오페이 꼴
+    send.textContent = busy ? T.단추.여는중
+      : !열림 ? T.단추.닫힘
+      : 로그인됨() ? (금액 ? (카카오 ? 채움(T.단추.카카오, { 값: 금액 }) : 금액 + T.단추.결제값) : T.단추.결제) : T.단추.로그인;
+    send.classList.toggle('kakao', 카카오 && 열림);
+    $('whyLogin').hidden = !열림 || 로그인됨();
+  }
+  if (pvPick) pvPick.addEventListener('change', 단추);   // 결제사 칸이 그려지거나 바뀌면 단추 말도 따라간다
+  function 값자리(v) { document.querySelectorAll('[data-price="' + 상품 + '"]').forEach(function (el) { el.textContent = v; }); }
+
+  // ── 결제가 아직 열리지 않았을 때(pay.js 곧열림 — 결제사가 모두 시험 모드인 손님) ──
+  // 결제 단추 · 동의 두 칸은 그대로 두고(누르면 서버가 돌려보내 「심사 중」 말이 뜬다) 알림과 메일 신청을 덧붙인다. 운영 결제사가 있으면 저절로 안 뜬다.
+  function 신청메일() {
+    var f = 사람(고름.first), s = 사람(고름.second);
+    var 한줄 = function (p) { return p ? (이름(p) ? 이름(p) + ' · ' : '') + 생일말(p.birth) : ''; };
+    var 줄 = [
+      '누가 신청: ' + (kind === 'parent' ? T.손님갈래.부모 : T.손님갈래.본인),
+      '첫째 분(이름 · 생년월일시 · 성별 · 태어난 곳): ' + 한줄(f),
+      '둘째 분(이름 · 생년월일시 · 성별 · 태어난 곳): ' + 한줄(s),
+      '보고서를 받을 메일: ' + (($('email') && $('email').value.trim()) || ''),
+      '바라는 점: ' + (($('note') && $('note').value.trim()) || '')
+    ];
+    return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent(T.곧.제목) + '&body=' + encodeURIComponent(줄.join('\n') + '\n');
+  }
+  function 곧열림그리기() {
+    var box = $('soonPay');
+    box.hidden = false;
+    box.innerHTML = '<p style="margin:0 0 6px"><b>' + esc(T.곧.머리) + '</b></p>'
+      + '<p style="margin:0 0 12px">' + esc(채움(T.곧.몸, { 문의메일: 문의메일 })) + '</p>'
+      + '<a class="btn" id="soonMail" href="#" style="display:block;margin:0;text-align:center;text-decoration:none;color:var(--seal-ink)">' + esc(T.곧.단추) + '</a>';
+    $('soonMail').addEventListener('click', function () { this.href = 신청메일(); 사건('applymail'); });   // 누르는 그때 적은 것으로
+  }
+
+  // ── 최근 결제한 주문이 있으면 알린다 — 같은 두 분을 또 결제하지 않게(신청서는 결제 전에 붙어 있어 따로 붙일 일은 없다) ──
+  function 이미산것() {
+    if (!로그인됨() || 남의로그인() || !ChaeksaPay.mine) return;
+    ChaeksaPay.mine().then(function (rows) {
+      if (!Array.isArray(rows)) return;
+      var 두주 = Date.now() - 14 * 24 * 3600 * 1000;
+      var o = rows.filter(function (r) { return r.product === 상품 && r.status === 'paid' && Date.parse(r.paidAt || r.at || 0) > 두주; })[0];
+      if (!o) return;
+      var box = $('already');
+      box.hidden = false;
+      box.innerHTML = esc(채움(T.이미, { 주문번호: o.id, 문의메일: 문의메일 }));
+    }).catch(function () {});
+  }
+
+  // ── 결제 준비와 값은 서버의 상품표 한 곳에서 받는다. 준비가 안 됐거나 상품이 없으면 단추를 잠근다 ──
+  if (!(window.ChaeksaPay && ChaeksaPay.buy && ChaeksaPay.state)) {
+    열림 = false; 단추(); say(T.오류.모듈, true);
+  } else {
+    ChaeksaPay.state().then(function (st) {
+      var p = (st.products || []).filter(function (x) { return x.code === 상품; })[0];
+      if (!st.ready || !p) { 열림 = false; 단추(); say(T.오류.닫힘, true); return; }   // 값 자리는 「…」 그대로 — 값이 없다
+      금액 = ChaeksaPay.won(p.amount); 값자리(금액);
+      if (ChaeksaPay.결제사칸) ChaeksaPay.결제사칸(pvPick).catch(function () {});   // 결제 수단 칸(결제사가 둘 이상일 때만 그린다)
+      return Promise.resolve(ChaeksaPay.곧열림 ? ChaeksaPay.곧열림() : false).catch(function () { return false; }).then(function (아직) {
+        단추();
+        if (아직) { 곧열림그리기(); return; }
+        이미산것();
+      });
+    }).catch(function () {});
+  }
+
+  // ── 결제하기 ──
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (busy || !열림) return;
+    사건('pay');   // 깔때기 ④ 결제 단추 누름 — 앱 안 단추(pay.js 누르면)와 같은 사건
+    var f = 사람(고름.first), s = 사람(고름.second);
+    if (!f || !s) { say(T.오류.사람없음, true); return; }
+    if (f.id === s.id) { say(T.오류.같은사람, true); return; }
+    var fn = 이름(f) || ($('firstName') ? $('firstName').value.trim() : ''), sn = 이름(s) || ($('secondName') ? $('secondName').value.trim() : '');
+    if (!fn || !sn) { say(T.오류.이름없음, true); return; }
+    var email = $('email').value.trim(), note = $('note').value.trim().slice(0, 300);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say(T.오류.메일, true); $('email').focus(); return; }
+    if (!agreeData.checked || !agree.checked) { say(T.오류.동의, true); return; }
+    // 이름이 없던 사람은 적은 이름을 저장해 둔다 — 사이트 어디서나 그 이름
+    try { if (!이름(f)) PP.update(f.id, { name: fn }); if (!이름(s)) PP.update(s.id, { name: sn }); } catch (x) {}
+    초안저장();
+    if (!로그인됨()) {
+      // 적은 것(초안)과 동의 체크를 남겨 두고 로그인하러 간다 — 돌아오면 결제만 누르면 되게.
+      try { sessionStorage.setItem(동의키, '11'); } catch (x) {}
+      // 로그인 뒤 앱 첫 화면으로 떨어져도 여기로 돌려보내게 표시해 둔다(app.js 시작부가 읽는다).
+      try { localStorage.setItem('chaeksa.return', JSON.stringify({ path: location.pathname, at: Date.now() })); } catch (x) {}
+      try { if (ChaeksaCloud.로그인고르기) ChaeksaCloud.로그인고르기(); else ChaeksaCloud.signInWith('kakao'); } catch (err) { say(String((err && err.message) || err), true); }
+      return;
+    }
+    if (남의로그인()) {
+      var em = ChaeksaCloud.email();
+      if (!confirm((em ? em + ' ' : '지금 로그인한 ') + T.로그인.남의계정)) return;
+    }
+    var it = 신청서(f, fn, s, sn, email, note);
+    if (JSON.stringify(it).length > 7600) { say(T.오류.너무김, true); return; }
+    busy = true; 단추(); say('');
+    // 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake). 결제 뒤 화면(pay-done)이 맡는다 — 보고서(PDF)는 책사가 적은 메일로 보낸다.
+    ChaeksaPay.buy(상품, null, (ChaeksaPay.고른결제사 && ChaeksaPay.고른결제사(pvPick)) || null, it).then(function (r) {
+      busy = false; 단추();
+      if (r && r.ok === false && !r.closed) say(r.message || T.오류.결제창, true);
+    }).catch(function (err) { busy = false; 단추(); say(String((err && err.message) || err), true); });
+  });
+
+  // 결제창에서 뒤로 가기로 돌아오면 페이지가 통째로 되살아나 단추가 「여는 중」에 멈출 수 있다 — 풀어 준다.
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    busy = false; 단추();
+    try { localStorage.removeItem('chaeksa.return'); } catch (x) {}
+  });
+
+  갈래그리기(); 기본고름(); 둘다(); 단추();
 })();

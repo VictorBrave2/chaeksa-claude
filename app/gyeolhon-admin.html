@@ -46,32 +46,41 @@
   .adm-kv > span:last-child{color:var(--ink);word-break:break-all}
   .adm-memo{white-space:pre-wrap;font-size:var(--t2);line-height:1.7;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:var(--r1);padding:10px;margin:0}
   .adm-copy{width:100%;min-height:240px;box-sizing:border-box}
+  .adm-h2{font-family:var(--serif);font-size:var(--t4);line-height:1.4;margin:14px 0 8px;color:var(--ink)}
+  .adm-h2 .hint{display:inline;font-family:var(--sans);font-weight:400;font-size:var(--t1);margin:0 0 0 6px}
+  .adm-old{margin-top:28px;border-top:1px solid var(--line);padding-top:12px}
+  .adm-old summary{cursor:pointer;color:var(--ink2);font-size:var(--t2);margin:0 0 10px}
 </style>
 </head>
 <body>
-<!-- 결혼상대 점검 신청 — 사장님 목록(10-07 작업판 결혼-1 「신청 길 바꿈」). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
+<!-- 결혼상대 점검 — 사장님 목록. 10-22 결정 25 「모든 콘텐츠는 카카오페이」: 위 목록 = 카카오페이 결제 주문(server/migrate-41 gyeolhon_order_list) · 아래 접힘 = 옛 계좌이체 신청(10-07 ~ 10-22). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
      실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super'(비공개 core sql-gyeolhon-apply.sql) — 이 쪽의 가림은 편의다. 움직임은 gyeolhon-admin.js.
      입금 계좌 · 검사 · 저장은 비공개 서버에 있다 — 이 쪽에는 없다. -->
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="gyeolhon.html">← 결혼상대 점검</a></div>
 <div class="doc">
   <h1>결혼상대 점검 신청 — 사장님 목록</h1>
-  <p class="hint">접수 → 입금 확인(입금자 이름 · 접수 번호로 맞춤) → 「신청 JSON 복사」로 보고서를 만들어 검수 → 메일로 PDF 보냄 → 보냄. 손님이 지워 달라고 하면 「지우기」.</p>
+  <p class="hint">카카오페이로 결제된 신청이 아래 목록에 와요(결제 = 접수). 줄을 펼쳐 「신청 JSON 복사」로 보고서를 만들어 검수 → 「메일 쓰기」로 PDF 를 보내고 → 「보냄 표시」. 환불은 줄의 「환불(전액 취소) 화면」에서.</p>
   <div id="admGate"><p class="hint">불러오는 중…</p></div>
   <div id="admMain" hidden>
     <div class="adm-tools">
       <button type="button" class="btn ghost small" id="admReload">새로고침</button>
     </div>
     <p class="adm-msg" id="admMsg" role="status"></p>
+    <h2 class="adm-h2">카카오페이 결제 신청<span class="hint">10-22부터 — 결제되면 여기 와요</span></h2>
+    <div class="adm-filters" id="ordFilters"></div>
+    <div id="ordRows"></div>
+    <details class="adm-old"><summary>옛 계좌이체 신청(10-07 ~ 10-22) — 기록용. 새 신청은 여기로 오지 않아요</summary>
     <div class="adm-filters" id="admFilters"></div>
     <div id="admRows"></div>
+    </details>
   </div>
 </div>
 
 <script src="config.js?v=71396c29ad"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=04aff648af"></script>
-<script src="gyeolhon-admin.js?v=d202766ecb"></script>
+<script src="pay.js?v=dd825b8342"></script>
+<script src="gyeolhon-admin.js?v=4947e06f12"></script>
 <script>
 (function () {
   var m = '';

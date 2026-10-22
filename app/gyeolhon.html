@@ -139,25 +139,26 @@
     <li>두 사람의 태어난 시각 — 모르시면 「시간 모름」으로 넣어 주세요. 열두 칸에 하나씩 모두 넣어 보고, 어느 시냐에 따라 결론이 갈리면 「태어난 시를 알면 답이 정해져요」라고 적어 드려요</li>
     <li>두 사람이 태어난 곳 — 시 · 군까지면 돼요. 같은 시계 시각이라도 동쪽과 서쪽은 해가 뜨는 때가 조금씩 달라서, 태어난 시를 그곳 기준으로 맞추는 데 써요</li>
     <li>두 사람의 성별</li>
-    <li>보고서(PDF)를 받으실 메일 주소, 그리고 입금이 확인되지 않을 때 연락드릴 연락처(카카오톡 아이디나 전화번호)</li>
+    <li>보고서(PDF)를 받으실 메일 주소</li>
   </ul>
 
   <h2>어떻게 받나요</h2>
+  <!-- 10-22 사장님 결정 25 「모든 콘텐츠는 카카오페이」 — 계좌이체 · 접수 번호 · 연락처 걷음. 신청 = 결제(주문에 신청서가 붙는다). 보고서는 지금처럼 책사가 만들어 메일로. -->
   <ol class="steps">
-    <li>신청서에서 두 사람을 저장된 사람에서 고르거나 새로 넣고(생년월일 · 태어난 시 · 태어난 곳 · 성별), 메일 주소와 연락처를 적어 주세요. 로그인은 필요 없어요.</li>
-    <li>신청하면 바로 접수 번호와 입금 계좌가 화면에 나와요. 그 계좌로 49,000원을 넣어 주세요.</li>
-    <li>입금이 확인되면 엔진이 두 사람을 계산하고, 책사가 한 번 더 확인해요.</li>
+    <li>신청서에서 두 사람을 저장된 사람에서 고르거나 새로 넣고(생년월일 · 태어난 시 · 태어난 곳 · 성별), 보고서를 받으실 메일 주소를 적어 주세요. 카카오 · 네이버로 로그인하고 그 자리에서 카카오페이로 결제해요.</li>
+    <li>결제가 되면 신청이 바로 접수돼요 — 따로 입금하거나 연락하실 일이 없어요.</li>
+    <li>엔진이 두 사람을 계산하고, 책사가 한 번 더 확인해요.</li>
     <li>보통 2~3일 안에 보고서(PDF)를 적어 주신 메일로 보내 드려요.</li>
   </ol>
 
   <h2>값과 환불</h2>
   <div class="note">
-    <p class="price"><b>49,000원</b> (부가세 포함) — 두 사람을 함께 본 보고서 한 벌이에요.</p>
-    <p>보고서를 받으시기 전에는 이유를 묻지 않고 전액 돌려드려요. 받으신 뒤에는 청약철회가 제한될 수 있어요. 보고서를 만들지 못해도 전액 돌려드려요.</p>
+    <p class="price"><b data-price="gyeolhon">49,000원</b> (부가세 포함, 따로 붙는 수수료 없음) — 두 사람을 함께 본 보고서 한 벌이에요. 카카오페이로 결제해요.</p>
+    <p>보고서를 메일로 받으시기 전에는 이유를 묻지 않고 전액 돌려드려요. 받으신 뒤에는 청약철회가 제한될 수 있어요. 보고서를 만들지 못해도 전액 돌려드려요. 환불은 홈 「설정」 → 「내 결제」의 메일 단추로 알려 주세요.</p>
   </div>
 
   <div data-apply-box hidden>
-    <a class="btn cta" data-apply href="#">보고서 신청하기</a>
+    <a class="btn cta kakao" data-apply href="#">카카오페이로 결제하고 신청하기</a>
   </div>
 
   <p class="foot"><a href="./">책사 처음으로</a> · <a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
@@ -166,6 +167,16 @@
 </main>
 <script src="config.js?v=71396c29ad"></script>
 <script src="track.js?v=4520244637"></script>
+<script src="cloud.js?v=bee1b9298c"></script>
+<script src="usage.js?v=0c1ca14b01"></script>
+<script src="pay.js?v=dd825b8342"></script>
+<script>
+  // 값은 서버 상품표(products, code gyeolhon — server/migrate-41) 한 곳에만 있다. 금액 글자는 표에서 받아 채운다(「나는 뭐해 먹고 살까?」 안내 쪽과 같은 꼴). 못 받으면 적힌 값 그대로.
+  if (window.ChaeksaPay) ChaeksaPay.product('gyeolhon').then(function (p) {
+    if (!p) return;
+    document.querySelectorAll('[data-price="gyeolhon"]').forEach(function (el) { el.textContent = ChaeksaPay.won(p.amount); });
+  }).catch(function () {});
+</script>
 <script>try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('sheet'); } catch (e) {}</script><!-- 10-10 깔때기 ③ 유료 장 엶(sheet) — 유료 소개 · 견본 쪽을 열면 하루 한 번(track.js). 화면은 안 바뀐다 -->
 <script>
   // 신청 단추 — 머리의 결혼신청주소 한 곳만 읽는다. 비었거나 javascript: 주소면 단추 자리째 숨긴 채로 둔다.
