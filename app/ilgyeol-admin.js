@@ -23,7 +23,7 @@
   const 나누기 = [['', '전부'], ['todo', '안 만듦'], ['making', '만드는 중'], ['held', '검수 대기'], ['blocked', '막힘'], ['ready', '열림'], ['canceled', '환불']];
   const 모드이름 = { live: '운영', test: '시험' };
   const 이유말 = (r) => ({ forbidden: '검수 계정만 할 수 있어요', login: '로그인이 끝났어요 — 다시 로그인해 주세요', missing: 'migrate-39 SQL 을 아직 Run 하지 않았어요(새 판)',
-    network: '인터넷 연결이 끊겼어요', db: '저장소에서 문제가 생겼어요', not_made: '아직 만든 풀이가 없어요', not_held: '검수 대기 상태가 아니에요', opened: '손님이 이미 열어 봤어요 — 다시 만들 수 없어요',
+    network: '인터넷 연결이 끊겼어요', db: '저장소에서 문제가 생겼어요', not_made: '아직 만든 풀이가 없어요', not_held: '검수 대기 상태가 아니에요', opened: '손님이 이미 열어 봤어요 — 다시 만들 수 없어요(사장님 자기 주문이면 server/migrate-40 을 Run 한 뒤 다시)',
     busy: '지금 만드는 중이에요', not_paid: '결제완료 주문이 아니에요', not_found: '줄을 찾지 못했어요' })[r && r.reason]
     || (r && r.message) || '되지 않았어요';
   let 지금 = '', 줄들 = [], 스위치 = null;
@@ -146,7 +146,7 @@
     단추.push('<a class="btn ghost small" href="' + esc(G.주소(x.id)) + '&amp;as=customer" target="_blank" rel="noopener">손님 눈으로 보기</a>');
     단('make', v === 'making' ? '만드는 중…' : '만들기', (v === 'todo') && !환불);
     단('release', '내보내기(손님에게 열기)', v === 'held' && !x.missingN && !환불);
-    단('redo', '다시 만들기', 만듦 && !x.openedAt && !환불);
+    단('redo', '다시 만들기', 만듦 && !환불);   // 열어 본 줄도 단추는 살려 둔다 — 되는지는 서버가 정한다(손님 주문은 opened, 검수 계정 자기 주문은 migrate-40 뒤 허용)
     단('copy', '신청 JSON 복사(손 도구용)', !!x.intake);
     d.innerHTML = '<div class="adm-acts">' + 단추.join('') + '</div>'
       + '<p class="adm-msg" role="status">' + esc(말 || '') + '</p>'
