@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>정통궁합 새 읽기 틀 견본 · 책사</title>
+<meta name="robots" content="noindex,nofollow">
+<!-- 10-23 사장님 「정통궁합 견본부터 ㄱㄱ」 — 보통 사람과 앉아 읽어 보니 12장이 사주 낱말 · 괄호로 가득해 못 읽었다.
+     새 틀: 맨 위 1층 = 두 사람이 실제로 묻는 물음 여덟(gunghap-1cheung.js, 장이 잰 값에서만) → 「근거 보기 — 옛 책과 계산」 접힘 안에 지금 12장 그대로.
+     **지어낸 세 쌍이다.** 실제 손님 · 상담 · 사장님 생년월일은 쓰지 않았다. 검색에 안 걸리게 noindex.
+     라이브 정통궁합 탭은 그대로다 — 주소에 ?gh=new 를 붙이면 같은 틀로 나온다(사장님 검수 뒤 켠다). -->
+<script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3eacd33519">
+<style>
+.wrap{max-width:660px;margin:0 auto;padding:var(--s3) 16px 80px}
+.eyebrow{font-size:var(--t1);color:var(--accent);letter-spacing:.06em;margin:0}
+.wrap h1{font-family:var(--serif);font-size:var(--t5);line-height:1.45;margin:6px 0 8px;color:var(--ink)}
+.sub{color:var(--ink2);font-size:var(--t2);margin:0 0 var(--s2);line-height:1.75;word-break:keep-all}
+.pick{display:flex;flex-wrap:wrap;gap:8px;margin:var(--s2) 0 6px}
+.pick button{flex:1 1 150px;padding:10px 8px;border:1px solid var(--line2);border-radius:var(--r3);background:var(--card);font-size:var(--t2);color:var(--ink2);cursor:pointer;font-family:var(--sans);line-height:1.45}
+.pick button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);font-weight:700}
+.pair-h{font-size:var(--t2);color:var(--ink2);margin:10px 2px 0;line-height:1.7;word-break:keep-all}
+.pair-h b{color:var(--ink)}
+.hide{display:none}
+.foot{font-size:var(--t1);color:var(--ink3);line-height:1.8;margin-top:var(--s4)}
+</style>
+</head>
+<body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a></div>
+<main class="wrap">
+  <a class="btn ghost small backhome" href="./" style="display:inline-block;margin-top:0;text-decoration:none">← 홈</a>
+  <p class="eyebrow">정통궁합 · 새 읽기 틀 견본</p>
+  <h1>사주를 모르는 사람도 한 번에 읽히는 정통궁합</h1>
+  <p class="sub">지어낸 두 사람 세 쌍이에요. 맨 위에는 두 사람이 실제로 묻는 물음 여덟에 짧게 답했어요. 계산과 옛 책 원문은 아래 「근거 보기」 안에 지금 화면 그대로 들어 있어요. 사이트의 정통궁합 화면은 아직 바뀌지 않았어요.</p>
+
+  <div class="pick" id="pick">
+    <button type="button" data-k="0" class="on">쌍 1 · 남자와 여자</button>
+    <button type="button" data-k="1">쌍 2 · 여자 둘</button>
+    <button type="button" data-k="2">쌍 3 · 한쪽 시간 모름</button>
+  </div>
+  <div id="pairs"></div>
+
+  <p class="foot">견본에 쓴 생년월일은 모두 지어낸 것이에요. 실제 손님의 정보는 쓰지 않았어요.</p>
+</main>
+
+<script src="config.js?v=71396c29ad"></script>
+<script src="astro.js?v=c0bb3fa175"></script>
+<script src="lunar.js?v=9d5b6391f1"></script>
+<script src="engine.js?v=e0bd1ab409"></script>
+<script src="sipseong.js?v=1cceaa79a7"></script>
+<script src="yaksok.js?v=b4d6d5bece"></script>
+<script src="saenggeuk.js?v=df8648d564"></script>
+<script src="gise.js?v=d0f879078e"></script>
+<script src="panjeong.js?v=389d38ced7"></script>
+<script src="chaeyong.js?v=93b8a16a98"></script>
+<script src="brief.js?v=4d9e929569"></script>
+<script src="geunamja.js?v=6e9a186815"></script>
+<script src="maeum.js?v=a0b8abf8b1"></script>
+<script src="hwakin.js?v=a46799e8f9"></script>
+<script src="mun.js?v=950e2eaf40"></script>
+<script src="mun/all.js?v=b23e589b30"></script>
+<script src="typecard.js?v=606368696f"></script>
+<script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=f45b014bad"></script>
+<script src="gungtong-wonmun.js?v=2995009646"></script>
+<script src="yeongyeok.js?v=e95d67fe8a"></script>
+<script src="samyeong.js?v=eaae23eaca"></script>
+<script src="gwanjeom.js?v=66f729533c"></script>
+<script src="gunghap-gwanjeom.js?v=107cee7c3e"></script>
+<script src="gunghap-1cheung.js?v=ce2fbf8443"></script>
+<script src="gunghap-chongnon.js?v=ba7fa5c43e"></script>
+<script>
+(function () {
+  // 지어낸 세 쌍 — 「당신」이 왼쪽, 「그 사람」이 오른쪽
+  var 쌍 = [
+    { 말: '<b>당신</b> 남자 · 1992년 8월 14일 오전 10시 &nbsp;× &nbsp;<b>그 사람</b> 여자 · 1994년 3월 3일 오후 3시',
+      나: { year: 1992, month: 8, day: 14, hour: 10, minute: 0, gender: 'M' }, 그: { year: 1994, month: 3, day: 3, hour: 15, minute: 0, gender: 'F' } },
+    { 말: '<b>당신</b> 여자 · 1995년 11월 20일 오전 8시 &nbsp;× &nbsp;<b>그 사람</b> 여자 · 1993년 6월 5일 오후 9시',
+      나: { year: 1995, month: 11, day: 20, hour: 8, minute: 0, gender: 'F' }, 그: { year: 1993, month: 6, day: 5, hour: 21, minute: 0, gender: 'F' } },
+    { 말: '<b>당신</b> 남자 · 1990년 1월 25일 오전 7시 30분 &nbsp;× &nbsp;<b>그 사람</b> 여자 · 1991년 7월 9일 · 태어난 시간 모름',
+      나: { year: 1990, month: 1, day: 25, hour: 7, minute: 30, gender: 'M' }, 그: { year: 1991, month: 7, day: 9, hour: null, minute: 0, gender: 'F' } },
+  ];
+  var 판 = document.getElementById('pairs'), GC = window.ChaeksaGunghapChongnon;
+  쌍.forEach(function (p, i) {
+    var 칸 = document.createElement('section');
+    칸.className = i ? 'hide' : '';
+    칸.innerHTML = '<p class="pair-h">' + p.말 + '</p><div class="gc-box"></div>';
+    판.appendChild(칸);
+    var box = 칸.querySelector('.gc-box');
+    if (!GC) { box.innerHTML = '<p class="hint">지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.</p>'; return; }
+    try { GC.그리기(box, p.나, p.그, { 새틀: true, 접두: 'gc' + 'ABC'.charAt(i) + 'Ch' }); } catch (e) { box.innerHTML = '<p class="hint">이 쌍을 그리지 못했어요.</p>'; }
+  });
+  var 단추 = document.querySelectorAll('#pick button');
+  Array.prototype.forEach.call(단추, function (b) {
+    b.addEventListener('click', function () {
+      Array.prototype.forEach.call(단추, function (x) { x.classList.toggle('on', x === b); });
+      Array.prototype.forEach.call(판.children, function (s, i) { s.className = String(i) === b.getAttribute('data-k') ? '' : 'hide'; });
+    });
+  });
+})();
+</script>
+</body>
+</html>

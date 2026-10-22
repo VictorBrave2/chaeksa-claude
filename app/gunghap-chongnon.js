@@ -57,13 +57,26 @@
   }
 
   const 장목록 = [];
+  let 접두 = 'gcCh';   // 장 카드 id 앞머리 — 한 쪽에 궁합을 여럿 그리는 견본(gunghap-new-sample.html)은 쌍마다 다르게 준다
   const 장 = (번호, 제목, 부제, 속) => {
     장목록.push([번호, 제목]);
-    return '<details class="card jt-ch" id="gcCh' + 번호 + '"' + (번호 === 1 ? ' open' : '') + '><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
+    return '<details class="card jt-ch" id="' + 접두 + 번호 + '"' + (번호 === 1 ? ' open' : '') + '><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
   };
-  const 목차 = () => '<nav class="card jt-toc"><div class="jt-no">목차</div>' + 장목록.map(([n, t]) => '<a href="#gcCh' + n + '" data-ch="' + n + '"><b>' + n + '</b>' + esc(t) + '</a>').join('') + '</nav>';
+  const 목차 = () => '<nav class="card jt-toc"><div class="jt-no">목차</div>' + 장목록.map(([n, t]) => '<a href="#' + 접두 + n + '" data-ch="' + n + '"><b>' + n + '</b>' + esc(t) + '</a>').join('') + '</nav>';
 
-  function 그리기(box, 입력나, 입력그) {
+  // 10-23 사장님 「정통궁합 견본부터 ㄱㄱ」 — 새 읽기 틀(1층 물음 여덟 + 근거 접힘). 주소에 gh=new 가 있거나 옵션.새틀 일 때만.
+  // 없으면 지금 화면 그대로다(사장님이 견본을 먼저 본다). 1층 글은 gunghap-1cheung.js 가 장이 잰 값에서만 고른다.
+  const 새틀인가 = (옵션) => !!(옵션 && 옵션.새틀) || (function () { try { return /[?&]gh=new(?:&|$)/.test(global.location.search || ''); } catch (e) { return false; } })();
+  function 일층(C) {
+    const L = global.ChaeksaGunghap1cheung; if (!L) return '';
+    const 장값 = {};
+    [3, 4, 7, 10, 11, 12].forEach(n => { try { 장값[n] = Q['장' + n](C); } catch (e) { 장값[n] = null; } });
+    try { return L.html(C, 장값); } catch (e) { if (global.console) console.warn('정통궁합 1층', e); return ''; }
+  }
+
+  function 그리기(box, 입력나, 입력그, 옵션) {
+    접두 = (옵션 && 옵션.접두) || 'gcCh';
+    const 새틀 = 새틀인가(옵션);
     let C; try { C = Q.바탕(입력나, 입력그); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
     const out = []; 장목록.length = 0;
     // 장마다 따로 감싼다 — 한 장이 죽어도 나머지 장은 나온다.
@@ -110,8 +123,12 @@
       return 결혼 + 문단(v.머리) + '<div class="gc-links">' + v.길.map(([t, h]) => '<a href="' + h + '">' + esc(t) + '</a>').join('') + '</div>';
     });
 
-    box.innerHTML = 목차() + out.join('');
-    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#gcCh' + a.dataset.ch); if (d) d.open = true; }));
+    const 위 = 새틀 ? 일층(C) : '';
+    box.innerHTML = 위
+      ? 위 + '<details class="gc-fold"><summary>근거 보기 — 옛 책과 계산</summary><p class="gc-fold-sub">위 답이 나온 계산과 옛 책 원문을 장마다 그대로 펼쳐 놓았어요.</p>' + 목차() + out.slice(0, 12).join('') + '</details>' + out.slice(12).join('')
+      : 목차() + out.join('');
+    const 이름 = 접두;
+    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#' + 이름 + a.dataset.ch); if (d) d.open = true; const f = box.querySelector('.gc-fold'); if (f) f.open = true; }));
   }
 
   // 따로 열던 궁합총론 쪽(gunghap-chongnon.html)의 입력 칸(#gcForm)을 세우던 코드는 10-02 개편 3묶음에서 지웠다 — 그 쪽은 이제 앱(?go=chongnon)으로 넘기기만 한다. 그리기는 app.js 가 부른다.

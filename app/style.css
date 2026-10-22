@@ -1413,3 +1413,20 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .oryu .hint{margin:8px 0 0;font-size:var(--t1);color:var(--ink3)}
 .oryu-do{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .oryu-do .btn{flex:1 1 140px;width:auto;margin-top:6px;display:block;box-sizing:border-box;text-align:center;text-decoration:none}
+/* 10-23 정통궁합 새 읽기 틀 — 1층 물음 여덟(gunghap-1cheung.js) + 근거 접힘. 주소 gh=new · 견본 gunghap-new-sample.html 에서만 나온다 */
+.gc1{padding:18px 16px 8px}
+.gc1-kick{font-size:var(--t1);letter-spacing:.14em;color:var(--accent);font-weight:700;margin:0 0 8px}
+.gc1-note{font-size:var(--t2);color:var(--ink2);background:var(--accent-soft);border-radius:var(--r1);padding:8px 12px;margin:0 0 10px;line-height:1.7;word-break:keep-all}
+.gc1-q{padding:14px 0 12px;border-top:1px solid var(--line)}
+.gc1-q:first-of-type{border-top:0}
+.gc1-q h3{display:flex;gap:9px;align-items:baseline;font-family:var(--serif);font-size:var(--t4);line-height:1.45;margin:0 0 8px;color:var(--ink)}
+.gc1-q h3 b{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--seal-bg);color:var(--seal-ink);font-family:var(--sans);font-size:var(--t1)}
+.gc1-a{font-size:var(--t3);font-weight:700;line-height:1.75;color:var(--ink);margin:0 0 6px;word-break:keep-all;overflow-wrap:anywhere}
+.gc1-w{font-size:var(--t2);line-height:1.75;color:var(--ink2);margin:0 0 6px;word-break:keep-all;overflow-wrap:anywhere}
+.gc1-t{font-size:var(--t2);line-height:1.7;color:var(--ink);margin:4px 0 2px;padding:7px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 var(--r1) var(--r1) 0;word-break:keep-all}
+.gc-fold{margin-top:16px}
+.gc-fold > summary{cursor:pointer;list-style:none;padding:13px 16px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--card);font-weight:700;font-size:var(--t3);color:var(--ink);position:relative}
+.gc-fold > summary::-webkit-details-marker{display:none}
+.gc-fold > summary::after{content:'＋';position:absolute;right:16px;top:12px;color:var(--ink3)}
+.gc-fold[open] > summary::after{content:'－'}
+.gc-fold-sub{font-size:var(--t2);color:var(--ink3);margin:10px 4px 0}
