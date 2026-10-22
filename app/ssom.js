@@ -6,7 +6,7 @@
     const 굵 = (x) => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
     return t.indexOf('> ') === 0 ? '<p class="ss-say">' + 굵(t.slice(2)) + '</p>' : '<p>' + 굵(t) + '</p>';
   };
-  const 식상말 = (x) => x.키 === '없음' ? '좋아하는 마음을 행동으로 내는 기운(식신 · 상관)은 없어요' : '좋아하는 마음을 행동으로 내는 기운은 ' + [x.식신 && E.STEMS_KO[E.STEMS.indexOf(x.식신)] + '(' + x.식신 + ') 식신(챙겨 주는 것)', x.상관 && E.STEMS_KO[E.STEMS.indexOf(x.상관)] + '(' + x.상관 + ') 상관(하고 싶은 말을 바로 하고 앞장서는 것)'].filter(Boolean).join(' · ') + (x.식신 && x.상관 ? '이 함께 있어요' : '만 있어요');
+  const 식상말 = (x) => x.키 === '없음' ? '좋아할 때 어떻게 대하는지 보여 주는 글자(식신 · 상관)는 없어요. 표현을 안 한다는 뜻이 아니라, 사주로는 그 방식을 말할 근거가 없다는 뜻이에요' : '좋아하는 마음을 행동으로 내는 기운은 ' + [x.식신 && E.STEMS_KO[E.STEMS.indexOf(x.식신)] + '(' + x.식신 + ') 식신(챙겨 주는 것)', x.상관 && E.STEMS_KO[E.STEMS.indexOf(x.상관)] + '(' + x.상관 + ') 상관(하고 싶은 말을 바로 하고 앞장서는 것)'].filter(Boolean).join(' · ') + (x.식신 && x.상관 ? '이 함께 있어요' : '만 있어요');
   const 받침 = (t) => { const c = String(t).charCodeAt(String(t).length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; };
   const 사람줄 = (주, 쪽, 식) => { const 지 = E.BRANCHES_KO[E.BRANCHES.indexOf(쪽.일지)], 십 = 쪽.일지십신, 바 = (S.바라는사람 || {})[십]; return 주 + '은 ' + 쪽.일주 + '일에 태어났어요. 태어난 날의 글자 ' + 지말(쪽.일지) + (받침(지) ? '은 ' : '는 ') + 주 + '에게 ' + 십 + (받침(십) ? '이라' : '라') + (바 ? ', 「' + 바 + '」에게 끌려요. ' : '예요. ') + 식상말(식) + '.'; };
   const 지말 = (b) => E.BRANCHES_KO[E.BRANCHES.indexOf(b)] + '(' + b + ')';
@@ -27,7 +27,7 @@
     opts = opts || {};
     // 09-25 사장님 「입력도 막아줘」: 연애궁합 웹툰은 남녀 두 사람 이야기로만 만든다 — 같은 성별이면 그리지 않는다
     if (같은성별(a, b)) { box.innerHTML = '<div class="card"><p>지금은 남녀 두 사람 이야기만 있어요. 같은 성별 이야기는 준비 중이에요.</p></div>'; return; }
-    let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
+    let 나R, 그R; try { 나R = E.calc(a); 그R = E.calc(b); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요. 날짜와 태어난 시를 다시 확인해 주세요.</p>'; return; }
     const z = S.짝(나R, 그R), 원고 = W[z.키];
     const 바람 = global.ChaeksaSsomBaram || {}, 줌 = global.ChaeksaSsomJuneun || {}, 닿 = global.ChaeksaSsomDaeum || {}, 맞 = (global.ChaeksaSsomMatchum || {})[z.키];
     // 09-25 사장님 「텍스트는 좋은데 안 읽어진다」 — 굵은 첫 줄 · 첫 대사 · 굵은 끝 줄만 먼저 보이고 나머지는 「더 읽기」로 접는다.
@@ -53,7 +53,7 @@
     const 나제 = 제목of(나R), 그제 = 제목of(그R);
     const 소개 = (누, 제) => !제[0] && !제[1] ? '' : '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
     const 근거 = ((global.ChaeksaSsomCard && global.ChaeksaSsomCard.카드(나R, 그R)) || '')   /* 09-26 3초 결과 · 공유 카드(docs/87) — 숫자 없이 사이 한 줄 + 두 방향 */ + '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">웹툰궁합 시작하기</button>'
-      + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">' + esc(사람줄('당신', z.나쪽, z.나식상)) + '<br>' + esc(사람줄('그 사람', z.그쪽, z.그식상)) + '<br>끌리는 사람은 태어난 날의 글자로, 좋아할 때 하는 행동은 식신 · 상관으로 봤어요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
+      + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">' + esc(사람줄('당신', z.나쪽, z.나식상)) + '<br>' + esc(사람줄('그 사람', z.그쪽, z.그식상)) + '<br>끌리는 사람은 태어난 날의 글자로, 좋아할 때 하는 행동은 챙겨 주는 기운(식신) · 하고 싶은 말을 하는 기운(상관)으로 봤어요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
     const 웹 = (() => { try { return global.ChaeksaSsomWebtoon ? global.ChaeksaSsomWebtoon.조립(나R, 그R, '썸', false, 달력끔(opts)) : null; } catch (e) { return null; } })();
@@ -264,7 +264,7 @@
   }
   /* 09-25 사장님 「콘텐츠 선택칸 디자인 수정」: 기본 select 는 숨기고 그림 카드로 고른다. select 값 · change 는 그대로 쓴다. */
   const 고름칸 = [
-    ['둘', '두 사람 이야기', '우리는 어떤 두 사람일까', 'ss-give'], ['시작전', '시작 전', '첫인상 · 만나는 곳 여섯', 'ss-meet-blind'],
+    ['둘', '두 사람 이야기', '우리는 어떤 두 사람일까', 'ss-give'], ['시작전', '시작 전', '첫인상 — 소개팅 · 앱 · 모임 · 회사 · 취미 · 대외활동', 'ss-meet-blind'],
     ['썸', '썸', '막 알아 가는 중', 'ss-sseom-5'], ['초반', '연애 초반', '사귄 지 6개월까지', 'ss-early-1'],
     ['안정기', '안정기', '6개월에서 2년', 'ss-steady-4'], ['결혼', '결혼', '결혼을 생각할 때', 'ss-marry-1'],
     ['흔들림', '흔들릴 때', '권태 · 이별 고민', 'ss-shake-3'], ['재회', '재회', '헤어진 뒤', 'ss-again-3']];

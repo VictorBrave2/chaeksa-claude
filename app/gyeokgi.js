@@ -12,8 +12,8 @@
   var 셌다 = false;
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
   if (쪽.제목) $('h1').textContent = 쪽.제목;
-  $('sub').textContent = 쪽.한줄 || '삼명통회 · 연해자평 · 적천수가 이름 붙여 반긴 드문 격 362개에 내 명식을 하나씩 대 봐요.';
-  $('hint').textContent = 쪽.입력안내 || '시를 모르면 비워 두세요. 열두 시를 다 넣어 보고, 시에 따라 갈리는 격은 따로 알려 드려요.';
+  $('sub').textContent = 쪽.한줄 || '옛 책 세 권이 이름 붙여 반긴 드문 짜임 362가지에 내 사주를 하나씩 대 봐요(삼명통회 · 연해자평 · 적천수).';
+  $('hint').textContent = 쪽.입력안내 || '시를 모르면 비워 두세요. 열두 시를 다 넣어 보고, 시에 따라 갈리는 짜임은 따로 알려 드려요.';
   var 출처말 = function (s) { return String(s || '').replace(/ · (docs|jamidusu)\/\S+/g, ''); };
   function 칸(x, 머리) {
     var a = 격글[x.key] || {};
@@ -30,11 +30,11 @@
     if (j.해당.length) {
       h += j.해당.map(function (x) { return 칸(x, x.이름 + '에 해당합니다'); }).join('');
     } else {
-      h += '<div class="big"><p>' + esc(쪽.빈칸 || '드문 격 362개 가운데 딱 들어맞는 것은 없었어요. 아래에 아깝게 빗나간 격을 모았어요.') + '</p></div>';
+      h += '<div class="big"><p>' + esc(쪽.빈칸 || '드문 짜임 362가지 가운데 딱 들어맞는 것은 없었어요. 아래에 아깝게 빗나간 짜임을 모았어요.') + '</p></div>';
     }
-    if (j.시따라.length) h += '<p class="sec">태어난 시에 따라 해당하는 격</p>' + j.시따라.map(function (x) { return 칸(x, '시에 따라 해당'); }).join('');
-    if (j.아깝게.length) h += '<p class="sec">' + esc(쪽.모자람머리 || '조건 하나가 모자라 아깝게 빗나간 격') + '</p>' + j.아깝게.map(function (x) { return 칸(x, '아깝게 빗나감'); }).join('');
-    h += '<p class="note">옛 책이 적은 조건만 그대로 대 봤어요. 「많다 · 왕하다」처럼 옛 책이 재는 법을 정하지 않은 말이 든 격은 넣지 않았어요. 해당 비율은 1950~2009년생 6만 명에 대 본 값이에요.</p>';
+    if (j.시따라.length) h += '<p class="sec">태어난 시에 따라 드는 짜임</p>' + j.시따라.map(function (x) { return 칸(x, '시에 따라 해당'); }).join('');
+    if (j.아깝게.length) h += '<p class="sec">' + esc(쪽.모자람머리 || '조건 하나가 모자라 아깝게 빗나간 짜임') + '</p>' + j.아깝게.map(function (x) { return 칸(x, '아깝게 빗나감'); }).join('');
+    h += '<p class="note">옛 책이 적은 조건만 그대로 대 봤어요. 「많다 · 세다(旺)」처럼 옛 책이 재는 법을 적지 않은 말이 든 짜임은 넣지 않았어요. 비율은 1950~2009년생 6만 명에 대 본 값이에요.</p>';
     $('out').innerHTML = h;
   }
   var PP = window.ChaeksaPeople, 사람들 = [];
@@ -88,7 +88,7 @@
     보기(body);
   });
   async function 보기(body) {
-    $('err').textContent = '옛 책 362개 격에 대 보고 있어요…';
+    $('err').textContent = '옛 책 짜임 362가지에 대 보고 있어요…';
     try {
       var r = await fetch(API + '/api/gyeokgi', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var j = await r.json();

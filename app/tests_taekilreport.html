@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><title>출산택일 보고서 화면 검사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="style.css?v=88cf88dbd4">
+<link rel="stylesheet" href="style.css?v=86cd1c46ad">
 <style>body{font:14px/1.7 system-ui;margin:20px;max-width:960px}h2.r{margin:18px 0 6px;font-size:15px}.ok{color:#1a7f37}.no{color:#b42318}pre{background:#f4f4f4;padding:8px;overflow:auto;font-size:12px;white-space:pre-wrap}#stage{margin-top:30px;padding-top:10px;border-top:1px solid #ddd}</style>
 </head><body>
 <h1>출산택일 보고서 화면 검사(10-02 설계서 ⑤)</h1>
@@ -12,9 +12,9 @@
 <div id="stage"></div>
 <script src="config.js?v=71396c29ad"></script>
 <script src="places.js?v=1350b96148"></script><script src="astro.js?v=c0bb3fa175"></script><script src="lunar.js?v=9d5b6391f1"></script><script src="engine.js?v=e0bd1ab409"></script>
-<script src="saenggeuk.js?v=fe0683a9e6"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="gyeokguk.js?v=63f811f535"></script>
-<script src="classic.js?v=f45b014bad"></script><script src="gwanjeom.js?v=c85d806510"></script><script src="taekilsim.js?v=e2b12e27a5"></script>
-<script src="taekil-read.js?v=b2175b5326"></script><script src="yaksok.js?v=45af80540e"></script><script src="pay.js?v=dd825b8342"></script>
+<script src="saenggeuk.js?v=df8648d564"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="gyeokguk.js?v=63f811f535"></script>
+<script src="classic.js?v=f45b014bad"></script><script src="gwanjeom.js?v=b906b903e5"></script><script src="taekilsim.js?v=e2b12e27a5"></script>
+<script src="taekil-read.js?v=b2175b5326"></script><script src="yaksok.js?v=b4d6d5bece"></script><script src="pay.js?v=dd825b8342"></script>
 <script src="myeongsik-card.js?v=4fc56b2857"></script><script src="taekil-report.js?v=420d9470a1"></script>
 <script id="tests">
 (function () {
@@ -129,9 +129,9 @@
     if (빈곳.filter((x) => x.indexOf('태어날 지역') === 0).length !== 1) 문제.push('빈 곳을 두 번 적었다 ' + J(빈곳));
     return 문제;
   });
-  검사('신청서 칸 — 「원하시는 방향」(앞세우신 말 없음) · 칸마다 읽은 줄 자리', () => {
+  검사('신청서 칸 — 「원하시는 특징」(앞세우신 말 없음, 10-22 칸 이름 「아이의 성장 방향 · 원하시는 특징」) · 칸마다 읽은 줄 자리', () => {
     const h = F.틀(), 문제 = [];
-    if (h.indexOf('원하시는 방향') < 0 || /앞세우/.test(h)) 문제.push('칸 이름');
+    if (h.indexOf('원하시는 특징') < 0 || /앞세우/.test(h)) 문제.push('칸 이름');
     ['range', 'place', 'time', 'father', 'mother', 'siblings', 'count'].forEach((k) => { if (h.indexOf('data-read="' + k + '"') < 0) 문제.push('읽은 줄 자리 없음 ' + k); });
     return 문제;
   });
@@ -152,7 +152,7 @@
     const 본문 = decodeURIComponent(m.slice(앞.length)), 줄 = 본문.trim().split('\n');
     if (줄.length !== 14 || 줄.some((z) => !/:\s*$/.test(z))) 문제.push('본문은 칸 이름 14줄(값 없음): ' + 줄.length);
     const 글 = F.메일글({ mail: 'a@b.kr', range: '2027년 4월 12일 ~ 16일', place: '서울', sex: '모름', first: '재물', weekend: true, father: '1990년 1월 1일' });
-    ['연락받으실 메일 주소: a@b.kr', '아이 성별(남아 · 여아 · 아직 몰라요): 아직 몰라요', '주말도 가능한지: 가능해요', '재물', '아버지 생년월일시(양력/음력): 1990년 1월 1일']
+    ['연락받으실 메일 주소: a@b.kr', '아이 성별(남아 · 여아 · 아직 몰라요): 아직 몰라요', '주말도 가능한지: 가능해요', '재물', '아이 아버지(남편) 생년월일시(양력/음력): 1990년 1월 1일']
       .forEach((t) => { if (글.indexOf(t) < 0) 문제.push('복사 글에 없음 ' + t); });
     if (typeof P.곧열림 !== 'function') 문제.push('곧열림 없음(결제 단추 갈림은 pay.js 한 곳)');
     return 문제;

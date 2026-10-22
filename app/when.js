@@ -79,7 +79,7 @@
     // 10-06 사장님 「사주 길 문장 두 줄로 나눠서 보여줘」 — 서버 문장의 줄바꿈을 화면 줄로
     var 두줄 = function (t) { return String(t).split(/\n/).map(esc).join('<br>'); };
     var 쌍칩 = function (년, 년월) { return '<span class="pk">년</span>' + 판칩(년) + ' <span class="pk">년+월</span>' + 판칩(년월); };
-    h += '<details class="more"><summary>' + esc(화('더보기', '길흉 네 가지로 보기 — 사주 · 자미두수, 년 · 년+월')) + '</summary>';
+    h += '<details class="more"><summary>' + esc(화('더보기', '해마다 · 달마다 자세히 보기 — 사주와 자미두수를 따로 봐요')) + '</summary>';
     h += '<div class="card">' + 띠 + '</div>';
     h += '<div class="sec">해마다 — 사주 · 자미두수 (년)</div><div class="yrs">' + (P.해들 || []).map(function (x) {
       var 흔 = (x.흔들림 || []).map(function (k) { var m = V2[k]; return m ? '<div class="yr-sharp">' + esc(V틀('해칸', { 이름: m.이름 })) + '<br><span>' + esc(m[갈래(x)]) + '</span></div>' : ''; }).join('');
@@ -88,15 +88,15 @@
         + 줄('자미두수 · 년', 판칩(x.자판), x.자사건 ? '그해 ' + esc(x.자사건) : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
-    h += '<div class="sec">' + esc(화('달머리', '달마다 — 년 · 년+월')) + '</div><p class="why">년 = 그 달이 속한 해의 판단(사주는 입춘, 자미두수는 설로 해가 바뀝니다) · 년+월 = 그해 위에 그달까지 얹은 판단과 그달 일</p><div class="yrs">' + (P.달들 || []).map(function (a, i) {
+    h += '<div class="sec">' + esc(화('달머리', '달마다 — 년 · 년+월')) + '</div><p class="why">칩이 둘이에요. 앞 칩(년)은 그달이 속한 해 전체로 본 판단, 뒤 칩(년+월)은 그해에 그달 운까지 더해 본 판단이에요. 그달 일도 함께 보여 드려요. 사주는 입춘에, 자미두수는 음력 설에 해가 바뀌어요.</p><div class="yrs">' + (P.달들 || []).map(function (a, i) {
       var 자 = V2[a.곳] || {}, 일 = (달말[a.곳] || {})[a.등급] || '';
-      var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">큰 움직임이 오는 자리의 달 — ' + esc(자.이름) + '</div>' : '';
+      var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">' + esc(자.이름) + ' 쪽에 큰 움직임이 오는 달</div>' : '';
       return '<div class="yr' + (i === 0 ? ' now' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + a.y + '년 ' + a.m + '월</b>' + (i === 0 ? ' <small>이번 달</small>' : '') + '</div>'
         + 줄('사주', 쌍칩(a.사년판, a.사판), a.사현상 ? 두줄('그달 ' + a.사현상) : esc(a.사왜 || ''))
         + 줄('자미두수', 쌍칩(a.자년판, a.자판), 일 ? '그달 ' + esc(일) : '', 자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
-    h += '<p class="note">계산 — 자미두수 해마다 운(《紫微斗數全書》 卷三), 사주는 판정엔진이 그해 · 그달 운이 원국의 틀을 깨는지 · 막아 주는지 · 바꾸는지로 봅니다. 「맞아요 · 아니에요」는 계산을 다듬는 데만 씁니다(생일은 저장하지 않아요).</p></details>';
+    h += '<p class="note">계산 — 자미두수는 해마다 바뀌는 운(자미두수전서 셋째 권, 《紫微斗數全書》 卷三)으로, 사주는 그해 · 그달 운이 태어날 때 받은 여덟 글자(원국)의 짜임을 깨는지 · 깨지지 않게 막아 주는지 · 바꾸는지로 봐요. 「맞아요 · 아니에요」는 계산을 다듬는 데만 써요(생일은 저장하지 않아요).</p></details>';
     $('out').innerHTML = h;
   }
   // 10-05 사장님 「맞아요를 실시간 현황판으로 — 리뷰 시스템」 「만든 나보다 이용자 리뷰를 더 믿는다」.
@@ -110,7 +110,7 @@
       if (!r.ok) return;
       판섬 = true;
       var d = await r.json(), 줄 = function (k) { var x = d[k] || {}, 맞 = (x.first || 0) + (x.fixed || 0);
-        return '<div class="row2"><span>' + 칸이름[k] + '</span><span><b>맞아요 ' + 맞 + '명</b>' + (x.fixed ? ' (시각 고쳐서 ' + x.fixed + ')' : '') + ' · 아니에요 ' + (x.miss || 0) + '명</span></div>'; };
+        return '<div class="row2"><span>' + 칸이름[k] + '</span><span><b>맞아요 ' + 맞 + '명</b>' + (x.fixed ? ' (이 가운데 ' + x.fixed + '명은 시각을 두 시간 옮겨서 맞음)' : '') + ' · 아니에요 ' + (x.miss || 0) + '명</span></div>'; };
       var h = '<div class="bd"><span class="live">● 실시간</span><h2>' + esc(d.people ? 화('현황판제목', '지금까지 {n}명이 지나온 해를 맞혀 봤어요').replace('{n}', d.people) : 화('현황판0', '아직 맞혀 본 사람이 없어요. 처음으로 맞혀 보세요.')) + '</h2>';
       if (d.people) h += 줄('b') + 줄('c');
       if (d.reviews && d.reviews.length) h += '<ul>' + d.reviews.map(function (x) { return '<li>「' + esc(x.text) + '」<small>' + (x.y ? x.y + '년' + (x.age != null ? '(' + x.age + '세)' : '') + ' · ' : '') + 칸이름[x.kind] + ' 맞아요 · ' + 몇전(x.at) + '</small></li>'; }).join('') + '</ul>';

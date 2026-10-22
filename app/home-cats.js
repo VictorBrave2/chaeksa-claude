@@ -19,7 +19,7 @@
     // 10-07 「결혼상대 점검」(gyeolhon.html, 사장님 10-07 확정 유료) — 궁합 칸 맨 앞. 그림은 소개 쪽 머리와 같은 상견례 컷(성별 없음)
     // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
     //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
-    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '이 사람과 함께 살아도 되는지, 결혼 날짜로 피할 해까지', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
+    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '이 사람과 함께 살아도 되는지, 결혼식을 피할 해까지', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
       { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
@@ -91,8 +91,8 @@
   }
 
   function 물음칸(b, w, Y) {
-    // 딱지 = 가는 콘텐츠 이름(정통사주면 몇 장) · 그 콘텐츠의 장부 딱지 — 「정통사주 7장 · 무료」 · 「웹툰궁합 · 무료」.
-    var 어디 = ((Y && Y.이름(w.키)) || '') + (w.장 ? ' ' + w.장 + '장' : ''), 딱지 = Y ? Y.딱지html(w.키) : '';
+    // 딱지 = 가는 콘텐츠 이름(정통사주면 몇 장) · 그 콘텐츠의 장부 딱지 — 「정통사주 제7장 · 무료」 · 「웹툰궁합 · 무료」.
+    var 어디 = ((Y && Y.이름(w.키)) || '') + (w.장 ? ' 제' + w.장 + '장' : ''), 딱지 = Y ? Y.딱지html(w.키) : '';
     return '<a class="cat-q" href="' + esc('./?go=' + w.탭) + '" data-cat="' + esc(b.키) + '" data-to="' + esc(w.키) + '" data-tab="' + esc(w.탭) + '"' + (w.곳 ? ' data-spot="' + esc(w.곳) + '"' : '') + '>'
       + '<span class="k">' + esc(b.이름) + '</span><span class="n">' + esc(w.글) + '</span>'
       + '<span class="t">' + esc(어디) + (어디 && 딱지 ? ' · ' : '') + 딱지 + '</span></a>';

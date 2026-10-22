@@ -1000,26 +1000,31 @@ details.tkr-foldsec[open]>summary.tkr-h::after{content:""}
 @media print{.tkr-appx{break-before:page;page-break-before:always}}
 /* 10-22 자미두수 명반(한글 이름표) · 원문 작게 — app/taekil-report.js mb · 작게 */
 .tkr small.tkr-won{font-size:var(--t1);color:var(--ink3);word-break:keep-all}
-.tkr-mb{margin:12px 0 16px}
-.tkr-mb-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;background:var(--line2);border:2px solid var(--line2);border-radius:var(--r1);overflow:hidden}
-.tkr-mb-c{background:var(--card);padding:5px 5px 18px;position:relative;min-width:0;min-height:88px;font-size:var(--t1);line-height:1.35}
-.tkr-mb-c.tkr-mb-me{box-shadow:inset 0 0 0 2px var(--accent)}   /* 공통 .me 와 겹치지 않게 이름을 따로(10-22) */
-.tkr-mb-h{display:block;padding-right:14px;word-break:keep-all}
-.tkr-mb-h span{font-weight:700;color:var(--ink)}
-.tkr-mb-h em{font-style:normal;color:var(--accent);font-size:.92em;margin-left:4px}
-.tkr-mb-h small{position:absolute;right:5px;top:5px;color:var(--ink3);font-size:.85em}
-.tkr-mb-m{margin:3px 0 1px;font-family:var(--serif);font-weight:700;font-size:1.12em;color:var(--ink);word-break:keep-all}
-.tkr-mb-s{display:block}
-.tkr-mb-s i{display:block;font-style:normal;font-family:var(--sans);font-weight:400;font-size:.66em;color:var(--ink3);white-space:nowrap;margin:-1px 0 2px}
-.tkr-mb-c b{font-weight:700;font-size:.72em;color:var(--accent);margin-left:2px}
-.tkr-mb-a{color:var(--ink2);font-size:.9em;word-break:keep-all}
-.tkr-mb-d{position:absolute;left:5px;bottom:3px;font-size:.82em;color:var(--ink3)}
-.tkr-mb-e{font-family:var(--sans);font-weight:400;font-size:.8em;color:var(--ink3)}
-.tkr-mb-ctr{grid-column:2/4;grid-row:2/4;background:var(--bg2);padding:8px 10px;display:flex;flex-direction:column;justify-content:center;gap:2px;font-size:var(--t1);color:var(--ink2);line-height:1.5}
+.tkr-mb{margin:12px 0 16px;width:max(100%,min(calc(100vw - 24px),406px));margin-inline:calc((100% - max(100%,min(calc(100vw - 24px),406px))) / 2);overflow-wrap:normal}
+.tkr-mb-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;background:var(--line2);border:2px solid var(--line2);border-radius:var(--r1);overflow:hidden;margin-top:8px}
+.tkr-mb .tkr-mb-c{background:var(--card);padding:8px 3px 5px;position:relative;display:flex;flex-direction:column;min-width:0;min-height:116px;font-size:var(--t1);line-height:1.4}
+.tkr-mb-c.tkr-mb-me{background:linear-gradient(var(--accent-soft),var(--accent-soft)),var(--card);box-shadow:inset 0 0 0 2px var(--accent)}
+.tkr-mb-h{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 2px;align-items:start;padding:0 0 6px;border-bottom:1px solid var(--line);word-break:keep-all}
+.tkr-mb-h span{grid-column:1;grid-row:1;font-weight:700;color:var(--ink);font-size:var(--t1)}
+.tkr-mb .tkr-mb-h em{grid-column:1/-1;grid-row:2;font-style:normal;color:var(--ink2);font-size:11px;margin:0;line-height:1.45}
+.tkr-mb-h small{grid-column:2;grid-row:1;color:var(--ink2);font-size:10px;white-space:nowrap}
+.tkr-mb .tkr-mb-m{display:flex;flex-direction:column;gap:6px;margin:7px 0;font-family:var(--serif);font-weight:700;font-size:var(--t2);color:var(--ink);word-break:keep-all}
+.tkr-mb-s{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.tkr-mb-s i{order:1;display:block;font-style:normal;font-family:var(--sans);font-weight:400;font-size:11px;color:var(--ink2);white-space:nowrap;line-height:1.4;margin:0}
+.tkr-mb .tkr-mb-c b{order:2;display:inline-block;width:fit-content;font-family:var(--sans);font-weight:700;font-size:10px;line-height:1.5;color:var(--accent);background:var(--card);border:1px solid var(--accent-line);border-radius:4px;padding:0 3px;margin:0;white-space:nowrap}
+.tkr-mb-a{color:var(--ink2);font-size:11px;word-break:keep-all;line-height:1.6;margin-top:auto;padding-bottom:5px}
+.tkr-mb-d{position:static;font-size:10px;color:var(--ink2);font-family:var(--sans);font-variant-numeric:tabular-nums;margin-top:auto;padding-top:5px;border-top:1px solid var(--line);line-height:1.5;white-space:nowrap}
+.tkr-mb-e{font-family:var(--sans);font-weight:400;font-size:11px;color:var(--ink2);line-height:1.5}
+.tkr-mb-ctr{grid-column:2/4;grid-row:2/4;min-width:0;background:var(--bg2);padding:12px 8px;display:flex;flex-direction:column;justify-content:center;gap:7px;font-family:var(--sans);font-size:var(--t1);color:var(--ink2);line-height:1.6;word-break:keep-all;overflow-wrap:normal}
 .tkr .tkr-mb-ctr p{margin:0;line-height:1.5;font-size:var(--t1);color:var(--ink2)}
 .tkr .tkr-mb-ctr .tkr-mb-t{font-weight:700;color:var(--ink);font-size:var(--t2)}
 .tkr .tkr-mb-cap{font-size:var(--t1);color:var(--ink3);margin:6px 0 0;line-height:1.6}
 @media (max-width:420px){.tkr-mb-c{padding:4px 3px 16px;min-height:80px}.tkr-mb-m{font-size:1em}.tkr-mb-h em{display:block;margin-left:0}}
+.tkr-mb .tkr-mb-ctr p{margin:0;font-size:11px;line-height:1.6;color:var(--ink2)}
+.tkr-mb .tkr-mb-ctr .tkr-mb-t{font-size:var(--t1);font-weight:500;color:var(--ink2)}
+.tkr-mb .tkr-mb-cap{font-size:var(--t1);color:var(--ink2);margin:12px 0 0;padding-top:8px;border-top:1px solid var(--line);line-height:1.7}
+.tkr-mb .tkr-mb-cap small.tkr-won{display:block;margin-top:5px;font-size:11px;color:var(--ink2);line-height:1.6}
+.tkr-mb .tkr-mb-c.tkr-mb-me .tkr-mb-h span{color:var(--accent)}
 .tkr-han{margin:6px 0 12px;padding:10px 12px;border-left:3px solid var(--accent-line);background:var(--accent-soft);border-radius:0 var(--r1) var(--r1) 0}
 .tkr-han figcaption{font-size:var(--t1);color:var(--ink3)}
 .tkr .tkr-han-t{font-family:var(--serif);font-size:var(--t4);color:var(--ink);margin:4px 0 2px;letter-spacing:.02em}

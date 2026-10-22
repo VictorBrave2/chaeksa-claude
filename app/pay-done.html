@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=88cf88dbd4">
+<link rel="stylesheet" href="style.css?v=86cd1c46ad">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:var(--t5);margin:18px 0 8px}
@@ -42,7 +42,7 @@
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=dd825b8342"></script>
-<script src="yaksok.js?v=45af80540e"></script>
+<script src="yaksok.js?v=b4d6d5bece"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=1350b96148"></script>
 <script src="taekil-read.js?v=b2175b5326"></script>
@@ -72,7 +72,7 @@
       + '<h1>결제를 마치지 못했습니다</h1>'
       + '<p>' + esc(msg) + '</p>'
       + (code ? '<p class="warn">코드 ' + esc(code) + '</p>' : '')
-      + '<p class="warn">돈이 빠져나갔는데 이 화면이 보인다면 아래로 알려주세요. 바로 확인해 돌려드립니다.</p>'
+      + '<p class="warn">돈이 빠져나갔는데 이 화면이 보인다면 아래 「메일로 문의하기」를 눌러 알려 주세요. 바로 확인해 돌려드립니다.</p>'
       + (돌아갈 ? '<p><a class="btn go" href="' + 돌아갈 + '">보던 화면으로 돌아가기</a></p><p><a class="btn sub" href="./">← 홈</a></p>'
                : '<p><a class="btn go" href="./">← 홈</a></p>')
       + '<p><a class="btn sub" href="' + esc(메일) + '">메일로 문의하기 (dl4431@naver.com)</a></p>');
@@ -90,7 +90,7 @@
   function 받음(d) {
     var 줄 = function (k, v) { return v ? '<div class="row"><span>' + k + '</span><span>' + esc(v) + '</span></div>' : ''; };
     return '<div class="intake"><h2>신청이 접수됐습니다</h2>'
-      + '<p class="lead">엔진이 계산하고 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요. 보통 2~3일 안이에요.</p>'
+      + '<p class="lead">자동으로 계산한 내용을 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요. 보통 2~3일 안이에요.</p>'
       + '<p class="lead">늦어지거나 여쭐 것이 있으면 이 주소로 연락드려요 — <b>' + esc(d.mail) + '</b></p>'
       + '<div class="box" style="margin:14px 0 10px">'
       +   줄('출산 예정 기간', d.range) + 줄('태어날 지역', d.place)
@@ -104,7 +104,7 @@
     // 없으면(다른 길로 결제) 여기서 같은 말로 동의를 받는다 — 건강과 이어진 내용이라 따로 받아야 한다(검토).
     var 앞선동의 = (F.초안() || {}).consent || null;
     자리.innerHTML = '<form class="intake" id="intake" novalidate><h2>신청서</h2>'
-      + '<p class="lead">아래를 적어 보내 주시면 이 주문에 붙습니다. 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요 — '
+      + '<p class="lead">아래 신청서를 적어 보내 주시면 이 주문으로 접수돼요. 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요 — '
       +   '보통 2~3일 안이에요.</p>'
       + F.틀()
       + '<p class="hint">적어 주신 내용은 보고서를 만들어 드리는 데만 쓰고, 이 주문 기록과 함께 보관합니다. '
@@ -162,19 +162,19 @@
     var 로그인 = false;
     try { 로그인 = !!(window.ChaeksaCloud && ChaeksaCloud.signedIn && ChaeksaCloud.signedIn()); } catch (e) { 로그인 = false; }
     if (!로그인) {
-      칸('보고서는 「내 보고서」에서 이어서 만들어요', ['로그인하면 「내 보고서」에서 이어서 만들어요. 신청서는 이미 이 주문에 붙어 있어요.'], 가기('로그인하고 보고서 보기'));
+      칸('보고서는 「내 보고서」에서 이어서 만들어요', ['신청서는 이미 이 주문으로 접수됐어요. 로그인하면 「내 보고서」에서 이어서 만들어요.'], 가기('로그인하고 보고서 보기'));
       return;
     }
     if (F && F.자동붙음 && F.자동붙음(orderId)) F.초안지움();   // 신청서가 주문에 붙었고 결제도 끝났다 — 이 기기의 초안은 이제 지운다
     var 시작 = Date.now(), 째깍 = null, 만듦 = false, 끝 = false;
-    var 만드는중 = function () { 칸('여덟 글자를 연산하는 중이에요', ['보통 1~2분 걸려요. 이 창을 닫아도 돼요 — 다 만들면 책사가 한 번 더 확인한 뒤 「내 보고서」에서 열어 드려요.'], 가기('내 보고서로 가기')); };
+    var 만드는중 = function () { 칸('사주를 나타내는 여덟 글자를 계산하는 중이에요', ['보통 1~2분 걸려요. 이 창을 닫아도 돼요 — 다 만들면 책사가 한 번 더 확인한 뒤 「내 보고서」에서 열어 드려요.'], 가기('내 보고서로 가기')); };
     var 마침 = function (st, 말) {
       if (끝) return; 끝 = true; clearTimeout(째깍);
       if (st === 'ready') { 칸('보고서가 열렸어요', [], 가기('보고서 열기')); return; }
       if (st === 'checking') { 칸('책사가 한 번 더 확인하고 있어요', [T.상태말.checking], 가기('내 보고서로 가기')); return; }
       if (st === 'canceled') { 칸('환불된 주문이에요', [T.상태말.canceled]); return; }
-      if (st === 'no_intake') { 칸('신청서가 아직 이 주문에 붙지 않았어요', ['「내 보고서」에서 이 기기에 적어 두신 신청서를 붙이거나, 주문번호와 함께 ' + F.문의메일 + ' 으로 알려 주세요.'], 가기('내 보고서로 가기')); return; }
-      칸('보고서를 아직 만들지 못했어요', [말 || '잠시 뒤 「내 보고서」에서 다시 봐 주세요.', '결제는 그대로 있어요. 계속 안 되면 ' + F.문의메일 + ' 으로 주문번호를 알려 주세요.'], 가기('내 보고서로 가기'));
+      if (st === 'no_intake') { 칸('신청서가 아직 이 주문으로 접수되지 않았어요', ['「내 보고서」에서 이 기기에 적어 두신 신청서를 제출하거나, 주문번호와 함께 ' + F.문의메일 + ' 으로 알려 주세요.'], 가기('내 보고서로 가기')); return; }
+      칸('보고서를 아직 만들지 못했어요', [말 || '잠시 뒤 「내 보고서」에서 다시 봐 주세요.', '결제 내역은 그대로 남아 있어요. 계속 안 되면 ' + F.문의메일 + ' 으로 주문번호를 알려 주세요.'], 가기('내 보고서로 가기'));
     };
     var 보기 = function () {
       clearTimeout(째깍);
@@ -222,7 +222,7 @@
     if (이미) { 자리.innerHTML = 받음(이미); return; }
     var d = F.초안();
     if (d && !F.빈칸(d).length) {
-      자리.innerHTML = '<div class="intake"><p class="lead">신청서를 이 주문에 붙이고 있습니다…</p></div>';
+      자리.innerHTML = '<div class="intake"><p class="lead">이 주문으로 신청서를 접수하고 있습니다…</p></div>';
       ChaeksaPay.intake(orderId, F.신청서(d)).then(function (r) {
         if (r && (r.ok || r.reason === 'already')) { F.초안지움(); F.보냄기록(orderId, d); 자리.innerHTML = 받음(d); }
         else 양식(자리, orderId, r || { reason: 'db' });   // 초안은 남아 있어 양식에 그대로 채워진다
@@ -280,10 +280,10 @@
       var 시험 = r.payMode === 'test';
       if (기록안됨) {
         draw('<div class="mark">驗</div>'
-          + '<h1>결제는 되었고, 기록을 맞추는 중입니다</h1>'
+          + '<h1>결제는 되었고, 주문 기록을 저장하는 중입니다</h1>'
           + (시험 ? '<p><b>시험 결제 — 돈이 빠지지 않았습니다</b></p>' : '')
-          + '<p>결제는 끝났지만 저희 쪽 주문 기록이 아직 되지 않았습니다. 이 화면을 <b>새로고침</b>하면 다시 기록합니다.</p>'
-          + '<p>그래도 이 화면이 다시 보이면 아래 주문번호를 메일로 보내 주세요. 확인해서 열어 드리거나 돌려 드립니다.</p>'
+          + '<p>결제는 끝났지만 저희 쪽에 주문 기록이 아직 저장되지 않았습니다. 이 화면을 <b>새로고침</b>하면 다시 기록합니다.</p>'
+          + '<p>그래도 이 화면이 다시 보이면 아래 주문번호를 메일로 보내 주세요. 확인해서 결제하신 내용을 열어 드리거나 결제 금액을 돌려드립니다.</p>'
           + '<div class="box">'
           +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
           +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
@@ -305,8 +305,8 @@
       var Y = window.ChaeksaYaksok, 약 = (Y && Y.줄(code)) || {}, 저절로 = (연애 || 일결) && !시험;
       var 이어서 = '돌아가면 ' + (code === 'love_pair' ? '고른 그 사람의 생년월일시로' : '내 생년월일시로') + ' 바로 만들기 시작해요. '
         + (약.시간 || '조금') + ' 걸리니 다 될 때까지 그 화면을 그대로 두세요.' + (r.already ? ' 이미 만든 것이 있으면 그대로 열려요.' : '');
-      var 일결이어서 = '넘어가면 바로 만들기 시작해요. ' + (약.시간 || '보통 1~2분') + ' 걸리니 다 될 때까지 그 화면을 두세요. 창을 닫아도 돼요 — 소개 쪽 「내 결과」와 설정 「내 결제」에서 이어져요.';
-      var 결혼이어서 = '신청이 접수됐어요. 엔진이 두 사람을 계산하고 책사가 한 번 더 확인한 뒤, ' + (약.시간 || '보통 2~3일 안') + '에 적어 주신 메일로 보고서(PDF)를 보내 드려요. 더 하실 일은 없어요.'
+      var 일결이어서 = '넘어가면 바로 만들기 시작해요. ' + (약.시간 || '보통 1~2분') + ' 걸리니 다 될 때까지 그 화면을 두세요. 창을 닫아도 돼요 — 소개 페이지의 「내 결과」와 설정의 「내 결제」에서 이어서 볼 수 있어요.';
+      var 결혼이어서 = '신청이 접수됐어요. 두 사람의 사주를 자동으로 계산하고 책사가 한 번 더 확인한 뒤, ' + (약.시간 || '보통 2~3일 안') + '에 적어 주신 메일로 보고서(PDF)를 보내 드려요. 더 하실 일은 없어요.'
       draw('<div class="mark">成</div>'
         + '<h1>' + (연애 ? (r.already ? '이미 결제된 주문이에요. 봉인을 풀러 갑니다' : '결제됐어요. 봉인을 풀러 갑니다') : 일결 ? (r.already ? '이미 결제된 주문이에요. 풀이를 보러 갑니다' : '결제됐어요. 풀이를 보러 갑니다') : 결혼 ? (r.already ? '이미 결제된 주문이에요. 신청은 접수돼 있어요' : '결제됐어요. 신청이 접수됐어요') : '결제가 끝났습니다') + '</h1>'
         + (시험 ? '<p><b>시험 결제 — 돈이 빠지지 않았습니다</b></p>' : '')

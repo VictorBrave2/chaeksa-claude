@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>분야 표 시험</title>
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}</style></head>
 <body><div id="out">시험하는 중이에요…</div>
-<script src="bunya.js?v=a8096dcb35"></script>
+<script src="bunya.js?v=709f086e54"></script>
 <script src="home-ask.js?v=2de9fd9596"></script>
 <script>
 // 홈 분야 표 시험(docs/100 전략 카) — 이번 범위는 모듈 없이 표만으로 되는 것.
@@ -79,7 +79,7 @@
     if (!T) throw new Error('bunya.js 가 실리지 않았다');
     봄('가2 맨 위 열쇠 = 설정 · 큰분야 · 분야 · 콘텐츠 · 목차(표 넷과 설정 한 줄)', Object.keys(T), 열쇠.맨위);
     봄('가3 설정 — 홈타일 · 칸줄 · 접음이 모두 자연수', Object.keys(T.설정).length === 3 && ['홈타일', '칸줄', '접음'].every((k) => Number.isInteger(T.설정[k]) && T.설정[k] > 0), true);
-    const 소스 = await 받기('bunya.js?v=a8096dcb35');
+    const 소스 = await 받기('bunya.js?v=709f086e54');
     봄('가4 bunya.js 를 읽었다', 소스 != null, true);
     const 시작 = '/*표 시작*/', 끝 = '/*표 끝*/';
     const a = 소스.indexOf(시작), b = 소스.indexOf(끝);
@@ -253,7 +253,9 @@
       if (!A) throw new Error('home-ask.js 가 실리지 않았다');
       const 갈 = A.갈래들(T), 칩 = [].concat(...갈.map((g) => g.칩)), 열 = 열린칸(T);
       const 물음 = {}; T.분야.forEach((f) => f.물음.forEach((q, i) => { 물음[f.키 + '.' + (i + 1)] = q; }));
-      봄('차2 칩 수 = 답이 걸린 물음 수(설계 물음답) — 빠진 물음 0', 칩.length, 설계수.물음답);
+      // 10-23 「이번 주」 카드(10-12 사장님 「삭제하자」로 숨김)에만 걸린 물음은 칩이 아니라 「받고 싶어요」로 간다(home-ask.js 칸길 wk.* → null)
+      const 주만 = Object.keys(물음).filter((id) => { const q = 물음[id]; return q.칸 && q.칸.length && q.칸.every((k) => /^wk\./.test(k)); }).length;
+      봄('차2 칩 수 = 답이 걸린 물음 수(설계 물음답) − 숨긴 「이번 주」에만 걸린 물음 — 빠진 물음 0', 칩.length, 설계수.물음답 - 주만);
       봄('차2 칩 id 겹침 0 · 칩 글 = 분야 표 물음 글 그대로', [없음목록(겹침(칩.map((c) => c.id))), 없음목록(칩.filter((c) => !물음[c.id] || 물음[c.id].글 !== c.글).map((c) => c.id))], ['0', '0']);
       봄('차3 칩마다 간 칸 = 그 물음의 칸 목록 가운데 열린 칸 · 그보다 앞의 칸은 갈 길이 없는 칸', 없음목록(칩.filter((c) => { const ks = 물음[c.id].칸 || [], i = ks.indexOf(c.칸); return i < 0 || !열.has(c.칸) || ks.slice(0, i).some((k) => A.칸길(k, T)); }).map((c) => c.id)), '0');
       // 칸 → 탭 · 곳 — 칸 이름에서 따로 셈해 대조한다(home-ask.js 칸길과 다른 손으로).
@@ -274,8 +276,8 @@
       const 짧게 = (w) => (w.주소 ? w.주소 : w.탭 + (w.곳 ? ' · ' + w.곳 : ''));
       봄('차4 칩 66개 전부 — 칸 → 탭 · 장(정통사주 · 정통궁합 N장 · 웹툰 N화 · 웹툰궁합 단계 · 이번 주 · 시뮬레이터 · 바깥 글)', 없음목록(칩.filter((c) => 짧게(c.길) !== 짧게(기대길(c.칸))).map((c) => c.id + ' ' + 짧게(c.길) + ' ≠ ' + 짧게(기대길(c.칸)))), '0');
       const 칩길 = (글) => { const c = 칩.find((x) => x.글 === 글); return c ? 짧게(c.길) : '없음'; };
-      봄('차5 본보기 다섯 — 맞는 일 → 정통사주 9장 · 약한 곳 → 10장 · 「왜 요즘 차가워요?」 → 웹툰궁합 연애 초반 · 제왕절개 → 출산택일 · 「왜 일간이 나예요?」 → 그 글',
-        ['나한테 맞는 일은 뭐예요?', '나는 어디가 약해요?', '왜 요즘 차가워요?', '제왕절개 몇 시가 좋아요?', '왜 일간이 나예요?'].map(칩길),
+      봄('차5 본보기 다섯 — 맞는 일 → 정통사주 9장 · 약한 곳 → 10장 · 「식은 걸까요, 원래 이런 걸까요?」 → 웹툰궁합 연애 초반 · 제왕절개 → 출산택일 · 「왜 일간이 나예요?」 → 그 글',
+        ['나한테 맞는 일은 뭐예요?', '나는 어디가 약해요?', '식은 걸까요, 원래 이런 걸까요?', '제왕절개 몇 시가 좋아요?', '왜 일간이 나예요?'].map(칩길),
         ['jeongtong · jtCh9', 'jeongtong · jtCh10', 'ssom · 단계:초반', 'taekil', 'why-day-master-is-me.html']);
       봄('차6 칩의 탭은 index.html 에 있다', 없음목록(칩.filter((c) => c.길.탭 && !탭들.has(c.길.탭)).map((c) => c.id + ':' + c.길.탭)), '0');
       {
@@ -284,13 +286,13 @@
         봄('차6 칩의 바깥 글 주소가 app/ 에 있다(' + 주소들.length + '개)', 없음목록(없는), '0');
       }
       {
-        const ssom = (await 받기('ssom.js?v=1af0c45672')) || '', 고름 = (ssom.match(/const 고름칸 = \[([\s\S]*?)\];/) || [])[1] || '';
+        const ssom = (await 받기('ssom.js?v=10a233faea')) || '', 고름 = (ssom.match(/const 고름칸 = \[([\s\S]*?)\];/) || [])[1] || '';
         const 값들 = new Set(Array.from(고름.matchAll(/\['([^']+)', '/g)).map((m) => m[1]));
         const 쓴 = 칩.filter((c) => c.길.단계).map((c) => c.길.단계).concat(A.단계칩.map((s) => s[1]));
         봄('차7 단계 값(칩 · 연애 갈래 단계 칩)이 웹툰궁합 고르는 칸(ssom.js 고름칸) 값 안', [값들.size > 0, 없음목록(쓴.filter((v) => !값들.has(v)))], [true, '0']);
       }
       {
-        const 원 = { jeongtong: (await 받기('jeongtong.js?v=0e1579a277')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=79e6eb98e1')) || '', app: (await 받기('app.js?v=07e34a03ab')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
+        const 원 = { jeongtong: (await 받기('jeongtong.js?v=32474d5766')) || '', chongnon: (await 받기('gunghap-chongnon.js?v=05618978b7')) || '', app: (await 받기('app.js?v=07e34a03ab')) || '', vn: (await 받기('ssom-vn.html')) || '', idx: 첫화면 || '' };
         const 곳들 = new Set(칩.map((c) => c.길.곳).filter(Boolean)), 틀린 = [];
         곳들.forEach((s) => {
           if (/^jtCh\d+$/.test(s)) { if (!원.jeongtong.includes("id=\"jtCh' + 번호")) 틀린.push(s); }

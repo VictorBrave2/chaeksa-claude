@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | DES-0001 |
-| 상태 | 요청 |
+| 상태 | 적용됨 |
 | 요청한 날 | 2026-10-22 |
 | 볼 화면 | https://chaeksa.kr/taekil-sample.html — 「자미두수로 본 권하는 곳」 칸(권하는 곳 1~3번마다 명반 그림) · https://chaeksa.kr/myeongban.html(생년월일을 넣으면 명반이 나옴) |
 | 지금 화면 사진 | design-requests/ref/DES-0001-phone-before.jpg(사장님 폰, 10-22 첫 판) |
@@ -66,3 +66,4 @@
 ## 기록
 
 - 2026-10-22 요청 — Claude Code(사장님 폰 화면 · 「디자인 부분은 진짜 gpt한테 다 맡기고 싶노」 · 「1」)
+- 2026-10-23 적용 — Codex gpt-6-astra 디자인(style.css .tkr-mb · myeongban.html .mb-) → main. 밝기 일곱 말은 Codex 안(「득지·밝은 쪽」 · 「자리 못 얻음」) 대신 책사 쪽이 원문 차례로 정함: 가장 밝음 · 밝음 · 꽤 밝음 · 조금 밝음 · 보통 · 조금 어두움 · 빛 잃음(「조금 밝음 ↔ 조금 어두움」이 보통을 사이에 두고 마주 봄). 사진 ref/DES-0001-after-375.png(낮) · after-430.png(밤).

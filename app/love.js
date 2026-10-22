@@ -31,7 +31,7 @@
 
   // 기다림 네 단계(10-01 흐름) — 걸린 시간(초)으로 넘어간다. 서버 진행을 재는 것이 아니다. 다만 질문이 이미 왔으면(덜됨) 셋째 단계부터 보인다(질문 고르기는 끝났다).
   // 10-02 개편 — 「봉인 · 해독」 말 대신 지금 무엇을 하고 있는지 보이는 말로. 기다리는 동안 아래에 장 이름 · 장면 목록(밑그림)이 먼저 깔린다.
-  var 단계 = ['태어난 날의 글자를 읽는 중', '연애할 때 나오는 버릇을 고르는 중', '장면마다 내 글을 쓰는 중', '연애할 때의 나를 한 줄로 정리하는 중'], 단계때 = [0, 8, 20, 55];
+  var 단계 = ['태어난 날을 나타내는 사주 글자를 읽는 중', '연애할 때 나오는 버릇을 고르는 중', '장면마다 내 글을 쓰는 중', '연애할 때의 나를 한 줄로 정리하는 중'], 단계때 = [0, 8, 20, 55];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 읽기(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
@@ -133,7 +133,7 @@
           + '</section>';
       });
       if (잠긴.length) {
-        html += '<section class="card lv-lock"><p class="lv-t">🔒 이 장의 글 ' + 잠긴.length + '개는 아직 봉인돼 있어요</p>'
+        html += '<section class="card lv-lock"><p class="lv-t">🔒 이 장의 글 ' + 잠긴.length + '개는 아직 잠겨 있어요</p>'
           + '<p class="hint" style="margin:0 0 6px">이 장에서 다루는 장면</p><ul>'
           + 잠긴.map(function (it) { return '<li id="lvq-' + esc(it.id) + '">' + esc(it.q) + '</li>'; }).join('') + '</ul></section>';
       }
@@ -149,7 +149,7 @@
     var 장 = 장들(저장 && 저장.items);
     if (!장.차례.length) { box.innerHTML = ''; return; }
     box.innerHTML = '<section class="card lv-wait"><h3 class="doc-h">나에게 나온 장 ' + 장.차례.length + '개 · 글 ' + 저장.items.length + '개</h3>'
-      + '<p class="hint" style="margin:0 0 4px">아래 장면들을 하나씩 내 글로 쓰고 있어요. 다 쓰면 이 자리가 장마다 그림과 글로 바뀌어요.</p>'
+      + '<p class="hint" style="margin:0 0 4px">아래 장면마다 내 연애 행동을 글로 쓰고 있어요. 다 쓰면 이 자리가 장마다 그림과 글로 바뀌어요. 이 화면을 그대로 두세요.</p>'
       + 장.차례.map(function (sec, i) {
         return '<p class="lv-t" style="margin:14px 0 4px">' + (i + 1) + '장 · ' + esc(sec) + ' <span style="font-weight:400;font-size:var(--t1);color:var(--ink3)">글 ' + 장.묶음[sec].length + '개</span></p>'
           + '<ul style="margin:0;padding-left:18px;font-size:var(--t2);line-height:1.7;color:var(--ink3)">'
@@ -166,9 +166,9 @@
     var 장 = 장들(저장.items), 장번호 = {}, 자리 = {};
     장.차례.forEach(function (s, i) { 장번호[s] = i + 1; });
     (저장.items || []).forEach(function (it) { 자리[it.id] = 장번호[it.section]; });
-    var html = '<section class="card lv-sum"><h3 class="doc-h">해독 결과</h3><p class="lv-title">' + esc(p.title) + '</p>';
+    var html = '<section class="card lv-sum"><h3 class="doc-h">연애 행동 풀이</h3><p class="lv-title">' + esc(p.title) + '</p>';
     if (p.locked || !Array.isArray(p.traits)) {
-      html += '<p class="hint" style="margin:0">🔒 연애할 때 나의 세 가지 모습, 그래서 할 것, 조심할 것은 <a href="#" data-go="lvPay">1장 끝의 봉인 풀기</a>에서 열려요.</p>';
+      html += '<p class="hint" style="margin:0">🔒 연애할 때 나의 세 가지 모습, 그래서 할 것, 조심할 것은 <a href="#" data-go="lvPay">1장 끝의 결제 안내</a>에서 결제하면 열려요.</p>';
     } else {
       p.traits.forEach(function (t, i) {
         var 본 = {}, ns = [];
@@ -208,9 +208,9 @@
   function 끝상자(box, 저장) {
     if (!저장 || !저장.items || !저장.items.length) { box.innerHTML = ''; return; }
     var Y = 장부(), 딱지 = Y ? Y.딱지html('pair') : '';
-    box.innerHTML = '<section class="card lv-next"><p class="lv-t">' + esc((Y && Y.이름('pair')) || '그 사람 사용설명서') + '</p>'
+    box.innerHTML = '<section class="card lv-next"><p class="lv-t">' + esc((Y && Y.이름('pair')) || 'SSS급 그 사람 사용설명서') + '</p>'
       + '<p class="hint" style="margin:0 0 10px">이번엔 그 사람 차례예요. ' + esc((Y && Y.한줄('pair')) || '') + (약('pair').미리 ? ' ' + esc(약('pair').미리) : '') + '</p>'
-      + '<button class="btn" type="button" id="lvPair" style="width:100%">그 사람 사용설명서 보기' + (딱지 ? ' — ' + 딱지 : '') + '</button></section>';
+      + '<button class="btn" type="button" id="lvPair" style="width:100%">SSS급 그 사람 사용설명서 보기' + (딱지 ? ' — ' + 딱지 : '') + '</button></section>';
     if (Y) Y.값채우기(box);
     box.querySelector('#lvPair').onclick = function () {
       if (typeof global.책사들어가기 === 'function') global.책사들어가기('pair'); else location.hash = '#pair';
@@ -328,8 +328,8 @@
   function 예시(box) {
     var e = 예시자료;
     box.innerHTML = '<section class="card"><h3 class="doc-h">예시 — 지어낸 한 사람의 결과 일부</h3>'
-      + '<p class="hint" style="margin:0 0 12px">결제 전에는 내 결과를 보여 드리지 않아요. 대신 책사가 지어낸 한 사람의 생년월일로 실제로 만든 결과에서 몇 줄을 옮겼어요. 결제하면 내 생년월일로 이런 글을 처음부터 끝까지 받아요.</p>'
-      + '<p style="margin:0 0 4px"><b>해독 결과 첫 줄</b></p><p class="lv-t" style="margin:0 0 12px">' + esc(e.title) + '</p>'
+      + '<p class="hint" style="margin:0 0 12px">결제 전에는 내 결과를 보여 드리지 않아요. 아래 글은 책사가 지어낸 한 사람의 생년월일로 실제로 만든 결과에서 몇 줄을 옮긴 예시예요. 결제하면 내 생년월일로 이런 글을 처음부터 끝까지 받아요. 아래 예시를 먼저 읽어 보세요.</p>'
+      + '<p style="margin:0 0 4px"><b>연애 행동 풀이 첫 줄</b></p><p class="lv-t" style="margin:0 0 12px">' + esc(e.title) + '</p>'
       + '<p style="margin:0 0 4px"><b>모습 하나 — ' + esc(e.trait.name) + '</b></p><p style="margin:0 0 4px">' + esc(e.trait.line) + '</p></section>'
       + e.items.map(function (it) { return '<section class="card"><p class="hint" style="margin:0 0 6px">예시 · ' + esc(it.section) + '</p><p class="lv-t">' + esc(it.t) + '</p><p style="margin:0">' + esc(it.a) + '</p></section>'; }).join('');
   }
@@ -337,7 +337,7 @@
   // [필수] 동의에 「생년월일시를 이 콘텐츠를 만드는 데 쓰는 것」을 함께 받는다 — 결제 전에는 생년월일을 서버에 보내지 않는다.
   function 사기상자(box, b, 다음) {
     var Y = 장부(), 받는것 = Y ? Y.받는것목록('love') : [], 만듦 = Y ? Y.만듦글('love') : '';   // 장부 love 줄 — pay.html 「무엇을 사나」와 같은 말
-    box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">내 해독 결과 받기</h3>'
+    box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">내 연애 행동 풀이 받기</h3>'
       + (만듦 ? '<p style="margin:0 0 10px">' + esc(만듦) + '</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 받는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
@@ -353,7 +353,7 @@
     if (P && P.product) P.product('love_full').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
       if (p && p.amount) btn.textContent = (P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount)) + ' 결제하고 내 것 받기';
-      else { btn.disabled = true; say.textContent = '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열 수 있어요.'; }
+      else { btn.disabled = true; say.textContent = '온라인 결제는 준비 중이에요. 준비가 끝나면 이 자리에서 바로 결제할 수 있어요. 나중에 다시 확인해 주세요.'; }
     }).catch(function () {});
     btn.onclick = function () {
       if (btn.dataset.busy) return;
@@ -400,16 +400,16 @@
     // 「장마다 그 장의 나를 한 줄로」는 서버가 그 줄을 준 결과에만 보이므로 이 결과에 장 한 줄이 있을 때만 적는다(장부 조건 「장한줄」).
     var 장한줄 = !!(저장.portrait && 저장.portrait.chapters && Object.keys(저장.portrait.chapters).length);
     var Y = 장부(), 받는것 = Y ? Y.받는것목록('love', { 장한줄: 장한줄 }) : [];
-    box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">' + (잠긴 ? '아직 봉인된 글 ' + 잠긴 + '개' : '해독 결과 전체') + '</h3>'
-      + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었고, 봉인을 풀면 이 자리에서 바로 보여요.</p>' : '')
-      + '<p style="margin:0 0 4px"><b>결제하면 풀리는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
+    box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">' + (잠긴 ? '아직 잠긴 글 ' + 잠긴 + '개' : '연애 행동 풀이 전체') + '</h3>'
+      + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었고, 결제하면 이 자리에서 바로 보여요. 아래 결제 안내를 확인해 주세요.</p>' : '')
+      + '<p style="margin:0 0 4px"><b>결제하면 열리는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.filter(Boolean).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
       + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:var(--t1);line-height:1.7;color:var(--ink);cursor:pointer;margin:0 0 10px">'
       + '<input type="checkbox" id="lvAgree" style="margin-top:4px;width:auto;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span></label>'
-      + '<button class="btn" id="lvBuy" type="button" style="width:100%">출시 기념가 9,900원 결제하고 봉인 풀기</button>'
+      + '<button class="btn" id="lvBuy" type="button" style="width:100%">출시 기념가 9,900원 결제하고 전체 보기</button>'
       + '<p class="hint" id="lvPaySay" style="margin:8px 0 0"></p><div id="lvPayErr"></div></div>'
       + 소개길 + '</section>';
     var btn = box.querySelector('#lvBuy'), say = box.querySelector('#lvPaySay'), 막힘칸 = box.querySelector('#lvPayErr'), P = global.ChaeksaPay;
@@ -427,8 +427,8 @@
     // 단추의 값은 상품표 값으로 다시 적는다. 상품이 내려가 있으면(active 아님) 단추를 잠근다.
     if (P && P.product) P.product('love_full').then(function (p) {
       if (!btn.isConnected || btn.dataset.busy) return;
-      if (p && p.amount) btn.textContent = (P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount)) + ' 결제하고 봉인 풀기';   // pay.js 값 = 「출시 기념가 9,900원」
-      else { btn.disabled = true; say.textContent = '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열 수 있어요.'; }
+      if (p && p.amount) btn.textContent = (P.값 ? P.값(p) : '출시 기념가 ' + P.won(p.amount)) + ' 결제하고 전체 보기';   // pay.js 값 = 「출시 기념가 9,900원」
+      else { btn.disabled = true; say.textContent = '온라인 결제는 준비 중이에요. 준비가 끝나면 이 자리에서 바로 결제할 수 있어요. 나중에 다시 확인해 주세요.'; }
     }).catch(function () {});
     btn.onclick = function () {
       if (btn.dataset.busy) return;
@@ -470,10 +470,10 @@
     var Y = 장부(), 소개 = [Y ? Y.한줄('love') : '', 약('love').미리 || '', Y ? Y.만듦글('love') : ''].filter(Boolean).map(esc).join(' ');
     el.innerHTML = '<div class="lv-cover">' + 그림(표지그림, true) + '<span class="k" id="lvCoverK">연애</span><span class="n" id="lvCoverN">사랑할 때만 나오는 당신</span></div>'
       + '<section class="card">'
-      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준이에요. ' + 소개 + ' 카카오 계정 하나에 한 사람 한 번 만들 수 있어요.</p>'
+      + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준이에요. ' + 소개 + ' 로그인한 계정(카카오 · 네이버) 하나당 한 사람의 결과를 한 번만 만들어요.</p>'
       + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p><div id="lvErr"></div></section>'
       + '<div id="lvTop"></div>'
-      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날의 글자로 계산한 연애할 때 내가 하는 말과 행동이에요.</p>'
+      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날을 나타내는 사주 글자로 계산한, 연애할 때 내가 하는 말과 행동이에요.</p>'
       + '<div id="lvList"></div><div id="lvShare"></div><div id="lvEnd"></div>';   // lvShare = 결과 보내기(산 결과에만)
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps'), 막힘칸 = el.querySelector('#lvErr'), 공유칸 = el.querySelector('#lvShare');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
@@ -490,7 +490,7 @@
     // 표지 글 — 결론이 있으면 결론 첫 줄, 없으면 콘텐츠 이름
     function 표지글() {
       var p = 저장 && 저장.portrait, k = el.querySelector('#lvCoverK'), n = el.querySelector('#lvCoverN');
-      if (k) k.textContent = p && p.title ? '해독 결과' : '연애';
+      if (k) k.textContent = p && p.title ? '연애 행동 풀이' : '연애';
       if (n) n.textContent = p && p.title ? p.title : '사랑할 때만 나오는 당신';
     }
     // 다 받은 결과를 그린다 — 표지 · 결론 · 장들(1장 끝에 결제 상자) · 결과 보내기(산 결과에만) · 맨 끝 사용설명서 상자
@@ -511,7 +511,7 @@
       if (결론 && 결론.title) 저장.portrait = 결론;
       var 잠긴 = 저장.items.filter(function (it) { return it.locked; }).length;
       쓰기(키, 저장); head.innerHTML = '';
-      알림((msg || '해독을 마쳤어요.') + (잠긴 ? ' 1장 끝에서 봉인을 풀면 나머지 글 ' + 잠긴 + '개가 보여요.' : ''));
+      알림((msg || '연애 행동 풀이를 마쳤어요.') + (잠긴 ? ' 1장 끝에서 결제하면 나머지 글 ' + 잠긴 + '개가 보여요.' : ''));
       다그리기();
     }
     // 결론 칸 전에 받은 결과(이 기기에 결론이 없음) — 보관된 답을 다시 불러오면 서버가 결론을 한 번 만들어 같이 준다.
@@ -531,7 +531,7 @@
       // portraitOnly — 서버에 보관된 답이 없으면 새로 쓰지 말고 그냥 돌아오라는 표시(결론만 받으러 가는 길)
       post('/api/love-answers', { portraitOnly: true, runId: 저장.runId, birth: b, sig: 저장.sig, items: 저장.items.map(function (it) { return { id: it.id, section: it.section, q: it.q }; }) }).then(function (r) {
         if (!list.isConnected || !r || !r.saved || !Array.isArray(r.items)) return;
-        채우기(r.items, r.portrait ? '해독 결과를 맨 위에 붙였어요.' : '', r.paid, r.payKey, r.portrait);
+        채우기(r.items, r.portrait ? '연애 행동 풀이를 맨 위에 붙였어요.' : '', r.paid, r.payKey, r.portrait);
       }).catch(function () {});
     }
     // 잠긴 채로 이 기기에 남아 있으면 — 결제하고 돌아왔거나 다른 기기에서 샀을 수 있다. 서버에 샀는지만 묻고(peek, 만들지도 세지도 않음),
@@ -543,11 +543,11 @@
         var k = 올바른열쇠(r && r.payKey);
         if (k && k !== 저장.payKey) { 저장.payKey = k; 쓰기(키, 저장); }   // 옛 꼴 열쇠를 서버 열쇠로 바꿔 둔다(단추는 잠금상자가 다시 그린다)
         if (!r || r.paid !== true || !list.isConnected) return;
-        알림('봉인을 푸는 중이에요…');
+        알림('전체 결과를 불러오는 중이에요…');
         return post('/api/love-questions', { consent: true, birth: b }).then(function (r2) {
           if (!list.isConnected || !r2 || !Array.isArray(r2.answers)) return;
           if (r2.runId !== 저장.runId) 저장 = { runId: r2.runId, sig: r2.sig, payKey: 올바른열쇠(r2.payKey) || 저장.payKey, items: r2.items.map(function (it) { return { id: it.id, section: it.section, q: it.q, a: '', t: '' }; }), fb: 저장.fb || {} };
-          채우기(r2.answers, '봉인이 풀렸어요.', r2.paid, r2.payKey, r2.portrait);
+          채우기(r2.answers, '전체 결과가 열렸어요.', r2.paid, r2.payKey, r2.portrait);
         });
       }).catch(function () { if (list.isConnected) 알림(''); });
     }
@@ -608,7 +608,7 @@
         if (덜됨 && e.status === 400) { 덜됨 = false; 저장 = null; 지우기(키); list.innerHTML = ''; }   // 이 기기 것이 서버와 안 맞으면 처음부터
         btn.textContent = 덜됨 ? '이어서 받기' : '내 연애 행동 보기';
         // 10-02 공용 오류 상자 — 무엇이 안 됐는지 · (산 것이 확인된 길이면) 결제한 것은 그대로 · 다시 하기(이 단추 대신) · 문의하기
-        if (막힘({ 무엇: '내 해독 결과를 다 받지 못했어요', 까닭: e.message, 돈: 산것 ? '남음' : '', 코드: e.status ? 'HTTP ' + e.status : '' }, function () { btn.hidden = false; 시작(); })) btn.hidden = true;
+        if (막힘({ 무엇: '내 연애 행동 풀이를 다 받지 못했어요', 까닭: e.message, 돈: 산것 ? '남음' : '', 코드: e.status ? 'HTTP ' + e.status : '' }, function () { btn.hidden = false; 시작(); })) btn.hidden = true;
       });
     }
     // 산 사람 — 만들기 단추를 놓고 바로 시작한다(결제하고 돌아오면 또 누르지 않게).

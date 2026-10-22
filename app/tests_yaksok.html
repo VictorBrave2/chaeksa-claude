@@ -3,11 +3,11 @@
 <style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 16px;background:#fff;color:#222}h2{font-size:15px;margin:10px 0 4px}h3{font-size:13px;margin:16px 0 2px;color:#666}.ok{color:#2a7}.no{color:#c33}.info{color:#a60}</style></head>
 <body><div id="out">시험하는 중이에요…</div><div id="stage" hidden></div>
 <script src="config.js?v=71396c29ad"></script>
-<script src="bunya.js?v=a8096dcb35"></script>
-<script src="yaksok.js?v=45af80540e"></script>
-<script src="love.js?v=fdb5b13842"></script>
-<script src="pair.js?v=d2522785f7"></script>
-<script src="home-cats.js?v=e8e96cd12c"></script>
+<script src="bunya.js?v=709f086e54"></script>
+<script src="yaksok.js?v=b4d6d5bece"></script>
+<script src="love.js?v=31fd29976c"></script>
+<script src="pair.js?v=2690489039"></script>
+<script src="home-cats.js?v=007f2d5099"></script>
 <script src="people.js?v=608bb7b89c"></script>
 <script>
 // 상품 약속 장부 시험(10-02 개편 2묶음 「상품 약속 장부 한 줄씩 만들고, 모든 화면이 거기서 읽게 하기」).
@@ -42,15 +42,15 @@
   const 아는조건 = ['장한줄'];
   // 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
   const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'taekil-sample.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html',
-    'love.js?v=fdb5b13842', 'pair.js?v=d2522785f7', 'home-cats.js?v=e8e96cd12c', 'app.js?v=07e34a03ab', 'pay.js?v=dd825b8342', 'gunghap-gwanjeom.js?v=52bed683fa', 'bunya.js?v=a8096dcb35', 'about.html',
+    'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'home-cats.js?v=007f2d5099', 'app.js?v=07e34a03ab', 'pay.js?v=dd825b8342', 'gunghap-gwanjeom.js?v=193bc18d87', 'bunya.js?v=709f086e54', 'about.html',
     // 10-02 「켜는 날」 — 바깥 신청 폼 · 「사람이 직접」 · 「작업 전 전액 환불」 같은 걷은 약속이 출산택일 쪽에 다시 들어오지 않게(tools_check.py 7) 은 월별 · 궁통보감 쪽까지 taekil-*.html 전부를 본다)
     'taekil-price.html', 'taekil-sim.html', 'taekil-report.html', 'taekil-admin.html', 'taekil-why-different.html', 'taekil-cesarean-date.html', 'taekil-how-to-choose.html',
     'taekil-verify.html', 'taekil-fate-vs-timing.html', 'taekil-doctor-schedule.html', 'taekil-solar-time.html', 'taekil-lunar-december.html',
     'taekilsim.js?v=e2b12e27a5', 'taekil-admin.js?v=dcf19f00dc', 'taekil-report.js?v=420d9470a1'];
   // about.html(10-02 개편 3묶음 책사 소개) — 상품 말은 장부에서 읽는다. 손으로 쓴 숫자가 끼면 여기서 잡는다(tools_check.py 7)과 같은 목록)
-  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=fdb5b13842', 'pair.js?v=d2522785f7', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=e8e96cd12c', 'about.html'];
-  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=fdb5b13842', 'pair.js?v=d2522785f7', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=52bed683fa', 'home-cats.js?v=e8e96cd12c', 'about.html'];
-  const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=fdb5b13842', 'pair.js?v=d2522785f7', 'about.html'];
+  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=007f2d5099', 'about.html'];
+  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=193bc18d87', 'home-cats.js?v=007f2d5099', 'about.html'];
+  const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'about.html'];
   // 10-02 개편 3묶음 — 상품 소개 쪽 다섯(tools_sogae.py 가 장부 · 분야 표에서 만든다. tools_check.py SOGAE_PAGES 와 같은 목록). 시간 · 질문 수 · 보관 해도 장부와 같아야 한다.
   const 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
   [시간파일, 질문파일, 해파일].forEach((목록) => Object.values(소개쪽).forEach((f) => { if (!목록.includes(f)) 목록.push(f); }));
@@ -60,7 +60,7 @@
     머리('가. 장부 꼴');
     봄('가1 전역 ChaeksaYaksok 이 있다', !!(Y && T && T.콘텐츠), true);
     if (!Y) throw new Error('yaksok.js 가 실리지 않았다');
-    const 소스 = await 받기('yaksok.js?v=45af80540e');
+    const 소스 = await 받기('yaksok.js?v=b4d6d5bece');
     const 시작 = '/*장부 시작*/', 끝 = '/*장부 끝*/';
     봄('가2 장부 시작 · 장부 끝 표시가 한 번씩', [String(소스).split(시작).length - 1, String(소스).split(끝).length - 1], [1, 1]);
     let 파싱 = null; try { 파싱 = JSON.parse(소스.slice(소스.indexOf(시작) + 시작.length, 소스.indexOf(끝))); } catch (e) { 파싱 = null; }
@@ -108,7 +108,7 @@
       봄('다2 연애 잠금상자 — 장 한 줄이 없는 결과는 그 줄만 빼고, 있는 결과는 장부 그대로', [목록글(b), 목록글(c)], [Y.받는것목록('love', { 장한줄: false }), Y.받는것목록('love')]);
       const d = 새칸(); LV.끝상자(d, 잠긴);
       const 단추 = d.querySelector('#lvPair');
-      봄('다3 연애 끝상자 — 이름 · 미리 보는 것 · 단추 딱지가 장부 pair 줄', [d.querySelector('.lv-t').textContent, d.textContent.includes(Y.줄('pair').미리), 단추 && 단추.textContent], [Y.이름('pair'), true, '그 사람 사용설명서 보기 — ' + Y.딱지글('pair')]);
+      봄('다3 연애 끝상자 — 이름 · 미리 보는 것 · 단추 딱지가 장부 pair 줄', [d.querySelector('.lv-t').textContent, d.textContent.includes(Y.줄('pair').미리), 단추 && 단추.textContent], [Y.이름('pair'), true, 'SSS급 그 사람 사용설명서 보기 — ' + Y.딱지글('pair')]);
       const e = 새칸(); PV.결제상자(e, null, 3, null);
       봄('다4 사용설명서 결제 상자 — 받는 것 · 만드는 때와 시간 = 장부 pair 줄', [목록글(e), e.textContent.includes(Y.만듦글('pair'))], [Y.받는것목록('pair'), true]);
       const f = 새칸(); Y.무엇을사나(f);
