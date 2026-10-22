@@ -116,7 +116,7 @@
   };
   function 귀인(R) {
     const P = R.pillars, ds = P.day.stem, out = [], 빈 = 공망지(ds, P.day.branch), 자리들 = 있는(P);
-    const 공망주 = (곳) => { const 든 = 곳.filter(k => k !== 'day' && 빈.indexOf(P[k].branch) >= 0); return 든.length ? ' 그런데 ' + 든.map(k => 자리말[k] + '지').join(' · ') + '는 공망에 들어 있어요. 책은 귀인이 공망에 들면 안 된다고 했어요.' : ''; };
+    const 공망주 = (곳) => { const 든 = 곳.filter(k => k !== 'day' && 빈.indexOf(P[k].branch) >= 0); return 든.length ? ' 그런데 ' + 든.map(k => 자리말[k] + '지').join(' · ') + '는 공망에 들어 있어요. 책은 공망에 든 귀인은 없는 것과 같다고 했어요.' : ''; };
     const 천 = 천을표[E.STEMS[ds]].split('').map(B), 천곳 = 자리들.filter(k => 천.indexOf(P[k].branch) >= 0);
     if (천곳.length) out.push({ 이름: '천을귀인', 글: 귀인글.천을귀인, 줄: ['나 ' + 간(ds) + '의 천을귀인은 ' + 지(천[0]) + ' · ' + 지(천[1], 예요) + '. ' + 천곳.map(k => 자리말[k] + '지').join(' · ') + '에 있어요.' + 공망주(천곳)] });
     const 월 = E.BRANCHES[P.month.branch], 월말 = 지(P.month.branch), 덕 = 천덕표[월], 덕이간 = E.STEMS.indexOf(덕) >= 0;
