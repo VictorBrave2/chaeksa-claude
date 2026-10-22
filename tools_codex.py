@@ -3,12 +3,16 @@
 
     python tools_codex.py copy-requests/COPY-0001-paid-pages.md      # 명세 한 장 → 따로 떨어진 작업 폴더에서 Codex 가 고침
     python tools_codex.py copy-requests/COPY-0001-paid-pages.md --ask "추가 지시 한 줄"
+    python tools_codex.py copy-requests/COPY-0002-free-pages.md --part ssom12 --ask "「웹툰궁합(썸) — 화면 · 앞 회차」 절만"
+        # --part: 한 명세를 묶음으로 나눠 동시에 돌릴 때 — 묶음마다 작업 폴더 ../chaeksa-codex-<ID>-<part>
+    --model gpt-6-astra(기본) · --effort high(기본) — 10-23 사장님 Pro 구독 뒤 가장 센 모델로
 
 하는 일
   1) 이 저장소 옆에 작업 폴더(git worktree) ../chaeksa-codex-<작업 ID> 를 가지 codex/<작업 ID> 로 만든다(있으면 그대로 쓴다).
      — 본 폴더(main)를 Codex 가 직접 만지지 않게. 다른 손(사장님 Codex 앱 · 다른 세션)과 겹치지 않는다.
-  2) 그 폴더에서 codex exec 를 부른다. 깃발은 10-22 시험으로 맞춘 것:
-       --ignore-user-config(사장님 설정의 모델 「gpt-6-astra」는 ChatGPT 로그인으로 안 돼서 기본 모델로) · --ignore-rules ·
+  2) 그 폴더에서 codex exec 를 부른다. 깃발은 10-22 · 23 시험으로 맞춘 것:
+       -m gpt-6-astra · model_reasoning_effort=high(10-23 사장님 Pro 구독 — 이제 astra 가 목록에 있다. 안 되면 가벼운 모델로 내려가지 않고 멈춘다) ·
+       --ignore-user-config · --ignore-rules ·
        -s workspace-write + -c windows.sandbox="elevated"(사장님 설정에 있던 윈도우 보안 상자 — 이게 없으면 읽기 전용으로 떨어져 못 고친다, 10-23 시험) · --skip-git-repo-check
   3) Codex 가 끝나면 작업 폴더의 바뀐 파일 목록과 Codex 마지막 말(CODEX_REPORT.md)을 보여 준다. 커밋 · 합치기는 하지 않는다 —
      Claude Code 가 뜻 대조(원문 · 계산) · 시험(tools_check · tests_yaksok) 뒤 main 으로 가져온다.
@@ -25,17 +29,26 @@ def run(cmd, cwd=None, check=True):
     return r
 
 def main():
+    try:
+        sys.stdout.reconfigure(encoding='utf-8'); sys.stderr.reconfigure(encoding='utf-8')  # 파일로 받을 때 cp949 로 죽지 않게
+    except Exception:
+        pass
     a = sys.argv[1:]
     if not a or a[0].startswith('-'):
         sys.exit(__doc__)
     spec = a[0].replace('\\', '/')
-    더 = a[a.index('--ask') + 1] if '--ask' in a else ''
+    def 값(k, d=''):
+        return a[a.index(k) + 1] if k in a else d
+    더 = 값('--ask')
+    part = re.sub(r'[^A-Za-z0-9_-]', '', 값('--part'))
+    model = 값('--model', 'gpt-6-astra')
+    effort = 값('--effort', 'high')
     if not os.path.exists(os.path.join(ROOT, spec)):
         sys.exit('명세가 없다: ' + spec)
     m = re.search(r'(COPY|DES|IMG)-\d{4}', spec)
     if not m:
         sys.exit('명세 파일 이름에 작업 ID(COPY-0001 · DES-0001 · IMG-0001)가 없다')
-    wid = m.group(0)
+    wid = m.group(0) + ('-' + part if part else '')
     wt = os.path.normpath(os.path.join(ROOT, '..', 'chaeksa-codex-' + wid))
     branch = 'codex/' + wid
     if not os.path.isdir(wt):
@@ -52,16 +65,13 @@ def main():
               + (' Extra instruction from the owner: ' + 더 if 더 else ''))
     last = os.path.join(wt, 'CODEX_LAST.txt')
     print('Codex 부름 — 끝날 때까지 몇 분 걸릴 수 있다 …')
-    기본 = ['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'windows.sandbox="elevated"', '-o', last]
-    # 10-23 사장님 「네가 일 시키는 게 gpt6 astra 는 아닐 거잖아」 — 가장 센 모델(gpt-6-astra)부터 부르고, 요금제가 안 받으면 기본 모델(gpt-6-luna)로 내려간다
-    r = None
-    for 모델 in (['-m', 'gpt-6-astra'], []):
-        r = subprocess.run(기본 + 모델 + [prompt], cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))
-        if 'not supported' in ((r.stdout or '') + (r.stderr or '')) and 모델:
-            print('gpt-6-astra 는 지금 요금제로 안 됨 — 기본 모델로 다시 부름')
-            continue
-        print('쓴 모델:', 모델[1] if 모델 else '기본(gpt-6-luna)')
-        break
+    기본 = ['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'windows.sandbox="elevated"',
+            '-c', 'model_reasoning_effort="' + effort + '"', '-m', model, '-o', last]
+    # 10-23 사장님 Pro 구독(「구독했어」) — gpt-6-astra 를 부르고, 요금제가 안 받으면 가벼운 모델로 몰래 내려가지 않고 멈춘다
+    r = subprocess.run(기본 + [prompt], cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))
+    if 'not supported' in ((r.stdout or '') + (r.stderr or '')):
+        sys.exit(model + ' 는 지금 요금제로 안 됨 — 멈춤(가벼운 모델로 돌리지 않음). ~/.codex/models_cache.json 목록을 보라')
+    print('쓴 모델:', model, '· 생각 깊이:', effort)
     print('Codex 끝(종료 코드 ' + str(r.returncode) + ')')
     if r.returncode != 0:
         print((r.stderr or '')[-1500:])
