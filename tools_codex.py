@@ -52,8 +52,16 @@ def main():
               + (' Extra instruction from the owner: ' + 더 if 더 else ''))
     last = os.path.join(wt, 'CODEX_LAST.txt')
     print('Codex 부름 — 끝날 때까지 몇 분 걸릴 수 있다 …')
-    r = subprocess.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'windows.sandbox="elevated"', '-o', last, prompt],
-                       cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))
+    기본 = ['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'windows.sandbox="elevated"', '-o', last]
+    # 10-23 사장님 「네가 일 시키는 게 gpt6 astra 는 아닐 거잖아」 — 가장 센 모델(gpt-6-astra)부터 부르고, 요금제가 안 받으면 기본 모델(gpt-6-luna)로 내려간다
+    r = None
+    for 모델 in (['-m', 'gpt-6-astra'], []):
+        r = subprocess.run(기본 + 모델 + [prompt], cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))
+        if 'not supported' in ((r.stdout or '') + (r.stderr or '')) and 모델:
+            print('gpt-6-astra 는 지금 요금제로 안 됨 — 기본 모델로 다시 부름')
+            continue
+        print('쓴 모델:', 모델[1] if 모델 else '기본(gpt-6-luna)')
+        break
     print('Codex 끝(종료 코드 ' + str(r.returncode) + ')')
     if r.returncode != 0:
         print((r.stderr or '')[-1500:])
