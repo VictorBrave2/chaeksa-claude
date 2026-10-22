@@ -168,7 +168,7 @@
     (저장.items || []).forEach(function (it) { 자리[it.id] = 장번호[it.section]; });
     var html = '<section class="card lv-sum"><h3 class="doc-h">해독 결과</h3><p class="lv-title">' + esc(p.title) + '</p>';
     if (p.locked || !Array.isArray(p.traits)) {
-      html += '<p class="hint" style="margin:0">🔒 연애할 때 당신의 세 가지 모습, 그래서 해 볼 것, 조심할 것은 <a href="#" data-go="lvPay">1장 끝의 봉인 풀기</a>에서 열려요.</p>';
+      html += '<p class="hint" style="margin:0">🔒 연애할 때 나의 세 가지 모습, 그래서 할 것, 조심할 것은 <a href="#" data-go="lvPay">1장 끝의 봉인 풀기</a>에서 열려요.</p>';
     } else {
       p.traits.forEach(function (t, i) {
         var 본 = {}, ns = [];
@@ -178,7 +178,7 @@
         html += '<p class="lv-t" style="margin:0 0 4px">' + (i + 1) + '. ' + esc(t.name) + '</p><p style="margin:0 0 4px">' + esc(t.line) + '</p>'
           + (근거 ? '<p class="hint" style="margin:0 0 12px">' + 근거 + '에서 보여요</p>' : '<div style="height:8px"></div>');
       });
-      if (p.todo) html += '<p class="lv-t" style="margin:6px 0 4px">그래서 연애할 때 이렇게 해 보세요</p><p style="margin:0 0 12px">' + esc(p.todo) + '</p>';
+      if (p.todo) html += '<p class="lv-t" style="margin:6px 0 4px">그래서 연애할 때 이렇게 하세요</p><p style="margin:0 0 12px">' + esc(p.todo) + '</p>';
       if (p.watch) html += '<p class="lv-t" style="margin:0 0 4px">조심할 것</p><p style="margin:0">' + esc(p.watch) + '</p>';
     }
     box.innerHTML = html + '</section>';
@@ -311,24 +311,24 @@
       {
         "section": "마음에 드는 사람이 생겼을 때",
         "t": "소개팅 전 시간·장소·비용까지 미리 정해 둬요",
-        "a": "소개팅이 잡히면 만날 시간과 장소를 먼저 정하고, 밥값을 어떻게 나눌지도 미리 생각해 두는 편이에요. 상대가 시간을 정하지 않고 미루면 몇 시, 어디가 좋을지 구체적인 후보를 먼저 보내 정리하는 쪽으로 기울기 쉬워요. 정해진 뒤에는 예약과 가는 길까지 확인해 두고, 당일에 바꾸는 일은 되도록 만들지 않아요. 애매한 상태로 두는 것보다 미리 분명히 해 두어야 마음이 놓이는 경향이 커서 그래요."
+        "a": "소개팅이 잡히면 만날 시간과 장소를 먼저 정하고, 밥값을 어떻게 나눌지도 미리 생각해 둬요. 상대가 시간을 정하지 않고 미루면 몇 시, 어디가 좋을지 구체적인 후보를 먼저 보내 정리해요. 정해진 뒤에는 예약과 가는 길까지 확인해 두고, 당일에 바꾸는 일은 되도록 만들지 않아요. 애매한 상태로 두는 것보다 미리 분명히 해 두어야 마음이 놓여서 그래요."
       },
       {
         "section": "연락과 애정표현",
         "t": "바쁜 날에도 한 줄이라도 보내서 약속한 연락 횟수를 채워요",
-        "a": "하루 몇 번 연락하기로 정했다면, 바쁜 날에도 짧게라도 그 횟수를 채우는 편이에요. 회의 사이나 이동 중에 한 줄이라도 보내서 약속한 수를 맞춰요. 정말 못 할 상황이면 미리 늦어진다고 알려 두는 쪽을 택해요. 정한 약속을 실제로 챙기는 힘이 강해서, 횟수를 어기는 것 자체가 마음에 걸리는 편이에요."
+        "a": "하루 몇 번 연락하기로 정했다면, 바쁜 날에도 짧게라도 그 횟수를 채워요. 회의 사이나 이동 중에 한 줄이라도 보내서 약속한 수를 맞춰요. 정말 못 할 상황이면 미리 늦어진다고 알려 둬요. 정한 약속을 실제로 챙기는 힘이 강해서, 횟수를 어기는 것 자체가 마음에 걸려요."
       },
       {
         "section": "싸웠을 때",
         "t": "같은 싸움이 반복되면 다음엔 어떻게 할지 약속을 정해요",
-        "a": "같은 문제로 다시 싸우게 되면, 앞으로는 어떻게 할지 둘만의 규칙을 정해 두는 편이에요. 무엇 때문에 또 부딪혔는지 짚은 다음, 다음에 같은 상황이 오면 각자 무엇을 할지까지 정하려 할 가능성이 커요. 정한 규칙은 흐지부지 두지 않고 실제로 지켜지는지 계속 챙기는 쪽으로 기울어요. 같은 일이 되풀이되는 걸 그냥 두기 어렵고, 익숙한 방식으로 안정되게 굴러가는 관계를 원하는 경향이 있어서예요."
+        "a": "같은 문제로 다시 싸우게 되면, 앞으로는 어떻게 할지 둘만의 규칙을 정해 둬요. 무엇 때문에 또 부딪혔는지 짚은 다음, 다음에 같은 상황이 오면 각자 무엇을 할지까지 정해요. 정한 규칙은 흐지부지 두지 않고 실제로 지켜지는지 계속 챙겨요. 같은 일이 되풀이되는 걸 그냥 두기 어렵고, 익숙한 방식으로 안정되게 굴러가는 관계를 원해서예요."
       }
     ]
   };
   function 예시(box) {
     var e = 예시자료;
     box.innerHTML = '<section class="card"><h3 class="doc-h">예시 — 지어낸 한 사람의 결과 일부</h3>'
-      + '<p class="hint" style="margin:0 0 12px">결제 전에는 내 결과를 보여 드리지 않아요. 대신 책사가 지어낸 한 사람의 생년월일로 실제로 만든 결과에서 몇 줄을 고치지 않고 옮겼어요. 결제하면 내 생년월일로 이런 글을 처음부터 끝까지 받아요.</p>'
+      + '<p class="hint" style="margin:0 0 12px">결제 전에는 내 결과를 보여 드리지 않아요. 대신 책사가 지어낸 한 사람의 생년월일로 실제로 만든 결과에서 몇 줄을 옮겼어요. 결제하면 내 생년월일로 이런 글을 처음부터 끝까지 받아요.</p>'
       + '<p style="margin:0 0 4px"><b>해독 결과 첫 줄</b></p><p class="lv-t" style="margin:0 0 12px">' + esc(e.title) + '</p>'
       + '<p style="margin:0 0 4px"><b>모습 하나 — ' + esc(e.trait.name) + '</b></p><p style="margin:0 0 4px">' + esc(e.trait.line) + '</p></section>'
       + e.items.map(function (it) { return '<section class="card"><p class="hint" style="margin:0 0 6px">예시 · ' + esc(it.section) + '</p><p class="lv-t">' + esc(it.t) + '</p><p style="margin:0">' + esc(it.a) + '</p></section>'; }).join('');
@@ -473,7 +473,7 @@
       + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준이에요. ' + 소개 + ' 카카오 계정 하나에 한 사람 한 번 만들 수 있어요.</p>'
       + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p><div id="lvErr"></div></section>'
       + '<div id="lvTop"></div>'
-      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날에서 계산한 행동 경향이라 틀릴 수 있어요.</p>'
+      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날의 글자로 계산한 연애할 때 내가 하는 말과 행동이에요.</p>'
       + '<div id="lvList"></div><div id="lvShare"></div><div id="lvEnd"></div>';   // lvShare = 결과 보내기(산 결과에만)
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps'), 막힘칸 = el.querySelector('#lvErr'), 공유칸 = el.querySelector('#lvShare');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';

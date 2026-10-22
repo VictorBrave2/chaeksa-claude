@@ -42,7 +42,7 @@
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=dd825b8342"></script>
-<script src="yaksok.js?v=df69508bd8"></script>
+<script src="yaksok.js?v=184d1edc3e"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=1350b96148"></script>
 <script src="taekil-read.js?v=b2175b5326"></script>
@@ -249,7 +249,7 @@
   }
   if (카카오 ? (!orderId || !pgToken) : 네이버 ? (!orderId || !네이버번호) : (!paymentKey || !orderId || !amount)) {
     // 결제창을 거치지 않고 이 주소를 직접 연 경우다.
-    fail('결제 정보가 없습니다. 결제 화면을 거치지 않고 열린 주소 같습니다.');
+    fail('결제 정보가 없습니다. 결제 화면을 거치지 않고 바로 열린 주소입니다.');
     return;
   }
 
