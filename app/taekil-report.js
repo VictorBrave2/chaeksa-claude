@@ -28,7 +28,7 @@
     const 칸 = (지) => {
       const c = 칸들.find((x) => x && x.지 === 지);
       if (!c) return '<div class="tkr-mb-c"></div>';
-      const 별 = (s) => '<span class="tkr-mb-s">' + esc(s.이름) + (s.밝기 ? '<i>' + esc(s.밝기) + '</i>' : '') + (s.화 ? '<b>' + esc(s.화) + '</b>' : '') + '</span>';
+      const 별 = (s) => '<span class="tkr-mb-s">' + esc(s.이름) + (s.화 ? '<b>' + esc(s.화) + '</b>' : '') + (s.밝기 ? '<i>' + esc(s.밝기) + '</i>' : '') + '</span>';   // 별마다 한 줄 · 밝기는 그 아래(10-22 폰에서 끊김)
       return '<div class="tkr-mb-c' + (c.나 ? ' tkr-mb-me' : '') + '"><div class="tkr-mb-h"><span>' + esc(c.궁) + (c.몸 ? ' · 신궁' : '') + '</span><em>' + esc(c.쉬운) + '</em><small>' + esc(c.지말) + '</small></div>'
         + '<div class="tkr-mb-m">' + ((c.주성 || []).length ? c.주성.map(별).join('') : '<span class="tkr-mb-e">중심 별 없음</span>') + '</div>'
         + ((c.보조 || []).length ? '<div class="tkr-mb-a">' + c.보조.map((s) => esc(s.이름) + (s.화 ? '<b>' + esc(s.화) + '</b>' : '')).join(' · ') + '</div>' : '')
