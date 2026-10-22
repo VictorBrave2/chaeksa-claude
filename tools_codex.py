@@ -8,7 +8,8 @@
   1) 이 저장소 옆에 작업 폴더(git worktree) ../chaeksa-codex-<작업 ID> 를 가지 codex/<작업 ID> 로 만든다(있으면 그대로 쓴다).
      — 본 폴더(main)를 Codex 가 직접 만지지 않게. 다른 손(사장님 Codex 앱 · 다른 세션)과 겹치지 않는다.
   2) 그 폴더에서 codex exec 를 부른다. 깃발은 10-22 시험으로 맞춘 것:
-       --ignore-user-config(사장님 설정의 모델 「gpt-6-astra」는 ChatGPT 로그인으로 안 돼서 기본 모델로) · --ignore-rules · --approve-for-me(쓰기는 작업 폴더 안만) · --skip-git-repo-check
+       --ignore-user-config(사장님 설정의 모델 「gpt-6-astra」는 ChatGPT 로그인으로 안 돼서 기본 모델로) · --ignore-rules ·
+       -s workspace-write + -c windows.sandbox="elevated"(사장님 설정에 있던 윈도우 보안 상자 — 이게 없으면 읽기 전용으로 떨어져 못 고친다, 10-23 시험) · --skip-git-repo-check
   3) Codex 가 끝나면 작업 폴더의 바뀐 파일 목록과 Codex 마지막 말(CODEX_REPORT.md)을 보여 준다. 커밋 · 합치기는 하지 않는다 —
      Claude Code 가 뜻 대조(원문 · 계산) · 시험(tools_check · tests_yaksok) 뒤 main 으로 가져온다.
 비밀값 없음. 이미지 생성 · 유료 API 없음(구독 사용량만 쓴다 — 한도가 있으니 큰 요청은 나눠서).
@@ -51,7 +52,7 @@ def main():
               + (' Extra instruction from the owner: ' + 더 if 더 else ''))
     last = os.path.join(wt, 'CODEX_LAST.txt')
     print('Codex 부름 — 끝날 때까지 몇 분 걸릴 수 있다 …')
-    r = subprocess.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '--approve-for-me', '-o', last, prompt],
+    r = subprocess.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'windows.sandbox="elevated"', '-o', last, prompt],
                        cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))
     print('Codex 끝(종료 코드 ' + str(r.returncode) + ')')
     if r.returncode != 0:
