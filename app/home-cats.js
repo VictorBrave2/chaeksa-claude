@@ -13,29 +13,30 @@
   // 원본은 지우지 않는다(09-30 사장님 「삽화 화질을 줄이지 않았으면」 — 작은 판이 칸 폭보다 작아지면 원본으로 넘어간다).
   // 사용설명서는 연애 칸 — 그 사람 한 명이 연애 단계마다 어떻게 할지라서(두 사람을 맞대는 궁합 칸이 아니다). 연애 두 상품이 첫 줄에 나란히 선다.
   var 칸 = {
+    // 10-23 사장님 「클릭하고 싶게 만드는 표지여야 한다」 · 「안 바뀌었는데」 — 빌려 쓰던 밤 컷 아홉 칸을 제 표지(IMG-0013~0026, 콘텐츠 첫 줄에서 꺼낸 밝은 그림)로
     love: [{ 키: 'love', 탭: 'love', 그림: 'art/love-cover.webp', 작은: 'art/love-cover-s.webp', 크기: [1086, 1448] },
-      { 키: 'pair', 탭: 'pair', 그림: 'art/story-friend-to-lover.webp', 작은: 'art/story-friend-to-lover-s.webp', 크기: [1024, 1536] }],
+      { 키: 'pair', 탭: 'pair', 그림: 'art/pair-cover.webp', 작은: 'art/pair-cover-s.webp', 크기: [1024, 1536] }],
     child: [{ 키: 'taekil', 탭: 'taekil', 그림: 'art/taekil-main.webp', 작은: 'art/taekil-main-s.webp', 크기: [1086, 1448] }],
     // 10-07 「결혼상대 점검」(gyeolhon.html, 사장님 10-07 확정 유료) — 궁합 칸 맨 앞. 그림은 소개 쪽 머리와 같은 상견례 컷(성별 없음)
     // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
     //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
-    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
+    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/gyeolhon-cover.webp', 작은: 'art/gyeolhon-cover-s.webp', 크기: [1024, 1536] },
       { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
-      { 키: 'saram', 주소: 'saram.html', 그림: 'art/jt-g-bigyeon-{g}.webp', 작은: 'art/jt-g-bigyeon-{g}-s.webp', 크기: [1024, 1536] },
+      { 키: 'saram', 주소: 'saram.html', 그림: 'art/saram-cover.webp', 작은: 'art/saram-cover-s.webp', 크기: [1024, 1536] },
       { 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] },
       // 10-06 「옛 책이 본 내 머리」(brain.html) — 사장님 「썸네일 달고 컨텐츠로 배포」. 그림은 편인 칸(혼천의를 짜 맞추는 사람 — 머리 자체)
-      { 키: 'brain', 주소: 'brain.html', 그림: 'art/jt-g-pyeonin-{g}.webp', 작은: 'art/jt-g-pyeonin-{g}-s.webp', 크기: [1024, 1536] },
+      { 키: 'brain', 주소: 'brain.html', 그림: 'art/brain-cover-{g}.webp', 작은: 'art/brain-cover-{g}-s.webp', 크기: [1024, 1536] },
       // 10-10 「나는 귀한 사람일까」(gwi.html, 작업판 귀-1) — 사장님 「귀 새 뜻으로 쓰고」. 그림은 정관 칸(맡은 자리와 책임 — 옛 책이 귀의 조건으로 본 글자)
-      { 키: 'gwi', 주소: 'gwi.html', 그림: 'art/jt-g-jeonggwan-{g}.webp', 작은: 'art/jt-g-jeonggwan-{g}-s.webp', 크기: [1024, 1536] },
+      { 키: 'gwi', 주소: 'gwi.html', 그림: 'art/gwi-cover-{g}.webp', 작은: 'art/gwi-cover-{g}-s.webp', 크기: [1024, 1536] },
       // 10-10 「내 명반에는 무엇이 적혀 있을까」(myeongban.html, 작업판 자미-1) — 사장님 「자미두수 명판을 두고 글자를 누르면 해석」. 그림은 편관 칸(화면에 둥근 판을 띄워 놓고 들여다보는 컷 — 명반을 짚어 읽는 꼴)
       // 10-11 「옛 책은 내 명식을 반겼을까」(gyeokgi.html, 작업판 34 옛책격) — 사장님 「명식을 넣으면 ~에 해당합니다 식으로」 → 「3으로 바로 가」. 그림은 식신 칸(아직 홈에서 안 쓴 그림)
-      { 키: 'gyeokgi', 주소: 'gyeokgi.html', 그림: 'art/jt-g-siksin-{g}.webp', 작은: 'art/jt-g-siksin-{g}-s.webp', 크기: [1024, 1536] },
-      { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/jt-g-pyeongwan-{g}.webp', 작은: 'art/jt-g-pyeongwan-{g}-s.webp', 크기: [1024, 1536] }],
+      { 키: 'gyeokgi', 주소: 'gyeokgi.html', 그림: 'art/gyeokgi-cover-{g}.webp', 작은: 'art/gyeokgi-cover-{g}-s.webp', 크기: [1024, 1536] },
+      { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/myeongban-cover-{g}.webp', 작은: 'art/myeongban-cover-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
-    time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
-    learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}.webp', 작은: 'art/jt-g-jeongin-{g}-s.webp', 크기: [1024, 1536] }],
+    time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
+    learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/read-cover.webp', 작은: 'art/read-cover-s.webp', 크기: [1024, 1536] }],
     // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류.
     // 10-23 제 그림(IMG-0006 · 0007 밤 갈림길 불 켜진 문들, 남녀 두 벌 — 소개 쪽 머리와 같은 그림). 전에는 정통사주 15장(일) 컷을 빌려 썼다.
     work: [{ 키: 'ilgyeol', 주소: 'ilgyeol.html', 그림: 'art/ilgyeol-{g}.webp', 작은: 'art/ilgyeol-{g}-s.webp', 크기: [1024, 1536] }],

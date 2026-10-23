@@ -78,15 +78,15 @@ ART = {
     'hongyeom': 'art/story-say-love.webp',
     'gwaegang': 'art/jt-08-power-f.webp',
     'baekho': 'art/jt-06-steady-f.webp',
-    'read': 'art/jt-g-jeongin-f.webp',
+    'read': 'art/read-cover.webp',
     'taekil-apply': 'art/taekil-main.webp',
-    'when': 'art/jt-19-return-f.webp',   # 10-06 「언제 나아지나」 카톡 미리보기 — 홈 칸과 같은 그림
-    'brain': 'art/jt-g-pyeonin-f.webp',  # 10-06 「옛 책이 본 내 머리」 — 홈 칸과 같은 그림
-    'saram': 'art/jt-g-bigyeon-f.webp',  # 10-12 「내 사람들」
-    'gyeokgi': 'art/jt-g-siksin-f.webp',  # 10-11 「옛 책은 내 명식을 반겼을까」
-    'gwi': 'art/jt-g-jeonggwan-f.webp',  # 10-10 「나는 귀한 사람일까」 — 홈 칸과 같은 그림(정관 칸)
-    'myeongban': 'art/jt-g-pyeongwan-f.webp',  # 10-10 「내 명반에는 무엇이 적혀 있을까」 — 홈 칸과 같은 그림(편관 칸)
-    'gyeolhon': 'art/story-sanggyeonrye.webp',  # 10-07 「결혼상대 점검」 — 홈 칸 · 소개 쪽 머리와 같은 상견례 컷
+    'when': 'art/when-cover-f.webp',   # 10-06 「언제 나아지나」 카톡 미리보기 — 홈 칸과 같은 그림
+    'brain': 'art/brain-cover-f.webp',  # 10-06 「옛 책이 본 내 머리」 — 홈 칸과 같은 그림
+    'saram': 'art/saram-cover.webp',  # 10-12 「내 사람들」
+    'gyeokgi': 'art/gyeokgi-cover-f.webp',  # 10-11 「옛 책은 내 명식을 반겼을까」
+    'gwi': 'art/gwi-cover-f.webp',  # 10-10 「나는 귀한 사람일까」 — 홈 칸과 같은 그림(정관 칸)
+    'myeongban': 'art/myeongban-cover-f.webp',  # 10-10 「내 명반에는 무엇이 적혀 있을까」 — 홈 칸과 같은 그림(편관 칸)
+    'gyeolhon': 'art/gyeolhon-cover.webp',  # 10-07 「결혼상대 점검」 — 홈 칸 · 소개 쪽 머리와 같은 상견례 컷
     'gyeolhon-apply': 'art/gyeolhon-apply.webp',  # 10-23 결혼상대 점검 신청 쪽(IMG-0005 신청 컷과 같은 그림) — 전에는 og.jpg(출산택일 카드)
     'ilgyeol': 'art/ilgyeol-f.webp',  # 10-23 「나는 뭐해 먹고 살까?」 소개(IMG-0006 머리 그림 · 홈 칸과 같은 그림) — 전에는 og.jpg
     'ilgyeol-apply': 'art/ilgyeol-f.webp',  # 10-23 진로 신청 쪽 — 소개 쪽과 같은 그림
