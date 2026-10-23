@@ -11,16 +11,18 @@
 | 투명 배경 | 아니요 |
 | 원본 올릴 곳 | image-requests/out/IMG-0002.png |
 | 최종 경로(책사 쪽이 바꿔 둠) | app/art/taekil-apply.webp · 작은 판 app/art/taekil-apply-s.webp |
-| 맞출 본보기 | app/art/jt-13-heart-f.webp(윗부분 인물 · 아래 40% 인디고 — 입력 컷 틀 그대로) · app/art/story-sanggyeonrye.webp(그림체) |
+| 맞출 본보기 | app/art/taekil-main.webp · app/art/ssom-main.webp(홈 표지 — 10-23 사장님 「일곱 장도 표지처럼 밝게」) — 밝은 대낮 · 파스텔 · 꽃 · 맑은 채색 |
 
 ## 프롬프트(전문 — 그대로 넣으세요)
 
 ```
-Korean webtoon style, semi-realistic anime illustration, cinematic, soft film grain.
-Vertical 2:3 (1024x1536). Palette: deep indigo and violet dusk, warm amber lamp light, small red camellia accent somewhere in frame. Seoul setting, subtle city bokeh through the window.
-MOM: Korean woman, early 30s, long dark brown hair loosely tied, visibly pregnant (about eight months), cream knit cardigan, calm thoughtful face.
-Scene: MOM alone at a desk at night. In one hand a folded hospital appointment slip (a plain blank paper, nothing written on it), in the other her phone; she is deciding which days to type in. Desk lamp, a small maternity notebook closed, one red camellia in a small vase, window with Seoul night lights.
-Composition: MOM in the upper half of the frame; the bottom 40% fades into dark indigo with no objects and no faces (speech-bubble area).
+Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
+No film grain, no night scene, no dark indigo, no heavy shadows.
+Vertical 2:3 (1024x1536). Bright late morning at a desk by a sunny window with sheer white curtains, soft blue sky outside, cream and lilac room, a small vase of pink flowers and one red camellia.
+MOM: Korean woman, early 30s, long dark brown hair loosely tied, visibly pregnant (about eight months), cream knit cardigan over a soft pink dress, calm cheerful face.
+Scene: MOM alone at the desk. In one hand a folded hospital appointment slip (a plain blank paper, nothing written on it), in the other her phone; she is deciding which days to type in. A closed maternity notebook on the desk.
+Composition: MOM in the upper half of the frame; the bottom 40% fades into a plain, soft pale cream-to-lilac gradient with no objects and no faces (speech-bubble area).
+Phone screen is soft light only, nothing written on it.
 No text, no letters, no logos, no watermark. Original characters, not based on any real person.
 ```
 
@@ -33,3 +35,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 2순위.
+- 2026-10-23 다시 — 사장님 「일곱 장도 표지처럼 밝게 다시 그려」. 밤 · 새벽 프롬프트를 홈 표지(taekil-main · ssom-main) 화풍으로 바꿔 씀(장면은 그대로, 빛 · 색만). 첫 판 PNG 는 out/old/ 에.

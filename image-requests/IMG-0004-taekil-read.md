@@ -11,16 +11,17 @@
 | 투명 배경 | 아니요 |
 | 원본 올릴 곳 | image-requests/out/IMG-0004.png |
 | 최종 경로(책사 쪽이 바꿔 둠) | app/art/taekil-read.webp · 작은 판 app/art/taekil-read-s.webp |
-| 맞출 본보기 | IMG-0001 과 같은 두 사람 · app/art/story-sanggyeonrye.webp(그림체) |
+| 맞출 본보기 | app/art/taekil-main.webp · app/art/ssom-main.webp(홈 표지 — 10-23 사장님 「일곱 장도 표지처럼 밝게」) — 밝은 대낮 · 파스텔 · 꽃 · 맑은 채색 |
 
 ## 프롬프트(전문 — 그대로 넣으세요)
 
 ```
-Korean webtoon style, semi-realistic anime illustration, cinematic, soft film grain.
-Vertical 2:3 (1024x1536). Palette: pre-dawn indigo sky outside a tall window with the first gold light on the horizon, warm amber light inside, small red camellia accent somewhere in frame. Seoul skyline far behind, subtle bokeh.
+Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
+No film grain, no night scene, no dark indigo, no heavy shadows.
+Vertical 2:3 (1024x1536). Bright morning in a clean white hospital room, tall window with sheer curtains, soft blue sky with peach clouds, sunlight on white sheets, a small vase of pink flowers and one red camellia on the windowsill.
 MOM: Korean woman, early 30s, long dark brown hair loosely tied, soft tired happy face, cream hospital gown with a knit cardigan over it.
-DAD: Korean man, early 30s, short dark hair, gentle eyes, dark navy knit.
-Scene: MOM sitting up in a clean bright bed by the window at first light, holding a sleeping newborn wrapped in a cream blanket; DAD beside her leaning in to look at the baby. A red camellia in a small vase on the windowsill. The room is quiet and simple — no machines, no screens, no charts.
+DAD: Korean man, early 30s, short dark hair, gentle eyes, light blue knit.
+Scene: MOM sitting up in bed by the window holding a sleeping newborn wrapped in a cream blanket; DAD beside her leaning in to look at the baby. The room is quiet and simple: no machines, no screens, no charts.
 Composition: both faces and the baby inside the upper 60% of the frame. Whole frame painted, no empty area.
 No text, no letters, no logos, no watermark. Original characters, not based on any real person.
 ```
@@ -34,3 +35,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 4순위.
+- 2026-10-23 다시 — 사장님 「일곱 장도 표지처럼 밝게 다시 그려」. 밤 · 새벽 프롬프트를 홈 표지(taekil-main · ssom-main) 화풍으로 바꿔 씀(장면은 그대로, 빛 · 색만). 첫 판 PNG 는 out/old/ 에.

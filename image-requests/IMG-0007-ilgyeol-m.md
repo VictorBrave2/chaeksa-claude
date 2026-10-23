@@ -11,15 +11,16 @@
 | 투명 배경 | 아니요 |
 | 원본 올릴 곳 | image-requests/out/IMG-0007.png |
 | 최종 경로(책사 쪽이 바꿔 둠) | app/art/ilgyeol-m.webp · 작은 판 app/art/ilgyeol-m-s.webp |
-| 맞출 본보기 | app/art/jt-15-work-m.webp(같은 남자 ME-M) · IMG-0006(같은 장소) |
+| 맞출 본보기 | app/art/taekil-main.webp · app/art/ssom-main.webp(홈 표지 — 10-23 사장님 「일곱 장도 표지처럼 밝게」) — 밝은 대낮 · 파스텔 · 꽃 · 맑은 채색 |
 
 ## 프롬프트(전문 — 그대로 넣으세요)
 
 ```
-Korean webtoon style, semi-realistic anime illustration, cinematic, soft film grain.
-Vertical 2:3 (1024x1536). Palette: deep indigo and violet dusk, warm amber lamp light, small red camellia accent somewhere in frame. Seoul setting, subtle city bokeh.
-ME-M: Korean man, late 20s, short dark hair, calm thoughtful eyes, plain dark knit, dark coat.
-Scene: ME-M standing alone at a quiet Seoul crossroads at night, several lit doorways around him, each glowing a different warm color — a bakery window, a glass office lobby, a small art studio, a shop with hanging paper lanterns. None of them has a sign. He holds his phone loosely at his side and looks up, deciding which way to go. A red camellia bush beside a lamp post.
+Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
+No film grain, no night scene, no dark indigo, no heavy shadows.
+Vertical 2:3 (1024x1536). Bright sunny afternoon on a quiet tree-lined Seoul street, blossoming trees with pink and white petals drifting, soft blue sky, pastel shopfronts.
+ME-M: Korean man, late 20s, short dark hair, calm thoughtful eyes, white shirt, light blue cardigan, light trousers.
+Scene: ME-M standing alone at a small crossroads, several open doorways around him, each a different warm pastel color: a bakery window with a pink awning, a glass office lobby, a small art studio with a yellow door, a shop with hanging paper lanterns. None of them has a sign. He holds his phone loosely at his side and looks up, deciding which way to go. A red camellia bush beside a lamp post.
 Composition: ME-M and the nearest doorways inside the upper 60% of the frame (the site crops a square from the top for thumbnails). Whole frame painted, no empty area.
 No text, no letters, no logos, no watermark. Original characters, not based on any real person.
 ```
@@ -33,3 +34,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 7순위.
+- 2026-10-23 다시 — 사장님 「일곱 장도 표지처럼 밝게 다시 그려」. 밤 · 새벽 프롬프트를 홈 표지(taekil-main · ssom-main) 화풍으로 바꿔 씀(장면은 그대로, 빛 · 색만). 첫 판 PNG 는 out/old/ 에.

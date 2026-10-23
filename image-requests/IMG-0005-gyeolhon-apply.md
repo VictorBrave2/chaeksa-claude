@@ -11,18 +11,19 @@
 | 투명 배경 | 아니요 |
 | 원본 올릴 곳 | image-requests/out/IMG-0005.png |
 | 최종 경로(책사 쪽이 바꿔 둠) | app/art/gyeolhon-apply.webp · 작은 판 app/art/gyeolhon-apply-s.webp |
-| 맞출 본보기 | app/art/story-sanggyeonrye.webp(같은 두 사람 — 상견례 컷의 남녀) · app/art/ss-give.webp(윗부분 인물 · 아래 40% 인디고) |
+| 맞출 본보기 | app/art/taekil-main.webp · app/art/ssom-main.webp(홈 표지 — 10-23 사장님 「일곱 장도 표지처럼 밝게」) — 밝은 대낮 · 파스텔 · 꽃 · 맑은 채색 |
 
 ## 프롬프트(전문 — 그대로 넣으세요)
 
 ```
-Korean webtoon style, semi-realistic anime illustration, cinematic, soft film grain.
-Vertical 2:3 (1024x1536). Palette: deep indigo and violet dusk, warm amber lamp light, small red camellia accent somewhere in frame. Seoul setting, subtle city bokeh.
-HIM: Korean man, early 30s, short dark tousled hair, calm gentle eyes, white shirt, dark coat on the chair.
-HER: Korean woman, late 20s, dark brown hair in a loose bun, bright expressive face, cream knit, red scarf hanging on her chair.
-Scene: HIM and HER sitting side by side at a small cafe table at night. HER types on her phone; HIM holds his own phone up a little, as if reading a date out loud to her; she glances at him with a small smile. Two cups, a red camellia in a glass, window with Seoul night lights.
-Composition: both in the upper half of the frame; the bottom 40% fades into dark indigo with no objects and no faces (speech-bubble area).
-Phone screens are soft light only — nothing written on them.
+Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
+No film grain, no night scene, no dark indigo, no heavy shadows.
+Vertical 2:3 (1024x1536). Bright afternoon at a sunny cafe terrace, cherry blossom branches and pink petals drifting, soft blue sky, white table, two pastel cups, one red camellia in a glass.
+HIM: Korean man, early 30s, short dark tousled hair, calm gentle eyes, white shirt, light blue cardigan.
+HER: Korean woman, late 20s, dark brown hair in a loose bun, bright expressive face, blush pink blouse, lilac scarf on her chair.
+Scene: HIM and HER sitting side by side at the small cafe table. HER types on her phone; HIM holds his own phone up a little, as if reading a date out loud to her; she glances at him with a small smile.
+Composition: both in the upper half of the frame; the bottom 40% fades into a plain, soft pale cream-to-lilac gradient with no objects and no faces (speech-bubble area).
+Phone screens are soft light only, nothing written on them.
 No text, no letters, no logos, no watermark. Original characters, not based on any real person.
 ```
 
@@ -36,3 +37,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 5순위(결혼상대 점검 = 둘째 유료).
+- 2026-10-23 다시 — 사장님 「일곱 장도 표지처럼 밝게 다시 그려」. 밤 · 새벽 프롬프트를 홈 표지(taekil-main · ssom-main) 화풍으로 바꿔 씀(장면은 그대로, 빛 · 색만). 첫 판 PNG 는 out/old/ 에.
