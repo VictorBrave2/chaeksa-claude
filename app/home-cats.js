@@ -19,7 +19,7 @@
     // 10-07 「결혼상대 점검」(gyeolhon.html, 사장님 10-07 확정 유료) — 궁합 칸 맨 앞. 그림은 소개 쪽 머리와 같은 상견례 컷(성별 없음)
     // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
     //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
-    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '이 사람과 함께 살아도 되는지, 결혼식을 피할 해까지', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
+    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/story-sanggyeonrye.webp', 작은: 'art/story-sanggyeonrye-s.webp', 크기: [1024, 1536] },
       { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
@@ -111,7 +111,7 @@
     조각.sort(function (x, y) { return (순위(x.c.키) - 순위(y.c.키)) || (x.n - y.n); });   // 유료 다섯 먼저, 나머지는 있던 차례(n)
     조각.forEach(function (z) { 그림들 += 그림칸(z.b, z.c, z.i, 차례++, g, Y); });
     el.innerHTML = '<div class="cats">' + 그림들 + '</div>'
-      + (물음들 ? '<p class="cats-h">이런 물음은 여기서 바로 답해요</p><div class="cats-q">' + 물음들 + '</div>' : '')
+      + (물음들 ? '<p class="cats-h">궁금한 물음을 누르면 답으로 바로 가요</p><div class="cats-q">' + 물음들 + '</div>' : '')
       // 10-04 전략 — 빈 선반(「곧 열려요 · …」)은 보이지 않는다. 손님 수가 적을 때 고를 것이 많으면 아무것도 안 고른다(곧 목록은 그리지 않고 버린다).
       + '';
     if (Y) Y.값채우기(el);

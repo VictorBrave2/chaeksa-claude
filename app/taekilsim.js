@@ -58,7 +58,7 @@
     const 칩 = r.본.눈들.map(n => '<span class="tk-eye' + (n.걸림 ? ' tk-hit' : '') + (n.보조 ? ' tk-aux' : '') + '"><em>' + esc(n.고전) + (n.보조 ? ' · 참고' : '') + '</em>' + esc(n.한줄) + '</span>').join('');
     const 속 = r.본.눈들.map(n => '<div class="tk-why"><b>' + esc(n.고전) + (n.보조 ? ' · 참고' : '') + '</b><span>' + esc(n.묻는것) + '</span>' + n.풀이.map(p => '<p>' + esc(p) + '</p>').join('') + '</div>').join('');
     return '<details class="tk-row' + (r.본.없음 ? ' tk-clean' : '') + '">'
-      + '<summary><div class="tk-sum"><b>' + esc(r.시진) + '</b><span>' + esc(r.창) + '</span><i>' + esc(r.일주) + '일 ' + esc(r.시주) + '시' + (r.밤끝 ? ' · 다음 날 일주' : '') + '</i></div>'
+      + '<summary><div class="tk-sum"><b>' + esc(r.시진) + '</b><span>' + esc(r.창) + '</span><i>' + esc(r.일주) + '일 ' + esc(r.시주) + '시' + (r.밤끝 ? ' · 다음 날의 사주 글자(일주)' : '') + '</i></div>'
       + (r.본.으뜸 ? '<div class="tk-badge tk-top">' + esc(W.출산택일.으뜸말) + '</div>' : '')
       + (r.본.없음 ? '<div class="tk-badge">' + esc(W.출산택일.없음말) + '</div>' : '')
       + '<div class="tk-eyes">' + 칩 + '</div></summary>' + 속 + '</details>';
@@ -78,7 +78,7 @@
     if (!r) return '<div class="tk-vs tk-vs-go">' + 신청 + '</div>';
     return '<div class="tk-vs">'
       + '<p class="tk-vs-h">시뮬레이터와 보고서는 이렇게 달라요</p>'
-      + '<div class="tk-vs-row"><b>이 시뮬레이터 · 무료</b><p>날짜 하루를 골라 그날 열두 시각을 직접 봐요. 가족 생년월일과 병원 시간은 넣지 않고, 대운(10년마다 바뀌는 운)도 보지 않아요.</p></div>'
+      + '<div class="tk-vs-row"><b>이 시뮬레이터 · 무료</b><p>날짜 하루를 골라 그날 열두 시각을 비교해요. 가족 생년월일과 병원 시간은 넣지 않아요. 10년마다 바뀌는 운(대운)도 보지 않아요.</p></div>'
       + '<div class="tk-vs-row"><b>' + esc(r.상품이름) + (r.코드 ? Y.값자리(r.코드, ' · ', '', 'won') : '') + '</b><ul>'
       + Y.받는것목록('taekil').map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></div>'
       + '<div class="tk-vs-go">' + (r.견본 ? '<a class="btn ghost small" href="' + esc(r.견본) + '?from=sim">견본 보기</a>' : '') + 신청 + '</div>'
@@ -95,17 +95,17 @@
     let 성별 = opts.gender || 'M', 곳값 = opts.place || 'KR:서울', 거르기 = false;
     box.innerHTML = '<section class="card tk" data-plain="1">'
       + '<h2>이 시각에 낳으면 — 세 고전이 보는 것</h2>'
-      + '<p class="hint" style="margin:0 0 12px">날짜를 고르면 그날 열두 시진을 시계 시각으로 나눠, 시진마다 세 고전이 각자 본 것을 적어 드려요. 회원가입 없이 무료예요.</p>'
+      + '<p class="hint" style="margin:0 0 12px">날짜를 고르면 그날 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
       + '<div class="tk-form"><label>날짜<input type="date" id="tkDate" value="' + esc(날) + '"></label>'
       + '<label>성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
       + '<label>태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
-      + '<div class="tk-nav"><button type="button" class="btn ghost small" id="tkPrev">← 앞날</button><b id="tkHead"></b><button type="button" class="btn ghost small" id="tkNext">뒷날 →</button></div>'
-      + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 궁통보감 · 자평진전 두 책 모두 문제 삼지 않는 시각만 보기</label>'
+      + '<div class="tk-nav"><button type="button" class="btn ghost small" id="tkPrev">← 이전 날</button><b id="tkHead"></b><button type="button" class="btn ghost small" id="tkNext">다음 날 →</button></div>'
+      + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 두 책 모두 문제 삼지 않는 시각만 보기(궁통보감 · 자평진전)</label>'
       + '<p class="tk-note" id="tkTop"></p><div id="tkList"></div>'
-      + '<div class="tk-send"><button type="button" class="btn ghost small" id="tkSend">이 날 가족에게 보내기</button><p class="tk-note" id="tkSendSay">' + esc(보내기안내) + '</p></div>'
+      + '<div class="tk-send"><button type="button" class="btn ghost small" id="tkSend">이날 가족에게 보내기</button><p class="tk-note" id="tkSendSay">' + esc(보내기안내) + '</p></div>'
       + '<p class="tk-note">' + esc(W.출산택일.꼬리) + '</p>'
       + 다리(!!(box.closest && box.closest('[data-tk-pane]')))
-      + '<p class="tk-note">출산 날짜와 시각은 산모와 아기의 안전, 담당 선생님의 판단이 먼저예요. 택일은 그 범위 안에서 고르는 참고자료입니다.</p>'
+      + '<p class="tk-note">출산 날짜와 시각은 산모와 아이의 안전, 담당 의사의 판단이 먼저예요. 안전한 범위 안에서 날짜를 고를 때 택일을 참고하세요.</p>'
       + '</section>';
     const q = (id) => box.querySelector('#' + id);
     q('tkG').value = 성별; q('tkPlace').value = 곳값;
@@ -113,12 +113,12 @@
     function 그리기() {
       const [y, m, d] = 날.split('-').map(Number);
       if (!y || !m || !d) return;
-      let r; try { r = 하루(y, m, d, 성별, 곳값); } catch (e) { q('tkList').innerHTML = '<p class="tk-note">이 날짜는 계산하지 못했어요.</p>'; return; }
+      let r; try { r = 하루(y, m, d, 성별, 곳값); } catch (e) { q('tkList').innerHTML = '<p class="tk-note">이 날짜는 계산하지 못했어요. 날짜를 확인해 주세요.</p>'; return; }
       const 첫 = r.rows[Math.floor(r.rows.length / 2)];
       q('tkHead').textContent = m + '월 ' + d + '일 · ' + (첫 ? 첫.일주 + '일' : '');
       const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length, 으뜸수 = r.rows.filter(x => x.본 && x.본.으뜸 && !x.밤끝).length;
       q('tkTop').textContent = W.출산택일.머리 + ' ' + r.곳 + ' 기준 시계 시각이에요(이날은 시계가 해보다 ' + Math.abs(r.밀림) + '분 ' + (r.밀림 >= 0 ? '빨라요' : '늦어요') + '). '
-        + (깨끗 ? '이날은 궁통보감 · 자평진전 두 책 모두 문제 삼지 않는 시각이 ' + 깨끗 + '개 있어요.' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '개는 궁통보감이 찾는 글자가 다 뜬 으뜸 시각이에요.' : '') : '이날은 궁통보감 · 자평진전 두 책 모두 문제 삼지 않는 시각이 없어요. 앞뒤 날도 보세요.');
+        + (깨끗 ? '이날 두 책 모두 문제 삼지 않는 시각은 ' + 깨끗 + '개예요(궁통보감 · 자평진전).' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '개는 필요한 글자가 모두 드러난 으뜸 시각이에요(궁통보감).' : '') : '이날은 두 책 모두 문제 삼지 않는 시각이 없어요(궁통보감 · 자평진전). 앞뒤 날도 보세요.');
       const 보일 = 거르기 ? r.rows.filter(x => x.본 && x.본.없음) : r.rows;
       q('tkList').innerHTML = 보일.length ? 보일.map(줄).join('') : '<p class="tk-note">이날은 해당하는 시각이 없어요.</p>';
     }
@@ -136,8 +136,8 @@
       try { global.ChaeksaTrack && global.ChaeksaTrack.event && global.ChaeksaTrack.event('share-tk'); } catch (e) {}
       let r = '';
       try {
-        r = await 링크보내기({ title: m + '월 ' + d + '일에 낳으면 — 시각마다 세 고전이 보는 것', text: '이 날 열두 시각을 궁통보감 · 자평진전 · 적천수가 각각 어떻게 보는지 같이 봐 주세요 · 책사',
-          image: 'https://chaeksa.kr/art/kakao/taekil-main.jpg', url, button: '이 날 시각 보기' });
+        r = await 링크보내기({ title: m + '월 ' + d + '일에 낳으면 — 시각마다 세 고전이 보는 것', text: '이날 열두 시각에 대한 옛 책 세 권의 판단을 같이 봐 주세요(궁통보감 · 자평진전 · 적천수) · 책사',
+          image: 'https://chaeksa.kr/art/kakao/taekil-main.jpg', url, button: '이날 시각 보기' });
       } catch (e) { r = ''; }
       b.disabled = false;
       say.textContent = r === 'copied' ? '주소를 복사했어요 — 카톡 대화창에 붙여 넣어 보내 주세요. ' + 보내기안내
@@ -149,7 +149,7 @@
   // 「이 날 가족에게 보내기」(10-02 개편 2묶음 「공유 카드 넓히기」) — 가족이 같은 날짜 화면을 연다. 주소에는 날짜와 꼬리표(from=share-tk)만 싣는다.
   // 성별 · 태어날 곳 · 부모 생년월일은 싣지 않는다(받는 쪽에서 다시 고른다). 보내는 길은 share.js shareLink(카카오 링크 → 폰 공유 창 → 주소 복사),
   // share.js 가 없는 화면(시험 페이지)에서는 폰 공유 창 → 주소 복사만.
-  const 보내기안내 = '주소에는 고른 날짜만 실려요. 성별 · 태어날 곳은 받는 쪽에서 다시 고르면 돼요.';
+  const 보내기안내 = '주소에는 고른 날짜만 담겨요. 주소를 받은 분은 아이 성별과 태어날 곳을 다시 골라 주세요.';
   const 보낼주소 = (날) => 'https://chaeksa.kr/taekil-sim.html?d=' + encodeURIComponent(날) + '&from=share-tk';
   async function 링크보내기(o) {
     const SH = global.ChaeksaShare;

@@ -50,7 +50,7 @@
       case 'read': return '<div class="tkr-read' + (n.못읽음 ? ' bad' : '') + '"><span class="tkr-read-k">' + esc(n.이름) + '</span><span class="tkr-read-v">' + esc(n.말) + '</span></div>';
       case 'card': {
         const i = Number(n.i), c = Number.isInteger(i) && rep && Array.isArray(rep.cards) ? rep.cards[i] : null;
-        return '<div class="tkr-cardslot" data-card="' + (Number.isInteger(i) ? i : -1) + '"><p class="tkr-cardwait">명식 카드 — ' + esc(c ? c.label : '') + '</p></div>';
+        return '<div class="tkr-cardslot" data-card="' + (Number.isInteger(i) ? i : -1) + '"><p class="tkr-cardwait">사주 여덟 글자 카드(명식) — ' + esc(c ? c.label : '') + '</p></div>';
       }
       case 'han': return '<figure class="tkr-han"><figcaption>' + esc(n.고전) + ' · ' + esc(n.꼴) + '</figcaption>'
         + '<p class="tkr-han-t" lang="zh-Hant">' + esc(n.글) + '</p><p class="tkr-han-m">' + esc(n.뜻) + '</p></figure>';
@@ -81,7 +81,7 @@
         out += 노드(n, rep);
         const 묶음 = [];
         while (i + 1 < xs.length && xs[i + 1] && xs[i + 1].part === '대운') 묶음.push(xs[++i]);
-        if (묶음.length) out += '<details class="tkr-fold"><summary>대운 목록 펼쳐 보기</summary>' + 묶음.map((m) => 노드(m, rep)).join('') + '</details>';
+        if (묶음.length) out += '<details class="tkr-fold"><summary>운의 변화(대운) 펼쳐 보기</summary>' + 묶음.map((m) => 노드(m, rep)).join('') + '</details>';
         continue;
       }
       out += 노드(n, rep);
@@ -123,7 +123,7 @@
       const c = (rep && Array.isArray(rep.cards) ? rep.cards : [])[Number(el.dataset.card)];
       let h = null;
       if (실림 && MC && c) { try { h = MC.html({ slot: c.slot, label: c.label, place: rep.card && rep.card.place, g: rep.card && rep.card.g, pre: 'msc-' }); } catch (e) { h = null; } }
-      if (h) { el.innerHTML = h; n++; } else el.innerHTML = '<p class="tkr-cardwait">명식 카드를 그리지 못했어요' + (c ? ' — ' + esc(c.label) : '') + '. 새로고침하면 다시 그려요.</p>';
+      if (h) { el.innerHTML = h; n++; } else el.innerHTML = '<p class="tkr-cardwait">사주 여덟 글자 카드(명식)를 불러오지 못했어요' + (c ? ' — ' + esc(c.label) : '') + '. 새로고침해 주세요.</p>';
     });
     return n;
   }
@@ -141,7 +141,7 @@
         (n.칸 || []).forEach((c) => 줄.push('· ' + c.궁 + (c.쉬운 ? '(' + c.쉬운 + ')' : '') + ' — ' + ((c.주성 || []).map((s) => s.이름 + (s.밝기 ? ' ' + s.밝기 : '') + (s.화 ? ' ' + s.화 : '')).join(' · ') || '중심 별 없음')
           + ((c.보조 || []).length ? ' / ' + c.보조.map((s) => s.이름 + (s.화 ? ' ' + s.화 : '')).join(' · ') : '') + (c.대한 ? ' · ' + c.대한 : ''))); }
       else if (n.k === 'read') 줄.push('· ' + n.이름 + ' — ' + n.말);
-      else if (n.k === 'card') { const c = (rep.cards || [])[Number(n.i)]; 줄.push('(명식 카드' + (c ? ' — ' + c.label : '') + ')'); }
+      else if (n.k === 'card') { const c = (rep.cards || [])[Number(n.i)]; 줄.push('(사주 여덟 글자 카드(명식)' + (c ? ' — ' + c.label : '') + ')'); }
       else if (n.k === 'han') { 줄.push(n.고전 + ' ' + n.꼴 + ' — ' + n.글); 줄.push('  ' + n.뜻); }
       else if (n.k === 'pillars') { 줄.push(String(n.한자 || '')); 줄.push(String(n.읽기 || '')); (n.글자 || []).forEach((x) => 줄.push('· ' + (x && x.말))); }
       else if (n.k === 'fold') { 줄.push(String(n.head || '')); (n.body || []).forEach(노드글); }
@@ -175,7 +175,7 @@
       if (n.k === 'card') {
         const i = Number(n.i), c = (Array.isArray(rep.cards) ? rep.cards : [])[i]; if (!c) return '';
         const 주소 = typeof 그림 === 'function' ? 그림(i, c) : null;
-        return 주소 ? '<p class="card-img"><img src="' + esc(주소) + '" alt="' + esc(c.label) + ' 명식" style="max-width:100%;height:auto"></p>'
+        return 주소 ? '<p class="card-img"><img src="' + esc(주소) + '" alt="' + esc(c.label) + ' 사주 여덟 글자(명식)" style="max-width:100%;height:auto"></p>'
           : '<p class="blog-pic">[그림 ' + (i + 1) + ' — ' + esc(c.label) + ' · ' + 번(i) + '.png 를 여기에]</p>';
       }
       return '';   // read · pillars · 모르는 노드는 싣지 않는다

@@ -136,7 +136,7 @@
         </button>
         <button class="btn-ghost" data-id="${p.id}" data-a="edit" aria-label="수정">고치기</button>
         <button class="btn-ghost pr-del" data-id="${p.id}" data-a="del" aria-label="지우기">지우기</button>
-      </div>`).join('') || '<p class="hint">아직 등록된 사람이 없습니다.</p>';
+      </div>`).join('') || '<p class="hint">아직 저장한 사람이 없어요. 「사람 추가하기」를 눌러 주세요.</p>';
     // 09-25 사장님 「프로필 선택에 고치기도 좋지만 삭제도 필요함」 — 줄마다 지우기. 10-04 마지막 한 사람도 지운다(첫 화면으로).
     $('peopleList').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.a === 'pick') { P.setActive(b.dataset.id); $('peopleSheet').classList.add('hide'); start(P.toProfile(P.active())); }
@@ -174,7 +174,7 @@
     const 필요 = !머리 ? '' : 누구 === 'me' ? 머리.필요 : /^그 사람/.test(머리.필요 || '') ? 머리.필요 : '그 사람 생년월일시';
     openPersonForm(null, {
       누구, 길: !!길, 이름: 머리 && 머리.이름, 필요, 표지: 누구 === 'me' && window.ChaeksaHomeCats && ChaeksaHomeCats.표지 ? ChaeksaHomeCats.표지(tab) : null,
-      말: 누구 === 'me' ? '내 생년월일시를 넣어 주세요. 이건 내 것으로 만들어요.' : '그 사람은 언제 태어났어요? 그 사람 생년월일시 하나면 돼요.',
+      말: 누구 === 'me' ? '당신의 생년월일시를 넣어 주세요. 당신의 사주로 결과를 만들어요.' : '그 사람의 생년월일시를 넣어 주세요.',
       // 저장 단추 — 장부 입력단추(사용설명서 「저장하고 사용설명서 보기」 · 연애 「저장하고 예시 보기」). 「다음 — 그 사람 …」은 이 칸에 맞지 않아 「저장하고 보기」.
       단추: (길 && 말 && !/^다음/.test(말)) ? 말 : '저장하고 보기',
     });
@@ -352,7 +352,7 @@
       note.innerHTML = `사주는 시계가 아니라 해를 기준으로 봐요. ${p.name}에서는 해 시각이 시계보다 <b>${Math.abs(diff)}분 ${diff < 0 ? '늦어요' : '빨라요'}</b>. 그래서 1시 · 3시 · 5시처럼 홀수 시 정각 가까이 태어났다면 사주가 달라질 수 있어요.`;
     } else {
       note.classList.remove('hide');
-      note.innerHTML = `${p.name} 시계(UTC${p.tzOffset >= 0 ? '+' : ''}${p.tzOffset})로 계산해요. <b>태어난 때 서머타임 중이었다면</b> 태어난 시각에서 1시간을 빼고 넣어 주세요.`;
+      note.innerHTML = `${p.name} 시계(UTC${p.tzOffset >= 0 ? '+' : ''}${p.tzOffset})로 계산해요. <b>태어났을 때 시계를 한 시간 앞당기는 기간(서머타임)이었다면</b> 태어난 시각에서 1시간을 빼고 넣어 주세요.`;
     }
   }
 
@@ -792,8 +792,8 @@
     if (!T || !T.drawLifeCurve || !R || !R.daeun || !R.daeun.list || !R.daeun.list.length) { box.classList.add('hide'); return null; }
     const lc = T.lifeCurve(R, today);
     box.innerHTML = '<h2>인생 곡선</h2>'
-      + '<p class="hint" style="margin:0 0 4px">열 해마다 바뀌는 대운 아홉 칸을 곡선으로 그렸어요. 대운이 내 사주에 필요한 것을 가져오는지로 점수를 매겼어요.</p>'
-      + (profile && profile.genderUnknown ? '<p class="hint" style="margin:6px 0 0">성별을 모른다고 하셔서 남성 기준으로 그렸어요. 대운은 성별에 따라 도는 방향이 달라요.</p>' : '')
+      + '<p class="hint" style="margin:0 0 4px">열 해마다 바뀌는 운의 흐름(대운) 아홉 칸을 곡선으로 그렸어요. 당신의 사주에 필요한 기운이 오는지를 점수로 매겼어요.</p>'
+      + (profile && profile.genderUnknown ? '<p class="hint" style="margin:6px 0 0">성별을 모름으로 입력해 남성 기준으로 그렸어요. 운의 흐름(대운)은 성별에 따라 진행 방향이 달라요.</p>' : '')
       + '<div class="cardwrap"><div class="cardflip"><div class="cardsvg" id="lcSvg">' + T.drawLifeCurve(이름값(), lc) + '</div></div>'
       + '<button class="btn small" id="btnLcShare" style="margin-top:12px">이 그림 저장 · 보내기</button><p class="hint" id="lcShareSay" style="margin:8px 0 0;text-align:center"></p></div>'
       + '<p class="hint" style="margin-top:10px;text-align:center">' + esc(lc.kind + '형 · 가장 높은 구간 ' + lc.peakTxt) + ' · 같은 사주는 언제나 같은 곡선이에요</p>';
@@ -923,7 +923,7 @@
       const 동의 = document.querySelector('input[data-pay-agree="' + bb.id + '"]');
       if (C && C.signedIn() && C.uploadHold && C.uploadHold() && 동의 && 동의.checked && !bb.dataset.busy) {
         const em = C.email();
-        if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 결제한 것은 이 계정에서 열려요.')) return null;
+        if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n다른 곳에서 시작한 로그인이라 계정을 확인해요. 결제한 콘텐츠는 이 계정에서 열려요.')) return null;
       }
     } catch (e) {}
     return ChaeksaPay.누르면(bb, code, 열쇠, 결제로그인);
@@ -978,11 +978,11 @@
       add.textContent = 단추; add.classList.remove('ghost', 'hide'); add.onclick = 누르면; 비우기();
     };
     // 내 원국이 없으면 두 분을 놓을 수 없다. (원국이 없으면 아래 탭이 안 보이지만, 주소로 들어오는 길을 막아 둔다.)
-    if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요. 내 원국이 있어야 두 분을 나란히 놓아요.', '내 생년월일 넣기', () => go('home')); return; }
+    if (!profile || !R) { 안내('당신의 생년월일이 아직 없어요. 두 사람의 사주를 비교하려면 당신의 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
     if (P && !GC && 꾸러미받는중('chongnon')) return;   // 10-02 정통궁합 파일(탭별 꾸러미)이 아직 오는 중 — 다 오면 go() 가 다시 그린다
     if (!P || !GC) { 궁합그린것 = ''; if (!못불러옴(out, '정통궁합', renderChongnon, [wrap, none, add, $('gcStart')])) 안내('지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
-    if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요. 넣으면 바로 두 분을 나란히 놓아요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
+    if (!list.length) { 안내('그 사람의 생년월일이 아직 없어요. 입력하면 두 사람의 사주를 바로 비교해요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
@@ -1018,7 +1018,7 @@
       wrap.classList.add('hide'); none.textContent = 말; none.classList.remove('hide');
       add.textContent = 단추; add.classList.remove('ghost', 'hide'); add.onclick = 누르면; out.innerHTML = '';
     };
-    if (!profile || !R) { 안내('내 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
+    if (!profile || !R) { 안내('당신의 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
     if (P && !SP && 꾸러미받는중('ssom')) return;   // 10-02 웹툰궁합 파일(탭별 꾸러미)이 아직 오는 중 — 다 오면 go() 가 다시 그린다
     if (!P || !SP) { if (!못불러옴(out, '웹툰궁합', renderSsom, [wrap, none, add, $('ssMore')])) 안내('지금은 웹툰궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
     const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
@@ -1056,7 +1056,7 @@
     const me = P.active();
     const list = P.list().filter(p => !me || p.id !== me.id);
     $('ghPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('')
+      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGh').disabled = !list.length;
     $('btnGhAdd').onclick = () => openPersonForm(null);
@@ -1075,10 +1075,10 @@
   }
   function showGunghap(you0, youName, met) {
     const G = window.ChaeksaGunghap; const box = $('ghResult'); if (!box) return;
-    let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    let Rm; try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했어요. 입력한 생년월일시를 확인하고 「비밀 열기」를 다시 눌러 주세요.</p>'; box.classList.remove('hide'); return; }
     // 역산 — 공주님 쪽 「먼저 달라진 것」이 바뀌었을 수 있으니 내 사주도 다시 계산한다
     let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
-    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    let v, f; try { v = G.값(Rm, Rf, met, today, youName); f = G.문장(v, today, youName); } catch (e) { box.innerHTML = '<p class="hint">이 사주로 답을 만들지 못했어요. 잠시 뒤 「비밀 열기」를 다시 눌러 주세요.</p>'; box.classList.remove('hide'); return; }
     const 열쇠 = 'gunghap:' + [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey('gunghap', 열쇠)) || null;
     const 미리 = new Set([0, 4, 8]);
@@ -1091,7 +1091,7 @@
         + (열림 ? `<p class="gn-a">${esc(q.답)}</p><p class="gn-w">${esc(q.왜)}</p>` : `<p class="gn-a dim">결제하면 열리는 비밀이에요.</p>`)
         + '</div>';
     }).join('');
-    const 결제 = paid ? '' : 결제상자('btnGhBuy', youName, '네 층(그 사람 → 나 · 나 → 그 사람 · 원래 둘 · 지금 둘)을 다 보고 가도 되는지는 나머지 일곱 가지 비밀에서 봅니다.');
+    const 결제 = paid ? '' : 결제상자('btnGhBuy', youName, '서로에게 미치는 영향과 타고난 궁합, 지금의 궁합을 네 갈래로 봅니다. 그 사람과 계속 만나도 되는지는 나머지 일곱 가지 비밀에서 봅니다.');
     // 53조 궁합 — 판정 하나(사람을 맨 바깥 층으로 얹은 차이). 무료. 전문용어 칸이라 data-plain·escP.
     let 판정띠 = '';
     try {
@@ -1104,12 +1104,12 @@
         // 질문 생성기를 탄 꼴 — 질문 → 답(판정 이유) → 결론·할 것(둘 사이 × 칸). 「우리 둘」 장은 그 질문들을 그리는 자리다.
         const 질문줄 = (둘 && 둘.질문들.length)
           ? 둘.질문들.map(q => '<div class="gh-q s' + (q.칸 === '좋음' ? 2 : q.칸 === '조심' ? 0 : 1) + '"><b>' + escP(q.질문) + '</b><span>' + escP(q.답) + '</span></div>').join('')
-          : '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람을 얹어도 내 판정이 그대로예요.</p>';
-        const 그쪽줄 = g.그사람에게.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') || '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람 판정이 그대로예요.</p>';
+          : '<p class="gh-line"><b>바뀌는 것 없음</b> 그 사람의 사주를 함께 봐도 당신의 판정은 그대로예요.</p>';
+        const 그쪽줄 = g.그사람에게.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') || '<p class="gh-line"><b>바뀌는 것 없음</b> 당신의 사주를 함께 봐도 그 사람의 판정은 그대로예요.</p>';
         const 머리셋 = 둘 ? 둘.머리.map(q => '<div class="gh-q s' + (q.칸 === '좋음' ? 2 : q.칸 === '조심' ? 0 : 1) + '"><b>' + escP(q.질문) + '</b><span>' + escP(q.답) + '</span></div>').join('') : '';
-        const 되돌림 = 둘 && 둘.실험 && 둘.실험.줄.length ? '<details class="wg-fold"><summary>되돌아오는 것 (실험)</summary><p class="hint">내가 먼저 얹히면 ' + escP(youName) + '의 격신이 ' + escP(둘.실험.사람말) + '로 바뀌고, 그것이 다시 내게 와요.</p>' + 둘.실험.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') + '</details>' : '';
+        const 되돌림 = 둘 && 둘.실험 && 둘.실험.줄.length ? '<details class="wg-fold"><summary>되돌아오는 것 (실험)</summary><p class="hint">당신의 사주를 먼저 함께 보면 ' + escP(youName) + '의 사주 짜임을 정하는 글자(격신)가 ' + escP(둘.실험.사람말) + '로 바뀌어요. 바뀐 글자가 다시 당신에게 영향을 줘요.</p>' + 둘.실험.줄.map(j => '<p class="gh-line ' + (j.방향 === '보완' ? 'up' : 'down') + '"><b>' + escP(j.갈래) + ' · ' + escP(j.방향) + '</b> ' + escP(j.말) + '</p>').join('') + '</details>' : '';
         판정띠 = '<section class="wg gh-pan" data-plain="1"><div class="wg-head"><b>두 사람을 놓고 본 판정</b><span>' + escP(둘 ? 둘.결론문 : P.궁합결론(g)) + '</span></div>'
-          + '<p class="wg-gk top">나에게 ' + escP(youName) + '은(는) <b>' + escP(g.나에게.사람말 || '안 나왔어요') + '</b>이고, ' + escP(youName) + '에게 나는 <b>' + escP(g.그사람에게.사람말 || '안 나왔어요') + '</b>이에요. 사람의 글자는 그 사람의 격신이에요.</p>'
+          + '<p class="wg-gk top">나에게 ' + escP(youName) + '은(는) <b>' + escP(g.나에게.사람말 || '안 나왔어요') + '</b>이고, ' + escP(youName) + '에게 나는 <b>' + escP(g.그사람에게.사람말 || '안 나왔어요') + '</b>이에요. 여기서는 사주 짜임을 정하는 글자(격신)로 그 사람이 미치는 영향을 봐요.</p>'
           + 머리셋
           + (둘 ? '<p class="gh-verdict"><em>' + escP(둘.결론) + '</em> ' + escP(둘.할것) + '</p>' : '')
           + '<details class="wg-fold"><summary>갈래마다 보기</summary>'
@@ -1128,7 +1128,7 @@
       ${다 ? `<div class="gn-card"><p class="k">간직하기 카드</p>${f.카드.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${결제}`;
     box.classList.remove('hide');
-    한편붙이기(box, 'gunghap', { 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 이 사람이랑 가도 되는지' }, f, met, you0.관찰, 열쇠, youName);
+    한편붙이기(box, 'gunghap', { 제목: '우리 둘, 잘 맞아요?', 부제: '그래서 그 사람과 계속 만나도 되는지' }, f, met, you0.관찰, 열쇠, youName);
     const bb = box.querySelector('#btnGhBuy');
     if (bb) bb.onclick = () => 결제누름(bb, 'gunghap', 열쇠);
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1139,11 +1139,11 @@
     const S = window.ChaeksaSheets; const P = People(); if (!S || !P || !$('shPick')) return;
     const 장 = S.찾기(window.현재장 || 'gyeolhon'); if (!장) return;
     $('shTitle').textContent = 장.제목;
-    $('shHint').innerHTML = 장.둘 ? '그 사람의 생년월일시와 두 분이 만난 해만 있으면 됩니다. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.' : '내 사주만으로 봅니다. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.';
+    $('shHint').innerHTML = 장.둘 ? '그 사람의 생년월일시와 당신이 그 사람을 만난 해를 넣어 주세요. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.' : '당신의 사주만으로 봅니다. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.';
     $('shPickWrap').classList.toggle('hide', !장.둘); $('btnShAdd').classList.toggle('hide', !장.둘);
     if ($('shSoloWrap')) $('shSoloWrap').classList.toggle('hide', !!장.둘);
     const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
-    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '나')} · ${esc(p.relation)}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
+    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
     $('btnSh').disabled = 장.둘 && !list.length;
     $('btnShAdd').onclick = () => openPersonForm(null);
     $('shResult').classList.add('hide');
@@ -1166,11 +1166,11 @@
   }
   function showSheet(장, you0, youName, met) {
     const S = window.ChaeksaSheets; const box = $('shResult'); if (!box) return;
-    let Rm = null; if (장.둘) { try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했습니다.</p>'; box.classList.remove('hide'); return; } }
+    let Rm = null; if (장.둘) { try { Rm = E.calc(you0); } catch (e) { box.innerHTML = '<p class="hint">계산하지 못했어요. 입력한 생년월일시를 확인하고 「비밀 열기」를 다시 눌러 주세요.</p>'; box.classList.remove('hide'); return; } }
     // 공주님 쪽 관찰(역산)이 엔진까지 가려면 방금 저장한 값으로 다시 계산해야 한다
     let Rf = R; try { const P0 = People(), me = P0 && P0.active(); if (me) Rf = E.calc(P0.toProfile(me)); } catch (e) {}
     let v, f; try { v = 장.둘 ? 장.값(Rm, Rf, met, today, youName) : 장.값(Rf, null, met, today); f = 장.둘 ? 장.문장(v, today, youName) : 장.문장(v, today); }
-    catch (e) { try { console.warn('sheet', 장.code, e); } catch (x) {} box.innerHTML = '<p class="hint">이 사주로는 답을 만들지 못했습니다.</p>'; box.classList.remove('hide'); return; }
+    catch (e) { try { console.warn('sheet', 장.code, e); } catch (x) {} box.innerHTML = '<p class="hint">이 사주로 답을 만들지 못했어요. 잠시 뒤 「비밀 열기」를 다시 눌러 주세요.</p>'; box.classList.remove('hide'); return; }
     const 열쇠 = 장.code + ':' + (장.둘 ? [you0.year, you0.month, you0.day, you0.hour == null ? 'x' : you0.hour, you0.minute == null ? 'x' : you0.minute].join('-') : 'me');
     const paid = (window.ChaeksaPay && ChaeksaPay.paidForKey && ChaeksaPay.paidForKey(장.code, 열쇠)) || null;
     const 미리 = new Set(장.무료);
@@ -1250,17 +1250,17 @@
     // 한 편의 이름표는 「올 사람」처럼 표 이름표와 다를 때가 있다(짝 장). 산 뒤에 뜨는 상자와 같은 말을 써야 한다.
     const 편 = esc(한편이름 || 이름표);
     const 머리 = 무료 ? 편 + ' 한 편' : '세 가지 비밀은 여기까지';
-    const 몸 = 무료 ? '위 열 가지 답은 전부 열려 있어요. 그 답들이 한 사람 안에서 어떻게 맞물리는지를 책사가 한 편으로 엮어 드립니다.' : 예전안내;
+    const 몸 = 무료 ? '위 열 가지 답은 전부 열려 있어요. 책사가 그 답들이 한 사람 안에서 어떻게 이어지는지 한 편의 글로 씁니다.' : 예전안내;
     const 단추 = 무료 ? '9,900원 · ' + 편 + ' 한 편 받기' : '9,900원 · ' + esc(이름표) + ' 한 장 열기';
     const 꼬리 = payReady
-      ? (무료 ? '결제하시면 이 자리에서 바로 청하실 수 있어요.' : '결제하면 바로 열립니다.')
-      : '온라인 결제는 준비 중이에요. 열리는 대로 이 자리에서 바로 열립니다.';
+      ? (무료 ? '결제하면 여기서 바로 글을 요청할 수 있어요.' : '결제하면 바로 열립니다.')
+      : '온라인 결제는 준비 중이에요. 준비가 끝나면 여기서 결제할 수 있어요.';
     // 청약철회 안내와 [필수] 동의(2026-09-22 점검). 약관 9조(terms.html#refund)와 같은 말이다 —
     // 콘텐츠는 열람이 시작되면 제공이 시작된 것이고, 그 뒤에는 청약철회가 제한될 수 있다. 체크 전에는 단추가 잠긴다
     // (아래 결제동의 · pay.js 누르면 이 한 번 더 막는다).
     const 동의 = '<div class="pb-refund" style="margin:14px 0 10px;text-align:left">'
       + '<p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
-      + '열람이 시작되면 청약철회(결제 후 7일 안 취소)가 제한될 수 있고, 열람 전에는 전액 환불됩니다.</p>'
+      + '보기 시작하면 결제 후 7일 안에 취소하는 권리(청약철회)가 제한될 수 있습니다. 보기 전에는 전액 환불됩니다.</p>'
       + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:var(--t1);line-height:1.7;color:var(--ink);cursor:pointer">'
       + '<input type="checkbox" data-pay-agree="' + id + '" style="margin-top:4px;flex:none">'
       + '<span><b>[필수]</b> 위 내용을 확인했고 동의합니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span>'
@@ -1291,14 +1291,14 @@
   }
   function 한편자리(paid, 이름표) {
     return 한편보임(paid)
-      ? `<div class="paidbox pb-piece"><p class="pb-k">${esc(이름표)} 한 편</p><p class="pb-lede">위 열 가지 답을 책사가 한 사람의 이야기로 엮어 드립니다. 판정은 위 답 그대로이고, 한 번 쓰면 이달 안에는 그대로 남습니다.</p><div class="pb-ai-slot"></div></div>`
+      ? `<div class="paidbox pb-piece"><p class="pb-k">${esc(이름표)} 한 편</p><p class="pb-lede">책사가 위 열 가지 답을 한 사람의 이야기로 씁니다. 판정은 위 답과 같습니다. 한 번 쓴 글은 이달 안에는 그대로 남습니다.</p><div class="pb-ai-slot"></div></div>`
       : '';
   }
   // 「먼저 달라진 것」은 공주님이 직접 적어 둔 관찰이다. 판정이 아니라 알아보는 장면으로만 쓴다.
   const 관찰말표 = { 여자: '다른 사람에게 눈이 가는 모습이 먼저 보였다', 돈: '돈 쓰는 모습이 먼저 달라졌다', 말: '말과 표현이 먼저 늘었다', 자리: '맡은 일이 먼저 늘고 친구들과 멀어졌다' };
   const 관찰말표나 = { 재: '돈이나 사람이 먼저 들어왔다', 식: '말과 표현이 먼저 늘었다', 관: '맡은 일이 먼저 늘었다' };
   // 엔진이 부제를 안 주는 세 장 — 홈 표지의 물음을 그대로 쓴다(설계 facts_spec: 한 곳에서만 채운다)
-  const 한편부제 = { geunamja: '그래서 나한테 도움이 되나요?', maeum: '그래서 나한테 좋은 사람인가요?', gunghap: '그래서 이 사람이랑 가도 되나요?' };
+  const 한편부제 = { geunamja: '그래서 나한테 도움이 되나요?', maeum: '그래서 나한테 좋은 사람인가요?', gunghap: '그래서 그 사람과 계속 만나도 되나요?' };
   const 요일말 = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
   // 숫자 날짜는 LLM 에게 안 보낸다 — 표를 베낀 것처럼 읽히고, 화면 위 표에 이미 있다.
   const 날치우기 = (s) => String(s || '').replace(/\s*\(\d{1,2}\/\d{1,2}\)/g, '');
@@ -1385,11 +1385,11 @@
       slot.innerHTML = '<div class="pb-ai"><p class="pb-ai-k">열 가지를 한 편으로 풀었어요</p>'
         + (p.제목 ? '<p class="pb-ai-t">' + esc(p.제목) + '</p>' : '')
         + 발언들(한편줄(p.본문))
-        + '<p class="pb-ft">엔진이 낸 결과를 생성형 AI가 말로 옮겼습니다. 판정은 위 답 그대로입니다.</p></div>';
+        + '<p class="pb-ft">계산 결과를 글을 쓰는 인공지능(생성형 AI)이 문장으로 옮겼습니다. 판정은 위 답 그대로입니다.</p></div>';
     };
     const 알림 = (말, 단추) => {
       slot.innerHTML = '<div class="pb-ai">' + (말 ? '<p class="pb-ai-load">' + esc(말) + '</p>' : '')
-        + (단추 ? '<button class="btn nx-cta" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">' + esc(이름표) + ' 한 편 청하기</button>' : '') + '</div>';
+        + (단추 ? '<button class="btn nx-cta" type="button" style="background:var(--accent);color:#fff;border-color:var(--accent)">' + esc(이름표) + ' 한 편 요청하기</button>' : '') + '</div>';
       const b = slot.querySelector('button'); if (b) b.onclick = () => { b.disabled = true; 굽기(); };
     };
     const 서버읽기 = async () => {
@@ -1400,7 +1400,7 @@
       } catch (e) { return null; }
     };
     const 굽기 = async () => {
-      알림('책사가 위 열 가지 답을 한 사람의 이야기로 엮는 중입니다 — 1분 안팎 걸립니다. 화면을 벗어나셔도 끝까지 씁니다.', false);
+      알림('책사가 위 열 가지 답을 한 사람의 이야기로 쓰고 있습니다. 1분 안팎 걸립니다. 화면을 나가도 끝까지 씁니다.', false);
       try {
         const r = await ChaeksaAI.sheetPiece(code, 한편자료(장, code, f, met, 관찰), { note: 열쇠, cachePk: pk });
         try { localStorage.setItem(key, r.raw); } catch (e) {}
@@ -1409,7 +1409,7 @@
       } catch (e) {
         try { console.warn('한 편 실패:', code, e); } catch (e2) {}
         if (e && e.baking) {
-          알림('앞서 청하신 한 편을 아직 쓰는 중입니다 — 끝나는 대로 여기 펴 드립니다…', false);
+          알림('앞서 요청한 글을 아직 쓰고 있습니다. 끝나면 여기에 보여 줍니다…', false);
           for (let 회 = 0; 회 < 18; 회++) {           // 10초씩 3분 — 프록시 자물쇠와 같은 길이. 새로 굽지 않는다
             await new Promise(r => setTimeout(r, 10000));
             if (!slot.isConnected) return;
@@ -1428,9 +1428,9 @@
               + ((e && e.block && e.block.length) ? ' · ' + e.block.join(',') : '') + ')';
           }
         } catch (x) {}
-        알림((e && e.gate ? '이번 글이 검사를 넘지 못해 드리지 않았습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
-          : e && (e.timeout || e.truncated) ? '이번에는 끝까지 쓰지 못했습니다. 사용 횟수는 되돌려 놓았으니 다시 청해 주세요.'
-          : '지금은 한 편을 쓰지 못했습니다. 잠시 뒤 다시 청해 주세요.') + 까닭, true);
+        알림((e && e.gate ? '이번 글은 검사를 통과하지 못해 보여 주지 않았습니다. 사용 횟수를 돌려놓았으니 다시 요청해 주세요.'
+          : e && (e.timeout || e.truncated) ? '이번에는 끝까지 쓰지 못했습니다. 사용 횟수를 돌려놓았으니 다시 요청해 주세요.'
+          : '지금은 글을 쓰지 못했습니다. 잠시 뒤 다시 요청해 주세요.') + 까닭, true);
       }
     };
     let 있던 = null; try { 있던 = localStorage.getItem(key); } catch (e) {}
@@ -1464,9 +1464,9 @@
   const TAEK_FORM = [
     '출산택일 상담을 신청합니다.', '',
     '아버지 생년월일시 :', '어머니 생년월일시 :',
-    '출생 예정지 (시·군) :', '수술 가능한 날짜 범위 :',
+    '아이가 태어날 곳 (시·군) :', '수술 가능한 날짜 범위 :',
     '아이 성별 :', '첫째인지 :', '',
-    '(양력/음력을 함께 적어주시면 좋습니다)',
+    '(양력/음력을 함께 적어 주세요)',
   ].join('\n');
 
   function copyText(t) {
@@ -1541,7 +1541,7 @@
     if (!box || !T) return;
     let 수퍼 = false;
     try { 수퍼 = !!(window.ChaeksaUsage && ChaeksaUsage.plan() === 'super'); } catch (e) { 수퍼 = false; }
-    const 딱지 = { todo: '만들기 →', no_intake: '신청서 붙이기 →', making: '만드는 중', checking: '확인 중', ready: '보고서 열기 →', canceled: '환불됨' };
+    const 딱지 = { todo: '만들기 →', no_intake: '신청서 보내기 →', making: '만드는 중', checking: '확인 중', ready: '보고서 열기 →', canceled: '환불됨' };
     const 날 = (s) => { const d = new Date(s); return isNaN(d) ? '' : d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 결제'; };
     const 수퍼길 = '<p class="hint" style="margin:10px 0 0">검수 계정 — <a href="taekil-admin.html">사장님 목록 →</a> · <a href="taekil-apply.html">사이트 신청서로 시험하기 →</a></p>';
     if (수퍼) { box.innerHTML = '<div class="tk-mine"><h3>내 보고서</h3><p class="hint" style="margin:0">불러오는 중…</p>' + 수퍼길 + '</div>'; box.classList.remove('hide'); }
@@ -1781,7 +1781,7 @@
         try { const MM = window.ChaeksaMemo, st = MM && MM.standing ? MM.standing(R, today) : null;
           if (st) {
             // 「5월부터」가 내년 5월이면 해를 붙인다 — 안 붙이면 지난 5월로 읽힌다.
-            const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 결이 바뀝니다') : '';
+            const 언제 = st.turn ? ((st.turn.y !== today.getFullYear() ? st.turn.y + '년 ' : '') + st.turn.m + '월부터 흐름이 바뀝니다') : '';
             말 = st.head + (언제 ? ' · ' + 언제 : '') || 말;   // 등급 이름(담금질…)은 안 낸다
           } } catch (e) {}
       }
@@ -1804,10 +1804,10 @@
       { id: 'maeum', tab: 'maeum', k: 'inyeon', 사이: '썸', 제목: '그 사람, 나한테 마음이 있을까요?', 소개: '그래서 나한테 좋은 사람인가요?', 띠: 띠기본, 값: '9,900원' },
       { id: 'jjak', tab: 'sheet', sheet: 'jjak', k: 'inyeon', 사이: '썸', 제목: '내 짝은 언제 와요?', 소개: '그래서 지금 뭘 하면 되나요?', 띠: 띠기본, 값: '9,900원' },
       { id: 'jigeum', tab: 'sheet', sheet: 'jigeum', k: 'gungtong', 사이: '연애 중', 제목: '그 사람 지금 무슨 생각해요?', 소개: '그래서 지금 나는 어떻게 하면 되나요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 사이: '연애 중', 제목: '우리 둘, 잘 맞아요?', 소개: '그래서 이 사람이랑 가도 되나요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 사이: '연애 중', 제목: '우리 둘, 속궁합은요?', 소개: '누가 더 뜨겁고, 정이 어디로 가는지', 띠: 띠기본, 값: '9,900원' },
+      { id: 'gunghap', tab: 'gunghap', k: 'gungwi', 사이: '연애 중', 제목: '우리 둘, 잘 맞아요?', 소개: '그래서 그 사람과 계속 만나도 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'sok', tab: 'sheet', sheet: 'sok', k: 'inyeon', 사이: '연애 중', 제목: '우리 둘, 속궁합은요?', 소개: '누가 더 성적 끌림을 느끼고, 누구에게 마음이 가는지', 띠: 띠기본, 값: '9,900원' },
       { id: 'ibyeol', tab: 'sheet', sheet: 'ibyeol', k: 'inyeon', 사이: '재회', 제목: '헤어질까요, 계속 갈까요?', 소개: '그래서 어떻게 하면 되나요?', 띠: 띠기본, 값: '9,900원' },
-      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 사이: '결혼', 제목: '그 사람, 결혼 생각 있을까요?', 소개: '그래서 이 사람과 결혼해도 되나요?', 띠: 띠기본, 값: '9,900원' },
+      { id: 'gyeolhon', tab: 'sheet', sheet: 'gyeolhon', k: 'gungwi', 사이: '결혼', 제목: '그 사람, 결혼 생각 있을까요?', 소개: '그래서 그 사람과 결혼해도 되나요?', 띠: 띠기본, 값: '9,900원' },
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 사이: '돈과 생활', 제목: '이 남자, 나한테 돈을 쓸까요?', 소개: '그래서 나한테 도움이 되나요?', 띠: 띠기본, 값: '9,900원' },
     ];
     // 여덟 장도 콘텐츠마다 한 장(art/story-<id>-s.webp)을 쓴다 — 책사 얼굴은 2026-09-12 밤에 다 지웠다. 없으면 글자 표지.
@@ -1891,7 +1891,7 @@
     // 출산택일 문 — 지금 돈이 되는 상품인데 홈에는 푸터 링크뿐이었다(2026-09-15 「출산택일의 최적화부터」).
     // 새 상품이 아니라 있는 상품(#taekil 탭)으로 가는 길이라 심사 중 수정 불가 항목(상품 카테고리)에 안 걸린다.
     h += '<div class="wt-head" style="margin-top:26px"><b>출산택일 보고서</b><span>병원에서 받은 날짜, 근거로 검토</span></div>'
-      + '<a class="wt-taekil" href="#taekil"><b>후보 기간 전체를 시진 단위로 계산해요.</b><span>부모님 사주와 부딪히는 자리를 거르고, 담당 선생님 수술 시간에 잡히는 자리만 남겨 보고서로 드려요. 시계 몇 시에 잡아야 하는지까지.</span><em><i data-price="taekil">99,000원</i> · 신청하기 →</em></a>';
+      + '<a class="wt-taekil" href="#taekil"><b>후보 기간의 모든 날을 사주에서 나누는 시간대(시진)마다 계산해요.</b><span>부모님 사주와 부딪히는 시각을 빼고, 담당 의사의 수술 가능 시간 안에서 골라요. 병원에 예약할 시계 시각까지 보고서에 적어요.</span><em><i data-price="taekil">99,000원</i> · 신청하기 →</em></a>';
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; window.현재질문 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
@@ -2017,7 +2017,7 @@
     if (R) { Object.keys(localStorage).filter(k => k.startsWith('chaeksa.brief.') || k.startsWith('chaeksa.profile.ai.')).forEach(k => localStorage.removeItem(k)); }
   };
   $('btnReset').onclick = () => {
-    if (!confirm('내 정보, 대화, 저장된 사람을 모두 지웁니다. 계속할까요?')) return;
+    if (!confirm('이 기기에 저장한 당신의 정보, 대화, 사람을 모두 지웁니다. 계속할까요?')) return;
     // 데이터는 전부 지우고, 데이터가 아닌 것만 남긴다.
     //   auth      로그인 세션 — "이 기기에서만 지우기"는 로그아웃이 아니다
     //   usage·usageLife  AI 한도 — 지우면 이 버튼이 한도 우회 수단이 된다
@@ -2133,7 +2133,7 @@
       let from = ''; try { from = new URLSearchParams(location.search).get('from') || ''; } catch (e) {}
       const 카드 = !!(머리 && 머리.이름 && /^card-[a-z]+$/.test(from));
       띠.classList.toggle('hide', !카드);
-      띠.innerHTML = 카드 ? '친구가 보낸 <b>「' + escP(머리.이름) + '」</b>' + josa(머리.이름, '이에요', '예요').slice(머리.이름.length) + '. 내 생년월일시를 넣으면 나도 바로 볼 수 있어요.' : '';
+      띠.innerHTML = 카드 ? '친구가 보낸 <b>「' + escP(머리.이름) + '」</b>' + josa(머리.이름, '이에요', '예요').slice(머리.이름.length) + '. 당신의 생년월일시를 넣으면 당신의 결과도 바로 볼 수 있어요.' : '';
     }
   }
   // 10-02 입력 칸을 그만두고 나갈 때(「← 홈」 · 로고 · 폰 「뒤로」) — 들고 있던 갈 곳과 단추 말 · 맨 위 모양을 내려놓는다.
@@ -2193,7 +2193,7 @@
   // ───── 서버 동기화 ─────
   const Cloud = () => window.ChaeksaCloud;
   // 「아니요」를 누른 로그인(cloud.js hold 'no')을 설정 창과 묻는 창에서 같은 말로 적는다.
-  const 안주고받음 = '이 계정과 이 기기는 서로 주고받지 않아요(로그아웃하면 풀려요).';
+  const 안주고받음 = '이 계정과 이 기기는 사주 정보를 주고받지 않아요. 로그아웃하면 이 설정이 풀려요.';
   function cloudMsg(t, ok) {
     const el = $('cloudMsg'); if (!el) return;
     el.classList.toggle('hide', !t); el.innerHTML = t || '';
@@ -2202,7 +2202,7 @@
   function renderCloud() {
     const C = Cloud(); if (!C || !$('cloudBox')) return;
     if (!C.enabled()) {
-      $('cloudBox').innerHTML = '<label style="margin-top:0">기기 간 동기화</label><p class="hint">아직 준비 중입니다. 지금은 이 기기에만 저장됩니다.</p>';
+      $('cloudBox').innerHTML = '<label style="margin-top:0">다른 기기에서도 이어 보기(동기화)</label><p class="hint">아직 준비 중입니다. 지금은 이 기기에만 저장됩니다.</p>';
       return;
     }
     const inn = C.signedIn();
@@ -2230,7 +2230,7 @@
       const at = localStorage.getItem('chaeksa.sync');
       const 보류 = C.uploadHold ? C.uploadHold() : null;
       $('cloudWhen').textContent = (at && !보류 ? ' · 마지막 동기화 ' + new Date(at).toLocaleString('ko-KR') : '')
-        + (보류 === 'no' ? ' · ' + 안주고받음 : 보류 === 'ask' ? ' · 이 계정에 저장할지 아직 안 골랐어요. 「지금 동기화」를 누르면 다시 여쭤봐요.' : '');
+        + (보류 === 'no' ? ' · ' + 안주고받음 : 보류 === 'ask' ? ' · 이 계정에 저장할지 아직 정하지 않았어요. 「지금 동기화」를 눌러 정해 주세요.' : '');
     }
   }
   // ── 이 기기 사주를 이 계정에 저장할까 (2026-09-22 둘째 묶음 · 셋째에 고침) ──
@@ -2250,9 +2250,9 @@
         <h3 id="uaTitle">이 계정에 저장할까요?</h3>
         <p class="hint" style="margin:0 0 8px">로그인한 계정 — <b id="uaWho">확인하는 중…</b></p>
         <p class="hint" style="margin:0 0 8px" id="uaWhat"></p>
-        <p class="hint" style="margin:0 0 8px">이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 내 계정이 맞으면 저장하세요.
+        <p class="hint" style="margin:0 0 8px">다른 곳에서 시작한 로그인이라 계정을 확인해요. 당신의 계정이 맞으면 저장하세요.
           이 계정에 있던 사주도 이 기기로 받아 와요.</p>
-        <p class="hint" style="margin:0 0 14px">내 계정이 아니면 「아니요」를 누르세요. 로그인은 그대로 두지만, ${안주고받음}</p>
+        <p class="hint" style="margin:0 0 14px">당신의 계정이 아니면 「아니요」를 누르세요. 로그인은 그대로 두지만, ${안주고받음}</p>
         <button class="btn" id="uaYes">저장하기</button>
         <button class="btn ghost" id="uaNo">아니요</button>
       </div>`;
@@ -2260,11 +2260,11 @@
     }
     // 이 기기에 있는 사람 이름을 보여 준다 — 내 것인지 알아보게. 다섯까지만 적고 나머지는 「외 N명」.
     const l = C.localStuff ? C.localStuff() : { 이름: [], 사람: 0 };
-    const 이름 = (l.이름 && l.이름.length) ? l.이름 : [l.원국이름 || (l.원국 ? '내 원국' : '')].filter(Boolean);
+    const 이름 = (l.이름 && l.이름.length) ? l.이름 : [l.원국이름 || (l.원국 ? '당신의 사주' : '')].filter(Boolean);
     const 남은 = Math.max(0, Math.max(l.사람 || 0, 이름.length) - 5);
     $('uaWhat').innerHTML = (l.원국 || l.사람)
-      ? '이 기기에 있는 사주 — <b>' + esc(이름.slice(0, 5).join(' · ') || '사주') + '</b>' + (남은 ? ' 외 ' + 남은 + '명' : '') + '. 저장하면 이 계정에 올라가요.'
-      : '이 기기에는 아직 넣은 사주가 없어요. 저장하면 앞으로 넣는 사주가 이 계정에 저장돼요.';
+      ? '이 기기에 있는 사주 — <b>' + esc(이름.slice(0, 5).join(' · ') || '사주') + '</b>' + (남은 ? ' 외 ' + 남은 + '명' : '') + '. 「저장하기」를 누르면 이 계정에 저장돼요.'
+      : '이 기기에는 아직 저장한 사주가 없어요. 「저장하기」를 누르면 앞으로 넣는 사주가 이 계정에도 저장돼요.';
     const 누구 = () => {
       const em = C.email();
       $('uaWho').textContent = em || '이메일이 없는 계정(카카오 등)';
@@ -2297,11 +2297,11 @@
     }
     if (보류) { 복귀대기 = false; renderCloud(); return; }
     try {
-      if (showMsg) cloudMsg('동기화 중…');
+      if (showMsg) cloudMsg('기기와 계정의 정보를 맞추는 중…');
       const r = await C.pull();   // 서버 것과 병합 (더 최신인 쪽이 남는다)
       await C.push();             // 병합 결과를 다시 올린다
       renderCloud();
-      if (showMsg) cloudMsg('동기화했습니다.', true);
+      if (showMsg) cloudMsg('기기와 계정의 정보를 맞췄습니다.', true);
       if (r.changed) {
         // 09-26 사장님 「이름 넣을 때 일정 시간 지나면 홈으로 돌아가진다」 — 부팅 뒤 몇 초 만에 서버 병합이 끝나면 start()가 홈으로 보냈다.
         // 첫 만남 · 그 사람 폼을 열어 두었거나 입력 칸에 커서가 있으면 화면을 건드리지 않는다(다음 부팅 때 반영).
@@ -2318,7 +2318,7 @@
         });
         주소맞추기();
       }
-    } catch (e) { if (showMsg) cloudMsg('동기화 실패: ' + e.message); }
+    } catch (e) { if (showMsg) cloudMsg('정보를 맞추지 못했어요. 「지금 동기화」를 다시 눌러 주세요. 오류: ' + e.message); }
     복귀대기 = false;
   }
   function wireCloud() {
@@ -2341,7 +2341,7 @@
       const v = $('loginEmail').value.trim();
       if (!v) { $('loginEmail').focus(); return; }
       cloudMsg('메일 보내는 중…');
-      try { await C.sendMagicLink(v); cloudMsg('메일을 보냈습니다. 링크를 눌러주세요.', true); }
+      try { await C.sendMagicLink(v); cloudMsg('메일을 보냈습니다. 메일 안의 로그인 링크를 눌러 주세요.', true); }
       catch (e) { cloudMsg(e.message); }
     };
     // 비밀번호 로그인 — 심사관 테스트 계정용(2026-09-15, 토스 FAQ 10). 위 이메일 칸 + 비밀번호 칸.
@@ -2369,7 +2369,7 @@
         const 적음 = prompt('정말 지우시려면 「삭제」 두 글자를 적어 주세요. 결제하신 것까지 모두 사라집니다.');
         if (String(적음 || '').trim() !== '삭제') { cloudMsg('지우지 않았어요.'); return; }
       } else {
-        if (!confirm('서버에 저장된 원국·등록하신 사람들 정보와 계정을 모두 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
+        if (!confirm('서버에 저장된 당신의 사주·사람들 정보와 계정을 모두 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
         if (!confirm('정말 삭제하시겠습니까? 마지막 확인입니다.')) return;
       }
       cloudMsg('삭제 중…');
@@ -2382,7 +2382,7 @@
         Object.keys(localStorage).filter(k => k.startsWith('chaeksa.')).forEach(k => localStorage.removeItem(k));
         alert('모두 삭제했습니다.');
         location.href = location.pathname;
-      } catch (e) { cloudMsg('삭제 실패: ' + e.message); }
+      } catch (e) { cloudMsg('삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요. 오류: ' + e.message); }
     };
     renderCloud();
   }

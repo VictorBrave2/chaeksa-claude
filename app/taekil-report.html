@@ -35,9 +35,9 @@
 <script src="config.js?v=71396c29ad"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=dd825b8342"></script>
-<script src="myeongsik-card.js?v=3dd46dfdfc"></script>
-<script src="taekil-report.js?v=420d9470a1"></script>
+<script src="pay.js?v=8776a1a2bc"></script>
+<script src="myeongsik-card.js?v=958193b6af"></script>
+<script src="taekil-report.js?v=03fdaeefab"></script>
 <!-- 명식 카드를 그릴 때만 차례대로 싣는 시뮬레이터 엔진 사슬 — 비공개 서버 vendor 와 같은 차례(sync-vendor ORDER, 신청서 읽개는 뺀다) -->
 <template id="tkChain">
 <script src="places.js?v=1350b96148"></script>
@@ -49,8 +49,8 @@
 <script src="panjeong.js?v=389d38ced7"></script>
 <script src="gyeokguk.js?v=63f811f535"></script>
 <script src="classic.js?v=f45b014bad"></script>
-<script src="gwanjeom.js?v=66f729533c"></script>
-<script src="taekilsim.js?v=e2b12e27a5"></script>
+<script src="gwanjeom.js?v=998e0327ba"></script>
+<script src="taekilsim.js?v=53286ae0b4"></script>
 </template>
 <script>
 (function () {
@@ -91,7 +91,7 @@
     try { if (C.로그인고르기) C.로그인고르기(); else C.signInWith('kakao'); } catch (e) { 그림(상자('로그인을 열지 못했어요', [String((e && e.message) || e)])); }
   }
   function 로그인화면(글) {
-    그림(상자('로그인하면 보고서가 열려요', [글 || '결제하신 계정(카카오 또는 네이버)으로 로그인해 주세요. 보고서는 그 계정에 보관돼요.'],
+    그림(상자('로그인하면 보고서가 열려요', [글 || '결제한 계정(카카오 또는 네이버)으로 로그인해 주세요. 보고서는 그 계정에 보관돼요.'],
       '<button type="button" class="btn kakao" id="go"><span class="seal">話</span>로그인하기</button>'));
     document.getElementById('go').onclick = 로그인하러;
   }
@@ -118,13 +118,13 @@
     T.make(o).then(function (r) {
       if (r && r.ok) { clearTimeout(기다림); 불러오기(true); return; }
       if (r && r.reason === 'busy') { 기다리기(); return; }   // 다른 창에서 만드는 중 — 기다린다
-      if (r && r.reason === 'login') { 로그인화면('로그인이 끝났어요. 다시 로그인하면 이어서 만들어요.'); return; }
+      if (r && r.reason === 'login') { 로그인화면('로그인이 풀렸어요. 다시 로그인하면 이어서 만들어요.'); return; }
       clearTimeout(기다림);
       if (r && r.reason === 'llm_paused') {   // 글쓰기 열쇠 잔액 0(10-22) — 사장님이 충전하면 이어진다. 손님에겐 오류가 아니라 「확인 중」
-        그림(상자('책사가 확인한 뒤 열어 드려요', ['결제는 됐고, 계산도 끝났어요. 보고서 글을 만드는 단계에서 잠시 멈춰 있어요. 책사가 직접 확인한 뒤 열어 드려요(보통 하루 안).', '열리면 이 주소와 출산택일 탭 「내 보고서」에서 보여요. 급하시면 ' + 문의 + ' 으로 알려 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>'));
+        그림(상자('책사가 확인한 뒤 열어요', ['결제는 됐고, 계산도 끝났어요. 보고서 글을 만드는 단계에서 잠시 멈춰 있어요. 책사가 직접 확인한 뒤 열어요(보통 하루 안).', '열리면 이 주소와 출산택일 탭 「내 보고서」에서 보여요. 급하시면 ' + 문의 + ' 으로 알려 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>'));
         return;
       }
-      그림(상자('보고서를 만들지 못했어요', [(r && r.message) || '잠시 뒤 다시 해 주세요.', '결제는 그대로 있어요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요.'],
+      그림(상자('보고서를 만들지 못했어요', [(r && r.message) || '잠시 뒤 다시 해 주세요.', '결제 내역은 유지돼요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요.'],
         '<button type="button" class="btn ghost" id="again">다시 해 보기</button>'));
       document.getElementById('again').onclick = function () { 만들었음 = false; 불러오기(); };
     });
@@ -135,8 +135,8 @@
   function 신청서없음() {
     var F = P.주문서, d = F && F.초안();
     var 됨 = d && !F.빈칸(d).length;
-    그림(상자('신청서가 아직 이 주문에 붙지 않았어요', [됨 ? '이 기기에 적어 두신 신청서가 있어요. 이 주문에 붙이면 바로 만들어요.' : '주문번호와 함께 ' + 문의 + ' 으로 알려 주시면 이어서 만들어 드려요.'],
-      됨 ? '<button type="button" class="btn" id="attach">이 신청서를 붙이고 만들기</button><p class="hint">기간 · ' + esc(d.range) + ' / 지역 · ' + esc(d.place) + '</p>'
+    그림(상자('이 주문에 신청서가 아직 등록되지 않았어요', [됨 ? '이 기기에 저장한 신청서가 있어요. 이 주문에 등록하면 보고서를 바로 만들어요.' : '주문번호와 함께 ' + 문의 + ' 으로 알려 주세요. 확인 후 이어서 만들어요.'],
+      됨 ? '<button type="button" class="btn" id="attach">이 신청서를 등록하고 만들기</button><p class="hint">기간 · ' + esc(d.range) + ' / 지역 · ' + esc(d.place) + '</p>'
          : '<a class="btn ghost" href="mailto:' + 문의 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청서 ' + o) + '">메일로 알리기</a>'));
     var a = document.getElementById('attach');
     if (a) a.onclick = function () {
@@ -144,7 +144,7 @@
       P.intake(o, F.신청서(d)).then(function (r) {
         if (r && (r.ok || r.reason === 'already')) { F.초안지움(); 불러오기(); return; }
         a.disabled = false;
-        그림(상자('신청서를 붙이지 못했어요', [F.이유(r) + '. 주문번호와 함께 ' + 문의 + ' 으로 알려 주세요.']));
+        그림(상자('신청서를 등록하지 못했어요', [F.이유(r) + '. 주문번호와 함께 ' + 문의 + ' 으로 알려 주세요.']));
       });
     };
   }
@@ -166,8 +166,8 @@
       if (그렸음) return;
       if (!r || r.ok === false) {
         var 까닭 = r && r.reason;
-        if (까닭 === 'login') { 로그인화면('로그인이 끝났어요. 다시 로그인해 주세요.'); return; }
-        if (까닭 === 'not_found') { 그림(상자('이 주문을 찾지 못했어요', ['결제하신 계정(카카오 또는 네이버)으로 로그인했는지 확인해 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>')); return; }
+        if (까닭 === 'login') { 로그인화면('로그인이 풀렸어요. 다시 로그인해 주세요.'); return; }
+        if (까닭 === 'not_found') { 그림(상자('이 주문을 찾지 못했어요', ['결제한 계정(카카오 또는 네이버)으로 로그인했는지 확인해 주세요.'], '<a class="btn ghost" href="./#taekil">출산택일로 가기</a>')); return; }
         if (까닭 === 'expired') { 그림(상자('볼 수 있는 기간이 끝났어요', ['결제한 날부터 2년이 지났어요.'])); return; }
         if (까닭 === 'not_paid') { 그림(상자('결제가 확인되지 않은 주문이에요', ['결제가 끝난 주문만 볼 수 있어요.'])); return; }
         if (조용히 && (까닭 === 'network' || 까닭 === 'db')) { 기다리기(); return; }

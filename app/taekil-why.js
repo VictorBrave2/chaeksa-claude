@@ -13,7 +13,7 @@
     function () { return '<div class="tw-two"><div><small>12월 9일 오전 9시</small>' + 기둥('丙午 庚子 丁巳 甲辰') + '</div><div><small>같은 날 오전 11시</small>' + 기둥('丙午 庚子 丁巳 乙巳', true) + '</div></div>'; },
     function () { return 달력(21, [3, 4, 5, 6, 7, 10, 11, 12, 13, 14]).replace('tw-cal', 'tw-cal pick'); },
     function () { return 달력(21, [5, 12]).replace('tw-cal', 'tw-cal sift') + '<p class="tw-ex">예시 — 남는 날은 사람마다 달라요</p>'; },
-    function () { return '<div class="tw-rep"><p><b>12월 5일 오전 9시 ~ 10시</b><br><small>왜 이 시각인지 — 옛 책 세 권 근거</small></p><p><b>12월 12일 오후 1시 ~ 2시</b><br><small>왜 이 시각인지 — 옛 책 세 권 근거</small></p></div><p class="tw-ex">보고서 예시 — 날짜와 시각은 부모님 두 분과 기간으로 계산해요</p>'; },
+    function () { return '<div class="tw-rep"><p><b>12월 5일 오전 9시 ~ 10시</b><br><small>이 시각을 고른 이유 — 옛 책 세 권의 근거</small></p><p><b>12월 12일 오후 1시 ~ 2시</b><br><small>이 시각을 고른 이유 — 옛 책 세 권의 근거</small></p></div><p class="tw-ex">보고서 예시 — 부모님 두 분의 생년월일시와 출산 예정 기간으로 날짜와 시각을 계산해요</p>'; },
   ];
   var i = 0;
   function 그리기() {

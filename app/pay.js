@@ -111,7 +111,7 @@
     let 곧 = false;
     try { 곧 = await 곧열림(); } catch (e) { 곧 = false; }
     if (!곧 || !wrap || !wrap.isConnected || wrap.querySelector('[data-soon]')) return false;
-    wrap.insertAdjacentHTML('afterbegin', '<p data-soon style="margin:0 0 10px"><b>결제는 곧 열려요.</b> 지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요.</p>');
+    wrap.insertAdjacentHTML('afterbegin', '<p data-soon style="margin:0 0 10px"><b>결제는 곧 열려요.</b> 카카오페이 가맹 심사 중이에요. 지금은 「결제하기」를 눌러도 결제창이 열리지 않아요.</p>');
     return true;
   }
 
@@ -156,8 +156,8 @@
       if (global.Naver && global.Naver.Pay) return ok(global.Naver);
       const s = document.createElement('script');
       s.src = NAVER_SDK;
-      s.onload = () => (global.Naver && global.Naver.Pay ? ok(global.Naver) : no(new Error('네이버페이 결제 모듈을 불러오지 못했습니다')));
-      s.onerror = () => { _nsdk = null; no(new Error('네이버페이 결제 모듈을 불러오지 못했습니다')); };
+      s.onload = () => (global.Naver && global.Naver.Pay ? ok(global.Naver) : no(new Error('네이버페이 결제 기능을 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요')));
+      s.onerror = () => { _nsdk = null; no(new Error('네이버페이 결제 기능을 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요')); };
       document.head.appendChild(s);
     });
     return _nsdk;
@@ -170,8 +170,8 @@
       if (global.TossPayments) return ok(global.TossPayments);
       const s = document.createElement('script');
       s.src = SDK;
-      s.onload = () => (global.TossPayments ? ok(global.TossPayments) : no(new Error('SDK 없음')));
-      s.onerror = () => no(new Error('결제 모듈을 불러오지 못했습니다'));
+      s.onload = () => (global.TossPayments ? ok(global.TossPayments) : no(new Error('결제 기능을 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요')));
+      s.onerror = () => no(new Error('결제 기능을 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요'));
       document.head.appendChild(s);
     });
     return _sdk;
@@ -191,10 +191,10 @@
   }
 
   const REASON = {
-    unauthenticated: '결제하시려면 먼저 로그인해 주세요.',
+    unauthenticated: '결제하려면 먼저 로그인해 주세요.',
     not_ready: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — dl4431@naver.com',
     no_product: '없는 상품입니다.',
-    too_many: '오늘 연 주문이 너무 많습니다. 내일 다시 시도해 주세요.',
+    too_many: '오늘 만든 주문이 너무 많습니다. 내일 다시 시도해 주세요.',
     no_order: '주문을 찾지 못했습니다.',
     closed: '이미 처리가 끝난 주문입니다.',
     amount_mismatch: '금액이 맞지 않아 승인을 멈췄습니다. 결제되지 않았습니다.',
@@ -202,11 +202,11 @@
     server: '서버에서 문제가 생겼습니다. 잠시 뒤 다시 시도해 주세요.',
     forbidden: '결제 준비가 아직 끝나지 않았습니다. 메일로 문의해 주세요 — dl4431@naver.com',
     bad_request: '결제 정보가 올바르지 않습니다. 처음부터 다시 결제해 주세요.',
-    unverified: '결제 확인이 늦어지고 있습니다. 돈이 빠졌다면 문의해 주세요. 확인해서 열어 드립니다.',
-    no_provider: '지금은 그 결제 수단을 쓸 수 없습니다.',
+    unverified: '결제 확인이 늦어지고 있습니다. 돈이 빠져나갔다면 문의해 주세요. 결제를 확인한 뒤 콘텐츠를 엽니다.',
+    no_provider: '지금은 선택한 결제 수단을 쓸 수 없습니다.',
     test_only: '카카오페이 가맹 심사 중이라 아직 결제창이 열리지 않습니다. 심사가 끝나는 대로 열립니다.',
     // 10-02 출산택일 — 결제창을 열기 전에 신청서를 주문에 붙이지 못했다(api/pay.js kopen). 결제는 되지 않았다.
-    no_intake: '신청서를 주문에 붙이지 못해 결제창을 열지 않았어요. 결제는 되지 않았어요. 칸을 확인하고 한 번 더 눌러 주세요.',
+    no_intake: '신청서를 주문에 저장하지 못했어요. 결제창은 열리지 않았고 결제되지 않았어요. 신청서 내용을 확인하고 결제 단추를 다시 눌러 주세요.',
   };
   const say = (r) => REASON[r && r.reason] || (r && r.message) || '결제를 진행하지 못했습니다.';
 
@@ -397,13 +397,13 @@
     // 칸이 없는 화면에서 이 단추를 부르면 결제를 열지 않는다(동의 없이 결제되는 길을 남기지 않는다).
     const 동의칸 = document.querySelector('input[data-pay-agree="' + btn.id + '"]');
     if (!(동의칸 && 동의칸.checked)) {
-      꼬리.textContent = '위 [필수] 칸에 체크해 주셔야 결제할 수 있어요.';
+      꼬리.textContent = '위 내용을 읽고 동의하면 [필수] 칸에 체크해 주세요. 체크해야 결제할 수 있어요.';
       if (동의칸) { try { 동의칸.focus(); } catch (e) {} }
       return { ok: false, reason: 'agree' };
     }
     const C = global.ChaeksaCloud;
     if (!(C && C.signedIn && C.signedIn())) {
-      꼬리.innerHTML = '결제하시려면 먼저 로그인해 주세요 — 결제한 것을 그 계정에 매어 두어야 다른 기기에서도 열립니다. '
+      꼬리.innerHTML = '결제하려면 먼저 로그인해 주세요. 결제한 콘텐츠가 그 계정에 저장되어 다른 기기에서도 볼 수 있습니다. '
         + '<a href="#" class="pay-login"><b>카카오로 로그인 →</b></a>';
       const a = 꼬리.querySelector('.pay-login');
       if (a) a.onclick = (e) => {
@@ -704,7 +704,7 @@
   const 고르기 = (id, 이름, 갈래, 여럿) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '"' + (여럿 ? ' data-multi="1"' : '') + '>'
     + 갈래.map((g) => '<button type="button" data-v="' + 글(g[0]) + '">' + 글(g[1]) + '</button>').join('') + '</div>';
   // 재물과 자리는 따로 묻는다 — 「재관」이라 해도 재물 쪽인지 관직 쪽인지에 따라 답이 갈린다(택일상담). 둘 다 재관 저울.
-  const 앞세움 = [['무난', '두루 무난하게'], ['재물', '재물'], ['자리', '자리(직업·지위)'],
+  const 앞세움 = [['무난', '두루 무난하게'], ['재물', '돈(재물)'], ['자리', '직업·지위'],
                  ['건강', '건강'], ['학업', '공부'], ['가족', '가족 화목']];
   const 성별 = [['남아', '남아'], ['여아', '여아'], ['모름', '아직 몰라요']];
   // 고르개 켜기 — 여럿 고르는 칸(data-multi, 10-20 사장님 「아이의 성장방향 및 원하시는 특징 (복수선택)」)은 값이 「재물,건강」처럼 쉼표로 이어진다.
@@ -744,10 +744,10 @@
   const 생일줄 = (시각) => '<div class="tkp-row"><select data-k="y" aria-label="태어난 해">' + 옵션(해들(1940, 올해()), '해') + '</select>'
     + '<select data-k="m" aria-label="달">' + 옵션(달들(), '월') + '</select><select data-k="d" aria-label="날">' + 옵션(날들(), '일') + '</select>'
     + '<select data-k="cal" aria-label="양력 음력"><option value="양력">양력</option><option value="음력">음력</option><option value="윤달">음력 윤달</option></select></div>'
-    + (시각 ? '<div class="tkp-row"><input type="time" data-k="t" aria-label="태어난 시각"><label class="tk-chk"><input type="checkbox" data-k="tno"> 시각 몰라요</label></div>' : '');
+    + (시각 ? '<div class="tkp-row"><input type="time" data-k="t" aria-label="태어난 시각"><label class="tk-chk"><input type="checkbox" data-k="tno"> 시각을 몰라요</label></div>' : '');
   const 고르개틀 = {
     range: () => '<div class="tkp-row"><input type="date" data-k="a" aria-label="시작"><span>~</span><input type="date" data-k="b" aria-label="끝"></div>'
-      + '<span class="tk-sub">예정일(아시면)</span><div class="tkp-row"><input type="date" data-k="due" aria-label="예정일"></div>',
+      + '<span class="tk-sub">예정일(알면 적어 주세요)</span><div class="tkp-row"><input type="date" data-k="due" aria-label="예정일"></div>',
     dates: () => '<div class="tk-list" data-item="date"></div><button type="button" class="tk-add">+ 날짜 더하기</button>',
     slots: () => '<div class="tk-list" data-item="slot"></div><button type="button" class="tk-add">+ 날짜 · 시각 더하기</button>',
     place: () => {
@@ -755,10 +755,10 @@
       const 큰 = PL.KOREA.slice(0, 8), 그밖 = PL.KOREA.slice(8), 밖 = PL.ABROAD || [];
       const 묶 = (이름, xs) => '<optgroup label="' + 글(이름) + '">' + xs.map((c) => '<option value="' + 글(c[0]) + '">' + 글(c[0]) + '</option>').join('') + '</optgroup>';
       return '<div class="tkp-row"><select data-k="p" aria-label="태어날 지역"><option value="">고르세요</option>' + 묶('큰 도시', 큰) + 묶('그 밖의 도시', 그밖) + (밖.length ? 묶('해외', 밖) : '') + '</select></div>'
-        + '<span class="tk-sub">목록에 없으면 가장 가까운 도시를 고르세요 — 시각 차이는 몇 분 안쪽이에요.</span>';
+        + '<span class="tk-sub">목록에 없으면 가장 가까운 도시를 고르세요. 시각 차이는 몇 분 이내예요.</span>';
     },
     time: () => '<div class="tkp-row"><select data-k="a" aria-label="몇 시부터">' + 옵션(시각들30(), '몇 시부터') + '</select><span>~</span>'
-      + '<select data-k="b" aria-label="몇 시까지">' + 옵션(시각들30(), '몇 시까지') + '</select></div><span class="tk-sub">모르시면 비워 두세요 — 시간 제한 없이 봐요.</span>',
+      + '<select data-k="b" aria-label="몇 시까지">' + 옵션(시각들30(), '몇 시까지') + '</select></div><span class="tk-sub">모르면 비워 두세요. 시간 제한 없이 봐요.</span>',
     birth: () => 생일줄(true),
     sibs: () => '<div class="tk-list" data-item="sib"></div><button type="button" class="tk-add">+ 형제자매 더하기</button>',
   };
@@ -853,14 +853,14 @@
     틀(opt) {
       const 칸 = opt && opt.글로 ? 칸글 : 고르개칸;
       // 10-02 자동 보고서 — 보고서는 「내 보고서」에서 연다. 메일은 확인 · 연락용이라 칸 이름도 그 말로.
-      return 칸글('i_mail', '연락받으실 메일 주소', true, 'name@example.com', true)
+      return 칸글('i_mail', '연락받을 메일 주소', true, 'name@example.com', true)
         + 칸('i_range', '출산 예정 기간', true, '예) 2026년 10월 3일 ~ 17일') + 읽줄('range') + 읽줄('due')
         + 칸('i_hosp', '병원이 말한 수술 가능 날짜', false, '예) 10월 8일 또는 10일 — 없으면 비워 두세요') + 읽줄('hospital')
         + '<p class="hint">날짜는 의사가 정합니다. 병원이 말한 범위 안에서만 봅니다.</p>'
         // 이미 받아 둔 택일을 교차검증하러 오는 분이 많다(택일상담 — 두 건 다 그 경로였다).
         // 묻지 않는 것은 「어디서」 받았는지다. 「무엇을」 받았는지는 적어 주시면 비교해 드린다.
-        + 칸('i_have', '이미 받아 두신 날짜·시간', false, '있으면 — 예) 10월 8일 오전 10시') + 읽줄('have')
-        + '<p class="hint">받으신 날짜가 틀렸다고 하지 않습니다. 저희 기준으로는 어떻게 나오는지 나란히 보여 드립니다.</p>'
+        + 칸('i_have', '이미 받은 날짜·시간', false, '있으면 — 예) 10월 8일 오전 10시') + 읽줄('have')
+        + '<p class="hint">이미 받은 날짜와 책사 기준의 결과를 나란히 비교합니다. 받은 날짜 자체가 틀렸다는 판단은 아닙니다.</p>'
         + 칸('i_place', '태어날 지역', true, '예) 경기도 성남 — 시·군까지면 됩니다') + 읽줄('place')
         + 고르기('i_sex', '아이 성별', 성별)
         + 칸('i_time', '수술 가능한 시간대', false, '예) 평일 09시 ~ 19시') + 읽줄('time')
@@ -868,10 +868,10 @@
         +   '<label for="i_weekend" style="margin:0">주말도 가능해요</label></div>'
         // 10-02 사장님 「앞세우신 ✗ → 원하시는 방향 ○」 — 칸 이름만 바꾼다. 고르는 보기는 그대로.
         + 고르기('i_first', '아이의 성장 방향 · 원하시는 특징 (여러 개 고를 수 있어요)', 앞세움, true)
-        + 칸('i_dad', '아이 아버지(남편) 생년월일시', false, '예) 1994년 12월 10일 오후 3시 10분 · 양력') + 읽줄('father')
+        + 칸('i_dad', '아이 아버지 생년월일시', false, '예) 1994년 12월 10일 오후 3시 10분 · 양력') + 읽줄('father')
         + 칸('i_mom', '아이 어머니(산모) 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력') + 읽줄('mother')
-        + 칸('i_sib', '형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력') + 읽줄('siblings')
-        + '<p class="hint">가족 정보는 아이와 가족이 서로 부딪히는 날을 걸러 내는 데만 씁니다. 모르시면 비워 두셔도 보고서는 나옵니다.</p>'
+        + 칸('i_sib', '아이의 형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력') + 읽줄('siblings')
+        + '<p class="hint">가족 정보는 아이와 가족의 사주가 부딪히는 날을 빼는 데만 씁니다. 모르면 비워 두세요. 가족 정보 없이도 보고서는 나옵니다.</p>'
         + '<label for="i_wish">바라는 점</label>'
         + '<textarea id="i_wish" maxlength="1500" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
         + '<label for="i_ask">궁금한 점</label>'
@@ -945,15 +945,15 @@
         const 열쇠 = r.기간.첫날 + '|' + r.기간.끝날 + '|' + r.곳.값;
         if (열쇠 === 셈열쇠) return;
         셈열쇠 = 열쇠; const 차 = ++셈차;
-        셈칸.hidden = false; 셈칸.classList.remove('bad'); 셈칸.textContent = '이 기간을 미리 세는 중…';
+        셈칸.hidden = false; 셈칸.classList.remove('bad'); 셈칸.textContent = '이 기간에 조건을 통과하는 시각을 미리 세는 중…';
         주문서.미리셈(r.기간, r.곳.값).then((n) => {
           if (차 !== 셈차) return;   // 그 사이 칸이 또 바뀌었다
           if (n == null) { 셈칸.hidden = true; delete root.dataset.cands; opt.셈(null); return; }
           root.dataset.cands = String(n);
           셈칸.classList.toggle('bad', n === 0);
           셈칸.textContent = n === 0
-            ? '이 기간에는 두 고전에 걸리지 않는 시각이 없어요. 기간을 넓혀 주세요.'
-            : '이 기간에 두 고전에 걸리지 않는 시각이 ' + n + '곳 있어요(가족 · 병원 시간으로 거르기 전).';
+            ? '이 기간에는 두 고전이 문제로 보는 조건을 모두 피하는 시각이 없어요. 기간을 넓혀 주세요.'
+            : '이 기간에 두 고전이 문제로 보는 조건을 모두 피하는 시각이 ' + n + '곳 있어요. 가족 사주 · 병원 시간은 아직 반영하지 않았어요.';
           opt.셈(n);
         });
       };
@@ -1060,23 +1060,23 @@
     /** 저장이 막힌 이유를 손님 말로. 영어 코드를 그대로 보이지 않는다. */
     이유(r) {
       return ({ unauthenticated: '로그인이 풀렸습니다 — 다시 로그인한 뒤 보내 주세요',
-                network: '인터넷 연결이 끊겼습니다', missing: '저장소가 아직 준비되지 않았습니다',
+                network: '인터넷 연결이 끊겼습니다', missing: '신청서 저장 기능이 아직 준비되지 않았습니다',
                 bad_request: '내용이 너무 깁니다 — 바라는 점·궁금한 점을 줄여 주세요',
                 no_order: '이 주문을 찾지 못했습니다' })[r && r.reason] || '저장하는 데 문제가 생겼습니다';
     },
     // 신청서 내용 이용 동의 — 신청 페이지와 결제 뒤 화면이 같은 말을 쓴다. 건강과 이어진 내용이 있어 따로 받는다.
-    동의문: '[필수] 건강과 이어진 정보(출산 예정 기간, 병원이 말한 수술 가능 날짜·시간대)와 가족의 생년월일시를 '
-      + '출산택일 보고서를 만들어 드리는 데만 쓰는 것에 동의합니다. 동의하지 않으시면 보고서를 만들 수 없습니다. '
+    동의문: '[필수] 건강 관련 정보(출산 예정 기간, 병원이 말한 수술 가능 날짜·시간대)와 가족의 생년월일시를 '
+      + '출산택일 보고서를 만드는 데만 쓰는 것에 동의합니다. 동의하지 않으시면 보고서를 만들 수 없습니다. '
       + '(<a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)',
     앞세움이름: (v) => 고른것(v).map((x) => (앞세움.find((g) => g[0] === x) || [])[1]).filter(Boolean).join(' · '),
     메일초안(orderId, d) {
-      const 줄 = ['주문번호: ' + orderId, '받으실 메일: ' + d.mail, '출산 예정 기간: ' + d.range,
+      const 줄 = ['주문번호: ' + orderId, '연락받을 메일: ' + d.mail, '출산 예정 기간: ' + d.range,
         '병원이 말한 날짜: ' + (d.hospital || '없음'), '이미 받아 둔 날짜: ' + (d.have || '-'),
         '태어날 지역: ' + d.place,
         '아이 성별: ' + (d.sex || '미정'),
         '수술 가능한 시간대: ' + (d.time || '-') + (d.weekend ? ' · 주말 가능' : ''),
         '아이의 성장 방향 · 원하시는 특징: ' + (주문서.앞세움이름(d.first) || '-'),
-        '아버지: ' + (d.father || '-'), '어머니: ' + (d.mother || '-'), '형제자매: ' + (d.siblings || '-'),
+        '아버지: ' + (d.father || '-'), '어머니: ' + (d.mother || '-'), '아이의 형제자매: ' + (d.siblings || '-'),
         '바라는 점: ' + (d.wish || '-'), '궁금한 점: ' + (d.ask || '-')];
       return 'mailto:' + 문의메일 + '?subject=' + encodeURIComponent('[책사] 출산택일 신청서 ' + orderId)
         + '&body=' + encodeURIComponent(줄.join('\n'));
@@ -1086,13 +1086,13 @@
       d = d || {};
       const 값 = (v) => (v == null ? '' : String(v).trim());
       const 성 = (성별.find((g) => g[0] === d.sex) || [])[1] || '';
-      return ['연락받으실 메일 주소: ' + 값(d.mail), '출산 예정 기간: ' + 값(d.range),
-        '병원이 말한 수술 가능 날짜: ' + 값(d.hospital), '이미 받아 두신 날짜·시간: ' + 값(d.have),
+      return ['연락받을 메일 주소: ' + 값(d.mail), '출산 예정 기간: ' + 값(d.range),
+        '병원이 말한 수술 가능 날짜: ' + 값(d.hospital), '이미 받은 날짜·시간: ' + 값(d.have),
         '태어날 지역(시·군): ' + 값(d.place), '아이 성별(남아 · 여아 · 아직 몰라요): ' + 성,
         '수술 가능한 시간대: ' + 값(d.time), '주말도 가능한지: ' + (d.weekend ? '가능해요' : ''),
-        '아이의 성장 방향 · 원하시는 특징(두루 무난 · 재물 · 자리 · 건강 · 공부 · 가족 화목, 여러 개 가능): ' + 주문서.앞세움이름(d.first),
-        '아이 아버지(남편) 생년월일시(양력/음력): ' + 값(d.father), '아이 어머니(산모) 생년월일시(양력/음력): ' + 값(d.mother),
-        '형제자매 생년월일: ' + 값(d.siblings), '바라는 점: ' + 값(d.wish), '궁금한 점: ' + 값(d.ask)].join('\n');
+        '아이의 성장 방향 · 원하시는 특징(두루 무난 · 돈(재물) · 직업·지위 · 건강 · 공부 · 가족 화목, 여러 개 가능): ' + 주문서.앞세움이름(d.first),
+        '아이 아버지 생년월일시(양력/음력): ' + 값(d.father), '아이 어머니(산모) 생년월일시(양력/음력): ' + 값(d.mother),
+        '아이의 형제자매 생년월일: ' + 값(d.siblings), '바라는 점: ' + 값(d.wish), '궁금한 점: ' + 값(d.ask)].join('\n');
     },
     /** 메일로 신청하기(결제가 열리기 전) — 제목 「[책사] 출산택일 신청」 · 본문은 칸 이름만. */
     신청메일() {
@@ -1161,9 +1161,9 @@
     /** 손님 눈의 상태 → 화면 한 줄(작가 검수 대상) */
     상태말: {
       todo: '결제가 확인됐어요. 이제 보고서를 만들어요.',
-      no_intake: '결제는 됐는데 신청서가 아직 이 주문에 붙지 않았어요.',
-      making: '여덟 글자를 연산하는 중이에요.',
-      checking: '책사가 한 번 더 확인한 뒤 「내 보고서」에서 열어 드려요(보통 2~3일 안).',
+      no_intake: '결제는 됐지만 이 주문에 신청서가 아직 저장되지 않았어요.',
+      making: '아이의 사주 여덟 글자를 계산하는 중이에요.',
+      checking: '책사가 한 번 더 확인하고 있어요. 확인이 끝나면 「내 보고서」에서 열려요(보통 2~3일 안).',
       ready: '보고서가 열렸어요.',
       canceled: '환불된 주문이라 보고서가 닫혔어요.',
     },
@@ -1193,7 +1193,7 @@
     orders: (filter) => 택일함수('gyeolhon_order_list', { p_filter: filter || null, p_limit: 200 }),
     /** 보냄 표시(sent true) · 되돌리기(false) · 그대로(null) — 메모(null 이면 그대로, '' 이면 지움) → { ok, row } */
     mark: (id, sent, note) => 택일함수('gyeolhon_order_mark', { p_order: String(id || ''), p_sent: sent == null ? null : !!sent, p_note: note == null ? null : String(note) }),
-    상태말: { received: '접수됐어요 — 책사가 확인한 뒤 메일로 보내 드려요', sent: '메일로 보냈어요', canceled: '환불됐어요' },
+    상태말: { received: '접수됐어요. 책사가 확인한 뒤 보고서를 메일로 보내요', sent: '메일로 보냈어요', canceled: '환불됐어요' },
   };
 
   // ── 「나는 뭐해 먹고 살까?」(ilgyeol · 10-22 사장님 「보고서 형식 말고 결제하면 바로 나오게」) — 출산택일 자동 보고서와 같은 길 ─────────
@@ -1234,9 +1234,9 @@
     /** 손님 눈의 상태 → 화면 한 줄 */
     상태말: {
       todo: '결제가 확인됐어요. 이제 풀이를 만들어요.',
-      no_intake: '결제는 됐는데 신청서가 아직 이 주문에 붙지 않았어요.',
-      making: '여덟 글자와 명반을 세우고 글을 쓰는 중이에요.',
-      checking: '책사가 한 번 더 확인한 뒤 열어 드려요(보통 하루 안).',
+      no_intake: '결제는 됐지만 이 주문에 신청서가 아직 저장되지 않았어요.',
+      making: '사주 여덟 글자를 계산하고 태어났을 때의 별 배치표(명반)를 만들어 풀이를 쓰는 중이에요.',
+      checking: '책사가 한 번 더 확인하고 있어요. 확인이 끝나면 풀이가 열려요(보통 하루 안).',
       ready: '풀이가 열렸어요.',
       canceled: '환불된 주문이라 풀이가 닫혔어요.',
     },

@@ -23,7 +23,7 @@
   if (C.눈썹) $('eyebrow').textContent = C.눈썹;
   $('sub').textContent = 글('첫줄', '');
   $('hint').textContent = 글('입력.시모름안내', '');
-  $('go').textContent = 글('입력.단추', '귀의 조건 보기');
+  $('go').textContent = 글('입력.단추', '귀함의 조건 보기');
 
   function 남기기(id, v) {
     if (!표) return;
@@ -36,7 +36,7 @@
     var s = String(명식 || '').trim(), 기둥 = s.match(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g) || [];
     if (기둥.length !== 3 && 기둥.length !== 4) return s;
     var 성 = 성별 === 'F' ? '여자' : 성별 === 'M' ? '남자' : /(?:여|여자)$/.test(s) ? '여자' : /(?:남|남자)$/.test(s) ? '남자' : '';
-    return '내 사주(시 · 일 · 월 · 년) — ' + (기둥.length === 3 ? '시 모름 · ' : '') + 기둥.slice().reverse().join(' ') + (성 ? ' · ' + 성 : '');
+    return '당신의 사주(시 · 일 · 월 · 년) — ' + (기둥.length === 3 ? '시 모름 · ' : '') + 기둥.slice().reverse().join(' ') + (성 ? ' · ' + 성 : '');
   }
   var 근거낱말 = {
     '정관': '맡은 역할과 지킬 기준으로 오는 책임(정관)', '편관': '강한 요구와 긴장으로 오는 책임(편관)',
@@ -119,7 +119,7 @@
   // 옛 책 짜임 한 칸 — 이름 · 있음말/없음말(원고)은 펼쳐 두고, 원문 · 뜻 · 근거(엔진 값) · 출처는 접는다. 이름 · 말은 원고(1층 말), 원문은 서버 그대로, 근거는 표시 낱말만 풀이한다.
   function 짜임칸(x, 묶음, 성) {
     var a = (C.옛 && C.옛.항목 && C.옛.항목[x.id]) || {};
-    var 못잼 = x.걸림 === '못잼', 상태 = 못잼 ? '세지 않음' : x.걸림 ? '내 사주에 있음' : '내 사주에 없음';
+    var 못잼 = x.걸림 === '못잼', 상태 = 못잼 ? '세지 않음' : x.걸림 ? '당신의 사주에 있음' : '당신의 사주에 없음';
     var 말 = 못잼 ? (a.못잼말 || '') : x.걸림 ? (a.걸림말 || '') : 없음말(x, a);
     return '<div class="card"><div class="k">' + esc(묶음 + ' · ' + 상태) + '</div><div class="y" style="font-size:var(--t4)">' + esc(a.이름 || x.이름) + '</div>'
       + (말 ? '<p>' + esc(말) + '</p>' : '')
@@ -192,14 +192,14 @@
       + '<div class="card"><div class="k">' + esc(글('지금.관통.이름')) + '</div><div class="y">' + (t.걸림 ? '있음' : '없음') + '</div></div></div>';
     h += '<div class="big"><p><b>' + esc(틀(글('지금.함께'), { k: [g.걸림, t.걸림].filter(function (v) { return v === true; }).length, p: J.함께p })) + '</b></p></div>';
     h += '<p class="why">' + esc(글('지금.머리')) + '</p>';
-    h += '<div class="card"><div class="k">' + (g.걸림 ? '내 사주에 있음' : '내 사주에 없음') + '</div><div class="y" style="font-size:var(--t4)">' + esc(글('지금.그릇넷.이름')) + '</div>'
+    h += '<div class="card"><div class="k">' + (g.걸림 ? '당신의 사주에 있음' : '당신의 사주에 없음') + '</div><div class="y" style="font-size:var(--t4)">' + esc(글('지금.그릇넷.이름')) + '</div>'
       + '<p>' + esc(g.걸림 ? 글('지금.그릇넷.걸림') : 틀(글(g.시모름 && g.단계 == null ? '지금.그릇넷.시따라' : '지금.그릇넷.없음'), { 단계: 단계글 })) + '</p>'
       + (!g.걸림 && g.단계 === 3 ? '<p>' + esc(글('지금.그릇넷.셋')) + '</p>' : '')
       + (g.시모름 && g.단계 != null ? '<p class="why">' + esc(글('지금.그릇넷.시같음')) + '</p>' : '')
       + '<p class="why"><b>' + esc(틀(글('지금.그릇넷.빈도'), { p: g.p })) + '</b></p>'
       + '<details class="fold"><summary>근거 보기</summary><p class="why"><small>' + esc(근거말(g.근거)) + '</small></p></details></div>';
     var 받 = t.받는해 || [], 일간 = String(R.명식 || '').split(' ')[2] ? String(R.명식).split(' ')[2].charAt(0) : '', 올해 = t.받는해범위 ? t.받는해범위[0] : new Date().getFullYear();
-    h += '<div class="card"><div class="k">' + (t.걸림 ? '내 사주에 있음' : '내 사주에 없음') + '</div><div class="y" style="font-size:var(--t4)">' + esc(글('지금.관통.이름')) + '</div>'
+    h += '<div class="card"><div class="k">' + (t.걸림 ? '당신의 사주에 있음' : '당신의 사주에 없음') + '</div><div class="y" style="font-size:var(--t4)">' + esc(글('지금.관통.이름')) + '</div>'
       + '<p>' + esc(t.걸림 ? 글('지금.관통.걸림') : 관통없음말(t)) + '</p>'
       + (t.걸림 ? '' : 받.length ? 받는해칸(받, 일간, 올해) : '<p>' + esc(글('지금.관통.받는해없음')) + '</p>')
       + (t.시모름 ? '<p class="why">' + esc(글('지금.관통.시모름')) + '</p>' : '')
@@ -257,7 +257,7 @@
   try { if (PP) { PP.migrate(); 사람들 = PP.list().filter(function (p) { return p.birth && p.birth.year; }); } } catch (e) { 사람들 = []; }
   if (사람들.length) {
     var 나 = PP.self(), 먼저 = Math.max(0, 사람들.findIndex(function (p) { return 나 && p.id === 나.id; }));
-    $('who').innerHTML = '<p class="who-h">넣어 둔 생년월일로 볼게요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
+    $('who').innerHTML = '<p class="who-h">저장한 생년월일로 봐요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
     $('who').addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('button'); if (!b) return;
       if (b.getAttribute('data-new')) { Array.prototype.forEach.call(document.querySelectorAll('#who .who button'), function (x) { x.classList.remove('on'); }); b.classList.add('on'); $('f').reset(); $('p').value = 'KR:서울'; $('f').classList.remove('hide'); $('out').innerHTML = ''; $('y').focus(); return; }
@@ -293,7 +293,7 @@
     try {
       var r = await fetch(API + '/api/gwi', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var j = await r.json();
-      if (!r.ok) { $('err').textContent = j.error || '계산하지 못했어요.'; return; }
+      if (!r.ok) { $('err').textContent = j.error || '계산하지 못했어요. 다시 눌러 주세요.'; return; }
       결과 = j; 표 = j.표 || ''; $('err').textContent = '';
       그리기();
       // 자취는 「gwi」 한 번 — 첫 결과가 그려질 때만(탭 · 답 · 공유는 따로 세지 않는다)

@@ -23,7 +23,7 @@
     const 칸 = (k, 줄) => {
       const p = Pp[k];
       if (!p) return 줄 === 'gan' || 줄 === 'ji' ? '<td class="jt-' + 줄 + '" style="color:var(--ink3)">&nbsp;<small>모름</small></td>' : '<td class="jt-god"></td>';
-      if (줄 === 'top') return '<td class="jt-god">' + (k === 'day' ? '이 사람' : esc((gods[k] || {}).stem || '')) + '</td>';
+      if (줄 === 'top') return '<td class="jt-god">' + (k === 'day' ? '본인' : esc((gods[k] || {}).stem || '')) + '</td>';
       if (줄 === 'gan') return '<td class="jt-gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' jt-me' : '') + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + '(' + 오행한[E.STEM_ELEM[p.stem]] + ')' + '</small></td>';
       if (줄 === 'ji') return '<td class="jt-ji e' + E.BRANCH_ELEM[p.branch] + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + '(' + 오행한[E.BRANCH_ELEM[p.branch]] + ')' + '</small></td>';
       return '<td class="jt-god">' + esc((gods[k] || {}).branch || '') + '</td>';
@@ -77,31 +77,31 @@
   function 그리기(box, 입력나, 입력그, 옵션) {
     접두 = (옵션 && 옵션.접두) || 'gcCh';
     const 새틀 = 새틀인가(옵션);
-    let C; try { C = Q.바탕(입력나, 입력그); } catch (e) { box.innerHTML = '<p class="hint">이 생년월일은 계산하지 못했어요.</p>'; return; }
+    let C; try { C = Q.바탕(입력나, 입력그); } catch (e) { box.innerHTML = '<p class="hint">입력한 생년월일을 계산하지 못했어요. 생년월일을 확인해 주세요.</p>'; return; }
     const out = []; 장목록.length = 0;
     // 장마다 따로 감싼다 — 한 장이 죽어도 나머지 장은 나온다.
     const 안전 = (번호, 제목, 부제, 짓기) => {
-      let 속; try { 속 = 짓기(); } catch (e) { 속 = '<p class="jt-yet">이 장을 지금 그리지 못했어요. 잠시 뒤에 다시 열어 주세요.</p>'; if (global.console) console.warn('궁합총론 ' + 번호 + '장', e); }
+      let 속; try { 속 = 짓기(); } catch (e) { 속 = '<p class="jt-yet">지금 이 장을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.</p>'; if (global.console) console.warn('궁합총론 ' + 번호 + '장', e); }
       out.push(장(번호, 제목, 부제, 속));
     };
 
     안전(1, '두 사람의 여덟 글자', '나란히 놓고 보면 어떤 기운이 가장 센가', () => {
       const v = Q.장1(C);
-      return 칸그리기(v, 명식표(C.나.R) + '<h3>오행이 몇 글자씩</h3>' + 오행줄(v.오행.나), 명식표(C.그.R) + '<h3>오행이 몇 글자씩</h3>' + 오행줄(v.오행.그));
+      return 칸그리기(v, 명식표(C.나.R) + '<h3>기운별 글자 수(오행)</h3>' + 오행줄(v.오행.나), 명식표(C.그.R) + '<h3>기운별 글자 수(오행)</h3>' + 오행줄(v.오행.그));
     });
     안전(2, '두 사람을 뜻하는 글자', '각자를 뜻하는 글자 둘이 만나면 서로 어떻게 되나', () => 칸그리기(Q.장2(C)));
-    안전(3, '배우자 자리끼리', '두 사람의 태어난 날의 글자가 붙나 부딪히나', () => 칸그리기(Q.장3(C)));
+    안전(3, '두 사람의 배우자 자리', '두 사람의 태어난 날의 글자가 붙나 부딪히나', () => 칸그리기(Q.장3(C)));
     안전(4, '각자의 배우자 자리', '각자 어떤 사람에게 끌리나', () => 칸그리기(Q.장4(C)));
     안전(5, '짝을 뜻하는 글자(배우자별)', '짝을 뜻하는 글자가 각자의 사주에 있나', () => 칸그리기(Q.장5(C)));
-    안전(6, '서로에게 필요한 기운(계절)', '서로에게 가장 필요한 기운을 상대가 가졌나', () => 칸그리기(Q.장6(C)));
+    안전(6, '서로에게 필요한 기운(계절)', '각자에게 가장 필요한 기운을 서로 가졌나', () => 칸그리기(Q.장6(C)));
     안전(7, '그 사람이 곁에 오면', '당신 사주의 큰 줄기가 그대로인가, 바뀌나', () => 칸그리기(Q.장7(C)));
-    안전(8, '옛 책이 이름 붙인 글자(신살 · 귀인)', '각자에게 붙는 이름과 상대의 글자가 나에게 어떤 이름이 되나', () => {
+    안전(8, '옛 책이 이름 붙인 글자(신살 · 귀인)', '각자의 글자와 서로의 글자에 어떤 이름이 붙나', () => {
       const v = Q.장8(C);
-      const 벌 = (x) => (x.살.length || x.귀.length ? x.살.concat(x.귀).map(살칸).join('') : '<p class="jt-yet">책이 꼽은 것 가운데 이 글자들에 있는 것은 없어요.</p>');
+      const 벌 = (x) => (x.살.length || x.귀.length ? x.살.concat(x.귀).map(살칸).join('') : '<p class="jt-yet">옛 책이 이름 붙인 글자 가운데 이 사주에 해당하는 것은 없어요.</p>');
       return 칸그리기(v, 벌(v.살귀.나), 벌(v.살귀.그));
     });
     안전(9, '서로의 사주 속 짝 글자', '각자의 사주 안에서 짝을 뜻하는 글자가 어떤 모습인가', () => 칸그리기(Q.장9(C)));
-    안전(10, '돈과 활동', '누가 먼저 일을 만들고, 돈은 어떤 모양인가', () => 칸그리기(Q.장10(C)));
+    안전(10, '돈과 활동', '누가 먼저 일을 만들고, 돈을 뜻하는 글자는 어떤 상태인가', () => 칸그리기(Q.장10(C)));
     안전(11, '10년마다 바뀌는 운', '지금 10년, 두 사람의 마음이 어디로 가나', () => {
       const v = Q.장11(C);
       // 정통사주 11장처럼 — 지금 대운은 다 펴고, 나머지는 앞 세 줄만 보이고 뒤는 접는다
@@ -125,7 +125,7 @@
 
     const 위 = 새틀 ? 일층(C) : '';
     box.innerHTML = 위
-      ? 위 + '<details class="gc-fold"><summary>근거 보기 — 옛 책과 계산</summary><p class="gc-fold-sub">위 답이 나온 계산과 옛 책 원문을 장마다 그대로 펼쳐 놓았어요.</p>' + 목차() + out.slice(0, 12).join('') + '</details>' + out.slice(12).join('')
+      ? 위 + '<details class="gc-fold"><summary>근거 보기 — 옛 책과 계산</summary><p class="gc-fold-sub">위 답의 근거인 계산과 옛 책 원문을 장마다 확인하세요.</p>' + 목차() + out.slice(0, 12).join('') + '</details>' + out.slice(12).join('')
       : 목차() + out.join('');
     const 이름 = 접두;
     box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#' + 이름 + a.dataset.ch); if (d) d.open = true; const f = box.querySelector('.gc-fold'); if (f) f.open = true; }));

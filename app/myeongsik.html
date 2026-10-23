@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>명식 카드 — 상담 글에 넣을 그림</title>
+<title>사주 여덟 글자 카드(명식) — 상담 글에 넣을 그림</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -41,8 +41,8 @@
 <div class="bar" id="bar"></div>
 <div class="cards" id="cards"></div>
 <script src="config.js?v=71396c29ad"></script><script src="places.js?v=1350b96148"></script><script src="astro.js?v=c0bb3fa175"></script><script src="lunar.js?v=9d5b6391f1"></script><script src="engine.js?v=e0bd1ab409"></script>
-<script src="saenggeuk.js?v=df8648d564"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="typecard.js?v=606368696f"></script><script src="gyeokguk.js?v=63f811f535"></script><script src="classic.js?v=f45b014bad"></script>
-<script src="gwanjeom.js?v=66f729533c"></script><script src="taekilsim.js?v=e2b12e27a5"></script><script src="myeongsik-card.js?v=3dd46dfdfc"></script>
+<script src="saenggeuk.js?v=df8648d564"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="typecard.js?v=5d55054c79"></script><script src="gyeokguk.js?v=63f811f535"></script><script src="classic.js?v=f45b014bad"></script>
+<script src="gwanjeom.js?v=998e0327ba"></script><script src="taekilsim.js?v=53286ae0b4"></script><script src="myeongsik-card.js?v=958193b6af"></script>
 <script>
 /* 쓰는 법: myeongsik.html?place=KR:천안&g=M&slots=2026-10-12T16:00,2026-10-12T20:00&labels=낮에 권하는 시각,저녁 7시 18분 이후
  *  slots 의 시각은 그 시진 안의 아무 분이면 된다 — 카드에는 그 시진의 시계 창(분 단위)이 찍힌다. */
@@ -50,16 +50,16 @@
   const q = new URLSearchParams(location.search);
   const place = q.get('place') || 'KR:서울';
   const slots = (q.get('slots') || '').split(',').filter(Boolean), labels = (q.get('labels') || '').split(',');
-  document.getElementById('bar').innerHTML = '<b>명식 카드</b> — 카드 하나씩 화면 갈무리해서 네이버 글에 그림으로 넣으세요(표는 모바일에서 깨져서 그림으로 넣습니다). '
+  document.getElementById('bar').innerHTML = '<b>사주 여덟 글자 카드(명식)</b> — 카드를 하나씩 화면 캡처해 네이버 글에 그림으로 넣으세요. 표는 휴대폰에서 깨져 보여요. '
     + '주소 뒤에 <code>?place=KR:천안&amp;g=M&amp;slots=2026-10-12T16:00,2026-10-12T20:00&amp;labels=낮,저녁</code> 꼴로 바꾸면 다른 상담에도 씁니다.';
   const box = document.getElementById('cards');
-  if (!slots.length) { box.innerHTML = '<p style="color:#5d584f">주소에 slots 가 없어요.</p>'; return; }
+  if (!slots.length) { box.innerHTML = '<p style="color:#5d584f">카드로 만들 날짜와 시각이 없어요. 위 주소 예시처럼 입력해 주세요.</p>'; return; }
   // only=N 이면 그 카드 한 장만, shot=1 이면 안내 줄을 감춘다 — tools_card.py 가 머리 없는 브라우저로 한 장씩 찍는다.
   const only = q.get('only'); if (q.get('shot')) { document.getElementById('bar').style.display = 'none'; box.style.padding = '24px'; }
   // 카드 한 장 그리기는 myeongsik-card.js 한 곳(10-02 — 자동 보고서 쪽과 같이 쓴다). 그림은 옛 그리기와 글자 하나까지 같다.
   slots.forEach((s, i) => {
     if (only != null && String(i) !== only) return;
-    const h = ChaeksaMyeongsikCard.html({ slot: s, label: labels[i] || '명식', place, g: q.get('g'), pre: '' });
+    const h = ChaeksaMyeongsikCard.html({ slot: s, label: labels[i] || '사주 여덟 글자(명식)', place, g: q.get('g'), pre: '' });
     if (h) box.insertAdjacentHTML('beforeend', h);
   });
 })();

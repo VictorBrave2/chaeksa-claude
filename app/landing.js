@@ -27,7 +27,7 @@
     var mm = /-(?:m|gt)(\d{1,2})$/.exec(tag), 달 = mm && +mm[1] >= 1 && +mm[1] <= 12 ? +mm[1] + '월 ' : '';
     길 = { 앞: ['child'], 첫줄: '표에서 고른 ' + 달 + '날짜,<br>세 고전은 어떻게 보나' };
   } else if (/^(blog|site|naver)-(why|ohaeng|hoesa|chung|root|good|byeongo|ai3|how-good|gwaegang|baekho)/.test(tag) || /^why-/.test(tag)) {
-    길 = { 앞: ['me'], 첫줄: '글에서 본 그것,<br>내 사주로 확인해 보세요' };
+    길 = { 앞: ['me'], 첫줄: '글에서 읽은 내용이<br>당신의 사주에도 있는지 확인하세요' };
   } else if (/^(blog|site|naver)-(dohwa|hongyeom)/.test(tag) || tag === 'don') {
     길 = { 앞: ['love'], 첫줄: null };
   } else if (tag === 'sok') {

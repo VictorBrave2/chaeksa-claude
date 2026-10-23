@@ -12,14 +12,14 @@
   var 셌다 = false;
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
   if (쪽.제목) $('h1').textContent = 쪽.제목;
-  $('sub').textContent = 쪽.한줄 || '옛 책 세 권이 이름 붙여 반긴 드문 짜임 362가지에 내 사주를 하나씩 대 봐요(삼명통회 · 연해자평 · 적천수).';
-  $('hint').textContent = 쪽.입력안내 || '시를 모르면 비워 두세요. 열두 시를 다 넣어 보고, 시에 따라 갈리는 짜임은 따로 알려 드려요.';
+  $('sub').textContent = 쪽.한줄 || '옛 책 세 권이 이름 붙여 반긴 드문 짜임 362가지에 당신의 사주가 맞는지 하나씩 확인해요(삼명통회 · 연해자평 · 적천수).';
+  $('hint').textContent = 쪽.입력안내 || '시를 모르면 비워 두세요. 열두 시를 다 넣어 보고, 시에 따라 갈리는 짜임은 따로 보여 줘요.';
   // 응답의 판정과 글자는 그대로 두고 표시 순서와 낱말만 바꾼다.
   function 명식말(명식, 성별) {
     var s = String(명식 || '').trim(), 기둥 = s.match(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g) || [];
     if (기둥.length !== 3 && 기둥.length !== 4) return s;
     var 성 = 성별 === 'F' ? '여자' : 성별 === 'M' ? '남자' : /(?:여|여자)$/.test(s) ? '여자' : /(?:남|남자)$/.test(s) ? '남자' : '';
-    return '내 사주(시 · 일 · 월 · 년) — ' + (기둥.length === 3 ? '시 모름 · ' : '') + 기둥.slice().reverse().join(' ') + (성 ? ' · ' + 성 : '');
+    return '당신의 사주(시 · 일 · 월 · 년) — ' + (기둥.length === 3 ? '시 모름 · ' : '') + 기둥.slice().reverse().join(' ') + (성 ? ' · ' + 성 : '');
   }
   var 근거낱말 = {
     '정관': '맡은 역할과 지킬 기준으로 오는 책임(정관)', '편관': '강한 요구와 긴장으로 오는 책임(편관)',
@@ -76,20 +76,20 @@
     return '<div class="card hit"><p class="pct">' + esc(머리) + (x.p == null ? '' : ' · 100명 가운데 ' + esc(x.p) + '명') + '</p>'
       + '<div class="y" style="font-size:var(--t4)">' + esc(표시말(x.이름)) + '</div>'
       + (a.뜻 ? '<p>' + esc(a.뜻) + '</p>' : '')
-      + (x.시 && x.시.length ? '<p class="why">태어난 시가 ' + esc(x.시.map(시말).join(' · ')) + '이면 이 짜임에 들어요.</p>' : '')
+      + (x.시 && x.시.length ? '<p class="why">태어난 시가 ' + esc(x.시.map(시말).join(' · ')) + '이면 이 짜임에 해당해요.</p>' : '')
       + '<details class="fold"><summary>원문 · 짜임 보기</summary><p class="q" lang="zh-Hant">' + esc(x.원문) + '</p>'
       + (a.짜임 ? '<p class="why">' + esc(a.짜임) + '</p>' : '')
-      + '<p class="why"><small>' + (String(x.근거 || '').trim() ? '내 사주에서: ' + esc(근거말(x.근거)) + '<br>' : '') + esc(책말(x.책)) + ' · ' + esc(출처말(x.출처)) + '</small></p></details></div>';
+      + '<p class="why"><small>' + (String(x.근거 || '').trim() ? '당신의 사주에서: ' + esc(근거말(x.근거)) + '<br>' : '') + esc(책말(x.책)) + ' · ' + esc(출처말(x.출처)) + '</small></p></details></div>';
   }
   function 그리기(j) {
     var h = '<p class="sec">' + esc(명식말(j.명식, j.성별)) + '</p>';
     if (j.해당.length) {
-      h += j.해당.map(function (x) { return 칸(x, '내 사주에 있어요'); }).join('');
+      h += j.해당.map(function (x) { return 칸(x, '당신의 사주에 있어요'); }).join('');
     } else {
-      h += '<div class="big"><p>' + esc(쪽.빈칸 || '드문 짜임 362가지 가운데 내 사주에 꼭 맞는 짜임은 없어요.') + '</p></div>';
+      h += '<div class="big"><p>' + esc(쪽.빈칸 || '드문 짜임 362가지 가운데 당신의 사주에 꼭 맞는 짜임은 없어요.') + '</p></div>';
     }
-    if (j.시따라.length) h += '<p class="sec">태어난 시에 따라 드는 짜임</p>' + j.시따라.map(function (x) { return 칸(x, '시에 따라 해당'); }).join('');
-    if (j.아깝게.length) h += '<p class="sec">' + esc(쪽.모자람머리 || '조건이 맞지 않는 짜임') + '</p>' + (쪽.모자람안내 ? '<p class="why">' + esc(쪽.모자람안내) + '</p>' : '') + j.아깝게.map(function (x) { return 칸(x, '내 사주에 해당하지 않아요'); }).join('');
+    if (j.시따라.length) h += '<p class="sec">태어난 시에 따라 해당하는 짜임</p>' + j.시따라.map(function (x) { return 칸(x, '시에 따라 해당'); }).join('');
+    if (j.아깝게.length) h += '<p class="sec">' + esc(쪽.모자람머리 || '조건이 맞지 않는 짜임') + '</p>' + (쪽.모자람안내 ? '<p class="why">' + esc(쪽.모자람안내) + '</p>' : '') + j.아깝게.map(function (x) { return 칸(x, '당신의 사주에 해당하지 않아요'); }).join('');
     h += '<p class="note">옛 책이 적은 조건만 그대로 대 봤어요. 「많다 · 세다(旺)」처럼 옛 책이 재는 법을 적지 않은 말이 든 짜임은 넣지 않았어요. 비율은 1950~2009년생 6만 명에 대 본 값이에요.</p>';
     if (쪽.낱말 && 쪽.낱말.length) h += '<details class="fold"><summary>낱말 풀이 펼쳐 보기</summary>' + 쪽.낱말.map(function (말) { return '<p class="why">' + esc(말) + '</p>'; }).join('') + '</details>';
     $('out').innerHTML = h;
@@ -113,7 +113,7 @@
   try { if (PP) { PP.migrate(); 사람들 = PP.list().filter(function (p) { return p.birth && p.birth.year; }); } } catch (e) { 사람들 = []; }
   if (사람들.length) {
     var 나 = PP.self(), 먼저 = Math.max(0, 사람들.findIndex(function (p) { return 나 && p.id === 나.id; }));
-    $('who').innerHTML = '<p class="who-h">넣어 둔 생년월일로 볼게요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
+    $('who').innerHTML = '<p class="who-h">저장한 생년월일로 봐요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
     $('who').addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('button'); if (!b) return;
       if (b.getAttribute('data-new')) { Array.prototype.forEach.call(document.querySelectorAll('#who .who button'), function (x) { x.classList.remove('on'); }); b.classList.add('on'); $('f').reset(); $('p').value = 'KR:서울'; $('f').classList.remove('hide'); $('out').innerHTML = ''; $('y').focus(); return; }
@@ -145,11 +145,11 @@
     보기(body);
   });
   async function 보기(body) {
-    $('err').textContent = '옛 책 짜임 362가지에 대 보고 있어요…';
+    $('err').textContent = '옛 책의 짜임 362가지와 비교하고 있어요…';
     try {
       var r = await fetch(API + '/api/gyeokgi', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var j = await r.json();
-      if (!r.ok) { $('err').textContent = j.error || '계산하지 못했어요.'; return; }
+      if (!r.ok) { $('err').textContent = j.error || '계산하지 못했어요. 다시 눌러 주세요.'; return; }
       $('err').textContent = '';
       그리기(j);
       if (!셌다) { 셌다 = true; try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('gyeokgi'); } catch (e2) {} }

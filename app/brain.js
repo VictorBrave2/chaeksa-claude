@@ -20,7 +20,7 @@
 
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
   if (C.h1) $('h1').textContent = C.h1;
-  $('sub').textContent = 화('sub', '옛 책이 「머리 자체」를 말한 대목으로 내 명식을 봅니다. 다 보신 뒤 맞아요 · 아니에요를 눌러 주세요. 그 답이 쌓여 어느 쪽이 맞는지 가립니다.');
+  $('sub').textContent = 화('sub', '옛 책이 「머리 자체」를 말한 대목으로 당신의 사주를 봐요. 결과를 보고 맞아요 · 아니에요를 누르세요. 그 답을 모아 어느 기준이 맞는지 가려요.');
 
   function 남기기(id, v) {
     if (!표) return;
@@ -59,7 +59,7 @@
   function 그리기() {
     var R = 결과; if (!R) return;
     var 옛 = R.옛, 렌 = R.렌즈, 성 = 성별말(R.성별), h = '';
-    h += '<div class="tabs" role="tablist">' + [['1', 화('탭1', '옛 책이 꼽은 대목')], ['2', 화('탭2', '책사가 보는 법')]].map(function (t) {
+    h += '<div class="tabs" role="tablist">' + [['1', 화('탭1', '옛 책이 꼽은 대목')], ['2', 화('탭2', '책사가 세운 기준')]].map(function (t) {
       return '<button type="button" role="tab" data-tab="' + t[0] + '" aria-selected="' + (탭 === t[0]) + '" class="' + (탭 === t[0] ? 'on' : '') + '">' + esc(t[1]) + '</button>';
     }).join('') + '</div>';
     // 관점 1 — 옛 책 대목: 몇 개 · 얼마나 드문가 · 원문(판정 없음)
@@ -75,7 +75,7 @@
     h += 걸.length ? 걸.map(표지칸).join('') : '<div class="card"><p>' + esc(화('A없음', '해당하는 대목이 없어요.')) + '</p></div>';
     var 안 = 옛.안걸린 || [];
     if (안.length) h += '<details class="fold"><summary>' + esc(틀(화('A나머지', '해당하지 않은 대목 {값}개 펼쳐 보기'), { 값: 안.length })) + '</summary>' + 안.map(표지칸).join('') + '</details>';
-    h += '<p class="q2">' + esc(화('A물음', '이 대목들이 나를 잘 말하나요?')) + '</p>' + 단추('A2');
+    h += '<p class="q2">' + esc(화('A물음', '이 대목들이 당신을 잘 설명하나요?')) + '</p>' + 단추('A2');
     h += '</div>';
     // 관점 2 — 사장님 관법(10-06): ① 월간 인성이 떴고 힘이 있다 +1 ② 연간 관성이 그 인성을 돕는다 +1. 근거 줄은 서버가 낸다.
     var V2 = (R.관점2 || {}).사주;
@@ -83,23 +83,23 @@
     if (V2) {
       var w = { n: V2.점수, p: V2.p, q: V2.q, 성별: 성 };
       var V첫 = V2.점수 ? 틀(화('V첫줄', '두 가지 가운데 {n}가지가 맞아요.'), w) : 틀(화('V첫줄0', '두 가지 가운데 맞는 것이 없어요.'), w);
-      var V드 = V2.점수 ? 틀(화('V드묾', '같은 {성별} 가운데 {n}가지 이상 맞는 사람은 {p}%예요.'), w) : 틀(화('V드묾0', '같은 {성별} 가운데 {q}%가 이래요.'), w);
+      var V드 = V2.점수 ? 틀(화('V드묾', '같은 {성별} 가운데 {n}가지 이상 맞는 사람은 {p}%예요.'), w) : 틀(화('V드묾0', '같은 {성별} 가운데 {q}%가 두 가지 모두 맞지 않아요.'), w);
       h += '<div class="big"><p>' + esc(V첫) + '</p><p><b>' + esc(V드) + '</b></p></div>';
-      h += (화('V머리', '') ? '<div class="sec">' + esc(화('V머리', '')) + '</div>' : '') + '<p class="why">' + esc(화('V설명', '태어난 달의 천간과 태어난 해의 천간을 봐요.')) + '</p>';
-      var 이름들 = { V1: ['V1이름', '태어난 달에 선 배우는 힘', 'V1맞음', 'V1아님'], V2: ['V2이름', '배우는 힘을 키워 주는 규칙과 책임', 'V2맞음', 'V2아님'] };
+      h += (화('V머리', '') ? '<div class="sec">' + esc(화('V머리', '')) + '</div>' : '') + '<p class="why">' + esc(화('V설명', '태어난 달과 해의 위 글자(천간)를 봐요.')) + '</p>';
+      var 이름들 = { V1: ['V1이름', '태어난 달에 있는 배우는 힘', 'V1맞음', 'V1아님'], V2: ['V2이름', '배우는 힘을 키워 주는 규칙과 책임', 'V2맞음', 'V2아님'] };
       h += (V2.항목 || []).map(function (x) {
         var k = 이름들[x.id] || [x.id, x.id, '', ''];
         return '<div class="card"><div class="k">' + (x.걸림 ? '맞음' : '아님') + '</div><div class="y" style="font-size:var(--t4)">' + esc(화(k[0], k[1])) + '</div>'
           + '<p>' + esc(화(x.걸림 ? k[2] : k[3], '')) + '</p><p class="why"><small>' + esc(표시말(x.근거)) + '</small></p></div>';
       }).join('');
-      h += '<p class="q2">' + esc(화('V물음', '이 결과가 실제 나와 맞나요?')) + '</p>' + 단추('V');
+      h += '<p class="q2">' + esc(화('V물음', '이 결과가 실제 당신과 맞나요?')) + '</p>' + 단추('V');
     }
     // 관점 2 · 자미두수 — 사장님이 보낸 글을 『자미두수전서』 원문과 대조해 남긴 14가지(+1 열하나 · -1 셋). 서버가 원문 · 뜻 · 근거를 낸다.
     var VZ = (R.관점2 || {}).자미;
     if (VZ) {
       var 더 = VZ.항목.filter(function (x) { return x.걸림 && x.plus > 0; }), 덜 = VZ.항목.filter(function (x) { return x.걸림 && x.plus < 0; }), 안2 = VZ.항목.filter(function (x) { return !x.걸림; });
       var z = { n: VZ.점수, p: VZ.p, q: VZ.q, 더: 더.length, 덜: 덜.length, 성별: 성 };
-      h += '<div class="sec">' + esc(화('Z머리', '자미두수로 본 총명')) + '</div><p class="why">' + esc(화('Z설명', '옛 책 『자미두수전서』가 총명을 말한 대목 가운데 명반으로 셀 수 있는 것만 골랐어요. 총명을 깎는다고 한 대목도 함께 셌어요.')) + '</p>';
+      h += '<div class="sec">' + esc(화('Z머리', '총명을 보는 기준(자미두수)')) + '</div><p class="why">' + esc(화('Z설명', '총명을 말한 옛 책(『자미두수전서』)에서 태어난 때의 별자리로 확인할 수 있는 대목만 골랐어요. 총명을 깎는다고 한 대목도 함께 셌어요.')) + '</p>';
       var Z첫 = 더.length && 덜.length ? 틀(화('Z첫줄', '맞은 대목 {더}가지 · 깎는 대목 {덜}가지 — 합쳐 {n}점이에요.'), z)
         : 더.length ? 틀(화('Z첫줄더만', '맞은 대목 {더}가지 — {n}점이에요.'), z)
         : 덜.length ? 틀(화('Z첫줄덜만', '깎는 대목 {덜}가지 — {n}점이에요.'), z)
@@ -109,7 +109,7 @@
       if (더.length) h += '<p class="q2">' + esc(화('Z맞음칸', '맞은 대목')) + '</p>' + 더.map(표지칸).join('');
       if (덜.length) h += '<p class="q2">' + esc(화('Z깎임칸', '깎는 대목')) + '</p>' + 덜.map(표지칸).join('');
       if (안2.length) h += '<details class="fold"><summary>' + esc(틀(화('Z나머지', '해당하지 않은 대목 {값}개 펼쳐 보기'), { 값: 안2.length })) + '</summary>' + 안2.map(표지칸).join('') + '</details>';
-      h += '<p class="q2">' + esc(화('Z물음', '이 결과가 실제 나와 맞나요?')) + '</p>' + 단추('Z');
+      h += '<p class="q2">' + esc(화('Z물음', '이 결과가 실제 당신과 맞나요?')) + '</p>' + 단추('Z');
     }
     h += '</div>';
     h += '<p class="note">' + esc(화('맺음', '이 결과는 옛 책과 사주로 본 관점이에요. 머리를 재는 시험이 아니에요. 맞아요 · 아니에요는 생일 없이 저장돼요.')) + ' <small>(같은 ' + 성 + ' ' + R.표본.toLocaleString() + '명 사주로 센 분포)</small></p>';
@@ -121,7 +121,7 @@
     var sh = e.target.closest && e.target.closest('[data-share]');
     if (sh) {
       var 주소 = 'https://chaeksa.kr/brain.html', 말 = $('shareMsg');
-      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: 화('공유_title', '옛 책으로 보면, 나는 고지능일까요 — 책사'), text: 화('공유_text', '옛 책이 총명하다고 한 대목으로 내 사주를 봐요. 무료예요.'), url: 주소 }) : '';
+      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: 화('공유_title', '옛 책으로 보면, 당신은 고지능일까요 — 책사'), text: 화('공유_text', '옛 책이 총명하다고 한 대목으로 당신의 사주를 봐요. 무료예요.'), url: 주소 }) : '';
       if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : '';
       try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('brain_share'); } catch (e2) {}
       return;
@@ -139,7 +139,7 @@
     남기기(id, v);
     Array.prototype.forEach.call(box.querySelectorAll('button'), function (x) { x.classList.toggle('on', x === b); });
     var 뒤 = document.querySelector('[data-after="' + id + '"]');
-    if (뒤) 뒤.textContent = v === 'yes' ? 화('고마움', '고마워요. 답이 쌓이면 어느 쪽이 맞는지 가려져요.') : 화('아니에요뒤', '알려 주셔서 고마워요. 아니라는 답도 똑같이 쓰여요.');
+    if (뒤) 뒤.textContent = v === 'yes' ? 화('고마움', '고마워요. 답을 모아 어느 기준이 맞는지 가려요.') : 화('아니에요뒤', '알려 줘서 고마워요. 안 맞는다는 답도 똑같이 써요.');
     try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('brain_vote'); } catch (e2) {}
   });
   // 넣어 둔 생년월일(people.js) — 「언제 나아지나」와 같은 길(10-05 사장님 「이용자 정보 입력은 프로필로」)
@@ -155,14 +155,14 @@
     var p = 사람들[i]; if (!p) return;
     Array.prototype.forEach.call(document.querySelectorAll('#who .who button[data-i]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-i') === i); });
     칸채우기(p.birth);
-    if (p.birth.hour == null) { $('out').innerHTML = ''; $('f').classList.remove('hide'); $('err').textContent = '이 분은 태어난 시각이 없어요. 시각을 넣어 주세요.'; $('hh').focus(); return; }
+    if (p.birth.hour == null) { $('out').innerHTML = ''; $('f').classList.remove('hide'); $('err').textContent = '선택한 사람의 태어난 시각이 비어 있어요. 시각을 넣으세요.'; $('hh').focus(); return; }
     $('f').classList.add('hide');
     보기({ year: p.birth.year, month: p.birth.month, day: p.birth.day, hour: p.birth.hour, minute: p.birth.minute || 0, gender: p.birth.gender === 'F' ? 'F' : 'M', place: p.birth.place || 'KR:서울' });
   }
   try { if (PP) { PP.migrate(); 사람들 = PP.list().filter(function (p) { return p.birth && p.birth.year; }); } } catch (e) { 사람들 = []; }
   if (사람들.length) {
     var 나 = PP.self(), 먼저 = Math.max(0, 사람들.findIndex(function (p) { return 나 && p.id === 나.id; }));
-    $('who').innerHTML = '<p class="who-h">넣어 둔 생년월일로 볼게요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
+    $('who').innerHTML = '<p class="who-h">저장한 생년월일로 봐요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
     $('who').addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('button'); if (!b) return;
       if (b.getAttribute('data-new')) { Array.prototype.forEach.call(document.querySelectorAll('#who .who button'), function (x) { x.classList.remove('on'); }); b.classList.add('on'); $('f').reset(); $('p').value = 'KR:서울'; $('f').classList.remove('hide'); $('out').innerHTML = ''; $('y').focus(); return; }

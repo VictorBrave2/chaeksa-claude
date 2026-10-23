@@ -21,10 +21,10 @@
     const place = opt.place || 'KR:서울', g = opt.g === 'F' ? 'F' : 'M';
     const day = S.하루(y, mo, d, g, place), r = day.rows.find(x => t >= x.시작 && t <= x.끝); if (!r) return null;
     const R = E.calc(Object.assign({ year: y, month: mo, day: d, hour: hh, minute: mi, gender: g }, (() => { const p = PL.resolve(place); return { longitude: p.lon, tzOffset: p.tzOffset }; })()));
-    const P = R.pillars, gods = R.analysis && R.analysis.gods || {}, 순 = ['hour', 'day', 'month', 'year'], 머리 = { hour: '시', day: '일', month: '월', year: '연' };
+    const P = R.pillars, gods = R.analysis && R.analysis.gods || {}, 순 = ['hour', 'day', 'month', 'year'], 머리 = { hour: '시각', day: '날', month: '달', year: '해' };
     const 칸 = (k, 줄) => {
       const p = P[k];
-      if (줄 === 'top') return '<td class="' + c('god') + '">' + (k === 'day' ? '나' : esc((gods[k] || {}).stem || '')) + '</td>';
+      if (줄 === 'top') return '<td class="' + c('god') + '">' + (k === 'day' ? '아이' : esc((gods[k] || {}).stem || '')) + '</td>';
       if (줄 === 'gan') return '<td class="' + c('gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' me' : '')) + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + '(' + 오행한[E.STEM_ELEM[p.stem]] + ')' + '</small></td>';
       if (줄 === 'ji') return '<td class="' + c('ji e' + E.BRANCH_ELEM[p.branch]) + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + '(' + 오행한[E.BRANCH_ELEM[p.branch]] + ')' + '</small></td>';
       return '<td class="' + c('god') + '">' + esc((gods[k] || {}).branch || '') + '</td>';
@@ -32,7 +32,7 @@
     const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';
     const 눈 = r.본 ? r.본.눈들.map(n => '<p class="' + c('eye' + (n.걸림 ? ' hit' : '')) + '"><em>' + esc(n.고전) + (n.보조 ? ' · 참고' : '') + '</em><span>' + esc(n.한줄) + '</span></p>').join('') : '';
     const 요 = 요일[new Date(y, mo - 1, d).getDay()];
-    return '<div class="' + c('card') + '"><div class="' + c('k') + '">' + esc(opt.label || '명식') + '</div>'
+    return '<div class="' + c('card') + '"><div class="' + c('k') + '">' + esc(opt.label || '사주 여덟 글자(명식)') + '</div>'
       + '<div class="' + c('when') + '">' + mo + '월 ' + d + '일(' + 요 + ') ' + esc(r.창.replace('~', ' ~ ')) + '</div>'
       + '<p class="' + c('sub') + '">' + esc(day.곳) + ' 시계 시각 · ' + esc(r.시진) + (opt.g === 'M' ? ' · 남아' : opt.g === 'F' ? ' · 여아' : '') + '</p>'
       + '<table><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table>'

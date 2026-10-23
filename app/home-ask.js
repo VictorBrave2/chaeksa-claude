@@ -101,12 +101,12 @@
     return ' href="' + esc('./?go=' + w.탭) + '" data-tab="' + esc(w.탭) + '"' + (w.곳 ? ' data-spot="' + esc(w.곳) + '"' : '');
   }
   function 누름(k) { try { return !!localStorage.getItem('chaeksa.want.' + k); } catch (e) { return false; } }
-  var 바람말 = '눌린 수를 보고 만들 차례를 정해요. 물음 번호만 세고, 이름 · 생년월일은 보내지 않아요.';
+  var 바람말 = '물음마다 누른 횟수를 세어 답을 만들 순서를 정해요. 물음 번호만 보내고, 이름 · 생년월일은 보내지 않아요.';
   function 바람단추(w) { var 됨 = 누름(w.id); return '<button type="button" class="ask-w' + (됨 ? ' done' : '') + '" data-want="' + esc(w.id) + '"' + (됨 ? ' disabled' : '') + '>' + esc(w.글) + '<i>' + (됨 ? '눌렀어요' : '받고 싶어요') + '</i></button>'; }
 
   function 몸(g) {
     // 「그 밖에」 — 답이 걸린 물음이 아직 없는 분야들. 받고 싶은 물음만 고른다(펼친 채).
-    if (g.묶음) return '<p class="ask-want-p">여기 물음은 아직 답을 만들지 않았어요. 받고 싶은 걸 눌러 주세요. ' + esc(바람말) + '</p>'
+    if (g.묶음) return '<p class="ask-want-p">이 물음들의 답은 아직 만들지 않았어요. 답을 받고 싶은 물음을 눌러 주세요. ' + esc(바람말) + '</p>'
       + g.묶음.map(function (m) { return '<p class="ask-want-h">' + esc(m.이름) + '</p>' + m.바람.map(바람단추).join(''); }).join('');
     var h = '';
     if (g.키 === 'love') h += '<div class="ask-st-row"><span class="ask-st-l">우리 둘은 지금</span>'
@@ -115,7 +115,7 @@
       return '<a class="ask-c' + (i >= 보임수 ? ' hide' : '') + '"' + 길속성(c.길) + ' data-q="' + esc(c.id) + '">' + esc(c.글) + '</a>';
     }).join('') + '</div>';
     if (g.칩.length > 보임수) h += '<button type="button" class="ask-more">물음 ' + (g.칩.length - 보임수) + '개 더 보기</button>';
-    if (g.바람.length) h += '<details class="ask-want"><summary>아직 답이 없는 물음 ' + g.바람.length + '개 — 받고 싶은 걸 눌러 주세요</summary>'
+    if (g.바람.length) h += '<details class="ask-want"><summary>아직 답이 없는 물음 ' + g.바람.length + '개 — 답을 받고 싶은 물음을 눌러 주세요</summary>'
       + '<p class="ask-want-p">' + esc(바람말) + '</p>' + g.바람.map(바람단추).join('') + '</details>';
     return h;
   }
