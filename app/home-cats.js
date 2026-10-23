@@ -36,8 +36,9 @@
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
     time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/jt-19-return-{g}.webp', 작은: 'art/jt-19-return-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/jt-g-jeongin-{g}.webp', 작은: 'art/jt-g-jeongin-{g}-s.webp', 크기: [1024, 1536] }],
-    // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류 · 그림은 정통사주 15장(일) 컷
-    work: [{ 키: 'ilgyeol', 주소: 'ilgyeol.html', 그림: 'art/jt-15-work-{g}.webp', 작은: 'art/jt-15-work-{g}-s.webp', 크기: [1024, 1536] }],
+    // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류.
+    // 10-23 제 그림(IMG-0006 · 0007 밤 갈림길 불 켜진 문들, 남녀 두 벌 — 소개 쪽 머리와 같은 그림). 전에는 정통사주 15장(일) 컷을 빌려 썼다.
+    work: [{ 키: 'ilgyeol', 주소: 'ilgyeol.html', 그림: 'art/ilgyeol-{g}.webp', 작은: 'art/ilgyeol-{g}-s.webp', 크기: [1024, 1536] }],
   };
   // 10-22 사장님 「유료 콘텐츠들 상단으로」 — 메뉴판 맨 앞은 값을 받는 다섯(이 차례), 그 뒤는 분류 차례 그대로.
   var 유료차례 = ['taekil', 'gyeolhon', 'ilgyeol', 'love', 'pair'];

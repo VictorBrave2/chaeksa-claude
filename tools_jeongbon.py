@@ -202,7 +202,22 @@ def first_added(slug):
     except Exception:
         return None
 
+# 10-23 출산택일 글 머리 그림(IMG-0004 새벽 병원 창가 갓난아기 — 질문 글 열두 편 공용). 값 쪽(taekil-price)은 소개 쪽과 같은 그림(IMG-0001).
+# 달 글(월별 · 궁통보감)과 「왜」 글은 안 넣는다(달 글은 명식 카드가 제 그림). 꼴은 gyeolhon.html 머리와 같다(4:3 · object-position 은 얼굴 자리).
+HERO = {'taekil-price': ('taekil-hero', '50% 22%')}
+HERO_DEFAULT = ('taekil-read', '50% 18%')
+def hero(slug):
+    """(머리 그림 CSS, figure) — taekil-* 질문 글만. 다른 글은 ('', '') 라 템플릿 출력이 한 글자도 안 바뀐다."""
+    if not slug.startswith('taekil-') or month_of(slug): return '', ''
+    name, pos = HERO.get(slug, HERO_DEFAULT)
+    css = ('  .hero{margin:0 0 4px;padding:0;aspect-ratio:4/3;overflow:hidden;border-radius:var(--r2);background:var(--hero-bg)}\n'
+           '  .hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:' + pos + '}\n')
+    f = (f'  <figure class="hero"><img src="art/{name}.webp" srcset="art/{name}-s.webp 360w, art/{name}.webp 1024w" sizes="(max-width: 720px) 100vw, 660px"'
+         f' alt="" width="1024" height="1536" fetchpriority="high"></figure>\n')
+    return css, f
+
 def page(slug, title, desc, body, summary, faq, prev_next, related, img, published, modified, tags):
+    hcss, hfig = hero(slug)
     url = SITE + slug + '.html'
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "Article", "headline": title, "description": desc, "url": url, "mainEntityOfPage": url,
@@ -274,7 +289,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
   .pn{{display:flex;justify-content:space-between;gap:12px;margin-top:30px;font-size:var(--t2)}}
   .meta{{font-size:var(--t1);color:var(--ink3);margin-bottom:18px}}
   .readmore{{margin-top:34px;border-top:1px solid var(--line);padding-top:20px}}
-  .readmore ul{{margin:6px 0 12px 18px}} .readmore li{{margin-bottom:6px}}
+{hcss}  .readmore ul{{margin:6px 0 12px 18px}} .readmore li{{margin-bottom:6px}}
 </style>
 <script type="application/ld+json">{ldjson}</script>
 </head>
@@ -284,7 +299,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>{html.escape(title)}</h1>
   <p class="meta">책사 · {modified} 갱신 · 계산은 chaeksa.kr 엔진(절기 시각·진태양시 보정), 기준은 본문에 공개</p>
-  {summ}
+{hfig}  {summ}
 {body}
   {rel}
   {nav}

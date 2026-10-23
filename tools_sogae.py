@@ -87,11 +87,23 @@ ART = {
     'gwi': 'art/jt-g-jeonggwan-f.webp',  # 10-10 「나는 귀한 사람일까」 — 홈 칸과 같은 그림(정관 칸)
     'myeongban': 'art/jt-g-pyeongwan-f.webp',  # 10-10 「내 명반에는 무엇이 적혀 있을까」 — 홈 칸과 같은 그림(편관 칸)
     'gyeolhon': 'art/story-sanggyeonrye.webp',  # 10-07 「결혼상대 점검」 — 홈 칸 · 소개 쪽 머리와 같은 상견례 컷
+    'gyeolhon-apply': 'art/gyeolhon-apply.webp',  # 10-23 결혼상대 점검 신청 쪽(IMG-0005 신청 컷과 같은 그림) — 전에는 og.jpg(출산택일 카드)
+    'ilgyeol': 'art/ilgyeol-f.webp',  # 10-23 「나는 뭐해 먹고 살까?」 소개(IMG-0006 머리 그림 · 홈 칸과 같은 그림) — 전에는 og.jpg
+    'ilgyeol-apply': 'art/ilgyeol-f.webp',  # 10-23 진로 신청 쪽 — 소개 쪽과 같은 그림
+    'taekil-sample': 'art/taekil-report.webp',  # 10-23 출산택일 견본(IMG-0003 머리 그림과 같은 그림)
 }
+# 10-23 출산택일 질문 글 열두 편(tools_jeongbon.py 가 만드는 taekil-*) — 머리 그림(IMG-0004)과 같은 그림으로 미리보기. 값 쪽은 소개 쪽 그림(IMG-0001).
+# 달 글(월별 · 궁통보감)은 명식 카드가 제 그림이라 여기 없다(tools_jeongbon og_image). 새 질문 글이 생기면 여기 한 줄.
+TAEKIL_ARTICLES = ['taekil-cesarean-date', 'taekil-one-day-time', 'taekil-son-or-daughter', 'taekil-first-child', 'taekil-how-to-choose', 'taekil-solar-time',
+                   'taekil-verify', 'taekil-why-different', 'taekil-doctor-schedule', 'taekil-fate-vs-timing', 'taekil-lunar-december', 'taekil-price']
+for _s in TAEKIL_ARTICLES:
+    ART.setdefault(_s, 'art/taekil-hero.webp' if _s == 'taekil-price' else 'art/taekil-read.webp')
 SECTION_ART = {'왜': 'art/jt-g-jeongin-f.webp', '신살': 'art/ss-her.webp', '연애': 'art/love-cover.webp', '출산택일': 'art/taekil-main.webp'}
 DEFAULT_ART = 'art/jt-05-who-f.webp'
 # read.html 밖에서 미리보기를 붙일 쪽 — 쪽 이름: 칸 말(그 쪽이 read.html 의 어느 칸 말을 쓰나)
-EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'gwi': '무료', 'gyeokgi': '무료', 'saram': '무료', 'myeongban': '무료', 'gyeolhon': '결혼상대 점검'}
+EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'gwi': '무료', 'gyeokgi': '무료', 'saram': '무료', 'myeongban': '무료', 'gyeolhon': '결혼상대 점검',
+               'gyeolhon-apply': '결혼상대 점검', 'ilgyeol': None, 'ilgyeol-apply': None, 'taekil-sample': '출산택일'}   # 10-23 제 카드가 없던 쪽
+EXTRA_CARDS.update({_s: '출산택일' for _s in TAEKIL_ARTICLES})
 # read.html 에 걸려 있어도 미리보기를 찍지 않는 쪽 — 출산택일 안내는 출산택일 그림(og.jpg)이 제 표지다
 NO_CARD = {'taekil'}
 

@@ -21,6 +21,11 @@
   .doc{max-width:660px;margin:0 auto;padding:24px 18px 90px}
   .doc h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin-bottom:8px}
   .doc .lead{font-size:var(--t2);color:var(--ink3);margin-bottom:28px;line-height:1.8}
+  /* 10-23 머리 그림(IMG-0001 새벽 창가 달력) · 「보고서는 이렇게 만듭니다」 그림(IMG-0003) — gyeolhon.html 머리와 같은 꼴(4:3) */
+  .hero{margin:0 0 4px;padding:0;aspect-ratio:4/3;overflow:hidden;border-radius:var(--r2);background:var(--hero-bg)}
+  .hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+  .hero.report{margin:0 0 14px}
+  .hero.report img{object-position:50% 10%}
   .doc h2{font-size:var(--t4);font-weight:700;color:var(--ink);margin:34px 0 11px;letter-spacing:-.01em}
   .doc h2::after{display:none}
   .doc h3{font-size:var(--t3);font-weight:700;color:var(--ink);margin:22px 0 8px}
@@ -71,6 +76,7 @@
   <h1>출산택일<br>제왕절개 좋은 날짜와 시간 고르는 법</h1>
   <p class="lead">사주의 달이 바뀌는 순간(절기)을 날짜가 아니라 분 단위 시각으로 계산합니다.
     무엇이 무료인지 먼저 적어두었습니다.</p>
+  <figure class="hero"><img src="art/taekil-hero.webp" srcset="art/taekil-hero-s.webp 360w, art/taekil-hero.webp 1024w" sizes="(max-width: 720px) 100vw, 660px" alt="" width="1024" height="1536" fetchpriority="high"></figure>
 
   <div id="twhy" aria-label="출산택일을 왜 하나 — 네 장면"></div>
 
@@ -141,6 +147,7 @@
   <hr>
 
   <h2>보고서는 이렇게 만듭니다</h2>
+  <figure class="hero report"><img src="art/taekil-report.webp" srcset="art/taekil-report-s.webp 360w, art/taekil-report.webp 1024w" sizes="(max-width: 720px) 100vw, 660px" alt="" width="1024" height="1536" loading="lazy"></figure>
   <p>출산 날짜와 시간은 한 번 지나면 되돌릴 수 없으므로, 자동으로 계산한 보고서를 <b>책사가 한 번 더 확인한 뒤</b> 열어 드립니다.</p>
   <ul>
     <li><b>1단계 · 아이 사주 자체</b> — 후보 기간의 모든 날 모든 시각에서 아이 사주를 계산해, 두 고전이 꺼리는 글자 조합이 없는 시각만 남깁니다(궁통보감 · 자평진전).</li>
