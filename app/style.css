@@ -1045,10 +1045,10 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 
 /* ── 정통사주(jeongtong.js) — 앱 탭과 jeongtong.html 이 같이 쓴다 (2026-09-21) ── */
 .jt-ch{margin-top:16px}
-.jt-ch summary{cursor:pointer;list-style:none;position:relative;padding-right:28px}
-.jt-ch summary::-webkit-details-marker{display:none}
-.jt-ch summary::after{content:'＋';position:absolute;right:0;top:4px;font-size:var(--t4);color:var(--ink3)}
-.jt-ch[open] summary::after{content:'－'}
+.jt-ch>summary{cursor:pointer;list-style:none;position:relative;padding-right:28px}
+.jt-ch>summary::-webkit-details-marker{display:none}
+.jt-ch>summary::after{content:'＋';position:absolute;right:0;top:4px;font-size:var(--t4);color:var(--ink3)}
+.jt-ch[open]>summary::after{content:'－'}
 .jt-ch:not([open]) .jt-sub{margin-bottom:0}
 .jt-toc{margin-top:16px;display:flex;flex-direction:column;gap:2px}
 .jt-toc a{display:flex;gap:12px;padding:9px 2px;font-size:var(--t3);color:var(--ink);text-decoration:none;border-top:1px solid var(--line)}
@@ -1081,6 +1081,15 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .jt-du-h i{font-style:normal;font-size:var(--t1);font-weight:700;padding:2px 9px;border-radius:var(--r3);background:var(--seal-bg);color:var(--seal-ink)}
 .jt-du p{font-size:var(--t2);margin:0 0 5px}
 .jt-more summary{cursor:pointer;font-size:var(--t2);color:var(--ink3);margin:4px 0 8px}
+/* 10-23 사장님 「결론 (근거 작게)」 꼴 — 장은 펼친 채, 물음(h2) → 결론(.jt-answer) → 근거는 .jt-ev 로 접힘 */
+.jt-head{margin:0 0 8px}
+.jt-head .jt-no{display:block;margin-bottom:2px}
+.jt-ev{margin-top:4px;border-top:1px solid var(--line)}
+.jt-ev>summary{cursor:pointer;list-style:none;font-size:var(--t2);color:var(--ink3);padding:9px 0 6px}
+.jt-ev>summary::-webkit-details-marker{display:none}
+.jt-ev>summary::before{content:'＋ ';color:var(--ink3)}
+.jt-ev[open]>summary::before{content:'－ '}
+.jt-todo li{margin:0 0 8px;line-height:1.7}
 .jt-du.now{background:var(--bg2);margin:0 -12px;padding:13px 12px;border-radius:var(--r1)}
 
 /* 궁합총론 — 두 사람을 나란히 (2026-09-23). 나머지는 jt-* 를 그대로 쓴다. */

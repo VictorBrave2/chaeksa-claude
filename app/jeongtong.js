@@ -49,11 +49,13 @@
     return '<table class="jt-table"><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table>';
   }
 
-  // 장은 접이식이다 — 목차에서 누르면 그 장이 열리며 내려간다. 10-02 개편 — 1장도 접힌 채 시작한다(펼치면 목차와 장 제목 열셋이 먼저 보인다).
+  // 10-23 사장님 「결론 (근거 작게) 결론 (근거 작게) 이런 식으로 흘러가야 … 그 꼴로 가자 ㄱㄱ 정통사주부터」
+  // — 장은 펼친 채 간다: 물음 한 줄(부제) → 결론 한 줄(답칸) → 근거는 「근거 보기」로 접는다. 결론이 없는 장만 근거를 펴 둔다. (전에는 장 전체가 접혀 결론에 닿기 전에 지쳤다)
   const 장목록 = [];
-  const 장 = (번호, 제목, 부제, 속) => {
+  const 장 = (번호, 제목, 부제, 답, 근거) => {
     장목록.push([번호, 제목]);
-    return '<details class="card jt-ch" id="jtCh' + 번호 + '"><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
+    return '<section class="card jt-ch" id="jtCh' + 번호 + '"><div class="jt-head"><span class="jt-no">제 ' + 번호 + '장 · ' + esc(제목) + '</span><h2>' + esc(부제 || 제목) + '</h2></div>' + 답칸(답)
+      + (근거 ? '<details class="jt-ev"' + (답 ? '' : ' open') + '><summary>근거 보기</summary>' + 근거 + '</details>' : '') + '</section>';
   };
   const 목차 = () => '<nav class="card jt-toc"><div class="jt-no">목차</div>' + 장목록.map(([n, t]) => '<a href="#jtCh' + n + '" data-ch="' + n + '"><b>' + n + '</b>' + esc(t) + '</a>').join('') + '</nav>';
   const 문단 = (arr) => arr.map(t => '<p>' + esc(t) + '</p>').join('');
@@ -85,8 +87,8 @@
       : 준비(못그림);
     const 안전 = (번호, 제목, 부제, 짓기, 답짓기) => {
       let 답 = ''; try { 답 = 답짓기 ? 답짓기() : ''; } catch (e) { 답 = ''; }
-      let 속; try { 속 = 답칸(답) + 짓기(); } catch (e) { 속 = 못그린칸(번호); if (global.console) console.warn('정통사주 ' + 번호 + '장', e); }
-      out.push(장(번호, 제목, 부제, 속));
+      let 속; try { 속 = 짓기(); } catch (e) { 속 = 못그린칸(번호); if (global.console) console.warn('정통사주 ' + 번호 + '장', e); }
+      out.push(장(번호, 제목, 부제, 답, 속));
     };
     const 기 = 층.기세, 적 = 눈['적천수'];
     // 눈에 보이는 여덟 글자를 그대로 센다(천간 넷 + 지지 넷, 시를 모르면 여섯). 기세의 「무리」는 뿌리 없는 천간을 빼서 합이 여덟이 안 된다.
@@ -159,12 +161,12 @@
       const 이름모음 = (arr) => arr.map(x => x.이름).filter((n, i, a) => a.indexOf(n) === i);
       const 답5 = () => { const 살 = SM.신살(R).filter(x => !x.표시 || x.표시.해당 !== false); return 살.length ? 뜻줄(살) + '(삼명통회)' : '옛 책이 꼽은 여덟 가지 살 가운데 당신 사주에 있는 건 없어요.'; };
       const 답6 = () => { const 귀 = SM.귀인(R); return 귀.length ? 뜻줄(귀) + '(삼명통회)' : '옛 책이 꼽은 여섯 가지 귀인 가운데 당신 사주에 있는 건 없어요. 귀인은 운으로도 와요.'; };
-      안전(5, '옛 책이 이름 붙인 여덟 가지 기운(신살)', '역마 · 함지(도화) · 화개 · 겁살 · 망신 · 양인 · 괴강 · 공망 — 옛 책이 꼽은 여덟 가지 가운데 당신에게 있는 것', () => {
+      안전(5, '옛 책이 이름 붙인 여덟 가지 기운(신살)', '옛 책이 꼽은 여덟 가지(역마 · 함지 · 화개 · 겁살 · 망신 · 양인 · 괴강 · 공망) 가운데 당신에게 있는 건 무엇인가', () => {
         const 살 = SM.신살(R);
         return 문단(['삼명통회가 찾는 법 그대로 찾았어요. 역마 · 함지 · 화개 · 겁살 · 망신은 책대로 태어난 해에서 찾아요. 요즘 흔히 쓰는 표와 다를 수 있어요. 책에 없는 살(백호대살 등)은 싣지 않았어요.'].concat(시없음 ? ['태어난 시간을 몰라서 태어난 시간의 아래 글자에 있는 살은 찾지 않았어요. 그 칸은 비워 뒀어요.'] : []))
           + (살.length ? 살.map(살칸).join('') : 문단(['여덟 가지 가운데 이 ' + 온수 + ' 글자에 있는 것은 없어요.']));
       }, 답5);
-      안전(6, '옛 책이 도움으로 본 여섯 가지(귀인)', '천을귀인 · 천덕 · 월덕 · 학당 · 록 · 금여 — 옛 책이 도움으로 본 여섯 가지 가운데 당신에게 있는 것', () => {
+      안전(6, '옛 책이 도움으로 본 여섯 가지(귀인)', '옛 책이 도움으로 본 여섯 가지(천을귀인 · 천덕 · 월덕 · 학당 · 록 · 금여) 가운데 당신에게 있는 건 무엇인가', () => {
         const 귀 = SM.귀인(R);
         return 문단(['이것도 삼명통회가 찾는 법 그대로예요. 책은 귀인이 있어도 그 자리가 힘이 없거나, 다른 글자와 부딪히거나(충), 짝 없는 자리에 들면(공망) 없는 것과 같다고 했어요.'].concat(시없음 ? ['태어난 시간을 몰라서 태어난 시간의 글자에 있는 귀인은 찾지 않았어요. 그 칸은 비워 뒀어요.'] : []))
           + (귀.length ? 귀.map(살칸).join('') : 문단(['여섯 가지 가운데 이 ' + 온수 + ' 글자에 있는 것은 없어요. 귀인은 운으로도 와요.']));
@@ -177,6 +179,7 @@
     const 걸러 = (칸들) => 칸들.map(x => Object.assign({}, x, { 줄: (x.줄 || []).filter(t => !통설말.test(t)) })).filter(x => x.줄.length || x.원문);
     const 영칸 = (x) => '<div class="jt-du"><div class="jt-du-h"><b>' + esc(x.제목) + '</b></div>' + 문단(x.줄) + (x.원문 ? '<blockquote class="jt-q"><p>' + esc(x.원문[0]) + '</p><p>「' + esc(x.원문[1]) + '」</p></blockquote>' : '') + '</div>';
     const 통설주 = '<p class="jt-yet">「많다」는 나 말고 ' + (시없음 ? '다섯 글자 가운데 셋 이상일 때예요. 태어난 시간을 몰라서 시주 두 글자를 뺀 여섯 글자로 셌어요.' : '일곱 글자 가운데 셋 이상일 때예요.') + '</p>';
+    let 몸답 = '', 일답 = '';
     if (YY) {
       const 일 = YY.일곱(R), 센다 = (이름들) => 일.filter(x => 이름들.indexOf(x.신) >= 0).length, 여자 = input.gender === 'F';
       const 답7 = () => { const 정 = 센다(['정재']), 편 = 센다(['편재']), 식 = 센다(['식신', '상관']);
@@ -188,8 +191,10 @@
         return '옛 책은 당신 글자 ' + E.STEMS_KO[R.pillars.day.stem] + '(' + 일간 + ')' + (받(E.STEMS_KO[R.pillars.day.stem]) ? '을 ' : '를 ') + 과와(YY.간장부[R.pillars.day.stem].replace(/\([^)]*\)/g, '')) + ', 그 기운인 ' + 을를(기운이름[일오]) + ' ' + 과와(YY.집[일오].replace(/\([^)]*\)/g, '')) + ' 짝지었어요. ' + (n >= 3 ? '이 글자를 누르는 ' + 기운이름[친다] + ' 기운이 ' + n + '개로 많아서, ' + 몸[일오] + ' 쪽을 살피라고 했어요.' : '이 글자를 누르는 ' + 기운이름[친다] + ' 기운은 ' + n + '개예요.'); };
       안전(7, '재물운', '돈을 뜻하는 글자가 있나, 어떤 돈인가', () => 걸러(YY.재물(R)).map(영칸).join('') + 통설주, 답7);
       안전(8, '연애 · 결혼운', '어떤 사람에게 끌리나, 짝을 뜻하는 글자가 있나', () => 걸러(YY.연애(R, input.gender === 'F' ? 'F' : 'M')).map(영칸).join('') + 통설주, 답8);
-      안전(9, '직업운', '당신에게 맞는 일', () => 걸러(YY.직업(R, s.격, null, s.상신)).map(영칸).join('') + 통설주, () => YY.직업답(R, s.격, s.상신, '당신'));
-      안전(10, '건강운', '옛 책이 당신의 글자와 짝지은 몸', () => 걸러(YY.건강(R)).map(영칸).join(''), 답10);
+      안전(9, '직업운', '당신에게 맞는 일은 무엇인가', () => 걸러(YY.직업(R, s.격, null, s.상신)).map(영칸).join('') + 통설주, () => YY.직업답(R, s.격, s.상신, '당신'));
+      안전(10, '건강운', '옛 책이 당신의 글자와 짝지은 몸은 어디인가', () => 걸러(YY.건강(R)).map(영칸).join(''), 답10);
+      try { 몸답 = 답10(); } catch (e) {}
+      try { 일답 = YY.직업답(R, s.격, s.상신, '당신') || ''; } catch (e) {}
     }
 
     // 대운 한 칸이 길다 — 앞 세 줄만 보이고 나머지는 접는다. 지금 대운은 펴 둔다.
@@ -206,17 +211,24 @@
     const 답12 = () => { const st = ((올해 - 4) % 10 + 10) % 10, br = ((올해 - 4) % 12 + 12) % 12, 바뀜 = 대목록.find(x => x.startYear > 올해 && x.startYear < 올해 + 5);
       return '올해(' + 올해 + '년)는 ' + 마음몸(st, br) + 닿음(br, '해') + (바뀜 ? ' ' + 바뀜.startYear + '년에 10년 운이 바뀌어요.' : ''); };
     // 09-27 사장님 「대운칸 삭제하자 꼬이는 것 같아」 — 10년마다의 목록(천간 · 지지 두 줄씩 되풀이)은 걷고 첫 줄(지금 10년) 답만 둔다
-    안전(11, '10년마다 바뀌는 운(대운)', '10년마다 마음이 가는 곳과 몸이 움직이는 곳이 바뀌어요.', () => 시주빈말, 답11);
+    안전(11, '10년마다 바뀌는 운(대운)', '지금 10년, 마음과 몸은 어디로 가나', () => 시주빈말, 답11);
 
-    안전(12, '앞으로 다섯 해', '해마다 마음이 가는 곳과 몸이 움직이는 곳. 그해가 속한 긴 운(대운)과 함께 읽었어요.', () => {
+    안전(12, '앞으로 다섯 해', '올해와 앞으로 다섯 해, 마음과 몸은 어디로 가나', () => {
       const 세 = W.세운 ? W.세운(R, 올해, 5, input.gender === 'F' ? 'F' : 'M') : [];
       return 시주빈말 + 세.map((d, i) => '<div class="jt-du' + (i === 0 ? ' now' : '') + '"><div class="jt-du-h"><b>' + d.해 + '년</b><span>' + esc(d.간지) + (d.대운 ? ' · ' + esc(d.대운) + ' 대운 안' : '') + '</span>' + (i === 0 ? '<i>올해</i>' : '') + '</div>' + 문단(d.줄) + '</div>').join('');
     }, 답12);
     // 질문과 답(13장)은 준비될 때까지 목차와 본문에 넣지 않는다.
 
-    box.innerHTML = 목차() + out.join('');
+    // 10-23 사장님 꼴의 끝 — 「그래서 무엇을 하면 되나」 한 덩이. 장의 결론 가운데 할 일로 읽히는 것만 모은다(새 판정 없음 · 사장님 검수 대상).
+    const 할일 = [];
+    if (일답) 할일.push(['일', 일답]);
+    if (몸답) 할일.push(['몸', 몸답]);
+    try { const j = 층.조후; if (j && j.need && !j.hasMain) 할일.push(['기다릴 것', 답2()]); } catch (e) {}
+    try { 할일.push(['올해', 답12()]); } catch (e) {}
+    const 할일칸 = 할일.filter(x => x[1]).length ? '<section class="card jt-ch jt-todo" id="jtTodo"><div class="jt-head"><span class="jt-no">끝</span><h2>그래서 무엇을 하면 되나</h2></div><ul class="jt-li">' + 할일.filter(x => x[1]).map(x => '<li><b>' + esc(x[0]) + '</b> — ' + esc(x[1]) + '</li>').join('') + '</ul></section>' : '';
+    box.innerHTML = 목차() + out.join('') + 할일칸;
     if (global.ChaeksaOryu) global.ChaeksaOryu.잇기(box, () => 그리기(box, input));   // 못 그린 장의 다시 하기 = 처음부터 다시 그린다
-    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#jtCh' + a.dataset.ch); if (d) d.open = true; }));
+    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#jtCh' + a.dataset.ch); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
     try { const S = global.ChaeksaSeolmyeong, b = box.querySelector('#jtSeol'); if (S && b) S.render(R, today, b, {}); } catch (e) {}
   }
 
