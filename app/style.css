@@ -1287,9 +1287,10 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
    그림 위 아래쪽 어두운 띠 · 왼쪽 위 분류 딱지(.k) · 아래 제목(.n). 큰 표지는 여백 · 제목 크기 · 띠 높이만 다르다(아래 .lv-cover). */
 .cat .pic::after,.lv-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,9,24,.82) 0%,rgba(12,9,24,.42) 26%,rgba(12,9,24,0) 50%);pointer-events:none}
 .cat .k,.lv-cover .k{position:absolute;z-index:2;left:8px;top:8px;font-size:var(--t1);letter-spacing:.08em;padding:1px 8px;border-radius:var(--r3);background:rgba(0,0,0,.42);color:#fff}
-.cat .k{left:6px;top:6px;font-size:10px;letter-spacing:.04em;padding:0 6px}
+.cat .k{display:none}   /* 10-23 사장님 「글씨들 때문에 삽화가 잘 안 보여」 — 홈 칸은 분류 딱지 없음 */
+.cat .pic::after{display:none}   /* 홈 칸은 어둠 띠 없음(표지 .lv-cover 만 남김) */
 .cat .n,.lv-cover .n{position:absolute;z-index:2;left:10px;right:10px;bottom:9px;font-family:var(--serif);font-weight:900;font-size:var(--t3);line-height:1.3;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.7);word-break:keep-all;overflow-wrap:anywhere}
-.cat .n{left:7px;right:7px;bottom:7px;font-size:var(--t2);line-height:1.25}
+.cat .n{position:static;left:auto;right:auto;bottom:auto;margin:7px 7px 0;font-size:var(--t2);line-height:1.3;color:var(--ink);text-shadow:none}   /* 10-23 제목은 그림 아래 */
 .cat .s{display:none;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:7px 10px 0;font-size:var(--t1);line-height:1.42;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
 .cat .t{display:block;margin:auto 10px 0;padding:5px 0 9px;font-size:var(--t1);line-height:1.45;font-weight:700;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .cat .t{margin:0 7px;padding:5px 0 7px;font-size:11px;line-height:1.35}
