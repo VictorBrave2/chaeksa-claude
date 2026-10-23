@@ -21,7 +21,7 @@
 Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
 No film grain, no night scene, no dark indigo, no heavy shadows.
 Vertical 2:3 (1024x1536). First-person view in a bright, sunlit modern office lounge or cafe, big windows, soft blue sky, green plants, a small vase with one red camellia.
-NEW PERSON: Korean man, late 20s, short dark tousled hair, warm gentle eyes, white shirt with sleeves rolled, light blue cardigan over the shoulder.
+NEW PERSON: Korean man, late 20s, short dark tousled hair, warm gentle eyes, pale lilac linen shirt with sleeves rolled.
 Scene: NEW PERSON stands or sits across from the viewer, smiling politely and a little curiously, holding out a plain blank white name card with both hands (nothing printed on it). In the lower foreground the viewer's own hand (a young woman's hand) reaches to take it.
 Composition: NEW PERSON's face in the upper third of the frame, the card and the viewer's hand in the middle. Whole frame painted, no empty area.
 No text, no letters, no numbers, no logos, no watermark. Original characters, not based on any real person.

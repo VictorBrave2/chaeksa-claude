@@ -21,7 +21,7 @@
 Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
 No film grain, no night scene, no dark indigo, no heavy shadows.
 Vertical 2:3 (1024x1536). First-person view of a sunny cafe window table, cherry blossom branches outside, soft blue sky, two pastel cups, one red camellia in a glass.
-HIM: Korean man, late 20s, short dark tousled hair, warm gentle eyes, white shirt with sleeves rolled, light blue cardigan over the shoulder.
+HIM: Korean man, late 20s, short dark tousled hair, warm gentle eyes, warm peach fine-knit polo shirt.
 Scene: HIM sits across the table, leaning in a little, looking straight at the viewer with a warm knowing smile, his phone in one hand resting on the table. In the lower foreground, the viewer's own hand (a young woman's hand, pastel nails) holds a phone whose screen is only soft light. Petals drift between them.
 Composition: HIM's face in the upper third of the frame, the viewer's hand and phone in the lower part. Whole frame painted, no empty area.
 No text, no letters, no numbers, no logos, no watermark. Original characters, not based on any real person.

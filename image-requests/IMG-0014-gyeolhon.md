@@ -21,7 +21,7 @@
 Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
 No film grain, no night scene, no dark indigo, no heavy shadows.
 Vertical 2:3 (1024x1536). A bright spring afternoon on a tree-lined path, blossoms overhead, petals drifting, soft blue sky, a red camellia bush beside the path.
-HIM: Korean man, late 20s, short dark tousled hair, warm gentle eyes, white shirt with sleeves rolled, light blue cardigan over the shoulder.
+HIM: Korean man, late 20s, short dark tousled hair, warm gentle eyes, cream lightweight cotton jacket over a blush pink crew-neck top.
 HER: Korean woman, late 20s, dark brown hair loosely tied, calm expressive eyes, cream knit top, lilac skirt, small red scarf.
 Scene: HIM walks half a step ahead, turning back toward HER with an easy happy smile, one hand holding hers. HER face is seen in profile, close to the viewer, with a thoughtful, tender, slightly uncertain expression, as if silently asking herself "can I marry him?".
 Composition: both faces in the upper third of the frame, his face more toward the viewer, hers in profile. Whole frame painted, no empty area.

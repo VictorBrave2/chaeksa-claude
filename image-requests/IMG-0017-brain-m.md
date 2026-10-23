@@ -21,7 +21,7 @@
 Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
 No film grain, no night scene, no dark indigo, no heavy shadows.
 Vertical 2:3 (1024x1536). A bright sunlit desk by a window, sheer white curtains, soft blue sky, pink flowers and one red camellia in a small vase.
-ME-M: Korean man, late 20s, short dark hair, calm expressive eyes, white shirt, light blue cardigan, light trousers.
+ME-M: Korean man, late 20s, short dark hair, calm expressive eyes, pale lilac V-neck sweater vest over a cream shirt, ivory trousers.
 Scene: ME-M sits at the desk, an old thread-bound book lying open in front (its pages completely blank), one pen tip resting playfully at the lips, looking straight at the viewer with one eyebrow slightly raised, a bright curious half-smile, as if asking "am I?". Petals drift in the sunlight.
 Composition: the face(s) in the upper third of the frame. Whole frame painted, no empty area.
 No text, no letters, no numbers, no logos, no watermark. Original characters, not based on any real person.

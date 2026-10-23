@@ -21,7 +21,7 @@
 Korean romance webtoon cover illustration, glossy semi-realistic anime style, smooth luminous rendering, clean delicate linework, bright airy daylight, high-key pastel palette (cream white, lilac, blush pink, soft sky blue, warm peach), sparkling bloom highlights, a few drifting flower petals and small fresh flowers in frame, cheerful warm dreamy mood. Match the look of a bright sunlit Korean webtoon cover.
 No film grain, no night scene, no dark indigo, no heavy shadows.
 Vertical 2:3 (1024x1536). A bright old bookshop or library corner, tall shelves of thread-bound books with plain spines, sunlight pouring through a window, petals drifting in, one red camellia in a small vase.
-ME-M: Korean man, late 20s, short dark hair, calm expressive eyes, white shirt, light blue cardigan, light trousers.
+ME-M: Korean man, late 20s, short dark hair, calm expressive eyes, pale sky-blue lightweight denim overshirt over a cream Henley top, ivory trousers.
 Scene: ME-M stands holding an old thread-bound book open with both hands (its pages completely blank, no marks), and has just looked up from it toward the viewer with a hopeful, slightly surprised expression, as if asking "did they welcome me?".
 Composition: the face(s) in the upper third of the frame. Whole frame painted, no empty area.
 No text, no letters, no numbers, no logos, no watermark. Original characters, not based on any real person.
