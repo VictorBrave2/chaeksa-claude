@@ -21,7 +21,7 @@ No film grain, no night scene, no dark indigo, no heavy shadows.
 Vertical 2:3 (1024x1536). Bright late morning at a desk by a sunny window with sheer white curtains, soft blue sky outside, cream and lilac room, a small vase of pink flowers and one red camellia.
 MOM: Korean woman, early 30s, long dark brown hair loosely tied, visibly pregnant (about eight months), cream knit cardigan over a soft pink dress, calm cheerful face.
 Scene: MOM alone at the desk. In one hand a folded hospital appointment slip (a plain blank paper, nothing written on it), in the other her phone; she is deciding which days to type in. A closed maternity notebook on the desk.
-Composition: MOM in the upper half of the frame; the bottom 40% fades into a plain, soft pale cream-to-lilac gradient with no objects and no faces (speech-bubble area).
+Composition: MOM's face in the upper third of the frame, her hands and the desk below her; the lower part of the frame shows the desk, the notebook and flowers. Whole frame painted, no empty area.
 Phone screen is soft light only, nothing written on it.
 No text, no letters, no logos, no watermark. Original characters, not based on any real person.
 ```
@@ -36,3 +36,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 2순위.
 - 2026-10-23 다시 — 사장님 「일곱 장도 표지처럼 밝게 다시 그려」. 밤 · 새벽 프롬프트를 홈 표지(taekil-main · ssom-main) 화풍으로 바꿔 씀(장면은 그대로, 빛 · 색만). 첫 판 PNG 는 out/old/ 에.
+- 2026-10-23 다시(아래 비움 없앰) — 사장님 「아래를 비워 두는 이유는?」. 입력 컷 틀(.gc-cut 높이 300px · 위부터 보임)은 그림 위쪽 55% 만 보여 주고 말풍선은 그 안에 얹히므로 아래 40% 를 비워도 화면에 안 보인다. 온 틀을 다 그리게 바꿈. 비운 판은 out/old/IMG-0002-blank.png.

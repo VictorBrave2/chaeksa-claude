@@ -22,7 +22,7 @@ Vertical 2:3 (1024x1536). Bright afternoon at a sunny cafe terrace, cherry bloss
 HIM: Korean man, early 30s, short dark tousled hair, calm gentle eyes, white shirt, light blue cardigan.
 HER: Korean woman, late 20s, dark brown hair in a loose bun, bright expressive face, blush pink blouse, lilac scarf on her chair.
 Scene: HIM and HER sitting side by side at the small cafe table. HER types on her phone; HIM holds his own phone up a little, as if reading a date out loud to her; she glances at him with a small smile.
-Composition: both in the upper half of the frame; the bottom 40% fades into a plain, soft pale cream-to-lilac gradient with no objects and no faces (speech-bubble area).
+Composition: both faces in the upper third of the frame, the table with cups and the camellia below them; the lower part of the frame shows the table and drifting petals. Whole frame painted, no empty area.
 Phone screens are soft light only, nothing written on them.
 No text, no letters, no logos, no watermark. Original characters, not based on any real person.
 ```
@@ -38,3 +38,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 5순위(결혼상대 점검 = 둘째 유료).
 - 2026-10-23 다시 — 사장님 「일곱 장도 표지처럼 밝게 다시 그려」. 밤 · 새벽 프롬프트를 홈 표지(taekil-main · ssom-main) 화풍으로 바꿔 씀(장면은 그대로, 빛 · 색만). 첫 판 PNG 는 out/old/ 에.
+- 2026-10-23 다시(아래 비움 없앰) — 사장님 「아래를 비워 두는 이유는?」. 입력 컷 틀(.gc-cut 높이 300px · 위부터 보임)은 그림 위쪽 55% 만 보여 주고 말풍선은 그 안에 얹히므로 아래 40% 를 비워도 화면에 안 보인다. 온 틀을 다 그리게 바꿈. 비운 판은 out/old/IMG-0005-blank.png.

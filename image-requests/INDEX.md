@@ -7,10 +7,10 @@
 | 작업 ID | 그림 | 상태 | 명세 | 원본 | 최종 경로 |
 |---|---|---|---|---|---|
 | IMG-0001 | 출산택일 소개 머리 그림 — 새벽 창가, 달력에 동그라미 치는 부부 | 적용됨(taekil.html · taekil-price.html 머리) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0001-taekil-hero.md | out/IMG-0001.png | app/art/taekil-hero.webp |
-| IMG-0002 | 출산택일 신청서 머리 컷 — 병원 예약지를 든 엄마(말풍선 자리 비움) | 적용됨(taekil-apply.html 컷 + 말풍선) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0002-taekil-apply.md | out/IMG-0002.png | app/art/taekil-apply.webp |
+| IMG-0002 | 출산택일 신청서 머리 컷 — 병원 예약지를 든 엄마(말풍선 자리 비움) | 적용됨(taekil-apply.html 컷 + 말풍선) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) · 아래 40% 비움 없앰(사장님 「아래를 비워 두는 이유는?」 — 입력 컷은 그림 위 55% 만 보여 비워도 안 보임) | IMG-0002-taekil-apply.md | out/IMG-0002.png | app/art/taekil-apply.webp |
 | IMG-0003 | 보고서를 함께 읽는 부부 — 견본 쪽 · 「보고서는 이렇게」 · 결제 끝 | 적용됨(taekil-sample.html 머리 · taekil.html 「보고서는 이렇게 만듭니다」 · pay-done.html 출산택일 · 견본 og) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0003-taekil-report.md | out/IMG-0003.png | app/art/taekil-report.webp |
 | IMG-0004 | 출산택일 글 열세 편 공용 머리 — 새벽 병원 창가, 갓 태어난 아기 | 적용됨(tools_jeongbon.py 머리 figure — taekil-* 질문 글 11편 + og 카드 cards/og/taekil-*.jpg) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0004-taekil-read.md | out/IMG-0004.png | app/art/taekil-read.webp |
-| IMG-0005 | 결혼상대 점검 신청서 머리 컷 — 서로 생년월일을 불러 주는 둘(말풍선 자리 비움) | 적용됨(gyeolhon-apply.html 컷 + 말풍선 · og 카드) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0005-gyeolhon-apply.md | out/IMG-0005.png | app/art/gyeolhon-apply.webp |
+| IMG-0005 | 결혼상대 점검 신청서 머리 컷 — 서로 생년월일을 불러 주는 둘(말풍선 자리 비움) | 적용됨(gyeolhon-apply.html 컷 + 말풍선 · og 카드) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) · 아래 40% 비움 없앰(사장님 「아래를 비워 두는 이유는?」 — 입력 컷은 그림 위 55% 만 보여 비워도 안 보임) | IMG-0005-gyeolhon-apply.md | out/IMG-0005.png | app/art/gyeolhon-apply.webp |
 | IMG-0006 | 「나는 뭐해 먹고 살까?」 표지 · 여자 — 밤 갈림길, 불 켜진 문들 | 적용됨(ilgyeol.html 머리 · 홈 「일」 칸 · ilgyeol · ilgyeol-apply og 카드) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0006-ilgyeol-f.md | out/IMG-0006.png | app/art/ilgyeol-f.webp |
 | IMG-0007 | 「나는 뭐해 먹고 살까?」 표지 · 남자 — 같은 갈림길 | 적용됨(ilgyeol.html 머리 · 홈 「일」 칸 — 남자 프로필) · 10-23 밝게 다시(사장님 「일곱 장도 표지처럼 밝게」, 첫 판은 out/old/) | IMG-0007-ilgyeol-m.md | out/IMG-0007.png | app/art/ilgyeol-m.webp |
 | IMG-0008 | 「사랑할 때만 나오는 당신」 표지 다시 — 밤 카페 창가, 유리에 비친 다른 얼굴(표지 통일 안 함) | 취소(10-23 사장님 — 지금 표지 그대로) | IMG-0008-love-cover.md | out/IMG-0008.png | app/art/love-cover.webp |

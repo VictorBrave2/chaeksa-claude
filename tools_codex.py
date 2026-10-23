@@ -4,11 +4,13 @@
     python tools_codex.py copy-requests/COPY-0001-paid-pages.md      # 명세 한 장 → 따로 떨어진 작업 폴더에서 Codex 가 고침
     python tools_codex.py copy-requests/COPY-0001-paid-pages.md --ask "추가 지시 한 줄"
     python tools_codex.py copy-requests/COPY-0002-free-pages.md --part ssom12 --ask "「웹툰궁합(썸) — 화면 · 앞 회차」 절만"
-        # --part: 한 명세를 묶음으로 나눠 동시에 돌릴 때 — 묶음마다 작업 폴더 ../chaeksa-codex-<ID>-<part>
+        # --part: 한 명세를 묶음으로 나눠 동시에 돌릴 때 — 묶음마다 작업 폴더 ~/.chaeksa-codex/<ID>-<part>
+    python tools_codex.py --clean                                      # 합친 뒤: 작업 폴더 · codex/* 가지 전부 지움
     --model gpt-6-astra(기본) · --effort high(기본) — 10-23 사장님 Pro 구독 뒤 가장 센 모델로
 
 하는 일
-  1) 이 저장소 옆에 작업 폴더(git worktree) ../chaeksa-codex-<작업 ID> 를 가지 codex/<작업 ID> 로 만든다(있으면 그대로 쓴다).
+  1) 홈의 숨은 폴더에 작업 폴더(git worktree) ~/.chaeksa-codex/<작업 ID> 를 가지 codex/<작업 ID> 로 만든다(있으면 그대로 쓴다). 바탕화면에는 안 만든다(10-23 사장님).
+     합친 뒤 `python tools_codex.py --clean` 으로 작업 폴더 · codex/* 가지를 전부 지운다.
      — 본 폴더(main)를 Codex 가 직접 만지지 않게. 다른 손(사장님 Codex 앱 · 다른 세션)과 겹치지 않는다.
   2) 그 폴더에서 codex exec 를 부른다. 깃발은 10-22 · 23 시험으로 맞춘 것:
        -m gpt-6-astra · model_reasoning_effort=high(10-23 사장님 Pro 구독 — 이제 astra 가 목록에 있다. 안 되면 가벼운 모델로 내려가지 않고 멈춘다) ·
@@ -34,6 +36,18 @@ def main():
     except Exception:
         pass
     a = sys.argv[1:]
+    if a and a[0] == '--clean':
+        # 10-23 사장님 「바탕화면에 왜 쌓는 거야 폴더를?」 — 합친 뒤 작업 폴더(worktree) · codex/* 가지를 전부 지운다
+        n = 0
+        for line in run(['git', 'worktree', 'list', '--porcelain']).stdout.splitlines():
+            if line.startswith('worktree ') and '.chaeksa-codex' in line.replace('\\', '/'):
+                run(['git', 'worktree', 'remove', '--force', line[9:]], check=False); n += 1
+        run(['git', 'worktree', 'prune'], check=False)
+        for b in run(['git', 'branch', '--list', 'codex/*']).stdout.split():
+            if b.startswith('codex/'):
+                run(['git', 'branch', '-D', b], check=False)
+        print('지움: 작업 폴더 %d개 · codex/* 가지' % n)
+        return
     if not a or a[0].startswith('-'):
         sys.exit(__doc__)
     spec = a[0].replace('\\', '/')
@@ -49,7 +63,8 @@ def main():
     if not m:
         sys.exit('명세 파일 이름에 작업 ID(COPY-0001 · DES-0001 · IMG-0001)가 없다')
     wid = m.group(0) + ('-' + part if part else '')
-    wt = os.path.normpath(os.path.join(ROOT, '..', 'chaeksa-codex-' + wid))
+    # 10-23 사장님 「바탕화면에 왜 쌓는 거야 폴더를?」 — 작업 폴더는 저장소 옆(바탕화면)이 아니라 홈의 숨은 폴더 ~/.chaeksa-codex/<작업 ID> 에. 합친 뒤엔 --clean 으로 지운다
+    wt = os.path.normpath(os.path.join(os.path.expanduser('~'), '.chaeksa-codex', wid))
     branch = 'codex/' + wid
     if not os.path.isdir(wt):
         has = run(['git', 'branch', '--list', branch]).stdout.strip()
