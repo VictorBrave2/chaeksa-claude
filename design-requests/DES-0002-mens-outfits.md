@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | DES-0002 |
-| 상태 | 요청 |
+| 상태 | 적용됨(v1424 — 아홉 장 다시 그려 끼움) |
 | 요청한 날 | 2026-10-24 |
 | 고칠 수 있는 파일 | `image-requests/IMG-0007-ilgyeol-m.md` · `IMG-0013-pair.md` · `IMG-0014-gyeolhon.md` · `IMG-0015-saram.md` · `IMG-0017-brain-m.md` · `IMG-0019-gwi-m.md` · `IMG-0021-gyeokgi-m.md` · `IMG-0023-myeongban-m.md` · `IMG-0025-when-m.md` — 각 파일 **프롬프트 블록(```) 안의 남자 인물 줄(ME-M: … / HIM: … / NEW PERSON: …)의 옷차림 부분만** |
 | 까닭 | 10-24 사장님 「표지 남자 옷이 단벌신사라서...」 — 아홉 표지의 남자가 전부 「white shirt, light blue cardigan」이라 같은 사람이 옷 한 벌로 돌아다니는 것처럼 보인다. |
