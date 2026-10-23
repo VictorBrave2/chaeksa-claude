@@ -68,7 +68,7 @@ def main():
     기본 = ['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'windows.sandbox="elevated"',
             '-c', 'model_reasoning_effort="' + effort + '"', '-m', model, '-o', last]
     # 10-23 사장님 Pro 구독(「구독했어」) — gpt-6-astra 를 부르고, 요금제가 안 받으면 가벼운 모델로 몰래 내려가지 않고 멈춘다
-    r = subprocess.run(기본 + [prompt], cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))
+    r = subprocess.run(기본 + [prompt], cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'), stdin=subprocess.DEVNULL)   # 입력을 닫아야 codex 가 안 멈춘다(10-23)
     if 'not supported' in ((r.stdout or '') + (r.stderr or '')):
         sys.exit(model + ' 는 지금 요금제로 안 됨 — 멈춤(가벼운 모델로 돌리지 않음). ~/.codex/models_cache.json 목록을 보라')
     print('쓴 모델:', model, '· 생각 깊이:', effort)
