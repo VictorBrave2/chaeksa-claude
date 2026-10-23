@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | IMG-0011 |
-| 상태 | 요청 |
+| 상태 | 취소 |
 | 요청한 날 | 2026-10-23 |
 | 쓰임 | **사장님 결정 뒤에 그린다(INVENTORY-1023.md 「정할 것 1」).** 지금 표지(ssom-main.webp)는 대낮 분홍 카페의 남녀 — 밝고 예쁘지만 웹툰궁합 장면 그림 36장(ss-*, 밤 · 인디고 · 동백)과 나란히 서면 다른 작품처럼 보인다. 새로 그리지 않고 있는 장면 그림(ss-sseom-5 · ss-give)을 표지로 돌려 쓰는 길도 있다 — 다만 장면 그림은 아래 40%가 비어 있어 표지로는 아래가 허전하다. |
 | 넣을 화면 | chaeksa.kr 홈 「궁합」 칸(home-cats.js ssom 줄) · ssom.html 머리(.sg-cover) · 파일 app/home-cats.js · app/ssom.html |
@@ -34,3 +34,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 11순위 · 사장님 결정 대기.
+- 2026-10-23 취소 — 사장님 「현재 출산택일 · 정통궁합 · 웹툰궁합 표지로 쓰고 있는 삽화 스타일이 좋다」. 지금 표지 그대로 둔다. 만든 그림은 out/ 에 남김(다른 자리에 쓸 수 있음).

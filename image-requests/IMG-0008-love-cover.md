@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | IMG-0008 |
-| 상태 | 요청 |
+| 상태 | 취소 |
 | 요청한 날 | 2026-10-23 |
 | 쓰임 | **사장님 결정 뒤에 그린다(INVENTORY-1023.md 「정할 것 1」 — 홈 표지 다섯을 한 화풍으로 통일할지).** 지금 표지(love-cover.webp)는 대낮 웨딩 장면 — 결혼식 그림인데 콘텐츠는 「연애할 때의 나」라 소재가 어긋나고, 화풍도 사이트 나머지(밤 · 인디고 · 동백)와 다르다. 홈 「연애」 칸 · love.html 머리 · 카톡 공유 그림(art/kakao/love-cover.jpg 800×1000) 세 곳. 통일을 고르지 않으면 이 줄은 `취소`. |
 | 넣을 화면 | chaeksa.kr 홈 「연애」 칸(home-cats.js love 줄) · love.html 머리(.sg-cover) · 카톡 공유 · 파일 app/home-cats.js · app/love.html · app/love.js(표지그림) · app/art/kakao/love-cover.jpg |
@@ -34,3 +34,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 8순위 · 사장님 결정 대기.
+- 2026-10-23 취소 — 사장님 「현재 출산택일 · 정통궁합 · 웹툰궁합 표지로 쓰고 있는 삽화 스타일이 좋다」. 지금 표지 그대로 둔다. 만든 그림은 out/ 에 남김(다른 자리에 쓸 수 있음).

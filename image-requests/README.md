@@ -26,7 +26,7 @@
 
 - 2020년대 한국 로맨스 · 일상 웹툰 표지 느낌 — 부드러운 채색, 맑은 피부 표현, 섬세한 선, 따뜻한 빛.
 - 기본 비율은 세로 2:3(1024×1536). 가로 띠가 필요하면 명세에 따로 적습니다.
-- 맞출 본보기: `app/art/story-sanggyeonrye.webp`(상견례) · `app/art/story-propose.webp` · `app/art/taekil-main.webp`(출산택일 머리 그림). 새 그림은 이 그림들 옆에 놓여도 어색하지 않아야 합니다.
+- 맞출 본보기 — **표지(홈 칸 · 화면 머리)**: `app/art/taekil-main.webp`(출산택일) · `app/art/gunghap-main.webp`(정통궁합) · `app/art/ssom-main.webp`(웹툰궁합). 10-23 사장님 「현재 출산택일 · 정통궁합 · 웹툰궁합 표지로 쓰고 있는 삽화 스타일이 좋다」 — 맑고 밝은 채색 · 꽃 · 따뜻한 빛 · 대낮. 이 셋은 바꾸지 않습니다. **본문 장면 컷**: `app/art/story-sanggyeonrye.webp`(상견례) · `app/art/story-propose.webp`. 새 그림은 같은 자리의 그림 옆에 놓여도 어색하지 않아야 합니다.
 
 ## 파일
 

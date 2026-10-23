@@ -36,3 +36,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 10-23 사장님 「그다음은 삽화 손보도록 하자」 — 삽화 재고(INVENTORY-1023.md) 1순위.
+- 2026-10-23 사장님 「현재 출산택일 · 정통궁합 · 웹툰궁합 표지로 쓰고 있는 삽화 스타일이 좋다」 — 홈 「아이」 칸(taekil-main)은 그대로. 이 그림은 taekil · taekil-price 머리에만 쓴다.

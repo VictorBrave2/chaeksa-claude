@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | IMG-0009 |
-| 상태 | 요청 |
+| 상태 | 취소 |
 | 요청한 날 | 2026-10-23 |
 | 쓰임 | **사장님 결정 뒤에 그린다(INVENTORY-1023.md 「정할 것 1」).** 지금 표지(saju-main.webp)는 보랏빛 긴 머리의 판타지풍 소녀 — 흔한 AI 그림 느낌이고, 서울 · 밤 · 동백이라는 사이트 세계와 닿지 않는다. 같은 그림을 잘라 쓴 love-main.webp(첫 만남 입력 칸 배경)는 IMG-0012 로 따로. 「네 계절 · 한 사람」이라는 뜻은 살린다. |
 | 넣을 화면 | chaeksa.kr 홈 「나」 칸(home-cats.js jeongtong 줄) · jeongtong.html 머리(.sg-cover) · 파일 app/home-cats.js · app/jeongtong.html |
@@ -33,3 +33,4 @@ No text, no letters, no logos, no watermark. Original characters, not based on a
 ## 기록
 
 - 2026-10-23 요청 — Claude Code(화면 담당). 삽화 재고(INVENTORY-1023.md) 9순위 · 사장님 결정 대기.
+- 2026-10-23 취소 — 사장님 「현재 출산택일 · 정통궁합 · 웹툰궁합 표지로 쓰고 있는 삽화 스타일이 좋다」. 지금 표지 그대로 둔다. 만든 그림은 out/ 에 남김(다른 자리에 쓸 수 있음).
