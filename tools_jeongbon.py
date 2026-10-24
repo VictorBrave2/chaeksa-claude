@@ -293,8 +293,8 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 </style>
 <script type="application/ld+json">{ldjson}</script>
 </head>
-<body>
-<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
+<body{ ' class="tk-page"' if slug.startswith('taekil-') else ''}>
+{ '<div class="mini-head" role="banner"><span class="logo"><i class="seal">策</i><span>책사</span></span></div>' if slug.startswith('taekil-') else '<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>'}
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>{html.escape(title)}</h1>
@@ -304,7 +304,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
   {rel}
   {nav}
   <p style="margin-top:34px;font-size:var(--t2);color:var(--ink3)">
-    <a href="./">책사 홈</a> · <a href="taekil.html">출산택일 안내</a> · <a href="taekil-apply.html">보고서 신청</a> ·
+    {'' if slug.startswith('taekil-') else '<a href="./">책사 홈</a> · '}<a href="taekil.html">출산택일 안내</a> · <a href="taekil-apply.html">보고서 신청</a> ·
     <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a></p>
   <p style="font-size:var(--t1);line-height:1.8;opacity:.75;color:var(--ink3)">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
 </div>
@@ -313,7 +313,64 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 </script>
 <script src="config.js"></script>
 <script src="track.js"></script>
-</body>
+{"""<!-- DES-0006: 출산택일 길의 네 칸과 월별 자료 24편. -->
+<div class="tk-dock">
+  <section class="tk-data" id="tk-data" aria-labelledby="tk-data-title" hidden>
+    <div class="tk-data-head"><h2 id="tk-data-title">월별 자료</h2><button id="tk-data-close" type="button">닫기</button></div>
+    <div class="tk-data-scroll" role="region" aria-label="월별 출산택일과 궁통보감 자료" tabindex="0">
+      <div class="tk-data-row"><time datetime="2026-09">2026.09</time><a href="taekil-2026-09.html" aria-label="2026년 9월 출산택일">출산택일</a><a href="taekil-2026-09-gungtong.html" aria-label="2026년 9월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2026-10">2026.10</time><a href="taekil-2026-10.html" aria-label="2026년 10월 출산택일">출산택일</a><a href="taekil-2026-10-gungtong.html" aria-label="2026년 10월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2026-11">2026.11</time><a href="taekil-2026-11.html" aria-label="2026년 11월 출산택일">출산택일</a><a href="taekil-2026-11-gungtong.html" aria-label="2026년 11월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2026-12">2026.12</time><a href="taekil-2026-12.html" aria-label="2026년 12월 출산택일">출산택일</a><a href="taekil-2026-12-gungtong.html" aria-label="2026년 12월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-01">2027.01</time><a href="taekil-2027-01.html" aria-label="2027년 1월 출산택일">출산택일</a><a href="taekil-2027-01-gungtong.html" aria-label="2027년 1월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-02">2027.02</time><a href="taekil-2027-02.html" aria-label="2027년 2월 출산택일">출산택일</a><a href="taekil-2027-02-gungtong.html" aria-label="2027년 2월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-03">2027.03</time><a href="taekil-2027-03.html" aria-label="2027년 3월 출산택일">출산택일</a><a href="taekil-2027-03-gungtong.html" aria-label="2027년 3월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-04">2027.04</time><a href="taekil-2027-04.html" aria-label="2027년 4월 출산택일">출산택일</a><a href="taekil-2027-04-gungtong.html" aria-label="2027년 4월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-05">2027.05</time><a href="taekil-2027-05.html" aria-label="2027년 5월 출산택일">출산택일</a><a href="taekil-2027-05-gungtong.html" aria-label="2027년 5월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-06">2027.06</time><a href="taekil-2027-06.html" aria-label="2027년 6월 출산택일">출산택일</a><a href="taekil-2027-06-gungtong.html" aria-label="2027년 6월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-07">2027.07</time><a href="taekil-2027-07.html" aria-label="2027년 7월 출산택일">출산택일</a><a href="taekil-2027-07-gungtong.html" aria-label="2027년 7월 궁통보감">궁통보감</a></div>
+      <div class="tk-data-row"><time datetime="2027-08">2027.08</time><a href="taekil-2027-08.html" aria-label="2027년 8월 출산택일">출산택일</a><a href="taekil-2027-08-gungtong.html" aria-label="2027년 8월 궁통보감">궁통보감</a></div>
+    </div>
+  </section>
+  <nav id="tk-nav" aria-label="출산택일 길 안내">
+    <a href="taekil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><circle cx="12" cy="15" r="1.6"/></svg><span>출산택일</span></a>
+    <button id="tk-data-toggle" type="button" aria-expanded="false" aria-controls="tk-data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg><span>자료</span></button>
+    <a href="taekil-sample.html?from=site-taekil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>견본</span></a>
+    <a class="tk-apply" href="./taekil-apply.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H5v16h14v-9M10 14l1-4 7-7 3 3-7 7z"/></svg><span>신청</span></a>
+  </nav>
+</div>
+<script>
+  (function () {
+    var dock = document.querySelector('.tk-dock');
+    var toggle = document.getElementById('tk-data-toggle');
+    var panel = document.getElementById('tk-data');
+    var close = document.getElementById('tk-data-close');
+    var page = location.pathname.split('/').pop();
+    var links = document.querySelectorAll('#tk-nav > a');
+    var current = page === 'taekil.html' || page === 'taekil-price.html' ? links[0] :
+      page === 'taekil-sample.html' ? links[1] :
+      /^taekil-(apply|report|admin)[.]html$/.test(page) ? links[2] : toggle;
+    current.setAttribute('aria-current', current === toggle || page === 'taekil-price.html' || /^taekil-(report|admin)[.]html$/.test(page) ? 'true' : 'page');
+    function setOpen(open, restoreFocus) {
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) close.focus({ preventScroll: true });
+      else if (restoreFocus) toggle.focus({ preventScroll: true });
+    }
+    toggle.addEventListener('click', function () { setOpen(panel.hidden, true); });
+    close.addEventListener('click', function () { setOpen(false, true); });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !panel.hidden) { setOpen(false, true); }
+    });
+    document.addEventListener('click', function (event) {
+      if (!panel.hidden && !dock.contains(event.target)) setOpen(false, panel.contains(document.activeElement));
+    });
+    dock.addEventListener('focusout', function () {
+      setTimeout(function () { if (!dock.contains(document.activeElement)) setOpen(false, false); }, 0);
+    });
+  })();
+</script>
+""" if slug.startswith('taekil-') else ''}</body>
 </html>
 '''
 
