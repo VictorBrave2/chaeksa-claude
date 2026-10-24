@@ -70,6 +70,8 @@
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
     // 내(클로드) 캡처·검사 방문은 세지 않는다 — 주소에 cap= 또는 scan= 이 붙는다(2026-09-15 헤드리스 캡처가 첫 방문 열 건으로 찍혔다).
     try { var q = new URLSearchParams(location.search); if (q.has('cap') || q.has('scan')) return; } catch (e) {}
+    // 10-25 배포가 많던 날(10-22~24 커밋 36 · 37 · 50)마다 「첫 방문 · direct」가 110~134 로 뛰었다 — 바뀐 쪽을 다시 그리는 검색 로봇(JS 실행)이다. 로봇 · 헤드리스는 세지 않는다. 사람 수는 그대로(사주 넣은 사람 하루 4~5).
+    try { if (navigator.webdriver || /bot|crawl|spider|slurp|headless|yeti|daum|bingpreview|facebookexternalhit|preview/i.test(navigator.userAgent || '')) return; } catch (e) {}
     if (tooSoon()) return;
 
     var row = {
