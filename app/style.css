@@ -1448,7 +1448,7 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .tkr .tkr-rarity-result{margin:0 0 14px;font-size:var(--t3);line-height:1.6;color:var(--ink)}
 .tkr-rarity-result span{display:inline-block;color:var(--accent)}
 .tkr-rarity-figure{margin:0 0 12px}
-.tkr-rarity-layers{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:460px;margin:0 auto;padding:0;list-style:none}
+.tkr-rarity-layers{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:360px;margin:0 auto;padding:0;list-style:none}   /* 10-25 사장님 「왜 찌그러져 보일까」 — PC 에서 층이 460 까지 넓어져 납작했다. 폰 폭으로 묶는다 */
 .tkr-rarity-layers li{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:10px 20px;text-align:center}
 .tkr-rarity-layers li::before{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(5% 0,95% 0,100% 100%,0 100%);background:var(--line)}
 .tkr-rarity-layers li:nth-child(1){width:82%;padding-top:12px;padding-bottom:12px}
@@ -1470,7 +1470,7 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .doc .tk-intro-rarity h2{margin:0 0 8px;font-family:var(--serif);font-size:var(--t4);line-height:1.5}
 .doc .tk-intro-rarity .tkr-rarity-pick{margin:0 0 10px;font-size:var(--t1);line-height:1.5;color:var(--ink)}
 .doc .tk-intro-rarity .tkr-rarity-pick strong{color:var(--accent)}
-.doc .tk-intro-rarity .tkr-rarity-layers li{margin:0;padding:2px 14px;gap:1px;line-height:1.5}
+.doc .tk-intro-rarity .tkr-rarity-layers li{margin:0;padding:6px 14px;gap:1px;line-height:1.5}
 .doc .tk-intro-rarity .tkr-rarity-layers li:nth-child(4){width:97%}
 .doc .tk-intro-rarity .tkr-rarity-name,.doc .tk-intro-rarity .tkr-rarity-count,.doc .tk-intro-rarity .tkr-rarity-detail{line-height:1.35}
 .doc .tk-intro-rarity .tkr-rarity-figure{margin:0 0 8px}
