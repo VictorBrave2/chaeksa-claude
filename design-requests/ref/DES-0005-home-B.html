@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>책사 — 홈 첫 화면 안 B</title>
+<base href="../../app/">
+<link rel="stylesheet" href="style.css?v=b34976464f">
+<style>
+/* DES-0005 4차: 기존 입력값·그림을 쓰는 화면 견본. 저장·계산은 연결하지 않는다. */
+body{overflow-wrap:normal}
+.wrap{padding-top:0;padding-bottom:var(--s3)}
+header{position:static;padding:var(--s2) 0;gap:var(--s2);background:var(--bg);margin-bottom:var(--s2)}
+header .logo{font-size:var(--t4);gap:var(--s1)}
+header .logo .seal{width:30px;height:30px;font-size:var(--t4)}
+header .logo small{font-size:var(--t1);letter-spacing:0;color:var(--ink2)}
+.home-intro{margin:0 0 var(--s2);text-align:left}
+.home-intro .hi-t{font-size:var(--t5);line-height:1.45;letter-spacing:-.03em}
+.birth-card{margin:0 0 var(--s2);padding:0;border:0;box-shadow:none;background:none}
+.birth-card::before{display:none}
+.birth-card label,.birth-card legend{margin:0;font-size:var(--t2);color:var(--ink2);letter-spacing:0}
+.birth-card fieldset{border:0;min-width:0}
+.birth-top{margin-bottom:var(--s1)}
+.birth-date{display:grid;grid-template-columns:1.2fr .8fr .8fr 1fr;gap:var(--s1)}
+.birth-card input,.birth-card select{min-width:0;padding:10px 8px;font-size:var(--t3);border-radius:var(--r1);height:44px}
+.birth-card input::placeholder{color:var(--ink2);opacity:1}
+.birth-second{margin:var(--s2) 0}
+.birth-time{display:grid;grid-template-columns:1fr 1fr auto;align-items:center;gap:var(--s1);margin-top:var(--s1)}
+.calendar{display:flex;gap:var(--s1)}
+.calendar label{display:flex;align-items:center;gap:4px;cursor:pointer}
+.calendar input,.birth-card input[type="checkbox"]{width:16px;height:16px;padding:0;accent-color:var(--accent);flex:none}
+.birth-card .check{gap:var(--s1);margin-top:var(--s1)}
+.birth-card .birth-time .check{margin-top:0}
+.birth-card .check label{font-size:var(--t1);line-height:1.5}
+.birth-card .fc-more{margin-top:var(--s1);padding-top:0;border:0}
+.birth-card .fc-more>summary{font-size:var(--t1);padding:4px 0;color:var(--ink2)}
+.birth-card .fc-more>label{margin:var(--s2) 0 var(--s1)}
+.birth-card .btn{margin-top:var(--s1);padding:12px 6px;font-size:var(--t3);min-height:48px;letter-spacing:-.02em;word-break:keep-all;background:var(--accent);color:var(--card);box-shadow:none}
+:root[data-theme="night"] .birth-card .btn{color:var(--bg)}
+.home-price-note{font-size:var(--t1);color:var(--ink2);margin-bottom:var(--s1)}
+.cat .n{overflow-wrap:normal}
+.cat .t{font-size:var(--t1)}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.variant-a header{padding:var(--s1) 0}
+.variant-a .home-intro{margin-bottom:var(--s1)}
+.variant-a .birth-card{margin-bottom:var(--s1)}
+.variant-a .birth-top label{font-size:var(--t1)}
+.variant-b .home-intro{padding:var(--s2) 0 var(--s3);margin-bottom:var(--s2);border-bottom:1px solid var(--line2)}
+.variant-b .hi-t{font-size:var(--t6);line-height:1.65;letter-spacing:-.04em}
+.variant-b .hi-t span{display:block}
+.variant-b .hi-t span:last-child{color:var(--accent)}
+@media(min-width:520px){.variant-b .home-intro{padding-top:var(--s3)}}
+</style>
+</head>
+<body class="variant-b">
+<div class="wrap">
+<header>
+<a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사<small>사주 · 연애 · 궁합 · 자미두수</small></span></a>
+<button class="btn-ghost btn-icon" id="btnTheme" type="button" aria-label="낮·밤 화면 바꾸기" title="낮/밤 바꾸기">☀</button>
+</header>
+<main id="landing">
+<div class="home-intro">
+<h1 class="hi-t"><span>내 성격을 안다.</span><span>잘 맞는 사람을 안다.</span><span>내게 좋은 때를 안다.</span></h1>
+</div>
+<!-- 기존 #formCard의 입력값·범위 보존. 실제 연결은 app.js → people.js 경로를 쓴다. -->
+<section class="card birth-card" id="formCard" aria-label="내 생년월일시">
+<div class="birth-top"><label for="y">생년월일 · 성별</label></div>
+<div class="birth-date">
+<input id="y" aria-label="출생 연도" type="number" placeholder="1990" min="1900" max="2100" inputmode="numeric">
+<input id="m" aria-label="출생 월" type="number" placeholder="월" min="1" max="12" inputmode="numeric">
+<input id="d" aria-label="출생 일" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
+<select id="g" aria-label="성별"><option value="F">여성</option><option value="M">남성</option></select>
+</div>
+<details class="fc-more" id="fcMore">
+<summary>시간 · 달력 · 이름 · 태어난 곳</summary>
+<div class="birth-second">
+<fieldset>
+<legend>태어난 시간(몰라도 돼요)</legend>
+<div class="birth-time">
+<input id="hh" aria-label="태어난 시" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
+<input id="mi" aria-label="태어난 분" type="number" placeholder="분" min="0" max="59" inputmode="numeric">
+<div class="check"><input type="checkbox" id="noTime"><label for="noTime">시간을 몰라요</label></div>
+</div>
+</fieldset>
+</div>
+<fieldset class="calendar" id="calSeg" aria-label="양력 또는 음력">
+<label><input type="radio" name="calendar" value="solar" data-cal="solar" checked>양력</label>
+<label><input type="radio" name="calendar" value="lunar" data-cal="lunar">음력</label>
+</fieldset>
+<div class="check hide" id="leapWrap"><input type="checkbox" id="isLeap"><label for="isLeap">윤달이에요</label></div>
+<label for="name">이름</label>
+<input id="name" type="text" aria-label="이름" placeholder="예: 지수" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
+<p class="hint">기본값은 서울이에요. 태어난 곳의 해 위치에 맞춰 시각을 계산해요. 다른 곳에서 태어났으면 아래에서 골라 주세요.</p>
+<label for="place">태어난 곳</label>
+<select id="place" aria-label="태어난 곳"><optgroup label="주요 도시"><option value="KR:서울">서울</option><option value="KR:부산">부산</option><option value="KR:인천">인천</option><option value="KR:대구">대구</option><option value="KR:대전">대전</option><option value="KR:광주">광주</option><option value="KR:울산">울산</option><option value="KR:세종">세종</option></optgroup><optgroup label="그 외 지역"><option value="KR:수원">수원</option><option value="KR:성남">성남</option><option value="KR:춘천">춘천</option><option value="KR:강릉">강릉</option><option value="KR:원주">원주</option><option value="KR:청주">청주</option><option value="KR:천안">천안</option><option value="KR:전주">전주</option><option value="KR:목포">목포</option><option value="KR:여수">여수</option><option value="KR:안동">안동</option><option value="KR:포항">포항</option><option value="KR:창원">창원</option><option value="KR:진주">진주</option><option value="KR:제주">제주</option><option value="KR:서귀포">서귀포</option></optgroup><optgroup label="해외"><option value="AB:도쿄">도쿄 (UTC+9)</option><option value="AB:오사카">오사카 (UTC+9)</option><option value="AB:베이징">베이징 (UTC+8)</option><option value="AB:상하이">상하이 (UTC+8)</option><option value="AB:홍콩">홍콩 (UTC+8)</option><option value="AB:타이베이">타이베이 (UTC+8)</option><option value="AB:싱가포르">싱가포르 (UTC+8)</option><option value="AB:마닐라">마닐라 (UTC+8)</option><option value="AB:방콕">방콕 (UTC+7)</option><option value="AB:하노이">하노이 (UTC+7)</option><option value="AB:호치민">호치민 (UTC+7)</option><option value="AB:자카르타">자카르타 (UTC+7)</option><option value="AB:델리">델리 (UTC+5.5)</option><option value="AB:두바이">두바이 (UTC+4)</option><option value="AB:모스크바">모스크바 (UTC+3)</option><option value="AB:런던">런던 (UTC+0)</option><option value="AB:파리">파리 (UTC+1)</option><option value="AB:베를린">베를린 (UTC+1)</option><option value="AB:로마">로마 (UTC+1)</option><option value="AB:뉴욕">뉴욕 (UTC-5)</option><option value="AB:토론토">토론토 (UTC-5)</option><option value="AB:시카고">시카고 (UTC-6)</option><option value="AB:덴버">덴버 (UTC-7)</option><option value="AB:로스앤젤레스">로스앤젤레스 (UTC-8)</option><option value="AB:샌프란시스코">샌프란시스코 (UTC-8)</option><option value="AB:시애틀">시애틀 (UTC-8)</option><option value="AB:밴쿠버">밴쿠버 (UTC-8)</option><option value="AB:호놀룰루">호놀룰루 (UTC-10)</option><option value="AB:상파울루">상파울루 (UTC-3)</option><option value="AB:시드니">시드니 (UTC+10)</option><option value="AB:멜버른">멜버른 (UTC+10)</option><option value="AB:오클랜드">오클랜드 (UTC+12)</option></optgroup></select>
+<div class="check"><input type="checkbox" id="solar" checked><label for="solar">태어난 곳의 해 위치로 시각 맞추기(진태양시) — 켜 두세요</label></div>
+</details>
+<button class="btn" id="btnGo" type="button">AI분석을 넘어서는 사주분석 받기</button>
+</section>
+<p class="home-price-note">무료인지 · 얼마인지는 각 칸에 적혀 있어요</p>
+<!-- 일반 사주 홈의 배치안: 정통사주·연애·궁합·자미두수를 먼저 보인다. 그림·주소·상품 정보는 그대로다. -->
+<div data-home-cats>
+<div class="cats">
+<a class="cat" href="./?go=jeongtong" data-cat="me" data-i="1" data-key="jeongtong" data-tab="jeongtong"><span class="pic"><img src="art/saju-main.webp?v1448" srcset="art/saju-main-s.webp?v1448 360w, art/saju-main.webp?v1448 1086w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1086" height="1448" decoding="async" loading="lazy"></span><span class="n">정통사주</span><span class="s">나는 어떤 사람이고, 요즘은 어떤 때인지</span><span class="t">무료</span></a>
+<a class="cat" href="./?go=love" data-cat="love" data-i="0" data-key="love" data-tab="love"><span class="pic"><img src="art/love-cover.webp?v1448" srcset="art/love-cover-s.webp?v1448 360w, art/love-cover.webp?v1448 1086w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1086" height="1448" decoding="async"></span><span class="n">사랑할 때만 나오는 당신</span><span class="s">연애할 때 내가 하는 말과 행동</span><span class="t">예시 보기<span data-yaksok-price="love_full" data-pre=" · " data-post="" data-fmt="won"></span></span></a>
+<a class="cat" href="./?go=chongnon" data-cat="match" data-i="1" data-key="chongnon" data-tab="chongnon"><span class="pic"><img src="art/gunghap-main.webp?v1448" srcset="art/gunghap-main-s.webp?v1448 360w, art/gunghap-main.webp?v1448 1086w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1086" height="1448" decoding="async" loading="lazy"></span><span class="n">정통궁합</span><span class="s">두 사람이 잘 맞는 곳과 부딪히는 곳</span><span class="t">무료</span></a>
+<a class="cat" href="myeongban.html" data-cat="me" data-i="5" data-key="myeongban"><span class="pic"><img src="art/myeongban-cover-f.webp?v1448" srcset="art/myeongban-cover-f-s.webp?v1448 360w, art/myeongban-cover-f.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">자미두수 · 내 명반에는 무엇이 적혀 있을까</span><span class="s">자미두수 명반(열두 칸에 별을 놓은 판)을 그리고, 칸(궁)과 별을 누르면 옛 책이 거기 적은 말을</span><span class="t">무료</span></a>
+<a class="cat" href="./?go=taekil" data-cat="child" data-i="0" data-key="taekil" data-tab="taekil"><span class="pic"><img src="art/taekil-main.webp?v1448" srcset="art/taekil-main-s.webp?v1448 360w, art/taekil-main.webp?v1448 1086w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1086" height="1448" decoding="async" fetchpriority="high"></span><span class="n">출산택일</span><span class="s">병원이 준 날짜 중 어느 날이 나은지</span><span class="t">자료 무료 · 보고서<span data-yaksok-price="taekil" data-pre=" " data-post="" data-fmt="won"></span></span></a>
+<a class="cat" href="gyeolhon.html" data-cat="match" data-i="0" data-key="gyeolhon"><span class="pic"><img src="art/gyeolhon-cover.webp?v1448" srcset="art/gyeolhon-cover-s.webp?v1448 360w, art/gyeolhon-cover.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async"></span><span class="n">결혼상대 점검</span><span class="s">이 사람과 결혼해도 될까요?</span><span class="t">보고서<span data-yaksok-price="gyeolhon" data-pre=" · " data-post="" data-fmt="won"></span></span></a>
+<a class="cat" href="ilgyeol.html" data-cat="work" data-i="0" data-key="ilgyeol"><span class="pic"><img src="art/ilgyeol-f.webp?v1448" srcset="art/ilgyeol-f-s.webp?v1448 360w, art/ilgyeol-f.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async"></span><span class="n">나는 뭐해 먹고 살까?</span><span class="s">맞는 일의 조건 · 피할 상황 · 앞으로 10년</span><span class="t">결제하면 바로<span data-yaksok-price="ilgyeol" data-pre=" · " data-post="" data-fmt="won"></span></span></a>
+<a class="cat" href="./?go=pair" data-cat="love" data-i="1" data-key="pair" data-tab="pair"><span class="pic"><img src="art/pair-cover.webp?v1448" srcset="art/pair-cover-s.webp?v1448 360w, art/pair-cover.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">SSS급 그 사람 사용설명서</span><span class="s">그 사람이 연애 단계마다 어떻게 할지</span><span class="t">예시 보기<span data-yaksok-price="love_pair" data-pre=" · " data-post="" data-fmt="won"></span></span></a>
+<a class="cat" href="./?go=ssom" data-cat="match" data-i="2" data-key="ssom" data-tab="ssom"><span class="pic"><img src="art/ssom-main.webp?v1448" srcset="art/ssom-main-s.webp?v1448 360w, art/ssom-main.webp?v1448 1086w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1086" height="1448" decoding="async" loading="lazy"></span><span class="n">웹툰궁합</span><span class="s">내가 바라는 사람 vs 그 사람이 하는 행동</span><span class="t">무료</span></a>
+<a class="cat" href="saram.html" data-cat="me" data-i="0" data-key="saram"><span class="pic"><img src="art/saram-cover.webp?v1448" srcset="art/saram-cover-s.webp?v1448 360w, art/saram-cover.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">새로 만난 그 사람</span><span class="s">이름 · 생년월일만 넣으면 원래 어떤 사람인지 한눈에</span><span class="t">무료</span></a>
+<a class="cat" href="brain.html" data-cat="me" data-i="2" data-key="brain"><span class="pic"><img src="art/brain-cover-f.webp?v1448" srcset="art/brain-cover-f-s.webp?v1448 360w, art/brain-cover-f.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">나는 고지능일까</span><span class="s">옛 책이 총명하다고 꼽은 사주인지</span><span class="t">무료</span></a>
+<a class="cat" href="gwi.html" data-cat="me" data-i="3" data-key="gwi"><span class="pic"><img src="art/gwi-cover-f.webp?v1448" srcset="art/gwi-cover-f-s.webp?v1448 360w, art/gwi-cover-f.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">나는 귀한 사람일까</span><span class="s">옛 책이 귀하다고 꼽은 짜임이 내 사주에 있는지</span><span class="t">무료</span></a>
+<a class="cat" href="gyeokgi.html" data-cat="me" data-i="4" data-key="gyeokgi"><span class="pic"><img src="art/gyeokgi-cover-f.webp?v1448" srcset="art/gyeokgi-cover-f-s.webp?v1448 360w, art/gyeokgi-cover-f.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">옛 책은 내 명식을 반겼을까</span><span class="s">옛 책이 이름 붙여 반긴 드문 짜임(격)에 내 사주(명식)가 해당하는지</span><span class="t">무료</span></a>
+<a class="cat" href="when.html" data-cat="time" data-i="0" data-key="when"><span class="pic"><img src="art/when-cover-f.webp?v1448" srcset="art/when-cover-f-s.webp?v1448 360w, art/when-cover-f.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">언제 나아지나</span><span class="s">지금 힘든 시기가 언제 끝나는지</span><span class="t">무료</span></a>
+<a class="cat" href="read.html" data-cat="learn" data-i="0" data-key="read"><span class="pic"><img src="art/read-cover.webp?v1448" srcset="art/read-cover-s.webp?v1448 360w, art/read-cover.webp?v1448 1024w" sizes="(min-width:520px) 115px, calc(33.3vw - 17px)" alt="" width="1024" height="1536" decoding="async" loading="lazy"></span><span class="n">읽을거리</span><span class="s">사주에서 말하는 도화살의 뜻과 나를 뜻하는 글자(일간)의 근거</span><span class="t">무료</span></a>
+</div>
+</div>
+</main>
+</div>
+<script>
+// 견본의 표시 전환만 한다. 저장·계산·로그인·결제·통신 코드는 싣지 않는다.
+document.getElementById('btnTheme').onclick = function () {
+  var night = document.documentElement.dataset.theme !== 'night';
+  document.documentElement.dataset.theme = night ? 'night' : 'day';
+  this.textContent = night ? '☾' : '☀';
+};
+document.querySelectorAll('[name="calendar"]').forEach(function (input) {
+  input.onchange = function () {
+    var lunar = this.value === 'lunar';
+    document.getElementById('leapWrap').classList.toggle('hide', !lunar);
+    if (!lunar) document.getElementById('isLeap').checked = false;
+  };
+});
+document.getElementById('noTime').onchange = function () {
+  document.getElementById('hh').disabled = document.getElementById('mi').disabled = this.checked;
+};
+</script>
+</body>
+</html>
