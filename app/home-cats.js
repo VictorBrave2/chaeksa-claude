@@ -1,11 +1,6 @@
-/* 홈 = 분류 칸 — 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 컨텐츠라도 준비중으로 넣고 칸부터 · 모바일 전용」.
- * 10-02 개편 2묶음 「홈 첫 화면 다시 짜기」 — 폰 첫 화면에 그림 한 장과 다음 그림 윗부분만 보였고, 「준비중」 11줄이 가게가 반쯤 빈 인상을 줬다.
- *   ① 그림 칸은 2열 · 높이를 같게(3:4). 폰 첫 화면에 네 칸이 보인다. 칸마다 한줄(무엇을 보나)과 딱지(무엇이 무료 · 얼마).
- *   ② 그림 칸이 없는 분류(일 · 돈 · 건강 · 사람 사이 …)는 「물음 칸」 — 누르면 답이 있는 콘텐츠의 그 장으로 곧장 간다.
- *      물음 글은 분야 표(bunya.js) 대표 물음(답 칸이 없으면 그 분류에서 답 칸이 걸린 첫 물음), 갈 장은 그 물음의 칸 값(jt.cN → 정통사주 N장).
- *   ③ 아직 콘텐츠가 없는 분류는 맨 아래 한 줄 「곧 열려요」로 접는다.
- * 분류 이름 · 차례 · 물음은 bunya.js, 칸 이름 · 한줄 · 딱지는 상품 약속 장부(yaksok.js)에서 읽는다. 이 파일은 분류마다 어느 콘텐츠 · 그림 · 자리를 여는지만 안다.
- * 콘텐츠가 생기면 아래 칸 표에 한 줄 — 그러면 「곧 열려요」에서 저절로 빠진다. 누르면 들어가기(저장된 사람이 없으면 입구를 거쳐 그 탭). */
+/* DES-0007 — 홈에는 목적별 입구 네 칸, #all에는 기존 콘텐츠 전체.
+ * 이름·가격은 상품 약속 장부, 입력·결과는 기존 책사들어가기 경로를 쓴다.
+ * 표지·묶음·장길 API는 다른 화면에서도 사용하므로 유지한다. */
 (function (global) {
   'use strict';
   // 분류 키 → 그림 칸(콘텐츠). 그림 {g} = f · m. 크기 = 원본 [가로, 세로].
@@ -45,7 +40,7 @@
   var 유료차례 = ['taekil', 'gyeolhon', 'ilgyeol', 'love', 'pair'];
   function 순위(키) { var i = 유료차례.indexOf(키); return i < 0 ? 99 : i; }
   // 그림 칸 폭 — .wrap(최대 520 · 양옆 18) 안의 3열(사이 8) · 넓으면 4열. index.html 머리의 첫 표지 미리 부르기(preload imagesizes)와 같아야 한다.
-  var 칸폭 = '(min-width:520px) 115px, calc(33.3vw - 17px)';   // 10-22 메뉴판(폰 3열 · 넓으면 4열) — index.html 머리 미리 부르기(imagesizes)와 같게
+  var 칸폭 = '(min-width:520px) 236px, calc((100vw - 48px)/2)';
   // 정통사주 장으로 가지 않는 물음 칸 — 결혼은 웹툰궁합 「결혼을 생각할 때」 단계(곳 「단계:결혼」 → app.js 도착이 단계를 미리 골라 둔다),
   // 날 고르기는 출산택일(지금 날을 고르는 콘텐츠는 출산택일뿐이라 글에 그대로 밝힌다).
   var 길 = {
@@ -76,17 +71,17 @@
     return null;
   }
 
-  var 그림판 = 'v1462';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1463';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
-    var 이름 = (Y && Y.이름(c.키)) || b.이름, 한줄 = Y && Y.홈한줄 ? Y.홈한줄(c.키) : '', 딱지 = Y ? Y.딱지html(c.키) : '';
+    var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
     var 원본 = c.그림.replace('{g}', g) + '?' + 그림판, 작은 = c.작은 ? c.작은.replace('{g}', g) + '?' + 그림판 : '';   // 10-24 그림 꼬리(판) — 같은 이름으로 바뀐 그림을 캐시가 물고 있지 않게(tools_bust --bump 가 올림)
     var 주소 = c.주소 || (c.탭 && c.탭 !== 'home' ? './?go=' + c.탭 : '#');
     // 첫 줄 둘은 바로 받고(첫 칸은 먼저), 그 아래는 화면에 다가오면 받는다.
     var 받기 = 차례 === 0 ? ' fetchpriority="high"' : 차례 < 4 ? '' : ' loading="lazy"';
     return '<a class="cat" href="' + esc(주소) + '" data-cat="' + esc(b.키) + '" data-i="' + i + '" data-key="' + esc(c.키) + '"'
       + (c.주소 ? '' : ' data-tab="' + esc(c.탭) + '"' + (c.곳 ? ' data-spot="' + esc(c.곳) + '"' : '')) + '>'
-      + '<span class="pic"><img src="' + esc(원본) + '"' + (작은 ? ' srcset="' + esc(작은) + ' 360w, ' + esc(원본) + ' ' + c.크기[0] + 'w" sizes="' + 칸폭 + '"' : '')
+      + '<span class="pic"><img src="' + esc(원본) + '"' + (작은 ? ' srcset="' + esc(작은) + ' 360w, ' + esc(원본) + ' ' + c.크기[0] + 'w" sizes="' + (c.목록 ? '76px' : 칸폭) + '"' : '')
       + ' alt="" width="' + c.크기[0] + '" height="' + c.크기[1] + '" decoding="async"' + 받기 + '>'
       + '</span><span class="n">' + esc(이름) + '</span>'   // 10-23 사장님 「나 · 아이 · 궁합 · 일과 자리 글씨들 때문에 삽화가 잘 안 보여」 — 분류 딱지(.k) 안 그리고, 제목은 그림 밖 아래로
       + (한줄 ? '<span class="s">' + esc(한줄) + '</span>' : '')
@@ -101,31 +96,55 @@
       + '<span class="t">' + esc(어디) + (어디 && 딱지 ? ' · ' : '') + 딱지 + '</span></a>';
   }
 
-  function 그리기(el) {
-    if (!el || !global.ChaeksaBunya) return;
-    var 큰 = global.ChaeksaBunya.큰분야.slice();
-    큰.sort(function (a, b) { var x = 앞.indexOf(a.키), y = 앞.indexOf(b.키); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });
-    var g = 성별(), Y = global.ChaeksaYaksok, 그림들 = '', 물음들 = '', 곧 = [], 차례 = 0, 조각 = [];
-    큰.forEach(function (b) {
-      if (칸[b.키]) { 칸[b.키].forEach(function (c, i) { 조각.push({ b: b, c: c, i: i, n: 조각.length }); }); return; }
-      var w = 길[b.키] || 장길(b);
-      if (w) 물음들 += 물음칸(b, w, Y); else 곧.push(b.이름);
-    });
-    조각.sort(function (x, y) { return (순위(x.c.키) - 순위(y.c.키)) || (x.n - y.n); });   // 유료 다섯 먼저, 나머지는 있던 차례(n)
-    조각.forEach(function (z) { 그림들 += 그림칸(z.b, z.c, z.i, 차례++, g, Y); });
-    el.innerHTML = '<div class="cats">' + 그림들 + '</div>'
-      + (물음들 ? '<p class="cats-h">궁금한 물음을 누르면 답으로 바로 가요</p><div class="cats-q">' + 물음들 + '</div>' : '')
-      // 10-04 전략 — 빈 선반(「곧 열려요 · …」)은 보이지 않는다. 손님 수가 적을 때 고를 것이 많으면 아무것도 안 고른다(곧 목록은 그리지 않고 버린다).
-      + '';
-    if (Y) Y.값채우기(el);
+  function 길달기(el) {
     el.querySelectorAll('a[data-tab]').forEach(function (a) {
       a.onclick = function (e) {
-        if (typeof global.책사들어가기 !== 'function') return;   // 앱이 아직 안 섰으면 주소(./?go=…)대로 간다
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0 || typeof global.책사들어가기 !== 'function') return;
         e.preventDefault();
-        // 곳(칸)도 같이 넘긴다 — 입력을 거쳐 오면 시간이 흐르니 app.js 도착() 이 그 탭을 연 뒤 그 칸으로 내려간다(접힌 장이면 펼친다).
         global.책사들어가기(a.getAttribute('data-tab'), a.getAttribute('data-spot') || undefined);
       };
     });
+  }
+
+  function 찾기(키) {
+    var out;
+    Object.keys(칸).some(function (분류) { return 칸[분류].some(function (c) { if (c.키 !== 키) return false; out = { b: { 키: 분류 }, c: c }; return true; }); });
+    return out;
+  }
+  // 홈은 목적 네 개, 전체 보기는 기존 상품 표 전부. 계산·가격·입력 경로는 기존 것을 쓴다.
+  function 그리기(el) {
+    if (!el) return;
+    var Y = global.ChaeksaYaksok, g = 성별();
+    var 입구 = [
+      ['taekil', '아기 태어날 날과 시간', '가능한 범위에서 가장 좋은 시간을 골라 드려요'],
+      ['chongnon', '우리 둘, 잘 맞을까?', '두 사람의 잘 맞는 점과 부딪히는 점'],
+      ['jeongtong', '내 일과 돈', '돈 버는 방식부터 살펴보세요', 'jtCh7'],
+      ['when', '언제 나아질까?', '힘든 때와 풀리는 때를 살펴보세요']
+    ];
+    el.innerHTML = '<section class="home-paths" aria-label="목적별 바로가기"><h2>바로 보고 싶은 이야기</h2><div class="cats home-doors">' + 입구.map(function (r, i) {
+      var x = 찾기(r[0]);
+      return 그림칸(x.b, Object.assign({}, x.c, { 표시명: r[1], 설명: r[2], 곳: r[3] }), i, i, g, Y);
+    }).join('') + '</div><a class="home-all-link" href="#all">전체 보기 <span aria-hidden="true">→</span></a></section>';
+    if (Y) Y.값채우기(el);
+    길달기(el);
+  }
+  function 전체그리기(el) {
+    var Y = global.ChaeksaYaksok, g = 성별(), n = 4;
+    var 묶음들 = [
+      ['아기 태어날 날과 시간', ['taekil']],
+      ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
+      ['일과 돈', ['ilgyeol']],
+      ['나를 알아보기', ['jeongtong', 'when', 'brain', 'gwi', 'gyeokgi', 'myeongban']],
+      ['읽을거리', ['read']]
+    ];
+    el.innerHTML = 묶음들.map(function (r, group) {
+      return '<section class="catalog-group" aria-labelledby="catalog-title-' + group + '"><h2 id="catalog-title-' + group + '">' + esc(r[0]) + '</h2><div class="catalog-list">' + r[1].map(function (키, i) {
+        var x = 찾기(키);
+        return 그림칸(x.b, Object.assign({}, x.c, { 목록: true }), i, n++, g, Y);
+      }).join('') + '</div></section>';
+    }).join('');
+    if (Y) Y.값채우기(el);
+    길달기(el);
   }
 
   /** 콘텐츠 키 또는 탭 이름 → 그 칸 표지 그림(원본 · 화질 그대로). 생년월일 입력창 맨 위 그림이 쓴다 — 홈에서 누른 그 그림이 입력창에도 뜬다(10-02). 없으면 null. */
@@ -139,7 +158,7 @@
    *  칸 표가 바뀌면 고르기 창도 같이 바뀐다(한 사실은 한 곳). 그림 칸이 없는 분류면 빈 배열. */
   function 묶음(b) { return (칸[b] || []).map(function (c) { return { 키: c.키, 탭: c.탭 || null, 주소: c.주소 || null, 창: c.창 || null }; }); }
 
-  function 모두() { document.querySelectorAll('[data-home-cats]').forEach(그리기); }
+  function 모두() { document.querySelectorAll('[data-home-cats]').forEach(그리기); document.querySelectorAll('[data-home-catalog]').forEach(전체그리기); }
   /** 맨 앞에 설 분류를 바꾸고 다시 그린다 — 블로그 꼬리표로 온 손님(landing.js)에게 온 길의 칸을 앞에.
    *  「무엇이 궁금하세요?」(home-ask.js)도 같은 분류의 물음을 먼저 펼친다 — 부르는 쪽은 이것 하나만 부르면 된다. */
   function 앞바꾸기(키들) { 앞 = (키들 || []).slice(); 모두(); try { if (global.ChaeksaHomeAsk) global.ChaeksaHomeAsk.앞바꾸기(키들); } catch (e) {} }

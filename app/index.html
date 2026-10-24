@@ -112,11 +112,11 @@
      굵기 목록은 글 · 택일 쪽 67곳과 같게 맞췄다 — 같은 주소라 쪽을 옮겨도 다시 받지 않는다. 걷은 Serif 600 은 쓰는 곳이 없었다(style.css 의 600 넷은 모두 Sans). -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=3d7dace826">
+<link rel="stylesheet" href="style.css?v=cf102006dd">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
-<link rel="preload" as="image" href="art/taekil-main.webp" imagesrcset="art/taekil-main-s.webp 360w, art/taekil-main.webp 1086w" imagesizes="(min-width:520px) 115px, calc(33.3vw - 17px)" fetchpriority="high">
+<link rel="preload" as="image" href="art/taekil-main.webp" imagesrcset="art/taekil-main-s.webp 360w, art/taekil-main.webp 1086w" imagesizes="(min-width:520px) 236px, calc((100vw - 48px)/2)" fetchpriority="high">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
@@ -159,7 +159,7 @@
       <!-- 10-02 홈 첫 화면 다시 짜기 — 처음 온 손님에게 여기가 무엇을 하는 곳인지 한 줄(전에는 그림만 있고 사주 사이트라는 말도 없었다).
            스크립트를 기다리지 않게 글로 박아 둔다. 칸마다 무료인지 · 얼마인지는 아래 칸 딱지(상품 약속 장부)가 말한다. -->
       <div class="home-intro">
-        <h1 class="hi-t">내 사주를 한눈에 본다.</h1>
+        <h1 class="hi-t">내 사주를 알아보세요</h1>
         <section class="card birth-card" id="hiBirth" aria-label="내 생년월일시">
         <div class="birth-top"><label for="hiY">생년월일 · 성별</label></div>
         <div class="birth-date">
@@ -168,8 +168,14 @@
         <input id="hiD" aria-label="출생 일" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
         <select id="hiG" aria-label="성별"><option value="F">여성</option><option value="M">남성</option></select>
         </div>
+        <fieldset class="calendar" id="hiCal" aria-label="양력 또는 음력">
+        <label><input type="radio" name="hiCalendar" value="solar" data-cal="solar" checked>양력</label>
+        <label><input type="radio" name="hiCalendar" value="lunar" data-cal="lunar">음력</label>
+        </fieldset>
+        <div class="check hide" id="hiLeapWrap"><input type="checkbox" id="hiLeap"><label for="hiLeap">윤달이에요</label></div>
+        <p class="hint home-time-hint">태어난 시간은 몰라도 돼요.</p>
         <details class="fc-more" id="hiMore">
-        <summary>시간 · 달력 · 이름 · 태어난 곳</summary>
+        <summary>시간 · 이름 · 태어난 곳 더하기</summary>
         <div class="birth-second">
         <fieldset>
         <legend>태어난 시간(몰라도 돼요)</legend>
@@ -180,11 +186,6 @@
         </div>
         </fieldset>
         </div>
-        <fieldset class="calendar" id="hiCal" aria-label="양력 또는 음력">
-        <label><input type="radio" name="hiCalendar" value="solar" data-cal="solar" checked>양력</label>
-        <label><input type="radio" name="hiCalendar" value="lunar" data-cal="lunar">음력</label>
-        </fieldset>
-        <div class="check hide" id="hiLeapWrap"><input type="checkbox" id="hiLeap"><label for="hiLeap">윤달이에요</label></div>
         <label for="hiName">이름</label>
         <input id="hiName" type="text" aria-label="이름" placeholder="예: 지수" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
         <p class="hint">기본값은 서울이에요. 태어난 곳의 해 위치에 맞춰 시각을 계산해요. 다른 곳에서 태어났으면 아래에서 골라 주세요.</p>
@@ -192,7 +193,7 @@
         <select id="hiPlace" aria-label="태어난 곳"><optgroup label="주요 도시"><option value="KR:서울">서울</option><option value="KR:부산">부산</option><option value="KR:인천">인천</option><option value="KR:대구">대구</option><option value="KR:대전">대전</option><option value="KR:광주">광주</option><option value="KR:울산">울산</option><option value="KR:세종">세종</option></optgroup><optgroup label="그 외 지역"><option value="KR:수원">수원</option><option value="KR:성남">성남</option><option value="KR:춘천">춘천</option><option value="KR:강릉">강릉</option><option value="KR:원주">원주</option><option value="KR:청주">청주</option><option value="KR:천안">천안</option><option value="KR:전주">전주</option><option value="KR:목포">목포</option><option value="KR:여수">여수</option><option value="KR:안동">안동</option><option value="KR:포항">포항</option><option value="KR:창원">창원</option><option value="KR:진주">진주</option><option value="KR:제주">제주</option><option value="KR:서귀포">서귀포</option></optgroup><optgroup label="해외"><option value="AB:도쿄">도쿄 (UTC+9)</option><option value="AB:오사카">오사카 (UTC+9)</option><option value="AB:베이징">베이징 (UTC+8)</option><option value="AB:상하이">상하이 (UTC+8)</option><option value="AB:홍콩">홍콩 (UTC+8)</option><option value="AB:타이베이">타이베이 (UTC+8)</option><option value="AB:싱가포르">싱가포르 (UTC+8)</option><option value="AB:마닐라">마닐라 (UTC+8)</option><option value="AB:방콕">방콕 (UTC+7)</option><option value="AB:하노이">하노이 (UTC+7)</option><option value="AB:호치민">호치민 (UTC+7)</option><option value="AB:자카르타">자카르타 (UTC+7)</option><option value="AB:델리">델리 (UTC+5.5)</option><option value="AB:두바이">두바이 (UTC+4)</option><option value="AB:모스크바">모스크바 (UTC+3)</option><option value="AB:런던">런던 (UTC+0)</option><option value="AB:파리">파리 (UTC+1)</option><option value="AB:베를린">베를린 (UTC+1)</option><option value="AB:로마">로마 (UTC+1)</option><option value="AB:뉴욕">뉴욕 (UTC-5)</option><option value="AB:토론토">토론토 (UTC-5)</option><option value="AB:시카고">시카고 (UTC-6)</option><option value="AB:덴버">덴버 (UTC-7)</option><option value="AB:로스앤젤레스">로스앤젤레스 (UTC-8)</option><option value="AB:샌프란시스코">샌프란시스코 (UTC-8)</option><option value="AB:시애틀">시애틀 (UTC-8)</option><option value="AB:밴쿠버">밴쿠버 (UTC-8)</option><option value="AB:호놀룰루">호놀룰루 (UTC-10)</option><option value="AB:상파울루">상파울루 (UTC-3)</option><option value="AB:시드니">시드니 (UTC+10)</option><option value="AB:멜버른">멜버른 (UTC+10)</option><option value="AB:오클랜드">오클랜드 (UTC+12)</option></optgroup></select>
         <div class="check"><input type="checkbox" id="hiSolar" checked><label for="hiSolar">태어난 곳의 해 위치로 시각 맞추기(진태양시) — 켜 두세요</label></div>
         </details>
-        <button class="btn" id="hiGo" type="button">AI분석을 넘어서는 사주분석 받기</button>
+        <button class="btn" id="hiGo" type="button">내 사주 무료로 보기</button>
         </section>
         <p class="home-price-note">무료인지 · 얼마인지는 각 칸에 적혀 있어요</p>
       </div>
@@ -201,7 +202,6 @@
            10-02 그림 칸 2열 · 물음 칸 · 「곧 열려요」 한 줄(home-cats.js 머리 주석). -->
       <div data-home-cats></div>
       <!-- 10-02 「무엇이 궁금하세요?」 — 손님 말투 물음을 누르면 답이 있는 장으로 곧장(home-ask.js 가 bunya.js 물음 표에서 그린다). -->
-      <div data-home-ask></div>
       <!-- 10-02 숨어 있던 네 컷 그림(.lp-scene)은 걷었다 — 안 보이는데도 열 때마다 그림(194KB)을 받고 있었다. 칸은 위 분류 칸(home-cats.js)이 대신한다. -->
       <div class="lp-caps hide" aria-hidden="true"><span>나는 어떤 사람이고, 요즘은 어떤 때인지</span><span>두 사람이 잘 맞는 곳과 부딪히는 곳</span><span>내가 바라는 사람 vs 그 사람이 하는 행동</span><span>병원이 준 날짜 중 어느 날이 나은지</span></div>
       <button class="btn lp-cta hide" id="btnGunghap" type="button">로그인 없이 생년월일로 궁합 시작하기</button>
@@ -271,6 +271,11 @@
   <div id="app" class="hide">
     <!-- 홈 — 타일 · 만세력(사람 전환) · 타일 -->
     <div class="tab" data-tab="home">
+      <section class="home-return">
+        <h1>내 사주, 이어서 볼까요?</h1>
+        <p>저장한 생년월일로 바로 볼 수 있어요.</p>
+        <a class="btn" href="./?go=jeongtong" data-home-open="jeongtong">내 사주 이어 보기</a>
+      </section>
       <!-- 홈은 이야기 서점이다 (2026-09-12 사장님 확정 전략 — 「웹툰처럼 고르고 → 내 이야기라서 읽고 →
            다음이 궁금해서 결제하고 → 다른 이야기도 찾아보는 서비스」). 긴 소개문 없이 바로 표지.
            ① 지금 마음에 걸리는 이야기(큰 표지 가로 진열대) ② 어떤 사이가 궁금하세요(칩) ③ 표지 목록(모바일 3열)
@@ -293,14 +298,16 @@
       <!-- 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 건 준비중」 — home-cats.js 가 그린다. -->
       <div data-home-cats></div>
       <!-- 10-02 「무엇이 궁금하세요?」(home-ask.js) — 첫 화면과 같은 물음 칩. 그림 칸 위. -->
-      <div data-home-ask></div>
       <!-- 10-02 숨어 있던 네 컷 그림(.lp-scene.home-scene)은 걷었다 — 위 첫 화면과 같은 까닭. -->
       <!-- 09-27 GPT 지적 5: 표지마다 「무슨 답을 얻나」 한 줄(작가) -->
       <div class="lp-caps hide" aria-hidden="true"><span>나는 어떤 사람이고, 요즘은 어떤 때인지</span><span>두 사람이 잘 맞는 곳과 부딪히는 곳</span><span>내가 바라는 사람 vs 그 사람이 하는 행동</span><span>병원이 준 날짜 중 어느 날이 나은지</span></div>
       <div id="wtTop" class="wt hide"></div>
       <!-- 홈 순서 — 「지금 마음에 걸리는 이야기 → 내 원국 → 어떤 사이가 궁금하세요」(2026-09-15 사장님). 원국 밴드는 wongook.js. -->
       <div id="wgMain" class="hide"></div>
-      <div id="smMain" class="hide"></div>
+      <details class="home-extra">
+        <summary>내 사주 더 살펴보기</summary>
+        <div id="smMain" class="hide"></div>
+      </details>
       <div id="wtHome" class="wt hide"></div>
       <div id="qToday" class="hide"></div>
       <!-- 이번 주 카드(bhCard) · 인생 곡선(lcCard)은 10-02 맨 위 「이번 주 띠」(#wkBand) 안으로 옮겼다. -->
@@ -315,6 +322,13 @@
            **life 만 홈으로 되돌렸다** — 상태차 181칸이 붙어 근거가 생겼기 때문이다.
 
            비망록(#memo)·출산택일(#taekil)도 같은 처지다. taekil.html 이 ./#taekil 로 보낸다. -->
+    </div>
+    <div class="tab hide" data-tab="all">
+      <header class="catalog-heading">
+        <h1>전체 보기</h1>
+        <p>보고 싶은 이야기를 골라 보세요.</p>
+      </header>
+      <div data-home-catalog></div>
     </div>
     <!-- 독립 콘텐츠: 오늘의 금지령 (매일 갱신) -->
 
@@ -579,12 +593,10 @@
      바깥 쪽(결혼상대 점검 · 고지능 · 귀 · 명반 — 주소가 ….html)도 한 줄로 서고, 누르면 그 쪽으로 간다(10-10).
      사용설명서는 홈과 같이 연애 쪽이다(그 사람 한 명이 연애 단계마다 어떻게 할지라서 — 두 사람을 맞대는 궁합 칸이 아니다).
      data-go 는 고르기 창을 못 그릴 때(스크립트가 덜 왔을 때) 곧장 갈 탭. 9,900원 궁합 장(gunghap) · sheet 는 결제 심사와 묶여 아래 줄에 없다. -->
-<nav id="nav" class="hide">
-  <button data-go="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg><span>홈</span></button>
-  <button data-pick="love" data-go="love" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>연애</span></button>
-  <button data-pick="match" data-go="chongnon" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>궁합</span></button>
-  <!-- 정통사주 — 세 고전으로 푼 열세 장(jeongtong.js). 조립기라 원가 0, 무료다. -->
-  <button data-pick="me" data-go="jeongtong" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg><span>내 사주</span></button>
+<nav id="nav" class="hide" aria-label="주요 메뉴">
+  <button type="button" data-go="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg><span>홈</span></button>
+  <button type="button" data-go="all"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>전체 보기</span></button>
+  <a href="./#mine" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/></svg><span>내 보고서</span></a>
 </nav>
 
 <!-- 10-02 아래 줄 「연애」 · 「궁합」 고르기 창 — app.js 고르기창() 이 채운다(머리 = bunya.js 큰분야 이름 · 머리, 줄 = 상품 약속 장부). -->
@@ -761,7 +773,7 @@
 <script src="yaksok.js?v=ac6b394f76"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=f082457166"></script>
-<script src="home-cats.js?v=55ab3ab364"></script>
+<script src="home-cats.js?v=11f2d7039f"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
@@ -820,7 +832,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=07ae0c9e36"></script>
+<script src="app.js?v=7015e824ad"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

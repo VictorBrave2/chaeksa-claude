@@ -1536,3 +1536,37 @@ body.tk-has-cta .doc{padding-bottom:calc(190px + env(safe-area-inset-bottom))}
 .tk-data-row a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:6px 4px;border:1px solid var(--line);border-radius:var(--r1);color:var(--accent);background:var(--bg2);text-decoration:none;white-space:nowrap}
 .tk-data-row a:hover{border-color:var(--accent-line);background:var(--accent-soft)}
 @media print{.tk-dock{display:none}}
+
+/* DES-0007: 네 가지 목적 → 전체 목록 → 산 보고서. */
+html[data-boot="landing"] #nav{display:grid!important}
+#nav a{background:none;border:0;color:var(--ink3);font-size:var(--t1);text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:4px 0;border-radius:var(--r1);font-family:var(--sans)}
+#nav a svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#nav a:hover{color:var(--ink2)}
+#nav :is(button,a):focus-visible,.home-paths a:focus-visible,.catalog-list a:focus-visible,.home-return a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.home-return{margin:8px 0 28px;padding:24px 20px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card)}
+.home-return h1,.catalog-heading h1{margin:0;font-size:26px;line-height:1.4;word-break:keep-all}
+.home-return p,.catalog-heading p{margin:10px 0 20px;color:var(--ink2);font-size:15px;line-height:1.6}
+.home-return .btn{display:flex;align-items:center;justify-content:center;min-height:48px;text-decoration:none}
+.home-paths{text-align:left}
+.home-paths h2{font-size:19px;line-height:1.5;margin:0 0 14px}
+.home-doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.home-doors .pic{aspect-ratio:3/2}
+.home-doors .n{margin:12px 12px 0;font-size:17px;line-height:1.45}
+.home-doors .s{display:block;margin:6px 12px 0;font-size:14px;line-height:1.5}
+.home-doors .t{margin:auto 12px 0;padding:10px 0 12px;font-size:13px;line-height:1.45}
+.home-all-link{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card);color:var(--ink);font-size:16px;font-weight:700;text-decoration:none}
+.home-extra{margin:24px 0 12px;border-top:1px solid var(--line)}
+.home-extra>summary{cursor:pointer;padding:16px 4px;min-height:48px;font-size:16px;font-weight:700}
+.catalog-heading{margin:12px 0 28px;text-align:left}
+.catalog-group{margin:0 0 28px}
+.catalog-group h2{margin:0 0 12px;font-size:19px;line-height:1.5}
+.catalog-list{display:grid;gap:10px}
+.catalog-list .cat{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:14px;min-height:114px;text-align:left}
+.catalog-list .pic{grid-column:1;grid-row:1/4;width:76px;height:100%;aspect-ratio:auto}
+.catalog-list .n{grid-column:2;margin:12px 12px 0 0;font-size:17px;line-height:1.4}
+.catalog-list .s{grid-column:2;display:block;margin:5px 12px 0 0;font-size:14px;line-height:1.5}
+.catalog-list .t{grid-column:2;margin:0 12px 0 0;padding:8px 0 12px;font-size:13px;line-height:1.45}
+#hiCal{margin-top:12px;gap:20px}
+#hiCal label{display:flex;align-items:center;gap:6px;min-height:44px;font-size:15px;cursor:pointer}
+#hiBirth .home-time-hint{margin:2px 0 6px;font-size:14px}
+#hiMore>summary{min-height:44px;padding:12px 0;font-size:14px;cursor:pointer}

@@ -633,13 +633,19 @@
     if (tab === 'gacha' || tab === 'today') tab = 'home';   // 오늘 탭은 2026-09-13 에 걷었다 — 옛 링크는 홈으로
     주소남기기(경로('#' + tab));   // 10-02 화면마다 주소(위 「화면마다 주소」)
     홈길(tab);
+    if (tab === 'all' || tab === 'home') {
+      $('landing').classList.add('hide');
+      $('formCard').classList.add('hide');
+      $('app').classList.remove('hide');
+      $('nav').classList.remove('hide');
+    }
     // 원국 없는 방문자가 '← 홈'을 누르면 빈 홈이 아니라 안내 화면으로 돌아가야 한다
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     if (tab === 'taekil') 택일문달기();   // 10-02 맨 위 두 문 — 탭 파일(꾸러미)을 기다리기 전에 칸부터 정한다
-    document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.pick ? 분류탭(b.dataset.pick, b.dataset.go).indexOf(tab) >= 0 : b.dataset.go === tab));
+    document.querySelectorAll('#nav button[data-go]').forEach(b => b.classList.toggle('on', b.dataset.pick ? 분류탭(b.dataset.pick, b.dataset.go).indexOf(tab) >= 0 : b.dataset.go === tab));
     // 탭 위의 열 책사 한마디(renderChorus)는 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
-    if (tab !== 'home') 본표시(tab); else { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
+    if (tab !== 'home' && tab !== 'all') 본표시(tab); else if (tab === 'home') { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
     // 자리 잡기 — 홈이면 보던 데로, 아니면 맨 위로.
     // 그림이 늦게 서면 그만큼 짧아진 문서에 맞춰 브라우저가 잘라 버린다. 한 박자씩 두 번 더 민다.
     if (tab === 'home' && 홈자리 > 0) {
@@ -693,7 +699,7 @@
     }
   }
   // 10-02 아래 줄 다섯 칸 — 홈 · 출산택일은 곧장 그 탭, 연애 · 궁합 · 내 사주(data-pick)는 고르기 창(10-10 내 사주도 — 나 분류에 고지능 · 귀 · 명반이 서서). 창을 못 그리면 data-go 탭으로 곧장.
-  document.querySelectorAll('nav button').forEach(b => b.onclick = () => { if (b.dataset.pick && 고르기창(b.dataset.pick)) return; 돌아가기(b.dataset.go); });
+  document.querySelectorAll('#nav button[data-go]').forEach(b => b.onclick = () => { if (보인주소 === 'form') 입력접기(); if (b.dataset.pick && 고르기창(b.dataset.pick)) return; 돌아가기(b.dataset.go); });
   // ───── 아래 줄 고르기 창(10-02) — 연애 · 궁합을 누르면 그 분류의 콘텐츠를 한 줄씩 견주어 고른다 ─────
   // 무엇이 있나 · 차례 = 홈 분류 칸(home-cats.js 칸 표 → ChaeksaHomeCats.묶음). 창 머리 = 분야 표 큰분야 이름 · 머리(bunya.js).
   // 줄마다 이름 · 무엇을 보나(홈한줄) · 딱지(무엇이 무료 · 얼마 — 값은 상품표에서) = 상품 약속 장부(yaksok.js). 글을 여기 손으로 적지 않는다.
@@ -738,7 +744,7 @@
   // '상담 신청하기'를 눌렀을 때 홈으로 떨어지면 버튼 문구와 어긋난다.
   // 없는 탭 이름이 오면 아무것도 안 한다 — 빈 화면을 띄우느니 홈이 낫다.
   // 사주 없이도 읽을 수 있는 탭. 나머지는 원국이 있어야 그려진다.
-  const NO_PROFILE_TABS = ['taekil'];
+  const NO_PROFILE_TABS = ['taekil', 'all'];
 
   function goHash(booted) {
     let t = (location.hash || '').replace(/^#/, '');
@@ -2071,6 +2077,8 @@
     // 랜딩의 열 사람 도열(#lpCorps)은 2026-09-12 걷었다.
     $('formCard').classList.add('hide');
     $('landing').classList.remove('hide');
+    $('nav').classList.remove('hide');
+    document.querySelectorAll('#nav button[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === 'home'));
     $('btnSettings').classList.add('hide');
     주소남기기('');   // 10-02 첫 화면 주소는 꼬리 없음
   }
@@ -2197,6 +2205,10 @@
     }
   }
   window.책사들어가기 = 들어가기;
+  document.querySelectorAll('[data-home-open]').forEach(a => a.addEventListener('click', e => {
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    e.preventDefault(); 들어가기(a.dataset.homeOpen);
+  }));
   window.책사사람추가 = () => { if (!사람폼열기('them', 'pair', false)) openPersonForm(null); };   // 그 사람 사용설명서(pair.js) — 아직 아무도 없을 때 「그 사람 생년월일 넣기」
   window.책사궁합고르기 = 궁합고르기;   // 10-02 사용설명서 끝 칸(pair.js 끝칸) → 웹툰궁합 · 정통궁합을 같은 그 사람으로
   window.책사사람칩 = 사람칩;   // 그 사람 사용설명서(pair.js)도 정통궁합 · 웹툰궁합과 같은 사람 칩(docs/79 4절)
