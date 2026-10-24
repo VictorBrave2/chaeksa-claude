@@ -7,7 +7,7 @@
 <script src="yaksok.js?v=b4d6d5bece"></script>
 <script src="love.js?v=31fd29976c"></script>
 <script src="pair.js?v=2690489039"></script>
-<script src="home-cats.js?v=3678eb26bc"></script>
+<script src="home-cats.js?v=7058985c28"></script>
 <script src="people.js?v=608bb7b89c"></script>
 <script>
 // 상품 약속 장부 시험(10-02 개편 2묶음 「상품 약속 장부 한 줄씩 만들고, 모든 화면이 거기서 읽게 하기」).
@@ -42,14 +42,14 @@
   const 아는조건 = ['장한줄'];
   // 손으로 쓴 곳 — 장부를 읽지 못하는 법 문서 · 정적 글과, 장부를 읽게 바꾼 화면 파일(남은 손글씨가 없는지)
   const 손글파일 = ['pay.html', 'terms.html', 'privacy.html', 'index.html', 'manifest.json', 'llms.txt', 'taekil.html', 'taekil-apply.html', 'taekil-sample.html', 'pay-done.html', 'pay-fail.html', 'love.html', 'pair.html', 'ssom.html', 'gunghap-chongnon.html', 'jeongtong.html',
-    'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'home-cats.js?v=3678eb26bc', 'app.js?v=642d5e2503', 'pay.js?v=8776a1a2bc', 'gunghap-gwanjeom.js?v=854a3553f1', 'bunya.js?v=f082457166', 'about.html',
+    'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'home-cats.js?v=7058985c28', 'app.js?v=642d5e2503', 'pay.js?v=8776a1a2bc', 'gunghap-gwanjeom.js?v=854a3553f1', 'bunya.js?v=f082457166', 'about.html',
     // 10-02 「켜는 날」 — 바깥 신청 폼 · 「사람이 직접」 · 「작업 전 전액 환불」 같은 걷은 약속이 출산택일 쪽에 다시 들어오지 않게(tools_check.py 7) 은 월별 · 궁통보감 쪽까지 taekil-*.html 전부를 본다)
     'taekil-price.html', 'taekil-sim.html', 'taekil-report.html', 'taekil-admin.html', 'taekil-why-different.html', 'taekil-cesarean-date.html', 'taekil-how-to-choose.html',
     'taekil-verify.html', 'taekil-fate-vs-timing.html', 'taekil-doctor-schedule.html', 'taekil-solar-time.html', 'taekil-lunar-december.html',
     'taekilsim.js?v=53286ae0b4', 'taekil-admin.js?v=dcf19f00dc', 'taekil-report.js?v=03fdaeefab'];
   // about.html(10-02 개편 3묶음 책사 소개) — 상품 말은 장부에서 읽는다. 손으로 쓴 숫자가 끼면 여기서 잡는다(tools_check.py 7)과 같은 목록)
-  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=3678eb26bc', 'about.html'];
-  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=854a3553f1', 'home-cats.js?v=3678eb26bc', 'about.html'];
+  const 시간파일 = ['pay.html', 'terms.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'index.html', 'pay-done.html', 'pay-fail.html', 'home-cats.js?v=7058985c28', 'about.html'];
+  const 질문파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'index.html', 'llms.txt', 'gunghap-gwanjeom.js?v=854a3553f1', 'home-cats.js?v=7058985c28', 'about.html'];
   const 해파일 = ['pay.html', 'terms.html', 'privacy.html', 'love.js?v=31fd29976c', 'pair.js?v=2690489039', 'about.html'];
   // 10-02 개편 3묶음 — 상품 소개 쪽 다섯(tools_sogae.py 가 장부 · 분야 표에서 만든다. tools_check.py SOGAE_PAGES 와 같은 목록). 시간 · 질문 수 · 보관 해도 장부와 같아야 한다.
   const 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };

@@ -45,7 +45,7 @@
   function 칸그리기(v0, 속나, 속그) {
     const v = Object.assign({}, v0, { 머리: 거름(v0.머리), 나: 거름(v0.나), 그: 거름(v0.그), 사이: 거름(v0.사이), 갈림: 거름(v0.갈림), 비움: (거름(v0.비움) || []).filter(Boolean), 통설: [] });
     const out = [];
-    if (v.답) out.push(답칸(v.답));   // 09-27 장마다 첫 줄 = 1층 답 한 줄(관점이 이미 잰 값에서). 근거는 그 아래 그대로.
+    // 답(결론 한 줄)은 장()이 물음 아래에 따로 그린다(10-24) — 여기는 근거만.
     if (v.머리 && v.머리.length) out.push(문단(v.머리));
     if (v.원문 && v.원문.length) out.push(v.원문.map(원문칸).join(''));
     if ((v.나 && v.나.length) || (v.그 && v.그.length) || 속나 || 속그) out.push(두칸(v.나, v.그, 속나, 속그));
@@ -58,9 +58,11 @@
 
   const 장목록 = [];
   let 접두 = 'gcCh';   // 장 카드 id 앞머리 — 한 쪽에 궁합을 여럿 그리는 견본(gunghap-new-sample.html)은 쌍마다 다르게 준다
-  const 장 = (번호, 제목, 부제, 속) => {
+  // 10-24 사장님 「궁합총론도 같은 꼴로」(10-23 「결론 (근거 작게) …」) — 장은 펼친 채: 물음(부제) → 결론(답칸) → 근거는 「근거 보기」로 접는다. 결론이 없는 장만 근거를 펴 둔다.
+  const 장 = (번호, 제목, 부제, 답, 근거) => {
     장목록.push([번호, 제목]);
-    return '<details class="card jt-ch" id="' + 접두 + 번호 + '"' + (번호 === 1 ? ' open' : '') + '><summary><span class="jt-no">제 ' + 번호 + '장</span><h2>' + esc(제목) + '</h2>' + (부제 ? '<p class="jt-sub">' + esc(부제) + '</p>' : '') + '</summary>' + 속 + '</details>';
+    return '<section class="card jt-ch" id="' + 접두 + 번호 + '"><div class="jt-head"><span class="jt-no">제 ' + 번호 + '장 · ' + esc(제목) + '</span><h2>' + esc(부제 || 제목) + '</h2></div>' + 답칸(답)
+      + (근거 ? '<details class="jt-ev"' + (답 ? '' : ' open') + '><summary>근거 보기</summary>' + 근거 + '</details>' : '') + '</section>';
   };
   const 목차 = () => '<nav class="card jt-toc"><div class="jt-no">목차</div>' + 장목록.map(([n, t]) => '<a href="#' + 접두 + n + '" data-ch="' + n + '"><b>' + n + '</b>' + esc(t) + '</a>').join('') + '</nav>';
 
@@ -80,28 +82,31 @@
     let C; try { C = Q.바탕(입력나, 입력그); } catch (e) { box.innerHTML = '<p class="hint">입력한 생년월일을 계산하지 못했어요. 생년월일을 확인해 주세요.</p>'; return; }
     const out = []; 장목록.length = 0;
     // 장마다 따로 감싼다 — 한 장이 죽어도 나머지 장은 나온다.
-    const 안전 = (번호, 제목, 부제, 짓기) => {
+    // 짓기()는 근거 HTML 을, 답짓기()는 결론 한 줄을 낸다(관점 장N 의 답). 결론이 비면 근거를 펴 둔다.
+    const 안전 = (번호, 제목, 부제, 짓기, 답짓기) => {
+      let 답 = ''; try { 답 = 답짓기 ? (답짓기() || '') : ''; } catch (e) { 답 = ''; }
       let 속; try { 속 = 짓기(); } catch (e) { 속 = '<p class="jt-yet">지금 이 장을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.</p>'; if (global.console) console.warn('궁합총론 ' + 번호 + '장', e); }
-      out.push(장(번호, 제목, 부제, 속));
+      out.push(장(번호, 제목, 부제, 답, 속));
     };
+    const 답of = (n) => () => { const v = Q['장' + n](C); return v && v.답; };
 
     안전(1, '두 사람의 여덟 글자', '나란히 놓고 보면 어떤 기운이 가장 센가', () => {
       const v = Q.장1(C);
       return 칸그리기(v, 명식표(C.나.R) + '<h3>기운별 글자 수(오행)</h3>' + 오행줄(v.오행.나), 명식표(C.그.R) + '<h3>기운별 글자 수(오행)</h3>' + 오행줄(v.오행.그));
-    });
-    안전(2, '두 사람을 뜻하는 글자', '각자를 뜻하는 글자 둘이 만나면 서로 어떻게 되나', () => 칸그리기(Q.장2(C)));
-    안전(3, '두 사람의 배우자 자리', '두 사람의 태어난 날의 글자가 붙나 부딪히나', () => 칸그리기(Q.장3(C)));
-    안전(4, '각자의 배우자 자리', '각자 어떤 사람에게 끌리나', () => 칸그리기(Q.장4(C)));
-    안전(5, '짝을 뜻하는 글자(배우자별)', '짝을 뜻하는 글자가 각자의 사주에 있나', () => 칸그리기(Q.장5(C)));
-    안전(6, '서로에게 필요한 기운(계절)', '각자에게 가장 필요한 기운을 서로 가졌나', () => 칸그리기(Q.장6(C)));
-    안전(7, '그 사람이 곁에 오면', '당신 사주의 큰 줄기가 그대로인가, 바뀌나', () => 칸그리기(Q.장7(C)));
+    }, 답of(1));
+    안전(2, '두 사람을 뜻하는 글자', '각자를 뜻하는 글자 둘이 만나면 서로 어떻게 되나', () => 칸그리기(Q.장2(C)), 답of(2));
+    안전(3, '두 사람의 배우자 자리', '두 사람의 태어난 날의 글자가 붙나 부딪히나', () => 칸그리기(Q.장3(C)), 답of(3));
+    안전(4, '각자의 배우자 자리', '각자 어떤 사람에게 끌리나', () => 칸그리기(Q.장4(C)), 답of(4));
+    안전(5, '짝을 뜻하는 글자(배우자별)', '짝을 뜻하는 글자가 각자의 사주에 있나', () => 칸그리기(Q.장5(C)), 답of(5));
+    안전(6, '서로에게 필요한 기운(계절)', '각자에게 가장 필요한 기운을 서로 가졌나', () => 칸그리기(Q.장6(C)), 답of(6));
+    안전(7, '그 사람이 곁에 오면', '당신 사주의 큰 줄기가 그대로인가, 바뀌나', () => 칸그리기(Q.장7(C)), 답of(7));
     안전(8, '옛 책이 이름 붙인 글자(신살 · 귀인)', '각자의 글자와 서로의 글자에 어떤 이름이 붙나', () => {
       const v = Q.장8(C);
       const 벌 = (x) => (x.살.length || x.귀.length ? x.살.concat(x.귀).map(살칸).join('') : '<p class="jt-yet">옛 책이 이름 붙인 글자 가운데 이 사주에 해당하는 것은 없어요.</p>');
       return 칸그리기(v, 벌(v.살귀.나), 벌(v.살귀.그));
-    });
-    안전(9, '서로의 사주 속 짝 글자', '각자의 사주 안에서 짝을 뜻하는 글자가 어떤 모습인가', () => 칸그리기(Q.장9(C)));
-    안전(10, '돈과 활동', '누가 먼저 일을 만들고, 돈을 뜻하는 글자는 어떤 상태인가', () => 칸그리기(Q.장10(C)));
+    }, 답of(8));
+    안전(9, '서로의 사주 속 짝 글자', '각자의 사주 안에서 짝을 뜻하는 글자가 어떤 모습인가', () => 칸그리기(Q.장9(C)), 답of(9));
+    안전(10, '돈과 활동', '누가 먼저 일을 만들고, 돈을 뜻하는 글자는 어떤 상태인가', () => 칸그리기(Q.장10(C)), 답of(10));
     안전(11, '10년마다 바뀌는 운', '지금 10년, 두 사람의 마음이 어디로 가나', () => {
       const v = Q.장11(C);
       // 정통사주 11장처럼 — 지금 대운은 다 펴고, 나머지는 앞 세 줄만 보이고 뒤는 접는다
@@ -109,13 +114,13 @@
       const 벌 = (list) => list ? list.map(d => '<div class="jt-du' + (d.지금 ? ' now' : '') + '"><div class="jt-du-h"><b>' + esc(d.나이) + '</b><span>' + esc(d.간지) + ' · ' + d.시작해 + '년부터</span>' + (d.지금 ? '<i>지금</i>' : '') + '</div>' + 접어(d) + '</div>').join('') : '<p class="jt-yet">성별을 넣으면 보여요.</p>';
       // 09-27 사장님 「대운칸 삭제하자」 — 두 사람 10년 목록은 걷고 첫 줄(지금 10년) 답만
       return 칸그리기(Object.assign({}, v, { 머리: [] }), null, null);
-    });
+    }, 답of(11));
     안전(12, '앞으로 다섯 해', '같은 해에 두 사람에게 오는 것', () => {
       const v = Q.장12(C);
-      return 답칸(v.답) + 문단(v.머리) + v.해들.map(y => '<div class="jt-du"><div class="jt-du-h"><b>' + y.해 + '년</b><span>' + esc(y.간지) + '</span></div>'
+      return 문단(v.머리) + v.해들.map(y => '<div class="jt-du"><div class="jt-du-h"><b>' + y.해 + '년</b><span>' + esc(y.간지) + '</span></div>'
         + '<div class="gc-two"><div class="gc-col"><div class="gc-who">당신</div>' + 문단(y.나) + '</div><div class="gc-col"><div class="gc-who">그 사람</div>' + 문단(y.그) + '</div></div></div>').join('')
         + 흐린(v.비움);
-    });
+    }, 답of(12));
     안전(13, '더 묻고 싶으면', '', () => {
       const v = Q.장13();
       // 10-07 결혼상대 점검 다리가 맨 위(관점 장13 결혼 — 장부에 줄이 있을 때만), 그 아래 살아 있는 셋으로 가는 길
@@ -128,7 +133,7 @@
       ? 위 + '<details class="gc-fold"><summary>근거 보기 — 옛 책과 계산</summary><p class="gc-fold-sub">위 답의 근거인 계산과 옛 책 원문을 장마다 확인하세요.</p>' + 목차() + out.slice(0, 12).join('') + '</details>' + out.slice(12).join('')
       : 목차() + out.join('');
     const 이름 = 접두;
-    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#' + 이름 + a.dataset.ch); if (d) d.open = true; const f = box.querySelector('.gc-fold'); if (f) f.open = true; }));
+    box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const f = box.querySelector('.gc-fold'); if (f) f.open = true; const d = box.querySelector('#' + 이름 + a.dataset.ch); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
   }
 
   // 따로 열던 궁합총론 쪽(gunghap-chongnon.html)의 입력 칸(#gcForm)을 세우던 코드는 10-02 개편 3묶음에서 지웠다 — 그 쪽은 이제 앱(?go=chongnon)으로 넘기기만 한다. 그리기는 app.js 가 부른다.
