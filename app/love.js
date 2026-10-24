@@ -31,7 +31,7 @@
 
   // 기다림 네 단계(10-01 흐름) — 걸린 시간(초)으로 넘어간다. 서버 진행을 재는 것이 아니다. 다만 질문이 이미 왔으면(덜됨) 셋째 단계부터 보인다(질문 고르기는 끝났다).
   // 10-02 개편 — 「봉인 · 해독」 말 대신 지금 무엇을 하고 있는지 보이는 말로. 기다리는 동안 아래에 장 이름 · 장면 목록(밑그림)이 먼저 깔린다.
-  var 단계 = ['태어난 날을 나타내는 사주 글자를 읽는 중', '연애할 때 나오는 버릇을 고르는 중', '장면마다 내 글을 쓰는 중', '연애할 때의 나를 한 줄로 정리하는 중'], 단계때 = [0, 8, 20, 55];
+  var 단계 = ['태어난 날을 나타내는 사주 글자를 읽는 중', '연애할 때 나오는 버릇을 고르는 중', '장면마다 내 연애 행동을 글로 쓰는 중', '연애할 때의 나를 한 줄로 정리하는 중'], 단계때 = [0, 8, 20, 55];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function 읽기(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
@@ -133,7 +133,7 @@
           + '</section>';
       });
       if (잠긴.length) {
-        html += '<section class="card lv-lock"><p class="lv-t">🔒 이 장의 글 ' + 잠긴.length + '개는 아직 잠겨 있어요</p>'
+        html += '<section class="card lv-lock"><p class="lv-t">🔒 결제하면 이 장의 글 ' + 잠긴.length + '개가 열려요</p>'
           + '<p class="hint" style="margin:0 0 6px">이 장에서 다루는 장면</p><ul>'
           + 잠긴.map(function (it) { return '<li id="lvq-' + esc(it.id) + '">' + esc(it.q) + '</li>'; }).join('') + '</ul></section>';
       }
@@ -149,7 +149,7 @@
     var 장 = 장들(저장 && 저장.items);
     if (!장.차례.length) { box.innerHTML = ''; return; }
     box.innerHTML = '<section class="card lv-wait"><h3 class="doc-h">나에게 나온 장 ' + 장.차례.length + '개 · 글 ' + 저장.items.length + '개</h3>'
-      + '<p class="hint" style="margin:0 0 4px">아래 장면마다 내 연애 행동을 글로 쓰고 있어요. 다 쓰면 이 자리가 장마다 그림과 글로 바뀌어요. 이 화면을 그대로 두세요.</p>'
+      + '<p class="hint" style="margin:0 0 4px">아래 장면마다 내 연애 행동을 글로 쓰고 있어요. 다 쓰면 각 장의 그림과 글이 여기에 보여요. 이 화면을 그대로 두세요.</p>'
       + 장.차례.map(function (sec, i) {
         return '<p class="lv-t" style="margin:14px 0 4px">' + (i + 1) + '장 · ' + esc(sec) + ' <span style="font-weight:400;font-size:var(--t1);color:var(--ink3)">글 ' + 장.묶음[sec].length + '개</span></p>'
           + '<ul style="margin:0;padding-left:18px;font-size:var(--t2);line-height:1.7;color:var(--ink3)">'
@@ -168,7 +168,7 @@
     (저장.items || []).forEach(function (it) { 자리[it.id] = 장번호[it.section]; });
     var html = '<section class="card lv-sum"><h3 class="doc-h">연애 행동 풀이</h3><p class="lv-title">' + esc(p.title) + '</p>';
     if (p.locked || !Array.isArray(p.traits)) {
-      html += '<p class="hint" style="margin:0">🔒 연애할 때 나의 세 가지 모습, 그래서 할 것, 조심할 것은 <a href="#" data-go="lvPay">1장 끝의 결제 안내</a>에서 결제하면 열려요.</p>';
+      html += '<p class="hint" style="margin:0">🔒 연애할 때 나의 세 가지 모습, 할 일, 조심할 점은 <a href="#" data-go="lvPay">1장 끝의 결제 안내</a>에서 결제하면 열려요.</p>';
     } else {
       p.traits.forEach(function (t, i) {
         var 본 = {}, ns = [];
@@ -328,7 +328,7 @@
   function 예시(box) {
     var e = 예시자료;
     box.innerHTML = '<section class="card"><h3 class="doc-h">예시 — 지어낸 한 사람의 결과 일부</h3>'
-      + '<p class="hint" style="margin:0 0 12px">결제 전에는 내 결과를 보여 드리지 않아요. 아래 글은 책사가 지어낸 한 사람의 생년월일로 실제로 만든 결과에서 몇 줄을 옮긴 예시예요. 결제하면 내 생년월일로 이런 글을 처음부터 끝까지 받아요. 아래 예시를 먼저 읽어 보세요.</p>'
+      + '<p class="hint" style="margin:0 0 12px">결제하면 내 생년월일로 이런 글을 처음부터 끝까지 받아요. 결제 전에는 내 결과를 보여 드리지 않아요. 아래 글은 책사가 지어낸 한 사람의 생년월일로 실제로 만든 결과에서 몇 줄을 옮긴 예시예요.</p>'
       + '<p style="margin:0 0 4px"><b>연애 행동 풀이 첫 줄</b></p><p class="lv-t" style="margin:0 0 12px">' + esc(e.title) + '</p>'
       + '<p style="margin:0 0 4px"><b>모습 하나 — ' + esc(e.trait.name) + '</b></p><p style="margin:0 0 4px">' + esc(e.trait.line) + '</p></section>'
       + e.items.map(function (it) { return '<section class="card"><p class="hint" style="margin:0 0 6px">예시 · ' + esc(it.section) + '</p><p class="lv-t">' + esc(it.t) + '</p><p style="margin:0">' + esc(it.a) + '</p></section>'; }).join('');
@@ -401,7 +401,7 @@
     var 장한줄 = !!(저장.portrait && 저장.portrait.chapters && Object.keys(저장.portrait.chapters).length);
     var Y = 장부(), 받는것 = Y ? Y.받는것목록('love', { 장한줄: 장한줄 }) : [];
     box.innerHTML = '<section class="card lv-paybox"><h3 class="doc-h">' + (잠긴 ? '아직 잠긴 글 ' + 잠긴 + '개' : '연애 행동 풀이 전체') + '</h3>'
-      + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었고, 결제하면 이 자리에서 바로 보여요. 아래 결제 안내를 확인해 주세요.</p>' : '')
+      + (잠긴 ? '<p style="margin:0 0 10px">' + (첫장다열림 ? '1장을 먼저 모두 보여 드렸어요.' : '앞 글 ' + 열린 + '개를 먼저 보여 드렸어요.') + ' 나머지 글도 이미 다 써 두었어요. 결제하면 이 자리에서 바로 열려요.</p>' : '')
       + '<p style="margin:0 0 4px"><b>결제하면 열리는 것</b></p><ul style="margin:0 0 10px;padding-left:20px;line-height:1.7">'
       + 받는것.filter(Boolean).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>'
       + '<div id="lvBuyWrap"><p style="margin:0 0 6px;font-size:var(--t1);line-height:1.7;color:var(--ink2)">결제하면 바로 열리는 디지털 콘텐츠입니다. '
@@ -473,11 +473,11 @@
       + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준이에요. ' + 소개 + ' 로그인한 계정(카카오 · 네이버) 하나당 한 사람의 결과를 한 번만 만들어요.</p>'
       + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p><div id="lvErr"></div></section>'
       + '<div id="lvTop"></div>'
-      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>태어난 날을 나타내는 사주 글자로 계산한, 연애할 때 내가 하는 말과 행동이에요.</p>'
+      + '<p class="hint" id="lvAbout" style="margin:0 0 10px" hidden>연애할 때 내가 하는 말과 행동을 풀었어요. 태어난 날을 나타내는 사주 글자로 계산했어요.</p>'
       + '<div id="lvList"></div><div id="lvShare"></div><div id="lvEnd"></div>';   // lvShare = 결과 보내기(산 결과에만)
     var head = el.querySelector('#lvHead'), st = el.querySelector('#lvSt'), list = el.querySelector('#lvList'), about = el.querySelector('#lvAbout'), top = el.querySelector('#lvTop'), end = el.querySelector('#lvEnd'), steps = el.querySelector('#lvSteps'), 막힘칸 = el.querySelector('#lvErr'), 공유칸 = el.querySelector('#lvShare');
     var timer = null, t0 = null, 기다리는중 = false, 대기키 = 키 + '.wait';
-    var 기다림말 = '이 계정으로 지금 만들고 있어요. 다 되면 여기에 바로 떠요. 이 화면을 그대로 두세요.';
+    var 기다림말 = '이 계정의 연애 행동 풀이를 만들고 있어요. 완성되면 여기에 바로 보여요. 이 화면을 그대로 두세요.';
     function 알림(msg, err) { clearInterval(timer); steps.hidden = true; st.textContent = msg; st.style.color = err ? 'var(--seal, #8c2f23)' : ''; }
     // 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈 · 다시 하기 · 문의하기(메일에 화면 이름). 그 파일이 없으면 예전처럼 한 줄(false).
     function 막힘(o, 다시) {
@@ -634,7 +634,7 @@
     }
     if (로그인 && 덜됨) { 동의 = true; 쓰기(동의키, true); 열고시작(); return; }   // 질문까지 받고 끊긴 사람 — 답만 이어서(산 사람만 질문을 받는다)
     if (로그인 && 동의) {   // 결제하고 돌아왔거나 이미 산 사람인지 서버에 묻는다(peek — 만들지도 세지도 않음)
-      알림('확인하는 중이에요…');
+      알림('결제했는지 확인하는 중이에요…');
       샀나묻기(b).then(function (r) { if (!list.isConnected) return; 알림(''); if (r && r.paid === true) 열고시작(true); else 예시판(); },
         function (e) { if (!list.isConnected) return; 알림(''); 확인못함(e); });
       return;
