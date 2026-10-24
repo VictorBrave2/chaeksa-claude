@@ -57,6 +57,15 @@
       case 'pillars': return '<div class="tkr-pil"><p class="tkr-pil-h" lang="zh-Hant">' + esc(n.한자) + '</p><p>' + esc(n.읽기) + '</p>'
         + ((Array.isArray(n.글자) && n.글자.length) ? '<details class="tkr-fold"><summary>글자마다 뜻 보기</summary><ul class="tkr-ul">'
           + n.글자.map((x) => '<li>' + esc(x && x.말) + '</li>').join('') + '</ul></details>' : '') + '</div>';
+      case 'rarity': {   // 10-24 사장님 「얼마나 좋고 얼마나 귀한 자리인지 보여 줘야」 — 피라미드 · 백분위 · 빈도(모양 · 글은 astra DES-0003, 수는 조립기가 넣는다)
+        const 층 = (Array.isArray(n.층) ? n.층 : []).map((L, i) => '<li' + (L.나 ? ' class="tkr-rarity-top"' : '') + '>' + (L.나 ? '<span class="tkr-rarity-marker">' + esc(n.표시 || '이 아이의 자리') + '</span>' : '')
+          + '<strong class="tkr-rarity-name">' + esc(L.이름) + '</strong><span class="tkr-rarity-count">' + esc(L.수) + '자리 · <b>' + esc(L.비율) + '</b></span>'
+          + (L.상세 ? '<span class="tkr-rarity-detail">' + esc(L.상세) + '</span>' : '') + '</li>').join('');
+        return '<section class="tkr-rarity"><p class="tkr-rarity-result"><strong>' + esc(n.결론앞) + ' <span>' + esc(n.결론강조) + '</span></strong></p>'
+          + '<figure class="tkr-rarity-figure"><ol class="tkr-rarity-layers">' + 층 + '</ol>' + (n.캡션 ? '<figcaption>' + esc(n.캡션) + '</figcaption>' : '') + '</figure>'
+          + (n.빈도 ? '<p class="tkr-rarity-frequency">' + esc(n.빈도) + '</p>' : '')
+          + (Array.isArray(n.노트) ? n.노트.map(t => '<p class="tkr-rarity-note">' + esc(t) + '</p>').join('') : '') + '</section>';
+      }
       case 'fold': return '<details class="tkr-fold"><summary>' + esc(n.head) + '</summary>' + 몸(n.body, rep, n.head) + '</details>';
       default: return '';
     }
