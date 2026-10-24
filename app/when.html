@@ -18,11 +18,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <!-- 10-05 「언제 나아지나」 — 사장님 「무료로 공개해」(검색에 올림 · 홈 연결). 계산은 비공개 서버(/api/when)가 하고, 이 쪽은 그리기만 한다.
      무료 칸만: 해마다 색 띠 · 지나온 해 둘(맞아요 · 아니에요 — 아니에요면 한 시진 앞 · 뒤로 다시 맞춘다) · 한 줄 답 · 나아지는 해의 「왜」. -->
-<script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
+<script>document.documentElement.setAttribute('data-theme','day');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=cf102006dd">
+<link rel="stylesheet" href="style.css?v=49a9ab4e50">
 <style>
 /* 10-05 사장님 「다른 메뉴들은 왼쪽에 홈이 있잖아 통일」 — 앱 탭과 같은 「← 홈」 단추(btn ghost small backhome)를 본문 왼쪽 위에.
    10-05 사장님 「홈으로 가는 길이 없고 색상이랑 디자인이 거부감」 — 이 쪽만의 색을 걷고 사이트 공통(style.css 변수 · 머리 줄)을 쓴다 */
@@ -40,7 +40,7 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 .seg{display:flex;gap:8px}.seg label{flex:1;margin:0;text-align:center;border:1px solid var(--line2);border-radius:var(--r1);padding:10px;cursor:pointer;color:var(--ink2)}
 .seg input{display:none}.seg input:checked+span{font-weight:700;color:var(--accent)}
 .go{display:block;width:100%;margin-top:18px;padding:14px;border:0;border-radius:var(--r3);background:var(--accent);color:#fff;font-size:var(--t3);font-weight:700;cursor:pointer}
-[data-theme=night] .go{color:#1c1a3c}
+
 .err{color:var(--accent);font-size:var(--t2);margin-top:10px;min-height:1em}
 .strip{display:flex;gap:3px}.cell{flex:1;height:34px;border-radius:4px;position:relative}
 .cell span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--ink3)}.cell.now{outline:2px solid var(--ink);outline-offset:2px}
@@ -56,7 +56,7 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 .who{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}.who button{flex:0 0 auto;padding:8px 14px}.who-h{font-size:var(--t2);color:var(--ink2);margin:0}.hide{display:none}
 .bd h2{font-size:var(--t3);margin:0 0 8px;color:var(--ink);font-weight:700}.bd .row2{display:flex;justify-content:space-between;gap:8px;font-size:var(--t2);padding:6px 0;border-top:1px solid var(--line);color:var(--ink2)}.bd .row2 b{color:var(--wood)}
 .bd ul{list-style:none;margin:10px 0 0;padding:0;max-height:220px;overflow:auto}.bd li{font-size:var(--t2);line-height:1.6;padding:8px 0;border-top:1px dashed var(--line);color:var(--ink);font-family:var(--letter)}.bd li small{display:block;color:var(--ink3);font-size:var(--t1);font-family:var(--sans)}.bd .live{font-size:var(--t1);color:var(--wood);float:right}
-.rv{display:flex;gap:6px;margin-top:8px}.rv input{flex:1;font-size:var(--t2);padding:8px 10px}.rv button{padding:8px 14px;border:0;border-radius:var(--r3);background:var(--accent);color:#fff;font-size:var(--t2);cursor:pointer}[data-theme=night] .rv button{color:#1c1a3c}.rv-ok{font-size:var(--t2);color:var(--wood);margin-top:8px}
+.rv{display:flex;gap:6px;margin-top:8px}.rv input{flex:1;font-size:var(--t2);padding:8px 10px}.rv button{padding:8px 14px;border:0;border-radius:var(--r3);background:var(--accent);color:#fff;font-size:var(--t2);cursor:pointer}.rv-ok{font-size:var(--t2);color:var(--wood);margin-top:8px}
 .card.qa .q{font-size:var(--t3);line-height:1.8;color:var(--ink);margin:0;font-family:var(--letter)}.card.done{box-shadow:none;opacity:.85}.card.done p{font-size:var(--t2);color:var(--ink2)}.skip{text-align:right;margin:6px 0 0;font-size:var(--t2)}.skip a{color:var(--ink3)}details.more{margin-top:var(--s4)}details.more summary{cursor:pointer;font-size:var(--t3);color:var(--accent);padding:10px 0;font-weight:700}.why{font-size:var(--t2);color:var(--ink2);line-height:1.7;margin:8px 2px}
 .p-길{background:var(--g2-bg);color:var(--wood)}.p-흉{background:var(--g0-bg);color:var(--g0-ink)}.p-평{background:var(--bg2);color:var(--ink3);border:1px solid var(--line)}.p-변화{background:var(--g3-bg);color:var(--g3-ink)}.t3 small.same{color:var(--wood);font-weight:700}.t3 small.diff{color:var(--ink3)}
 .card.sharp p{margin-top:8px}.card.sharp p:first-child{margin-top:0}.card.sharp{border-color:var(--accent-line)}

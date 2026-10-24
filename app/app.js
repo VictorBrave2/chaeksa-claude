@@ -62,27 +62,9 @@
   const escP = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
 
-  // ───── 테마: 하루의 리듬 ─────
-  // 10-02 index.html 머리 스크립트가 같은 규칙으로 처음 화면부터 낮/밤을 정해 둔다(밤에 흰 화면이 번쩍이던 것). 규칙을 바꾸면 둘을 같이.
-  const TKEY = 'chaeksa.theme';
-  const themeMode = () => localStorage.getItem(TKEY) || 'auto';
-  const isNightHour = (d) => { const h = d.getHours(); return h < 6 || h >= 18; };
-  function applyTheme() {
-    const mode = themeMode();
-    const night = mode === 'night' || (mode === 'auto' && isNightHour(new Date()));
-    document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
-    const btn = $('btnTheme'); if (btn) { btn.textContent = night ? '☾' : '☀'; btn.title = night ? '밤 · 새벽 (눌러서 낮으로)' : '낮 · 한지 (눌러서 밤으로)'; }
-    const meta = $('metaTheme'); if (meta) meta.setAttribute('content', night ? '#161433' : '#f6f3f4');
-    const seg = $('themeSeg'); if (seg) seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === mode));
-  }
-  function setTheme(mode) { localStorage.setItem(TKEY, mode); applyTheme(); }
-  applyTheme();
-  setInterval(applyTheme, 10 * 60 * 1000);   // 열어둔 채 해가 지면 알아서 바뀜
-  $('btnTheme').onclick = () => {
-    const night = document.documentElement.getAttribute('data-theme') === 'night';
-    setTheme(night ? 'day' : 'night');
-  };
-  $('themeSeg').querySelectorAll('button').forEach(b => b.onclick = () => setTheme(b.dataset.t));
+  // 화면은 밝은 종이 한 가지. 예전에 저장한 밤낮 선택은 더 이상 사용하지 않는다.
+  document.documentElement.setAttribute('data-theme', 'day');
+  try { localStorage.removeItem('chaeksa.theme'); } catch (e) {}
 
   // ───── 사람들 ─────
   const People = () => window.ChaeksaPeople;
@@ -2056,7 +2038,7 @@
     //   theme·ai·trackAt 화면 취향, 프록시 설정, 방문 카운터 스로틀
     // 키 목록을 나열해서 지우면 새 키가 생길 때마다 여기서 또 빠뜨린다.
     // (예전 코드가 정확히 그 버그였다 — 사람 목록 키가 생긴 뒤에도 옛 키만 지웠다)
-    const KEEP = ['chaeksa.auth', 'chaeksa.usage', 'chaeksa.usageLife', 'chaeksa.theme', 'chaeksa.ai', 'chaeksa.trackAt'];
+    const KEEP = ['chaeksa.auth', 'chaeksa.usage', 'chaeksa.usageLife', 'chaeksa.ai', 'chaeksa.trackAt'];
     Object.keys(localStorage)
       .filter(k => k.startsWith('chaeksa.') && !KEEP.includes(k))
       .forEach(k => localStorage.removeItem(k));

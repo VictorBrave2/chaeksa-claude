@@ -18,11 +18,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <!-- 10-06 「옛 책이 본 내 머리」 — 사장님 「화면 시제품 ㄱㄱ」 → 같은 날 「썸네일 달고 컨텐츠로 배포」(검색에 올림 · 홈 「나」 칸 · 카톡 미리보기).
      계산은 비공개 서버(/api/brain — 옛 책 총명 표지 사주 17 · 자미 17, 생각 렌즈 둘, 남녀 각 12,932명 분포)가 하고, 이 쪽은 그리기만 한다. 문장은 작가 원고 brain-copy.js. -->
-<script>(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();</script>
+<script>document.documentElement.setAttribute('data-theme','day');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=cf102006dd">
+<link rel="stylesheet" href="style.css?v=49a9ab4e50">
 <style>
 /* 10-05 사장님 「다른 메뉴들은 왼쪽에 홈이 있잖아 통일」 — 앱 탭과 같은 「← 홈」 단추(btn ghost small backhome)를 본문 왼쪽 위에.
    10-05 사장님 「홈으로 가는 길이 없고 색상이랑 디자인이 거부감」 — 이 쪽만의 색을 걷고 사이트 공통(style.css 변수 · 머리 줄)을 쓴다 */
@@ -40,7 +40,7 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 .seg{display:flex;gap:8px}.seg label{flex:1;margin:0;text-align:center;border:1px solid var(--line2);border-radius:var(--r1);padding:10px;cursor:pointer;color:var(--ink2)}
 .seg input{display:none}.seg input:checked+span{font-weight:700;color:var(--accent)}
 .go{display:block;width:100%;margin-top:18px;padding:14px;border:0;border-radius:var(--r3);background:var(--accent);color:#fff;font-size:var(--t3);font-weight:700;cursor:pointer}
-[data-theme=night] .go{color:#1c1a3c}
+
 .err{color:var(--accent);font-size:var(--t2);margin-top:10px;min-height:1em}
 .btns{display:flex;gap:8px;margin-top:10px}.btns button,.who button{flex:1;padding:10px;border:1px solid var(--line2);border-radius:var(--r3);background:var(--card);font-size:var(--t2);color:var(--ink2);cursor:pointer;font-family:var(--sans)}
 .btns button.on,.who button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);font-weight:700}

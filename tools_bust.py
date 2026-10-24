@@ -98,6 +98,21 @@ if _missed or _notag or _gone:
     for pg, f in _gone:      print('   %-14s %-28s 파일이 없음' % (pg, f))
     sys.exit(1)
 
+# 공통 종이 바탕 CSS는 정적 안내·약관·월별 글에도 같은 지문을 붙인다.
+# PAGES에 없는 글도 재방문자의 이전 색을 문 채 남지 않게 한다.
+_css_n = 0
+for pg in sorted(os.listdir(APP)):
+    if not pg.endswith('.html') or pg in PAGES:
+        continue
+    p = os.path.join(APP, pg)
+    h = io.open(p, encoding='utf-8').read()
+    h2, n = re.subn(r'(["\'])(/?style\.css)(?:\?v=[0-9a-z]+)?\1',
+                    lambda m: m.group(1) + m.group(2) + '?v=' + VER['style.css'] + m.group(1), h)
+    if h2 != h:
+        io.open(p, 'w', encoding='utf-8', newline='\r\n').write(h2)
+        _css_n += 1
+print('정적 글 공통 CSS 지문:', _css_n)
+
 # -- 상품 소개 쪽 · 미리보기 그림 · 사이트맵 (10-02 개편 3묶음) --
 # 소개 쪽 다섯(love · pair · ssom · gunghap-chongnon · jeongtong.html)을 상품 약속 장부 · 분야 표에서, 글 미리보기(cards/og/*.jpg) ·
 # 홈 미리보기(og-home-3.jpg)를 그 쪽 제목 · 삽화에서, 사이트맵을 공개 쪽 목록 · git 기록에서 다시 만든다. 바뀐 것만 쓴다.

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=cf102006dd">
+<link rel="stylesheet" href="style.css?v=49a9ab4e50">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:var(--t5);margin:18px 0 8px}
@@ -42,10 +42,7 @@
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script>
 (function () {
-  var m = localStorage.getItem('chaeksa.theme') || 'auto';
-  var h = new Date().getHours();
-  var night = m === 'night' || (m === 'auto' && (h < 6 || h >= 18));
-  document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
+  document.documentElement.setAttribute('data-theme', 'day');
 
   var q = new URLSearchParams(location.search);
   var code = q.get('code'), message = q.get('message'), orderId = q.get('orderId');

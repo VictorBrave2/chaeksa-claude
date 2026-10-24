@@ -73,11 +73,10 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f6f3f4" id="metaTheme">
+<meta name="theme-color" content="#f8f5ed" id="metaTheme">
 <script>
 /* 첫 화면 깜빡임 막기(10-02) — 아래 스크립트 70여 개가 다 오기 전에 브라우저가 화면을 먼저 그린다. 그 전에 둘만 정해 둔다.
- *  ① 낮/밤 — 고른 값(설정 · 해/달 단추)이 있으면 그대로, 「자동」이면 시계(18~6시 밤). app.js applyTheme · 다른 쪽(pay.html 등)과 같은 규칙이다.
- *     전에는 낮 화면을 먼저 그렸다가 app.js 가 밤으로 바꿔서, 밤에는 흰 화면이 남색으로 번쩍였다.
+ *  ① 화면은 밝은 종이 한 가지로 고정한다. 시간·기기의 색 설정을 따르지 않는다.
  *  ② 처음 보일 칸 — html 의 data-boot 에 적으면 style.css 가 그 칸만 보여 준다. app.js 가 다 선 뒤(맨 끝) 떼고, 그 뒤로는 지금처럼 app.js 가 정한다.
  *     home = 넣어 둔 사람이 있음(홈) · form = 사람 없이 ?go= · #form 으로 옴(입력 칸) · wait = 사람 없이 #탭 · ?go=taekil 로 옴(빈 채로 기다림) · landing = 그 밖(첫 화면).
  *     ?go=pair(사용설명서)는 내 입력 칸을 거치지 않는다 — 첫 화면 위에 그 사람 칸(사람 추가 창)이 뜨니 landing(10-02 생년월일은 필요한 만큼만).
@@ -89,11 +88,8 @@
   window.addEventListener('hashchange', 택일로);
 })();
 (function () {
-  var d = document.documentElement, 모드 = 'auto', 사람 = false;
-  try { 모드 = localStorage.getItem('chaeksa.theme') || 'auto'; } catch (e) {}
-  var h = new Date().getHours(), 밤 = 모드 === 'night' || (모드 === 'auto' && (h < 6 || h >= 18));
-  d.setAttribute('data-theme', 밤 ? 'night' : 'day');
-  var 띠색 = document.getElementById('metaTheme'); if (띠색) 띠색.setAttribute('content', 밤 ? '#161433' : '#f6f3f4');
+  var d = document.documentElement, 사람 = false;
+  d.setAttribute('data-theme', 'day');
   try { var l = JSON.parse(localStorage.getItem('chaeksa.people') || 'null'); 사람 = !!(l && l.length); } catch (e) {}
   try { if (!사람) 사람 = !!localStorage.getItem('chaeksa.profile'); } catch (e) {}
   var 갈곳 = /[?&]go=([a-z][\w-]*)/.exec(location.search), 해시 = /^#[a-z]/i.test(location.hash), 간 = 갈곳 ? 갈곳[1] : '';
@@ -101,8 +97,8 @@
 })();
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.json?v=2">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json?v=3">
 <link rel="icon" href="icon-192.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,7 +108,7 @@
      굵기 목록은 글 · 택일 쪽 67곳과 같게 맞췄다 — 같은 주소라 쪽을 옮겨도 다시 받지 않는다. 걷은 Serif 600 은 쓰는 곳이 없었다(style.css 의 600 넷은 모두 Sans). -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=cf102006dd">
+<link rel="stylesheet" href="style.css?v=49a9ab4e50">
 <link rel="stylesheet" href="jeongtong-pyo.css?v=2bf79a1fef">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
@@ -147,7 +143,6 @@
     <a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사<small id="subtitle"><span class="sub-wide">생년월일로 보는 </span>사주 · 연애 · 궁합 · 자미두수</small></span></a>
     <div class="hbtns">
       <button class="btn-ghost hide" id="btnPerson" aria-label="사람 바꾸기"><b id="personName"></b> ▾</button>
-      <button class="btn-ghost btn-icon" id="btnTheme" aria-label="낮·밤 화면 바꾸기" title="낮/밤 바꾸기">☀</button>
       <button class="btn-ghost" id="btnLogin">로그인</button>
       <button class="btn-ghost" id="btnSettings">설정</button>
     </div>
@@ -691,12 +686,6 @@
       <input id="apiKey" aria-label="API 키" type="password" placeholder="비워두면 책사 서버를 이용합니다" autocomplete="off">
       <p class="hint">입력하면 이 기기에만 저장되고 Anthropic 서버로만 전송됩니다.</p>
     </div>
-    <label>화면 색</label>
-    <div class="seg" id="themeSeg">
-      <button data-t="auto">자동 (시간에 따라)</button>
-      <button data-t="day">낮 · 한지</button>
-      <button data-t="night">밤 · 새벽</button>
-    </div>
     <div class="devonly hide">
       <hr>
       <label>프록시 서버 주소 (고급, 비워두면 기본값)</label>
@@ -770,7 +759,7 @@
 <script src="yaksok.js?v=ac6b394f76"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=f082457166"></script>
-<script src="home-cats.js?v=4d0c2c4257"></script>
+<script src="home-cats.js?v=e7fd0a2a36"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
@@ -830,7 +819,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=534df3b6f9"></script>
+<script src="app.js?v=79253bb630"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가
