@@ -41,6 +41,10 @@ new = cur + 1 if '--bump' in sys.argv else cur
 if new != cur:
     sw = sw.replace('chaeksa-v%d' % cur, 'chaeksa-v%d' % new)
     io.open(os.path.join(APP, 'sw.js'), 'w', encoding='utf-8').write(sw)
+    # 10-24 홈 칸 그림 꼬리(home-cats.js 그림판) — 그림 파일은 이름이 같아 바꿔 끼워도 캐시가 옛것을 보여 줬다(사장님 「안 바뀌었는데」)
+    hc_path = os.path.join(APP, 'home-cats.js'); hc = io.open(hc_path, encoding='utf-8').read()
+    hc2 = re.sub(r"var 그림판 = 'v\d+'", "var 그림판 = 'v%d'" % new, hc)
+    if hc2 != hc: io.open(hc_path, 'w', encoding='utf-8', newline='').write(hc2)
 
 # 스크립트를 부르는 HTML 은 **전부** 여기서 버전을 올린다.
 # 결제 화면 셋이 config·cloud·pay.js 를 버전 없이 불러서, pay.js 를 고쳐도 재방문자는
