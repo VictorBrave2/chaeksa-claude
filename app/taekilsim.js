@@ -95,7 +95,7 @@
     let 성별 = opts.gender || 'M', 곳값 = opts.place || 'KR:서울', 거르기 = false;
     box.innerHTML = '<section class="card tk" data-plain="1">'
       + '<h2>출산 시각마다 옛 책 세 권의 판단을 확인하세요</h2>'
-      + '<p class="hint" style="margin:0 0 12px">어머니가 살펴볼 날짜를 넣으세요. 그날을 두 시간씩 나눈 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
+      + '<p class="hint" style="margin:0 0 12px">살펴볼 날짜를 넣으세요. 그날을 두 시간씩 나눈 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
       + '<div class="tk-form"><label>날짜<input type="date" id="tkDate" value="' + esc(날) + '"></label>'
       + '<label>아이 성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
       + '<label>아이가 태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
@@ -105,7 +105,7 @@
       + '<div class="tk-send"><button type="button" class="btn ghost small" id="tkSend">이날 가족에게 보내기</button><p class="tk-note" id="tkSendSay">' + esc(보내기안내) + '</p></div>'
       + '<p class="tk-note">' + esc(W.출산택일.꼬리) + '</p>'
       + 다리(!!(box.closest && box.closest('[data-tk-pane]')))
-      + '<p class="tk-note">출산 날짜와 시각은 어머니와 아이의 안전, 담당 의사의 판단이 먼저예요. 안전한 범위 안에서 날짜를 고를 때 택일을 참고하세요.</p>'
+      + '<p class="tk-note">출산 날짜와 시각은 산모와 아이의 안전, 담당 의사의 판단이 먼저예요. 안전한 범위 안에서 날짜를 고를 때 택일을 참고하세요.</p>'
       + '</section>';
     const q = (id) => box.querySelector('#' + id);
     q('tkG').value = 성별; q('tkPlace').value = 곳값;
