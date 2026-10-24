@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=cf102006dd">
+<link rel="stylesheet" href="style.css?v=49a9ab4e50">
 <style>
   .doc{max-width:960px;margin:0 auto;padding:20px 16px 90px}
   .doc > h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:0 0 10px}
@@ -94,11 +94,7 @@
 </template>
 <script>
 (function () {
-  var m = '';
-  try { m = localStorage.getItem('chaeksa.theme') || 'auto'; } catch (e) { m = 'auto'; }
-  var h = new Date().getHours();
-  var night = m === 'night' || (m === 'auto' && (h < 6 || h >= 18));
-  document.documentElement.setAttribute('data-theme', night ? 'night' : 'day');
+  document.documentElement.setAttribute('data-theme', 'day');
   try { if (window.ChaeksaCloud && ChaeksaCloud.captureRedirect) ChaeksaCloud.captureRedirect(); } catch (e) {}
   try { localStorage.removeItem('chaeksa.return'); } catch (e) {}
   if (window.ChaeksaTaekilAdmin) ChaeksaTaekilAdmin.시작();

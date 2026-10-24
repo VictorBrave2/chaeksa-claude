@@ -396,7 +396,7 @@ def product_page(key, fname, Y, B, arts, foot, ver):
 <script>
 /* 넣어 둔 사람이 있는 손님은 지금처럼 앱의 그 화면으로 곧장 간다(들어온 길 from 은 그대로). 처음 온 손님 · 검색 로봇은 아래 소개를 본다. */
 (function(){{try{{var l=JSON.parse(localStorage.getItem('chaeksa.people')||'[]');if(!(l&&l.length)&&!localStorage.getItem('chaeksa.profile'))return;var f=new URLSearchParams(location.search).get('from');location.replace('./?go={tab}'+(f?'&from='+encodeURIComponent(f):''));}}catch(e){{}}}})();
-(function(){{var m='auto';try{{m=localStorage.getItem('chaeksa.theme')||'auto';}}catch(e){{}}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');}})();
+document.documentElement.setAttribute('data-theme','day');
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

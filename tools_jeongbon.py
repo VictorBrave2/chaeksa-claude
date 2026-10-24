@@ -309,7 +309,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
   <p style="font-size:var(--t1);line-height:1.8;opacity:.75;color:var(--ink3)">유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
 </div>
 <script>
-(function(){{var m=localStorage.getItem('chaeksa.theme')||'auto',h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');}})();
+document.documentElement.setAttribute('data-theme','day');
 </script>
 <script src="config.js"></script>
 <script src="track.js"></script>

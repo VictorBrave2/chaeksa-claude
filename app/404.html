@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=49a9ab4e50">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:32px 18px 90px}
   .doc h1{font-family:var(--serif);font-size:var(--t6);line-height:1.4;margin-bottom:10px}
@@ -24,7 +24,7 @@
   .go a:hover b{color:var(--accent)}
 </style>
 <script>/* 밤이면 처음부터 밤 색으로 — 앱과 같은 규칙(저장된 고르기, 없으면 저녁 6시~아침 6시) */
-(function(){var m='auto';try{m=localStorage.getItem('chaeksa.theme')||'auto';}catch(e){}var h=new Date().getHours();document.documentElement.setAttribute('data-theme',(m==='night'||(m==='auto'&&(h<6||h>=18)))?'night':'day');})();
+document.documentElement.setAttribute('data-theme','day');
 </script>
 </head>
 <body>

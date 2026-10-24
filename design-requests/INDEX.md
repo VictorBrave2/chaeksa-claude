@@ -13,3 +13,5 @@
 | DES-0007 | 홈 목적 네 칸 · 전체 보기 · 하단 세 메뉴 | 적용됨 | DES-0007-home-paths.md | main |
 
 | DES-0008 | 정통사주 · 이름·도형·비율·인생 흐름 스크롤 견본 | 적용됨 | DES-0008-jeongtong-identity.md | main |
+
+| DES-0009 | 밤낮 전환 제거 · 밝은 종이·먹색·금색 통일 | 적용됨 | DES-0009-paper-theme.md | main |
