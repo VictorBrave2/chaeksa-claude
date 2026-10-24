@@ -1020,7 +1020,7 @@
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderChongnon(); };
     사람칩(wrap, sel, list, 고름, add);
-    const 시작 = $('gcStart'); if (시작) { 시작.classList.toggle('hide', !고름); 시작.onclick = () => { const t = out.querySelector('h2, h3, details, .card') || out; try { t.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { t.scrollIntoView(); } }; }
+    const 시작 = $('gcStart'); if (시작) { 시작.classList.add('hide'); 시작.onclick = () => { const t = out.querySelector('h2, h3, details, .card') || out; try { t.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { t.scrollIntoView(); } }; }
     if (!고름) { 비우기(); return; }
     const 그 = P.get(고름), 나입력 = 궁합입력(profile), 그입력 = 궁합입력(P.toProfile(그));
     // 같은 두 사람을 이미 그려 뒀으면 그대로 둔다 — 탭을 오갈 때마다 다시 그리면 펼쳐 둔 장이 닫힌다.
@@ -2512,6 +2512,16 @@
     }
   } catch (e) {}
   복귀고르기();           // 결제하려다 로그인하러 떠났으면 그때 고른 사람을 다시 고른다
+  // 10-25 「내 보고서」 한 곳 — ./#mine 으로 오면 설정의 「내 결제」(출산택일 · 결혼상대 점검 · 나는 뭐해 먹고 살까? 주문마다 보러 가기)를 연다.
+  //  로그인 안 했으면 같은 창에서 로그인부터. 하단 메뉴 · 머리줄의 「내 보고서」 단추는 이 주소로 걸면 된다.
+  function 내보고서열기() {
+    if (location.hash !== '#mine') return;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    openSettings();
+    setTimeout(() => { const L = $('myPayList'), C = window.ChaeksaCloud; const t = (L && C && C.signedIn && C.signedIn()) ? L : $('cloudOut'); try { t && t.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) {} }, 80);
+  }
+  window.addEventListener('hashchange', 내보고서열기);
+  내보고서열기();
   주소시작();             // 10-02 여기서부터 화면을 옮길 때마다 주소가 따라간다(위 「화면마다 주소」)
   // 서버에 저장된 게 있으면 가져온다 (없으면 조용히 넘어간다)
   if (window.ChaeksaCloud && ChaeksaCloud.signedIn()) cloudSync(false);
