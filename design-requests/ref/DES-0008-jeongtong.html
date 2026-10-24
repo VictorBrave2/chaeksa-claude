@@ -21,9 +21,6 @@
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.fade-in{animation:none}}
 </style>
-<style>.name-card .name-title{font-size:22px;font-weight:700;line-height:1.7;margin:18px 0 14px}.name-reading{font-size:14px;line-height:1.7;color:var(--accent);margin:0 0 18px}.name-card details p{font-size:14px;line-height:1.8}.name-card summary{font-size:13px}</style>
-<script src="../../app/gyeokgi-copy.js?v=db51e2508b"></script>
-<script src="../../app/jeongtong-name-copy.js?v=6abcc23a9b"></script>
 </head>
 <body>
 <div class="top"><div class="top-inner"><a class="brand" href="#top" aria-label="책사, 결과 맨 위"><span class="brand-seal">策</span>책사</a><div class="top-actions"><span class="preview-tag">정통사주 · 디자인 견본</span><select class="sample" id="sample" aria-label="가상 인물 견본 선택"><option value="3">견본 4 · 편관격</option><option value="0">견본 1 · 정재격</option><option value="1">견본 2 · 정인격</option><option value="2">견본 3 · 편관격</option></select></div></div></div>
@@ -32,8 +29,8 @@
 <section class="hero" aria-labelledby="identity"><div class="hero-copy"><p class="hero-prefix">당신은</p><h1 id="identity"></h1><p class="hero-hanja" id="identity-hanja"></p><p class="hero-verdict" id="verdict"></p><span class="state-tag"><span class="state-dot"></span><span id="state"></span></span></div><div class="hero-art"><div id="emblem"></div><p class="shape-note">격 · 성패 · 조후 · 기세 · 강약</p><p class="shape-caption">돌출된 길이는 각 특징의 드문 정도입니다.</p></div></section>
 <div class="rarity"><div class="rarity-number" id="rarity"></div><div><p class="rarity-title">같은 짜임을 가진 명식</p><p class="rarity-sub">계산한 60,000개 기준</p></div><button type="button" class="source-toggle" id="measure" aria-label="비율과 도형의 기준 보기" aria-expanded="false" aria-controls="measure-detail">i</button></div>
 <div class="measure-detail" id="measure-detail" hidden></div>
-<a class="reading-link" href="#old-names">옛 책이 본 당신을 보세요 <span aria-hidden="true">↓</span></a>
-<section class="chapter" id="old-names" aria-labelledby="old-title"><p class="chapter-kicker"><span>一</span> 옛 책이 본 당신</p><h2 id="old-title">옛 책은 당신을<br><em>이렇게 보았습니다.</em></h2><div class="old-names" id="names"></div><details class="name-more" id="name-more"><summary id="name-more-summary"></summary><div class="old-names" id="other-names"></div></details><p class="small-note">각 비율은 그 고전 대목의 조건에 해당한 명식의 비율입니다.</p></section>
+<a class="reading-link" href="#old-names">옛사람이 붙인 이름을 보세요 <span aria-hidden="true">↓</span></a>
+<section class="chapter" id="old-names" aria-labelledby="old-title"><p class="chapter-kicker"><span>一</span> 옛사람이 붙인 이름</p><h2 id="old-title">옛 책은 당신에게<br><em>이런 이름을 붙였습니다.</em></h2><div class="old-names" id="names"></div><details class="name-more" id="name-more"><summary id="name-more-summary"></summary><div class="old-names" id="other-names"></div></details><p class="small-note">각 비율은 그 고전 대목의 조건에 해당한 명식의 비율입니다.</p></section>
 <section class="chapter" id="story" aria-labelledby="story-title"><p class="chapter-kicker"><span>二</span> 시간 속의 당신</p><h2 id="story-title">타고난 나에게,<br><em>시간이 더해집니다.</em></h2><div class="timeline-summary" id="story-summary"></div><div class="timeline" id="timeline"></div><details class="all-periods"><summary>다른 시기도 보기</summary><div id="periods"></div></details><p class="small-note">2026년 10월 25일 기준 · 대운은 10년 단위의 흐름입니다.</p></section>
 <section class="chapter" id="evidence"><p class="chapter-kicker"><span>三</span> 나의 이름이 나온 근거</p><details class="evidence"><summary>다섯 가지 판정과 고전 출처 보기</summary><div class="evidence-grid" id="evidence-grid"></div></details></section>
 <div class="closing"><span class="closing-mark">策</span><p id="closing"></p><a href="#top">나의 이름으로 돌아가기 ↑</a></div>
@@ -51,14 +48,14 @@ const stateName={'섰다':'성격 · 成格','깨졌다':'파격 · 敗格','구
 const stateSentence={'섰다':'타고난 짜임이 갖춰져 있습니다.','깨졌다':'타고난 짜임을 해치는 요소가 있습니다.','구제됐다':'짜임을 해치는 요소를 막아 주는 힘이 있습니다.','띠었다':'갖춰진 짜임에 방해하는 요소가 있습니다.'};
 const axisNames=['타고난 격','짜임의 상태','계절의 조건','기운의 모양','나의 강약'];
 const readableName={
-'SM06B-102':['포승','包承',''],
+'SM06B-102':['포승','包承','맑고 귀하며, 복이 두텁다.'],
 'YH-030':['인수천덕','印綬天德',''],
 'SM05-040':['관성육합','官星六合',''],
 'SMM1-010':['좌하자화','座下自化',''],
 'SM06B-096':['사시승왕','四時乘旺',''],
 'YH-095':['시상포태격','時上胞胎格',''],
-'SM05-044':['진관','真官',''],
-'SMM1-M036':['사간병일지','四干併一支 · 天乙貴人',''],
+'SM05-044':['진관','真官','귀하지 않으면 부유하다.'],
+'SMM1-M036':['사간병일지','四干併一支 · 天乙貴人','공명을 일찍 이룬다고 적었습니다.'],
 'SMM1-011':['좌하자화','座下自化 · 癸巳','']
 };
 const pct=n=>n==null?'—':Number(n).toLocaleString('ko-KR',{maximumFractionDigits:2});
@@ -76,18 +73,7 @@ function emblem(axes,type,ratio,small=false){
  const center=typeNames[type]?.replace(/格.*/,'').replace('七殺','七殺')||'命';
  return '<svg class="shape" viewBox="0 0 460 465" role="img" aria-label="'+esc(type+'격. 다섯 판정의 희소성을 나타낸 도형')+'"><circle class="orbital" cx="230" cy="225" r="163"/><circle class="orbital" cx="230" cy="225" r="117" stroke-dasharray="2 7"/><circle class="orbital" cx="230" cy="225" r="69"/>'+rays+facets+'<polygon class="edge" points="'+pts.map(str).join(' ')+'"/>'+dots+'<circle cx="230" cy="225" r="42" fill="var(--bg)"/><text class="center" x="230" y="229">'+pct(ratio)+'%</text><text class="center-sub" x="230" y="249">같은 짜임</text>'+(!small?labels:'')+'</svg>';
 }
-function plainMeaning(s){return String(s||'').replace(/\([^()]*[\u3400-\u9fff][^()]*\)/g,'').replace(/\s+([.,!?])/g,'$1').replace(/\s{2,}/g,' ').trim();}
-function nameCard(n){
- const named=readableName[n.key],words=window.GYEOKGI_COPY?.격?.[n.key]||{};
- const meaning=plainMeaning(window.JEONGTONG_NAME_COPY?.[n.key]||words.뜻)||'이 사주에 해당하는 옛 책의 대목입니다. 뜻풀이는 아직 준비하지 못했습니다.';
- return '<article class="name-card"><div class="name-top"><span class="name-book">'+esc(book[n.책]||n.책)+'</span><span class="name-percent">'+pct(n['%'])+'<small>%</small></span></div>'
-  +'<h3 class="name-title">'+esc(meaning)+'</h3>'
-  +(named?.[0]?'<p class="name-reading">고전의 표현 · '+esc(named[0])+'</p>':'')
-  +'<details><summary>이름·조건·고전 원문 보기</summary><p><b>고전의 표현</b><br><span lang="zh">'+esc(n.고전이름)+'</span></p>'
-  +(words.짜임?'<p><b>내 사주에 해당하는 조건</b><br>'+esc(words.짜임)+'</p>':'')
-  +(words.뜻&&meaning!==words.뜻?'<p><b>용어를 포함한 뜻풀이</b><br>'+esc(words.뜻)+'</p>':'')
-  +'<p lang="zh">'+esc(n.원문)+'</p><p>'+esc(String(n.출처||n.책||'').split(' · docs/')[0])+'</p></details></article>';
-}
+function nameCard(n){const named=readableName[n.key],title=named?.[0]||n.고전이름.split('(')[0],hanja=named?.[1]||n.고전이름;return '<article class="name-card"><div class="name-top"><span class="name-book">'+esc(book[n.책]||n.책)+'</span><span class="name-percent">'+pct(n['%'])+'<small>%</small></span></div><h3 class="name-title">'+esc(title)+'</h3><p class="name-hanja">'+esc(hanja)+'</p>'+(named?.[2]?'<p class="name-quote">“'+esc(named[2])+'”</p>':'')+'<details><summary>고전 원문과 출처</summary><p lang="zh">'+esc(n.원문)+'</p><p>'+esc(n.출처.split(' · docs/')[0])+'</p><p>해당 조건: '+esc(n.고전이름)+'</p></details></article>'}
 function mini(period){const a=typeNames[period.type]||'—',state=period.state==='깨졌다'?'var(--fire)':'var(--accent)';return '<svg class="period-small-shape" viewBox="0 0 112 90" role="img" aria-label="'+esc(period.type+'격 '+(stateName[period.state]||''))+'"><circle cx="56" cy="45" r="34" fill="none" stroke="var(--line2)"/><path d="M56 10 L67 32 L92 35 L74 53 L79 78 L56 66 L33 78 L38 53 L20 35 L45 32 Z" fill="var(--accent-soft)" stroke="'+state+'" stroke-width=".8"/><text x="56" y="49" text-anchor="middle" fill="'+state+'" font-family="var(--serif)" font-size="12">'+esc(a.replace('格',''))+'</text></svg>'}
 function periodSentence(p,previous){if(p.state==='깨졌다')return '이 시기에는 짜임을 해치는 요소가 들어옵니다.';if(p.state==='구제됐다')return '해치는 요소를 막아 주는 힘이 들어옵니다.';if(p.state==='띠었다')return '짜임에 방해하는 요소가 함께 들어옵니다.';if(previous?.state==='깨졌다')return '이 시기에는 짜임이 다시 갖춰집니다.';if(previous&&previous.type!==p.type)return (copy[p.type]?.short||p.type+'격으로 읽는 시기입니다.');return '갖춰진 짜임이 이어집니다.'}
 function render(index){
