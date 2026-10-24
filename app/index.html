@@ -106,7 +106,7 @@
      굵기 목록은 글 · 택일 쪽 67곳과 같게 맞췄다 — 같은 주소라 쪽을 옮겨도 다시 받지 않는다. 걷은 Serif 600 은 쓰는 곳이 없었다(style.css 의 600 넷은 모두 Sans). -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=b34976464f">
+<link rel="stylesheet" href="style.css?v=4c7ec43935">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
@@ -153,8 +153,42 @@
       <!-- 10-02 홈 첫 화면 다시 짜기 — 처음 온 손님에게 여기가 무엇을 하는 곳인지 한 줄(전에는 그림만 있고 사주 사이트라는 말도 없었다).
            스크립트를 기다리지 않게 글로 박아 둔다. 칸마다 무료인지 · 얼마인지는 아래 칸 딱지(상품 약속 장부)가 말한다. -->
       <div class="home-intro">
-        <h1 class="hi-t">생년월일로 보는<br>출산택일 · 연애 · 궁합 · 사주</h1>
-        <p class="hi-s"><span>가입 없이 시작해요</span><span>무료인지 · 얼마인지는 각 칸에 적혀 있어요</span><span>생년월일은 이 기기에 저장해요</span></p>
+        <h1 class="hi-t">내 사주를 한눈에 본다.</h1>
+        <section class="card birth-card" id="hiBirth" aria-label="내 생년월일시">
+        <div class="birth-top"><label for="hiY">생년월일 · 성별</label></div>
+        <div class="birth-date">
+        <input id="hiY" aria-label="출생 연도" type="number" placeholder="1990" min="1900" max="2100" inputmode="numeric">
+        <input id="hiM" aria-label="출생 월" type="number" placeholder="월" min="1" max="12" inputmode="numeric">
+        <input id="hiD" aria-label="출생 일" type="number" placeholder="일" min="1" max="31" inputmode="numeric">
+        <select id="hiG" aria-label="성별"><option value="F">여성</option><option value="M">남성</option></select>
+        </div>
+        <details class="fc-more" id="hiMore">
+        <summary>시간 · 달력 · 이름 · 태어난 곳</summary>
+        <div class="birth-second">
+        <fieldset>
+        <legend>태어난 시간(몰라도 돼요)</legend>
+        <div class="birth-time">
+        <input id="hiH" aria-label="태어난 시" type="number" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
+        <input id="hiMin" aria-label="태어난 분" type="number" placeholder="분" min="0" max="59" inputmode="numeric">
+        <div class="check"><input type="checkbox" id="hiNoTime"><label for="hiNoTime">시간을 몰라요</label></div>
+        </div>
+        </fieldset>
+        </div>
+        <fieldset class="calendar" id="hiCal" aria-label="양력 또는 음력">
+        <label><input type="radio" name="hiCalendar" value="solar" data-cal="solar" checked>양력</label>
+        <label><input type="radio" name="hiCalendar" value="lunar" data-cal="lunar">음력</label>
+        </fieldset>
+        <div class="check hide" id="hiLeapWrap"><input type="checkbox" id="hiLeap"><label for="hiLeap">윤달이에요</label></div>
+        <label for="hiName">이름</label>
+        <input id="hiName" type="text" aria-label="이름" placeholder="예: 지수" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
+        <p class="hint">기본값은 서울이에요. 태어난 곳의 해 위치에 맞춰 시각을 계산해요. 다른 곳에서 태어났으면 아래에서 골라 주세요.</p>
+        <label for="hiPlace">태어난 곳</label>
+        <select id="hiPlace" aria-label="태어난 곳"><optgroup label="주요 도시"><option value="KR:서울">서울</option><option value="KR:부산">부산</option><option value="KR:인천">인천</option><option value="KR:대구">대구</option><option value="KR:대전">대전</option><option value="KR:광주">광주</option><option value="KR:울산">울산</option><option value="KR:세종">세종</option></optgroup><optgroup label="그 외 지역"><option value="KR:수원">수원</option><option value="KR:성남">성남</option><option value="KR:춘천">춘천</option><option value="KR:강릉">강릉</option><option value="KR:원주">원주</option><option value="KR:청주">청주</option><option value="KR:천안">천안</option><option value="KR:전주">전주</option><option value="KR:목포">목포</option><option value="KR:여수">여수</option><option value="KR:안동">안동</option><option value="KR:포항">포항</option><option value="KR:창원">창원</option><option value="KR:진주">진주</option><option value="KR:제주">제주</option><option value="KR:서귀포">서귀포</option></optgroup><optgroup label="해외"><option value="AB:도쿄">도쿄 (UTC+9)</option><option value="AB:오사카">오사카 (UTC+9)</option><option value="AB:베이징">베이징 (UTC+8)</option><option value="AB:상하이">상하이 (UTC+8)</option><option value="AB:홍콩">홍콩 (UTC+8)</option><option value="AB:타이베이">타이베이 (UTC+8)</option><option value="AB:싱가포르">싱가포르 (UTC+8)</option><option value="AB:마닐라">마닐라 (UTC+8)</option><option value="AB:방콕">방콕 (UTC+7)</option><option value="AB:하노이">하노이 (UTC+7)</option><option value="AB:호치민">호치민 (UTC+7)</option><option value="AB:자카르타">자카르타 (UTC+7)</option><option value="AB:델리">델리 (UTC+5.5)</option><option value="AB:두바이">두바이 (UTC+4)</option><option value="AB:모스크바">모스크바 (UTC+3)</option><option value="AB:런던">런던 (UTC+0)</option><option value="AB:파리">파리 (UTC+1)</option><option value="AB:베를린">베를린 (UTC+1)</option><option value="AB:로마">로마 (UTC+1)</option><option value="AB:뉴욕">뉴욕 (UTC-5)</option><option value="AB:토론토">토론토 (UTC-5)</option><option value="AB:시카고">시카고 (UTC-6)</option><option value="AB:덴버">덴버 (UTC-7)</option><option value="AB:로스앤젤레스">로스앤젤레스 (UTC-8)</option><option value="AB:샌프란시스코">샌프란시스코 (UTC-8)</option><option value="AB:시애틀">시애틀 (UTC-8)</option><option value="AB:밴쿠버">밴쿠버 (UTC-8)</option><option value="AB:호놀룰루">호놀룰루 (UTC-10)</option><option value="AB:상파울루">상파울루 (UTC-3)</option><option value="AB:시드니">시드니 (UTC+10)</option><option value="AB:멜버른">멜버른 (UTC+10)</option><option value="AB:오클랜드">오클랜드 (UTC+12)</option></optgroup></select>
+        <div class="check"><input type="checkbox" id="hiSolar" checked><label for="hiSolar">태어난 곳의 해 위치로 시각 맞추기(진태양시) — 켜 두세요</label></div>
+        </details>
+        <button class="btn" id="hiGo" type="button">AI분석을 넘어서는 사주분석 받기</button>
+        </section>
+        <p class="home-price-note">무료인지 · 얼마인지는 각 칸에 적혀 있어요</p>
       </div>
       <!-- 10-22 사장님 「메뉴들이 한눈에 들어와야」 — 메뉴판(그림 칸)을 물음 칩보다 먼저. -->
       <!-- 09-30 사장님 「홈구성을 분류 → 연애 → 썸네일 삽화 터치하면 컨텐츠 입장 · 분류마다 하나씩 · 없는 건 준비중」 — home-cats.js 가 그린다.
@@ -167,7 +201,7 @@
       <button class="btn lp-cta hide" id="btnGunghap" type="button">로그인 없이 생년월일로 궁합 시작하기</button>
       <button class="btn ghost lp-cta hide" id="btnJeongtong" type="button">생년월일시로 정통사주 무료분석</button>
       <a class="btn ghost lp-cta hide" id="btnBaby" href="taekil-sim.html?from=site-landing">출산택일 생년월일시 확인하기</a>
-      <button class="btn-ghost lp-mine" id="btnStart">내 생년월일 저장해 두기</button>
+      <button class="btn-ghost lp-mine hide" id="btnStart">내 생년월일 저장해 두기</button>
       <button class="hide" id="btnStart2"></button>
     </div>
   </section>
@@ -723,7 +757,7 @@
 <script src="yaksok.js?v=b4d6d5bece"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=f082457166"></script>
-<script src="home-cats.js?v=545bf57d85"></script>
+<script src="home-cats.js?v=a1542c9972"></script>
 <script src="home-ask.js?v=2cfc49db62"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
@@ -782,7 +816,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=642d5e2503"></script>
+<script src="app.js?v=ad2528476b"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

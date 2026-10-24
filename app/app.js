@@ -437,6 +437,35 @@
     try { const s = history.state; if (주소켜짐 && 보인주소 === '' && s && s.책사 && s.앞 === '') history.back(); } catch (e) {}
   };
   $('noTime').onchange = (e) => { $('hh').disabled = $('mi').disabled = e.target.checked; };
+  // ───── 첫 화면 입력 칸(10-25 사장님 「A로 가고」 · DES-0005 안 A) ─────
+  // 모양 · 글은 astra. 동작은 여기 — 새 저장 길을 만들지 않고, 첫 화면 칸 값을 기존 입력 창(#formCard)에 옮겨 적은 뒤 그 저장 단추(btnGo)를 그대로 누른다(people.js 프로필 · 도착 · 주소 처리 전부 그 길).
+  // 갈 곳은 정통사주(단추 글 「AI분석을 넘어서는 사주분석 받기」). 묻지 않는다(10-25 「묻지 말고 딱딱」) — 비어 있으면 입력 창의 같은 알림이 뜬다.
+  (function 첫화면입력() {
+    const hi = (id) => document.getElementById(id);
+    if (!hi('hiGo') || !hi('hiY')) return;
+    const 시간토글 = () => { const off = !!(hi('hiNoTime') && hi('hiNoTime').checked); if (hi('hiH')) hi('hiH').disabled = off; if (hi('hiMin')) hi('hiMin').disabled = off; };
+    if (hi('hiNoTime')) hi('hiNoTime').onchange = 시간토글;
+    document.querySelectorAll('#hiCal input[data-cal]').forEach(r => { r.onchange = () => { if (hi('hiLeapWrap')) hi('hiLeapWrap').classList.toggle('hide', r.value !== 'lunar' || !r.checked); }; });
+    hi('hiGo').onclick = () => {
+      const v = (id) => (hi(id) ? String(hi(id).value || '').trim() : '');
+      if (!v('hiY') || !v('hiM') || !v('hiD')) { alert('생년월일을 넣어 주세요.'); (hi(!v('hiY') ? 'hiY' : !v('hiM') ? 'hiM' : 'hiD') || {}).focus && hi(!v('hiY') ? 'hiY' : !v('hiM') ? 'hiM' : 'hiD').focus(); return; }
+      입력준비(null); 들어가기('jeongtong');                      // 입력 창을 열고(갈 곳 = 정통사주) — 프로필이 이미 있으면 바로 정통사주로 간다
+      if (!$('formCard') || $('formCard').classList.contains('hide')) return;
+      const cal = (document.querySelector('#hiCal input[data-cal]:checked') || {}).value || 'solar';
+      const seg = document.querySelector('#calSeg [data-cal="' + cal + '"]'); if (seg && !seg.classList.contains('on')) seg.click();
+      $('y').value = v('hiY'); $('m').value = v('hiM'); $('d').value = v('hiD');
+      if ($('isLeap') && hi('hiLeap')) $('isLeap').checked = cal === 'lunar' && hi('hiLeap').checked;
+      if ($('g') && v('hiG')) $('g').value = v('hiG');
+      if ($('name')) $('name').value = v('hiName');
+      const 모름 = !!(hi('hiNoTime') && hi('hiNoTime').checked) || v('hiH') === '';
+      if ($('noTime')) { $('noTime').checked = 모름; $('noTime').onchange({ target: $('noTime') }); }
+      if (!모름) { $('hh').value = v('hiH'); $('mi').value = v('hiMin') || '0'; }
+      if ($('place') && v('hiPlace')) { $('place').value = v('hiPlace'); try { $('place').dispatchEvent(new Event('change')); } catch (e) {} }
+      if ($('solar') && hi('hiSolar')) $('solar').checked = hi('hiSolar').checked;
+      $('btnGo').onclick();
+    };
+  })();
+
 
   // ───── 탭 ─────
   // 원국을 넣은 적이 있는가. 없으면 탭들이 담긴 #app 자체가 hide 라 탭만 켜도 안 보인다.

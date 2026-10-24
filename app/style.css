@@ -1477,3 +1477,56 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .doc .tk-intro-rarity .tkr-rarity-note{margin:6px 0 0;font-size:var(--t1);line-height:1.5;color:var(--ink2)}
 .doc a.btn.tk-sample-cta{margin-top:10px;color:var(--ink2);word-break:keep-all;overflow-wrap:normal}
 .doc .tk-sample-cta span{display:block;margin-top:4px;font-size:var(--t1);font-weight:400;line-height:1.5}
+
+/* DES-0005 안 A — 첫 방문 입력의 모양만 적용. 동작은 메인에서 연결한다. */
+#landing .home-intro{margin:0 0 var(--s1);text-align:left;overflow-wrap:normal}
+#landing .home-intro .hi-t{margin:0 0 var(--s1);font-size:var(--t5);line-height:1.45;letter-spacing:-.03em}
+#landing .birth-card{margin:0 0 var(--s1);padding:0;border:0;box-shadow:none;background:none}
+#landing .birth-card::before{display:none}
+#landing .birth-card label,#landing .birth-card legend{margin:0;font-size:var(--t2);color:var(--ink2);letter-spacing:0}
+#landing .birth-card fieldset{border:0;min-width:0}
+#landing .birth-top{margin-bottom:var(--s1)}
+#landing .birth-top label{font-size:var(--t1)}
+#landing .birth-date{display:grid;grid-template-columns:1.2fr .8fr .8fr 1fr;gap:var(--s1)}
+#landing .birth-card input,#landing .birth-card select{min-width:0;padding:10px 8px;font-size:var(--t3);border-radius:var(--r1);height:44px}
+#landing .birth-card input::placeholder{color:var(--ink2);opacity:1}
+#landing .birth-second{margin:var(--s2) 0}
+#landing .birth-time{display:grid;grid-template-columns:1fr 1fr auto;align-items:center;gap:var(--s1);margin-top:var(--s1)}
+#landing .calendar{display:flex;gap:var(--s1)}
+#landing .calendar label{display:flex;align-items:center;gap:4px;cursor:pointer}
+#landing .calendar input,#landing .birth-card input[type="checkbox"]{width:16px;height:16px;padding:0;accent-color:var(--accent);flex:none}
+#landing .birth-card .check{gap:var(--s1);margin-top:var(--s1)}
+#landing .birth-card .birth-time .check{margin-top:0}
+#landing .birth-card .check label{font-size:var(--t1);line-height:1.5}
+#landing .birth-card .fc-more{margin-top:var(--s1);padding-top:0;border:0}
+#landing .birth-card .fc-more>summary{font-size:var(--t1);padding:4px 0;color:var(--ink2)}
+#landing .birth-card .fc-more>label{margin:var(--s2) 0 var(--s1)}
+#landing .birth-card .btn{margin-top:var(--s1);padding:12px 6px;font-size:var(--t3);min-height:48px;letter-spacing:-.02em;word-break:keep-all;background:var(--accent);color:var(--card);box-shadow:none}
+:root[data-theme="night"] #landing .birth-card .btn{color:var(--bg)}
+#landing .home-price-note{font-size:var(--t1);color:var(--ink2);margin-bottom:var(--s1)}
+#landing .home-intro button:focus-visible,#landing .home-intro summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+/* DES-0006: 홈 하단 바의 공통 nav 규칙을 그대로 사용한다. */
+body.tk-page .doc{padding-bottom:calc(118px + env(safe-area-inset-bottom))}
+.tk-dock{position:fixed;left:0;right:0;bottom:0;z-index:10}
+#tk-nav{position:static}
+#tk-nav>a{background:none;border:0;color:var(--ink3);font-size:var(--t1);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:4px 0;border-radius:var(--r1);transition:.15s;font-family:var(--sans);text-decoration:none}
+#tk-nav>a,#tk-nav>button{line-height:normal}
+#tk-nav>a svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#tk-nav>a span{white-space:nowrap}
+#tk-nav>a[aria-current]{color:var(--accent);font-weight:700}
+#tk-nav>a:hover{color:var(--ink2)}
+#tk-nav>a[aria-current]:hover{color:var(--accent)}
+#tk-nav>.tk-apply{background:var(--accent-soft);color:var(--accent);font-weight:700;box-shadow:inset 0 0 0 1px var(--accent-line)}
+#tk-nav>button[aria-current="true"]{color:var(--accent);font-weight:700}
+#tk-nav>button[aria-expanded="true"]{color:var(--accent);background:var(--accent-soft)}
+.tk-dock a:focus-visible,.tk-dock button:focus-visible,.tk-data-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tk-data{width:calc(100% - 28px);max-width:492px;margin:0 auto 8px;padding:14px;background:var(--card);border:1px solid var(--line2);border-radius:var(--r2);box-shadow:var(--nav-shadow)}
+.tk-data-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.tk-data-head h2{font-family:var(--serif);font-size:var(--t4);color:var(--ink)}
+.tk-data-head button{min-width:44px;min-height:44px;padding:6px 10px;border:1px solid var(--line2);border-radius:var(--r1);background:var(--card);color:var(--ink2);font:inherit;font-size:var(--t2);cursor:pointer}
+.tk-data-scroll{max-height:45vh;max-height:45dvh;overflow-y:auto;overscroll-behavior:contain;scroll-padding:4px;padding:3px}
+.tk-data-row{display:grid;grid-template-columns:minmax(0,1fr) repeat(2,minmax(0,1.15fr));align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--line);font-size:var(--t2)}
+.tk-data-row time{color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tk-data-row a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:6px 4px;border:1px solid var(--line);border-radius:var(--r1);color:var(--accent);background:var(--bg2);text-decoration:none;white-space:nowrap}
+.tk-data-row a:hover{border-color:var(--accent-line);background:var(--accent-soft)}
+@media print{.tk-dock{display:none}}
