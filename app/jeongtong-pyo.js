@@ -16,16 +16,16 @@ const axisNames=['타고난 격','짜임의 상태','계절의 조건','기운�
 const readableName={
 'SM05-006':['진관향','真官鄉',''],
 'SMM1-M009':['신일 좌해 투병','辛日 坐亥 透丙(貴)',''],
-'SM06B-102':['포승','包承','맑고 귀하며, 복이 두텁다.'],
+'SM06B-102':['포승','包承',''],
 'YH-030':['인수천덕','印綬天德',''],
 'SM05-040':['관성육합','官星六合',''],
 'SMM1-010':['좌하자화','座下自化',''],
 'SM06B-096':['사시승왕','四時乘旺',''],
 'YH-095':['시상포태격','時上胞胎格',''],
-'SM05-044':['진관','真官','귀하지 않으면 부유하다.'],
-'SMM1-M036':['사간병일지','四干併一支 · 天乙貴人','공명을 일찍 이룬다고 적었습니다.'],
+'SM05-044':['진관','真官',''],
+'SMM1-M036':['사간병일지','四干併一支 · 天乙貴人',''],
 'SMM1-011':['좌하자화','座下自化 · 癸巳',''],
-'SM06B-061':['정화견진','正化 見辰','생왕고의 도움을 받으면, 부귀와 공명이 천하에 가득하다.']
+'SM06B-061':['정화견진','正化 見辰','']
 };
 const pct=n=>n==null?'—':n>0&&n<0.01?'＜0.01':Number(n).toLocaleString('ko-KR',{maximumFractionDigits:2});
 function axisValue(a){if(a.id==='성패')return (stateName[a.값]||a.값).split(' · ')[0];if(a.id==='기세')return a.판정==='비해당'?'여러 기운':a.고전이름||a.값;if(a.id==='조후')return {'돕는 글자만 뜸':'보조 글자 있음','둘 다 안 뜸':'필요 글자 없음','필요한 글자 뜸':'필요 글자 있음'}[a.값]||a.값;return a.값||'판정 불가'}
@@ -46,7 +46,7 @@ function emblem(axes,type,ratio,small=false){
 function plainMeaning(s){return String(s||'').replace(/\([^()]*[\u3400-\u9fff][^()]*\)/g,'').replace(/\s+([.,!?])/g,'$1').replace(/\s{2,}/g,' ').trim();}
 function nameCard(n){
  const named=readableName[n.key],words=global.GYEOKGI_COPY?.격?.[n.key]||{};
- const meaning=plainMeaning(words.뜻||named?.[2])||'이 사주에 해당하는 옛 책의 대목입니다. 뜻풀이는 아직 준비하지 못했습니다.';
+ const meaning=plainMeaning(global.JEONGTONG_NAME_COPY?.[n.key]||words.뜻)||'이 사주에 해당하는 옛 책의 대목입니다. 뜻풀이는 아직 준비하지 못했습니다.';
  return '<article class="name-card"><div class="name-top"><span class="name-book">'+esc(book[n.책]||n.책)+'</span><span class="name-percent">'+pct(n['%'])+'<small>%</small></span></div>'
   +'<h3 class="name-title">'+esc(meaning)+'</h3>'
   +(named?.[0]?'<p class="name-reading">고전의 표현 · '+esc(named[0])+'</p>':'')
