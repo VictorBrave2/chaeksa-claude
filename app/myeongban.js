@@ -137,6 +137,7 @@
       + (명식짧게() ? '<div class="c3">' + esc(명식짧게()) + '</div>' : '')
       + '<div class="c3 tap' + (탭본() ? ' still' : '') + '">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
       + '</div>';
+    h += 흐름html(M);   // 10-24 열두 칸 글 흐름(결론 → 근거 접힘)
     h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(글('공유.단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(글('공유.안내', '')) + '</p></div>';
     $('out').innerHTML = h;
@@ -198,8 +199,9 @@
     }
     return '<p class="mb-none">' + esc(없음말) + '</p>';
   }
-  function 별시트(key) {
-    if (결과.칸[key] && 결과.칸[key].별종류) { 별시트2(key); return; }
+  function 별시트(key) { 열기(별시트html(key)); }
+  function 별시트html(key) {
+    if (결과.칸[key] && 결과.칸[key].별종류) return 별시트2html(key);
     var 별 = key.split('|')[0], 궁 = key.split('|')[1], 셀 = 결과.칸[key] || { 걸림: [], 일부: [], 안걸림: [], 움직이는해: [], 짝: [] }, g = 궁of(궁) || {}, 원고 = 칸글[key] || { 줄: [] };
     var 내 = 셀.내밝기 || ((g.주성 || []).filter(function (s) { return s.이름 === 별; })[0] || {}).밝기 || '', h = '';
     h += '<p class="sh-k">' + esc(궁말(궁) + ' · ' + 소리(g.지지) + ' 칸' + (결과.명반.신궁 === 궁 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
@@ -249,7 +251,7 @@
       h += '</details>';
     }
     if ((셀.안걸림 || []).length || 짝안.length) h += '<details class="fold"><summary>' + esc(글('칸.안걸림접힘', '')) + '</summary><p class="why">' + esc(글('칸.안걸림풀이', '')) + '</p>' + (셀.안걸림 || []).map(function (x) { return 원문칸(x, false); }).join('') + 짝안.map(function (x) { return 짝칸(x, 함께들, '안 걸림'); }).join('') + '</details>';
-    열기(h);
+    return h;
   }
   // 짝 원문 칸 — 1판 빈칸 짝 줄과 같은 꼴(짝 별 이름 · 걸림이면 「내 명반에서 걸려요」 · 일부면 일부 머리). 이름들이 비면(걸린 까닭이 이 궁의 짝 별이 아닐 때) 이름 없이
   //   상태 — 3판 짝칸은 걸림 · 일부 · 안걸림 묶음으로 와서 줄에 걸림 칸이 없다(넘긴다). 3판 일부는 원문칸처럼 까닭(왜)도. 2판 부름(상태 없음)은 그대로
@@ -265,7 +267,7 @@
     return 이름들.map(별쉬운).join(' · ') + (b == null ? '와' : b ? '과' : '와') + ' 함께';
   }
   // 2판 시트(보좌 · 살성 · 사화) — 1판 별시트와 같은 차례. 셀 = 서버 2판 칸, 원고 = 칸 216
-  function 별시트2(key) {
+  function 별시트2html(key) {
     var 별 = key.split('|')[0], 궁 = key.split('|')[1], 셀 = 결과.칸[key], g = 궁of(궁) || {}, 원고 = 칸글[key] || { 줄: [] };
     var 종 = 셀.별종류, 화칸 = 종 === '사화', 실은 = 셀.실은별 || '', 내 = 셀.내밝기 || '', 별글 = (쪽2.별 && 쪽2.별[별]) || {}, h = '';
     h += '<p class="sh-k">' + esc(궁말(궁) + ' · ' + 소리(g.지지) + ' 칸' + (결과.명반.신궁 === 궁 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
@@ -322,10 +324,11 @@
     }
     if ((셀.안걸림 || []).length || 짝안.length) h += '<details class="fold"><summary>' + esc(글('칸.안걸림접힘', '')) + '</summary><p class="why">' + esc(글('칸.안걸림풀이', '')) + '</p>' + (셀.안걸림 || []).map(function (x) { return 원문칸(x, false); }).join('') + 짝안.map(function (x) { return 짝칸(x, x.짝); }).join('') + '</details>';
     if (일판짝.length) h += '<details class="fold"><summary>' + esc(글2('주성칸에도.접힘', '큰 별(주성) 칸에도 있는 줄')) + '</summary><p class="why">' + esc(글2('주성칸에도.풀이', '')) + '</p>' + 일판짝.map(function (x) { return 짝칸(x, x.여기있는짝); }).join('') + '</details>';
-    열기(h);
+    return h;
   }
-  function 궁시트(이름) {
-    var g = 궁of(이름); if (!g) return;
+  function 궁시트(이름) { var h = 궁시트html(이름); if (h) 열기(h); }
+  function 궁시트html(이름) {
+    var g = 궁of(이름); if (!g) return '';
     var h = '<p class="sh-k">' + esc(소리((g.궁간 || '') + g.지지) + ' 칸' + (결과.명반.신궁 === 이름 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</p>';
     h += '<p class="sh-t">' + esc(궁쉬운(이름)) + '<small>' + esc((궁한글[이름] || 이름) + ' · ' + 이름) + '</small></p>';
     if (쪽.궁 && 쪽.궁[이름]) h += '<p class="sh-b">' + esc(쪽.궁[이름].한줄) + '</p>';
@@ -371,7 +374,34 @@
       // 안 걸림 — 접힘 이름만(칸.안걸림풀이는 「이 별이 …」라 궁 시트엔 안 맞아 뺀다)
       if (궁안.length) h += '<details class="fold"><summary>' + esc(글('칸.안걸림접힘', '')) + '</summary>' + 궁안.map(function (x) { return 원문칸(x, false); }).join('') + '</details>';
     }
-    열기(h);
+    return h;
+  }
+  // ── 10-24 사장님 「ㄱㄱ 명반도」(「결론 (근거 작게) 결론 (근거 작게)」 꼴) — 그림 아래에 열두 칸이 글로 흐른다.
+  //   칸마다: 머리(궁 이름 · 지지 칸) → 물음 자리에 쉬운 이름 → 결론 = 그 칸에 선 큰 별마다 「별(밝기) — 첫 줄」(시트가 보여 주던 작가 줄 그대로, 새 문장 없음) → 「근거 보기」 접힘 안에 궁 시트 · 별 시트 전부.
+  //   눌러서 열던 시트는 그대로 둔다(그림은 누르고, 흐름은 읽는다).
+  function 첫줄(key) {
+    var 별 = key.split('|')[0], 셀 = 결과.칸[key], 원고 = 칸글[key] || { 줄: [] }; if (!셀) return '';
+    var 내 = 셀.내밝기 || '', 걸림id = {}; (셀.걸림 || []).forEach(function (x) { 걸림id[x.id] = true; });
+    (셀.짝 || []).forEach(function (x) { if (x.걸림 === '걸림' && !x.일판칸) 걸림id[x.id] = true; });
+    var 줄들 = (원고.줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 걸림id[id]; }) && 밝기맞음(l.밝기, 내); });
+    var 특 = 줄들.filter(function (l) { return l.갈래 === '특성'; }), 사 = 줄들.filter(function (l) { return l.갈래 !== '특성'; });
+    if (특.length) return 특[0].글; if (사.length) return 사[0].글;
+    var 추 = 추론of(key); if (추.성품 && 추.성품.length) return 추.성품[0]; if (추.일 && 추.일.length) return 추.일[0];
+    if (셀.빈칸) return 원고.빈칸 || 글('칸.빈칸', '');
+    var 별글 = (쪽2.별 && 쪽2.별[별]) || {}; return 별글.한줄 || '';
+  }
+  function 흐름html(M) {
+    var 차례 = M.궁.slice().sort(function (a, b) { return (a.이름 === '命宮' ? 0 : 1) - (b.이름 === '命宮' ? 0 : 1); });
+    return 차례.map(function (g) {
+      var 결론 = [];
+      g.주성.forEach(function (s) { var 줄 = 첫줄(s.이름 + '|' + g.이름); if (줄) 결론.push('<p><b>' + esc(별쉬운(s.이름)) + (s.밝기 ? ' · ' + esc(밝기짧게[s.밝기] || s.밝기) : '') + '</b> — ' + esc(줄) + '</p>'); });
+      if (!결론.length) { var 보조 = (g.보좌 || []).concat(g.살성 || []).map(function (x) { return x + '|' + g.이름; }).filter(function (k) { return 결과.칸[k]; })[0]; if (보조) { var 줄b = 첫줄(보조); if (줄b) 결론.push('<p><b>' + esc(별쉬운(보조.split('|')[0])) + '</b> — ' + esc(줄b) + '</p>'); } }
+      if (!결론.length && g.궁줄) { var 걸id = {}; (g.궁줄.걸림 || []).forEach(function (x) { 걸id[x.id] = true; }); var 궁줄줄 = ((궁줄글[g.이름] || {}).줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 걸id[id]; }); }); if (궁줄줄.length) 결론.push('<p>' + esc(궁줄줄[0].글) + '</p>'); }   // 큰 별 줄이 없으면 이 궁에 걸린 궁줄(띠 · 시 · 밝기) 첫 줄
+      var 근거 = 궁시트html(g.이름) + g.주성.map(function (s) { return '<div class="mb-flow-sub"><div class="sec">' + esc(별쉬운(s.이름)) + '</div>' + 별시트html(s.이름 + '|' + g.이름) + '</div>'; }).join('');
+      return '<section class="card jt-ch mb-flow" id="mbFlow-' + esc(g.이름) + '"><div class="jt-head"><span class="jt-no">' + esc((궁한글[g.이름] || g.이름) + ' · ' + 소리(g.지지) + ' 칸' + (M.신궁 === g.이름 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</span><h2>' + esc(궁쉬운(g.이름) || 궁한글[g.이름] || g.이름) + '</h2></div>'
+        + (결론.length ? '<div class="jt-answer mb-flow-ans">' + 결론.join('') + '</div>' : '')
+        + '<details class="jt-ev"' + (결론.length ? '' : ' open') + '><summary>근거 보기</summary>' + 근거 + '</details></section>';
+    }).join('');
   }
   function 열기(h) {
     $('shBody').innerHTML = h;
