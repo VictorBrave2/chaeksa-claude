@@ -1464,3 +1464,16 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .tkr-rarity-figure figcaption{margin:8px 0 0;font-size:var(--t1);line-height:1.6;color:var(--ink2)}
 .tkr .tkr-rarity-frequency{margin:0 0 12px;font-size:var(--t2);line-height:1.7;color:var(--ink)}
 .tkr .tkr-rarity-note{margin:6px 0 0;font-size:var(--t1);line-height:1.7;color:var(--ink2)}
+
+/* DES-0004 출산택일 소개 — 견본의 다섯 층을 재사용하고 소개 칸만 작게 맞춤 */
+.doc .tk-intro-rarity{margin:0 0 20px;padding:12px 10px}
+.doc .tk-intro-rarity h2{margin:0 0 8px;font-family:var(--serif);font-size:var(--t4);line-height:1.5}
+.doc .tk-intro-rarity .tkr-rarity-pick{margin:0 0 10px;font-size:var(--t1);line-height:1.5;color:var(--ink)}
+.doc .tk-intro-rarity .tkr-rarity-pick strong{color:var(--accent)}
+.doc .tk-intro-rarity .tkr-rarity-layers li{margin:0;padding:2px 14px;gap:1px;line-height:1.5}
+.doc .tk-intro-rarity .tkr-rarity-layers li:nth-child(4){width:97%}
+.doc .tk-intro-rarity .tkr-rarity-name,.doc .tk-intro-rarity .tkr-rarity-count,.doc .tk-intro-rarity .tkr-rarity-detail{line-height:1.35}
+.doc .tk-intro-rarity .tkr-rarity-figure{margin:0 0 8px}
+.doc .tk-intro-rarity .tkr-rarity-note{margin:6px 0 0;font-size:var(--t1);line-height:1.5;color:var(--ink2)}
+.doc a.btn.tk-sample-cta{margin-top:10px;color:var(--ink2);word-break:keep-all;overflow-wrap:normal}
+.doc .tk-sample-cta span{display:block;margin-top:4px;font-size:var(--t1);font-weight:400;line-height:1.5}
