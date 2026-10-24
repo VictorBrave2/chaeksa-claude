@@ -89,9 +89,9 @@
       : '<p>' + esc(쪽.빈칸 || '드문 짜임 362가지 가운데 당신의 사주에 꼭 맞는 짜임은 없어요.') + '</p>';
     var h = '<section class="card jt-ch"><div class="jt-head"><h2>' + esc(String(제목).trim()) + '</h2></div><div class="jt-answer">' + 결론 + '</div><details class="jt-ev"><summary>근거 보기</summary>';
     h += '<p class="sec">' + esc(명식말(j.명식, j.성별)) + '</p>';
-    if (j.해당.length) h += j.해당.map(function (x) { return 칸(x, '당신의 사주에 있어요'); }).join('');
-    if (j.시따라.length) h += '<p class="sec">태어난 시에 따라 해당하는 짜임</p>' + j.시따라.map(function (x) { return 칸(x, '시에 따라 해당'); }).join('');
-    if (j.아깝게.length) h += '<p class="sec">' + esc(쪽.모자람머리 || '조건이 맞지 않는 짜임') + '</p>' + (쪽.모자람안내 ? '<p class="why">' + esc(쪽.모자람안내) + '</p>' : '') + j.아깝게.map(function (x) { return 칸(x, '당신의 사주에 해당하지 않아요'); }).join('');
+    if (j.해당.length) h += j.해당.map(function (x) { return 칸(x, '이 짜임이 당신의 사주에 있어요'); }).join('');
+    if (j.시따라.length) h += '<p class="sec">태어난 시에 따라 해당 여부가 갈리는 짜임</p>' + j.시따라.map(function (x) { return 칸(x, '태어난 시에 따라 이 짜임에 해당해요'); }).join('');
+    if (j.아깝게.length) h += '<p class="sec">' + esc(쪽.모자람머리 || '조건이 맞지 않는 짜임') + '</p>' + (쪽.모자람안내 ? '<p class="why">' + esc(쪽.모자람안내) + '</p>' : '') + j.아깝게.map(function (x) { return 칸(x, '이 짜임은 당신의 사주에 해당하지 않아요'); }).join('');
     h += '<p class="note">옛 책이 적은 조건만 그대로 대 봤어요. 「많다 · 세다(旺)」처럼 옛 책이 재는 법을 적지 않은 말이 든 짜임은 넣지 않았어요. 비율은 1950~2009년생 6만 명에 대 본 값이에요.</p>';
     if (쪽.낱말 && 쪽.낱말.length) h += '<details class="fold"><summary>낱말 풀이 펼쳐 보기</summary>' + 쪽.낱말.map(function (말) { return '<p class="why">' + esc(말) + '</p>'; }).join('') + '</details>';
     h += '</details></section>';
