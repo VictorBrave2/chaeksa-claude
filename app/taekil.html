@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2d9852d4cd">
+<link rel="stylesheet" href="style.css?v=3d7dace826">
 <style>
   .doc{max-width:660px;margin:0 auto;padding:24px 18px 90px}
   .doc h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin-bottom:8px}
@@ -69,7 +69,7 @@
 </script>
 <style>/* 10-13 출산택일 「왜」 네 장면(taekil-why.js) — 한 번 움직이고 멈춤, 손가락으로 넘김 */#twhy{margin:18px 0 22px}.tw-in{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;box-shadow:var(--shadow);animation:twIn .45s ease-out both}.tw-k{margin:0;font-size:12px;color:var(--ink3);letter-spacing:.08em}.tw-h{margin:4px 0 10px;font-family:var(--serif);font-size:1.25rem;font-weight:700;color:var(--ink)}.tw-t{margin:12px 0 0;line-height:1.8;color:var(--ink)}.tw-end{margin:14px 0 0;padding:12px 14px;border-left:3px solid var(--accent);font-family:var(--serif);font-weight:700;line-height:1.7;color:var(--ink)}.tw-art{min-height:120px;display:flex;flex-direction:column;justify-content:center}.tw-ex{margin:6px 0 0;font-size:12px;color:var(--ink3)}.tw-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tw-two small{display:block;font-size:12px;color:var(--ink2);margin-bottom:6px}.tw-pil{display:flex;gap:4px}.tw-gz{flex:1;text-align:center;padding:8px 0;border:1px solid var(--line2);border-radius:8px;font-family:var(--serif);font-size:1.05rem;writing-mode:vertical-rl;letter-spacing:.1em;height:64px;display:flex;align-items:center;justify-content:center}.tw-flip{border-color:var(--accent);color:var(--accent);font-weight:700;animation:twFlip .9s .5s ease-in-out both}.tw-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tw-d{text-align:center;padding:7px 0;border-radius:6px;background:var(--bg2);font-size:13px;color:var(--ink2)}.tw-cal.pick .tw-d{animation:twDim .4s calc(var(--i)*35ms) both}.tw-cal.pick .tw-d.keep{animation:twKeep .5s calc(var(--i)*35ms + .3s) both}.tw-cal.sift .tw-d{animation:twOut .35s calc(var(--i)*60ms + .2s) both}.tw-cal.sift .tw-d.keep{animation:twGlow .6s 1.6s both}.tw-rep p{margin:0 0 8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);animation:twIn .5s both}.tw-rep p+p{animation-delay:.25s}.tw-rep small{color:var(--ink3)}.tw-btns{display:flex;gap:8px;margin-top:14px}.tw-btns button,.tw-go{flex:1;padding:12px;border-radius:999px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:1px solid var(--line2);background:var(--card);color:var(--ink2)}.tw-next,.tw-go{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}[data-theme=night] .tw-next,[data-theme=night] .tw-go{color:#1c1a3c!important}@keyframes twIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes twFlip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}@keyframes twDim{to{opacity:.25}}@keyframes twKeep{from{opacity:.25}to{opacity:1;background:var(--accent-soft);color:var(--accent);font-weight:700}}@keyframes twOut{to{opacity:.12}}@keyframes twGlow{from{opacity:.12}to{opacity:1;background:var(--accent);color:#fff;font-weight:700}}@media (prefers-reduced-motion:reduce){#twhy *{animation-duration:1ms!important;animation-delay:0s!important}}</style>
 </head>
-<body class="tk-page">
+<body class="tk-page tk-has-cta">
 <div class="mini-head" role="banner"><a class="logo" href="./" title="책사 홈으로"><i class="seal">策</i><span>책사</span></a></div>
 <div class="doc">
   <h1>출산택일</h1>
@@ -295,6 +295,8 @@
       <div class="tk-data-row"><time datetime="2027-08">2027.08</time><a href="taekil-2027-08.html" aria-label="2027년 8월 출산택일">출산택일</a><a href="taekil-2027-08-gungtong.html" aria-label="2027년 8월 궁통보감">궁통보감</a></div>
     </div>
   </section>
+  <!-- 10-25 사장님 「보고서 신청하기가 하단에 고정되어서 둘러보다가 결제할 수 있게」 -->
+  <div class="tk-cta-bar" hidden><a class="btn cta" href="./taekil-apply.html">보고서 신청하기</a></div>
   <nav id="tk-nav" aria-label="출산택일 길 안내">
     <a class="tk-home" href="./"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg><span>홈</span></a>
     <a href="taekil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><circle cx="12" cy="15" r="1.6"/></svg><span>출산택일</span></a>
@@ -306,6 +308,17 @@
 <script>
   (function () {
     var dock = document.querySelector('.tk-dock');
+    // 본문의 「보고서 신청하기」가 화면에 보이는 동안은 아래 고정 단추를 숨긴다(같은 단추 둘이 겹치지 않게).
+    (function () {
+      var bar = document.querySelector('.tk-cta-bar'), 원래 = document.querySelectorAll('.doc a[href*="taekil-apply"]');
+      if (!bar) return;
+      var 판 = function () {
+        var h = window.innerHeight || document.documentElement.clientHeight, 보 = false;
+        원래.forEach(function (b) { var r = b.getBoundingClientRect(); if (r.bottom > 0 && r.top < h) 보 = true; });
+        bar.hidden = 보;
+      };
+      판(); window.addEventListener('scroll', 판, { passive: true }); window.addEventListener('resize', 판);
+    })();
     var toggle = document.getElementById('tk-data-toggle');
     var panel = document.getElementById('tk-data');
     var close = document.getElementById('tk-data-close');
