@@ -682,9 +682,6 @@
     // 시각을 다시 읽는다. 「지금」 표시와 오늘 간지가 로드 시각에 얼어 있었다.
     // 달력 탭은 2026-09-17 에 걷었다(사장님 「달력 삭제 — 설득력없음」). 날 점수(calendar.js)도 같이 나갔다.
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
-    // 09-26 정통사주 한 줄 카드(docs/87 4절) — 시작 단추 위. 카드는 ssom-card.js 가 그린다
-    if (tab === 'jeongtong' && $('jtStart') && profile && window.ChaeksaSsomCard) { try { const old = $('jtCard'); if (old) old.remove(); const R = ChaeksaEngine.calc(profile), html = window.ChaeksaSsomCard.정통카드(R); if (html) { $('jtStart').insertAdjacentHTML('beforebegin', html); window.ChaeksaSsomCard.정통붙이기($('jtStart').parentElement, R, profile.name || ''); } } catch (e) {} }
-    if (tab === 'jeongtong' && $('jtStart')) $('jtStart').onclick = () => { if (!profile) return; try { sessionStorage.setItem('chaeksa.jtVn', JSON.stringify({ a: 궁합입력(profile) })); } catch (e) {} location.href = 'ssom-vn.html'; };   // 09-26 정통사주 웹툰 시작
     if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
     if (tab === 'pair') { try { if (window.ChaeksaPairView) ChaeksaPairView.그리기($('pairBox'), profile); } catch (e) { try { console.warn('행동양식 궁합 탭:', e); } catch (x) {} } }   // 10-01 pair.js
     if (tab === 'ssom') { try { renderSsom(); } catch (e) { try { console.warn('연애궁합 탭:', e); } catch (x) {} } }
@@ -2194,7 +2191,7 @@
     // 10-02 접힌 장(<details>) 안의 칸이면 펼친 채 내려간다 — 홈 물음 칸 「돈 · 일 · 건강 · 사람 사이」 → 정통사주 N장(jtChN, 「근거 보기」 안의 접힌 장).
     // 탭 내용은 go() 뒤에 그려지기도 한다(정통사주 장은 그린 뒤에야 생김) — 칸이 생길 때까지 0.2초마다 4초 동안 찾는다.
     // 10-02 탭별 꾸러미 — 그 탭 파일이 아직 오는 중이면 다 온 뒤부터 센다(느린 망에서 4초를 파일 받는 데 다 쓰지 않게). 홈 칸(이번 주 등)은 기다리지 않는다.
-    if (곳) { let n = 0; const 찾기 = () => { const t = $(곳); if (!t || t.classList.contains('hide') || !t.offsetParent && t.tagName !== 'DETAILS') { if (++n < 20) setTimeout(찾기, 200); return; }
+    if (곳) { let n = 0; const 찾기 = () => { const t = $(곳); if (t) { for (let d = t; d; d = d.parentElement) if (d.tagName === 'DETAILS') d.open = true; } if (!t || t.classList.contains('hide') || !t.offsetParent && t.tagName !== 'DETAILS') { if (++n < 20) setTimeout(찾기, 200); return; }
       for (let d = t; d; d = d.parentElement) if (d.tagName === 'DETAILS') d.open = true; setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }; (tab === 'home' ? Promise.resolve() : 꾸러미받기(tab).catch(() => {})).then(() => setTimeout(찾기, 0)); }
     // 그 사람이 아직 없으면 바로 그 사람 폼을 연다(궁합 둘)
     // 10-02 사용설명서는 「나」 아닌 사람이 하나라도 있으면 된다(그 사람만 넣어 둔 손님은 그 사람이 보는 사람이다). 궁합 둘은 보는 사람 말고 한 사람 더.
@@ -2205,6 +2202,7 @@
     }
   }
   window.책사들어가기 = 들어가기;
+  window.책사내정보수정 = () => openPersonForm(People() && People().active() ? People().active().id : null);
   document.querySelectorAll('[data-home-open]').forEach(a => a.addEventListener('click', e => {
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
     e.preventDefault(); 들어가기(a.dataset.homeOpen);

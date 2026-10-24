@@ -113,6 +113,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css?v=cf102006dd">
+<link rel="stylesheet" href="jeongtong-pyo.css?v=2bf79a1fef">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
@@ -461,11 +462,7 @@
     <!-- 정통사주 — 판정엔진 + 평생 관점 = 장마다 카드(63조). jeongtong.js 가 그린다. -->
     <div class="tab hide" data-tab="jeongtong">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
-      <section class="card"><h2>정통사주</h2><p class="hint" style="margin:0"><b>당신의 사주를 3대 고전이 어떻게 판단하는지 보여 줘요.</b> 태어난 계절(궁통보감), 사주의 짜임(자평진전), 기운의 흐름(적천수)을 보고, 각 책의 판단을 장마다 따로 적었어요.</p></section>
-      <!-- 09-26 정통사주 웹툰(docs/80~84) — 시작 단추 → 장면 보기(ssom-vn.html, jtVn). 13장은 「근거 보기」로 물림.
-           10-02 개편 — 처음 온 사람은 답(위 카드 · 웹툰)부터. 10-23 — 열두 장은 펼친 채(물음 → 결론, 근거만 접힘). 홈 물음 칸이 N장으로 보낼 때는 app.js 도착()이 그 장으로 내려간다. -->
-      <button class="btn" id="jtStart" type="button" style="width:100%;margin:0 0 10px">웹툰 정통사주 시작하기</button>
-      <!-- 10-23 사장님 「결론 (근거 작게) … 그 꼴로 가자 정통사주부터」 — 열두 장을 겉에서 통째로 접지 않는다. 장마다 물음 → 결론이 보이고, 근거만 장 안에서 「근거 보기」로 접힌다(jeongtong.js). -->
+      <!-- DES-0008: 이름·도형·비율 → 고전 이름 → 스크롤로 읽는 운 흐름. -->
       <div id="jtOut" data-plain="1"></div>
     </div>
 
@@ -773,7 +770,7 @@
 <script src="yaksok.js?v=ac6b394f76"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=f082457166"></script>
-<script src="home-cats.js?v=c92a66bc39"></script>
+<script src="home-cats.js?v=4d0c2c4257"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
@@ -807,6 +804,7 @@
 <script src="samyeong.js?v=53c4e35359" data-for="jeongtong chongnon ssom taekil"></script>
 <script src="gwanjeom.js?v=20964aa88a" data-for="jeongtong chongnon taekil"></script>
 <script src="jeongtong.js?v=1e5951403d" data-for="jeongtong"></script>
+<script src="jeongtong-pyo.js?v=541e9293bf" data-for="jeongtong"></script>
 <script src="gunghap-gwanjeom.js?v=8760d7107c" data-for="chongnon"></script>
 <script src="ssom-gwanjeom.js?v=958eca8d96" data-for="jeongtong ssom"></script>
 <script src="ssom-baram.js?v=b3a4364fd1" data-for="jeongtong ssom"></script>
@@ -832,7 +830,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=7015e824ad"></script>
+<script src="app.js?v=534df3b6f9"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가
