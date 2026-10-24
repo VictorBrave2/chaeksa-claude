@@ -94,8 +94,8 @@
     let 날 = opts.date || (오늘.getFullYear() + '-' + 두(오늘.getMonth() + 1) + '-' + 두(오늘.getDate()));
     let 성별 = opts.gender || 'M', 곳값 = opts.place || 'KR:서울', 거르기 = false;
     box.innerHTML = '<section class="card tk" data-plain="1">'
-      + '<h2>출산 시각마다 세 고전의 판단을 확인하세요</h2>'
-      + '<p class="hint" style="margin:0 0 12px">날짜를 넣으세요. 그날을 두 시간씩 나눈 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
+      + '<h2>출산 시각마다 옛 책 세 권의 판단을 확인하세요</h2>'
+      + '<p class="hint" style="margin:0 0 12px">어머니가 살펴볼 날짜를 넣으세요. 그날을 두 시간씩 나눈 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
       + '<div class="tk-form"><label>날짜<input type="date" id="tkDate" value="' + esc(날) + '"></label>'
       + '<label>아이 성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
       + '<label>아이가 태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
@@ -113,7 +113,7 @@
     function 그리기() {
       const [y, m, d] = 날.split('-').map(Number);
       if (!y || !m || !d) return;
-      let r; try { r = 하루(y, m, d, 성별, 곳값); } catch (e) { q('tkList').innerHTML = '<p class="tk-note">이 날짜는 계산하지 못했어요. 날짜를 확인해 주세요.</p>'; return; }
+      let r; try { r = 하루(y, m, d, 성별, 곳값); } catch (e) { q('tkList').innerHTML = '<p class="tk-note">이 날짜는 계산하지 못했어요. 입력한 날짜를 확인하세요.</p>'; return; }
       const 첫 = r.rows[Math.floor(r.rows.length / 2)];
       q('tkHead').textContent = m + '월 ' + d + '일 · ' + (첫 ? 첫.일주 + '일' : '');
       const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length, 으뜸수 = r.rows.filter(x => x.본 && x.본.으뜸 && !x.밤끝).length;
@@ -140,8 +140,8 @@
           image: 'https://chaeksa.kr/art/kakao/taekil-main.jpg', url, button: '이날 시각 보기' });
       } catch (e) { r = ''; }
       b.disabled = false;
-      say.textContent = r === 'copied' ? '주소를 복사했어요 — 카톡 대화창에 붙여 넣어 보내 주세요. ' + 보내기안내
-        : r ? 보내기안내 : '이 주소를 복사해서 보내 주세요: ' + url;
+      say.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣어 보내세요. ' + 보내기안내
+        : r ? 보내기안내 : '이 주소를 복사해서 보내세요: ' + url;
     };
     그리기();
   }
