@@ -1440,3 +1440,27 @@ details.tkr-fold>summary{cursor:pointer;font-size:var(--t2);color:var(--accent);
 .gc-fold > summary::after{content:'＋';position:absolute;right:16px;top:12px;color:var(--ink3)}
 .gc-fold[open] > summary::after{content:'－'}
 .gc-fold-sub{font-size:var(--t2);color:var(--ink3);margin:10px 4px 0}
+
+/* DES-0003 출산택일 견본 — 조건을 통과한 자리의 네 층 */
+.tkr-rarity{margin:26px 0 0;padding:18px 10px;border:1px solid var(--accent-line);border-radius:var(--r2);background:var(--bg2);font-family:var(--sans);color:var(--ink);word-break:keep-all;overflow-wrap:normal}
+.tkr-rarity h2{margin:0 0 10px;font-family:var(--serif);font-size:var(--t4);line-height:1.5;color:var(--ink)}
+.tkr-rarity h2::after{display:none}
+.tkr .tkr-rarity-result{margin:0 0 14px;font-size:var(--t3);line-height:1.6;color:var(--ink)}
+.tkr-rarity-result span{display:inline-block;color:var(--accent)}
+.tkr-rarity-figure{margin:0 0 12px}
+.tkr-rarity-layers{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:460px;margin:0 auto;padding:0;list-style:none}
+.tkr-rarity-layers li{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:10px 20px;text-align:center}
+.tkr-rarity-layers li::before{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(5% 0,95% 0,100% 100%,0 100%);background:var(--line)}
+.tkr-rarity-layers li:nth-child(1){width:82%;padding-top:12px;padding-bottom:12px}
+.tkr-rarity-layers li:nth-child(2){width:88%}
+.tkr-rarity-layers li:nth-child(3){width:94%}
+.tkr-rarity-layers .tkr-rarity-top::before{background:var(--accent-soft)}
+.tkr-rarity-marker{display:inline-block;margin:0 0 2px;padding:2px 8px;border:1px solid var(--accent-line);border-radius:var(--r3);font-size:var(--t1);font-weight:700;color:var(--accent);background:var(--card)}
+.tkr-rarity-name{font-size:var(--t2);line-height:1.5;color:var(--ink)}
+.tkr-rarity-count{font-size:var(--t3);line-height:1.5;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.tkr-rarity-count b{color:var(--ink)}
+.tkr-rarity-top .tkr-rarity-count b{color:var(--accent)}
+.tkr-rarity-detail{font-size:var(--t1);line-height:1.5;color:var(--ink2)}
+.tkr-rarity-figure figcaption{margin:8px 0 0;font-size:var(--t1);line-height:1.6;color:var(--ink2)}
+.tkr .tkr-rarity-frequency{margin:0 0 12px;font-size:var(--t2);line-height:1.7;color:var(--ink)}
+.tkr .tkr-rarity-note{margin:6px 0 0;font-size:var(--t1);line-height:1.7;color:var(--ink2)}
