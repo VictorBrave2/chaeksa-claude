@@ -78,7 +78,7 @@
     if (!r) return '<div class="tk-vs tk-vs-go">' + 신청 + '</div>';
     return '<div class="tk-vs">'
       + '<p class="tk-vs-h">시뮬레이터와 보고서는 이렇게 달라요</p>'
-      + '<div class="tk-vs-row"><b>이 시뮬레이터 · 무료</b><p>날짜 하루를 골라 그날 열두 시각을 비교해요. 가족 생년월일과 병원 시간은 넣지 않아요. 10년마다 바뀌는 운(대운)도 보지 않아요.</p></div>'
+      + '<div class="tk-vs-row"><b>이 시뮬레이터 · 무료</b><p>날짜 하루를 골라 그날 열두 시간대를 비교하세요. 가족 생년월일과 병원 시간은 넣지 않아요. 10년마다 바뀌는 운(대운)도 보지 않아요.</p></div>'
       + '<div class="tk-vs-row"><b>' + esc(r.상품이름) + (r.코드 ? Y.값자리(r.코드, ' · ', '', 'won') : '') + '</b><ul>'
       + Y.받는것목록('taekil').map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></div>'
       + '<div class="tk-vs-go">' + (r.견본 ? '<a class="btn ghost small" href="' + esc(r.견본) + '?from=sim">견본 보기</a>' : '') + 신청 + '</div>'
@@ -94,18 +94,18 @@
     let 날 = opts.date || (오늘.getFullYear() + '-' + 두(오늘.getMonth() + 1) + '-' + 두(오늘.getDate()));
     let 성별 = opts.gender || 'M', 곳값 = opts.place || 'KR:서울', 거르기 = false;
     box.innerHTML = '<section class="card tk" data-plain="1">'
-      + '<h2>이 시각에 낳으면 — 세 고전이 보는 것</h2>'
-      + '<p class="hint" style="margin:0 0 12px">날짜를 고르면 그날 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
+      + '<h2>출산 시각마다 세 고전의 판단을 확인하세요</h2>'
+      + '<p class="hint" style="margin:0 0 12px">날짜를 넣으세요. 그날을 두 시간씩 나눈 열두 시간대(시진)를 시계 시각으로 보여 줘요. 시간대마다 옛 책 세 권의 판단을 따로 확인하세요. 회원가입 없이 무료예요.</p>'
       + '<div class="tk-form"><label>날짜<input type="date" id="tkDate" value="' + esc(날) + '"></label>'
-      + '<label>성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
-      + '<label>태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
+      + '<label>아이 성별<select id="tkG"><option value="M">남아</option><option value="F">여아</option></select></label>'
+      + '<label>아이가 태어날 곳<select id="tkPlace">' + (PL ? PL.options() : '<option value="KR:서울">서울</option>') + '</select></label></div>'
       + '<div class="tk-nav"><button type="button" class="btn ghost small" id="tkPrev">← 이전 날</button><b id="tkHead"></b><button type="button" class="btn ghost small" id="tkNext">다음 날 →</button></div>'
       + '<label class="tk-filter"><input type="checkbox" id="tkClean"> 두 책 모두 문제 삼지 않는 시각만 보기(궁통보감 · 자평진전)</label>'
       + '<p class="tk-note" id="tkTop"></p><div id="tkList"></div>'
       + '<div class="tk-send"><button type="button" class="btn ghost small" id="tkSend">이날 가족에게 보내기</button><p class="tk-note" id="tkSendSay">' + esc(보내기안내) + '</p></div>'
       + '<p class="tk-note">' + esc(W.출산택일.꼬리) + '</p>'
       + 다리(!!(box.closest && box.closest('[data-tk-pane]')))
-      + '<p class="tk-note">출산 날짜와 시각은 산모와 아이의 안전, 담당 의사의 판단이 먼저예요. 안전한 범위 안에서 날짜를 고를 때 택일을 참고하세요.</p>'
+      + '<p class="tk-note">출산 날짜와 시각은 어머니와 아이의 안전, 담당 의사의 판단이 먼저예요. 안전한 범위 안에서 날짜를 고를 때 택일을 참고하세요.</p>'
       + '</section>';
     const q = (id) => box.querySelector('#' + id);
     q('tkG').value = 성별; q('tkPlace').value = 곳값;
@@ -118,7 +118,7 @@
       q('tkHead').textContent = m + '월 ' + d + '일 · ' + (첫 ? 첫.일주 + '일' : '');
       const 깨끗 = r.rows.filter(x => x.본 && x.본.없음).length, 으뜸수 = r.rows.filter(x => x.본 && x.본.으뜸 && !x.밤끝).length;
       q('tkTop').textContent = W.출산택일.머리 + ' ' + r.곳 + ' 기준 시계 시각이에요(이날은 시계가 해보다 ' + Math.abs(r.밀림) + '분 ' + (r.밀림 >= 0 ? '빨라요' : '늦어요') + '). '
-        + (깨끗 ? '이날 두 책 모두 문제 삼지 않는 시각은 ' + 깨끗 + '개예요(궁통보감 · 자평진전).' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '개는 필요한 글자가 모두 드러난 으뜸 시각이에요(궁통보감).' : '') : '이날은 두 책 모두 문제 삼지 않는 시각이 없어요(궁통보감 · 자평진전). 앞뒤 날도 보세요.');
+        + (깨끗 ? '이날 두 책 모두 문제 삼지 않는 시각은 ' + 깨끗 + '개예요(궁통보감 · 자평진전).' + (으뜸수 ? ' 그 가운데 ' + 으뜸수 + '개는 필요한 글자가 모두 드러난 으뜸 시각이에요(궁통보감).' : '') : '이날은 두 책 모두 문제 삼지 않는 시각이 없어요(궁통보감 · 자평진전). 앞뒤 날짜도 확인하세요.');
       const 보일 = 거르기 ? r.rows.filter(x => x.본 && x.본.없음) : r.rows;
       q('tkList').innerHTML = 보일.length ? 보일.map(줄).join('') : '<p class="tk-note">이날은 해당하는 시각이 없어요.</p>';
     }
@@ -149,7 +149,7 @@
   // 「이 날 가족에게 보내기」(10-02 개편 2묶음 「공유 카드 넓히기」) — 가족이 같은 날짜 화면을 연다. 주소에는 날짜와 꼬리표(from=share-tk)만 싣는다.
   // 성별 · 태어날 곳 · 부모 생년월일은 싣지 않는다(받는 쪽에서 다시 고른다). 보내는 길은 share.js shareLink(카카오 링크 → 폰 공유 창 → 주소 복사),
   // share.js 가 없는 화면(시험 페이지)에서는 폰 공유 창 → 주소 복사만.
-  const 보내기안내 = '주소에는 고른 날짜만 담겨요. 주소를 받은 분은 아이 성별과 태어날 곳을 다시 골라 주세요.';
+  const 보내기안내 = '주소에는 고른 날짜만 담겨요. 주소를 받은 분에게 아이 성별과 태어날 곳은 다시 골라야 한다고 알려 주세요.';
   const 보낼주소 = (날) => 'https://chaeksa.kr/taekil-sim.html?d=' + encodeURIComponent(날) + '&from=share-tk';
   async function 링크보내기(o) {
     const SH = global.ChaeksaShare;

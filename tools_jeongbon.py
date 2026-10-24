@@ -166,12 +166,12 @@ def monthly_summary(body, y, mo):
     m = re.search(r'<h2>이달은 이만큼 남습니다</h2>\s*<blockquote>(.*?)</blockquote>', body, re.S)
     ls = [strip(x).lstrip('▸ ').strip() for x in re.split(r'<br\s*/?>', m.group(1))] if m else []
     ls = [l for l in ls if l and not l[0].isdigit() and '곳' in l]
-    summ = ['점수와 순위를 매기지 않고, 세 고전(궁통보감 · 자평진전 · 적천수)이 각자 본 것을 시간대마다 적었습니다.'] + [f'{y}년 {mo}월, 궁통보감 · 자평진전 ' + l for l in ls if '둘 다' in l][:1] + [l for l in ls if '낮 시간' in l][:1]
+    summ = ['점수와 순위를 매기지 않았습니다. 시간대마다 세 고전(궁통보감 · 자평진전 · 적천수)의 판단을 따로 적었습니다.'] + [f'{y}년 {mo}월, 궁통보감 · 자평진전 ' + l for l in ls if '둘 다' in l][:1] + [l for l in ls if '낮 시간' in l][:1]
     mu = re.search(r'<h2>이달의 으뜸 자리</h2>.*?<blockquote>(.*?)</blockquote>', body, re.S)
     if mu and '<h2>두 고전에 걸리지 않는 낮 자리</h2>' in body[mu.end():]:
         us = [u for u in (strip(x).lstrip('▸ ').strip() for x in re.split(r'<br\s*/?>', mu.group(1))) if u]
         낮먼저 = [u for u in us if '밤/새벽' not in u and '저녁' not in u] + [u for u in us if '저녁' in u] + [u for u in us if '밤/새벽' in u]
-        summ = [f'{y}년 {mo}월의 으뜸 자리는 {len(us)}곳입니다 — 궁통보감 · 자평진전에 걸리는 것이 없고, 궁통보감이 적어 둔 글자가 천간에 다 뜬 시각(서울 시계 기준).'] + 낮먼저[:2]
+        summ = [f'{y}년 {mo}월의 으뜸 자리는 {len(us)}곳입니다. 궁통보감 · 자평진전에 걸리지 않고, 궁통보감이 정한 글자가 사주 위 칸(천간)에 모두 있는 시각입니다(서울 시계 기준).'] + 낮먼저[:2]
     return summ
 
 def og_image(slug):
@@ -298,7 +298,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <h1>{html.escape(title)}</h1>
-  <p class="meta">책사 · {modified} 갱신 · 계산은 chaeksa.kr 엔진(절기 시각·진태양시 보정), 기준은 본문에 공개</p>
+  <p class="meta">책사 · {modified} 갱신 · 계산은 chaeksa.kr(절기 시각·태어난 곳의 해 시각 보정), 기준은 본문에 공개</p>
 {hfig}  {summ}
 {body}
   {rel}
@@ -375,8 +375,8 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 '''
 
 GEN_FAQ = [
-    ("왜 출산택일은 시계 시각이 아니라 진태양시로 보나요?","한국 표준시는 동경 135도 기준이라 지역마다 태양시가 시계보다 24~34분 늦습니다(서울 32분, 대구·창원 26분, 부산 24분). 여기에 계절마다 균시차가 붙어, 예를 들어 오후 3시 정각 수술은 신시가 아니라 미시가 될 수 있습니다. 병원에는 시계 시각으로 경계를 넘긴 시각을 말해야 합니다."),
-    ("왜 표만 보고 출산 날짜를 정하면 안 되나요?","표는 아이의 원국(타고난 네 기둥)만 본 첫 겹입니다. 실제 택일은 대운, 담당 선생님 수술 가능 시간, 부모·형제 사주와의 충, 무엇을 앞세우는지까지 네 겹을 더 얹어야 하며, 겹마다 남는 시각이 달라집니다. 출산 날짜는 의사가 정하고, 택일은 그 범위 안에서 고르는 참고자료입니다."),
+    ("왜 출산택일은 시계 시각이 아니라 진태양시로 보나요?","한국 표준시는 동경 135도 기준이라 지역마다 태양시가 시계보다 24~34분 늦습니다(서울 32분, 대구·창원 26분, 부산 24분). 여기에 계절에 따른 해 시각 차이(균시차)를 더합니다. 예를 들어 오후 3시 정각 수술은 신시가 아니라 미시가 될 수 있습니다. 병원에는 시간 구간의 경계를 넘긴 시계 시각을 말씀하세요."),
+    ("왜 표만 보고 출산 날짜를 정하면 안 되나요?","표는 아이가 타고나는 사주(원국)만 본 첫 단계입니다. 여기에 평생의 흐름(대운), 담당 선생님의 수술 가능 시간, 부모·형제 사주와의 부딪힘(충), 산모님이 중요하게 여기는 것까지 네 단계를 더 살핍니다. 단계마다 남는 시각이 달라집니다. 출산 날짜는 의사가 정하고, 택일은 그 범위 안에서 고르는 참고자료입니다."),
 ]
 
 # 글마다 따로 다는 질문 · 답(FAQPage) — 없으면 GEN_FAQ(출산택일 둘). 답 글자는 엔진 값 그대로(tests_panjeong 「책사 다섯 문제」가 지킨다).
@@ -424,8 +424,8 @@ def build():
         summ = monthly_summary(body, y, mo) if '<h2>두 고전에 걸리지 않는 낮 자리</h2>' in body else summary_lines(body)
         # 설명은 그 달 답 첫 줄부터(09-22 growth-11: 열두 편이 달 이름만 빼고 같았다). 으뜸이 없는 달은 남는 곳 수가 답이다.
         앞 = summ[0] if summ[0].startswith(f'{y}년') else f'{y}년 {mo}월 출산택일 — ' + ' · '.join(re.sub(rf'^{y}년 {mo}월, ', '', s) for s in summ[1:])
-        desc = 앞 + ' 모든 날 모든 시각을 계산해 세 고전이 각자 본 것을 점수 · 순위 없이 날짜순으로 적었습니다.'
-        faq = [(f'{y}년 {mo}월 출산택일, 어느 자리가 걸리는 것이 없나요?', ' '.join(summ) + ' 자리 목록은 본문에 날짜순으로 있습니다(원국만 본 것이며, 시계 시각은 서울 기준 보정값입니다).')] + GEN_FAQ
+        desc = 앞 + ' 모든 날과 시각을 계산했습니다. 세 고전의 판단을 점수 · 순위 없이 날짜순으로 적었습니다.'
+        faq = [(f'{y}년 {mo}월 출산택일, 어느 자리가 걸리는 것이 없나요?', ' '.join(summ) + ' 본문에서 날짜순으로 시각을 확인하세요. 아이가 타고나는 사주(원국)만 본 목록이며, 시각은 서울 기준으로 보정한 시계 시각입니다.')] + GEN_FAQ
         prev = (f'taekil-{items[i-1][0]}-{items[i-1][1]:02d}', f'{items[i-1][0]}년 {items[i-1][1]}월') if i > 0 else None
         nxt = (f'taekil-{items[i+1][0]}-{items[i+1][1]:02d}', f'{items[i+1][0]}년 {items[i+1][1]}월') if i + 1 < len(items) else None
         pages.append((slug, title, desc, body, summ, faq, (prev, nxt), tags, f'왜 {y}년 {mo}월 출산택일은 이 시각인가요 — 세 고전이 본 것'))

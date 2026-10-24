@@ -60,10 +60,10 @@
   <a class="back" href="taekil.html">← 출산택일 안내</a>
   <p class="hint" id="ownerBar" hidden style="margin:6px 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r2,14px)">검수 계정 — <a href="taekil-admin.html"><b>사장님 목록 →</b></a> · <a href="./#taekil">내 보고서 →</a></p>
   <h1>출산택일 보고서 신청</h1>
-  <div class="gc-cut"><img src="art/taekil-apply.webp" srcset="art/taekil-apply-s.webp 360w, art/taekil-apply.webp 1024w" sizes="(max-width: 600px) 100vw, 524px" alt="" width="1024" height="1536" fetchpriority="high"><div class="gc-bubble"><b>책사</b><span>병원이 말해 준 날짜 범위만 있으면 돼요.</span></div></div>
+  <div class="gc-cut"><img src="art/taekil-apply.webp" srcset="art/taekil-apply-s.webp 360w, art/taekil-apply.webp 1024w" sizes="(max-width: 600px) 100vw, 524px" alt="" width="1024" height="1536" fetchpriority="high"><div class="gc-bubble"><b>책사</b><span>어머니, 병원이 말해 준 날짜 범위를 준비하세요.</span></div></div>
   <!-- 세 걸음은 택일 탭 · taekil.html · 택일 비용 글과 같은 말이다(10-02 「켜는 날」 — 바깥 신청 폼을 걷고 사이트 신청서 → 결제 → 「내 보고서」 한 길).
        처음 몇 건은 사장님이 확인한 뒤 내보낸다(app_flags.taekil_auto_release '0') — 「바로 열린다」고 적지 않는다. -->
-  <p class="lede" id="lede">의사가 주신 범위 안에서 사주로 출산 날짜와 시간을 고른 보고서를 신청하는 곳이에요. 아래 신청서를 적고 결제하시면, 자동으로 계산한 내용을 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요. 보통 2~3일 안이에요.</p>
+  <p class="lede" id="lede">의사가 정해 준 범위 안에서 사주로 출산 날짜와 시간을 골라 드려요. 아래 신청서를 적고 결제하세요. 자동으로 계산한 내용을 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요. 보통 2~3일 안이에요.</p>
 
   <ol class="steps" id="steps">
     <li><b>① 신청서</b>이 페이지에서 아는 만큼 적기</li>
@@ -86,8 +86,8 @@
 
   <form class="intake" id="intake" novalidate>
     <h2>신청서</h2>
-    <p class="lead">모르는 칸은 비워 두셔도 됩니다. 로그인하고 돌아오셔도 적으신 내용은 그대로입니다.
-      적는 동안 이 기기에 임시로 저장되기 때문입니다.</p>
+    <p class="lead">모르는 칸은 비워 두세요. 로그인하고 돌아와도 적으신 내용은 그대로 남아요.
+      적는 동안 이 기기에 임시로 저장돼요.</p>
     <div id="fields"></div>
     <p class="hint">적어 주신 내용은 보고서를 만들어 드리는 데만 쓰고, 이 주문 기록과 함께 보관합니다.
       보고서는 결제일부터 2년 동안 「내 보고서」에 남고, 탈퇴하시면 신청서와 보고서를 바로 지웁니다.
@@ -138,7 +138,7 @@
 <script src="gyeokguk.js?v=63f811f535"></script>
 <script src="classic.js?v=f45b014bad"></script>
 <script src="gwanjeom.js?v=998e0327ba"></script>
-<script src="taekilsim.js?v=53286ae0b4"></script>
+<script src="taekilsim.js?v=342a5ea7e4"></script>
 </template>
 <script>
 (function () {
@@ -214,7 +214,7 @@
         if (el && !el.value && em && /@/.test(em)) { el.value = em; el.dispatchEvent(new Event('input', { bubbles: true })); }
       }).catch(function () {});
     } catch (e) {}
-    say('로그인됐습니다. 동의를 확인하시고 결제하시면 됩니다.');
+    say('로그인됐어요. 동의 내용을 확인하고 결제하세요.');
     setTimeout(function () { try { send.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 400);
   }
 
@@ -268,10 +268,10 @@
     var box = document.getElementById('soonPay');
     box.hidden = false;
     box.innerHTML = '<p style="margin:0 0 6px"><b>결제는 곧 열려요.</b></p>'
-      + '<p style="margin:0 0 12px">지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요. 열리기 전에는 위 신청서를 메일(' + esc(F.문의메일) + ')로 보내 주셔도 돼요. 답장으로 이어서 안내해 드려요.</p>'
+      + '<p style="margin:0 0 12px">지금은 카카오페이 가맹 심사 중이라 결제하기를 눌러도 결제창이 아직 열리지 않아요. 열리기 전에는 위 신청서를 메일(' + esc(F.문의메일) + ')로 보내 주세요. 답장으로 이어서 안내해 드려요.</p>'
       + '<a class="btn" id="soonMail" href="' + esc(F.신청메일()) + '" style="display:block;margin:0 0 8px;text-align:center;text-decoration:none;color:var(--seal-ink)">메일로 신청서 보내기 →</a>'
       + '<button type="button" class="btn ghost" id="soonCopy" style="display:block;width:100%;margin:0">신청서 내용 복사</button>'
-      + '<p id="soonSay" style="margin:8px 0 0;font-size:var(--t1)">위에 적으신 내용을 복사해 메일 본문에 붙여 넣으시면 돼요. 메일 앱이 안 열리면 ' + esc(F.문의메일) + ' 으로 보내 주세요.</p>';
+      + '<p id="soonSay" style="margin:8px 0 0;font-size:var(--t1)">위에 적으신 내용을 복사해 메일 본문에 붙여 넣으세요. 메일 앱이 안 열리면 ' + esc(F.문의메일) + ' 으로 보내 주세요.</p>';
     document.getElementById('soonMail').addEventListener('click', function () { 사건('applymail'); });
     document.getElementById('soonCopy').addEventListener('click', function () {
       var 말 = document.getElementById('soonSay');
@@ -321,7 +321,7 @@
       document.getElementById('attach').addEventListener('click', function (e) {
         e.preventDefault();
         var d = F.값(form), 빈 = F.빈칸(d);
-        if (빈.length) { say('비어 있거나 틀린 칸이 있습니다 — ' + 빈.join(' · '), true); return; }
+        if (빈.length) { say('다음 칸을 확인하고 채워 주세요 — ' + 빈.join(' · '), true); return; }
         if (!agreeData.checked) { say('신청서를 제출하려면 내용 이용에 동의해 주세요.', true); return; }
         d.consent = { data: true, refund: !!agree.checked, at: new Date().toISOString() };
         ChaeksaPay.intake(o.id, F.신청서(d)).then(function (r) {
@@ -342,9 +342,9 @@
     if (busy || !열림 || 곧) return;
     사건('pay');   // 깔때기 ④ 결제 단추 누름 — 앱 안 단추(pay.js 누르면)와 같은 사건. 여기는 buy() 를 바로 불러서 따로 센다.
     var d = F.값(form), 빈 = F.빈칸(d);
-    if (빈.length) { say('비어 있거나 틀린 칸이 있습니다 — ' + 빈.join(' · '), true); return; }
+    if (빈.length) { say('다음 칸을 확인하고 채워 주세요 — ' + 빈.join(' · '), true); return; }
     if (영곳) { say('이 기간의 모든 시각이 두 고전 중 하나 이상의 제외 조건에 해당해요(궁통보감 · 자평진전). 기간을 넓혀 주세요.', true); return; }
-    if (!agreeData.checked || !agree.checked) { say('동의 두 가지에 체크해 주셔야 결제할 수 있습니다.', true); return; }
+    if (!agreeData.checked || !agree.checked) { say('동의 내용 두 가지를 읽고 체크한 뒤 결제하세요.', true); return; }
     // 동의한 사실을 신청서와 함께 남긴다 — 결제 뒤 화면이 이 초안을 그대로 주문에 붙인다.
     d.consent = { data: true, refund: true, at: new Date().toISOString() };
     F.초안저장(d);
@@ -358,7 +358,7 @@
     }
     if (남의로그인()) {
       var em = ChaeksaCloud.email();
-      if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 주문은 이 계정에 남아요.')) return;
+      if (!confirm((em ? em + ' ' : '지금 로그인한 ') + '계정으로 결제합니다.\n\n이 기기에서 시작한 로그인이 아니에요. 본인 계정인지 확인하세요. 주문은 이 계정에 남아요.')) return;
     }
     busy = true; 단추(); say('');
     // 신청서(적은 그대로 + 「이렇게 읽었어요」)는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake, 10-02).
