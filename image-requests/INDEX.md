@@ -32,3 +32,5 @@
 | IMG-0024 | 홈 「언제 나아지나」 표지 · 여자 — 보는 사람 자신: 비 갠 창가, 구름이 갈라지며 첫 햇살이 얼굴에 닿는 순간 고개를 든다 | 적용됨(홈 「언제 나아지나」 칸 · og) | IMG-0024-when-f.md | out/IMG-0024.png | app/art/when-cover-f.webp |
 | IMG-0025 | 홈 「언제 나아지나」 표지 · 남자 — 보는 사람 자신: 비 갠 창가, 구름이 갈라지며 첫 햇살이 얼굴에 닿는 순간 고개를 든다 | 적용됨(홈 「언제 나아지나」 칸 · og) | IMG-0025-when-m.md | out/IMG-0025.png | app/art/when-cover-m.webp |
 | IMG-0026 | 홈 「읽을거리」 표지 — 햇살 드는 창가 자리에 웅크려 앉아 옛 책을 읽다가 「아, 그래서였구나」 하는 얼굴 | 적용됨(홈 「읽을거리」 칸 · og) | IMG-0026-read.md | out/IMG-0026.png | app/art/read-cover.webp |
+| IMG-0027 | 출산택일 소개 — 추천서를 건네는 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0027-taekil-advisor-offer.md | 삽화원본/taekil-advisor-offer-v1.png(로컬) | app/art/taekil-advisor-offer-v1.webp |
+| IMG-0028 | 출산택일 제작 설명 — 근거를 확인하는 같은 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0028-taekil-advisor-review.md | 삽화원본/taekil-advisor-review-v1.png(로컬) | app/art/taekil-advisor-review-v1.webp |
