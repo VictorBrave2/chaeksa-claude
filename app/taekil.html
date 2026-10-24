@@ -73,6 +73,7 @@
 <div class="mini-head" role="banner"><a class="logo" href="./" title="책사 홈으로"><i class="seal">策</i><span>책사</span></a></div>
 <div class="doc">
   <h1>출산택일</h1>
+  <div id="tkMine" class="hide"></div>
 
   <p class="lead">의사가 정해 준 출산 가능 범위 안에서, 책사의 기준으로 가장 좋은 날과 시간을 골라 드립니다.</p>
   <p>가장 먼저 권하는 시간과 그 이유, 다른 후보와의 차이를 보고서로 받으세요. 병원에 전달할 시계 시각까지 적어 드립니다.</p>
@@ -239,7 +240,26 @@
 <script src="yaksok.js?v=ac6b394f76"></script>
 <script src="taekil-why-copy.js?v=3d9504bce9"></script>
 <script src="taekil-why.js?v=ce07912d6a"></script>
-<script src="pay.js?v=b830dbd7bb"></script>
+<script src="cloud.js?v=bee1b9298c"></script>
+<script src="pay.js?v=b830dbd7bb"></script><script>
+  /* 10-25 앱 #taekil 탭을 걷으면서 「내 보고서」 목록을 여기로 옮김(app.js 택일내보고서와 같은 글) — 로그인했고 택일 주문이 있는 계정에만 보인다. */
+  (function () {
+    var box = document.getElementById('tkMine'), T = window.ChaeksaPay && ChaeksaPay.taekil;
+    if (!box || !T) return;
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var 딱지 = { todo: '만들기 →', no_intake: '신청서 보내기 →', making: '만드는 중', checking: '확인 중', ready: '보고서 열기 →', canceled: '환불됨' };
+    var 날 = function (s) { var d = new Date(s); return isNaN(d) ? '' : d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 결제'; };
+    T.mine().then(function (rows) {
+      var xs = Array.isArray(rows) ? rows : [];
+      if (!xs.length) return;
+      box.innerHTML = '<div class="tk-mine"><h3>내 보고서</h3>' + xs.map(function (x) {
+        return '<a class="tk-mine-row" href="' + esc(T.주소(x.id)) + '"><span><b>' + esc(x.range || '출산택일 보고서') + '</b><span>'
+          + esc([날(x.paidAt), (T.상태말 && T.상태말[x.state]) || ''].filter(Boolean).join(' · ')) + '</span></span><i>' + esc(딱지[x.state] || '보기 →') + '</i></a>';
+      }).join('') + '</div>';
+      box.classList.remove('hide');
+    }).catch(function () {});
+  })();
+</script>
 <script>
   // 값은 products 표 한 곳에만 있다. 금액 글자는 표에서 받아 채운다.
   if (window.ChaeksaPay) ChaeksaPay.product('taekil').then(function (p) {

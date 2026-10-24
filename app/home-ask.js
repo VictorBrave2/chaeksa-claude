@@ -56,7 +56,7 @@
     if (/^ss\.d\d+$/.test(id)) return { 탭: 'ssom', 곳: '단계:둘', 단계: '둘' };
     if ((m = /^ss\.([a-z]+)\.\d+$/.exec(id)) && 단계값[m[1]]) return { 탭: 'ssom', 곳: '단계:' + 단계값[m[1]], 단계: 단계값[m[1]] };
     if (/^wk\./.test(id)) return null;   // 10-23 「이번 주엔 무엇이 바뀌나」 카드는 10-12 사장님 「삭제하자 재미가 없네」로 숨김 — 누르면 빈 홈이라 길을 끊는다(물음은 「아직 답이 없는 물음」으로 내려간다)
-    if (id === 'tk.sim') return { 탭: 'taekil' };
+    if (id === 'tk.sim') return { 주소: 'taekil-sim.html' };
     return null;
   }
 

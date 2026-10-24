@@ -82,6 +82,12 @@
  *     home = 넣어 둔 사람이 있음(홈) · form = 사람 없이 ?go= · #form 으로 옴(입력 칸) · wait = 사람 없이 #탭 · ?go=taekil 로 옴(빈 채로 기다림) · landing = 그 밖(첫 화면).
  *     ?go=pair(사용설명서)는 내 입력 칸을 거치지 않는다 — 첫 화면 위에 그 사람 칸(사람 추가 창)이 뜨니 landing(10-02 생년월일은 필요한 만큼만).
  *     전에는 입력 칸(#formCard)이 기본으로 보여서, 스크립트가 다 올 때까지 입력 칸이 떴다가 사라졌다. */
+/* 10-25 사장님 — 출산택일은 taekil.html 한 곳. 옛 주소(#taekil · ?go=taekil)는 그리로 보낸다. */
+(function () {
+  function 택일로() { if (/^#taekil$/i.test(location.hash) || /[?&]go=taekil(&|$)/.test(location.search)) { location.replace('taekil.html'); return true; } return false; }
+  if (택일로()) return;
+  window.addEventListener('hashchange', 택일로);
+})();
 (function () {
   var d = document.documentElement, 모드 = 'auto', 사람 = false;
   try { 모드 = localStorage.getItem('chaeksa.theme') || 'auto'; } catch (e) {}
@@ -575,8 +581,6 @@
      data-go 는 고르기 창을 못 그릴 때(스크립트가 덜 왔을 때) 곧장 갈 탭. 9,900원 궁합 장(gunghap) · sheet 는 결제 심사와 묶여 아래 줄에 없다. -->
 <nav id="nav" class="hide">
   <button data-go="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg><span>홈</span></button>
-  <!-- 10-04 전략 — 출산택일을 홈 바로 옆으로(첫 매출 · 유입이 출산택일이다). 사주 없이 읽는 탭(맨 위 두 문: 보고서 신청 · 시뮬레이터). -->
-  <button data-go="taekil"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><circle cx="12" cy="15" r="1.6"/></svg><span>출산택일</span></button>
   <button data-pick="love" data-go="love" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>연애</span></button>
   <button data-pick="match" data-go="chongnon" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg><span>궁합</span></button>
   <!-- 정통사주 — 세 고전으로 푼 열세 장(jeongtong.js). 조립기라 원가 0, 무료다. -->
@@ -757,8 +761,8 @@
 <script src="yaksok.js?v=ac6b394f76"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=f082457166"></script>
-<script src="home-cats.js?v=9764b21994"></script>
-<script src="home-ask.js?v=2cfc49db62"></script>
+<script src="home-cats.js?v=daa1062d5a"></script>
+<script src="home-ask.js?v=d74f3373ef"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=d14e2a4e8e"></script>
 <script src="pay.js?v=b830dbd7bb"></script>
@@ -816,7 +820,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=ad2528476b"></script>
+<script src="app.js?v=b0681f0d5b"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

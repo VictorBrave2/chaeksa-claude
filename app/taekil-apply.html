@@ -58,7 +58,7 @@
 <div class="mini-head" role="banner"><a class="logo" href="./" title="책사 홈으로"><i class="seal">策</i><span>책사</span></a></div>
 <div class="doc">
   <a class="back" href="taekil.html">← 출산택일 안내</a>
-  <p class="hint" id="ownerBar" hidden style="margin:6px 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r2,14px)">검수 계정 — <a href="taekil-admin.html"><b>사장님 목록 →</b></a> · <a href="./#taekil">내 보고서 →</a></p>
+  <p class="hint" id="ownerBar" hidden style="margin:6px 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r2,14px)">검수 계정 — <a href="taekil-admin.html"><b>사장님 목록 →</b></a> · <a href="taekil.html">내 보고서 →</a></p>
   <h1>출산택일 보고서 신청</h1>
   <div class="gc-cut"><img src="art/taekil-apply.webp" srcset="art/taekil-apply-s.webp 360w, art/taekil-apply.webp 1024w" sizes="(max-width: 600px) 100vw, 524px" alt="" width="1024" height="1536" fetchpriority="high"><div class="gc-bubble"><b>책사</b><span>병원에서 안내받은 출산 가능 날짜를 알려 주세요.</span></div></div>
   <!-- 세 걸음은 택일 탭 · taekil.html · 택일 비용 글과 같은 말이다(10-02 「켜는 날」 — 바깥 신청 폼을 걷고 사이트 신청서 → 결제 → 「내 보고서」 한 길).
@@ -327,7 +327,7 @@
           if (r && (r.ok || r.reason === 'already')) {
             F.초안지움(); F.보냄기록(o.id, d); say('');
             // 10-02 자동 보고서 — 보고서는 메일이 아니라 「내 보고서」(그 주문의 보고서 쪽)에서 연다. 그 쪽이 아직 안 만든 주문이면 만들기를 부른다.
-            var 쪽 = ChaeksaPay.taekil && ChaeksaPay.taekil.주소 ? ChaeksaPay.taekil.주소(o.id) : './#taekil';
+            var 쪽 = ChaeksaPay.taekil && ChaeksaPay.taekil.주소 ? ChaeksaPay.taekil.주소(o.id) : 'taekil.html';
             box.innerHTML = '<b>고객님, 신청서가 접수됐습니다.</b> 적어 주신 조건에서 가장 좋은 날과 시간을 골라 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요(보통 2~3일 안). '
               + '<a href="' + esc(쪽) + '"><b>내 보고서로 가기 →</b></a>';
           } else say(F.이유(r), true);
