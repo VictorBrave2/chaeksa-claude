@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | COPY-0013 |
-| 상태 | 요청 |
+| 상태 | 적용됨(v1436) |
 | 요청한 날 | 2026-10-24 |
 | 묶음 | **jt_gh** = `app/jeongtong.js` · `app/gunghap-gwanjeom.js` / **copies** = `app/myeongban-copy.js` · `app/when-copy.js` · `app/brain-copy.js` · `app/gwi-copy.js` · `app/saram-copy.js` |
 | 고칠 수 있는 파일 | 위 묶음의 파일 — **문자열 안의 손님 한국어 문장만**(코드 · 조건 · 변수 · 키 이름 · 숫자 · 치환 토막 `{…}` · 괄호 안 책 · 엔진 낱말 · 원문(한자)은 그대로) |
