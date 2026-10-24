@@ -31,6 +31,7 @@
   var 단계 = 1, 아니수 = 0, 답칸 = {};   // 답칸: b · c 에 누른 값
   var 단추 = function (id) { return '<div class="btns" data-id="' + id + '"><button data-v="yes">맞아요</button><button data-v="no">아니에요</button></div>'; };
   var 끝난칸 = function (h, v) { return '<div class="card done"><div class="k">' + (v === 'yes' ? '✓ 맞아요' : v === 'no' ? '아니에요' : '건너뜀') + '</div><p>' + h.y + '년(' + h.나이 + '세) — ' + esc(h.사건) + '</p></div>'; };
+  // 10-24 사장님 「같은 꼴로 ㄱㄱㄱ」(10-23 「결론 (근거 작게)」) — 칸 = 물음(h2) → 결론(.jt-answer) → 「근거 보기」 접힘(.jt-ev). 문장은 그대로, 차례만 바꿈.
   function 그리기() {
     var P = 판들[지금판]; if (!P) return;
     if (단계 === 1 && !P.바닥) 단계 = 2;
@@ -43,13 +44,13 @@
     if (P.맑음 && 단계 >= 2) h += 단계 === 2 ? '<div class="card qa"><p class="q">' + esc(틀('맑음질문', P.맑음)) + '</p>' + 단추('c' + 지금판) + '</div>' : 끝난칸(P.맑음, 답칸.c);
     if (단계 < 3) { h += '<p class="skip"><a href="#" data-skip="1">' + esc(화('건너뛰기', '맞추기 건너뛰고 답 보기')) + '</a></p>'; $('out').innerHTML = h; return; }
     if (아니수 >= 판들.length) h += '<div class="redo">' + esc(화('다틀림', '세 번 다 맞지 않았어요. 아래 답은 입력한 시각으로 계산했어요. 태어난 시각이 정확해야 더 잘 맞아요.')) + '</div>';
-    h += '<div class="sec">' + esc(화('3단계머리', '그래서, 언제 나아지나')) + '</div><div class="big">';
+    h += '<section class="card jt-ch"><div class="jt-head"><h2>' + esc(화('3단계머리', '그래서, 언제 나아지나')) + '</h2></div><div class="jt-answer">';
     if (벌써) h += '<p>' + esc(틀('벌써', { y: 올해 })) + '</p>';
     if (!벌써 && P.숨통 && !(P.최고 && P.최고.y === P.숨통.y)) h += '<p>' + esc(틀('숨통', { y: P.숨통.y, 나이: P.숨통.나이, 왜: P.숨통.왜 })) + '</p>';
     if (P.최고) h += '<p>' + esc(틀('최고', { y: P.최고.y, 나이: P.최고.나이, 사건: P.최고.사건 })) + '</p>';
     if (!벌써 && !P.숨통 && !P.최고) h += '<p>' + esc(틀('없음', {})) + '</p>';
-    h += '<p class="why">' + esc(화('답출처', '태어난 때의 별자리로 해마다 운을 보는 방법(자미두수)으로 계산했어요. 막힘이 없는 해가 여럿이면 사주에서 돈을 뜻하는 글자(재성)를 비교해요. 그해 들어오는 돈 글자가 태어날 때 글자 · 10년 운과 가장 많이 겹치는 해를 가장 좋은 해로 골랐어요. 겹치는 수가 같으면 빠른 해를 골랐어요. 사주로 본 좋고 나쁨은 아래 「해마다 · 달마다 자세히 보기」에서 확인하세요. 두 방법의 판단이 다르면 각각 그대로 보여 줘요.')) + '</p></div>';
-    if (P.할일) h += '<div class="sec">' + esc(화('할일머리', '지금 할 일')) + '</div><div class="card"><p><b>' + esc(P.할일) + '</b></p></div>';
+    if (P.할일) h += '<p><b>' + esc(P.할일) + '</b></p>';   // 할 일은 결론 안에
+    h += '</div><details class="jt-ev"><summary>근거 보기</summary><p class="why">' + esc(화('답출처', '태어난 때의 별자리로 해마다 운을 보는 방법(자미두수)으로 계산했어요. 막힘이 없는 해가 여럿이면 사주에서 돈을 뜻하는 글자(재성)를 비교해요. 그해 들어오는 돈 글자가 태어날 때 글자 · 10년 운과 가장 많이 겹치는 해를 가장 좋은 해로 골랐어요. 겹치는 수가 같으면 빠른 해를 골랐어요. 사주로 본 좋고 나쁨은 아래 「해마다 · 달마다 자세히 보기」에서 확인하세요. 두 방법의 판단이 다르면 각각 그대로 보여 줘요.')) + '</p>@@근거A@@</details></section>';
     // 10-05 사장님 「자미두수에서 뾰족한 부분을 짚어 줄 순 없어?」 — 명반에서 가장 크게 흔들리는 곳(막힘별 · 흉별 둘 이상)과 터지는 해
     // 10-05 사장님 「내가 말해 준 사건들에 판단이 침몰된 것 같은데?」 — 흔들리는 해의 일은 그해 판단이 고른다(합치지 않고 고르기만):
     //   한쪽 길 · 한쪽 흉 = 중립 / 흉이 있으면 흉 / 길이 있으면 길 / 나머지 중립. 지나온 해를 묶어 물을 땐 중립.
@@ -57,7 +58,7 @@
     var 해찾기 = function (y) { return (P.해들 || []).find(function (z) { return z.y === y; }); };
     var V = T.뾰족 || {}, V틀 = function (k, v) { return String((V.틀 || {})[k] || '').replace(/\{([^{}]+)\}/g, function (_, n) { return v[n] == null ? '' : v[n]; }); };
     if (P.뾰족 && P.뾰족.length && V.자리) {
-      h += '<div class="sec">' + esc((V.틀 || {}).머리 || '당신의 삶에서 가장 크게 바뀌는 일') + '</div>' + ((V.틀 || {}).둘째 ? '<p class="why">' + esc(V.틀.둘째) + '</p>' : '');
+      h += '<section class="card jt-ch"><div class="jt-head"><h2>' + esc((V.틀 || {}).머리 || '당신의 삶에서 가장 크게 바뀌는 일') + '</h2></div>' + ((V.틀 || {}).둘째 ? '<p class="why">' + esc(V.틀.둘째) + '</p>' : '');
       P.뾰족.forEach(function (x, i) {
         var 말 = V.자리[x.곳]; if (!말) return;
         var 다음갈래 = 갈래(x.다음 && 해찾기(x.다음.y)), 할일 = x.다음 && 다음갈래 === '흉' ? 조심말(x.곳) : '';
@@ -68,8 +69,9 @@
           + '<p><b>' + esc(x.다음 ? V틀('다음', { y: x.다음.y, 나이: x.다음.나이, 사건: 말[다음갈래] }) : V틀('없음', {})) + '</b></p>'
           + (할일 ? '<p><b>' + esc(할일) + '</b></p>' : '') + '</div>';
       });
+      h += '</section>';
     }
-    if (P.조심) h += '<div class="sec">' + esc(화('조심머리', '조심할 해')) + '</div><div class="card"><p>' + esc(틀('조심', P.조심)) + (P.조심.할일.length ? '</p><p style="margin-top:8px"><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div>';
+    if (P.조심) h += '<section class="card jt-ch"><div class="jt-head"><h2>' + esc(화('조심머리', '조심할 해')) + '</h2></div><div class="jt-answer"><p>' + esc(틀('조심', P.조심)) + (P.조심.할일.length ? '</p><p style="margin-top:8px"><b>' + P.조심.할일.map(esc).join('<br>') + '</b>' : '') + '</p></div></section>';
     var 띠 = '<div class="strip">' + P.띠.map(function (x) { return '<div class="cell' + (x.y === 올해 ? ' now' : '') + '" style="background:' + 색[x.등급] + '" title="' + x.y + ' ' + x.등급 + '"><span>' + String(x.y).slice(2) + '</span></div>'; }).join('') + '</div>'
       + '<div class="legend">' + ['힘듦', '버팀', '나아짐', '좋음'].map(function (k) { return '<span><i style="background:' + 색[k] + '"></i>' + k + '</span>'; }).join('') + '</div>'
       + '<p class="why">아래 자미두수의 해마다 판단(년)은 색 띠의 좋음과 나아짐을 「좋음」으로 묶어요. 버팀은 「보통」, 힘듦은 「나쁨」으로 보여 줘요.</p>';
@@ -86,16 +88,15 @@
     // 10-06 사장님 「사주 길 문장 두 줄로 나눠서 보여줘」 — 서버 문장의 줄바꿈을 화면 줄로
     var 두줄 = function (t) { return String(t).split(/\n/).map(esc).join('<br>'); };
     var 쌍칩 = function (년, 년월) { return '<span class="pk">년</span>' + 판칩(년) + ' <span class="pk">년+월</span>' + 판칩(년월); };
-    h += '<details class="more"><summary>' + esc(화('더보기', '해마다 · 달마다 자세히 보기 — 사주와 자미두수를 따로 봐요')) + '</summary>';
-    h += '<div class="card">' + 띠 + '</div>';
-    h += '<div class="sec">해마다 — 사주 · 자미두수 (년)</div><div class="yrs">' + (P.해들 || []).map(function (x) {
+    var 더 = '<div class="card">' + 띠 + '</div>';
+    더 += '<div class="sec">해마다 — 사주 · 자미두수 (년)</div><div class="yrs">' + (P.해들 || []).map(function (x) {
       var 흔 = (x.흔들림 || []).map(function (k) { var m = V2[k]; return m ? '<div class="yr-sharp">' + esc(V틀('해칸', { 이름: m.이름 })) + '<br><span>' + esc(m[갈래(x)]) + '</span></div>' : ''; }).join('');
       return '<div class="yr' + (x.y === 올해 ? ' now' : x.y < 올해 ? ' past' : '') + (흔 ? ' hot' : '') + '"><div class="yr-h"><b>' + x.y + '</b> <small>' + x.나이 + '세' + (x.y === 올해 ? ' · 올해' : '') + (x.대운바뀜 ? ' · 10년 운 바뀜' : '') + '</small></div>'
         + 줄('사주 · 년', 판칩(x.사판), x.사현상 ? 두줄('그해 ' + x.사현상) : esc(x.사왜 || ''))
         + 줄('자미두수 · 년', 판칩(x.자판), x.자사건 ? '그해 ' + esc(x.자사건) : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
-    h += '<div class="sec">' + esc(화('달머리', '달마다 — 년 · 년+월')) + '</div><p class="why">판단은 둘이에요. 앞의 판단(년)은 그달이 속한 해 전체를 봐요. 뒤의 판단(년+월)은 그해에 그달 운을 더해서 봐요. 그달에 겪을 일도 함께 보여 줘요. 사주는 입춘에, 자미두수는 음력 설에 해가 바뀌어요.</p><div class="yrs">' + (P.달들 || []).map(function (a, i) {
+    더 += '<div class="sec">' + esc(화('달머리', '달마다 — 년 · 년+월')) + '</div><p class="why">판단은 둘이에요. 앞의 판단(년)은 그달이 속한 해 전체를 봐요. 뒤의 판단(년+월)은 그해에 그달 운을 더해서 봐요. 그달에 겪을 일도 함께 보여 줘요. 사주는 입춘에, 자미두수는 음력 설에 해가 바뀌어요.</p><div class="yrs">' + (P.달들 || []).map(function (a, i) {
       var 자 = V2[a.곳] || {}, 일 = (달말[a.곳] || {})[a.등급] || '';
       var 할일 = a.등급 === '조심' ? 조심말(a.곳) : '';
       var 흔 = a.흔들림 && 자.이름 ? '<div class="yr-sharp">' + esc(자.이름) + '에 큰 변화가 있는 달</div>' : '';
@@ -104,7 +105,8 @@
         + 줄('자미두수', 쌍칩(a.자년판, a.자판), (일 ? '그달 ' + esc(일) : '') + (할일 ? '<br><b>' + esc(할일) + '</b>' : ''), 자.이름 ? ' <small>' + esc(자.이름) + ' 쪽</small>' : '')
         + 흔 + '</div>';
     }).join('') + '</div>';
-    h += '<p class="note">계산 — 자미두수는 해마다 바뀌는 운으로 봐요(자미두수전서 셋째 권, 《紫微斗數全書》 卷三). 사주는 그해 · 그달 운이 태어날 때 받은 여덟 글자(원국)의 짜임을 깨는지, 깨지지 않게 막아 주는지, 바꾸는지 봐요. 「맞아요 · 아니에요」는 계산을 다듬는 데만 써요. 생일은 저장하지 않아요.</p></details>';
+    더 += '<p class="note">계산 — 자미두수는 해마다 바뀌는 운으로 봐요(자미두수전서 셋째 권, 《紫微斗數全書》 卷三). 사주는 그해 · 그달 운이 태어날 때 받은 여덟 글자(원국)의 짜임을 깨는지, 깨지지 않게 막아 주는지, 바꾸는지 봐요. 「맞아요 · 아니에요」는 계산을 다듬는 데만 써요. 생일은 저장하지 않아요.</p>';
+    h = h.replace('@@근거A@@', 더);
     $('out').innerHTML = h;
   }
   // 10-05 사장님 「맞아요를 실시간 현황판으로 — 리뷰 시스템」 「만든 나보다 이용자 리뷰를 더 믿는다」.

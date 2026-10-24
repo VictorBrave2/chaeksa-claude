@@ -163,6 +163,7 @@
     k = t.관있음 === false ? '관없음' : t.산관있음 === false ? (/합거/.test(s) ? '묶임' : '무근') : t.산관있음 === true ? '막힘' : '기본';
     return 글('지금.관통.없음갈래.' + k) + ' ' + 글('지금.관통.없음');
   }
+  // 10-24 사장님 「같은 꼴로 ㄱㄱㄱ」(10-23 「결론 (근거 작게)」) — 칸 = 물음(h2) → 결론(.jt-answer) → 「근거 보기」 접힘(.jt-ev). 문장은 그대로, 차례만 바꿈.
   function 그리기() {
     var R = 결과; if (!R) return;
     var 옛 = R.옛, 귀 = 옛.귀, 천 = 옛.천, J = R.지금, 성 = 성별말(R.성별), 표본 = R.표본 ? R.표본[R.성별 === 'F' ? '여' : '남'] : null, h = '';
@@ -172,10 +173,12 @@
     }).join('') + '</div>';
     // 탭 1 — 옛 책이 귀하다고 꼽은 짜임: 貴 수 · 賤 수 나란히(따로 센다, 빼지 않는다) · 빈도 · 걸린 짜임 · 없는 짜임은 접힘 · 덧 둘
     h += '<div data-pane="1"' + (탭 === '1' ? '' : ' class="hide"') + '>';
-    h += '<div class="duo"><div class="card"><div class="k">' + esc(귀묶음) + '</div><div class="y">' + esc(귀.n) + '<small> / ' + esc(귀.전체) + '</small></div></div>'
+    var 듀오 = '<div class="duo"><div class="card"><div class="k">' + esc(귀묶음) + '</div><div class="y">' + esc(귀.n) + '<small> / ' + esc(귀.전체) + '</small></div></div>'
       + '<div class="card"><div class="k">' + esc(천묶음) + '</div><div class="y">' + esc(천.n) + '<small> / ' + esc(천.전체) + '</small></div></div></div>';
-    h += '<div class="big"><p>' + esc(귀.n ? 틀(글('옛.귀머리'), { n: 귀.n }) : 글('옛.귀머리0')) + '</p><p><b>' + esc(빈도줄(귀)) + '</b></p></div>';
-    h += '<div class="big"><p>' + esc(천.n ? 틀(글('옛.빈도.천머리'), { n: 천.n }) : 글('옛.빈도.천머리0')) + '</p><p><b>' + esc(빈도줄(천)) + '</b></p></div>';
+    h += '<section class="card jt-ch"><div class="jt-head"><h2>' + esc(글('탭.옛', '옛 책이 귀하다고 꼽은 짜임')) + '</h2></div><div class="jt-answer">'
+      + '<p>' + esc(귀.n ? 틀(글('옛.귀머리'), { n: 귀.n }) : 글('옛.귀머리0')) + '</p><p><b>' + esc(빈도줄(귀)) + '</b></p>'
+      + '<p>' + esc(천.n ? 틀(글('옛.빈도.천머리'), { n: 천.n }) : 글('옛.빈도.천머리0')) + '</p><p><b>' + esc(빈도줄(천)) + '</b></p></div>'
+      + '<details class="jt-ev"><summary>근거 보기</summary>' + 듀오;
     h += '<p class="why">' + esc(글('옛.머리')) + '</p>';
     if (글('옛.낱말')) h += '<details class="fold"><summary>낱말 풀이 펼쳐 보기</summary><p class="why">' + esc(글('옛.낱말')) + '</p></details>';
     var 있 = 귀.항목.filter(걸린).map(function (x) { return 짜임칸(x, 귀묶음, 성); }).concat(천.항목.filter(걸린).map(function (x) { return 짜임칸(x, 천묶음, 성); }));
@@ -183,14 +186,18 @@
     h += 있.join('');
     if (없.length) h += '<details class="fold"><summary>' + esc(틀(글('옛.나머지'), { n: 없.length })) + '</summary>' + 없.join('') + '</details>';
     if ((옛.덧 || []).length) h += '<div class="sec">수에 넣지 않은 둘</div><p class="why">' + esc(글('옛.못잼')) + '</p>' + 옛.덧.map(function (x) { return 짜임칸(x, 덧묶음, 성); }).join('');
+    h += '</details></section>';
     h += '<p class="q2">' + esc(글('맞아요.옛물음')) + '</p>' + 단추('GY');
     h += '</div>';
     // 탭 2 — 책사가 세운 지금의 귀: ① 꺼내 쓰는 것이 넷(70조) ② 바깥의 요구와 책임이 나에게 이어짐 + 운에서 받는 해 · 둘 다인 사람 %
     var g = J.그릇넷, t = J.관통, 단계글 = g.단계 != null ? String(g.단계) : (g.단계들 || []).join(' · ');
     h += '<div data-pane="2"' + (탭 === '2' ? '' : ' class="hide"') + '>';
-    h += '<div class="duo"><div class="card"><div class="k">' + esc(글('지금.그릇넷.이름')) + '</div><div class="y">' + (g.걸림 ? '넷' : esc(단계글 ? 단계글 + '가지' : '가짓수 미확정') + '<small> · ' + (g.시모름 && g.단계 == null ? '시에 따라 다름' : '넷 아님') + '</small>') + '</div></div>'
+    var 듀오2 = '<div class="duo"><div class="card"><div class="k">' + esc(글('지금.그릇넷.이름')) + '</div><div class="y">' + (g.걸림 ? '넷' : esc(단계글 ? 단계글 + '가지' : '가짓수 미확정') + '<small> · ' + (g.시모름 && g.단계 == null ? '시에 따라 다름' : '넷 아님') + '</small>') + '</div></div>'
       + '<div class="card"><div class="k">' + esc(글('지금.관통.이름')) + '</div><div class="y">' + (t.걸림 ? '있음' : '없음') + '</div></div></div>';
-    h += '<div class="big"><p><b>' + esc(틀(글('지금.함께'), { k: [g.걸림, t.걸림].filter(function (v) { return v === true; }).length, p: J.함께p })) + '</b></p></div>';
+    h += '<section class="card jt-ch"><div class="jt-head"><h2>' + esc(글('탭.지금', '책사가 세운 지금의 귀')) + '</h2></div><div class="jt-answer">'
+      + '<p><b>' + esc(틀(글('지금.함께'), { k: [g.걸림, t.걸림].filter(function (v) { return v === true; }).length, p: J.함께p })) + '</b></p>'
+      + '<p>' + esc(글('지금.그릇넷.이름')) + ' — ' + (g.걸림 ? '당신의 사주에 있음' : '당신의 사주에 없음') + '</p><p>' + esc(글('지금.관통.이름')) + ' — ' + (t.걸림 ? '당신의 사주에 있음' : '당신의 사주에 없음') + '</p></div>'
+      + '<details class="jt-ev"><summary>근거 보기</summary>' + 듀오2;
     h += '<p class="why">' + esc(글('지금.머리')) + '</p>';
     h += '<div class="card"><div class="k">' + (g.걸림 ? '당신의 사주에 있음' : '당신의 사주에 없음') + '</div><div class="y" style="font-size:var(--t4)">' + esc(글('지금.그릇넷.이름')) + '</div>'
       + '<p>' + esc(g.걸림 ? 글('지금.그릇넷.걸림') : 틀(글(g.시모름 && g.단계 == null ? '지금.그릇넷.시따라' : '지금.그릇넷.없음'), { 단계: 단계글 })) + '</p>'
@@ -206,6 +213,7 @@
       + '<p class="why"><b>' + esc(틀(글('지금.관통.빈도'), { p: t.p })) + '</b></p>'
       + '<details class="fold"><summary>근거 보기</summary><p class="why"><small>' + esc(근거말(t.근거))
       + (t.받는해 || []).map(function (x) { return '<br>' + esc(근거말(x.해 + '년 ' + (x.간지 || '') + ' — ' + (x.글자 || []).join(' · '))); }).join('') + '</small></p></details></div>';
+    h += '</details></section>';
     h += '<p class="q2">' + esc(글('맞아요.지금물음')) + '</p>' + 단추('GJ');
     h += '</div>';
     // 끝 줄(사장님 ⑦) — 두 탭 아래 늘 보인다. 사주가 보여 주는 것은 조건과 때까지, 귀는 언행으로 완성된다.
