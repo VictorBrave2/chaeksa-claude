@@ -1920,7 +1920,7 @@
     // 출산택일 문 — 지금 돈이 되는 상품인데 홈에는 푸터 링크뿐이었다(2026-09-15 「출산택일의 최적화부터」).
     // 새 상품이 아니라 있는 상품(#taekil 탭)으로 가는 길이라 심사 중 수정 불가 항목(상품 카테고리)에 안 걸린다.
     h += '<div class="wt-head" style="margin-top:26px"><b>출산택일 보고서</b><span>병원에서 받은 날짜, 근거로 검토</span></div>'
-      + '<a class="wt-taekil" href="#taekil"><b>후보 기간의 모든 날을 사주에서 나누는 시간대(시진)마다 계산해요.</b><span>부모님 사주와 부딪히는 시각을 빼고, 담당 의사의 수술 가능 시간 안에서 골라요. 병원에 예약할 시계 시각까지 보고서에 적어요.</span><em><i data-price="taekil">99,000원</i> · 신청하기 →</em></a>';
+      + '<a class="wt-taekil" href="taekil.html"><b>후보 기간의 모든 날을 사주에서 나누는 시간대(시진)마다 계산해요.</b><span>부모님 사주와 부딪히는 시각을 빼고, 담당 의사의 수술 가능 시간 안에서 골라요. 병원에 예약할 시계 시각까지 보고서에 적어요.</span><em><i data-price="taekil">99,000원</i> · 신청하기 →</em></a>';
     if (top) { top.innerHTML = 위; top.classList.remove('hide'); }
     box.innerHTML = h; box.classList.remove('hide');
     const 열기 = (t) => { 본표시(t.id); if (t.sheet) window.현재장 = t.sheet; if (t.story) { window.현재이야기 = t.story; window.현재그사람 = null; window.현재갈래 = t.갈래 || null; window.현재질문 = null; } go(t.tab); if (t.scroll) setTimeout(() => { const el = $(t.scroll); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 260); };
