@@ -1,0 +1,49 @@
+{
+ "title": [
+  "말을 잘하면",
+  "사람들이 들을까?"
+ ],
+ "end": "chaeksa.kr",
+ "scenes": [
+  {
+   "s": 0,
+   "img": "../../../app/art/jt-07-shake-m.webp"
+  },
+  {
+   "s": 5.28,
+   "img": "../../../app/art/jt-13-heart-m.webp"
+  },
+  {
+   "s": 11.05,
+   "img": "../../../app/art/jt-05-who-m.webp"
+  },
+  {
+   "s": 16.16,
+   "img": "../../../app/art/jt-20-where-f.webp"
+  },
+  {
+   "s": 18.63,
+   "img": "../../../app/art/jt-02-push-m.webp"
+  },
+  {
+   "s": 24.8,
+   "img": "../../../app/art/jt-08-power-m.webp"
+  },
+  {
+   "s": 28.67,
+   "img": "../../../app/art/jt-04-good-bad-m.webp"
+  },
+  {
+   "s": 41,
+   "img": "../../../app/art/jt-09-shadow-m.webp"
+  },
+  {
+   "s": 54.61,
+   "img": "../../../app/art/jt-19-return-m.webp"
+  },
+  {
+   "s": 64,
+   "img": "../../../app/art/jt-14-in-love-m.webp"
+  }
+ ]
+}
