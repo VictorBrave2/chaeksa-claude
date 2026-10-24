@@ -20,6 +20,14 @@
 4. 본문 맨 아래가 바에 가리지 않게 여백. 낮 · 밤 테마. `style.css` 변수만.
 5. 그림: 소개 쪽(taekil.html)에 바를 붙인 360px 첫 화면 + 「자료」 고르기가 열린 상태 한 장 더(`DES-0006-taekil-360-data.png`).
 
+## 10-25 사장님 「출산택일 누르면 저 화면으로」 — 라이브 적용(하단 바)
+이제 **라이브 파일을 고친다**. 견본 `design-requests/ref/DES-0006-taekil.html` 의 하단 바 · 「자료」 판 · 머리줄(로고만)을 출산택일 길 전부에 붙인다:
+- 정적 쪽: `app/taekil.html` · `app/taekil-sample.html` · `app/taekil-apply.html` · `app/taekil-sim.html` · `app/taekil-price.html` · 질문 글 `app/taekil-cesarean-date.html` `taekil-first-child.html` `taekil-son-or-daughter.html` 등 `app/taekil-*.html` 가운데 월별(`taekil-20YY-MM*.html`)이 **아닌** 것 전부(목록은 `ls app/taekil-*.html` 로 확인).
+- 월별 24편은 **직접 고치지 말고** 찍는 틀 `tools_jeongbon.py` 의 머리줄 · 바닥 HTML 문자열(`.mini-head` 를 내는 곳 · 쪽 끝)에 같은 바를 넣는다(메인이 다시 찍는다). 파이썬 f-string `{…}` 자리 · 따옴표는 건드리지 않는다.
+- 바의 CSS 는 `app/style.css` 끝에 한 번만. 바 · 판의 글은 견본 그대로. 지금 쪽이 어느 칸인지 켜짐 표시(쪽마다 맞게).
+- 머리줄 `.mini-head` 의 「← 홈」은 이 쪽들에서 뺀다(로고만). 본문 맨 아래 「책사 홈」 류 링크와, 소개 쪽(taekil.html) 본문의 연애 · 궁합을 소개하는 문장 · 무료 사주 계산 링크(astra 가 1차에서 짚은 것)는 **걷어 낸다** — 출산택일 길에서는 다른 길이 안 보여야 한다. 손님 글을 고칠 땐 뜻을 바꾸지 않고 줄만 뺀다.
+- 숫자 · 값 · 주소 · 그림 · 신청 흐름 · 결제는 건드리지 않는다. `app/index.html`(홈)은 건드리지 않는다 — 홈 출산택일 칸 링크는 메인이 돌린다.
+
 ## 지킬 것
 라이브 파일 · 숫자 · 값 · 주소 · 그림 · 신청 흐름은 건드리지 않는다 · 손님에게 묻는 칸(선택지 · 확인)을 새로 두지 않는다(10-25 「묻지 말고 딱딱 짚어 줘라」 — 「자료」 고르기는 길 안내지 질문이 아니다) · 네 축 이름 · 「엔진」 「법전」 같은 우리끼리 말은 화면에 안 쓴다 · CRLF.
 
