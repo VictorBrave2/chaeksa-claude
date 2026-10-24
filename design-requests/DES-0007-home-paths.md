@@ -1,7 +1,7 @@
 # DES-0007 — 쉬운 홈 입구와 전체 보기
 
 - 요청: 어린아이도 이용하기 쉬운 홈 구성과 길. 2026-10-25 Claude v1462 인계 후 Codex 몫 구현.
-- 상태: 적용됨(배포 진행)
+- 상태: 적용됨(750719c2 v1463 공개 반영 · 제목 배치 후속 보정)
 - 범위: app/index.html, app/home-cats.js, app/app.js, app/style.css.
 
 ## 정한 것
