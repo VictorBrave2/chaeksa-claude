@@ -101,7 +101,7 @@ for _s in TAEKIL_ARTICLES:
 SECTION_ART = {'왜': 'art/jt-g-jeongin-f.webp', '신살': 'art/ss-her.webp', '연애': 'art/love-cover.webp', '출산택일': 'art/taekil-main.webp'}
 DEFAULT_ART = 'art/jt-05-who-f.webp'
 # read.html 밖에서 미리보기를 붙일 쪽 — 쪽 이름: 칸 말(그 쪽이 read.html 의 어느 칸 말을 쓰나)
-EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'gwi': '무료', 'gyeokgi': '무료', 'saram': '무료', 'myeongban': '무료', 'gyeolhon': '결혼상대 점검',
+EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'saram': '무료', 'myeongban': '무료', 'gyeolhon': '결혼상대 점검',
                'gyeolhon-apply': '결혼상대 점검', 'ilgyeol': None, 'ilgyeol-apply': None, 'taekil-sample': '출산택일'}   # 10-23 제 카드가 없던 쪽
 EXTRA_CARDS.update({_s: '출산택일' for _s in TAEKIL_ARTICLES})
 # read.html 에 걸려 있어도 미리보기를 찍지 않는 쪽 — 출산택일 안내는 출산택일 그림(og.jpg)이 제 표지다

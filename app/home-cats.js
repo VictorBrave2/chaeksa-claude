@@ -21,13 +21,7 @@
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
       { 키: 'saram', 주소: 'saram.html', 그림: 'art/saram-cover.webp', 작은: 'art/saram-cover-s.webp', 크기: [1024, 1536] },
       { 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] },
-      // 10-06 「옛 책이 본 내 머리」(brain.html) — 사장님 「썸네일 달고 컨텐츠로 배포」. 그림은 편인 칸(혼천의를 짜 맞추는 사람 — 머리 자체)
-      { 키: 'brain', 주소: 'brain.html', 그림: 'art/brain-cover-{g}.webp', 작은: 'art/brain-cover-{g}-s.webp', 크기: [1024, 1536] },
-      // 10-10 「나는 귀한 사람일까」(gwi.html, 작업판 귀-1) — 사장님 「귀 새 뜻으로 쓰고」. 그림은 정관 칸(맡은 자리와 책임 — 옛 책이 귀의 조건으로 본 글자)
-      { 키: 'gwi', 주소: 'gwi.html', 그림: 'art/gwi-cover-{g}.webp', 작은: 'art/gwi-cover-{g}-s.webp', 크기: [1024, 1536] },
-      // 10-10 「내 명반에는 무엇이 적혀 있을까」(myeongban.html, 작업판 자미-1) — 사장님 「자미두수 명판을 두고 글자를 누르면 해석」. 그림은 편관 칸(화면에 둥근 판을 띄워 놓고 들여다보는 컷 — 명반을 짚어 읽는 꼴)
-      // 10-11 「옛 책은 내 명식을 반겼을까」(gyeokgi.html, 작업판 34 옛책격) — 사장님 「명식을 넣으면 ~에 해당합니다 식으로」 → 「3으로 바로 가」. 그림은 식신 칸(아직 홈에서 안 쓴 그림)
-      { 키: 'gyeokgi', 주소: 'gyeokgi.html', 그림: 'art/gyeokgi-cover-{g}.webp', 작은: 'art/gyeokgi-cover-{g}-s.webp', 크기: [1024, 1536] },
+      // 귀함·고전 이름은 정통사주로 통합. 총명함 집중 보기는 정통사주 안에서 연결한다.
       { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/myeongban-cover-{g}.webp', 작은: 'art/myeongban-cover-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
     time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
@@ -71,7 +65,7 @@
     return null;
   }
 
-  var 그림판 = 'v1474';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1475';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -137,11 +131,10 @@
     var Y = global.ChaeksaYaksok, g = 성별(), n = 0;
     var prefix = el.closest('[data-tab="home"]') ? 'home-catalog-' : 'all-catalog-';
     var 묶음들 = [
-      ['나를 알아보기', ['jeongtong', 'myeongban']],
+      ['나를 알아보기', ['jeongtong', 'myeongban', 'when']],
       ['아기 태어날 날과 시간', ['taekil']],
       ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],
-      ['더 알아보기', ['when', 'brain', 'gwi', 'gyeokgi']],
       ['읽을거리', ['read']]
     ];
     el.innerHTML = 묶음들.map(function (r, group) {

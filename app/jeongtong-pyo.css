@@ -24,3 +24,17 @@
 .jtp{container-type:inline-size}
 .jtp .jtp-story nav.links{position:static;inset:auto;transform:none;width:auto;max-width:none;z-index:auto;background:transparent;border:0;box-shadow:none;padding:0;grid-template-columns:none;display:flex}
 @media(prefers-reduced-motion:reduce){.jtp .jtp-story{scroll-behavior:auto}.jtp .jtp-story *{animation:none!important;transition:none!important}}
+
+/* Consolidated evidence: kept out of the primary filter and its cumulative ratio. */
+.jtp .jtp-more-evidence{margin:36px 0 0;padding:24px 12px;border-top:1px solid var(--line);text-align:left}
+.jtp .jtp-more-evidence>h2{font-family:var(--serif);font-size:21px;margin:0 0 18px;font-weight:500;line-height:1.6}
+.jtp .jtp-more-evidence summary{cursor:pointer;min-height:44px;padding:12px 0;color:var(--accent);font-size:13px;line-height:1.7}
+.jtp .jtp-more-evidence p{font-size:13px;color:var(--ink2);line-height:1.8;margin:12px 0;overflow-wrap:anywhere}
+.jtp .jtp-more-evidence h4{font-family:var(--serif);font-size:17px;line-height:1.7;font-weight:500;margin:0}
+.jtp .jtp-evidence-item{padding:18px 0;border-bottom:1px solid var(--line)}
+.jtp .jtp-evidence-head{display:flex;align-items:baseline;justify-content:space-between;gap:15px}
+.jtp .jtp-evidence-head span{font-size:11px;color:var(--ink3);flex-shrink:0}
+.jtp .jtp-more-evidence blockquote{font-family:var(--serif);font-size:17px;line-height:1.8;margin:12px 0;color:var(--ink)}
+.jtp .jtp-more-evidence .jtp-evidence-raw,.jtp .jtp-more-evidence .jtp-evidence-note{font-size:12px;color:var(--ink3)}
+.jtp .jtp-brain-link{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;padding:16px 0;border-top:1px solid var(--line);margin-top:18px;color:var(--accent);text-decoration:none;font-size:13px;line-height:1.8}
+.jtp .jtp-evidence-retry{min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink)}
