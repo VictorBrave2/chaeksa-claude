@@ -9,6 +9,7 @@ const cache=new Map(),pending=new WeakMap();
 function resultView(host,r,input){
  if(!r.story?.filterStory||!global.ChaeksaNameSeason)throw new Error('story unavailable');
  global.ChaeksaNameSeason.mount(host,r.story);
+ global.ChaeksaJeongtongShare?.attach(host,r.story);
 }
 function oldContent(container,input){
  const d=document.createElement('details');d.className='jtp-legacy';
