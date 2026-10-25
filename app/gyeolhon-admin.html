@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>결혼상대 점검 신청 사장님 목록 · 책사</title>
+<title>결혼 전 궁합 점검 신청 사장님 목록 · 책사</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=49a9ab4e50">
+<link rel="stylesheet" href="style.css?v=5eec3ba506">
 <style>
   /* 사이트 공통(style.css 변수 · 머리 줄)만 쓴다 — 쪽 안에 색을 새로 박지 않는다(10-05 사장님). taekil-admin.html 꼴. */
   .doc{max-width:960px;margin:0 auto;padding:20px 16px 90px}
@@ -53,12 +53,12 @@
 </style>
 </head>
 <body>
-<!-- 결혼상대 점검 — 사장님 목록. 10-22 결정 25 「모든 콘텐츠는 카카오페이」: 위 목록 = 카카오페이 결제 주문(server/migrate-41 gyeolhon_order_list) · 아래 접힘 = 옛 계좌이체 신청(10-07 ~ 10-22). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
+<!-- 결혼 전 궁합 점검 — 사장님 목록. 10-22 결정 25 「모든 콘텐츠는 카카오페이」: 위 목록 = 카카오페이 결제 주문(server/migrate-41 gyeolhon_order_list) · 아래 접힘 = 옛 계좌이체 신청(10-07 ~ 10-22). 검수 계정(super)만 쓴다. 검색에 안 나오게 noindex · robots.txt Disallow.
      실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super'(비공개 core sql-gyeolhon-apply.sql) — 이 쪽의 가림은 편의다. 움직임은 gyeolhon-admin.js.
      입금 계좌 · 검사 · 저장은 비공개 서버에 있다 — 이 쪽에는 없다. -->
-<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="gyeolhon.html">← 결혼상대 점검</a></div>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="gyeolhon.html">← 결혼 전 궁합 점검</a></div>
 <div class="doc">
-  <h1>결혼상대 점검 신청 — 사장님 목록</h1>
+  <h1>결혼 전 궁합 점검 신청 — 사장님 목록</h1>
   <p class="hint">카카오페이로 결제된 신청이 아래 목록에 와요(결제 = 접수). 줄을 펼쳐 「신청 JSON 복사」로 보고서를 만들어 검수 → 「메일 쓰기」로 PDF 를 보내고 → 「보냄 표시」. 환불은 줄의 「환불(전액 취소) 화면」에서.</p>
   <div id="admGate"><p class="hint">불러오는 중…</p></div>
   <div id="admMain" hidden>
@@ -80,7 +80,7 @@
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=b830dbd7bb"></script>
-<script src="gyeolhon-admin.js?v=4947e06f12"></script>
+<script src="gyeolhon-admin.js?v=986e2bff1a"></script>
 <script>
 (function () {
   document.documentElement.setAttribute('data-theme', 'day');

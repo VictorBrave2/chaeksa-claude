@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>이 사람과 결혼해도 될까요? — 결혼상대 점검 · 책사</title>
+<title>결혼 전 궁합 점검 · 책사</title>
 <meta name="description" content="두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.">
 <!-- 10-07 아직 홈 · 메뉴에 걸지 않았다 — 신청서가 서면 메인이 걸면서 index,follow 로 푼다(견본 쪽 gyeolhon-sample.html 도 같이 — node tools/gyeolhon-sample.js 가 이 쪽 robots 를 따라간다).
      10-07 사장님 「네이버폼으로 받지말고 웹사이트에서 바로」 — 신청서는 사이트 쪽으로 짓는다(작업판 결혼-1 신청 길 바꿈). 아래 주소 상수에 그 쪽 이름(예: 상대 주소)을 넣으면 단추가 선다. -->
@@ -11,14 +11,14 @@
 <link rel="canonical" href="https://chaeksa.kr/gyeolhon.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
-<meta property="og:title" content="이 사람과 결혼해도 될까요? — 결혼상대 점검">
+<meta property="og:title" content="결혼 전 궁합 점검">
 <meta property="og:description" content="두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지.">
 <meta property="og:url" content="https://chaeksa.kr/gyeolhon.html">
 <meta property="og:image" content="https://chaeksa.kr/cards/og/gyeolhon.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<!-- 결혼상대 점검 소개 쪽 — 작업판 결혼-1 5단계 연결(10-07). 값 49,000원(사장님 10-07 확정).
+<!-- 결혼 전 궁합 점검 소개 쪽 — 작업판 결혼-1 5단계 연결(10-07). 값 49,000원(사장님 10-07 확정).
      글은 비공개 core data/gyeolhon-page-copy-v1.json 에서 옮겼다(작가 → 검수). 칸 머리(h2 여섯 · 단추 말)만 화면 담당이 붙였다 — 작가 검수 대상.
      계산 · 원고 · 판정 코드는 이 쪽에 없다(비공개 core 에만). 결론 그림은 보고서와 같다: 같이 = story-propose · 맞춰 = story-marry-talk · 다시 = story-gyeolhon. -->
 <script>
@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=49a9ab4e50">
+<link rel="stylesheet" href="style.css?v=5eec3ba506">
 <style>
   /* 사이트 공통(style.css 변수 · 머리 줄 · 「← 홈」 단추)만 쓴다 — 쪽 안에 색을 새로 박지 않는다(10-05 사장님). taekil.html 꼴. */
   .doc{max-width:660px;margin:0 auto;padding:var(--s3) 18px 90px}
@@ -73,7 +73,7 @@
   .doc .foot a{color:var(--ink3)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Service","name":"결혼상대 점검 보고서","serviceType":"명리 궁합","areaServed":"KR",
+{"@context":"https://schema.org","@type":"Service","name":"결혼 전 궁합 점검 보고서","serviceType":"명리 궁합","areaServed":"KR",
  "provider":{"@type":"Organization","name":"책사","url":"https://chaeksa.kr/"},
  "url":"https://chaeksa.kr/gyeolhon.html",
  "description":"두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요 — 같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해 봐야 하는지. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.",
@@ -84,8 +84,8 @@
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a></div>
 <main class="doc">
   <a class="btn ghost small backhome" href="./" style="display:inline-block;margin-top:0;text-decoration:none">← 홈</a>
-  <p class="eyebrow">결혼상대 점검 보고서</p>
-  <h1>이 사람과 결혼해도 될까요?</h1>
+  <p class="eyebrow">결혼 전 궁합 점검 보고서</p>
+  <h1>결혼 전 궁합 점검</h1>
   <p class="lead">같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해야 하는지 — 두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.</p>
   <figure class="hero"><img src="art/story-sanggyeonrye.webp" srcset="art/story-sanggyeonrye-s.webp 360w, art/story-sanggyeonrye.webp 1024w" sizes="(max-width: 720px) 100vw, 680px" alt="" width="1024" height="1536" fetchpriority="high"></figure>
 
@@ -171,7 +171,7 @@
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=b830dbd7bb"></script>
 <script>
-  // 값은 서버 상품표(products, code gyeolhon — server/migrate-41) 한 곳에만 있다. 금액 글자는 표에서 받아 채운다(「나는 뭐해 먹고 살까?」 안내 쪽과 같은 꼴). 못 받으면 적힌 값 그대로.
+  // 값은 서버 상품표(products, code gyeolhon — server/migrate-41) 한 곳에만 있다. 금액 글자는 표에서 받아 채운다(「내게 맞는 일과 돈」 안내 쪽과 같은 꼴). 못 받으면 적힌 값 그대로.
   if (window.ChaeksaPay) ChaeksaPay.product('gyeolhon').then(function (p) {
     if (!p) return;
     document.querySelectorAll('[data-price="gyeolhon"]').forEach(function (el) { el.textContent = ChaeksaPay.won(p.amount); });

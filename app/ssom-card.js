@@ -72,7 +72,7 @@
     const el = box.querySelector('#ssCard'); if (!el) return;
     const c = document.createElement('canvas');
     const nm = 이름 && 이름 !== '우리' ? 이름 : 보낸이;
-    const go = async (mode) => { try { await 그리기(c, 나R, 그R, nm); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=ssom&from=card-ssom'; if (mode === 'share') { const r = 재기(나R, 그R), m = 문장(r, nm); const ok = await SH.kakaoShare({ title: m.사이, text: m.당신줄 + ' ' + m.그줄, image: 'https://chaeksa.kr/art/kakao/' + (r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give') + '.jpg', url, button: m.단추.받은사람 }); if (!ok) { await SH.share(c, 이름 || '우리', '웹툰궁합', '우리 둘 사이 · 책사', url); 링크띠(el); } } else await SH.save(c, 이름 || '우리', '웹툰궁합'); } catch (e) {} };
+    const go = async (mode) => { try { await 그리기(c, 나R, 그R, nm); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=ssom&from=card-ssom'; if (mode === 'share') { const r = 재기(나R, 그R), m = 문장(r, nm); const ok = await SH.kakaoShare({ title: m.사이, text: m.당신줄 + ' ' + m.그줄, image: 'https://chaeksa.kr/art/kakao/' + (r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give') + '.jpg', url, button: m.단추.받은사람 }); if (!ok) { await SH.share(c, 이름 || '우리', '우리 둘의 연애궁합', '우리 둘 사이 · 책사', url); 링크띠(el); } } else await SH.save(c, 이름 || '우리', '우리 둘의 연애궁합'); } catch (e) {} };
     const b1 = el.querySelector('#ssCardShare'), b2 = el.querySelector('#ssCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile() && !global.CHAEKSA_KAKAO_JS_KEY) b1.textContent = '카톡으로 보내기(이미지를 저장해 보내세요)';

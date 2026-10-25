@@ -96,7 +96,7 @@
       var 맨위 = '';
       if (방금) { var bp = PP.get(방금), bR = bp && 명식(bp); if (bR) 맨위 = '<p class="sec">방금 넣은 사람</p>' + 카드(bp, bR, SC.재기(나R, bR), SC.으뜸(나R, bR)); }
       // 10-24 사장님 「같은 꼴로」 — 물음(쪽 제목) → 결론(몇 명 가운데 몇 명 · 으뜸) → 「근거 보기」 접힘(단계별 사람 카드)
-      var 제목 = (document.querySelector('h1') || {}).textContent || '새로 만난 그 사람, 원래 어떤 사람일까';
+      var 제목 = (document.querySelector('h1') || {}).textContent || '나와 잘 맞는 사람';
       $('out').innerHTML = 맨위 + '<section class="card jt-ch"><div class="jt-head"><h2>' + esc(String(제목).trim()) + '</h2></div><div class="jt-answer"><p>넣어 둔 <b>' + 다른.length + '명</b> 가운데 서로 바라는 것을 주고받는 사람은 <b>' + 서로 + '명</b>이에요.'
         + (으뜸들.length ? ' 그 가운데 ' + esc(으뜸들.join(' · ')) + ' 님과는 타고난 바탕부터 서로 바라는 것을 살려 주는 사이예요(으뜸).' : '') + '</p></div>'
         + '<details class="jt-ev" open><summary>근거 보기</summary>'

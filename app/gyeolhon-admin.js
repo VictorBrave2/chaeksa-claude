@@ -1,4 +1,4 @@
-/* 결혼상대 점검 — 사장님 목록(gyeolhon-admin.html).
+/* 결혼 전 궁합 점검 — 사장님 목록(gyeolhon-admin.html).
  * 10-22 사장님 결정 25 「모든 콘텐츠는 카카오페이」 — 위 목록은 카카오페이 결제 주문(ChaeksaPay.gyeolhon.orders · server/migrate-41 gyeolhon_order_list):
  *   줄 = { id(주문번호), mode live|test, state received|sent|canceled, amount, paidAt, kind self|parent, who, email, intake, sentAt, note(사장님 메모), gone }
  *   intake = 신청 쪽이 결제 전에 붙인 { v, product, kind, first, second, email, note, agreedAt } · 사람 = { name, year · month · day(양력), hour|null, minute|null, gender, place, placeName, 음력?: {y,m,d}, 윤달?, 시모름? }
@@ -185,8 +185,8 @@
       return;
     }
     if (act === 'mail') {
-      const 본문 = ['안녕하세요, 책사입니다.', '', '신청하신 결혼상대 점검 보고서를 보내 드려요(접수 번호 ' + (x.code || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
-      location.href = 'mailto:' + encodeURIComponent(c.email).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 결혼상대 점검 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
+      const 본문 = ['안녕하세요, 책사입니다.', '', '신청하신 결혼 전 궁합 점검 보고서를 보내 드려요(접수 번호 ' + (x.code || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
+      location.href = 'mailto:' + encodeURIComponent(c.email).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 결혼 전 궁합 점검 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
       return;
     }
     if (act === 'note') 메모칸(x);
@@ -345,8 +345,8 @@
       return;
     }
     if (act === 'mail') {
-      const 본문 = ['안녕하세요, 책사입니다.', '', '신청하신 결혼상대 점검 보고서를 보내 드려요(주문번호 ' + String(x.id || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
-      location.href = 'mailto:' + encodeURIComponent(메일주소).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 결혼상대 점검 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
+      const 본문 = ['안녕하세요, 책사입니다.', '', '신청하신 결혼 전 궁합 점검 보고서를 보내 드려요(주문번호 ' + String(x.id || '') + '). PDF 를 붙여 드려요.', '', '문의 — ' + 문의];
+      location.href = 'mailto:' + encodeURIComponent(메일주소).replace(/%40/g, '@') + '?subject=' + encodeURIComponent('[책사] 결혼 전 궁합 점검 보고서') + '&body=' + encodeURIComponent(본문.join('\r\n'));
       return;
     }
     if (act === 'note') 주문메모칸(x);

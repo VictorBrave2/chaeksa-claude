@@ -83,7 +83,7 @@
     "intro": [
       {
         "head": "그 사람의 연애 행동을 미리 알려 줘요",
-        "body": "SSS급 그 사람 사용설명서는 그 사람의 생년월일시로 연애할 때 어떻게 행동할지 미리 알려 줘요. 연락은 얼마나 자주 할지, 서운하면 말할지 삼킬지, 다투고 나면 먼저 연락해 올지에 답해요.\n\n연애하며 하나하나 묻고 싶어도 대놓고 묻기는 어렵고, 대부분은 겪어 보고 나서야 알게 돼요. 그 사이에 오해가 쌓이고, 같은 일로 몇 번씩 부딪혀요. 이런 시행착오를 줄이려고 만들었어요."
+        "body": "「연애할 때의 그 사람」은 그 사람의 생년월일시로 연애할 때 어떻게 행동할지 미리 알려 줘요. 연락은 얼마나 자주 할지, 서운하면 말할지 삼킬지, 다투고 나면 먼저 연락해 올지에 답해요.\n\n연애하며 하나하나 묻고 싶어도 대놓고 묻기는 어렵고, 대부분은 겪어 보고 나서야 알게 돼요. 그 사이에 오해가 쌓이고, 같은 일로 몇 번씩 부딪혀요. 이런 시행착오를 줄이려고 만들었어요."
       },
       {
         "head": "열두 단계, 장마다 세 가지",
@@ -112,7 +112,7 @@
     },
     "disclaimer": "심리검사가 아니라, 생년월일시로 그 사람의 행동을 읽어 내는 책사의 추론이에요. 다 맞지는 않아도, 미리 알고 만나면 같은 일로 덜 부딪혀요.",
     "consent": "그 사람의 생년월일시를 계산 서버로 보내는 데 동의해요. 생년월일은 저장하지 않고 알아볼 수 없게 바꾼 값만 남으며, AI에는 생년월일이 가지 않아요.",
-    "go_button": "SSS급 그 사람 사용설명서 열기",
+    "go_button": "연애할 때의 그 사람 열기",
     "login_line": "카카오나 네이버로 로그인한 뒤 결제하면 바로 열려요. 로그인을 마치면 이 화면으로 돌아와요.",
     "preview_head": "먼저 열린 질문",
     "preview_note": "왜 그런지와 나에게 비치는 모습은 결제하면 열려요.",
@@ -120,7 +120,7 @@
     "pay_button": "{price} 결제하고 전체 보기",
     "making": "그 사람의 연애 행동을 글로 쓰는 중이에요. {시간} 걸려요. 이 화면을 그대로 두세요.",
     "done": "그 사람의 연애 행동 풀이가 완성됐어요. 모두 {n}장이에요.",
-    "result_head": "SSS급 그 사람 사용설명서 — {name}",
+    "result_head": "연애할 때의 그 사람 — {name}",
     "result_lead": "장마다 붙은 표시는 그 사람 안에서 그 마음이 얼마나 분명한지를 알려 줘요.\n뚜렷함 — 글에 나온 마음이 분명해서, 적힌 대로 행동해요.\n그런 편 — 대체로 글에 적힌 대로 행동해요.\n두 마음 — 서로 다른 두 마음이 함께 있어서, 행동도 둘 중 어느 쪽으로든 나타나요.\n정해지지 않음 — 이 질문에서는 행동이 어느 쪽으로도 정해져 있지 않아서, 상황에 맞게 행동해요.\n표시를 보고 어디까지 믿고 무엇을 직접 물어볼지 정하세요.",
     "badges": {
       "sharp": "뚜렷함",
@@ -184,13 +184,13 @@
       + (끝 || '') + '</section>';
   }
 
-  function 화면이름() { var Y = global.ChaeksaYaksok; return (Y && Y.이름('pair')) || 'SSS급 그 사람 사용설명서'; }   // 문의 메일 제목에 싣는 화면 이름
+  function 화면이름() { var Y = global.ChaeksaYaksok; return (Y && Y.이름('pair')) || '연애할 때의 그 사람'; }   // 문의 메일 제목에 싣는 화면 이름
 
-  // 다 읽은 뒤 갈 곳(10-02) — 전에는 「← 홈」뿐이었다. 그 사람을 읽었으니 이번엔 내 차례(사랑할 때만 나오는 당신) + 같은 그 사람과 나란히 보는 궁합 둘.
-  // 이름 · 한 줄 · 딱지는 상품 약속 장부(yaksok.js)에서 — 사랑할 때만 나오는 당신 딱지는 「예시 보기 · 값」(무료라고 쓰지 않는다, 10-02 사장님).
+  // 다 읽은 뒤 갈 곳(10-02) — 전에는 「← 홈」뿐이었다. 그 사람을 읽었으니 이번엔 내 차례(연애할 때의 나) + 같은 그 사람과 나란히 보는 궁합 둘.
+  // 이름 · 한 줄 · 딱지는 상품 약속 장부(yaksok.js)에서 — 연애할 때의 나 딱지는 「예시 보기 · 값」(무료라고 쓰지 않는다, 10-02 사장님).
   function 끝칸() {
     var Y = global.ChaeksaYaksok;
-    var 이름 = (Y && Y.이름('love')) || '사랑할 때만 나오는 당신', 한줄 = Y ? Y.홈한줄('love') : '', 딱지 = Y ? Y.딱지html('love') : '';
+    var 이름 = (Y && Y.이름('love')) || '연애할 때의 나', 한줄 = Y ? Y.홈한줄('love') : '', 딱지 = Y ? Y.딱지html('love') : '';
     var 궁합 = ['ssom', 'chongnon'].map(function (k) {
       var n = Y && Y.이름(k); if (!n) return '';
       var t = Y.딱지글(k);
@@ -259,7 +259,7 @@
     끝칸잇기(box, 그id);
     var 표지n = document.getElementById('prCoverN'), 표지k = document.getElementById('prCoverK');
     if (표지n) {
-      표지n.textContent = 글.result_head.replace('{name}', 그이름); if (표지k) 표지k.textContent = 'SSS급 그 사람 사용설명서';
+      표지n.textContent = 글.result_head.replace('{name}', 그이름); if (표지k) 표지k.textContent = '연애할 때의 그 사람';
       var 표지s = document.getElementById('prCoverS'); if (표지s) { 표지s.remove(); if (표지n.parentNode) 표지n.parentNode.classList.remove('has-s'); }
     }
   }
@@ -329,7 +329,7 @@
     if (!el) return;
     var PP = global.ChaeksaPeople;
     if (!PP) {   // 사람 목록(people.js)을 못 받았다 — 공용 오류 상자(다시 하기 · 문의하기), 그 파일도 없으면 한 줄
-      el.innerHTML = '<section class="card"><h2>SSS급 그 사람 사용설명서</h2><div id="pairErr"><p class="hint">잠시 뒤 다시 열어 주세요.</p></div></section>';
+      el.innerHTML = '<section class="card"><h2>연애할 때의 그 사람</h2><div id="pairErr"><p class="hint">잠시 뒤 다시 열어 주세요.</p></div></section>';
       if (global.ChaeksaOryu) global.ChaeksaOryu.그리기(el.querySelector('#pairErr'), { 무엇: '지금은 이 화면을 열지 못했어요', 까닭: '인터넷이 잠깐 끊겼거나, 화면 파일을 받다가 멈췄을 수 있어요.', 화면: 화면이름() }, function () { 그리기(el, profile); });
       return;
     }
@@ -337,10 +337,10 @@
     var 목록 = PP.list().filter(function (p) { return p.id !== meId; }).concat(나 ? [나] : []);
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
     var LV = global.ChaeksaLoveView;
-    // 10-01 규격(docs/79) — 이름은 표지에 한 번만. 그 사람 고르기 = 정통궁합 · 웹툰궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김).
-    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">연애</span><span class="n" id="prCoverN">SSS급 그 사람 사용설명서</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
+    // 10-01 규격(docs/79) — 이름은 표지에 한 번만. 그 사람 고르기 = 정통궁합 · 우리 둘의 연애궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김).
+    el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">연애</span><span class="n" id="prCoverN">연애할 때의 그 사람</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
       + '<div id="pairIntro"></div>'
-      + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>SSS급 그 사람 사용설명서</h2>')
+      + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>연애할 때의 그 사람</h2>')
       + (목록.length
         ? '<div id="pairPickWrap" style="margin:0 0 10px"><label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label><select id="pairPick">'
           + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('')
@@ -402,7 +402,7 @@
         지우기(대기키); t0 = null;
         if (e.status === 402) { 알림(e.message, true); 결제상자(pay, e.body && e.body.payKey, 0, 그사람.id); return; }
         // 산 사람만 여기 온다(열기에서 paid) — 결제한 것은 그대로 · 다시 하기 = 다시 만들기(이미 만든 것은 서버가 꺼내 준다)
-        막힘({ 무엇: 'SSS급 그 사람 사용설명서를 다 만들지 못했어요', 까닭: e.message, 돈: '남음', 코드: e.status ? 'HTTP ' + e.status : '' }, 만들기);
+        막힘({ 무엇: '연애할 때의 그 사람을 다 만들지 못했어요', 까닭: e.message, 돈: '남음', 코드: e.status ? 'HTTP ' + e.status : '' }, 만들기);
       });
     }
     function 열기() {
@@ -415,7 +415,7 @@
         if (r.paid) { pay.innerHTML = ''; 만들기(); return; }   // 산 사람 — 보관된 것이 있으면 꺼내 오고, 없으면 지금 쓴다
         var pv = r.preview || {};
         결제상자(pay, r.payKey, Math.max(0, pv.count || 0), 그사람.id);
-      }, function (e) { if (out.isConnected) 막힘({ 무엇: 'SSS급 그 사람 사용설명서를 열지 못했어요', 까닭: e.message, 코드: e.status ? 'HTTP ' + e.status : '' }, 열기); });
+      }, function (e) { if (out.isConnected) 막힘({ 무엇: '연애할 때의 그 사람을 열지 못했어요', 까닭: e.message, 코드: e.status ? 'HTTP ' + e.status : '' }, 열기); });
     }
     if (읽기(동의키) === true) { 열기(); return; }
     head.innerHTML = '<label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px"><input type="checkbox" id="prOk1" style="margin-top:5px;width:auto;flex:0 0 auto"><span>' + esc(글.consent) + ' <a href="privacy.html">개인정보 처리방침</a></span></label>'
