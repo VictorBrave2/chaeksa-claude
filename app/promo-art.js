@@ -110,7 +110,7 @@ function drawResult(canvas,m){
  text(ctx,[v.name,v.hanja].filter(Boolean).join(' · '),79,Math.max(502,end+12),29,C.gold,true);
  const start=600,rowH=151;
  if(v.conditions.length){
-  v.conditions.forEach((f,i)=>{const y=start+i*rowH,indent=i*10;panel(ctx,76+indent,y,928-indent,rowH-18);text(ctx,String(i+1).padStart(2,'0'),105+indent,y+49,24,C.gold,true);text(ctx,f.book,169+indent,y+43,20,C.muted);const size=fitText(ctx,f.title,778-indent,32,23,true,2);paragraph(ctx,f.title,169+indent,y+91,778-indent,size,size*1.55,C.ink,true,2);});
+  v.conditions.forEach((f,i)=>{const y=start+i*rowH,indent=i*10;panel(ctx,76+indent,y,928-indent,rowH-14);text(ctx,String(i+1).padStart(2,'0'),105+indent,y+49,24,C.gold,true);text(ctx,f.book,169+indent,y+43,20,C.muted);const size=fitText(ctx,f.title,778-indent,32,23,true,2);paragraph(ctx,f.title,169+indent,y+80,778-indent,size,size*1.35,C.ink,true,2);});
   text(ctx,'나에게 겹친 '+v.count+'가지 좋은 조건 중에서',76,1114,25,C.muted);
  }else paragraph(ctx,v.line,76,670,900,36,66,C.ink,true,3);
  text(ctx,'당신의 이름도 찾아보세요.',76,1182,33,C.gold,true);
