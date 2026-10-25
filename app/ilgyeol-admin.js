@@ -1,4 +1,4 @@
-/* 「나는 뭐해 먹고 살까?」 — 사장님 목록(ilgyeol-admin.html · 10-22 사장님 「카카오페이로 판다」 · 「보고서 형식 말고 결제하면 바로 나오게」).
+/* 「내게 맞는 일과 돈」 — 사장님 목록(ilgyeol-admin.html · 10-22 사장님 「카카오페이로 판다」 · 「보고서 형식 말고 결제하면 바로 나오게」).
  * 출산택일 목록(taekil-admin.js)과 같은 상태 틀 — 결제된 주문마다 풀이 한 벌(server/migrate-39 ilgyeol_reports).
  *
  * 검수 계정(super)만 쓴다. 화면이 가리는 것은 편의일 뿐이고, 실제로 막는 것은 Supabase 함수 안의 ai_plan() = 'super' 다(ilgyeol_admin_*).

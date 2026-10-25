@@ -53,7 +53,7 @@
       return [b ? b.제목 : '', 하는]; };
     const 나제 = 제목of(나R), 그제 = 제목of(그R);
     const 소개 = (누, 제) => !제[0] && !제[1] ? '' : '<p><b>' + 누 + '</b>은 ' + (제[0] ? '「' + esc(제[0]) + '」을 바라고' : '') + (제[0] && 제[1] ? ', ' : '') + (제[1] ? esc(제[1]) + ' 사람이에요.' : (제[0] ? '요.' : '')) + '</p>';
-    const 근거 = ((global.ChaeksaSsomCard && global.ChaeksaSsomCard.카드(나R, 그R)) || '')   /* 09-26 3초 결과 · 공유 카드(docs/87) — 숫자 없이 사이 한 줄 + 두 방향 */ + '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">웹툰궁합 시작하기</button>'
+    const 근거 = ((global.ChaeksaSsomCard && global.ChaeksaSsomCard.카드(나R, 그R)) || '')   /* 09-26 3초 결과 · 공유 카드(docs/87) — 숫자 없이 사이 한 줄 + 두 방향 */ + '<div class="card">' + 소개('당신', 나제) + 소개('그 사람', 그제) + '<button type="button" class="btn" id="ssVnTop" style="width:100%;margin:8px 0 6px">우리 둘의 연애궁합 시작하기</button>'
       + '<details class="ss-more"><summary>근거 보기</summary><p class="ss-why">' + esc(사람줄('당신', z.나쪽, 나R)) + '<br>' + esc(사람줄('그 사람', z.그쪽, 그R)) + '<br>끌리는 사람은 태어난 날의 글자로, 좋아할 때 하는 행동은 챙겨 주는 기운(식신) · 하고 싶은 말을 하는 기운(상관)으로 봤어요. 장면과 대사는 이해를 돕는 예시예요.</p></details></div>';
     let 대화 = (global.ChaeksaSsomDaehwa || {})[z.키]; 대화 = 둘로(대화, 나R, 그R, opts);   // 책사 대화(09-25 A) — 있으면 1 · 2 · 3 · 5 칸을 대화로
     // 09-25 작업판 21 — 뼈대 + 조각 조립(ssom-webtoon.js)이 있는 회는 그걸, 없으면 손글씨 원고를
@@ -136,10 +136,10 @@
     const 끝 = '<details class="ss-q card"><summary>4. 그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?</summary>' + (맞
       ? '<h4 class="ss-sub">안고 갈 것 — 쉽게 안 바뀌어요</h4>' + 맞.안고.map(t => '<p>' + esc(t) + '</p>').join('') + '<h4 class="ss-sub">맞춰 갈 것 — 말 한마디, 방식 하나로 달라져요</h4>' + 맞.맞춰.map(t => '<p>' + esc(t) + '</p>').join('') + '<p class="ss-why">안고 갈지, 못 안고 갈지는 두 사람이 정해요.</p>'
       : '') + '</details>';
-    // 10-07 결혼상대 점검(작업판 결혼-1, 사장님 10-07 확정 유료) — 웹툰궁합 글 보기 맨 끝 다리. 글은 비공개 page-copy 「다리」.웹툰궁합끝 그대로,
+    // 10-07 결혼 전 궁합 점검(작업판 결혼-1, 사장님 10-07 확정 유료) — 우리 둘의 연애궁합 글 보기 맨 끝 다리. 글은 비공개 page-copy 「다리」.우리 둘의 연애궁합끝 그대로,
     // 이름 · 자리는 장부(yaksok.js gyeolhon 줄) — 장부에 줄이 없으면 안 낸다. 생년월일은 주소에 싣지 않는다(링크만). 컷넣기()가 지우지 않는 상자(.ss-bridge).
     const 결혼다리 = (() => { const Y = global.ChaeksaYaksok, r = Y && Y.줄 ? Y.줄('gyeolhon') : null; if (!r) return '';
-      return '<div class="card ss-bridge"><p>' + esc('두 사람의 연애는 여기까지 봤어요. 결혼을 생각한다면 함께 살아도 되는지, 결혼 날짜를 잡을 때 어느 해를 피해야 하는지 확인하세요. 「결혼상대 점검」 보고서에서 계산해 알려 줘요. 사이트에서 바로 신청하고 메일로 PDF를 받아요(49,000원).') + '</p>'
+      return '<div class="card ss-bridge"><p>' + esc('두 사람의 연애는 여기까지 봤어요. 결혼을 생각한다면 함께 살아도 되는지, 결혼 날짜를 잡을 때 어느 해를 피해야 하는지 확인하세요. 「결혼 전 궁합 점검」 보고서에서 계산해 알려 줘요. 사이트에서 바로 신청하고 메일로 PDF를 받아요(49,000원).') + '</p>'
         + '<a class="btn" href="' + esc(r.자리 || 'gyeolhon.html') + '" style="display:block;text-align:center;text-decoration:none;margin-top:10px">' + esc(Y.이름('gyeolhon')) + ' 보기 →</a></div>'; })();
     // 지금 단계의 질문 여섯
     const 반응원고 = (global.ChaeksaSsomBanung || {})[z.키] || {};
@@ -152,7 +152,7 @@
       const 글들 = ((단계표.원고 || {})[z.키] || {})[단계];
       const 단질 = '<h3 class="ss-part">지금 단계의 질문 — ' + esc(단계칸.이름) + '</h3><button type="button" class="btn" id="ssVnStage" style="width:100%;margin:0 0 10px">이 단계를 장면으로 보기</button>' + ((글들 || 대단(단계, 0))
         ? 단계칸.질문.map((q, i) => '<details class="ss-q card"><summary>' + esc(q) + '</summary>' + 칸2(대단(단계, i) || 글들[i] || []) + '</details>').join('')
-        : '<div class="card"><p>이 단계 글을 불러오지 못했어요. 화면을 새로 고친 뒤 맨 위 「웹툰궁합 시작하기」로 장면을 보세요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');   // 09-27 GPT 지적 2: 「아직 쓰고 있어요」 안 냄
+        : '<div class="card"><p>이 단계 글을 불러오지 못했어요. 화면을 새로 고친 뒤 맨 위 「우리 둘의 연애궁합 시작하기」로 장면을 보세요.</p><p class="ss-why">질문: ' + esc(단계칸.질문.join(' · ')) + '</p></div>');   // 09-27 GPT 지적 2: 「아직 쓰고 있어요」 안 냄
       if (단계 === '시작전') 때 = '';   // 아직 안 만났으니 「처음 만났을 때와 지금」은 없다
       box.innerHTML = 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 끝 + 단질 + 결혼다리;
       if (대화) box.innerHTML = 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 대화칸(4, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 단질 + 결혼다리;
@@ -165,7 +165,7 @@
     const 질문들 = (웹 || 원고 || (대화 && 대화.썸))
       ? '<h3 class="ss-part">지금 단계의 질문 — 막 썸을 시작했어요</h3>' + 이어 + '<button type="button" class="btn" id="ssVn" style="width:100%;margin:6px 0 4px">장면으로 보기 — 한 장씩 넘겨 보세요</button>'
         + 썸물음.map((q, i) => '<details class="ss-q card"' + ((끝기록 && 끝기록.장 === i) ? ' open' : '') + ' data-i="' + i + '"><summary>' + esc(q) + '</summary>' + 칸2(썸글(i) || (원고 && 원고[i]) || []) + 반응칸(i) + '</details>').join('')
-      : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>이 단계 글을 불러오지 못했어요. 맨 위 「웹툰궁합 시작하기」로 장면을 보세요.</p></div>';
+      : '<h3 class="ss-part">지금 단계의 질문</h3><div class="card"><p>이 단계 글을 불러오지 못했어요. 맨 위 「우리 둘의 연애궁합 시작하기」로 장면을 보세요.</p></div>';
     box.innerHTML = (대화 ? 근거 + 대화칸(1, '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.나알기, true) + 대화칸(2, '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?', 대화.그알기) + 대화칸(3, '우리는 서로 원하는 걸 주고 있을까요?', 대화.주고받음) + 대화칸(4, '그냥 안고 갈 것, 맞춰 볼 것은 뭘까요?', 대화.맞춤) + 질문들
       : 근거 + 알기칸(1, 나R, '당신', '나는 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 알기칸(2, 그R, '그 사람', '그 사람은 어떤 사람에게 끌리고, 어떻게 좋아할까요?') + 주고받음 + 끝 + 질문들) + 결혼다리;
     const 보이기 = (i, r, 적) => {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>웹툰궁합 — 장면으로 보기 · 책사</title>
+<title>우리 둘의 연애궁합 — 장면으로 보기 · 책사</title>
 <meta name="robots" content="noindex,nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -64,7 +64,7 @@
 </div>
 <script src="config.js?v=71396c29ad"></script><script src="astro.js?v=c0bb3fa175"></script><script src="lunar.js?v=9d5b6391f1"></script><script src="engine.js?v=e0bd1ab409"></script>
 <script src="saenggeuk.js?v=df8648d564"></script><script src="gise.js?v=d0f879078e"></script><script src="panjeong.js?v=389d38ced7"></script><script src="typecard.js?v=5d55054c79"></script><script src="gyeokguk.js?v=63f811f535"></script>
-<script src="classic.js?v=f45b014bad"></script><script src="samyeong.js?v=53c4e35359"></script><script src="jt-webtoon.js?v=9109dff28a"></script><script src="jt-webtoon-2.js?v=d43e567545"></script><script src="ssom-gwanjeom.js?v=958eca8d96"></script><script src="ssom-baram.js?v=b3a4364fd1"></script><script src="ssom-daehwa.js?v=75dfcab631"></script><script src="ssom-webtoon.js?v=b733d02a12"></script><script src="ssom-webtoon-2.js?v=ce796e62a0"></script><script src="ssom-webtoon-3.js?v=78438a8caf"></script><script src="ssom-wongo.js?v=19311bfbe2"></script><script src="ssom-dangye.js?v=73cc926955"></script><script src="ssom.js?v=24816f2055"></script>
+<script src="classic.js?v=f45b014bad"></script><script src="samyeong.js?v=53c4e35359"></script><script src="jt-webtoon.js?v=9109dff28a"></script><script src="jt-webtoon-2.js?v=d43e567545"></script><script src="ssom-gwanjeom.js?v=958eca8d96"></script><script src="ssom-baram.js?v=b3a4364fd1"></script><script src="ssom-daehwa.js?v=75dfcab631"></script><script src="ssom-webtoon.js?v=b733d02a12"></script><script src="ssom-webtoon-2.js?v=093acf33b6"></script><script src="ssom-webtoon-3.js?v=78438a8caf"></script><script src="ssom-wongo.js?v=19311bfbe2"></script><script src="ssom-dangye.js?v=73cc926955"></script><script src="ssom.js?v=a06b5580a1"></script>
 <script>
 // 연애궁합 장면 보기(09-25) — 글 보기와 같은 대본(ssom.js 대본)을 처음부터 끝까지 한 줄씩. 글을 새로 쓰지 않는다.
 // 두 사람 · 만난 달 · 단계는 글 보기에서 이 탭(sessionStorage)으로만 넘겨받는다 — 주소에 싣지 않는다. 없으면 지어낸 두 사람 견본으로 연다(실제 사람 생일 아님). 썸 원고가 있는 짝(丁卯 남 × 丙午 여, 같은 원고 열쇠)이어야 장면이 나온다.
@@ -84,7 +84,7 @@
       줄: h.줄.filter(([k]) => k !== '해설' && k !== '단서').map(([k, 말]) => k === '장면' ? { 누가: '장면', 말, 주인: '당신' } : k === '나' ? { 누가: '당신', 말 } : { 누가: '책사', 말, 쪽: k === '답' ? 0 : 1 }) }));
     return { 장들, 총론수: 0, 키: 'jt' };
   }
-  // 10-02 SSS급 그 사람 사용설명서(pair.js) — ?m=1 이고 sessionStorage chaeksa.manualVn {name, chapters} 가 있으면 그 대본으로.
+  // 10-02 연애할 때의 그 사람(pair.js) — ?m=1 이고 sessionStorage chaeksa.manualVn {name, chapters} 가 있으면 그 대본으로.
   // 장 = 질문 하나, 줄 = 맞히기(표시) · 왜 · 나에게 비치는 모습. 글은 서버가 만든 그대로(여기서 새로 쓰지 않는다). 배경 = pair.js 가 질문마다 고른 삽화.
   let mn = null; if (/[?&]m=1/.test(location.search)) { try { mn = JSON.parse(sessionStorage.getItem('chaeksa.manualVn') || 'null'); } catch (e) {} }
   function 설명서대본(m) {
@@ -100,7 +100,7 @@
     return { 장들, 총론수: 0, 키: 'manual' };
   }
   let 대; try { 대 = mn ? 설명서대본(mn) : jt && jt.a ? 정통대본(jt.a) : P.대본(v.a, v.b, v.opts || {}); } catch (e) { 대 = null; }
-  if (mn) { v = { 견본: false }; document.title = 'SSS급 그 사람 사용설명서 — 장면으로 보기 · 책사'; }
+  if (mn) { v = { 견본: false }; document.title = '연애할 때의 그 사람 — 장면으로 보기 · 책사'; }
   else if (jt && jt.a) { v = { a: jt.a, 견본: !!jt.견본 }; document.title = '정통사주 — 장면으로 보기 · 책사'; }
   const $ = (id) => document.getElementById(id);
   const bgs = [$('bgA'), $('bgB')]; let 앞 = 0, 지금배경 = '';
@@ -152,9 +152,9 @@
   }
   function 다음단추() {
     멈춤 = true;
-    // 10-07 결혼상대 점검(작업판 결혼-1) — 웹툰궁합 장면 끝에서 가는 다리(사용설명서 · 정통사주 장면에는 없다). 글은 비공개 page-copy 「다리」.웹툰궁합끝 그대로. 생년월일은 주소에 싣지 않는다.
+    // 10-07 결혼 전 궁합 점검(작업판 결혼-1) — 우리 둘의 연애궁합 장면 끝에서 가는 다리(사용설명서 · 정통사주 장면에는 없다). 글은 비공개 page-copy 「다리」.우리 둘의 연애궁합끝 그대로. 생년월일은 주소에 싣지 않는다.
     const 결혼다리 = !mn && !(jt && jt.a);
-    if (장 + 1 >= 장들.length) { 책사말(mn ? '끝까지 보셨어요. ' + (mn.name || '그 사람') + ' 사용설명서는 여기까지예요.' : jt ? '끝까지 보셨어요. 당신 이야기는 여기까지예요.' : '끝까지 보셨어요. 두 사람의 연애는 여기까지 봤어요. 결혼을 생각한다면 함께 살아도 되는지, 결혼 날짜를 잡을 때 어느 해를 피해야 하는지 확인하세요. 「결혼상대 점검」 보고서에서 계산해 알려 줘요. 사이트에서 바로 신청하고 메일로 PDF를 받아요(49,000원).'); return 선택((결혼다리 ? ['결혼상대 점검 보기'] : []).concat(['처음부터 다시', '목차', '글로 보기']), (t) => t === '결혼상대 점검 보기' ? (location.href = 'gyeolhon.html') : t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
+    if (장 + 1 >= 장들.length) { 책사말(mn ? '끝까지 보셨어요. ' + (mn.name || '그 사람') + ' 사용설명서는 여기까지예요.' : jt ? '끝까지 보셨어요. 당신 이야기는 여기까지예요.' : '끝까지 보셨어요. 두 사람의 연애는 여기까지 봤어요. 결혼을 생각한다면 함께 살아도 되는지, 결혼 날짜를 잡을 때 어느 해를 피해야 하는지 확인하세요. 「결혼 전 궁합 점검」 보고서에서 계산해 알려 줘요. 사이트에서 바로 신청하고 메일로 PDF를 받아요(49,000원).'); return 선택((결혼다리 ? ['결혼 전 궁합 점검 보기'] : []).concat(['처음부터 다시', '목차', '글로 보기']), (t) => t === '결혼 전 궁합 점검 보기' ? (location.href = 'gyeolhon.html') : t === '글로 보기' ? 돌아가기() : t === '목차' ? 목차() : 표지(첫장)); }
     선택(['다음 — ' + 장들[장 + 1].제목.replace(/\*\*/g, ''), '목차'], (t) => t === '목차' ? 목차() : 표지(장 + 1));
   }
   function 목차() {

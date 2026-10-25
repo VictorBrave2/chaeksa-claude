@@ -625,7 +625,7 @@
     if (tab === 'home' && !hasProfile()) { $('app').classList.add('hide'); showLanding(); return; }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.dataset.tab !== tab));
     if (tab === 'taekil') 택일문달기();   // 10-02 맨 위 두 문 — 탭 파일(꾸러미)을 기다리기 전에 칸부터 정한다
-    document.querySelectorAll('#nav button[data-go]').forEach(b => b.classList.toggle('on', b.dataset.pick ? 분류탭(b.dataset.pick, b.dataset.go).indexOf(tab) >= 0 : b.dataset.go === tab));
+    document.querySelectorAll('#nav button[data-go]').forEach(b => b.classList.toggle('on', b.dataset.pick ? 분류탭(b.dataset.pick, b.dataset.go).indexOf(tab) >= 0 : b.dataset.go === tab || (tab === 'all' && b.dataset.go === 'home')));
     // 탭 위의 열 책사 한마디(renderChorus)는 2026-09-12 사장님 「열책사 어쩌고 다 지우자」로 걷었다.
     if (tab !== 'home' && tab !== 'all') 본표시(tab); else if (tab === 'home') { try { renderWtHome(); } catch (e) {} }   // 홈으로 돌아오면 「최근 본」이 바로 찍힌다
     // 자리 잡기 — 홈이면 보던 데로, 아니면 맨 위로.

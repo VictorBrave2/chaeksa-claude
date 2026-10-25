@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>내 「나는 뭐해 먹고 살까?」 풀이 · 책사</title>
+<title>내 「내게 맞는 일과 돈」 풀이 · 책사</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=49a9ab4e50">
+<link rel="stylesheet" href="style.css?v=5eec3ba506">
 <style>
   .doc{max-width:760px;margin:0 auto;padding:22px 16px 90px}
   .doc > h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:0 0 6px}
@@ -44,18 +44,18 @@
 </style>
 </head>
 <body>
-<!-- 「나는 뭐해 먹고 살까?」 손님 결과 쪽(10-22 사장님 「보고서 형식 말고 결제하면 바로 나오게」). 주소 ilgyeol-report.html?o=<주문번호>. 검색에 안 나오게 noindex · robots.txt.
+<!-- 「내게 맞는 일과 돈」 손님 결과 쪽(10-22 사장님 「보고서 형식 말고 결제하면 바로 나오게」). 주소 ilgyeol-report.html?o=<주문번호>. 검색에 안 나오게 noindex · robots.txt.
      출산택일 「내 보고서」(taekil-report.html)와 같은 길 — 로그인 → ilgyeol_view(server/migrate-39) → 상태대로 그린다. 본문은 풀이가 열렸을(ready) 때만 받는다.
      결제됐는데 아직 안 만든 주문(todo)이면 이 자리에서 비공개 서버(/api/ilgyeol-report)를 불러 만든다 — 결제 완료 쪽(pay-done)이 3초 뒤 여기로 데려온다. 창을 닫았다 다시 와도 이어진다.
      「만드는 중」은 서버가 실제로 하는 일곱 단계가 차례로 ✓ 되는 틀(10-22 사장님 「드라마틱하게 설레게」) · 주문번호는 화면에 안 보인다(「전문성이 떨어져 보여」).
      본문은 비공개 서버가 만든 혼자 서는 HTML 한 벌 — iframe(srcdoc)에 그대로 띄우고 높이만 맞춘다(스크립트 없음 · 사이트 CSS 와 섞이지 않게). 「인쇄 · PDF 로 저장」은 그 안을 인쇄한다(A5 인쇄 꼴은 본문 CSS 에 있다). -->
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <div class="doc">
-  <h1>나는 뭐해 먹고 살까?</h1>
+  <h1>내게 맞는 일과 돈</h1>
   <p class="sub" id="sub"></p>
   <div id="igr"><p class="hint">불러오는 중…</p></div>
   <div class="fine">
-    <p>문의 — <a href="mailto:dl4431@naver.com">dl4431@naver.com</a> · <a href="ilgyeol.html">「나는 뭐해 먹고 살까?」 소개로 돌아가기</a></p>
+    <p>문의 — <a href="mailto:dl4431@naver.com">dl4431@naver.com</a> · <a href="ilgyeol.html">「내게 맞는 일과 돈」 소개로 돌아가기</a></p>
   </div>
 </div>
 
@@ -179,7 +179,7 @@
     sub.textContent = (rep.만든날 ? rep.만든날 + ' 만듦 · ' : '') + '이 계정에 2년 동안 남아요';
     그림((머리글 || '') + '<div class="igr-tools"><button type="button" class="btn ghost small" id="print">인쇄 · PDF 로 저장</button>'
       + '<a class="btn ghost small" href="ilgyeol.html">← 소개 화면</a></div>'
-      + '<iframe id="igFrame" class="igr-frame" title="나는 뭐해 먹고 살까? 풀이" scrolling="no"></iframe>');
+      + '<iframe id="igFrame" class="igr-frame" title="내게 맞는 일과 돈 풀이" scrolling="no"></iframe>');
     var f = document.getElementById('igFrame');
     function 키맞춤() { try { var d = f.contentDocument; if (d && d.documentElement) f.style.height = (d.documentElement.scrollHeight + 24) + 'px'; } catch (e) {} }
     f.addEventListener('load', function () {
@@ -223,7 +223,7 @@
       if (st === 'ready' && r.report) { 보고서(r); return; }
       if (st === 'todo') { 만들기(); return; }
       if (st === 'making') { 만드는중(); 기다리기(); return; }
-      if (st === 'no_intake') { 그림(상자('이 주문에 신청서가 등록되지 않았어요', ['아래 「메일로 알리기」로 ' + 문의 + ' 에 알려 주세요. 주문번호는 자동으로 들어가요. 확인 후 이어서 만들어요.'], '<a class="btn ghost" href="mailto:' + 문의 + '?subject=' + encodeURIComponent('[책사] 나는 뭐해 먹고 살까? ' + o) + '">메일로 알리기</a>')); return; }
+      if (st === 'no_intake') { 그림(상자('이 주문에 신청서가 등록되지 않았어요', ['아래 「메일로 알리기」로 ' + 문의 + ' 에 알려 주세요. 주문번호는 자동으로 들어가요. 확인 후 이어서 만들어요.'], '<a class="btn ghost" href="mailto:' + 문의 + '?subject=' + encodeURIComponent('[책사] 내게 맞는 일과 돈 ' + o) + '">메일로 알리기</a>')); return; }
       if (st === 'canceled') { 그림(상자('환불된 주문이에요', [G.상태말.canceled])); return; }
       // checking — 책사 확인 대기 · 막힘 · 만들 횟수를 다 씀
       그림(상자('책사가 한 번 더 확인하고 있어요', [G.상태말.checking, '확인이 끝나면 이 주소와 소개 화면 「내 결과」에서 열려요.'], '<a class="btn ghost" href="ilgyeol.html">소개 화면으로 가기</a>'));

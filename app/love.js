@@ -3,7 +3,7 @@
  * 같은 사람 결과는 이 기기에 남겨 두고 다시 열면 그대로 보여 준다(다시 부르지 않음). 생일은 주소에 싣지 않는다(POST 본문).
  * 10-01 사장님 「유료」 — 전체판 출시 기념가 9,900원. 10-02 「무료범위없이 예시만」 — 결제 전에는 지어낸 한 사람 예시뿐, 산 뒤에 만든다(서버도 안 산 사람에게는 쓰지도 보내지도 않는다).
  * 10-01 사장님 「더해서 예쁜 배경과 그림들이 이어졌으면」 — 표지 그림 → 장마다 장면 그림 + 「N장 · 장 이름」 + 그 장 한 줄, 장마다 그림에서 뽑은 옅은 바탕색이 다음 장으로 이어진다.
- *   글은 문답이 아니라 「~해요」 제목 + 풀어 쓴 글(서버 t · a). 1장이 끝나는 자리에 결제 상자, 맨 끝에 「SSS급 그 사람 사용설명서」로 가는 상자(#pair).
+ *   글은 문답이 아니라 「~해요」 제목 + 풀어 쓴 글(서버 t · a). 1장이 끝나는 자리에 결제 상자, 맨 끝에 「연애할 때의 그 사람」으로 가는 상자(#pair).
  * 결제는 ChaeksaPay.buy('love_full', 결제열쇠, 'kakao') — 결제열쇠는 서버만 만든다('love_full:' + 32자 조각, 생일이 주문에 안 남는다).
  * 이 파일은 생일로 열쇠를 만들지 않는다 — 서버가 준 값이 없으면 단추를 잠그고 서버에 묻는다(peek). */
 (function (global) {
@@ -196,7 +196,7 @@
   // 결제 상자 맨 아래 「책사 소개」 길(10-02 개편 3묶음) — 결제 전에 누가 만들고 어떻게 계산하는지 스스로 확인하게. 새 탭이라 보던 결과는 그대로다.
   var 소개길 = '<p class="hint" style="margin:10px 0 0;text-align:center"><a href="about.html" target="_blank" rel="noopener" style="color:var(--ink3)">누가 만들고 어떻게 계산하나요? — 책사 소개 →</a></p>';
   function 약(키) { var Y = 장부(); return (Y && Y.줄(키)) || {}; }
-  function 화면이름() { var Y = 장부(); return (Y && Y.이름('love')) || '사랑할 때만 나오는 당신'; }   // 문의 메일 제목에 싣는 화면 이름
+  function 화면이름() { var Y = 장부(); return (Y && Y.이름('love')) || '연애할 때의 나'; }   // 문의 메일 제목에 싣는 화면 이름
   // 결제 단계에서 막혔을 때(10-02) — 공용 오류 상자(oryu.js): 무엇이 안 됐는지 · 돈은 빠지지 않았어요 · 다시 하기 · 문의하기. 그 파일이 없으면 예전처럼 한 줄.
   function 결제막힘(say, 자리, 말, 다시) {
     var O = global.ChaeksaOryu, 글 = 말 || '결제창을 열지 못했어요.';
@@ -204,13 +204,13 @@
     say.textContent = ''; O.결제(자리, 글, 화면이름(), 다시);
   }
 
-  // 맨 끝 — SSS급 그 사람 사용설명서(#pair)로 가는 상자. 이름 · 한줄 · 미리 보는 것 · 딱지는 장부 pair 줄에서(옛 판 「장면마다 맞대 보기」는 걷었다).
+  // 맨 끝 — 연애할 때의 그 사람(#pair)로 가는 상자. 이름 · 한줄 · 미리 보는 것 · 딱지는 장부 pair 줄에서(옛 판 「장면마다 맞대 보기」는 걷었다).
   function 끝상자(box, 저장) {
     if (!저장 || !저장.items || !저장.items.length) { box.innerHTML = ''; return; }
     var Y = 장부(), 딱지 = Y ? Y.딱지html('pair') : '';
-    box.innerHTML = '<section class="card lv-next"><p class="lv-t">' + esc((Y && Y.이름('pair')) || 'SSS급 그 사람 사용설명서') + '</p>'
+    box.innerHTML = '<section class="card lv-next"><p class="lv-t">' + esc((Y && Y.이름('pair')) || '연애할 때의 그 사람') + '</p>'
       + '<p class="hint" style="margin:0 0 10px">이번엔 그 사람 차례예요. ' + esc((Y && Y.한줄('pair')) || '') + (약('pair').미리 ? ' ' + esc(약('pair').미리) : '') + '</p>'
-      + '<button class="btn" type="button" id="lvPair" style="width:100%">SSS급 그 사람 사용설명서 보기' + (딱지 ? ' — ' + 딱지 : '') + '</button></section>';
+      + '<button class="btn" type="button" id="lvPair" style="width:100%">연애할 때의 그 사람 보기' + (딱지 ? ' — ' + 딱지 : '') + '</button></section>';
     if (Y) Y.값채우기(box);
     box.querySelector('#lvPair').onclick = function () {
       if (typeof global.책사들어가기 === 'function') global.책사들어가기('pair'); else location.hash = '#pair';
@@ -461,14 +461,14 @@
   function 그리기(el, profile) {
     if (!el) return;
     if (!profile || !profile.year) {
-      el.innerHTML = '<section class="card"><h2>사랑할 때만 나오는 당신</h2><p class="hint">내 생년월일시를 먼저 저장해 주세요.</p></section>';
+      el.innerHTML = '<section class="card"><h2>연애할 때의 나</h2><p class="hint">내 생년월일시를 먼저 저장해 주세요.</p></section>';
       return;
     }
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
     var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
     // 소개 — 무엇을 받나(한줄) · 결제 전에 보는 것(미리) · 만드는 때와 시간(만듦)은 장부 love 줄에서(10-02). 「당신」 대신 「나」.
     var Y = 장부(), 소개 = [Y ? Y.한줄('love') : '', 약('love').미리 || '', Y ? Y.만듦글('love') : ''].filter(Boolean).map(esc).join(' ');
-    el.innerHTML = '<div class="lv-cover">' + 그림(표지그림, true) + '<span class="k" id="lvCoverK">연애</span><span class="n" id="lvCoverN">사랑할 때만 나오는 당신</span></div>'
+    el.innerHTML = '<div class="lv-cover">' + 그림(표지그림, true) + '<span class="k" id="lvCoverK">연애</span><span class="n" id="lvCoverN">연애할 때의 나</span></div>'
       + '<section class="card">'
       + '<p class="hint" style="margin:0 0 10px">' + 이름 + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시간 모름)' : ' ' + b.hour + ':' + String(b.minute).padStart(2, '0')) + ' 기준이에요. ' + 소개 + ' 로그인한 계정(카카오 · 네이버) 하나당 한 사람의 결과를 한 번만 만들어요.</p>'
       + '<div id="lvHead"></div><ol class="lv-steps" id="lvSteps" hidden></ol><p class="hint" id="lvSt" style="margin:8px 0 0"></p><div id="lvErr"></div></section>'
@@ -491,7 +491,7 @@
     function 표지글() {
       var p = 저장 && 저장.portrait, k = el.querySelector('#lvCoverK'), n = el.querySelector('#lvCoverN');
       if (k) k.textContent = p && p.title ? '연애 행동 풀이' : '연애';
-      if (n) n.textContent = p && p.title ? p.title : '사랑할 때만 나오는 당신';
+      if (n) n.textContent = p && p.title ? p.title : '연애할 때의 나';
     }
     // 다 받은 결과를 그린다 — 표지 · 결론 · 장들(1장 끝에 결제 상자) · 결과 보내기(산 결과에만) · 맨 끝 사용설명서 상자
     function 다그리기() {

@@ -149,7 +149,7 @@
     var sh = e.target.closest && e.target.closest('[data-share]');
     if (sh) {
       var 주소 = 'https://chaeksa.kr/when.html', 말 = $('shareMsg');
-      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: '힘든 때, 언제 끝나나요 — 책사', text: '지나온 해부터 맞혀 보고, 언제 나아지는지 알려 줘요. 무료예요.', url: 주소 }) : '';
+      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: '내 운은 언제 풀릴까? — 책사', text: '지나온 해부터 맞혀 보고, 언제 나아지는지 알려 줘요. 무료예요.', url: 주소 }) : '';
       if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : '';
       try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('when_share'); } catch (e2) {}
       return;
