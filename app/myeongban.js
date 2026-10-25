@@ -53,8 +53,8 @@
   var 궁of = function (이름) { return 결과 ? 결과.명반.궁.filter(function (g) { return g.이름 === 이름; })[0] : null; };
 
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
-  $('h1').textContent = '별들이 그린 당신의 귀한 자리';
-  $('eyebrow').textContent = '자미두수 · 자미두수전서';
+  $('h1').textContent = '정통자미두수';
+  $('eyebrow').textContent = '별들이 그린 당신의 귀한 자리';
   $('sub').textContent = '옛 책이 좋게 본 조건을 하나씩 겹쳐, 당신의 명반을 읽습니다.';
   $('hint').textContent = 글('입력.시필요', '');
   $('go').textContent = '내 명반 읽기';
@@ -458,7 +458,7 @@
     var sh = t.closest && t.closest('[data-share]');
     if (sh) {
       var 주소 = 'https://chaeksa.kr/myeongban.html', 말 = $('shareMsg');
-      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: 글('공유.제목', '당신의 명반에는 무엇이 적혀 있을까요? — 책사'), text: 글('공유.글', ''), url: 주소 }) : '';
+      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: '정통자미두수 — 책사', text: '별의 배치에서 찾은 당신의 귀한 조건', url: 주소 }) : '';
       if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : 글('공유.안내', '');
       try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban_share'); } catch (e2) {}
       return;

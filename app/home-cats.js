@@ -71,7 +71,7 @@
     return null;
   }
 
-  var 그림판 = 'v1472';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1473';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -111,7 +111,7 @@
     Object.keys(칸).some(function (분류) { return 칸[분류].some(function (c) { if (c.키 !== 키) return false; out = { b: { 키: 분류 }, c: c }; return true; }); });
     return out;
   }
-  // 홈은 목적 네 개, 전체 보기는 기존 상품 표 전부. 계산·가격·입력 경로는 기존 것을 쓴다.
+  // 처음 방문은 정통 풀이 두 칸과 목적별 입구. 재방문 홈은 전체 목록.
   function 그리기(el) {
     if (!el) return;
     var Y = global.ChaeksaYaksok, g = 성별();
@@ -121,7 +121,12 @@
       ['jeongtong', '내 일과 돈', '돈 버는 방식부터 살펴보세요', 'jtCh7'],
       ['when', '언제 나아질까?', '힘든 때와 풀리는 때를 살펴보세요']
     ];
-    el.innerHTML = '<section class="home-paths" aria-label="목적별 바로가기"><h2>바로 보고 싶은 이야기</h2><div class="cats home-doors">' + 입구.map(function (r, i) {
+    var 정통 = ['jeongtong', 'myeongban'].map(function (key, i) {
+      var x = 찾기(key);
+      return 그림칸(x.b, x.c, i, i, g, Y);
+    }).join('');
+    el.innerHTML = '<section class="home-paths" aria-label="나를 알아보기"><h2>나를 알아보기</h2><div class="cats home-doors">' + 정통 + '</div></section>'
+      + '<section class="home-paths" aria-label="목적별 바로가기"><h2>바로 보고 싶은 이야기</h2><div class="cats home-doors">' + 입구.map(function (r, i) {
       var x = 찾기(r[0]);
       return 그림칸(x.b, Object.assign({}, x.c, { 표시명: r[1], 설명: r[2], 곳: r[3] }), i, i, g, Y);
     }).join('') + '</div><a class="home-all-link" href="#all">전체 보기 <span aria-hidden="true">→</span></a></section>';
@@ -129,16 +134,18 @@
     길달기(el);
   }
   function 전체그리기(el) {
-    var Y = global.ChaeksaYaksok, g = 성별(), n = 4;
+    var Y = global.ChaeksaYaksok, g = 성별(), n = 0;
+    var prefix = el.closest('[data-tab="home"]') ? 'home-catalog-' : 'all-catalog-';
     var 묶음들 = [
+      ['나를 알아보기', ['jeongtong', 'myeongban']],
       ['아기 태어날 날과 시간', ['taekil']],
       ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],
-      ['나를 알아보기', ['jeongtong', 'when', 'brain', 'gwi', 'gyeokgi', 'myeongban']],
+      ['더 알아보기', ['when', 'brain', 'gwi', 'gyeokgi']],
       ['읽을거리', ['read']]
     ];
     el.innerHTML = 묶음들.map(function (r, group) {
-      return '<section class="catalog-group" aria-labelledby="catalog-title-' + group + '"><h2 id="catalog-title-' + group + '">' + esc(r[0]) + '</h2><div class="catalog-list">' + r[1].map(function (키, i) {
+      return '<section class="catalog-group" aria-labelledby="' + prefix + group + '"><h2 id="' + prefix + group + '">' + esc(r[0]) + '</h2><div class="catalog-list">' + r[1].map(function (키, i) {
         var x = 찾기(키);
         return 그림칸(x.b, Object.assign({}, x.c, { 목록: true }), i, n++, g, Y);
       }).join('') + '</div></section>';

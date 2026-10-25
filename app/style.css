@@ -1514,11 +1514,9 @@ html[data-boot="landing"] #nav{display:grid!important}
 #nav a{background:none;border:0;color:var(--ink3);font-size:var(--t1);text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:4px 0;border-radius:var(--r1);font-family:var(--sans)}
 #nav a svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 #nav a:hover{color:var(--ink2)}
-#nav :is(button,a):focus-visible,.home-paths a:focus-visible,.catalog-list a:focus-visible,.home-return a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-.home-return{margin:8px 0 28px;padding:24px 20px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card)}
-.home-return h1,.catalog-heading h1{margin:0;font-size:26px;line-height:1.4;word-break:keep-all}
-.home-return p,.catalog-heading p{margin:10px 0 20px;color:var(--ink2);font-size:15px;line-height:1.6}
-.home-return .btn{display:flex;align-items:center;justify-content:center;min-height:48px;text-decoration:none}
+#nav :is(button,a):focus-visible,.home-paths a:focus-visible,.catalog-list a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.catalog-heading h1{margin:0;font-size:26px;line-height:1.4;word-break:keep-all}
+.catalog-heading p{margin:10px 0 20px;color:var(--ink2);font-size:15px;line-height:1.6}
 .home-paths{text-align:left}
 .home-paths h2{font-size:19px;line-height:1.5;margin:0 0 14px}
 .home-doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
@@ -1542,3 +1540,6 @@ html[data-boot="landing"] #nav{display:grid!important}
 #hiCal label{display:flex;align-items:center;gap:6px;min-height:44px;font-size:15px;cursor:pointer}
 #hiBirth .home-time-hint{margin:2px 0 6px;font-size:14px}
 #hiMore>summary{min-height:44px;padding:12px 0;font-size:14px;cursor:pointer}
+
+/* Returning home is the complete catalog. */
+.home-paths+.home-paths{margin-top:28px}
