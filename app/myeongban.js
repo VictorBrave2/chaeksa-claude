@@ -53,11 +53,11 @@
   var 궁of = function (이름) { return 결과 ? 결과.명반.궁.filter(function (g) { return g.이름 === 이름; })[0] : null; };
 
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
-  if (쪽.제목) $('h1').textContent = 쪽.제목;
-  if (쪽.눈썹) $('eyebrow').textContent = 쪽.눈썹;
-  $('sub').textContent = 글('첫줄', '');
+  $('h1').textContent = '별들이 그린 당신의 귀한 자리';
+  $('eyebrow').textContent = '자미두수 · 자미두수전서';
+  $('sub').textContent = '옛 책이 좋게 본 조건을 하나씩 겹쳐, 당신의 명반을 읽습니다.';
   $('hint').textContent = 글('입력.시필요', '');
-  $('go').textContent = 글('입력.단추', '명반 그리기');
+  $('go').textContent = '내 명반 읽기';
 
   // 엔진 경계 말 → 작가 경계종류 열쇠(엔진 말은 1층에 내지 않는다 — 작가 원고 경계메모). 모르는 말은 머리 줄만.
   function 경계종류(말) {
@@ -127,7 +127,8 @@
   }
   function 그리기() {
     var R = 결과; if (!R) return;
-    var M = R.명반, h = '';
+    var M = R.명반, h = window.ChaeksaZiweiFilter ? ChaeksaZiweiFilter.html(R.filterStory) : '';
+    if (R.filterStory) h += '<details class="mb-original"><summary>내 명반과 전체 구절 보기</summary>';
     h += '<div class="mb-top"><div class="sec">' + esc(글('명반.머리', '당신의 명반')) + '</div><p class="why">' + esc(M.해범위[0] + '~' + M.해범위[1]) + '</p></div>';
     var 종류 = []; (M.경계 || []).forEach(function (말) { var k = 경계종류(말); if (k && 종류.indexOf(k) < 0) 종류.push(k); });
     if ((M.경계 || []).length) h += '<div class="mb-edge"><p>' + esc(글('명반.경계', '')) + '</p>' + 종류.map(function (k) { return '<p>' + esc(글('명반.경계종류.' + k, '')) + '</p>'; }).join('') + '</div>';
@@ -138,7 +139,8 @@
       + '<div class="c3 tap' + (탭본() ? ' still' : '') + '">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
       + '</div>';
     h += 흐름html(M);   // 10-24 열두 칸 글 흐름(결론 → 근거 접힘)
-    h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
+    if (R.filterStory) h += '</details>';
+    if (!R.filterStory) h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(글('공유.단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(글('공유.안내', '')) + '</p></div>';
     $('out').innerHTML = h;
   }
@@ -524,7 +526,7 @@
       결과 = j; 표 = j.표 || ''; 지금 = { 이름: 이름 || '', body: body }; $('err').textContent = '';
       그리기();
       // 손님이 눌러서 그린 것이면 명반으로 내려간다(처음 열릴 때 넣어 둔 사람으로 저절로 그린 것은 그대로 — 첫 줄부터 읽게)
-      if (스크롤) try { var 머리 = document.querySelector('.mb-top'); if (머리) 머리.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e4) {}
+      if (스크롤) try { var 머리 = document.querySelector('.zf') || document.querySelector('.mb-top'); if (머리) 머리.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e4) {}
       if (!셌다) { 셌다 = true; try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban'); } catch (e2) {} }
     } catch (err) { $('err').textContent = '연결하지 못했어요. 다시 눌러 주세요.'; }
   }
