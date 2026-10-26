@@ -40,3 +40,9 @@
 - A: taekil-sample.html / B: examples/taekil-decision-hospital.html. 가상 정보만 공개.
 - 외부AI 호출은 하지 않았고 검수된 직접 작성 답변을 정식 조립에 주입했다. 운영 자동 AI 작성에는 기존 크레딧이 필요하다.
 - 새로 생성되는 보고서부터 적용한다. 기발급 보고서/실제 주문 DB를 재작성하지 않았다.
+
+## 운영 반영 완료
+
+- 공개 v1481 bd13f458, 최종 후보 비교 주어 보정 6faac537. Pages 40309033954 성공.
+- 비공개 최종 6a37c07, 운영 Vercel READY. 추천 비교 주어를 첫 추천으로 명시했고 교차 검수 막는 문제0.
+- 실제 공개 A/B에서 첫 추천·병원 가능구간·16:59 마감·후보 비교 문장 확인. 라이브 첫 추천 화면을 Codex 로컬 taekil-audit/upgraded/live-report.png에 보관.
