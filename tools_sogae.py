@@ -227,7 +227,9 @@ def chapters_from(js):
     return uniq
 
 
-def chapters(key):
+def chapters(key, content=None):
+    if content and content.get('소개차례'):
+        return content['소개차례']
     if key == 'love':
         return re.findall(r"'([^']+)':\s*\[", _js_block(read(os.path.join(APP, 'love.js')), 'var 장그림 ='))
     if key == 'jeongtong':
@@ -281,7 +283,7 @@ def info(key, Y, B):
         for *_, 글 in sorted(후보):
             if 글 not in 알것:
                 알것.append(글)
-        알것 = 알것[:5]
+        알것 = b.get('소개물음') or 알것[:5]
     딱지 = r.get('딱지') or ''
     m = re.match(r'^([\s\S]*?)(\s*·\s*|\s+)?\{값\}([\s\S]*)$', 딱지)
     딱지앞, 딱지사이, 딱지뒤 = (m.group(1), m.group(2) or '', m.group(3)) if m else (딱지, '', '')
@@ -323,6 +325,9 @@ def product_page(key, fname, Y, B, arts, foot, ver):
             '    <a class="btn sg-go" data-go href="%s">%s</a>\n    <p class="hint">필요한 것 — %s</p>\n  </div>\n  </div>'
             % (cover, 딱지, E(I['이름']), E(I['한줄']), go, E(I['시작']), E(I['필요'])))
     parts = [head]
+    intro = _bunya_row(B, key).get('소개')
+    if intro:
+        parts.append(_paras(intro))
 
     목록 = lambda xs: '  <ul class="sg-list">\n%s\n  </ul>' % '\n'.join('    <li>%s</li>' % E(t) for t in xs)
     if I['알것'] and not 파는:
@@ -349,7 +354,7 @@ def product_page(key, fname, Y, B, arts, foot, ver):
         if intro:
             parts.append(_section(intro[0]['head'], _paras(intro[0].get('body'))))
     else:
-        ch = chapters(key)
+        ch = chapters(key, _bunya_row(B, key))
         if ch:
             parts.append(_section('차례', '  <ol class="sg-toc">\n%s\n  </ol>' % '\n'.join('    <li>%s</li>' % E(t) for t in ch)))
 

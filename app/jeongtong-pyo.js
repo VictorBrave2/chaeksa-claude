@@ -8,8 +8,9 @@ const API='https://chaeksa-behavior-core.vercel.app/api/jt-pyo';
 const cache=new Map(),pending=new WeakMap();
 function resultView(host,r,input){
  if(!r.story?.filterStory||!global.ChaeksaNameSeason)throw new Error('story unavailable');
- global.ChaeksaNameSeason.mount(host,r.story);
- global.ChaeksaJeongtongShare?.attach(host,r.story);
+ const view=global.ChaeksaJeongtongModelReading?.applyModel(r.story)||r.story;
+ global.ChaeksaNameSeason.mount(host,view);
+ global.ChaeksaJeongtongShare?.attach(host,view);
  global.ChaeksaJeongtongEvidence?.attach(host.parentElement,input);
 }
 function oldContent(container,input){
@@ -25,11 +26,11 @@ function 그리기(box,input){
  if(previous?.key===key&&previous.date===today&&(previous.done||previous.loading))return;
  previous?.controller.abort();
  const controller=new AbortController(),request={key,date:today,controller,loading:true,done:false};pending.set(box,request);
- box.innerHTML='<div class="jtp"><div class="jtp-result"><div class="jtp-loading" role="status">당신의 이름과 흐름을 불러오고 있습니다.</div></div></div>';
+ box.innerHTML='<div class="jtp"><div class="jtp-result"><div class="jtp-loading" role="status">나의 좋은 조건과 앞으로의 흐름을 불러오고 있습니다.</div></div></div>';
  const root=box.firstElementChild,host=root.querySelector('.jtp-result');
  oldContent(root,input);
  const fail=()=>{request.loading=false;host.innerHTML='<div class="jtp-empty" role="status">결과를 불러오지 못했어요.<p>잠시 뒤 다시 불러오거나, 아래에서 자세한 풀이를 읽어 보세요.</p><button type="button" class="jtp-retry">다시 불러오기</button></div>';host.querySelector('button').onclick=()=>{pending.delete(box);그리기(box,input);};};
- if(birth.hour==null){request.loading=false;request.done=true;host.innerHTML='<div class="jtp-empty">태어난 시간을 넣으면 나의 좋은 조건과 흐름을 볼 수 있어요.<p>시간을 몰라도 아래에서 여섯 글자로 보는 자세한 풀이를 읽을 수 있어요.</p><button type="button" class="jtp-retry">태어난 시간 추가하기</button></div>';host.querySelector('button').onclick=()=>global.책사내정보수정?.();global.ChaeksaJeongtongEvidence?.attach(root,input);return;}
+ if(birth.hour==null){request.loading=false;request.done=true;host.innerHTML='<div class="jtp-empty">태어난 시간을 넣으면 나의 좋은 조건과 흐름을 볼 수 있어요.<p>시간을 몰라도 아래에서 태어난 해·달·날의 여섯 글자로 자세한 풀이를 읽을 수 있어요.</p><button type="button" class="jtp-retry">태어난 시간 추가하기</button></div>';host.querySelector('button').onclick=()=>global.책사내정보수정?.();global.ChaeksaJeongtongEvidence?.attach(root,input);return;}
  const cached=cache.get(key);
  if(cached?.date===today){request.loading=false;request.done=true;resultView(host,cached.data,input);return;}
  const timeout=setTimeout(()=>controller.abort(),30000);
