@@ -75,8 +75,8 @@
     if (filter.line === '이 명식에서 원문이 반긴 글자 조건을 확인했습니다.') copy.line = '옛 책에 적힌 조건이 내 사주에 있습니다. 아래에서 해당 글자와 근거를 볼 수 있습니다.';
     if (filter.key === 'season:필요한 글자 뜸' || filter.key === 'season:돕는 글자만 뜸') {
       copy.title = filter.key === 'season:필요한 글자 뜸'
-        ? '태어난 계절에 우선 필요한 글자가 있습니다.'
-        : '우선 필요한 글자를 돕는 글자가 있습니다.';
+        ? '사주팔자에 필요한 기운이 있습니다.'
+        : '필요한 기운을 돕는 글자가 있습니다.';
       if (filter.line === '진월의 정화에 먼저 쓰는 甲이 명식에 있습니다.') {
         copy.line = '《궁통보감》은 봄의 마지막 달인 진월에 태어난 정화(丁)에 갑목(甲)을 우선 쓴다고 했습니다. 내 사주에도 甲이 있습니다.';
       } else if (typeof filter.line === 'string' && filter.line.startsWith('명식에서 확인한 글자: ')) {
@@ -85,23 +85,42 @@
         copy.line = '태어난 달과 나를 나타내는 글자에 필요한 것이 사주에 있는지 확인했습니다.';
       }
     } else if (filter.key === 'state:섰다') {
-      copy.title = '사주의 기본 구성이 제대로 갖춰졌습니다.';
-      copy.line = '성격(成格)은 사주의 기본 구성이 성립했다는 뜻입니다.';
+      copy.title = '팔자가 갖춰야 할 필수조건을 갖췄습니다.';
+      copy.line = '성격(成格)은 격의 조건을 갖춰 성립했다는 뜻입니다. 어떤 조건이 맞았는지는 이 사주의 판정 근거에서 확인할 수 있습니다.';
     } else if (filter.key === 'state:구제됐다') {
-      copy.title = '구성을 해치는 글자를 다른 글자가 막아 줍니다.';
+      copy.title = '해치는 작용을 막는 힘이 있습니다.';
       copy.line = '해로운 글자가 있어도 다른 글자가 그 작용을 막는 상태를 구응(救應)이라고 합니다.';
     } else if (filter.key === 'weak-with-seal') {
-      copy.title = '나를 돕는 배움의 글자가 있습니다.';
+      copy.title = '배움이 나를 돕습니다.';
       copy.line = '나를 나타내는 글자의 힘이 약한 신약 상태에, 그 글자를 돕는 배움의 글자인 인성이 함께 있습니다.';
     } else if (filter.key === 'form:동심') {
-      copy.title = '힘을 쓰는 두 종류의 글자가 한편을 이룹니다.';
-      copy.line = '나무·불·흙·쇠·물 가운데 두 종류가 힘을 쓰며, 한쪽이 다른 쪽을 돕습니다. 옛 책은 이 흐름을 따르고 거스르지 말라고 했습니다.';
+      copy.title = '두 가지 기운이 서로 돕습니다.';
+      copy.line = '목·화·토·금·수 가운데 두 기운이 힘을 쓰며, 한쪽이 다른 쪽을 돕습니다. 옛 책은 이 흐름을 따를 수는 있어도 거슬러서는 안 된다고 했습니다.';
+      if (!copy.subline) copy.subline = '이 흐름을 거스르면 안 됩니다.';
     } else if (filter.key === 'form:일인') {
-      copy.title = '사주의 힘이 한 종류의 글자에 모여 있습니다.';
-      copy.line = '나무·불·흙·쇠·물 가운데 한 종류가 사주를 이끕니다. 옛 책은 이 흐름을 따르고 거스르지 말라고 했습니다.';
+      copy.title = '한 가지 기운이 중심을 잡습니다.';
+      copy.line = '목·화·토·금·수 가운데 한 기운이 사주를 이끕니다. 옛 책은 이 흐름을 따를 수는 있어도 거슬러서는 안 된다고 했습니다.';
+      if (!copy.subline) copy.subline = '이 흐름을 거스르면 안 됩니다.';
     } else if (typeof filter.key === 'string' && filter.key.startsWith('type:')) {
+      const titles = {
+        정관: '배운 것이 곧 직업이 될 수 있습니다.',
+        정재: '차곡차곡 모으고 지킵니다.',
+        편재: '사람과 기회로 일을 넓힙니다.',
+        정인: '배운 것을 내 것으로 만듭니다.',
+        편인: '남다른 답을 찾아 파고듭니다.',
+        식신: '만들고 나눕니다.',
+        상관: '정해진 틀을 넘어 표현합니다.',
+        편관: '어려운 요구를 해낼 힘이 있습니다.',
+        건록: '자기 힘으로 섭니다.',
+        양인: '목표가 생기면 힘을 모읍니다.'
+      };
+      const title = titles[filter.key.slice('type:'.length)];
+      if (title) copy.title = title;
       const match = typeof filter.line === 'string' && filter.line.match(/^타고난 명식에서 (.+)격으로 읽는 바탕을 찾았습니다\.$/);
       if (match) copy.line = '태어난 사주에서 ' + match[1] + '격의 바탕을 확인했습니다.';
+      if (title && typeof filter.title === 'string' && filter.title !== title && !String(copy.line || '').includes(filter.title)) {
+        copy.line = (copy.line ? copy.line + ' ' : '') + filter.title;
+      }
     }
     return copy;
   }
@@ -120,6 +139,53 @@
     if (model.filterStory) {
       copy.filterStory = { ...model.filterStory };
       if (Array.isArray(model.filterStory.filters)) copy.filterStory.filters = model.filterStory.filters.map(f => baseFilterCopy(root.ChaeksaJeongtongClassicReading?.mapFilter ? root.ChaeksaJeongtongClassicReading.mapFilter(f) : f));
+    }
+    // API가 이미 확인한 표시 근거만 풀어 쓴다. 기운·걸림·존재 여부를 다시 판정하지 않는다.
+    const context = model.readingContext;
+    if (context && typeof context === 'object' && Array.isArray(copy.filterStory?.filters)) {
+      const append = (before, text) => {
+        const current = typeof before === 'string' ? before : '';
+        return !text || current.includes(text) ? current : current ? current + ' ' + text : text;
+      };
+      const stemNames = {
+        甲: '갑목(甲)', 乙: '을목(乙)', 丙: '병화(丙)', 丁: '정화(丁)', 戊: '무토(戊)',
+        己: '기토(己)', 庚: '경금(庚)', 辛: '신금(辛)', 壬: '임수(壬)', 癸: '계수(癸)'
+      };
+      const elementNames = { 목: '목(나무)', 화: '화(불)', 토: '토(흙)', 금: '금(쇠)', 수: '수(물)' };
+      const stems = value => typeof value === 'string' ? [...value].filter(char => stemNames[char]).map(char => stemNames[char]).join(' · ') : '';
+      const elements = Array.isArray(context.twoElements) ? context.twoElements : [];
+      copy.filterStory.filters = copy.filterStory.filters.map(filter => {
+        if (!filter || typeof filter !== 'object') return filter;
+        const shown = { ...filter };
+        const detail = text => {
+          if (shown.detail == null || typeof shown.detail === 'string') shown.detail = append(shown.detail, text);
+          else shown.line = append(shown.line, text);
+        };
+        if (filter.key === 'season:필요한 글자 뜸' || filter.key === 'season:돕는 글자만 뜸') {
+          const season = context.season;
+          if (!season || typeof season !== 'object') return shown;
+          const need = stems(season.need), aux = stems(season.aux);
+          const presence = value => value === true ? ' — 있음' : value === false ? ' — 없음' : '';
+          if (need) shown.line = append(shown.line, '먼저 필요한 글자: ' + need + presence(season.hasMain) + '.');
+          if (aux) shown.line = append(shown.line, '돕는 글자: ' + aux + presence(season.hasAux) + '.');
+          if (season.blocked === true) {
+            if (season.reason === '支成水局加壬透 殺重身輕 必夭折') {
+              shown.subline = append(shown.subline, '같은 책에는 “반드시 일찍 죽는다”는 경계도 있습니다.');
+              detail('같은 절은 아래 글자가 물의 모임을 이루고 위 글자에 임수가 드러나면, 살은 강하고 일간은 약하다며 “반드시 제 수명을 채우지 못하고 일찍 죽는다. 혹은 비명에 죽는다”고 경계했습니다.');
+              shown.scope = append(shown.scope, '이 단계의 비율은 ' + (filter.key === 'season:필요한 글자 뜸' ? '먼저 필요한 글자' : '돕는 글자') + '의 존재만 셉니다. 요절과 흉사는 고전의 경계 문장으로 전한 것이며, 실제 수명이나 사망 시점을 계산한 결과는 아닙니다.');
+            } else if (typeof season.reason === 'string' && season.reason.trim()) {
+              shown.subline = append(shown.subline, '함께 살펴볼 경계: ' + season.reason);
+            } else {
+              shown.subline = append(shown.subline, '함께 살펴볼 경계 조건이 있습니다.');
+            }
+          }
+        } else if (filter.key === 'form:동심' && context.form === '동심' && elements.length === 2 && elements.every(value => elementNames[value])) {
+          detail('이 사주에서 한편을 이루는 두 기운: ' + elements.map(value => elementNames[value]).join(' · ') + '. 한쪽이 다른 쪽을 돕는 흐름으로 분류됐습니다.');
+        } else if (filter.key === 'form:일인' && context.form === '일인' && elements.length === 1 && elementNames[elements[0]]) {
+          detail('이 사주에서 중심을 이루는 기운: ' + elementNames[elements[0]] + '.');
+        }
+        return shown;
+      });
     }
     return copy;
   }

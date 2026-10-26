@@ -38,3 +38,63 @@
 .jtp .jtp-more-evidence .jtp-evidence-raw,.jtp .jtp-more-evidence .jtp-evidence-note{font-size:12px;color:var(--ink3)}
 .jtp .jtp-brain-link{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;padding:16px 0;border-top:1px solid var(--line);margin-top:18px;color:var(--accent);text-decoration:none;font-size:13px;line-height:1.8}
 .jtp .jtp-evidence-retry{min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink)}
+
+/* DES-0020: 짧은 결론을 먼저, 내 조건과 원문은 펼쳐 읽는다. */
+.jtp .jtp-story{max-width:770px;margin:auto}
+.jtp .jtp-story .reader-hero{display:block;padding:35px 0 28px}
+.jtp .jtp-story .reader-hero h1{font-size:43px;line-height:1.45;font-weight:600;letter-spacing:-.055em;max-width:630px;text-wrap:balance;margin:15px 0 0}
+.jtp .jtp-story .reader-hero .hero-line{font-family:var(--sans);font-size:15px;line-height:1.85;margin-top:17px}
+.jtp .jtp-story .reader-hero .name-origin{display:flex;width:fit-content;border:0;padding:0;margin-top:18px;font-size:14px;gap:12px}
+.jtp .jtp-story .reader-hero .hero-line{max-width:620px}
+.jtp .jtp-story .reader-go{display:inline-flex;align-items:center;gap:20px;min-height:44px;margin-top:18px;font-size:13px;text-decoration:none;color:var(--ink2)}
+.jtp .jtp-story .reader-go span{color:var(--accent);font-size:20px}
+.jtp .jtp-story .filter-chapter{padding-top:25px}
+.jtp .jtp-story .filter-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:23px}
+.jtp .jtp-story .filter-section-heading h2{font-family:var(--sans);font-size:20px;font-weight:700;line-height:1.65;margin:6px 0 0}
+.jtp .jtp-story .filter-section-heading .chapter-label{font-size:11px;margin:0}
+.jtp .jtp-story .filter-column-label{font-size:11px;line-height:1.7;word-break:keep-all;text-wrap:balance;max-width:125px;margin:0;flex-shrink:0}
+.jtp .jtp-story .classic-filters{gap:14px;padding-left:27px;margin:0;list-style:none}
+.jtp .jtp-story .classic-filters:before{left:8px}
+.jtp .jtp-story .classic-filter{margin-left:calc(var(--depth)*5px)}
+.jtp .jtp-story .filter-number{left:calc(-27px - var(--depth)*5px);font-family:var(--sans);font-size:11px;top:20px}
+.jtp .jtp-story .filter-paper{padding:20px 22px 0;border-radius:3px;background:var(--card)}
+.jtp .jtp-story .filter-reading{grid-template-columns:minmax(0,1fr)105px;gap:17px;align-items:center}
+.jtp .jtp-story .filter-name{font-family:var(--sans);font-size:12px;line-height:1.7;margin:0;color:var(--accent)}
+.jtp .jtp-story .filter-name span{font-family:var(--serif)}
+.jtp .jtp-story .filter-reading h3{font-family:var(--sans);font-size:23px;font-weight:700;line-height:1.58;letter-spacing:-.045em;word-break:keep-all;overflow-wrap:break-word;margin:7px 0 0}
+.jtp .jtp-story .filter-subline{font-size:13px;line-height:1.8;margin-top:8px;color:var(--ink2)}
+.jtp .jtp-story .filter-rate{display:block;border:0;padding:0;text-align:right}
+.jtp .jtp-story .filter-rate>span{font-size:10px;margin:0 0 5px;word-break:keep-all}
+.jtp .jtp-story .filter-rate strong{font-family:var(--sans);font-size:30px;font-weight:500;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.jtp .jtp-story .filter-source{margin-top:17px;padding-top:0}
+.jtp .jtp-story .filter-source>summary{min-height:44px;font-size:12px;display:flex;justify-content:space-between;align-items:center;list-style:none;cursor:pointer}
+.jtp .jtp-story .filter-source>summary::-webkit-details-marker{display:none}
+.jtp .jtp-story .filter-source>summary:after{content:'+';color:var(--accent);font-size:20px}
+.jtp .jtp-story .filter-source[open]>summary:after{content:'−'}
+.jtp .jtp-story .filter-source p{font-size:14px;line-height:1.9;margin:14px 0}
+.jtp .jtp-story .filter-source details{border-top:1px solid var(--line)}
+.jtp .jtp-story .filter-rest{margin-top:14px}
+.jtp .jtp-story .filter-rest>summary{min-height:48px;padding:10px 0;color:var(--accent);cursor:pointer;font-size:13px;line-height:1.8}
+.jtp .jtp-story .filter-rest[open]>summary{margin-bottom:12px}
+.jtp .jtp-story .filter-conclusion{margin-top:30px;padding:30px 22px}
+.jtp .jtp-story .filter-conclusion h2{font-size:28px;line-height:1.7}
+.jtp .jtp-story .filter-conclusion .conclusion-seal{margin-bottom:15px}
+@container(max-width:600px){
+ .jtp .jtp-story .reader-hero h1{font-size:35px}
+ .jtp .jtp-story .reader-hero{padding:27px 0 23px}
+ .jtp .jtp-story .reader-hero .hero-line{font-size:14px}
+ .jtp .jtp-story .filter-section-heading{gap:10px}
+ .jtp .jtp-story .filter-section-heading h2{font-size:18px}
+ .jtp .jtp-story .filter-column-label{font-size:10px;max-width:85px}
+ .jtp .jtp-story .classic-filters{padding-left:21px;gap:12px}
+ .jtp .jtp-story .classic-filter{margin-left:calc(var(--depth)*2px)}
+ .jtp .jtp-story .filter-number{left:calc(-21px - var(--depth)*2px);font-size:10px}
+ .jtp .jtp-story .filter-paper{padding:17px 16px 0}
+ .jtp .jtp-story .filter-reading{grid-template-columns:minmax(0,1fr)83px;gap:10px}
+ .jtp .jtp-story .filter-reading h3{font-size:19px;line-height:1.65;margin-top:5px}
+ .jtp .jtp-story .filter-name{font-size:11px}
+ .jtp .jtp-story .filter-rate strong{font-size:24px}
+ .jtp .jtp-story .filter-subline{font-size:12px}
+ .jtp .jtp-story .filter-source{margin-top:13px}
+ .jtp .jtp-story .filter-source p{font-size:13px}
+}
