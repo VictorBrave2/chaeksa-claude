@@ -172,6 +172,7 @@
   function 읽는말(s) { return 읽기.text(s); }
   function 조건읽기(value) {
     var s = String(value || '');
+    if (/에 있다$/.test(s) && s.indexOf(' · ') < 0) return '';
     Object.keys(궁한글).forEach(function (k) { s = s.split(궁한글[k]).join(궁쉬운(k) + ' 자리'); });
     Object.keys(궁한글).sort(function (a, b) { return b.length - a.length; }).forEach(function (k) { s = s.split(k + '宮').join(궁쉬운(k) + ' 자리').split(k + '궁').join(궁쉬운(k) + ' 자리').split(k).join(궁쉬운(k) + ' 자리'); });
     Object.keys(읽기.stars).sort(function (a, b) { return b.length - a.length; }).forEach(function (k) { s = s.split(k).join(별쉬운(k)); });
