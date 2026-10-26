@@ -98,3 +98,8 @@
  .jtp .jtp-story .filter-source{margin-top:13px}
  .jtp .jtp-story .filter-source p{font-size:13px}
 }
+
+/* 개인별 대표 이름과, 같은 뜻을 묶은 조건. */
+.jtp .portrait-detail{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 24px;display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
+.jtp .portrait-detail>div{padding:24px 0}.jtp .portrait-detail .portrait-label{font-size:12px;color:var(--accent);margin-bottom:12px}.jtp .portrait-detail h2{font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.65;margin-bottom:10px}.jtp .portrait-detail p{font-size:14px;line-height:1.9;color:var(--ink2)}.jtp .portrait-detail .portrait-quote{font-family:var(--serif);font-size:20px;line-height:1.8;color:var(--ink)}.jtp .portrait-detail small{display:block;color:var(--ink3);font-size:11px;line-height:1.8;margin-top:12px}.jtp .portrait-detail details{margin-top:12px;font-size:12px;color:var(--ink3)}.jtp .portrait-detail summary{min-height:36px;align-content:center}.jtp .portrait-caution{grid-column:1/-1;border-top:1px solid var(--line)}.jtp .portrait-detail .portrait-caution .portrait-label{color:#935344}.jtp .group-source{border-bottom:1px solid var(--line);padding:15px 0}.jtp .group-source:last-child{border:0}.jtp .group-source h4{font-family:var(--serif);font-weight:500;font-size:16px;line-height:1.75;color:var(--accent)}.jtp .group-source p{overflow-wrap:anywhere}.jtp .jtp-story .reader-hero h1{max-width:700px}.jtp .jtp-story .name-origin{max-width:100%;flex-wrap:wrap;line-height:1.8}
+@container(max-width:650px){.jtp .portrait-detail{grid-template-columns:1fr}.jtp .portrait-detail>div+div{border-top:1px solid var(--line)}.jtp .portrait-detail h2{font-size:21px}.jtp .portrait-detail .portrait-quote{font-size:19px}}

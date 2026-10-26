@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>정통사주 · 가상 명식 견본 | 책사</title>
-<link rel="stylesheet" href="../jeongtong-pyo.css?v=c5868ac3b4">
+<link rel="stylesheet" href="../jeongtong-pyo.css?v=7d3aaa20a6">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -14,12 +14,12 @@
 <header><div class="example-mast"><a class="example-brand" href="../">策 책사</a><span>정통사주 · 가상 명식 견본</span></div></header>
 <div class="example-controls"><p>무작위로 만든 생년월일의 가상 이용자 세 명입니다.<br>실제 사람의 출생 정보가 아닙니다. 라이브와 같은 화면으로 표시합니다.</p><div class="example-tabs" aria-label="가상 명식 선택" id="examples"></div></div>
 <main class="example-main jtp"><div id="result" aria-live="polite"><p class="example-error">견본을 불러오고 있습니다.</p></div></main>
-<script src="../jeongtong-classic-reading.js?v=ef886463d5"></script><script src="../jeongtong-model-reading.js?v=0c88924c2a"></script><script src="../jeongtong-story.js?v=9d7206c352"></script>
+<script src="../jeongtong-classic-reading.js?v=ef886463d5"></script><script src="../jeongtong-distinct-reading.js?v=b8b959b753"></script><script src="../jeongtong-model-reading.js?v=76a35bedd9"></script><script src="../jeongtong-story.js?v=f3d9c57d45"></script>
 <script>
 (async function(){
  const host=document.getElementById('result'),tabs=document.getElementById('examples');
  try{
-  const response=await fetch('jeongtong-reader.json');if(!response.ok)throw Error();
+  const response=await fetch('jeongtong-reader.json?v=bc1edaf9eb');if(!response.ok)throw Error();
   const data=await response.json();
   data.cases.forEach((item,i)=>{const b=document.createElement('button');b.type='button';b.textContent=item.label;b.setAttribute('aria-pressed','false');b.onclick=()=>show(i);tabs.append(b)});
   function show(i){[...tabs.children].forEach((b,n)=>b.setAttribute('aria-pressed',String(n===i)));ChaeksaNameSeason.mount(host,ChaeksaJeongtongModelReading.applyModel(data.cases[i].story));}

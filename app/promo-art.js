@@ -95,7 +95,8 @@ function drawTaekil(canvas,index,images={}){
 function selectResult(m){
  const all=Array.isArray(m?.filterStory?.filters)?m.filterStory.filters:[],keys=new Set(),picked=[];
  // The card adds no interpretation. Prefer distinct conditions beside the identity already shown.
- for(const f of [...all.filter(f=>!String(f.key).startsWith('type:')), ...all]){
+ const grouped=m?.filterStory?.readingGroups?.map(g=>g.lead)||[];
+ for(const f of [...grouped, ...all.filter(f=>!String(f.key).startsWith('type:')), ...all]){
   const signature=String(f.title||'').trim();if(!signature||keys.has(signature))continue;
   if(String(f.key).startsWith('type:')&&picked.length)continue;
   keys.add(signature);picked.push({title:signature,name:String(f.name||''),book:String(f.book||'')});if(picked.length===3)break;
