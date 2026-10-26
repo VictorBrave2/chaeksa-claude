@@ -32,7 +32,7 @@
     h += '<section class="zf-conclusion"><p class="zf-kicker">당신에게 모인 자리들</p><h3>' + esc(story.conclusion) + '</h3><p>' + esc(story.summary) + '</p>';
     if (filters.length) h += '<p class="zf-closing">당신의 명반을 이루는<br>좋은 조건들을 기억해 두세요.</p>';
     h += '</section><details class="zf-method"><summary>비율은 어떻게 계산했나요?</summary><p>자미두수 명반을 같은 기준으로 계산한 비교 자료에서, 각 조건에 모두 해당하는 명반을 셌습니다. 앞선 조건을 통과한 명반 안에서 다음 조건을 다시 확인합니다. 각각의 비율을 곱하지 않습니다.</p><p>' + esc(story.scheme) + ' · 총 ' + Number(story.sampleSize).toLocaleString('ko-KR') + '개.</p><p>실제 인구 비율이나 능력 점수가 아닙니다. 조건이 겹치면 비율이 같을 수 있으며, 비교 자료에서 찾지 못한 조합은 비율 미산정으로 표시합니다.</p><p>이 조건을 모두 갖추어야만 귀한 사람이라는 뜻은 아닙니다.</p></details>';
-    h += '<p class="zf-scope">' + esc(story.scope) + '</p><div class="zf-chart-heading"><p class="zf-kicker">더 가까이 들여다보기</p><h3>당신의 열두 자리</h3><p>명반을 펼친 뒤 궁이나 별을 누르면 그 자리에 적힌 이야기가 열립니다.</p></div></article>';
+    h += '<p class="zf-scope">좋게 본 구절을 모아 읽은 결과입니다. 명반의 별과 전체 풀이에서 다른 구절도 함께 살펴보세요.</p></article>';
     return h;
   }
   window.ChaeksaZiweiFilter = { html: html };
