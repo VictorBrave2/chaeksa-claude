@@ -162,7 +162,7 @@
     return '<div class="src' + (일부 ? ' part' : '') + '">' + (x.뜻 ? '<p class="m">' + 문장html(x.뜻, true) + '</p>' : '')
       + (why ? '<p class="l">내 조건: ' + esc(why) + '</p>' : '')
       + '<details class="mb-source-original"><summary>한자 원문과 출처</summary><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>'
-      + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + (x.왜 ? '<p class="l">계산에서 확인한 조건: ' + esc(x.왜) + '</p>' : '') + '</details>'
+      + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + (x.왜 ? '<p class="l">계산에서 확인한 조건: ' + esc(String(x.왜).replace(/명궁\(명궁 /g, '명궁(')) + '</p>' : '') + '</details>'
       + (x.오늘말 ? '<details class="mb-source-original"><summary>오늘의 말로 옮긴 설명</summary>' + 오늘말줄(x) + '</details>' : '') + '</div>';
   }
   function 까닭말(k) {

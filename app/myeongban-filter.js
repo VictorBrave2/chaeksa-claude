@@ -8,7 +8,7 @@
     var volume = /卷([一二三])/.exec(s.source || '');
     var url = 'https://zh.wikisource.org/zh-hant/' + encodeURIComponent('紫微斗數全書') + '/' + encodeURIComponent('卷' + (volume ? volume[1] : '二'));
     var condition = window.ChaeksaZiweiCondition ? ChaeksaZiweiCondition(s.evidence) : '';
-    return '<div class="zf-source"><p>' + esc(R.sourceText ? R.sourceText(s.meaning) : s.meaning) + '</p><p class="zf-evidence"><b>내게 해당하는 조건</b><br>' + esc(condition || (R.sourceText ? R.sourceText(s.evidence) : s.evidence)) + '</p><details class="zf-original"><summary>고전 원문과 출처</summary><p class="zf-quote" lang="zh-Hant">' + esc(s.quote) + '</p><p class="zf-evidence">계산에서 확인한 조건: ' + esc(s.evidence) + '</p><a href="' + url + '" target="_blank" rel="noopener noreferrer">자미두수전서 · ' + esc(s.source) + ' ↗</a></details></div>';
+    return '<div class="zf-source"><p>' + esc(R.sourceText ? R.sourceText(s.meaning) : s.meaning) + '</p><p class="zf-evidence"><b>내게 해당하는 조건</b><br>' + esc(condition || (R.sourceText ? R.sourceText(s.evidence) : s.evidence)) + '</p><details class="zf-original"><summary>고전 원문과 출처</summary><p class="zf-quote" lang="zh-Hant">' + esc(s.quote) + '</p><p class="zf-evidence">계산에서 확인한 조건: ' + esc(String(s.evidence == null ? '' : s.evidence).replace(/명궁\(명궁 /g, '명궁(')) + '</p><a href="' + url + '" target="_blank" rel="noopener noreferrer">자미두수전서 · ' + esc(s.source) + ' ↗</a></details></div>';
   }
   function html(story) {
     if (!story || !Array.isArray(story.filters)) return '';
