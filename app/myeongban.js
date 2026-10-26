@@ -55,7 +55,7 @@
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
   $('h1').textContent = '정통자미두수';
   $('eyebrow').textContent = '별들이 그린 당신의 귀한 자리';
-  $('sub').textContent = '명반의 별을 누르고, 나에게 모인 좋은 조건을 읽어 보세요.';
+  $('sub').textContent = '태어난 날과 시간으로 나의 별 지도, 명반을 그려요. 별을 누르면 성향과 삶의 풀이가 열려요.';
   $('hint').textContent = 글('입력.시필요', '');
   $('go').textContent = '내 명반 읽기';
 
@@ -96,7 +96,7 @@
   function 화딱지(화들, 궁) {
     return (화들 || []).map(function (화) {
       var k = 화 + '|' + 궁, c = 화한글[화] || String(화).slice(-1), cls = 'mb-hwa' + (화 === '化忌' ? ' gi' : '');
-      return 결과.칸[k] ? '<button type="button" class="' + cls + '" data-cell="' + esc(k) + '" aria-label="' + esc(화 + ' ' + 별쉬운(화)) + '">' + esc(c) + '</button>' : '<em class="' + cls + '">' + esc(c) + '</em>';
+      return 결과.칸[k] ? '<button type="button" class="' + cls + '" data-cell="' + esc(k) + '" aria-label="' + esc(별쉬운(화)) + '">' + esc(c) + '</button>' : '<em class="' + cls + '">' + esc(c) + '</em>';
     }).join('');
   }
   function 궁칸(g) {
@@ -121,7 +121,7 @@
     h += '<div class="mb-sub">' + 딱들.join('') + '</div>';
     if (g.대한) {
       var now = g.대한.끝해 >= M.해범위[0] && g.대한.시작해 <= M.해범위[1];
-      h += '<div class="mb-dh' + (now ? ' now' : '') + '">큰 운 ' + g.대한.시작해 + '~' + String(g.대한.끝해).slice(-2) + '</div>';
+      h += '<div class="mb-dh' + (now ? ' now' : '') + '">10년 운 ' + g.대한.시작해 + '~' + String(g.대한.끝해).slice(-2) + '</div>';
     }
     return h + '</div>';
   }
@@ -132,13 +132,13 @@
     var 종류 = []; (M.경계 || []).forEach(function (말) { var k = 경계종류(말); if (k && 종류.indexOf(k) < 0) 종류.push(k); });
     if ((M.경계 || []).length) h += '<div class="mb-edge"><p>' + esc(글('명반.경계', '')) + '</p>' + 종류.map(function (k) { return '<p>' + esc(글('명반.경계종류.' + k, '')) + '</p>'; }).join('') + '</div>';
     h += '<div class="mb" id="mb">' + M.궁.map(궁칸).join('')
-      + '<div class="mb-center"><div class="c1">' + esc('당신을 보는 칸(' + 글('명반.명궁표시', '명궁') + ') — ' + 소리(M.명궁지지) + ' 칸 · 명반의 바탕 ' + (오행국한글[M.오행국] || M.오행국) + '(' + M.오행국 + ')') + '</div>'
-      + '<div class="c2">' + esc(글('명반.신궁표시', '신궁') + ' — ' + 궁말(M.신궁)) + '</div>'
+      + '<div class="mb-center"><div class="c1">' + esc('나를 보는 자리 · 명궁 ' + 소리(M.명궁지지)) + '</div>'
+      + '<div class="c2">' + esc('명궁과 짝을 이루는 신궁 · ' + 궁쉬운(M.신궁)) + '</div>'
       + (명식짧게() ? '<div class="c3">' + esc(명식짧게()) + '</div>' : '')
       + '<div class="c3 tap' + (탭본() ? ' still' : '') + '">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
-      + '</div>';
+      + '</div><p class="mb-legend">열두 칸은 삶의 분야를 뜻해요. 별 아래의 밝음·어두움은 옛 책이 그 위치에 붙인 분류예요.</p><details class="fold mb-calculation"><summary>명반의 계산 정보</summary><p class="why">' + esc('명궁 ' + 소리(M.명궁지지) + ' · 신궁 ' + 궁말(M.신궁) + ' · 오행국 ' + (오행국한글[M.오행국] || M.오행국) + '(' + M.오행국 + ')') + '</p><p class="why">오행국은 별의 위치와 운의 시작을 계산할 때 쓰는 분류예요. 함께 보는 네 자리인 삼방사정은 이 자리와 맞은편 자리, 네 칸씩 떨어진 두 자리를 뜻해요.</p></details>';
     if (window.ChaeksaZiweiFilter) h += ChaeksaZiweiFilter.html(R.filterStory);
-    if (R.filterStory) h += '<details class="mb-original"><summary>열두 궁 전체 풀이</summary>';
+    if (R.filterStory) h += '<details class="mb-original"><summary>성향·돈·일·관계 — 열두 분야 전체 풀이</summary>';
     h += 흐름html(M);   // 10-24 열두 칸 글 흐름(결론 → 근거 접힘)
     if (R.filterStory) h += '</details>';
     if (!R.filterStory) h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
@@ -153,15 +153,23 @@
     if (!x || !x.오늘말) return '';
     return '<p class="t">' + (x.옮긴거리 === 'none' ? '' : esc(글('칸.오늘말머리', '요즘 삶으로 말하면 — '))) + esc(x.오늘말) + '</p>';
   }
+  function 문장html(value, source) {
+    var prose = source && 읽기.sourceText ? 읽기.sourceText(value) : 읽는말(value);
+    return prose.split(/\n+|(?<=[.!?])\s+/).filter(Boolean).map(function (t) { return '<span class="mb-sentence">' + esc(t) + '</span>'; }).join('');
+  }
   function 원문칸(x, 일부) {
-    return '<div class="src' + (일부 ? ' part' : '') + '"><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>' + (x.뜻 ? '<p class="m">' + esc(x.뜻) + '</p>' : '') + 오늘말줄(x)
-      + (일부 && x.왜 ? '<p class="l">' + esc(x.왜) + '</p>' : '') + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + '</div>';
+    var why = x.왜 ? 조건읽기(x.왜) : '';
+    return '<div class="src' + (일부 ? ' part' : '') + '">' + (x.뜻 ? '<p class="m">' + 문장html(x.뜻, true) + '</p>' : '')
+      + (why ? '<p class="l">내 조건: ' + esc(why) + '</p>' : '')
+      + '<details class="mb-source-original"><summary>한자 원문과 출처</summary><p class="q" lang="zh-Hant">' + esc(x.구절) + '</p>'
+      + (x.줄 ? '<p class="l">' + esc(x.줄) + '</p>' : '') + (x.왜 ? '<p class="l">계산에서 확인한 조건: ' + esc(x.왜) + '</p>' : '') + '</details>'
+      + (x.오늘말 ? '<details class="mb-source-original"><summary>오늘의 말로 옮긴 설명</summary>' + 오늘말줄(x) + '</details>' : '') + '</div>';
   }
   function 까닭말(k) {
-    if (k.종류 === '대한') return '10년 운이 이 자리에 머뭅니다.';
-    if (k.종류 === '태세') return '한 해의 운인 태세가 이 자리에 옵니다.';
-    if (k.종류 === '소운') return '한 해의 운인 소운이 이 자리에 옵니다.';
-    if (k.종류 === '유년사화') return 별쉬운(k.별) + '에 ' + (화한글[k.화] || k.화) + ' 표시가 붙습니다.';
+    if (k.종류 === '대한') return '10년 동안 이어지는 운이 이 자리에 머물러요.';
+    if (k.종류 === '태세') return '이 해의 운이 이 자리에 와요(태세).';
+    if (k.종류 === '소운') return '이 해의 운이 이 자리에 와요(소운).';
+    if (k.종류 === '유년사화') return 별쉬운(k.별) + '에 ' + (화한글[k.화] || k.화) + ' 표시가 붙어요.';
     return k.말 || '';
   }
   function 추론of(key) { var A = (window.MYEONGBAN_COPY || {}).추론 || {}; return A[key] || {}; }
@@ -178,13 +186,14 @@
     Object.keys(읽기.stars).sort(function (a, b) { return b.length - a.length; }).forEach(function (k) { s = s.split(k).join(별쉬운(k)); });
     Object.keys(밝기짧게).sort(function (a, b) { return b.length - a.length; }).forEach(function (k) { s = s.split(k).join(밝기짧게[k]); });
     s = 소리(s).replace(/같은 궁/g, '같은 자리').replace(/([자축인묘진사오미신유술해])궁/g, '$1 칸').replace(/^(.+? 자리) ([자축인묘진사오미신유술해])에 /, '$1 · $2 칸 · ');
-    s = s.replace(/길성/g, '좋게 본 별').replace(/흉성/g, '거칠게 본 별').replace(/동궁/g, '같은 자리').replace(/생년/g, '태어난 해').replace(/생시/g, '태어난 시간대').replace(/음시|음궁/g, '음').replace(/양시|양궁/g, '양');
+    s = s.replace(/삼방사정/g, '함께 보는 네 자리').replace(/삼방/g, '함께 보는 세 자리').replace(/길성/g, '좋게 본 별').replace(/흉성/g, '거칠게 본 별').replace(/동궁/g, '같은 자리').replace(/생년/g, '태어난 해').replace(/생시/g, '태어난 시간대').replace(/음시|음궁/g, '음').replace(/양시|양궁/g, '양');
     var parts = s.split(' · '); s = parts.filter(function (p, i) { return parts.indexOf(p) === i; }).join(' · ');
     return /[\u3400-\u9fff]/.test(s) ? '' : s;
   }
+  window.ChaeksaZiweiCondition = 조건읽기;
   function 풀이줄(l, tag) {
     var conditions = (l.내조건 || []).map(조건읽기).filter(Boolean);
-    return '<div class="mb-reading-row">' + (conditions.length ? '<p class="mb-reading-condition">' + esc(conditions.join(' / ')) + '</p>' : '') + '<p class="mb-line">' + (tag ? '<span class="tag">' + esc(tag) + '</span>' : '') + esc(읽는말(l.글 || l)) + '</p></div>';
+    return '<div class="mb-reading-row"><p class="mb-line">' + (tag ? '<span class="tag">' + esc(tag) + '</span>' : '') + 문장html(l.글 || l) + '</p>' + (conditions.length ? '<p class="mb-reading-condition">내 조건: ' + esc(conditions.join(' / ')) + '</p>' : '') + '</div>';
   }
   function 실제줄(원고, 셀, 내, 더id) {
     var ids = {}; (셀.걸림 || []).forEach(function (x) { ids[x.id] = true; });
@@ -211,13 +220,13 @@
   function 근거접힘(제목, rows, intro) {
     if (!rows.length) return '';
     var seen = {};
-    return '<details class="fold"><summary>' + esc(제목) + '</summary>' + (intro ? '<p class="why">' + esc(intro) + '</p>' : '') + rows.filter(function (x) { var k = x.id || x.구절; if (seen[k]) return false; seen[k] = true; return true; }).map(function (x) { return 원문칸(x, !!x.왜); }).join('') + '</details>';
+    return '<details class="fold"><summary>' + esc(제목) + '</summary>' + (intro ? '<p class="why">' + esc(intro) + '</p>' : '') + rows.filter(function (x) { var k = x.id || x.구절; if (seen[k]) return false; seen[k] = true; return true; }).map(function (x) { return 원문칸(x, /확인할 수 없는|모르는/.test(제목)); }).join('') + '</details>';
   }
   function 연도풀이(셀) {
     var years = 셀.움직이는해 || [];
-    var h = '<details class="fold"><summary>운이 이 자리에 오는 연도</summary><p class="why">앞으로 20년의 운 배치입니다. 위 풀이의 일이 이 해에 모두 일어난다는 뜻은 아닙니다.</p>';
+    var h = '<details class="fold"><summary>이 자리의 운을 살펴볼 해</summary><p class="why">앞으로 20년 가운데 이 자리에 운이 오는 해예요. 각 연도에는 어떤 운이 오는지 적었어요. 위에 나온 모든 일이 그해에 일어난다는 뜻은 아니에요.</p>';
     if (years.length) h += years.map(function (y) { return '<p class="yr"><b>' + esc(y.해) + '년</b> — ' + esc((y.까닭 || []).map(까닭말).join(' · ')) + '</p>'; }).join('');
-    else h += '<p class="mb-none">앞으로 20년 안에 이 별과 자리에 연결되는 운이 계산되지 않았습니다.</p>';
+    else h += '<p class="mb-none">앞으로 20년 동안은 이 목록에서 찾는 운이 이 자리에 오지 않아요.</p>';
     return h + '</details>';
   }
   function 별시트(key) { 열기(별시트html(key)); }
@@ -231,79 +240,59 @@
     var h = '<p class="sh-k">' + esc(궁쉬운(palace) + ' · ' + (궁한글[palace] || palace)) + '</p>';
     h += '<h2 class="sh-t">' + esc(별쉬운(star)) + '<small>' + esc(별이름(star)) + '</small></h2>';
     if (읽기.stars[star]) h += '<p class="sh-b sh-intro">' + esc(읽기.stars[star]) + '</p>';
-    if (cell.실은별) h += '<p class="sh-location">' + esc(별쉬운(cell.실은별) + '에 ' + 별쉬운(star) + 받침말(별쉬운(star), '이', '가') + ' 붙어 있습니다.') + '</p>';
+    if (cell.실은별) h += '<p class="sh-location">' + esc(별쉬운(cell.실은별) + '에 ' + 별쉬운(star) + 받침말(별쉬운(star), '이', '가') + ' 붙어 있어요.') + '</p>';
     h += '<p class="sh-context">' + esc(읽기.palaces[palace] || '') + '</p>';
-    h += '<p class="why sh-attribution">고전 풀이는 《자미두수전서》에서 옮겼습니다. 책사의 해석은 따로 표시했습니다.</p>';
+    h += '<p class="why sh-attribution">《자미두수전서》의 뜻을 옮겼어요. 책사가 따로 해석한 문장에는 표시를 붙였어요.</p>';
     var body = 풀이묶음(lines, 추론of(key));
-    h += body || '<p class="mb-none">이 별이 이 자리에 있을 때의 풀이 가운데, 조건을 모두 확인한 문장은 아직 없습니다.</p>';
+    h += body || '<p class="mb-none">이 별이 이 자리에 있을 때의 구절 중, 내 조건에 모두 맞는 풀이는 찾지 못했어요.</p>';
     if (twin) {
       var twinLines = 실제줄(짝칸글[twin.키] || {}, twin, '');
       if (twinLines.length) h += '<div class="sec">' + esc(별쉬운(twin.함께) + 받침말(별쉬운(twin.함께), '과', '와') + ' 함께 읽는 풀이') + '</div>' + twinLines.map(function (l) { return 풀이줄(l); }).join('');
       hits = hits.concat(twin.걸림 || []); partial = partial.concat(twin.일부 || []); other = other.concat(twin.안걸림 || []);
     }
     h += 연도풀이(cell);
-    h += 근거접힘('풀이의 고전 원문과 근거', hits, '위 풀이가 연결된 원문입니다. 옛 표현과 그 뜻을 함께 적었습니다.');
-    h += 근거접힘('아직 확인할 수 없는 조건', partial, '일부 조건만 확인되어, 위의 내 풀이에는 넣지 않은 대목입니다.');
-    h += 근거접힘('내 명반과 다른 조건의 풀이', other, '내게 해당하는 풀이가 아닙니다. 다른 별 배치나 출생 조건을 설명한 대목입니다.');
+    h += 근거접힘('이렇게 풀이한 근거', hits, '각 풀이가 나온 고전 구절이에요. 뜻과 내 조건을 먼저 읽고 원문을 펼쳐 보세요.');
+    h += 근거접힘('내게 해당하는지 아직 모르는 구절', partial, '필요한 조건 중 일부만 알 수 있어요. 그래서 내게 해당한다고 확정하지 않은 구절이에요.');
+    h += 근거접힘('다른 별 배치에서의 풀이', other, '내 명반과 조건이 달라서 해당하지 않는 구절이에요.');
     h += '<details class="fold"><summary>이 별의 이름과 밝기 알아보기</summary>';
-    if (내) h += '<p class="mb-line">이 명반의 밝기: ' + esc(밝기짧게[내] || 내) + '</p><p class="why">실제 빛의 밝기가 아니라, 옛 책이 별의 위치에 붙인 분류입니다. 같은 별도 놓인 자리에 따라 풀이가 달라집니다.</p>';
-    if (def.한줄) h += '<p class="mb-line">' + esc(def.한줄) + '</p>';
+    if (내) h += '<p class="mb-line">내 명반에서 이 별의 밝기: ' + esc(밝기짧게[내] || 내) + '</p><p class="why">밝음·어두움은 옛 책에서 별의 위치를 나눈 말이에요. 같은 별도 어느 자리에 있느냐에 따라 풀이가 달라져요.</p>';
+    if (def.한줄) h += '<p class="mb-line">' + 문장html(def.한줄, true) + '</p>';
     if (def.원문) h += 원문칸({ 구절: def.원문, 줄: def.줄 }, false);
     return h + '</details>';
   }
   function 궁시트(name) { var h = 궁시트html(name); if (h) 열기(h); }
   function 궁시트html(name) {
     var g = 궁of(name); if (!g) return '';
-    var h = '<p class="sh-k">' + esc(궁한글[name] || name) + '</p><h2 class="sh-t">' + esc(궁쉬운(name)) + '</h2><p class="sh-b sh-intro">' + esc(읽기.palaces[name] || '') + '</p>';
-    if (결과.명반.신궁 === name) h += '<p class="why">이곳은 명궁과 짝을 이루는 신궁이기도 합니다.</p>';
-    var summaries = [];
-    (g.주성 || []).forEach(function (x) {
+    var h = '<p class="sh-k">' + esc(궁한글[name] || name) + '</p><h2 class="sh-t">' + esc((읽기.questions || {})[name] || 궁쉬운(name)) + '</h2><p class="sh-b sh-intro">' + esc(읽기.palaces[name] || '') + '</p>';
+    if (결과.명반.신궁 === name) h += '<p class="why">이곳은 나를 보는 자리인 명궁과 짝을 이루는 자리, 신궁이기도 해요.</p>';
+    var summaries = [], summarySeen = {};
+    function addSummary(l, tag) { var id = 읽는말(l.글 || l) + (l.내조건 || []).join('|'); if (!summarySeen[id]) { summaries.push(풀이줄(l, tag)); summarySeen[id] = true; } }
+    var summaryStars = g.주성.length ? g.주성 : (g.보좌 || []).concat(g.살성 || []).map(function (name) { return {이름:name}; });
+    summaryStars.forEach(function (x) {
       var k = x.이름 + '|' + name, c = 결과.칸[k] || {}, extra = (c.짝 || []).filter(function (z) { return z.걸림 === '걸림' && !z.일판칸; });
-      var lines = 실제줄(칸글[k] || {}, c, x.밝기 || '', extra), traits = lines.filter(function (l) { return l.갈래 === '특성'; });
-      var chosen = traits.length ? traits : lines;
-      if (chosen.length) chosen.forEach(function (l) { summaries.push(풀이줄(l, 별쉬운(x.이름))); });
-      else { var inferred = 추론of(k), line = (inferred.성품 || inferred.일 || [])[0]; if (line) summaries.push(풀이줄(line, 별쉬운(x.이름) + ' · 책사의 해석')); }
+      var lines = 실제줄(칸글[k] || {}, c, x.밝기 || c.내밝기 || '', extra);
+      var chosen = lines;
+      if (c.짝칸) chosen = chosen.concat(실제줄(짝칸글[c.짝칸.키] || {}, c.짝칸, ''));
+      if (chosen.length) chosen.forEach(function (l) { addSummary(l, 별쉬운(x.이름)); });
+      else { var inferred = 추론of(k), line = (inferred.성품 || inferred.일 || [])[0]; if (line) addSummary(line, 별쉬운(x.이름) + ' · 책사의 해석'); }
     });
-    if (summaries.length) h += '<div class="sec">이 자리의 별에서 읽은 모습</div><p class="why">《자미두수전서》의 풀이와 책사의 해석입니다. 별을 누르면 각각의 근거를 볼 수 있습니다.</p>' + summaries.join('');
-    else if (!g.주성.length) h += '<p class="why">이 칸에는 중심이 되는 열네 별이 없습니다. 아래에 있는 다른 별의 풀이를 볼 수 있습니다.</p>';
+    if (summaries.length) h += '<div class="sec">내게 해당하는 풀이</div><p class="why">별마다 내 조건에 맞는 구절을 골랐어요. 별을 누르면 성향·겪는 일·고전 근거를 함께 볼 수 있어요.</p>' + summaries.join('');
+    else if (!g.주성.length) h += '<p class="why">이 칸에는 중심이 되는 열네 별이 없어요. 아래의 다른 별을 눌러 풀이를 볼 수 있어요.</p>';
     var stars = (g.주성 || []).map(function (x) { return [x.이름, 밝기짧게[x.밝기] || '']; }).concat((g.보좌 || []).map(function (x) { return [x, '함께 놓인 별']; }), (g.살성 || []).map(function (x) { return [x, '함께 놓인 별']; }), (g.사화 || []).map(function (x) { return [x.화, 별쉬운(x.별) + '에 붙은 표시']; }));
     var buttons = [], seen = {};
     stars.forEach(function (x) { var k = x[0] + '|' + name; if (seen[k]) return; seen[k] = true; if (결과.칸[k]) buttons.push('<button type="button" data-cell="' + esc(k) + '">' + esc(별쉬운(x[0])) + '<small>' + esc(x[1]) + '</small></button>'); });
     if (buttons.length) h += '<div class="sec">별을 눌러 더 알아보기</div><div class="sh-stars">' + buttons.join('') + '</div>';
     var cell = g.궁줄 || {}, lines = 실제줄(궁줄글[name] || {}, cell, '');
-    if (lines.length) h += '<div class="sec">이 자리에 함께 해당하는 풀이</div><p class="why">태어난 시간과 다른 별의 배치까지 살펴본 고전 풀이입니다.</p>' + lines.map(function (l) { return 풀이줄(l); }).join('');
-    if (g.대한) h += '<details class="fold"><summary>이 자리의 10년 운</summary><p class="mb-line">' + esc(g.대한.시작해 + '~' + g.대한.끝해 + '년') + '</p><p class="why">명반에서 10년 단위로 옮겨 가는 운을 대한이라고 합니다. 이 기간에는 이 자리의 별을 함께 읽습니다.</p></details>';
-    h += 근거접힘('이 자리 풀이의 고전 원문', cell.걸림 || [], '위 풀이가 연결된 원문입니다.');
-    h += 근거접힘('아직 확인할 수 없는 조건', cell.일부 || [], '일부 조건만 확인된 대목입니다. 이 일들이 나에게 일어난다고 판정한 것은 아닙니다.');
-    h += 근거접힘('내 명반과 다른 조건의 풀이', cell.안걸림 || [], '다른 배치에서의 풀이입니다.');
+    if (lines.length) h += '<div class="sec">다른 조건까지 살펴본 풀이</div><p class="why">태어난 시간이나 다른 별의 위치에 따라 함께 해당하는 구절이에요.</p>' + lines.map(function (l) { return 풀이줄(l); }).join('');
+    if (g.대한) h += '<details class="fold"><summary>이 자리의 10년 운</summary><p class="mb-line">' + esc(g.대한.시작해 + '~' + g.대한.끝해 + '년') + '</p><p class="why">운은 10년마다 다른 자리로 옮겨 가요. 이를 대한이라고 불러요. 이 기간에는 이 자리의 별을 함께 읽어요.</p></details>';
+    h += 근거접힘('이 자리 풀이의 고전 원문', cell.걸림 || [], '각 풀이가 나온 고전 구절이에요.');
+    h += 근거접힘('내게 해당하는지 아직 모르는 구절', cell.일부 || [], '조건을 모두 확인하지 못해 내게 해당한다고 확정하지 않은 구절이에요.');
+    h += 근거접힘('다른 별 배치에서의 풀이', cell.안걸림 || [], '내 명반과 조건이 달라 해당하지 않는 구절이에요.');
     return h;
   }
-  // ── 10-24 사장님 「ㄱㄱ 명반도」(「결론 (근거 작게) 결론 (근거 작게)」 꼴) — 그림 아래에 열두 칸이 글로 흐른다.
-  //   칸마다: 머리(궁 이름 · 지지 칸) → 물음 자리에 쉬운 이름 → 결론 = 그 칸에 선 큰 별마다 「별(밝기) — 첫 줄」(시트가 보여 주던 작가 줄 그대로, 새 문장 없음) → 「근거 보기」 접힘 안에 궁 시트 · 별 시트 전부.
-  //   눌러서 열던 시트는 그대로 둔다(그림은 누르고, 흐름은 읽는다).
-  function 첫줄(key) {
-    var 별 = key.split('|')[0], 셀 = 결과.칸[key], 원고 = 칸글[key] || { 줄: [] }; if (!셀) return '';
-    var 내 = 셀.내밝기 || '', 걸림id = {}; (셀.걸림 || []).forEach(function (x) { 걸림id[x.id] = true; });
-    (셀.짝 || []).forEach(function (x) { if (x.걸림 === '걸림' && !x.일판칸) 걸림id[x.id] = true; });
-    var 줄들 = (원고.줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 걸림id[id]; }) && 밝기맞음(l.밝기, 내); });
-    var 특 = 줄들.filter(function (l) { return l.갈래 === '특성'; }), 사 = 줄들.filter(function (l) { return l.갈래 !== '특성'; });
-    if (특.length) return 읽는말(특[0].글); if (사.length) return 읽는말(사[0].글);
-    var 추 = 추론of(key); if (추.성품 && 추.성품.length) return 추.성품[0]; if (추.일 && 추.일.length) return 추.일[0];
-    if (셀.빈칸) return '이 별이 이 자리에 있을 때는 조건을 모두 확인한 풀이가 아직 없습니다.';
-    var 별글 = (쪽2.별 && 쪽2.별[별]) || {}; return 읽기.stars[별] || '';
-  }
   function 흐름html(M) {
-    var 차례 = M.궁.slice().sort(function (a, b) { return (a.이름 === '命宮' ? 0 : 1) - (b.이름 === '命宮' ? 0 : 1); });
-    return 차례.map(function (g) {
-      var 결론 = [];
-      g.주성.forEach(function (s) { var 줄 = 첫줄(s.이름 + '|' + g.이름); if (줄) 결론.push('<p><b>' + esc(별쉬운(s.이름)) + (s.밝기 ? ' · ' + esc(밝기짧게[s.밝기] || s.밝기) : '') + '</b> — ' + esc(줄) + '</p>'); });
-      if (!결론.length) { var 보조 = (g.보좌 || []).concat(g.살성 || []).map(function (x) { return x + '|' + g.이름; }).filter(function (k) { return 결과.칸[k]; })[0]; if (보조) { var 줄b = 첫줄(보조); if (줄b) 결론.push('<p><b>' + esc(별쉬운(보조.split('|')[0])) + '</b> — ' + esc(줄b) + '</p>'); } }
-      if (!결론.length && g.궁줄) { var 걸id = {}; (g.궁줄.걸림 || []).forEach(function (x) { 걸id[x.id] = true; }); var 궁줄줄 = ((궁줄글[g.이름] || {}).줄 || []).filter(function (l) { return (l.규칙 || []).some(function (id) { return 걸id[id]; }); }); if (궁줄줄.length) 결론.push('<p>' + esc(읽는말(궁줄줄[0].글)) + '</p>'); }   // 큰 별 줄이 없으면 이 궁에 걸린 궁줄(띠 · 시 · 밝기) 첫 줄
-      var 근거 = 궁시트html(g.이름) + g.주성.map(function (s) { return '<div class="mb-flow-sub"><div class="sec">' + esc(별쉬운(s.이름)) + '</div>' + 별시트html(s.이름 + '|' + g.이름) + '</div>'; }).join('');
-      return '<section class="card jt-ch mb-flow" id="mbFlow-' + esc(g.이름) + '"><div class="jt-head"><span class="jt-no">' + esc((궁한글[g.이름] || g.이름) + ' · ' + 소리(g.지지) + ' 칸' + (M.신궁 === g.이름 ? ' · ' + 글('명반.신궁표시', '신궁') : '')) + '</span><h2>' + esc(궁쉬운(g.이름) || 궁한글[g.이름] || g.이름) + '</h2></div>'
-        + (결론.length ? '<div class="jt-answer mb-flow-ans">' + 결론.join('') + '</div>' : '')
-        + '<details class="jt-ev"' + (결론.length ? '' : ' open') + '><summary>근거 보기</summary>' + 근거 + '</details></section>';
-    }).join('');
+    var order = M.궁.slice().sort(function (a, b) { return (a.이름 === '命宮' ? 0 : 1) - (b.이름 === '命宮' ? 0 : 1); });
+    return order.map(function (g) { return '<section class="card mb-flow" id="mbFlow-' + esc(g.이름) + '">' + 궁시트html(g.이름) + '</section>'; }).join('');
   }
   function 열기(h) {
     $('shBody').innerHTML = h;
@@ -358,7 +347,7 @@
     var sh = t.closest && t.closest('[data-share]');
     if (sh) {
       var 주소 = 'https://chaeksa.kr/myeongban.html', 말 = $('shareMsg');
-      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: '정통자미두수 — 책사', text: '별의 배치에서 찾은 당신의 귀한 조건', url: 주소 }) : '';
+      var r = window.ChaeksaShare && ChaeksaShare.shareLink ? await ChaeksaShare.shareLink({ title: '정통자미두수 — 책사', text: '나의 별 지도에서 읽는 성향·돈·일·관계', url: 주소 }) : '';
       if (말) 말.textContent = r === 'copied' ? '주소를 복사했어요. 카톡 대화창에 붙여 넣으세요.' : r === '' ? '이 주소를 보내 주세요 — ' + 주소 : 글('공유.안내', '');
       try { if (r && r !== 'aborted' && window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban_share'); } catch (e2) {}
       return;
@@ -378,7 +367,7 @@
     var p = 사람들[i]; if (!p) return;
     Array.prototype.forEach.call(document.querySelectorAll('#who .who button[data-i]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-i') === i); });
     칸채우기(p.birth);
-    if (p.birth.hour == null) { $('out').innerHTML = ''; $('f').classList.remove('hide'); $('err').textContent = '태어난 시각이 있어야 명반을 그려요. 시각을 넣어 주세요.'; $('hh').focus(); return; }
+    if (p.birth.hour == null) { $('out').innerHTML = ''; $('f').classList.remove('hide'); $('err').textContent = '태어난 시간을 넣어 주세요. 별의 위치를 정하는 데 필요해요.'; $('hh').focus(); return; }
     $('f').classList.add('hide');
     var 이름 = p.name && p.name !== '이름 없음' ? p.name : p.relation || '나';
     보기({ year: p.birth.year, month: p.birth.month, day: p.birth.day, hour: p.birth.hour, minute: p.birth.minute || 0, gender: p.birth.gender === 'F' ? 'F' : 'M', place: p.birth.place || 'KR:서울' }, 이름, 스크롤);
@@ -386,7 +375,7 @@
   try { if (PP) { PP.migrate(); 사람들 = PP.list().filter(function (p) { return p.birth && p.birth.year; }); } } catch (e) { 사람들 = []; }
   if (사람들.length) {
     var 나 = PP.self(), 먼저 = Math.max(0, 사람들.findIndex(function (p) { return 나 && p.id === 나.id; }));
-    $('who').innerHTML = '<p class="who-h">저장한 생년월일로 볼 사람을 고르세요</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 생년월일 넣기</button></div>';
+    $('who').innerHTML = '<p class="who-h">누구의 명반을 볼까요?</p><div class="who">' + 사람들.map(function (p, i) { return '<button type="button" data-i="' + i + '">' + esc(이름표(p)) + '</button>'; }).join('') + '<button type="button" data-new="1">다른 사람의 생년월일 넣기</button></div>';
     $('who').addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('button'); if (!b) return;
       if (b.getAttribute('data-new')) { Array.prototype.forEach.call(document.querySelectorAll('#who .who button'), function (x) { x.classList.remove('on'); }); b.classList.add('on'); $('f').reset(); $('p').value = 'KR:서울'; $('f').classList.remove('hide'); $('out').innerHTML = ''; $('err').textContent = ''; $('y').focus(); return; }
@@ -411,8 +400,8 @@
     // 시 · 분 숫자 칸(10-06 사장님 「시간 입력 바꿔 줘」) — 분은 비우면 0, 시는 0~23 · 분은 0~59 만
     var 시 = $('hh').value.trim(), 분 = $('mi').value.trim(), g = (document.querySelector('input[name=g]:checked') || {}).value || 'M';
     var body = { year: +$('y').value, month: +$('m').value, day: +$('d').value, hour: 시 === '' || +시 < 0 || +시 > 23 || +시 % 1 ? NaN : +시, minute: 분 === '' ? 0 : +분, gender: g, place: $('p').value };
-    if (isNaN(body.minute) || body.minute < 0 || body.minute > 59 || body.minute % 1) { $('err').textContent = '분은 0부터 59까지 넣어 주세요.'; return; }
-    if (!body.year || !body.month || !body.day) { $('err').textContent = '태어난 날을 다 넣어 주세요.'; return; }
+    if (isNaN(body.minute) || body.minute < 0 || body.minute > 59 || body.minute % 1) { $('err').textContent = '태어난 분을 0~59 사이로 넣어 주세요.'; return; }
+    if (!body.year || !body.month || !body.day) { $('err').textContent = '태어난 해·월·일을 모두 넣어 주세요.'; return; }
     if (isNaN(body.hour)) { $('err').textContent = '태어난 시각이 있어야 명반을 그려요. 시각을 넣어 주세요.'; return; }
     남겨두기(body);
     보기(body, '', true);
@@ -422,12 +411,12 @@
     try {
       var r = await fetch(API + '/api/myeongban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var j = await r.json();
-      if (!r.ok) { $('err').textContent = j.error || '계산하지 못했어요.'; return; }
+      if (!r.ok) { $('err').textContent = j.error || '명반을 만들지 못했어요. 입력한 생년월일과 시간을 확인해 주세요.'; return; }
       결과 = j; 표 = j.표 || ''; 지금 = { 이름: 이름 || '', body: body }; $('err').textContent = '';
       그리기();
       // 손님이 눌러서 그린 것이면 명반으로 내려간다(처음 열릴 때 넣어 둔 사람으로 저절로 그린 것은 그대로 — 첫 줄부터 읽게)
       if (스크롤) try { var 머리 = document.querySelector('.mb-top'); if (머리) 머리.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e4) {}
       if (!셌다) { 셌다 = true; try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban'); } catch (e2) {} }
-    } catch (err) { $('err').textContent = '연결하지 못했어요. 다시 눌러 주세요.'; }
+    } catch (err) { $('err').textContent = '풀이를 불러오지 못했어요. 잠시 후 다시 눌러 주세요.'; }
   }
 })();
