@@ -10,7 +10,7 @@
   'use strict';
   const E = global.ChaeksaEngine, P = global.ChaeksaPanjeong, W = global.ChaeksaGwanjeom, G = global.ChaeksaSaenggeuk;
   if (!E || !P || !W) return;
-  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const esc = (s) => (global.ChaeksaJeongtongProse ? global.ChaeksaJeongtongProse.text(s) : String(s == null ? '' : s)).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 오행말 = ['나무(목)', '불(화)', '흙(토)', '쇠(금)', '물(수)'];
   const 오행한 = ['목', '화', '토', '금', '수'];   // 명식 칸 이름 「정(화)」 꼴(10-23 사장님 「정(화) 이런 식이 맞지 않냐」) — 「정불(화)」 아님
   // 역학(09-24) — 성패 넷은 자평진전이 매긴 말이다. 우리 판정이 아니라 「옛 책은 이렇게 봤다」로 옮긴다. 길흉은 시대 · 환경이 정한다.
@@ -255,6 +255,7 @@
     if (global.ChaeksaOryu) global.ChaeksaOryu.잇기(box, () => 그리기(box, input));   // 못 그린 장의 다시 하기 = 처음부터 다시 그린다
     box.querySelectorAll('.jt-toc a').forEach(a => a.addEventListener('click', () => { const d = box.querySelector('#jtCh' + a.dataset.ch); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
     try { const S = global.ChaeksaSeolmyeong, b = box.querySelector('#jtSeol'); if (S && b) S.render(R, today, b, {}); } catch (e) {}
+    if (global.ChaeksaJeongtongProse) global.ChaeksaJeongtongProse.apply(box);
   }
 
   // 따로 열던 정통사주 쪽(jeongtong.html)의 입력 칸(#jtForm)을 세우던 코드는 10-02 개편 3묶음에서 지웠다 — 그 쪽은 이제 앱(?go=jeongtong)으로 넘기기만 한다. 그리기는 app.js 가 부른다.
