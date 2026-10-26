@@ -6,34 +6,10 @@
   var names = { 길: '좋음', 흉: '나쁨', 평: '보통', 변화: '전환' };
   function name(k) { return names[k] || '판단 없음'; }
   function chip(k) { return '<span class="wc-chip wc-' + (Object.prototype.hasOwnProperty.call(names, k) ? k : '평') + '">' + esc(name(k)) + '</span>'; }
-  // 서버의 현상 문장을 결론부터 읽는다. 길흉·연도·분야는 여기서 새로 정하지 않는다.
-  function object(s) { var c = s.charCodeAt(s.length - 1); return s + (c >= 44032 && c <= 55203 && (c - 44032) % 28 ? '을' : '를'); }
-  function subject(s) { var c = s.charCodeAt(s.length - 1); return s + (c >= 44032 && c <= 55203 && (c - 44032) % 28 ? '이' : '가'); }
-  function sentence(s) {
-    s = String(s || '').trim(); if (!s) return '';
-    var endings = [['더 좋은 성과를 내는 일','더 좋은 성과를 냅니다.'],['외부 활동은 적게 하는 일','외부 활동은 적습니다.'],['탈 없이 지내는 일','탈 없이 지냅니다.'],['어려움을 겪는 일','어려움을 겪습니다.'],['손해를 보는 일','손해를 봅니다.'],['다시 탈이 나는 일','다시 문제가 생깁니다.'],['탈이 나는 일','문제가 생깁니다.'],['다시 풀리는 일','다시 풀립니다.'],['해결하는 일','해결합니다.'],['시간을 쓰는 일','시간을 씁니다.'],['하던 대로 지내는 일','하던 대로 지냅니다.'],['문제가 풀리는 일','문제가 풀립니다.'],['이름이 알려지고 사람들이 나를 찾는 일','이름이 알려지고 사람들이 나를 찾습니다.'],['들어오는 돈이 늘어나는 일','들어오는 돈이 늘어납니다.'],['일이 잘 풀리고 맡을 자리나 직책이 생기는 일','일이 잘 풀리고 맡을 자리나 직책이 생깁니다.'],['걱정이 줄어 마음이 편해지는 일','걱정이 줄어 마음이 편해집니다.'],['혼자 감당하는 일','혼자 감당합니다.'],['쉬어야 하는 일','쉬어야 합니다.'],['사이가 틀어지는 일','사이가 틀어집니다.'],['기회를 살펴보는 일','기회를 살펴봅니다.'],['돈 될 일을 살펴보는 일','돈 될 일을 살펴봅니다.'],['일을 맡아 해내는 일','일을 맡아 해냅니다.'],['도움을 청하는 일','도움을 청합니다.'],['꾸준히 이어 가는 일','꾸준히 이어 갑니다.'],['표현하는 일','표현합니다.'],['챙기는 일','챙깁니다.'],['해 나가는 일','해 나갑니다.'],['공부하는 일','공부합니다.'],['움직이는 일','움직입니다.'],['어울리는 일','어울립니다.']];
-    for (var i = 0; i < endings.length; i++) { var a = endings[i][0]; if (s.slice(-a.length) === a) return s.slice(0, -a.length) + endings[i][1]; }
-    if (/손해 보는 일$/.test(s)) return s.replace(/손해 보는 일$/, '손해를 봅니다.');
-    return /[.!?。]$/.test(s) ? s : s + '.';
-  }
-  function sajuText(h) {
-    var s = String(h.사현상 || h.사왜 || '').trim(), m;
-    if (!s) return '이 해의 상세 풀이를 받지 못했습니다.';
-    m = s.match(/^(.*?) 때문에 문제가 생겨도 (.*?) 덕분에 (.*?)에서 탈 없이 지내는 일$/);
-    if (m) return object(m[3]) + ' 지킵니다. ' + m[1] + ' 때문에 문제가 생겨도 ' + subject(m[2].replace(/의 도움$/, '')) + ' 해결을 돕습니다.';
-    m = s.match(/^문제를 막아 주던 힘이 약해져 (.*?) 때문에 (.*?)에서 어려움을 겪는 일$/);
-    if (m) return m[2] + '에서 어려움을 겪습니다. ' + m[1] + ' 때문에 생기는 문제를 막아 주던 도움이 약해집니다.';
-    m = s.match(/^(.*?) 때문에 (.*?)에서 해결되지 않던 문제가 (.*?) 덕분에 다시 풀리는 일$/);
-    if (m) return m[2] + '에서 막혔던 일이 다시 풀립니다. ' + m[3] + ' 덕분에 ' + m[1] + ' 때문에 생긴 문제를 해결합니다.';
-    m = s.match(/^(.*?)보다 (.*?)에 더 관심을 두고 시간을 쓰는 일$/);
-    if (m) return m[2] + '에 집중합니다. ' + m[1] + '보다 여기에 더 많은 시간을 씁니다.';
-    m = s.match(/^(.*?)에서 크게 달라지는 것 없이, (.*)$/);
-    if (m) return m[1] + '에서는 큰 변화가 없습니다. ' + sentence(m[2]);
-    if (s === '배우고 준비하는 데 시간을 많이 쓰고 외부 활동은 적게 하는 일') return '배움과 준비에 시간이 많이 듭니다. 실제로 밖에서 활동하는 일은 적습니다.';
-    return sentence(s);
-  }
-  function ziweiText(h) { return String(h.자사건 || '').split(', ').filter(Boolean).map(sentence).join(' '); }
-  function firstSentence(s) { return String(s).split('. ')[0].replace(/\.$/, '') + '.'; }
+  function sajuReading(h) { return window.ChaeksaWhenReading.saju(h); }
+  function ziweiReading(h) { return window.ChaeksaWhenReading.ziwei(h); }
+  function sajuText(h) { return sajuReading(h).text; }
+  function ziweiText(h) { return h.자사건 ? ziweiReading(h).text : ''; }
   function runOf(years) {
     var run = [], ended = false;
     years.forEach(function (h) {
@@ -51,6 +27,7 @@
   }
   function selected(h) {
     var same = h.사판 === '길' && h.자판 === '길' ? '운이 풀리는 해입니다.' : h.사판 === '흉' && h.자판 === '흉' ? '고비를 겪는 해입니다.' : (h.사판 === '길' && h.자판 === '흉') || (h.사판 === '흉' && h.자판 === '길') ? '좋은 운과 어려운 운이 함께 있습니다.' : h.사판 === '변화' ? '힘을 쏟는 일이 달라집니다.' : h.자판 === '길' ? '자미두수로는 운이 좋은 해입니다.' : h.사판 === '길' ? '사주로는 운이 좋은 해입니다.' : h.사판 === '흉' || h.자판 === '흉' ? '어려운 일이 무엇인지 짚어볼 해입니다.' : '큰 변화보다 하던 일을 이어가는 해입니다.';
+    if (h.사판 === '길' && h.자판 === '길') same = h.자사건 ? ziweiReading(h).headline : sajuReading(h).summary;
     return '<div class="wc-selected-head"><h3>' + h.y + '<small>년</small></h3><span>' + esc(same) + '</span></div>' + (h.대운바뀜 ? '<p class="wc-turn">10년 운이 바뀌는 해</p>' : '') + description(h);
   }
   function render(P, now) {
@@ -59,11 +36,19 @@
     if (!years.length) return '<p class="why">운의 흐름 자료를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</p>';
     var run = runOf(years), first = run[0] || years.find(function (z) { return z.자판 === '길'; }) || years.find(function (z) { return z.사판 === '길'; }) || years[0];
     var heading = run.length ? '사주와 자미두수로 본 나의 운' : first.자판 === '길' ? '자미두수로 본 나의 운' : first.사판 === '길' ? '사주로 본 나의 운' : '앞으로 10년의 운';
-    var headline = run.length ? first.y + '년' + (run.length > 1 ? '부터' : '에') + '<br>운이 풀립니다.' : first.자판 === '길' || first.사판 === '길' ? first.y + '년에<br>좋은 운이 들어옵니다.' : '크게 풀리는 해보다<br>고비를 살펴야 합니다.';
-    var sub = run.length > 1 ? run[run.length - 1].y + '년까지 좋은 운이 이어집니다.' : run.length ? '사주와 자미두수 모두 이 해를 좋게 봅니다.' : first.자판 === '길' ? '사주에서는 ' + firstSentence(sajuText(first)) : first.사판 === '길' ? '자미두수에서는 ' + (ziweiText(first) || '이 해를 ' + first.등급 + '으로 봅니다.') : '앞으로 10년에는 두 풀이 모두 뚜렷한 길운을 잡지 못했습니다. 해마다 겪는 일은 다릅니다.';
-    var current = years.find(function (z) { return z.y === now; }), warning = years.find(function (z) { return z.y < first.y && z.사판 === '흉' && z.자판 === '흉'; });
-    var direct = (first.자판 === '길' ? ziweiText(first) : '') || (first.사판 === '길' ? firstSentence(sajuText(first)) : '');
-    var answers = '<div class="wc-answers">' + (current && current.y !== first.y ? '<div><span>지금은</span><p>' + esc(firstSentence(sajuText(current))) + '</p></div>' : '') + (direct ? '<div><span>' + first.y + '년에는</span><p>' + esc(direct) + '</p></div>' : '') + (warning ? '<div class="wc-caution"><span>그전에 ' + warning.y + '년</span><p>' + esc(firstSentence(sajuText(warning))) + '</p></div>' : '') + '</div>';
+    var favorable = first.자판 === '길' || first.사판 === '길';
+    var lead = first.자판 === '길' && first.자사건 ? ziweiReading(first) : sajuReading(first);
+    var headline = favorable ? first.y + '년' + (run.length > 1 ? '부터' : '에') + '<br>' + esc(lead.headline) : '앞으로의 고비를<br>살펴보겠습니다.';
+    var sub = run.length > 1 ? '좋은 흐름은 ' + run[run.length - 1].y + '년까지 이어집니다.' : run.length ? '사주와 자미두수 모두 좋게 보는 해입니다.' : first.자판 === '길' ? '다만 사주에서는 다른 흐름도 보입니다. ' + sajuReading(first).summary : first.사판 === '길' ? '다만 자미두수에서는 ' + (ziweiText(first) || '이 해를 ' + first.등급 + '으로 봅니다.') : '앞으로 10년 중 두 풀이가 모두 좋게 보는 해는 없습니다. 해마다 어떤 일이 있는지 살펴보세요.';
+    var current = years.find(function (z) { return z.y === now; });
+    var warning = years.find(function (z) { return z.y > now && z.y < first.y && z.사판 === '흉' && z.자판 === '흉'; });
+    // 한 연도를 두 번 내지 않고, 현재 → 앞선 고비 → 좋은 해 순으로 읽는다.
+    var timeline = [];
+    if (current && (!favorable || current.y !== first.y)) timeline.push({ y: current.y, label: '지금 · ' + current.y + '년', text: sajuReading(current).summary });
+    if (warning) timeline.push({ y: warning.y, label: warning.y + '년', text: sajuReading(warning).summary, caution: true });
+    if (favorable) timeline.push({ y: first.y, label: first.y + '년', text: lead.text });
+    timeline.sort(function (a, b) { return a.y - b.y; });
+    var answers = '<div class="wc-answers">' + timeline.map(function (row) { return '<div' + (row.caution ? ' class="wc-caution"' : '') + '><span>' + esc(row.label) + '</span><p>' + esc(row.text) + '</p></div>'; }).join('') + '</div>';
     var x = function (i) { return 96 + i * 608 / Math.max(1, years.length - 1); }, y = function (h) { return 52 + level[h.등급] * 56; };
     var path = years.map(function (h, i) { return (i ? 'L' : 'M') + x(i) + ' ' + y(h); }).join(' ');
     var svg = '<svg viewBox="0 0 760 278" role="img" aria-label="' + esc(years.map(function (h) { return h.y + '년 ' + h.등급; }).join(', ')) + '"><title>자미두수로 본 연도별 운의 높낮이</title>';
