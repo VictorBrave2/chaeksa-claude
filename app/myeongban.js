@@ -187,6 +187,7 @@
     Object.keys(밝기짧게).sort(function (a, b) { return b.length - a.length; }).forEach(function (k) { s = s.split(k).join(밝기짧게[k]); });
     s = 소리(s).replace(/같은 궁/g, '같은 자리').replace(/([자축인묘진사오미신유술해])궁/g, '$1 칸').replace(/^(.+? 자리) ([자축인묘진사오미신유술해])에 /, '$1 · $2 칸 · ');
     s = s.replace(/삼방사정/g, '함께 보는 네 자리').replace(/삼방/g, '함께 보는 세 자리').replace(/길성/g, '좋게 본 별').replace(/흉성/g, '거칠게 본 별').replace(/동궁/g, '같은 자리').replace(/생년/g, '태어난 해').replace(/생시/g, '태어난 시간대').replace(/음시|음궁/g, '음').replace(/양시|양궁/g, '양');
+    s = s.split('당신 자리').join('나를 보는 자리');
     var parts = s.split(' · '); s = parts.filter(function (p, i) { return parts.indexOf(p) === i; }).join(' · ');
     return /[\u3400-\u9fff]/.test(s) ? '' : s;
   }
