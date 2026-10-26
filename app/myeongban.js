@@ -55,7 +55,7 @@
   try { $('p').innerHTML = window.ChaeksaPlaces ? ChaeksaPlaces.options() : '<option value="KR:서울">서울</option>'; $('p').value = 'KR:서울'; } catch (e) {}
   $('h1').textContent = '정통자미두수';
   $('eyebrow').textContent = '별들이 그린 당신의 귀한 자리';
-  $('sub').textContent = '옛 책이 좋게 본 조건을 하나씩 겹쳐, 당신의 명반을 읽습니다.';
+  $('sub').textContent = '명반의 별을 누르고, 나에게 모인 좋은 조건을 읽어 보세요.';
   $('hint').textContent = 글('입력.시필요', '');
   $('go').textContent = '내 명반 읽기';
 
@@ -127,8 +127,7 @@
   }
   function 그리기() {
     var R = 결과; if (!R) return;
-    var M = R.명반, h = window.ChaeksaZiweiFilter ? ChaeksaZiweiFilter.html(R.filterStory) : '';
-    if (R.filterStory) h += '<details class="mb-original"><summary>내 명반과 전체 구절 보기</summary>';
+    var M = R.명반, h = '';
     h += '<div class="mb-top"><div class="sec">' + esc(글('명반.머리', '당신의 명반')) + '</div><p class="why">' + esc(M.해범위[0] + '~' + M.해범위[1]) + '</p></div>';
     var 종류 = []; (M.경계 || []).forEach(function (말) { var k = 경계종류(말); if (k && 종류.indexOf(k) < 0) 종류.push(k); });
     if ((M.경계 || []).length) h += '<div class="mb-edge"><p>' + esc(글('명반.경계', '')) + '</p>' + 종류.map(function (k) { return '<p>' + esc(글('명반.경계종류.' + k, '')) + '</p>'; }).join('') + '</div>';
@@ -138,6 +137,8 @@
       + (명식짧게() ? '<div class="c3">' + esc(명식짧게()) + '</div>' : '')
       + '<div class="c3 tap' + (탭본() ? ' still' : '') + '">👆 ' + esc(글('명반.누르기', '')) + '</div></div>'
       + '</div>';
+    if (window.ChaeksaZiweiFilter) h += ChaeksaZiweiFilter.html(R.filterStory);
+    if (R.filterStory) h += '<details class="mb-original"><summary>열두 궁 전체 풀이</summary>';
     h += 흐름html(M);   // 10-24 열두 칸 글 흐름(결론 → 근거 접힘)
     if (R.filterStory) h += '</details>';
     if (!R.filterStory) h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
@@ -526,7 +527,7 @@
       결과 = j; 표 = j.표 || ''; 지금 = { 이름: 이름 || '', body: body }; $('err').textContent = '';
       그리기();
       // 손님이 눌러서 그린 것이면 명반으로 내려간다(처음 열릴 때 넣어 둔 사람으로 저절로 그린 것은 그대로 — 첫 줄부터 읽게)
-      if (스크롤) try { var 머리 = document.querySelector('.zf') || document.querySelector('.mb-top'); if (머리) 머리.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e4) {}
+      if (스크롤) try { var 머리 = document.querySelector('.mb-top'); if (머리) 머리.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e4) {}
       if (!셌다) { 셌다 = true; try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban'); } catch (e2) {} }
     } catch (err) { $('err').textContent = '연결하지 못했어요. 다시 눌러 주세요.'; }
   }
