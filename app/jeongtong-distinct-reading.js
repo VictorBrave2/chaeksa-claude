@@ -5,6 +5,7 @@
   const topics = { movement: '배움과 이동', wealth: '재물이 모이는 방식', talent: '재능과 판단력', character: '사람을 대하는 성품', relationship: '인연과 매력', career: '맡을 자리와 권한', honor: '이름과 명예', structure: '강점이 작동하는 이유', support: '나를 받치는 기운', season: '계절에 필요한 기운' };
   // 짧은 이름은 책사의 해석. 고전의 표현·조건·예외는 본문과 원문에 함께 둔다.
   const portraits = {
+    'SM05-006': ['벼슬과 재복의 길이 있는 사람', '군자라면 임금 곁에서 벼슬하고, 보통 사람이라도 큰 부자가 된다고 했습니다.', '진관향', 8],
     'SM05-005': ['도움을 받아 올라서는 사람', '일찍 도움을 받고 벼슬이 쉽게 오른다고 했습니다.', '지관향', 6],
     'SM06B-087': ['지위에 재복을 더하는 사람', '높은 지위뿐 아니라 재물도 얻는다고 했습니다.', '록고봉재', 5],
     'SM06B-140': ['재물을 쌓아 가는 사람', '곡식과 비단이 넉넉하고, 집안에 재물이 쌓인다고 했습니다.', '일좌천재', 8],
@@ -45,7 +46,11 @@
     const type = String(m.axes?.find(a=>a.id==='격')?.값 || '').replace(/격$/,'');
     const state = m.axes?.find(a=>a.id==='성패');
     const reasons = state?.근거 || [];
-    const explanation = mechanisms.find(row=>reasons.some(s=>row[0].test(s)));
+    let explanation = mechanisms.find(row=>reasons.some(s=>row[0].test(s)));
+    if (!explanation && reasons.some(s=>s.includes('깨는 조항이 없다'))) {
+      const intact={정관:'맡은 자리를 해치는 조건은 잡히지 않았습니다.',편관:'거센 요구에 맞서는 힘을 해치는 조건은 잡히지 않았습니다.',정재:'꾸준한 수입과 살림을 해치는 조건은 잡히지 않았습니다.',편재:'사업과 돈벌이를 해치는 조건은 잡히지 않았습니다.',정인:'배움과 도움을 가로막는 조건은 잡히지 않았습니다.',편인:'자신만의 기술과 공부를 해치는 조건은 잡히지 않았습니다.',식신:'꾸준히 만들어 내는 힘을 해치는 조건은 잡히지 않았습니다.',상관:'표현과 재주를 가로막는 조건은 잡히지 않았습니다.',건록:'자기 힘과 몫을 해치는 조건은 잡히지 않았습니다.',양인:'경쟁에서 쓰는 힘을 해치는 조건은 잡히지 않았습니다.'}[type];
+      if(intact) explanation=[null,typeLines[type],intact+' 이 사주가 성격으로 판정된 이유입니다.',intact,'깨는 조항이 없다 — 성격'];
+    }
     const context = m.readingContext || {}, season = context.season;
     const filters = m.filterStory.filters.map(f=>{
       const out = {...f};
