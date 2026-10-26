@@ -187,7 +187,7 @@
         return shown;
       });
     }
-    return copy;
+    return root.ChaeksaJeongtongDistinct?.apply(copy) || copy;
   }
   const evidence = {
     G1: ['배움이 맡은 책임을 지켜 줍니다', '말과 재능이 맡은 책임과 부딪혀도, 배움이 그 충돌을 막아 책임을 지켜 주는 구성입니다. 사주에서 책임을 뜻하는 글자와 나를 뜻하는 글자가 모두 힘을 쓰고 있습니다. 배움의 글자도 힘을 써서, 책임을 치는 말과 재능의 글자를 누릅니다.'],

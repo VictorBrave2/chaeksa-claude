@@ -31,7 +31,7 @@ if os.path.exists(SCAN):
         sys.exit(1)
     print('화면 글 검사: ' + (r.stdout.strip().splitlines() or ['(출력 없음)'])[-1])
 
-FILES = ['style.css', 'taekil-report-decision.css', 'landing-cuts.webp', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'byeonhwa-jogak.js', 'byeonhwa.js', 'love.js', 'pair.js', 'yaksok.js', 'oryu.js', 'bunya.js', 'home-cats.js', 'home-ask.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'taekil-read.js', 'myeongsik-card.js', 'taekil-report.js', 'taekil-admin.js', 'gyeolhon-admin.js', 'gyeolhon-apply.js', 'ilgyeol-admin.js', 'ilgyeol-apply.js', 'gungtong-wonmun.js', 'samyeong.js', 'yeongyeok.js', 'ilju.js', 'jeongtong-prose.js', 'jeongtong-classic-reading.js', 'jeongtong-model-reading.js', 'jeongtong.js', 'jeongtong-story.js', 'promo-art.js', 'jeongtong-share.js', 'jeongtong-share.css', 'jeongtong-pyo.js', 'jeongtong-evidence.js', 'jeongtong-pyo.css', 'stories.js', 'landing.js',
+FILES = ['style.css', 'taekil-report-decision.css', 'landing-cuts.webp', 'config.js', 'track.js', 'cloud.js', 'usage.js', 'places.js', 'people.js', 'lunar.js', 'astro.js', 'engine.js', 'saenggeuk.js', 'gise.js', 'panjeong.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'byeonhwa-jogak.js', 'byeonhwa.js', 'love.js', 'pair.js', 'yaksok.js', 'oryu.js', 'bunya.js', 'home-cats.js', 'home-ask.js', 'questions.js', 'wongook.js', 'seolmyeongseo.js', 'chaeyong.js', 'brief.js', 'typecard.js', 'memo.js', 'classic.js', 'gwanjeom.js', 'taekilsim.js', 'taekil-read.js', 'myeongsik-card.js', 'taekil-report.js', 'taekil-admin.js', 'gyeolhon-admin.js', 'gyeolhon-apply.js', 'ilgyeol-admin.js', 'ilgyeol-apply.js', 'gungtong-wonmun.js', 'samyeong.js', 'yeongyeok.js', 'ilju.js', 'jeongtong-prose.js', 'jeongtong-classic-reading.js', 'jeongtong-model-reading.js', 'jeongtong-distinct-reading.js', 'jeongtong.js', 'jeongtong-story.js', 'promo-art.js', 'jeongtong-share.js', 'jeongtong-share.css', 'jeongtong-pyo.js', 'jeongtong-evidence.js', 'jeongtong-pyo.css', 'stories.js', 'landing.js',
          'tongbyeon.js', 'rules-wealth-love.js', 'rules-health-study-move.js', 'consult.js', 'share.js', 'ai.js',
          'gyeokguk.js', 'chaeksadan.js', 'geunamja.js', 'maeum.js', 'gunghap.js', 'gunghap-gwanjeom.js', 'gunghap-1cheung.js', 'gunghap-chongnon.js', 'ssom-gwanjeom.js', 'ssom-wongo.js', 'ssom-baram.js', 'ssom-dangye.js', 'ssom-daehwa.js', 'ssom-webtoon.js', 'ssom-webtoon-2.js', 'ssom-webtoon-3.js', 'ssom-webtoon-check.js', 'ssom-score.js', 'ssom-score-mal.js', 'ssom-card.js', 'ssom-card-mal.js', 'ssom.js', 'jt-webtoon.js', 'jt-webtoon-2.js', 'jt-webtoon-check.js', 'jt-webtoon-proto.js', 'sheets.js', 'hwakin.js', 'mun.js', 'mun/all.js', 'jamgeum-mal.js', 'pay.js', 'when.js', 'when-chart.js', 'when-reading-copy.js', 'when-chart.css', 'when-copy.js', 'brain.js', 'brain-copy.js', 'gwi.js', 'gwi-copy.js', 'myeongban.js', 'myeongban-prose.js', 'myeongban-reading.js', 'myeongban-filter.js', 'myeongban-filter.css', 'myeongban-copy.js', 'gyeokgi.js', 'gyeokgi-copy.js', 'saram.js', 'saram-copy.js', 'taekil-why.js', 'taekil-why-copy.js', 'app.js']
 
@@ -125,3 +125,16 @@ except Exception as e:
     print('!! 소개 쪽 · 미리보기 · 사이트맵을 만들지 못했습니다 — python tools_sogae.py 로 까닭을 보세요:', e)
     sys.exit(1)
 print('소개 쪽 · 미리보기 · 사이트맵:', ('바뀜 %d — %s' % (len(_sogae), ' · '.join(_sogae))) if _sogae else '그대로')
+
+# 정통사주 비교 견본도 운영 원고·CSS·자료가 바뀌면 새로 받는다.
+_example_path = os.path.join(APP, 'examples', 'jeongtong-reader.html')
+if os.path.exists(_example_path):
+    with open(_example_path, encoding='utf-8') as _f:
+        _example = _f.read()
+    _updated = re.sub(r'(?:\.\./)([a-z0-9-]+\.(?:js|css))(?:\?v=[a-z0-9]+)?', lambda m: '../' + m.group(1) + '?v=' + VER[m.group(1)] if m.group(1) in VER else m.group(0), _example)
+    _data_version = 지문('examples/jeongtong-reader.json')
+    if _data_version:
+        _updated = re.sub(r"fetch\('jeongtong-reader\.json(?:\?v=[a-z0-9]+)?'\)", "fetch('jeongtong-reader.json?v=" + _data_version + "')", _updated)
+    if _updated != _example:
+        with open(_example_path, 'w', encoding='utf-8', newline='\r\n') as _f:
+            _f.write(_updated)
