@@ -3,7 +3,7 @@
  * 엔진 사슬(places → astro → lunar → engine → … → gwanjeom → taekilsim)이 먼저 실려 있어야 한다. 없으면 null.
  *
  * html(opt) — opt = { slot: 'YYYY-MM-DDTHH:MM'(그 시진 안의 아무 분 — 카드에는 그 시진의 시계 창이 찍힌다), label, place: 'KR:서울',
- *                     g: 'M' | 'F' | 그 밖(남아로 재고 성별은 안 적는다), pre: 클래스 앞말 }
+ *                     g: 'M' | 'F' | 그 밖(남아로 재고 성별은 안 적는다), pre: 클래스 앞말, availableWindow?: {시작,끝}(분) }
  *   pre 가 '' 이면 myeongsik.html 의 옛 그림과 글자 하나까지 같은 꼴(그 쪽 CSS 가 꾸민다). 보고서 쪽은 'msc-' 로 부르고 css('msc-') 를 한 번 넣는다.
  */
 (function (global) {
@@ -32,8 +32,17 @@
     const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';
     const 눈 = r.본 ? r.본.눈들.map(n => '<p class="' + c('eye' + (n.걸림 ? ' hit' : '')) + '"><em>' + esc(n.고전) + (n.보조 ? ' · 참고' : '') + '</em><span>' + esc(n.한줄) + '</span></p>').join('') : '';
     const 요 = 요일[new Date(y, mo - 1, d).getDay()];
+    // 표시 범위만 좁힌다. 원래 시진과 명식 계산의 slot·row는 그대로 사용한다.
+    const available = opt.availableWindow;
+    const validWindow = !!(available && Number.isInteger(available.시작) && Number.isInteger(available.끝)
+      && r.시작 <= available.시작 && available.시작 <= available.끝 && available.끝 <= r.끝);
+    const clockText = minute => String(Math.floor(minute / 60)).padStart(2, '0') + ':' + String(minute % 60).padStart(2, '0');
+    const shownWindow = validWindow ? clockText(available.시작) + ' ~ ' + clockText(available.끝) : r.창.replace('~', ' ~ ');
+    const narrowed = validWindow && (available.시작 !== r.시작 || available.끝 !== r.끝);
     return '<div class="' + c('card') + '"><div class="' + c('k') + '">' + esc(opt.label || '사주 여덟 글자(명식)') + '</div>'
-      + '<div class="' + c('when') + '">' + mo + '월 ' + d + '일(' + 요 + ') ' + esc(r.창.replace('~', ' ~ ')) + '</div>'
+      + (validWindow ? '<p class="' + c('sub') + '">병원에 전할 시간</p>' : '')
+      + '<div class="' + c('when') + '">' + mo + '월 ' + d + '일(' + 요 + ') ' + esc(shownWindow) + '</div>'
+      + (narrowed ? '<p class="' + c('sub') + '">전체 시진 · ' + esc(r.창.replace('~', ' ~ ')) + '</p>' : '')
       + '<p class="' + c('sub') + '">' + esc(day.곳) + ' 시계 시각 · ' + esc(r.시진) + (opt.g === 'M' ? ' · 남아' : opt.g === 'F' ? ' · 여아' : '') + '</p>'
       + '<table><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table>'
       + '<div class="' + c('eyes') + '">' + (r.본 && r.본.으뜸 ? '<span class="' + c('badge') + '" style="background:#1b1916;margin-right:6px">' + esc(GW.출산택일.으뜸말) + '</span>' : '') + (r.본 && r.본.없음 ? '<span class="' + c('badge') + '">' + esc(GW.출산택일.없음말) + '</span>' : '') + 눈 + '</div>'

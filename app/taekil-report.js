@@ -83,7 +83,9 @@
         let h = 노드(n, rep);
         while (i + 1 < xs.length && 근거인가(xs[i + 1])) h += 노드(xs[++i], rep);
         부록.push({ 곳: 곳 || '', html: h });
-        out += '<p class="tkr-ref">원문 · 근거 → 부록 ' + 부록.length + '</p>';
+        out += rep && rep.layout === 'decision-1'
+          ? '<p class="tkr-ref"><a href="#" data-tkr-appendix="' + 부록.length + '">원문 · 근거 → 부록 ' + 부록.length + '</a></p>'
+          : '<p class="tkr-ref">원문 · 근거 → 부록 ' + 부록.length + '</p>';
         continue;
       }
       if (n && n.part === '대운') {
@@ -106,10 +108,112 @@
     if (s.접힘) return '<details class="tkr-sec tkr-foldsec" data-sec="' + esc(id) + '"><summary class="tkr-h">' + esc(s.head || '') + '</summary>' + 속 + '</details>';
     return '<section class="tkr-sec" data-sec="' + esc(id) + '">' + (s.head ? '<h2 class="tkr-h">' + esc(s.head) + '</h2>' : '') + 속 + '</section>';
   }
+  /** decision-1만 사용하는 표시 구조. 노드와 문장은 복사하거나 다시 계산하지 않는다. */
+  const 상세부분 = new Set(['사주', '명식', '궁통', '자평', '적천수', '가족', '대운', '관점', 'AI근거']);
+  const 접을칸 = new Set(['readback', 'steps', 'rarity', 'lenses', 'asked', 'ask', 'ziwei', 'crosscheck', 'excluded', 'others', 'method', 'alldays']);
+  const 후보부분 = (it) => {
+    const xs = Array.isArray(it && it.body) ? it.body : [];
+    return {
+      cards: xs.filter(n => n && n.k === 'card'),
+      main: xs.filter(n => n && n.k !== 'card' && !상세부분.has(n.part)),
+      detail: xs.filter(n => n && n.k !== 'card' && 상세부분.has(n.part))
+    };
+  };
+  function 결정후보(it, rep) {
+    if (!it || typeof it !== 'object') return '';
+    const parts = 후보부분(it);
+    return '<article class="tkr-item tkr-decision-item"' + (it.번호 != null ? ' data-no="' + esc(it.번호) + '"' : '') + '>'
+      + (it.head ? '<h3>' + esc(it.head) + '</h3>' : '')
+      + 몸(parts.cards, rep, it.head) + '<div class="tkr-decision-main">' + 몸(parts.main, rep, it.head) + '</div>'
+      + (parts.detail.length ? '<details class="tkr-fold tkr-decision-detail"><summary>상세 풀이</summary><div class="tkr-detail-body">' + 몸(parts.detail, rep, it.head) + '</div></details>' : '')
+      + '</article>';
+  }
+  function 결정첫줄(n) {
+    const chunks = String(n.t == null ? '' : n.t).split(' · ');
+    const value = chunks.length >= 3
+      ? '<span class="tkr-choice-label">' + esc(chunks[0]) + '</span><strong>' + esc(chunks[1]) + '</strong><span class="tkr-choice-clock">' + esc(chunks[2]) + '</span>'
+        + (chunks.length > 3 ? '<span class="tkr-choice-tag">' + chunks.slice(3).map(esc).join(' · ') + '</span>' : '')
+      : '<strong>' + esc(n.t) + '</strong>';
+    return '<div class="tkr-primary-date">' + value + 작게(n.작게) + '</div>';
+  }
+  function 결정비교(body, rep, head) {
+    let content = '', group = [], candidate = false;
+    const flush = () => {
+      if (!group.length) return;
+      const html = 몸(group, rep, head);
+      content += candidate ? '<article class="tkr-compare-card">' + html + '</article>' : html;
+      group = [];
+    };
+    body.forEach(node => {
+      if (node && node.k === 'b' && /^\d+번 · /.test(String(node.t || ''))) {
+        flush(); candidate = true;
+      }
+      group.push(node);
+    });
+    flush(); return content;
+  }
+  function 결정칸(id, section, rep) {
+    if (!section || typeof section !== 'object') return '';
+    const body = Array.isArray(section.body) ? section.body : [];
+    let content;
+    if (id === 'verdict') {
+      const first = body.findIndex(n => n && n.k === 'b');
+      content = first < 0 ? 몸(body, rep, section.head)
+        : 몸(body.slice(0, first), rep, section.head) + 결정첫줄(body[first]) + 몸(body.slice(first + 1), rep, section.head);
+    } else if (id === 'summary') content = 결정비교(body, rep, section.head);
+    else content = 몸(body, rep, section.head);
+    if (Array.isArray(section.items)) content += section.items.map(it => id === 'block' ? 결정후보(it, rep)
+      : '<article class="tkr-item"' + (it && it.번호 != null ? ' data-no="' + esc(it.번호) + '"' : '') + '>' + (it && it.head ? '<h3>' + esc(it.head) + '</h3>' : '') + 몸(it && it.body, rep, it && it.head) + '</article>').join('');
+    const classes = 'tkr-sec' + (id === 'verdict' ? ' tkr-decision-verdict' : id === 'summary' ? ' tkr-decision-comparison' : '');
+    if (section.접힘 || 접을칸.has(id)) return '<details class="' + classes + ' tkr-foldsec" data-sec="' + esc(id) + '"><summary class="tkr-h">' + esc(id === 'crosscheck' ? '상세 자미두수 대조' : section.head || '') + '</summary><div class="tkr-section-body">' + (id === 'crosscheck' && section.head ? '<p class="tkr-b">' + esc(section.head) + '</p>' : '') + content + '</div></details>';
+    return '<section class="' + classes + '" data-sec="' + esc(id) + '">' + (section.head ? '<h2 class="tkr-h">' + esc(section.head) + '</h2>' : '') + content + '</section>';
+  }
+  function 결정그리기(rep, order) {
+    부록 = [];
+    const end = order.filter(id => id === 'close' || id === 'receipt'), main = order.filter(id => !end.includes(id));
+    const content = main.map(id => 결정칸(id, rep[id], rep)).join(''), closing = end.map(id => 결정칸(id, rep[id], rep)).join('');
+    const appendix = 부록; 부록 = null;
+    const sources = appendix.length ? '<details class="tkr-sec tkr-appx tkr-foldsec" data-sec="appendix"><summary class="tkr-h">부록 — 원문과 근거 · ' + appendix.length + '개</summary><div class="tkr-appendix-body">'
+      + appendix.map((x, i) => '<div class="tkr-appx-i" data-appendix="' + (i + 1) + '" tabindex="-1"><p class="tkr-appx-h">부록 ' + (i + 1) + (x.곳 ? ' · ' + esc(x.곳) : '') + '</p>' + x.html + '</div>').join('') + '</div></details>' : '';
+    return '<div class="tkr tkr-decision">' + content + sources + closing + '</div>';
+  }
+  // details를 CSS로만 보이게 하지 않는다. 인쇄 직전에 실제로 열고 끝나면 이전 상태로 돌린다.
+  let 인쇄전접힘 = null;
+  function 인쇄펼침() {
+    if (인쇄전접힘 || typeof document === 'undefined') return;
+    인쇄전접힘 = Array.from(document.querySelectorAll('.tkr-decision details')).filter(el => !el.open);
+    인쇄전접힘.forEach(el => { el.open = true; });
+  }
+  function 인쇄복원() {
+    if (!인쇄전접힘) return;
+    인쇄전접힘.forEach(el => { if (el.isConnected) el.open = false; }); 인쇄전접힘 = null;
+  }
+  if (global.addEventListener) {
+    global.addEventListener('beforeprint', 인쇄펼침);
+    global.addEventListener('afterprint', 인쇄복원);
+    if (global.matchMedia) {
+      const media = global.matchMedia('print');
+      const change = event => { if (event.matches) 인쇄펼침(); else 인쇄복원(); };
+      if (media.addEventListener) media.addEventListener('change', change);
+      else if (media.addListener) media.addListener(change);
+    }
+  }
+  if (typeof document !== 'undefined') document.addEventListener('click', event => {
+    const link = event.target && event.target.closest ? event.target.closest('.tkr-decision [data-tkr-appendix]') : null;
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const root = link.closest('.tkr-decision'), target = root.querySelector('[data-appendix="' + link.dataset.tkrAppendix + '"]');
+    if (!target) return;
+    event.preventDefault();
+    let parent = target.parentElement;
+    while (parent && parent !== root) { if (parent.tagName === 'DETAILS') parent.open = true; parent = parent.parentElement; }
+    target.scrollIntoView({ block: 'start' }); target.focus({ preventScroll: true });
+  });
+
   /** 보고서 한 벌 → html(카드 자리는 비어 있다 — 카드채우기로 채운다) */
   function 그리기(rep) {
     if (!rep || typeof rep !== 'object') return '';
     const order = (Array.isArray(rep.order) && rep.order.length ? rep.order : 차례).filter(칸이름);
+    if (rep.layout === 'decision-1') return 결정그리기(rep, order);
     부록 = [];
     const 끝 = order.filter((id) => id === 'close' || id === 'receipt'), 앞 = order.filter((id) => !끝.includes(id));
     const 본문 = 앞.map((id) => 칸(id, rep[id], rep)).join(''), 맺 = 끝.map((id) => 칸(id, rep[id], rep)).join('');
@@ -131,7 +235,7 @@
     자리.forEach((el) => {
       const c = (rep && Array.isArray(rep.cards) ? rep.cards : [])[Number(el.dataset.card)];
       let h = null;
-      if (실림 && MC && c) { try { h = MC.html({ slot: c.slot, label: c.label, place: rep.card && rep.card.place, g: rep.card && rep.card.g, pre: 'msc-' }); } catch (e) { h = null; } }
+      if (실림 && MC && c) { try { h = MC.html({ slot: c.slot, label: c.label, place: rep.card && rep.card.place, g: rep.card && rep.card.g, pre: 'msc-', availableWindow: c.availableWindow }); } catch (e) { h = null; } }
       if (h) { el.innerHTML = h; n++; } else el.innerHTML = '<p class="tkr-cardwait">사주 여덟 글자 카드(명식)를 불러오지 못했어요' + (c ? ' — ' + esc(c.label) : '') + '. 새로고침해 주세요.</p>';
     });
     return n;
@@ -140,7 +244,7 @@
   /** 보고서 한 벌 → 메일에 붙일 글(사장님 목록 「메일용 글 복사」 — 메일 · 전화로 받은 수기 줄). 카드는 그림이라 이름표만 남는다. */
   function 글로(rep) {
     if (!rep || typeof rep !== 'object') return '';
-    const 줄 = [];
+    const 줄 = [], decision = rep.layout === 'decision-1', appendix = [];
     const 노드글 = (n) => {
       if (!n || typeof n !== 'object') return;
       const 끝 = (s) => (s != null && String(s).trim() ? ' (' + s + ')' : '');
@@ -153,16 +257,50 @@
       else if (n.k === 'card') { const c = (rep.cards || [])[Number(n.i)]; 줄.push('(사주 여덟 글자 카드(명식)' + (c ? ' — ' + c.label : '') + ')'); }
       else if (n.k === 'han') { 줄.push(n.고전 + ' ' + n.꼴 + ' — ' + n.글); 줄.push('  ' + n.뜻); }
       else if (n.k === 'pillars') { 줄.push(String(n.한자 || '')); 줄.push(String(n.읽기 || '')); (n.글자 || []).forEach((x) => 줄.push('· ' + (x && x.말))); }
-      else if (n.k === 'fold') { 줄.push(String(n.head || '')); (n.body || []).forEach(노드글); }
+      else if (n.k === 'fold') { 줄.push(String(n.head || '')); if (decision) 본문글(n.body, n.head); else (n.body || []).forEach(노드글); }
+      else if (decision && n.k === 'rarity') {
+        줄.push(String(n.결론앞 || '') + ' ' + String(n.결론강조 || ''));
+        (Array.isArray(n.층) ? n.층 : []).forEach(x => { 줄.push('· ' + (x.나 ? (n.표시 || '이 아이의 자리') + ' — ' : '') + String(x.이름 || '') + ' ' + String(x.수 == null ? '' : x.수) + '자리 · ' + String(x.비율 || '')); if (x.상세) 줄.push(String(x.상세)); });
+        if (n.캡션) 줄.push(String(n.캡션)); if (n.빈도) 줄.push(String(n.빈도)); (n.노트 || []).forEach(x => 줄.push(String(x)));
+      }
+    };
+    const 본문글 = (body, where) => {
+      const xs = Array.isArray(body) ? body : [];
+      for (let i = 0; i < xs.length; i++) {
+        if (decision && 근거인가(xs[i])) {
+          const group = [xs[i]];
+          while (i + 1 < xs.length && 근거인가(xs[i + 1])) group.push(xs[++i]);
+          appendix.push({ where, body: group }); 줄.push('원문 · 근거 → 부록 ' + appendix.length);
+        } else 노드글(xs[i]);
+      }
     };
     const order = (Array.isArray(rep.order) && rep.order.length ? rep.order : 차례).filter(칸이름);
-    order.forEach((id) => {
-      const s = rep[id]; if (!s || typeof s !== 'object') return;
+    const 칸글 = (id) => {
+      const section = rep[id]; if (!section || typeof section !== 'object') return;
       if (줄.length) 줄.push('');
-      if (s.head) 줄.push('[' + s.head + ']');
-      (s.body || []).forEach(노드글);
-      (Array.isArray(s.items) ? s.items : []).forEach((it) => { 줄.push(''); if (it && it.head) 줄.push(String(it.head)); ((it && it.body) || []).forEach(노드글); });
-    });
+      if (section.head) 줄.push('[' + section.head + ']');
+      본문글(section.body, section.head);
+      (Array.isArray(section.items) ? section.items : []).forEach(it => {
+        if (!it || typeof it !== 'object') return;
+        줄.push(''); if (it.head) 줄.push(String(it.head));
+        if (decision && id === 'block') {
+          const parts = 후보부분(it);
+          본문글(parts.cards, it.head); 본문글(parts.main, it.head);
+          if (parts.detail.length) { 줄.push('[상세 풀이 — ' + String(it.head || '') + ']'); 본문글(parts.detail, it.head); }
+        } else 본문글(it.body, it.head);
+      });
+    };
+    if (decision) {
+      줄.push('읽는 순서 — 추천 날짜와 시간 → 후보 비교 → 후보별 알아 둘 것 → 병원에 전할 시간.');
+      줄.push('후보별 사주와 고전 설명은 「상세 풀이」에서, 한자 원문과 뜻은 맨 뒤 「부록 — 원문과 근거」에서 찾을 수 있습니다.');
+      const end = order.filter(id => id === 'close' || id === 'receipt');
+      order.filter(id => !end.includes(id)).forEach(칸글);
+      if (appendix.length) {
+        줄.push('', '[부록 — 원문과 근거]');
+        appendix.forEach((item, i) => { 줄.push('', '부록 ' + (i + 1) + (item.where ? ' · ' + item.where : '')); item.body.forEach(노드글); });
+      }
+      end.forEach(칸글);
+    } else order.forEach(칸글);
     return 줄.join('\n');
   }
 
