@@ -1,0 +1,52 @@
+/* Preview decoration only. Production result renderer and its typography stay shared. */
+html{scroll-padding-top:82px}
+.preview-header{height:70px;padding:0 18px}
+.preview-mast{width:484px;max-width:100%;margin:auto;display:flex;align-items:center;gap:12px}
+.preview-brand{display:flex;align-items:center;gap:9px;font-family:var(--serif);font-size:21px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.preview-brand:first-letter{color:var(--accent)}
+.preview-mast>span{font-size:11px;color:var(--ink3);margin-right:auto}
+#guide-toggle{min-height:44px;padding:8px 12px;background:var(--card);border:1px solid var(--line2);border-radius:24px;font:inherit;font-size:11px;color:var(--ink2);cursor:pointer;white-space:nowrap}
+body>.wrap{padding-top:88px;padding-bottom:60px}
+.preview-footer{max-width:484px;margin:0 auto 35px;padding:18px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);font-size:12px}
+.preview-footer a{color:var(--ink3);min-height:44px;display:flex;align-items:center}
+.guide-figure{aspect-ratio:1/2;background-image:url('../reading-guide/art/notebook-poses.png');background-size:300% 100%;background-repeat:no-repeat;background-position:0 0;transform:scaleX(-1);pointer-events:none}
+.guide-figure[data-pose="1"]{background-position:50% 0}
+.guide-figure[data-pose="2"]{background-position:100% 0}
+.companion-rail{position:fixed;left:calc(50% + 290px);top:clamp(100px,18vh,200px);width:180px;pointer-events:none;transition:opacity .35s,transform .6s;z-index:1}
+.rail-stage{height:350px;overflow:hidden;mask-image:linear-gradient(#000 88%,transparent)}
+.rail-stage .guide-figure{width:175px;transition:opacity .18s}
+.rail-note{padding:14px 4px 0;border-top:1px solid var(--line2);color:var(--ink3)}
+.rail-position{font-size:10px;letter-spacing:.12em}
+.rail-title{font-size:13px;line-height:1.9;margin-top:8px!important}
+.companion-rail.is-closing{transform:translateX(24px) scale(.86);transform-origin:center top;opacity:.75}
+.companion-rail.is-evidence{opacity:.2}
+.companion-inline{display:none;pointer-events:none;overflow:hidden}
+.companion-on .classic-filter.is-reading .filter-paper{outline:1px solid var(--accent-line);outline-offset:2px}
+.companion-on .classic-filter.is-reading .filter-number{color:var(--accent)}
+body:not(.companion-on) .companion-rail,body:not(.companion-on) .companion-inline{display:none}
+@media(max-width:1050px){
+ .companion-rail{display:none}
+ .companion-on .companion-inline{display:block}
+ .companion-on .jtp .reader-hero>div{position:relative}
+ .companion-on .jtp .reader-hero .hero-line{margin-bottom:20px}
+ .companion-on .jtp .reader-hero .name-origin,.companion-on .jtp .reader-hero .reader-go{max-width:calc(100% - 120px)}
+ .companion-on .jtp .reader-hero .reader-go{min-height:66px;padding-bottom:12px;gap:10px}
+ .companion-on .jtp .reader-hero>div{padding-bottom:18px}
+ .companion-inline.hero-guide{position:absolute;right:-5px;bottom:-28px;width:120px;height:170px;mask-image:linear-gradient(#000 83%,transparent)}
+ .hero-guide .guide-figure{width:120px}
+ .companion-on .filter-section-heading{position:relative;min-height:170px;padding-right:105px}
+ .companion-on .jtp .jtp-story .filter-section-heading{display:block}
+ .companion-on .jtp .jtp-story .filter-column-label{margin-top:14px;max-width:none;text-align:left}
+ .companion-inline.filter-guide{position:absolute;right:-4px;bottom:0;width:108px;height:174px;mask-image:linear-gradient(#000 85%,transparent)}
+ .filter-guide .guide-figure{width:108px}
+ .companion-on .jtp .filter-conclusion{position:relative}
+ .companion-inline.conclusion-guide{height:140px;width:100px;margin:0 auto 14px;mask-image:linear-gradient(#000 78%,transparent)}
+ .conclusion-guide .guide-figure{width:100px}
+ .companion-on .jtp .filter-conclusion .conclusion-seal{margin-bottom:15px}
+}
+@media(max-width:370px){.preview-mast{gap:8px}.preview-mast>span{font-size:10px}.preview-brand{font-size:19px}#guide-toggle{padding:8px}.companion-inline.hero-guide{width:105px}.hero-guide .guide-figure{width:105px}.companion-on .jtp .reader-hero .name-origin,.companion-on .jtp .reader-hero .reader-go{max-width:calc(100% - 100px)}}
+@media(prefers-reduced-motion:no-preference){
+ .companion-inline.is-visible .guide-figure{animation:guide-arrive .65s both}
+ @keyframes guide-arrive{from{opacity:0;transform:scaleX(-1) translateY(12px)}to{opacity:1;transform:scaleX(-1) translateY(0)}}
+}
+@media(prefers-reduced-motion:reduce){.companion-rail{transition:none}}
