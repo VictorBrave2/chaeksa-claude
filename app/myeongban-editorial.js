@@ -53,7 +53,7 @@
       h+='<section class="zd-group"><div class="zd-group-head"><span>'+String(i+1).padStart(2,'0')+' · '+esc(names[g.palace]||g.palace)+'</span><small>'+g.filters.length+'개 좋은 조건</small></div><h3>'+esc(g.title).replace(/\n/g,' ')+'</h3>';
       g.filters.forEach(f=>{
         h+='<div class="zd-good">';
-        f.sources.forEach(s=>{h+='<h4>'+esc(short[s.id]||s.portrait.replace(/\n/g,' '))+'</h4><p>'+esc(read(s.meaning))+'</p>'+chartButton(s.targets)+evidence(s);});
+        f.sources.forEach((s,j)=>{const title=short[s.id]||s.portrait.replace(/\n/g,' ');if(f!==g.filters[0]||j||title!==g.title.replace(/\n/g,' '))h+='<h4>'+esc(title)+'</h4>';h+='<p>'+esc(read(s.meaning))+'</p>'+chartButton(s.targets)+evidence(s);});
         h+='<div class="zd-step-rate"><span>'+(f.index===1?'이 좋은 조건을 갖춘 명반':'여기까지 좋은 조건을 모두 갖춘 명반')+'</span><strong>'+rate(f.percent)+'</strong></div></div>';
       });
       if(g.cautions.length){
