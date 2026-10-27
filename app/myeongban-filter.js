@@ -12,6 +12,7 @@
   }
   function html(story) {
     if (!story || !Array.isArray(story.filters)) return '';
+    if (story.editorial && window.ChaeksaZiweiEditorial) return ChaeksaZiweiEditorial.html(story);
     var filters = story.filters, stars = (story.mainStars || []).join(' · ');
     var h = '<article class="zf" aria-label="자미두수 · 당신에게 모인 좋은 조건">';
     h += '<div class="zf-hero"><p class="zf-kicker">자미두수전서에서 읽은 당신</p><h2>옛 책이 좋게 본<br><em>당신의 모습.</em></h2>';
