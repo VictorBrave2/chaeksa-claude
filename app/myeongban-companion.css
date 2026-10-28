@@ -26,13 +26,14 @@
 .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 .zd.zd-companion.companion-on .guide-no-art .guide-scene-copy{margin-top:0}
 @container(min-width:620px){
- .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art copy";grid-template-columns:42% minmax(0,1fr);align-items:center;gap:20px}
- .zd.zd-companion.companion-on .guide-opening .guide-art{width:100%;max-width:360px;mask-image:linear-gradient(#000 94%,transparent)}
+ .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art copy";grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:20px}
+ .zd.zd-companion.companion-on .guide-opening .guide-art{width:100%;max-width:440px;mask-image:none}
  .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{margin:0}
- .zd.zd-companion.companion-on .guide-closing{grid-template-areas:"art copy";grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:center}
+ .zd.zd-companion.companion-on .guide-closing{grid-template-areas:"art copy";grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:center}
  .zd.zd-companion.companion-on .guide-closing .guide-scene-copy{margin:0}
- .zd.zd-companion.companion-on .guide-transition{grid-template-columns:minmax(0,1fr) 160px}
- .zd.zd-companion.companion-on .guide-transition .guide-art{width:160px}
+ .zd.zd-companion.companion-on .guide-closing .guide-art{width:320px}
+ .zd.zd-companion.companion-on .guide-transition{grid-template-columns:minmax(0,1fr) 210px}
+ .zd.zd-companion.companion-on .guide-transition .guide-art{width:210px}
  .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 }
 @container(max-width:380px){
@@ -46,8 +47,8 @@
  .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 }
 @media(prefers-reduced-motion:no-preference){
- .zd.zd-companion .guide-scene.is-visible .guide-art img{animation:guide-arrive .65s both}
- @keyframes guide-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+ .zd.zd-companion .guide-scene.is-visible .guide-art img{animation:guide-arrive .45s backwards}
+ @keyframes guide-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 }
 @media print{
  .zd.zd-companion .guide-art,.zd.zd-companion .zd-guide-controls{display:none!important}
@@ -64,3 +65,9 @@
 .zd.zd-companion.companion-on .guide-closing .zd-kicker{font-size:11px;color:var(--accent);margin:0}
 @container(max-width:380px){.zd.zd-companion.companion-on .guide-transition h3{font-size:20px}}
 
+
+@media(min-width:1000px){
+ .wrap:has(.zd-companion){max-width:1040px}
+ .wrap:has(.zd-companion)>:not(#out),.wrap:has(.zd-companion)>#out>:not(.zd-companion){max-width:560px;margin-left:auto;margin-right:auto}
+ .zd.zd-companion.companion-on .guide-art{mask-image:none}
+}

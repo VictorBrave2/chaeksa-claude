@@ -132,13 +132,14 @@
 .jtp .jtp-story.jt-companion-on .jt-guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 .jtp .jtp-story.jt-companion-on .jt-guide-no-art .jt-guide-copy{margin-top:0}
 @container(min-width:620px){
- .jtp .jtp-story.jt-companion-on .jt-guide-opening{grid-template-areas:"art copy";grid-template-columns:42% minmax(0,1fr);align-items:center;gap:20px}
- .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-art{width:100%;max-width:360px;mask-image:linear-gradient(#000 94%,transparent)}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening{grid-template-areas:"art copy";grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:20px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-art{width:100%;max-width:440px;mask-image:none}
  .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-copy{margin:0}
- .jtp .jtp-story.jt-companion-on .jt-guide-closing{grid-template-areas:"art copy";grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:center}
+ .jtp .jtp-story.jt-companion-on .jt-guide-closing{grid-template-areas:"art copy";grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:center}
  .jtp .jtp-story.jt-companion-on .jt-guide-closing .jt-guide-copy{margin:0}
- .jtp .jtp-story.jt-companion-on .jt-guide-transition{grid-template-columns:minmax(0,1fr) 160px}
- .jtp .jtp-story.jt-companion-on .jt-guide-transition .jt-guide-art{width:160px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-closing .jt-guide-art{width:320px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-transition{grid-template-columns:minmax(0,1fr) 210px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-transition .jt-guide-art{width:210px}
  .jtp .jtp-story.jt-companion-on .jt-guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 }
 @container(max-width:380px){
@@ -152,8 +153,8 @@
  .jtp .jtp-story.jt-companion-on .jt-guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 }
 @media(prefers-reduced-motion:no-preference){
- .jtp .jtp-story.jt-companion .jt-guide-scene.is-visible .jt-guide-art img{animation:jt-guide-arrive .65s both}
- @keyframes jt-guide-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+ .jtp .jtp-story.jt-companion .jt-guide-scene.is-visible .jt-guide-art img{animation:jt-guide-arrive .45s backwards}
+ @keyframes jt-guide-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 }
 @media print{
  .jtp .jtp-story.jt-companion .jt-guide-art,.jtp .jtp-story.jt-companion .jt-guide-controls{display:none!important}
@@ -170,3 +171,8 @@
 .jtp .jtp-story.jt-companion-on .jt-guide-closing .conclusion-seal{display:inline-flex;margin:0 0 12px;width:34px;height:34px;font-size:20px}
 .jtp .jtp-story.jt-companion-on .jt-guide-closing .conclusion-kicker{font-size:11px;color:var(--accent)}
 
+
+@media(min-width:1000px){
+ .wrap:has(#jtOut .jt-companion){max-width:1040px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-art{mask-image:none}
+}
