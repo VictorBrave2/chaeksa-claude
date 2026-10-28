@@ -1,0 +1,45 @@
+/* Character decoration only; chart, result copy and filter layout use the live styles. */
+html{scroll-padding-top:82px}
+.preview-header{height:70px;padding:0 18px}
+.preview-mast{width:524px;max-width:100%;margin:auto;display:flex;align-items:center;gap:12px}
+.preview-brand{display:flex;align-items:center;gap:9px;font-family:var(--serif);font-size:21px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.preview-mast>span{font-size:11px;color:var(--ink3);margin-right:auto}
+#guide-toggle{min-height:44px;padding:8px 12px;background:var(--card);border:1px solid var(--line2);border-radius:24px;font:inherit;font-size:11px;color:var(--ink2);cursor:pointer;white-space:nowrap}
+body>.wrap{padding-top:94px;padding-bottom:40px}
+.preview-footer{margin:35px auto 0;padding:18px 0;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);font-size:12px}
+.preview-footer a{color:var(--ink3);min-height:44px;display:flex;align-items:center}
+.guide-figure{aspect-ratio:1/2;background:url('art/notebook-poses.png') 0 0/300% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
+.guide-figure[data-pose="1"]{background-position:50% 0}
+.guide-figure[data-pose="2"]{background-position:100% 0}
+.companion-rail{position:fixed;left:calc(50% + 310px);top:clamp(100px,18vh,200px);width:180px;pointer-events:none;transition:opacity .3s,transform .6s;z-index:1}
+.rail-stage{height:350px;overflow:hidden;mask-image:linear-gradient(#000 88%,transparent)}
+.rail-stage .guide-figure{width:175px}
+.rail-note{padding:14px 4px 0;border-top:1px solid var(--line2);color:var(--ink3)}
+.rail-position{font-size:10px;letter-spacing:.12em}
+.rail-title{font-size:13px;line-height:1.9;margin-top:8px!important}
+.companion-rail.is-closing{transform:translateX(24px) scale(.86);transform-origin:center top;opacity:.75}
+.companion-rail.is-secondary{opacity:.3}
+.companion-inline{display:none;pointer-events:none;overflow:hidden}
+.companion-on .zd-group.is-reading{outline:1px solid var(--accent-line);outline-offset:3px}
+body:not(.companion-on) .companion-rail,body:not(.companion-on) .companion-inline{display:none}
+body.sh-open .companion-rail{opacity:0}
+.companion-on .sheet-guide{display:block;float:right;width:76px;height:124px;margin:0 10px 8px 14px;mask-image:linear-gradient(#000 85%,transparent)}
+.sheet-guide .guide-figure{width:76px}
+.sh #shBody>.sec,.sh #shBody>.fold{clear:both}
+@media(max-width:1090px){
+ .companion-rail{display:none}
+ .companion-on .companion-inline{display:block}
+ .chart-guide{width:78px;height:116px;flex-shrink:0;mask-image:linear-gradient(#000 86%,transparent)}
+ .chart-guide .guide-figure{width:78px}
+ .companion-on .zd-section-heading{position:relative;min-height:150px;padding-right:112px;display:flex;flex-direction:column;justify-content:center}
+ .filter-guide{position:absolute;right:0;bottom:0;width:102px;height:150px;mask-image:linear-gradient(#000 84%,transparent)}
+ .filter-guide .guide-figure{width:102px}
+ .ending-guide{width:82px;height:120px;margin:0 auto 14px;mask-image:linear-gradient(#000 82%,transparent)}
+ .ending-guide .guide-figure{width:82px}
+}
+@media(max-width:370px){.preview-mast{gap:7px}.preview-mast>span{font-size:10px}.preview-brand{font-size:19px}#guide-toggle{padding:8px}.companion-on .zd-section-heading{padding-right:95px}.filter-guide{width:90px}.filter-guide .guide-figure{width:90px}.chart-guide{width:65px;height:98px}.chart-guide .guide-figure{width:65px}}
+@media(prefers-reduced-motion:no-preference){
+ .companion-inline.is-visible .guide-figure{animation:guide-arrive .65s both}
+ @keyframes guide-arrive{from{opacity:0;transform:scaleX(-1) translateY(10px)}to{opacity:1;transform:scaleX(-1) translateY(0)}}
+}
+@media(prefers-reduced-motion:reduce){.companion-rail{transition:none}}
