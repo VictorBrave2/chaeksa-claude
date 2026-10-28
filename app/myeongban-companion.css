@@ -26,12 +26,12 @@
 .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 .zd.zd-companion.companion-on .guide-no-art .guide-scene-copy{margin-top:0}
 @container(min-width:620px){
- .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art copy";grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:20px}
- .zd.zd-companion.companion-on .guide-opening .guide-art{width:100%;max-width:440px;mask-image:none}
+ .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art copy";grid-template-columns:minmax(220px,.8fr) minmax(0,1.4fr);align-items:center;gap:24px}
+ .zd.zd-companion.companion-on .guide-opening .guide-art{width:100%;max-width:320px;mask-image:none}
  .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{margin:0}
- .zd.zd-companion.companion-on .guide-closing{grid-template-areas:"art copy";grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:center}
+ .zd.zd-companion.companion-on .guide-closing{grid-template-areas:"art copy";grid-template-columns:240px minmax(0,1fr);gap:24px;align-items:center}
  .zd.zd-companion.companion-on .guide-closing .guide-scene-copy{margin:0}
- .zd.zd-companion.companion-on .guide-closing .guide-art{width:320px}
+ .zd.zd-companion.companion-on .guide-closing .guide-art{width:240px}
  .zd.zd-companion.companion-on .guide-transition{grid-template-columns:minmax(0,1fr) 210px}
  .zd.zd-companion.companion-on .guide-transition .guide-art{width:210px}
  .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
@@ -66,8 +66,13 @@
 @container(max-width:380px){.zd.zd-companion.companion-on .guide-transition h3{font-size:20px}}
 
 
-@media(min-width:1000px){
- .wrap:has(.zd-companion){max-width:1040px}
- .wrap:has(.zd-companion)>:not(#out),.wrap:has(.zd-companion)>#out>:not(.zd-companion){max-width:560px;margin-left:auto;margin-right:auto}
+/* Keep the chart and reading on one measure; allow extra room only for the opening illustration. */
+@media(min-width:760px){
+ .wrap:has(.zd-companion){max-width:916px}
+ .wrap:has(.zd-companion)>:not(#out),.wrap:has(.zd-companion)>#out>:not(.zd-companion),.zd.zd-companion>:not(.zd-hero){max-width:720px;margin-left:auto;margin-right:auto}
+ .wrap:has(.zd-companion)>#f{max-width:560px}
+ .zd.zd-companion .zd-hero>.zd-origin,.zd.zd-companion .zd-hero>.zd-personal{max-width:720px;margin-left:auto;margin-right:auto}
+ .zd.zd-companion .zd-jump{display:block;max-width:720px;margin-left:auto;margin-right:auto}
+ .zd.zd-companion.companion-on .guide-opening h2{font-size:clamp(26px,3.4cqi,30px);line-height:1.55}
  .zd.zd-companion.companion-on .guide-art{mask-image:none}
 }

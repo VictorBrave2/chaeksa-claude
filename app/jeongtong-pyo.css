@@ -132,12 +132,12 @@
 .jtp .jtp-story.jt-companion-on .jt-guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 .jtp .jtp-story.jt-companion-on .jt-guide-no-art .jt-guide-copy{margin-top:0}
 @container(min-width:620px){
- .jtp .jtp-story.jt-companion-on .jt-guide-opening{grid-template-areas:"art copy";grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:20px}
- .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-art{width:100%;max-width:440px;mask-image:none}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening{grid-template-areas:"art copy";grid-template-columns:minmax(220px,.8fr) minmax(0,1.4fr);align-items:center;gap:24px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-art{width:100%;max-width:320px;mask-image:none}
  .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-copy{margin:0}
- .jtp .jtp-story.jt-companion-on .jt-guide-closing{grid-template-areas:"art copy";grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:center}
+ .jtp .jtp-story.jt-companion-on .jt-guide-closing{grid-template-areas:"art copy";grid-template-columns:240px minmax(0,1fr);gap:24px;align-items:center}
  .jtp .jtp-story.jt-companion-on .jt-guide-closing .jt-guide-copy{margin:0}
- .jtp .jtp-story.jt-companion-on .jt-guide-closing .jt-guide-art{width:320px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-closing .jt-guide-art{width:240px}
  .jtp .jtp-story.jt-companion-on .jt-guide-transition{grid-template-columns:minmax(0,1fr) 210px}
  .jtp .jtp-story.jt-companion-on .jt-guide-transition .jt-guide-art{width:210px}
  .jtp .jtp-story.jt-companion-on .jt-guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
@@ -172,9 +172,13 @@
 .jtp .jtp-story.jt-companion-on .jt-guide-closing .conclusion-kicker{font-size:11px;color:var(--accent)}
 
 
-@media(min-width:1000px){
- .wrap:has(#jtOut .jt-companion){max-width:1040px}
- .jtp .jtp-story.jt-companion{max-width:1000px}
+/* Widen only the visible reading tab; hidden results must not resize other menus. */
+@media(min-width:760px){
+ .wrap:has(.tab[data-tab="jeongtong"]:not(.hide) #jtOut .jt-companion){max-width:916px}
+ .jtp .jtp-story.jt-companion{max-width:880px;padding-left:0;padding-right:0;margin-left:auto;margin-right:auto}
+ .jtp .jtp-story.jt-companion>:not(.reader-hero){max-width:720px;margin-left:auto;margin-right:auto}
+ .jtp .jtp-story.jt-companion .reader-hero>div>.name-origin,.jtp .jtp-story.jt-companion .reader-hero>div>.reader-go{max-width:720px;margin-left:auto;margin-right:auto}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening h1{font-size:clamp(26px,3.4cqi,30px);line-height:1.55}
  .jtp .jtp-story.jt-companion-on .jt-guide-art{mask-image:none}
 }
 
