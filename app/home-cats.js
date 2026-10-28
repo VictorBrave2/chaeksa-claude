@@ -24,7 +24,7 @@
       // 귀함·고전 이름은 정통사주로 통합. 총명함 집중 보기는 정통사주 안에서 연결한다.
       { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/myeongban-cover-{g}.webp', 작은: 'art/myeongban-cover-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
-    time: [{ 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
+    time: [{ 키: 'today', 주소: 'today.html', 표시명: '오늘의 운세', 설명: '누구와, 무슨 일로. 오늘 달라지는 내 생각과 행동', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }, { 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/read-cover.webp', 작은: 'art/read-cover-s.webp', 크기: [1024, 1536] }],
     // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류.
     // 10-23 제 그림(IMG-0006 · 0007 밤 갈림길 불 켜진 문들, 남녀 두 벌 — 소개 쪽 머리와 같은 그림). 전에는 정통사주 15장(일) 컷을 빌려 썼다.
@@ -65,7 +65,7 @@
     return null;
   }
 
-  var 그림판 = 'v1489';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1490';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -131,7 +131,7 @@
     var Y = global.ChaeksaYaksok, g = 성별(), n = 0;
     var prefix = el.closest('[data-tab="home"]') ? 'home-catalog-' : 'all-catalog-';
     var 묶음들 = [
-      ['나를 알아보기', ['jeongtong', 'myeongban', 'when']],
+      ['나를 알아보기', ['jeongtong', 'myeongban', 'today', 'when']],
       ['아기 태어날 날과 시간', ['taekil']],
       ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],
