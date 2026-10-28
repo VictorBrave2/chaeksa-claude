@@ -174,5 +174,6 @@
 
 @media(min-width:1000px){
  .wrap:has(#jtOut .jt-companion){max-width:1040px}
+ .jtp .jtp-story.jt-companion{max-width:1000px}
  .jtp .jtp-story.jt-companion-on .jt-guide-art{mask-image:none}
 }
