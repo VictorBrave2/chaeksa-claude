@@ -18,14 +18,14 @@ function companion(host){
   const stage=document.createElement('div');stage.className='jt-guide-scene '+kind;
   const copy=document.createElement('div');copy.className='jt-guide-copy';parent.insertBefore(stage,nodes[0]);nodes.forEach(node=>copy.append(node));stage.append(copy);
   const art=document.createElement('div');art.className='jt-guide-art';art.setAttribute('aria-hidden','true');
-  const image=document.createElement('img');image.src=companionArt+pose+'-v3.png';image.alt='';image.width=1254;image.height=1254;image.loading='lazy';image.decoding='async';
+  const image=document.createElement('img');image.src=companionArt+pose+'-v4.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
   image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};art.append(image);stage.append(art);
  }
- scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1')),'jt-guide-opening','reading');
+ scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1,.hero-line')),'jt-guide-opening','welcome');
  const second=host.querySelectorAll('.classic-filter')[1]?.querySelector('.filter-reading');
- if(second){second.classList.add('jt-guide-filter');const copy=second.firstElementChild;scene(copy,[...copy.children].filter(x=>x.matches('.filter-name,h3')),'jt-guide-transition','explaining');}
+ if(second){second.classList.add('jt-guide-filter');const copy=second.firstElementChild;scene(copy,[...copy.children].filter(x=>x.matches('.filter-name,h3')),'jt-guide-transition','reading');}
  const ending=host.querySelector('.filter-conclusion');
- if(ending)scene(ending,[...ending.children].filter(x=>x.matches('.conclusion-seal,.conclusion-kicker,h2')),'jt-guide-closing','closing');
+ if(ending)scene(ending,[...ending.children].filter(x=>x.matches('.conclusion-seal,p,h2')),'jt-guide-closing','closing');
  const controls=document.createElement('div');controls.className='jt-guide-controls';
  const toggle=document.createElement('button');toggle.type='button';toggle.className='jt-guide-toggle';
  function update(){story.classList.toggle('jt-companion-on',companionEnabled);toggle.setAttribute('aria-pressed',String(companionEnabled));toggle.textContent=companionEnabled?'삽화 숨기기':'삽화 보기';}
