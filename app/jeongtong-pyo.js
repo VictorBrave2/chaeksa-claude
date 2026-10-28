@@ -21,7 +21,7 @@ function companion(host){
   const image=document.createElement('img');image.src=companionArt+pose+'-v4.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
   image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};art.append(image);stage.append(art);
  }
- scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1,.hero-line')),'jt-guide-opening','welcome');
+ scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1,.hero-line,.name-origin,.reader-go')),'jt-guide-opening','welcome');
  const second=host.querySelectorAll('.classic-filter')[1]?.querySelector('.filter-reading');
  if(second){second.classList.add('jt-guide-filter');const copy=second.firstElementChild;scene(copy,[...copy.children].filter(x=>x.matches('.filter-name,h3')),'jt-guide-transition','reading');}
  const ending=host.querySelector('.filter-conclusion');
