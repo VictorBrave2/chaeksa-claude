@@ -1,7 +1,9 @@
 
 /* Three reading moments: eye contact, evidence, conclusion. Original nodes stay intact. */
 .zd.zd-companion{container-type:inline-size}
+.zd.zd-companion .zd-hero{position:relative}
 .zd.zd-companion .zd-guide-controls{display:flex;justify-content:flex-end;margin:0 0 4px}
+.zd.zd-companion.companion-on .zd-guide-controls{position:absolute;top:12px;right:0;z-index:2;display:flex;justify-content:flex-end;margin:0}
 .zd.zd-companion .zd-guide-toggle{min-height:44px;padding:8px 0 8px 12px;border:0;background:transparent;color:var(--ink3);font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .zd.zd-companion .guide-scene,.zd.zd-companion .guide-scene-copy{display:contents}
 .zd.zd-companion .guide-art{display:none}

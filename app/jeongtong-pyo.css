@@ -107,7 +107,9 @@
 
 /* Three reading moments: eye contact, evidence, conclusion. Original nodes stay intact. */
 .jtp .jtp-story.jt-companion{container-type:inline-size}
+.jtp .jtp-story.jt-companion .reader-hero>div{position:relative}
 .jtp .jtp-story.jt-companion .jt-guide-controls{display:flex;justify-content:flex-end;margin:0 0 4px}
+.jtp .jtp-story.jt-companion-on .jt-guide-controls{position:absolute;top:0;right:0;z-index:2;display:flex;justify-content:flex-end;margin:0}
 .jtp .jtp-story.jt-companion .jt-guide-toggle{min-height:44px;padding:8px 0 8px 12px;border:0;background:transparent;color:var(--ink3);font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .jtp .jtp-story.jt-companion .jt-guide-scene,.jtp .jtp-story.jt-companion .jt-guide-copy{display:contents}
 .jtp .jtp-story.jt-companion .jt-guide-art{display:none}
