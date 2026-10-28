@@ -47,7 +47,7 @@
     if(e.source)h+='<div class="zd-origin"><span>이 이름을 붙인 근거</span><p>'+esc(read(e.source.meaning))+'</p>'+chartButton(e.source.targets)+evidence(e.source)+'</div><a class="zd-jump" href="#zd-filters">나를 설명하는 '+e.groups.length+'가지 이야기 ↓</a>';
     else h+='<p class="zd-personal">이 목록에서 고른 좋은 조건은 확인되지 않았습니다. 명반의 궁과 별을 누르면 내게 해당하는 나머지 풀이를 볼 수 있습니다.</p>';
     h+='</section>';
-    if(!e.groups.length)return h+'</article>';
+    if(!e.groups.length)return h+'<p class="zd-today-link"><a href="today.html">오늘의 운세 — 오늘 달라지는 나는? →</a></p></article>';
     h+='<section id="zd-filters"><div class="zd-section-heading"><p class="zd-kicker">당신의 명반에 실제로 있는 조건</p><h3>무엇으로 힘을 쓰고,<br>어디에서 걸리는가</h3></div>';
     e.groups.forEach((g,i)=>{
       h+='<section class="zd-group"><div class="zd-group-head"><span>'+String(i+1).padStart(2,'0')+' · '+esc(names[g.palace]||g.palace)+'</span><small>'+g.filters.length+'개 좋은 조건</small></div><h3>'+esc(g.title).replace(/\n/g,' ')+'</h3>';
@@ -66,7 +66,7 @@
       h+='</section>';
     });
     h+='</section><section class="zd-ending"><p class="zd-kicker">내 명반의 특징</p><h3>'+esc(e.title).replace(/\n/g,'<br>')+'</h3><p>좋은 조건 '+story.filters.length+'개와, 같은 분야의 경계를 함께 읽었습니다.</p><div class="zd-rate"><span>이 좋은 조건을 모두 갖춘 명반</span><strong>'+rate(story.percent)+'</strong></div><details class="zd-evidence"><summary>비율의 계산 기준</summary><p>'+esc(story.scheme)+' · '+Number(story.sampleSize).toLocaleString('ko-KR')+'개 비교 명반</p><p>좋은 조건의 표시 순서에 맞춰 실제 교집합을 다시 셌습니다. 한 조건에 비슷한 뜻의 원문이 여러 개 들어 있으면, 그중 하나 이상에 해당하는 명반을 셉니다. 본문에는 그중 내게 실제 해당한 원문만 나옵니다.</p><p>경계 구절은 이 비율에 포함하지 않습니다. 실제 인구 비율이나 능력 점수가 아닙니다. 비교 자료에서 같은 조합을 찾지 못하면 비율 미산정으로 표시합니다.</p><p>고전 구절의 뜻을 풀어 붙인 제목입니다. 이 제목 하나가 명반 전체를 대신하지 않습니다.</p></details></section></article>';
-    return h;
+    return h.replace('</article>', '<p class="zd-today-link"><a href="today.html">오늘의 운세 — 오늘 달라지는 나는? →</a></p></article>');
   }
   document.addEventListener('click',function(event){
     const button=event.target.closest('[data-chart-target]');
