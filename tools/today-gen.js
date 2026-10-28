@@ -10,7 +10,7 @@ const T = globalThis.ChaeksaToday, E = globalThis.ChaeksaEngine, 뜻 = globalThi
 const PF = path.join(A, 'today-pieces.js');
 let 있던 = {};
 if (fs.existsSync(PF)) { const g = {}; new Function('window', fs.readFileSync(PF, 'utf8'))(g); 있던 = g.ChaeksaTodayPieces || {}; }
-const 필드of = (k) => /^(새로|이어)\|/.test(k) ? T.오늘필드 : /^(때말|상대)\|/.test(k) ? ['이름'] : ['한줄'];
+const 필드of = (k) => /^(새로|이어)\|/.test(k) ? T.오늘필드 : /^(때말|상대|자리말)\|/.test(k) ? ['이름'] : ['한줄'];
 const 표 = {};
 for (const k of T.열쇠들()) { 표[k] = {}; for (const f of 필드of(k)) 표[k][f] = (있던[k] && typeof 있던[k][f] === 'string') ? 있던[k][f] : ''; }
 const 남은 = Object.keys(있던).filter(k => !표[k]);
@@ -27,7 +27,7 @@ for (let p = 0; p < 1000; p++) {
   for (let i = 0; i < 60; i += 1) {
     const v = T.오늘(R, new Date(2026, 10, 1 + i)); 날수++;
     const 더 = k => { 셈[k] = (셈[k] || 0) + 1; };
-    더(v.첫줄.열쇠); if (v.때) { 더(v.때.때말열쇠); 더(v.때.상대열쇠); 더(v.때.일열쇠); } if (v.작용) 더(v.작용.열쇠); if (v.생각) 더(v.생각.열쇠); if (v.둘째줄) 더(v.둘째줄.열쇠); if (v.조용) 더('조용'); v.바탕.forEach(b => 더(b.열쇠)); v.빠짐.forEach(b => 더(b.열쇠));
+    더(v.첫줄.열쇠); if (v.때) { 더(v.때.때말열쇠); 더(v.때.상대열쇠); 더(v.때.일열쇠); } if (v.작용) 더(v.작용.열쇠); if (v.생각) 더(v.생각.열쇠); if (v.때 && v.때.자리말열쇠) 더(v.때.자리말열쇠); if (v.둘째줄) 더(v.둘째줄.열쇠); if (v.조용) 더('조용'); v.바탕.forEach(b => 더(b.열쇠)); v.빠짐.forEach(b => 더(b.열쇠));
   }
 }
 // 빈도 — node tools/today-freq.js 가 낸 copy-requests/ref/today-freq.json(1,000명 × 365일). 사건 글은 이 빈도로 일어나는 일이어야 한다.
