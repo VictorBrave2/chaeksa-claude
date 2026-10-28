@@ -6,12 +6,39 @@ if(!Old||!Old.그리기)return;
 const legacyDraw=Old.그리기;
 const API='https://chaeksa-behavior-core.vercel.app/api/jt-pyo';
 const cache=new Map(),pending=new WeakMap();
+const companionArt=new URL('art/jeongtong-companion/',document.currentScript.src).href;
+let companionEnabled=true,companionObserver=null;
+function companion(host){
+ if(companionObserver){companionObserver.disconnect();companionObserver=null;}
+ const story=host.querySelector('.jtp-story'),hero=host.querySelector('.reader-hero>div');
+ if(!story||!hero)return;
+ story.classList.add('jt-companion');story.classList.toggle('jt-companion-on',companionEnabled);
+ function scene(parent,nodes,kind,pose){
+  if(!parent||!nodes.length)return;
+  const stage=document.createElement('div');stage.className='jt-guide-scene '+kind;
+  const copy=document.createElement('div');copy.className='jt-guide-copy';parent.insertBefore(stage,nodes[0]);nodes.forEach(node=>copy.append(node));stage.append(copy);
+  const art=document.createElement('div');art.className='jt-guide-art';art.setAttribute('aria-hidden','true');
+  const image=document.createElement('img');image.src=companionArt+pose+'-v1.png';image.alt='';image.width=1024;image.height=1536;image.loading='lazy';image.decoding='async';
+  image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};art.append(image);stage.append(art);
+ }
+ scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1')),'jt-guide-opening','reading');
+ const second=host.querySelectorAll('.classic-filter')[1]?.querySelector('.filter-reading');
+ if(second){second.classList.add('jt-guide-filter');const copy=second.firstElementChild;scene(copy,[...copy.children].filter(x=>x.matches('.filter-name,h3')),'jt-guide-transition','explaining');}
+ const ending=host.querySelector('.filter-conclusion');
+ if(ending)scene(ending,[...ending.children].filter(x=>x.matches('.conclusion-seal,.conclusion-kicker,h2')),'jt-guide-closing','closing');
+ const controls=document.createElement('div');controls.className='jt-guide-controls';
+ const toggle=document.createElement('button');toggle.type='button';toggle.className='jt-guide-toggle';
+ function update(){story.classList.toggle('jt-companion-on',companionEnabled);toggle.setAttribute('aria-pressed',String(companionEnabled));toggle.textContent=companionEnabled?'삽화 숨기기':'삽화 보기';}
+ toggle.onclick=()=>{companionEnabled=!companionEnabled;update();};update();controls.append(toggle);hero.prepend(controls);
+ if('IntersectionObserver' in window){companionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');companionObserver.unobserve(entry.target);}}),{threshold:.15});story.querySelectorAll('.jt-guide-scene').forEach(x=>companionObserver.observe(x));}
+}
 function resultView(host,r,input){
  if(!r.story?.filterStory||!global.ChaeksaNameSeason)throw new Error('story unavailable');
  const view=global.ChaeksaJeongtongModelReading?.applyModel(r.story)||r.story;
  global.ChaeksaNameSeason.mount(host,view);
  global.ChaeksaJeongtongShare?.attach(host,view);
  global.ChaeksaJeongtongEvidence?.attach(host.parentElement,input);
+ companion(host);
 }
 function oldContent(container,input){
  const d=document.createElement('details');d.className='jtp-legacy';
