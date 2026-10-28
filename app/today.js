@@ -66,7 +66,7 @@
         const answer=root.querySelector('input[name="today-answer"]:checked'); if(!answer)return;
         const ok=diary.답(selected,v.날짜,answer.value,memo.value);
         root.querySelector('#today-status').textContent=ok?'오늘의 기록을 저장했어요.':'기록을 저장하지 못했어요. 입력한 내용은 이 화면에 남겨 두었습니다.';
-        if(ok){event('today_note');root.querySelector('#today-history').innerHTML=history(selected,v.날짜.slice(0,7));}
+        if(ok){event('today_note');event((v.조용?'tq|':'tn|')+v.첫줄.열쇠+'|'+answer.value);root.querySelector('#today-history').innerHTML=history(selected,v.날짜.slice(0,7));}
       };
       try{if(track)track.watchEnd(root,'today_end');}catch(e){}
     }
