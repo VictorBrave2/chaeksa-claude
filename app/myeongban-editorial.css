@@ -2,3 +2,6 @@
 .chart-proof-status[hidden]{display:none}
 
 .zd-step-rate{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-top:16px;font-size:11px;color:var(--ink3)}.zd-step-rate strong{font-family:var(--serif);font-size:23px;font-weight:500;color:var(--accent)}.zd-good h4:not(:first-child){margin-top:24px}.zd-evidence{overflow-wrap:anywhere}.zd-personal{word-break:keep-all}
+
+/* COPY-0019: comparison rates support the reading. */
+.zd .zd-rate strong,.zd .zd-step-rate strong{font-family:var(--sans);font-size:16px;color:var(--ink2);font-weight:500}
