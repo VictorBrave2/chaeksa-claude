@@ -12,3 +12,6 @@
 @container(max-width:360px){.zf-hero,.zf-section-head{padding-left:18px;padding-right:18px}.zf-step{padding:18px}.zf-stack{padding-right:8px;padding-left:29px}.zf-stack:before{left:15px}.zf-step:before{left:-19px}.zf h4{font-size:22px}.zf-conclusion{margin-left:18px;margin-right:18px}.zf-conclusion h3{font-size:27px}.zf-total strong{font-size:46px}}
 @media(prefers-reduced-motion:reduce){.zf *{scroll-behavior:auto}}
 .mb-original{margin:0 28px 32px;border-top:1px solid #d9cbb3}.mb-original>summary{padding:18px 0;color:#926321;cursor:pointer;font-size:13px}.mb-original[open]{margin-left:0;margin-right:0}.mb-original .mb-top{margin-top:18px}
+
+/* COPY-0019: legacy rendering also keeps rates subordinate to the reading. */
+.zf .zf-total strong,.zf .zf-rate strong{font-size:16px;color:var(--ink2)}
