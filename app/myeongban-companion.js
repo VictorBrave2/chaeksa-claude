@@ -22,7 +22,7 @@
   const hero=reading.querySelector('.zd-hero'),groups=[...reading.querySelectorAll('.zd-group')],ending=reading.querySelector('.zd-ending');
   if(!hero||!groups.length)return;
   reading.dataset.companionMounted='true';reading.classList.add('zd-companion');reading.classList.toggle('companion-on',enabled);
-  scene(hero,[...hero.children].filter(el=>el.matches('.zd-kicker,h2,.zd-personal')),'guide-opening',0);
+  scene(hero,[...hero.children].filter(el=>el.matches('.zd-kicker,h2,.zd-personal,.zd-jump')),'guide-opening',0);
   const transition=groups[1];
   if(transition)scene(transition,[...transition.children].filter(el=>el.matches('.zd-group-head,h3')),'guide-transition',1);
   if(ending)scene(ending,[...ending.children].filter(el=>el.matches('p,h3')),'guide-closing',2);
