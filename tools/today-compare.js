@@ -1,9 +1,10 @@
 // 오늘의 운세 전후 비교 — COPY-0021 전(메인이 10-29 떠 둔 조각표)과 지금 조각표를 칸마다 · 화면마다 나란히.
 // 쓰기: node tools/today-compare.js            → copy-requests/ref/COPY-0021-compare.html (사장님이 보는 한 장)
+//       node tools/today-compare.js COPY-0022 [--snapshot]   (이름을 주면 그 주문의 전 · 비교 파일)
 //       node tools/today-compare.js --snapshot → 지금 조각표를 「전」으로 떠 둔다(copy-requests/ref/COPY-0021-before.json)
 'use strict';
 const fs = require('fs'), path = require('path'), A = path.join(__dirname, '../app'), REF = path.join(__dirname, '../copy-requests/ref');
-const 전파일 = path.join(REF, 'COPY-0021-before.json');
+const 이름 = (process.argv.find(x => /^COPY-\d+$/.test(x)) || 'COPY-0021'), 전파일 = path.join(REF, 이름 + '-before.json');
 const 읽기 = () => { const g = {}; new Function('window', fs.readFileSync(path.join(A, 'today-pieces.js'), 'utf8'))(g); return g.ChaeksaTodayPieces; };
 if (process.argv.includes('--snapshot')) { fs.writeFileSync(전파일, JSON.stringify(읽기(), null, 2).replace(/\n/g, '\r\n')); console.log('전 떠 둠 →', path.relative(process.cwd(), 전파일)); process.exit(0); }
 globalThis.window = globalThis;
@@ -28,10 +29,10 @@ for (const k of Object.keys(후)) for (const f of Object.keys(후[k])) {
   if (a !== b) { 종[무].바뀜++; 바뀜.push({ k, f, a, b }); }
 }
 const css = ':root{--bg:#f6f1e7;--fg:#2b2620;--sub:#7a6f60;--line:#ddd2bf;--acc:#8a3b2a;--card:#fffaf1;--old:#efe6d6}@media(prefers-color-scheme:dark){:root{--bg:#171a24;--fg:#ece6da;--sub:#a59c8c;--line:#343a4c;--acc:#e0a07c;--card:#1f2331;--old:#252a3a}}body{background:var(--bg);color:var(--fg);font:16px/1.65 "Noto Sans KR",system-ui,sans-serif;margin:0;padding:24px max(16px,env(safe-area-inset-left))}main{max-width:1100px;margin:auto}h1{font-size:24px;margin:0 0 4px}h2{font-size:19px;margin:32px 0 8px;color:var(--acc)}.sub{color:var(--sub);font-size:14px}.wrap{overflow-x:auto}table{border-collapse:collapse;background:var(--card);width:100%}th,td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;font-size:14px;text-align:left}th{white-space:nowrap;font-weight:600}td.old{background:var(--old);color:var(--sub)}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}.card h3{margin:0 0 8px;font-size:15px}';
-const html = '<!doctype html><html lang=ko><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>오늘의 운세 전후</title><style>' + css + '</style><main><h1>오늘의 운세 — 전 · 후</h1><p class=sub>전 = 10-29 메인 초안 · Codex 첫 판 / 후 = 지금 조각표(COPY-0021 뒤). 바뀐 칸 ' + 바뀜.length + '</p>'
+const html = '<!doctype html><html lang=ko><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>오늘의 운세 전후</title><style>' + css + '</style><main><h1>오늘의 운세 — 전 · 후</h1><p class=sub>' + 이름 + ' · 전 = 주문 직전 조각표 / 후 = 지금 조각표. 바뀐 칸 ' + 바뀜.length + '</p>'
   + '<h2>종류별 바뀐 칸</h2><div class=wrap><table><tr><th>종류</th><th>칸</th><th>바뀜</th></tr>' + Object.keys(종).map(k => '<tr><td>' + k + '</td><td>' + 종[k].칸 + '</td><td>' + 종[k].바뀜 + '</td></tr>').join('') + '</table></div>'
   + '<h2>같은 사람 · 같은 날 화면</h2>' + 견본.map(x => '<div class=card><h3>' + esc(x.누구) + '</h3><div class=wrap><table><tr><th></th><th>전</th><th>후</th></tr>' + x.전.map((r, i) => '<tr><th>' + r[0] + '</th><td class=old>' + esc(r[1]) + '</td><td>' + esc(x.후[i][1]) + '</td></tr>').join('') + '</table></div></div>').join('')
   + '<h2>바뀐 칸 전부</h2><div class=wrap><table><tr><th>열쇠 · 필드</th><th>전</th><th>후</th></tr>' + 바뀜.map(x => '<tr><th>' + esc(x.k) + '<br><span class=sub>' + esc(x.f) + '</span></th><td class=old>' + esc(x.a) + '</td><td>' + esc(x.b) + '</td></tr>').join('') + '</table></div></main>';
-const OUT = path.join(REF, 'COPY-0021-compare.html');
+const OUT = path.join(REF, 이름 + '-compare.html');
 fs.writeFileSync(OUT, html);
 console.log('바뀐 칸', 바뀜.length, JSON.stringify(종), '→', path.relative(process.cwd(), OUT));
