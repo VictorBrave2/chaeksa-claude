@@ -1,46 +1,64 @@
-/* Approved companion scenes; all rules scoped to the personalized reading. */
-.zd-companion .guide-figure{display:block;width:125%;max-width:none;height:auto;margin-left:-12.5%;aspect-ratio:2/3;transform:scaleX(-1);pointer-events:none}
-.zd-guide-controls{display:flex;justify-content:flex-end;margin:-18px 0 10px}
-.zd-guide-toggle{min-height:44px;padding:8px 12px;border:1px solid var(--line2);border-radius:22px;background:var(--card);color:var(--ink3);font:inherit;font-size:11px;cursor:pointer}
-.zd-companion .guide-art{display:none}
-.zd-companion .guide-scene,.zd-companion .guide-scene-copy{display:contents}
-.zd-companion .guide-transition h3{font-family:var(--serif);font-size:22px;margin:18px 0 25px;line-height:1.6;font-weight:500}
-.zd-companion.companion-on .guide-scene{display:block;position:relative;isolation:isolate;min-height:430px;overflow:hidden;margin:0 0 24px}
-.zd-companion.companion-on .guide-scene:before{content:"";position:absolute;width:310px;height:310px;border:1px solid var(--line2);border-radius:50%;right:-60px;top:70px;z-index:-1}
-.zd-companion.companion-on .guide-scene-copy{display:block;position:relative;z-index:2;width:58%;padding-top:20px}
-.zd-companion.companion-on .guide-art{display:block;position:absolute;right:-36px;bottom:0;width:285px;height:400px;pointer-events:none;mask-image:linear-gradient(#000 86%,transparent)}
-.zd-companion.companion-on .guide-scene h2,.zd-companion.companion-on .guide-scene h3{font-family:var(--serif);font-weight:500;font-size:32px;line-height:1.55;letter-spacing:-.04em;word-break:keep-all;margin:0 0 22px}
-.zd-companion.companion-on .guide-scene .zd-kicker{font-size:10px;letter-spacing:.05em;white-space:nowrap}
-.zd-companion.companion-on .guide-scene .zd-personal{font-size:13px;line-height:1.9;max-width:170px;color:var(--ink3)}
-.zd-companion.companion-on .guide-transition{min-height:370px;margin:-6px -25px 24px;padding:0 25px;border-bottom:1px solid var(--line2)}
-.zd-companion.companion-on .guide-transition .guide-scene-copy{width:57%;padding-top:24px}
-.zd-companion.companion-on .guide-transition .zd-group-head{display:block;margin-bottom:20px}
-.zd-companion.companion-on .guide-transition .zd-group-head small{display:block;margin-top:7px}
-.zd-companion.companion-on .guide-transition h3{font-size:28px}
-.zd-companion.companion-on .guide-transition .guide-art{width:255px;height:350px;right:-25px}
-.zd-companion.companion-on .guide-closing{min-height:380px;margin-bottom:10px}
-.zd-companion.companion-on .guide-closing .guide-art{width:265px;height:370px}
-.zd-companion.companion-on .guide-closing h3{font-size:30px}
-@media(max-width:430px){
- .zd-companion.companion-on .guide-scene{min-height:366px}
- .zd-companion.companion-on .guide-scene-copy{width:56%;padding-top:12px}
- .zd-companion.companion-on .guide-scene h2,.zd-companion.companion-on .guide-scene h3{font-size:26px;line-height:1.6}
- .zd-companion.companion-on .guide-art{width:228px;height:320px;right:-40px}
- .zd-companion.companion-on .guide-scene:before{width:240px;height:240px;right:-65px;top:76px}
- .zd-companion.companion-on .guide-scene .zd-personal{max-width:142px;font-size:12px}
- .zd-companion.companion-on .guide-transition{margin:-4px -19px 22px;padding:0 19px;min-height:340px}
- .zd-companion.companion-on .guide-transition .guide-scene-copy{width:56%}
- .zd-companion.companion-on .guide-transition h3{font-size:24px}
- .zd-companion.companion-on .guide-transition .guide-art{width:216px;height:305px;right:-40px}
- .zd-companion.companion-on .guide-transition .zd-group-head{font-size:11px}
- .zd-companion.companion-on .guide-closing{min-height:340px}
- .zd-companion.companion-on .guide-closing .guide-art{width:226px;height:320px}
+
+/* Three reading moments: eye contact, evidence, conclusion. Original nodes stay intact. */
+.zd.zd-companion{container-type:inline-size}
+.zd.zd-companion .zd-guide-controls{display:flex;justify-content:flex-end;margin:0 0 4px}
+.zd.zd-companion .zd-guide-toggle{min-height:44px;padding:8px 0 8px 12px;border:0;background:transparent;color:var(--ink3);font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.zd.zd-companion .guide-scene,.zd.zd-companion .guide-scene-copy{display:contents}
+.zd.zd-companion .guide-art{display:none}
+.zd.zd-companion.companion-on .guide-scene{display:grid;grid-template-areas:"art" "copy";grid-template-columns:minmax(0,1fr);justify-items:center;position:relative;isolation:isolate;margin:0 0 28px;text-align:left}
+.zd.zd-companion.companion-on .guide-art{grid-area:art;display:block;width:min(100%,300px);max-width:100%;pointer-events:none}
+.zd.zd-companion .guide-art img{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:1;margin:0;object-fit:contain}
+.zd.zd-companion.companion-on .guide-scene-copy{grid-area:copy;display:block;position:relative;z-index:1;width:100%;max-width:640px;margin-top:-22px;padding:24px 26px;border:1px solid var(--line2);border-radius:16px;background:var(--card);box-shadow:0 9px 28px rgba(65,48,23,.045)}
+.zd.zd-companion.companion-on .guide-scene h1,.zd.zd-companion.companion-on .guide-scene h2,.zd.zd-companion.companion-on .guide-scene h3{font-family:var(--serif);font-size:30px;font-weight:500;line-height:1.5;letter-spacing:-.04em;word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty;max-width:none;margin:10px 0 14px}
+.zd.zd-companion.companion-on .guide-scene-copy>p:last-child{margin-bottom:0}
+.zd.zd-companion.companion-on .guide-transition{grid-template-areas:"copy art";grid-template-columns:minmax(0,1fr) 136px;align-items:end;gap:10px;margin:0 0 18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.zd.zd-companion.companion-on .guide-transition .guide-art{width:136px;mask-image:linear-gradient(#000 90%,transparent)}
+.zd.zd-companion.companion-on .guide-transition .guide-scene-copy{margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:none}
+.zd.zd-companion.companion-on .guide-transition h3{font-family:var(--sans);font-size:21px;line-height:1.6;font-weight:600;margin:12px 0 0}
+.zd.zd-companion.companion-on .guide-closing{margin-bottom:24px}
+.zd.zd-companion.companion-on .guide-closing .guide-art{width:min(100%,230px)}
+.zd.zd-companion.companion-on .guide-closing .guide-scene-copy{padding:23px 24px;text-align:left}
+.zd.zd-companion.companion-on .guide-closing h2,.zd.zd-companion.companion-on .guide-closing h3{font-size:25px;line-height:1.65;margin:9px 0 14px}
+.zd.zd-companion.companion-on .guide-closing .guide-scene-copy>p{font-size:14px;line-height:1.9;color:var(--ink2)}
+.zd.zd-companion .guide-art[hidden]{display:none}
+.zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
+.zd.zd-companion.companion-on .guide-no-art .guide-scene-copy{margin-top:0}
+@container(min-width:620px){
+ .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art copy";grid-template-columns:42% minmax(0,1fr);align-items:center;gap:20px}
+ .zd.zd-companion.companion-on .guide-opening .guide-art{width:100%;max-width:360px;mask-image:linear-gradient(#000 94%,transparent)}
+ .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{margin:0}
+ .zd.zd-companion.companion-on .guide-closing{grid-template-areas:"art copy";grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:center}
+ .zd.zd-companion.companion-on .guide-closing .guide-scene-copy{margin:0}
+ .zd.zd-companion.companion-on .guide-transition{grid-template-columns:minmax(0,1fr) 160px}
+ .zd.zd-companion.companion-on .guide-transition .guide-art{width:160px}
+ .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
 }
-@media(max-width:370px){.zd-companion.companion-on .guide-scene h2,.zd-companion.companion-on .guide-scene h3{font-size:23px}.zd-companion.companion-on .guide-art{right:-48px}}
+@container(max-width:380px){
+ .zd.zd-companion.companion-on .guide-scene-copy{padding:20px}
+ .zd.zd-companion.companion-on .guide-scene h1,.zd.zd-companion.companion-on .guide-opening h2{font-size:27px}
+ .zd.zd-companion.companion-on .guide-transition{grid-template-columns:minmax(0,1fr) 112px;gap:8px}
+ .zd.zd-companion.companion-on .guide-transition .guide-art{width:112px}
+ .zd.zd-companion.companion-on .guide-transition h3{font-size:20px}
+ .zd.zd-companion.companion-on .guide-closing .guide-scene-copy{padding:20px}
+ .zd.zd-companion.companion-on .guide-closing h2,.zd.zd-companion.companion-on .guide-closing h3{font-size:24px}
+ .zd.zd-companion.companion-on .guide-no-art{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr)}
+}
 @media(prefers-reduced-motion:no-preference){
- .zd-companion .guide-scene.is-visible .guide-figure{animation:ziwei-guide-arrive .8s both}
- @keyframes ziwei-guide-arrive{from{opacity:0;transform:scaleX(-1) translateY(18px)}to{opacity:1;transform:scaleX(-1) translateY(0)}}
+ .zd.zd-companion .guide-scene.is-visible .guide-art img{animation:guide-arrive .65s both}
+ @keyframes guide-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+}
+@media print{
+ .zd.zd-companion .guide-art,.zd.zd-companion .zd-guide-controls{display:none!important}
+ .zd.zd-companion.companion-on .guide-scene,.zd.zd-companion.companion-on .guide-scene-copy{display:contents}
 }
 
-.zd-companion.companion-on .guide-no-art{min-height:0}.zd-companion.companion-on .guide-no-art .guide-scene-copy{width:100%}.zd-companion .guide-no-art:before{display:none}.zd-companion .guide-art[hidden]{display:none}
-@media print{.zd-guide-controls,.zd-companion .guide-art{display:none!important}.zd-companion.companion-on .guide-scene,.zd-companion.companion-on .guide-scene-copy{display:contents}.zd-companion .guide-scene:before{display:none}}
+.zd.zd-companion .guide-transition h3{font-size:22px;margin:18px 0 25px;line-height:1.6}
+.zd.zd-companion.companion-on .zd-hero{padding-top:12px}
+.zd.zd-companion.companion-on .guide-opening .zd-kicker{font-size:10px;letter-spacing:.08em;margin:0}
+.zd.zd-companion.companion-on .guide-opening .zd-personal{font-size:15px;line-height:1.85;max-width:none;color:var(--ink2);margin:0}
+.zd.zd-companion.companion-on .guide-transition .zd-group-head{display:block;font-size:11px;line-height:1.7}
+.zd.zd-companion.companion-on .guide-transition .zd-group-head small{display:block;margin-top:4px}
+.zd.zd-companion.companion-on .guide-transition h3{font-size:21px;margin:12px 0 0}
+.zd.zd-companion.companion-on .guide-closing .zd-kicker{font-size:11px;color:var(--accent);margin:0}
+@container(max-width:380px){.zd.zd-companion.companion-on .guide-transition h3{font-size:20px}}
+
