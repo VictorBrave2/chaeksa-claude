@@ -47,6 +47,8 @@ function oldContent(container,input){
  try{legacyDraw(d.querySelector('.jtp-legacy-content'),input);}catch(_){d.querySelector('.jtp-legacy-content').textContent='자세한 풀이를 지금 불러오지 못했어요.';}
  return d;
 }
+// 10-28 방향 지표 — 정통사주를 본 사람 · 끝까지 읽은 사람(화면은 그대로)
+const 셈=box=>{try{global.ChaeksaTrack?.event('jeongtong');global.ChaeksaTrack?.watchEnd?.(box,'jeongtong_end');}catch(_){}};
 function 그리기(box,input){
  const birth={year:input.year,month:input.month,day:input.day,hour:input.hour==null?null:input.hour,minute:input.minute||0,gender:input.gender==='F'?'F':'M',place:input.place,longitude:input.longitude,tzOffset:input.tzOffset,solarCorrection:input.solarCorrection!==false};
  const key=JSON.stringify(birth),today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'}),previous=pending.get(box);
@@ -59,12 +61,12 @@ function 그리기(box,input){
  const fail=()=>{request.loading=false;host.innerHTML='<div class="jtp-empty" role="status">결과를 불러오지 못했어요.<p>잠시 뒤 다시 불러오거나, 아래에서 자세한 풀이를 읽어 보세요.</p><button type="button" class="jtp-retry">다시 불러오기</button></div>';host.querySelector('button').onclick=()=>{pending.delete(box);그리기(box,input);};};
  if(birth.hour==null){request.loading=false;request.done=true;host.innerHTML='<div class="jtp-empty">태어난 시간을 넣으면 나의 좋은 조건과 흐름을 볼 수 있어요.<p>시간을 몰라도 아래에서 태어난 해·달·날의 여섯 글자로 자세한 풀이를 읽을 수 있어요.</p><button type="button" class="jtp-retry">태어난 시간 추가하기</button></div>';host.querySelector('button').onclick=()=>global.책사내정보수정?.();global.ChaeksaJeongtongEvidence?.attach(root,input);return;}
  const cached=cache.get(key);
- if(cached?.date===today){request.loading=false;request.done=true;resultView(host,cached.data,input);return;}
+ if(cached?.date===today){request.loading=false;request.done=true;resultView(host,cached.data,input);셈(box);return;}
  const timeout=setTimeout(()=>controller.abort(),30000);
  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(birth),signal:controller.signal}).then(async response=>{const r=await response.json();if(!response.ok||r.시모름||!Array.isArray(r.story?.filterStory?.filters))throw new Error('result unavailable');return r;}).then(r=>{
   if(pending.get(box)!==request)return;
   if(cache.size>12)cache.delete(cache.keys().next().value);
-  cache.set(key,{date:today,data:r});request.loading=false;request.done=true;resultView(host,r,input);
+  cache.set(key,{date:today,data:r});request.loading=false;request.done=true;resultView(host,r,input);셈(box);
  }).catch(()=>{if(pending.get(box)===request)fail();}).finally(()=>clearTimeout(timeout));
 }
 global.ChaeksaJeongtong={그리기,전문그리기:legacyDraw};
