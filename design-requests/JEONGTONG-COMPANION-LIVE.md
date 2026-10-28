@@ -17,3 +17,10 @@
 - reading-v2.png, explaining-v2.png, closing-v2.png를 사용하고 v1 원본은 보존한다.
 - 화면상 비율을 정사각형 이미지에 맞추고 하단 흐림 시작을 85%에서 96%로 줄였다.
 - 생성 도구와 프롬프트는 app/art/jeongtong-companion/image-prompts-v2.txt에 기록한다.
+
+## 어깨 잘림 수정 — v3
+
+- 양쪽 어깨와 수첩이 이미지 안에 들어오는 상반신 구도로 세 자세를 다시 생성했다.
+- 이미지 125% 확대와 음수 여백을 없애고, 컨테이너를 화면 밖으로 밀어내는 배치를 제거했다.
+- 모바일에서는 제목 아래에 상반신을 본문 폭으로 배치하여 글자와 겹치지 않으며 양쪽 어깨가 보이게 한다.
+- 새 이미지: reading-v3.png, explaining-v3.png, closing-v3.png. 도구와 프롬프트: image-prompts-v3.txt.
