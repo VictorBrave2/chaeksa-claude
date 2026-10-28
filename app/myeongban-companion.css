@@ -66,13 +66,27 @@
 @container(max-width:380px){.zd.zd-companion.companion-on .guide-transition h3{font-size:20px}}
 
 
-/* Keep the chart and reading on one measure; allow extra room only for the opening illustration. */
+/* Keep the chart, reading and introduction on the same measure. */
 @media(min-width:760px){
- .wrap:has(.zd-companion){max-width:916px}
+ .wrap:has(.zd-companion){max-width:756px}
  .wrap:has(.zd-companion)>:not(#out),.wrap:has(.zd-companion)>#out>:not(.zd-companion),.zd.zd-companion>:not(.zd-hero){max-width:720px;margin-left:auto;margin-right:auto}
  .wrap:has(.zd-companion)>#f{max-width:560px}
+ body:has(.zd-companion)>.mini-head{padding-left:max(18px,calc((100vw - 720px)/2));padding-right:max(18px,calc((100vw - 720px)/2))}
  .zd.zd-companion .zd-hero>.zd-origin,.zd.zd-companion .zd-hero>.zd-personal{max-width:720px;margin-left:auto;margin-right:auto}
  .zd.zd-companion .zd-jump{display:block;max-width:720px;margin-left:auto;margin-right:auto}
  .zd.zd-companion.companion-on .guide-opening h2{font-size:clamp(26px,3.4cqi,30px);line-height:1.55}
  .zd.zd-companion.companion-on .guide-art{mask-image:none}
+}
+
+/* The guide introduces one reading panel; source details remain directly below it. */
+.zd.zd-companion.companion-on .zd-guide-controls{position:static;margin:0;min-height:44px}
+.zd.zd-companion.companion-on .guide-opening{margin-bottom:24px}
+.zd.zd-companion.companion-on .guide-opening .zd-jump{display:flex;align-items:center;min-height:44px;width:fit-content;max-width:100%;margin:16px 0 0;font-size:12px}
+@container(min-width:620px){
+ .zd.zd-companion.companion-on .guide-opening{grid-template-columns:240px minmax(0,1fr);gap:0;align-items:center;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:var(--card)}
+ .zd.zd-companion.companion-on .guide-opening .guide-art{width:240px;align-self:end}
+ .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{min-width:0;padding:28px 28px 24px 20px;border:0;border-radius:0;box-shadow:none;background:transparent}
+ .zd.zd-companion.companion-on .guide-opening h2{font-size:28px;line-height:1.55;text-wrap:balance}
+ .zd.zd-companion.companion-on .guide-opening .zd-personal{font-size:14px}
+ .zd.zd-companion.companion-on .guide-opening.guide-no-art{grid-template-columns:minmax(0,1fr)}
 }
