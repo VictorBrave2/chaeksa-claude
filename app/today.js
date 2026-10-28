@@ -4,7 +4,8 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateText = s => { const a=s.split('-'); return Number(a[1])+'월 '+Number(a[2])+'일'; };
   const dayKey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  const names = {비견:'내 기준과 동등한 관계',겁재:'경쟁과 함께 나눌 몫',식신:'꾸준히 만들고 돌보는 일',상관:'다른 점을 짚고 개선하는 말',편재:'새 일에 쓰는 돈과 시간',정재:'비용과 약속의 꾸준한 관리',편관:'강한 요구와 빠른 대응',정관:'역할과 공식적인 약속',편인:'스스로 납득하는 배움',정인:'도움과 배움을 받아들이는 일'};
+  const meaning = k => { const S=global.ChaeksaSipseong, m=S&&S.뜻&&S.뜻[k]; return m?m.중심:''; };
+  const objP = w => { const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<=11171&&c%28 ? '을' : '를'; };
   const natal = {겉:'타고난 사주에 드러나 있는 성향이 오늘 다시 더해집니다.',속:'타고난 사주 안에 있던 성향이 오늘 겉으로 드러납니다.',없음:'오늘 새로 들어오는 성향입니다. 평생의 성격을 뜻하지 않습니다.'};
   function mount(root, options) {
     if (!root) return;
@@ -46,7 +47,7 @@
         +'<nav class="today-subnav" aria-label="오늘의 운세 목차"><a href="#today-reading">오늘의 핵심</a><a href="#today-week">가까운 변화</a><a href="#today-note">저녁 기록</a></nav>'
         +'<section id="today-reading"><div class="today-detail"><div class="today-event"><h2>오늘 마주하는 관계와 일</h2><p class="today-actor">'+esc(text('첫줄.누구'))+'</p><p>'+esc(text('첫줄.일'))+'</p></div><aside class="today-action"><h2>오늘 이렇게 해 보세요</h2><p>'+esc(text('첫줄.행동'))+'</p></aside></div>'
         +(v.둘째줄?'<div class="today-second"><span>'+(v.둘째줄.쪽==='천간'?'생각에서는':'행동에서는')+'</span><p>'+esc(text('둘째줄.한줄'))+'</p></div>':'')
-        +'<details class="today-basis"><summary>왜 내게 이런 하루일까요?</summary><p>'+esc(first.쪽==='천간'?'오늘 생각에 들어오는 십성은 ':'오늘 행동에 들어오는 십성은 ')+esc(first.십신)+'입니다. '+esc(names[first.십신])+ '을 뜻합니다.</p><p>'+esc(first.상태==='이어짐'?'이번 달까지의 흐름이 오늘도 이어집니다.':natal[first.원국대비])+'</p><p>이번 달까지 이어진 바탕</p>'+group('바탕.한줄')+(v.빠짐.length?'<p>오늘 잠시 쉬어 가는 흐름</p>'+group('빠짐.한줄'):'')+'<p>태어난 날의 사주와 오늘의 날짜를 비교한 풀이입니다.</p></details></section>'
+        +(group('바탕.한줄')?'<div class="today-second today-base"><span>이번 달까지 이어진 바탕</span>'+group('바탕.한줄')+'</div>':'')+'<details class="today-basis"><summary>왜 내게 이런 하루일까요?</summary><p>'+esc(first.쪽==='천간'?'오늘 생각에 들어오는 십성은 ':'오늘 행동에 들어오는 십성은 ')+esc(first.십신)+'입니다. '+esc(meaning(first.십신))+objP(meaning(first.십신)||'을')+' 뜻합니다.</p><p>'+esc(first.상태==='이어짐'?'이번 달까지의 흐름이 오늘도 이어집니다.':natal[first.원국대비])+'</p>'+(v.빠짐.length?'<p>오늘 잠시 쉬어 가는 흐름</p>'+group('빠짐.한줄'):'')+'<p>태어난 날의 사주와 오늘의 날짜를 비교한 풀이입니다.</p></details></section>'
         +'<section id="today-week" class="today-section"><p class="today-kicker">오늘부터 일곱 날</p><h2>내일은 무엇이 달라질까?</h2><p class="today-section-intro">‘힘을 쓸 날’은 생각과 행동의 변화가 가장 큰 날입니다. 운이 가장 좋은 날이라는 뜻은 아닙니다.</p><ol class="today-week">'+week.날들.map((d,i)=>{
           const strong=week.힘쓸날.includes(d.날짜), p=P[d.첫줄.열쇠];
           return '<li class="today-day'+(strong?' is-strong':'')+(d.조용?' is-quiet':'')+'"><div><time datetime="'+d.날짜+'">'+(i===0?'오늘':dateText(d.날짜))+'</time><span class="today-tag">'+(strong?'힘을 쓸 날':d.조용?'이어지는 하루':esc(d.요일)+'요일')+'</span></div><p>'+esc(p.주한줄)+'</p></li>';
