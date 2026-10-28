@@ -41,3 +41,14 @@
 - 가슴의 볼륨을 줄이고 눈동자가 보이는 열린 눈으로 수정했다. 얼굴·단발·의상·수첩의 정체성은 유지한다.
 - 새 자산: art/notebook-reading-v3.png, notebook-explaining-v3.png, notebook-closing-v3.png.
 - 도구는 built-in image_gen, 프롬프트 전문은 art/image-prompts-v3.txt에 기록한다.
+
+## 실제 서비스 적용 (2026-10-28)
+
+사용자가 견본 v3 승인 후 진행을 요청하여 정통자미두수 실제 화면에 적용한다.
+
+- myeongban-companion.js/css를 서비스에 연결하고 매번 이용자 결과를 그린 직후 해당 제목과 조건 DOM에 장면을 붙인다.
+- 견본의 생년월일이나 result.json은 서비스에서 사용하지 않는다.
+- 이야기 2개 이상이면 세 장면, 1개면 첫 해석과 마지막 요약만 배치한다. 좋은 조건이 없거나 구형 결과라면 기존 결과를 유지한다.
+- 삽화 숨기기/보기, 모션 줄이기, 장식 이미지의 빈 대체문자, 지연 로딩, 이미지 실패 시 본문 폭 복원을 적용한다.
+- 이미지 경로: app/art/ziwei-companion/의 notebook-reading-v3.png, notebook-explaining-v3.png, notebook-closing-v3.png.
+- 변경한 서비스 파일만 내용 지문을 갱신했다. tools_bust.py의 등록 목록에도 추가한다.
