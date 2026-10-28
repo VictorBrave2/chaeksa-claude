@@ -9,3 +9,11 @@
 - 삽화 숨기기, 이미지 지연 로딩, 모션 줄이기, 이미지 실패 시 원래 본문 폭을 제공한다.
 - 통합 지점은 jeongtong-pyo.js의 resultView이며, 스타일은 기존 jeongtong-pyo.css 안에 범위를 제한한다. index.html에서는 이 두 파일의 내용 지문만 바꾼다.
 - 이미지: app/art/jeongtong-companion/reading-v1.png, explaining-v1.png, closing-v1.png. 도구: built-in image_gen. 프롬프트 전문은 같은 폴더 image-prompts.txt에 저장한다.
+
+## 모바일 선명도 개선 — v2
+
+- 사용자 승인: 얼굴부터 수첩까지 담는 상반신 구도로 바꾸고 옷의 잔무늬와 하단 흐림을 줄인다.
+- 세 이미지를 1254×1254 정사각형 RGBA로 재생성했다. 얼굴이 크게 차지하고 눈과 윤곽이 선명하게 보이도록 정리했다.
+- reading-v2.png, explaining-v2.png, closing-v2.png를 사용하고 v1 원본은 보존한다.
+- 화면상 비율을 정사각형 이미지에 맞추고 하단 흐림 시작을 85%에서 96%로 줄였다.
+- 생성 도구와 프롬프트는 app/art/jeongtong-companion/image-prompts-v2.txt에 기록한다.
