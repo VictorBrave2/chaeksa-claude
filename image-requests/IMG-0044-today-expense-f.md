@@ -1,0 +1,29 @@
+# IMG-0044 — 돈을 씀 · 여신
+
+상태: 생성됨 · 표시 코드 연결, 통합 대기
+
+- 방식: 내장 image_gen · 참조 이미지로 인물 유지 · 투명 배경
+- 참조: app/art/today-guides/thought-f-v1.webp
+- 원본: 삽화원본/today-events/expense-f-v1.png (로컬)
+- 배포: app/art/today-events/expense-f-v1.webp (1254×1254)
+- 모바일: app/art/today-events/expense-f-v1-s.webp (480px)
+- 연결은 기존 문장 열쇠를 사용. 고객 성별이나 계산값을 새로 판정하지 않습니다.
+
+## 연결 문장
+
+- 결과|충|재성: 예상에 없던 돈이 나갑니다.
+- 결과|극함|재성: 함께 먹은 밥값을 내가 냅니다.
+- 결과|극함|인성: 돈 쓸 일이 생겨 쉬려던 계획을 미룹니다.
+- 결과|극받음|재성: 돈 문제를 처리하느라 쉴 시간을 놓칩니다.
+- 결과|생함|관성: 대접하는 자리에 돈을 씁니다.
+- 끌림|재성|비겁: 함께 쓰기로 한 돈을 내가 냅니다.
+- 끌림|재성|식상: 하고 싶었던 일에 돈을 씁니다.
+- 끌림|재성|인성: 배우고 싶던 것을 배우는 데 돈을 냅니다.
+- 끌림|인성|재성: 도움받은 대가로 돈을 건넵니다.
+- 생각|극함|재성: 이번에는 내가 밥을 사야겠다고 생각합니다.
+- 생각|극함|인성: 쉬는 것보다 돈 문제부터 해결하기로 합니다.
+- 생각|생함|관성: 대접할 자리에는 돈을 아끼지 않기로 합니다.
+
+## 최종 프롬프트
+
+Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a small open ivory wallet low and a plain blank bank card supported naturally against its edge, looking at reader with slightly rueful resigned expression. No coins pouring out, no giant smile. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.
