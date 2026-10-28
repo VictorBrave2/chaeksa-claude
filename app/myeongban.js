@@ -416,6 +416,7 @@
       if (!r.ok) { $('err').textContent = j.error || '명반을 만들지 못했어요. 입력한 생년월일과 시간을 확인해 주세요.'; return; }
       결과 = j; 표 = j.표 || ''; 지금 = { 이름: 이름 || '', body: body }; $('err').textContent = '';
       그리기();
+      try { if (window.ChaeksaTrack && ChaeksaTrack.watchEnd) ChaeksaTrack.watchEnd($('out'), 'myeongban_end'); } catch (e5) {}   // 10-28 끝까지 읽었나
       // 손님이 눌러서 그린 것이면 명반으로 내려간다(처음 열릴 때 넣어 둔 사람으로 저절로 그린 것은 그대로 — 첫 줄부터 읽게)
       if (스크롤) try { var 머리 = document.querySelector('.mb-top'); if (머리) 머리.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e4) {}
       if (!셌다) { 셌다 = true; try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('myeongban'); } catch (e2) {} }

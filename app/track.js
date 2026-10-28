@@ -145,5 +145,23 @@
     } catch (e) {}
   }
 
-  global.ChaeksaTrack = { sourceOf: sourceOf, event: event };
+  /** 끝까지 읽었나 — 결과 칸(box)의 마지막 줄이 화면에 들어오면 name 사건을 하루 한 번 남긴다(10-28 방향 「끝까지 읽는가」).
+   *  나중에 다시 그려도 새 마지막 줄을 본다. 화면에 보이는 것은 바꾸지 않는다. */
+  var 보는중 = typeof WeakMap === 'function' ? new WeakMap() : null;
+  function watchEnd(box, name) {
+    try {
+      if (!box || !global.IntersectionObserver) return;
+      if (보는중 && 보는중.get(box)) 보는중.get(box).disconnect();
+      var last = box.lastElementChild;
+      while (last && last.lastElementChild && last.offsetHeight > (global.innerHeight || 800)) last = last.lastElementChild;
+      if (!last) return;
+      var io = new IntersectionObserver(function (es) {
+        for (var i = 0; i < es.length; i++) if (es[i].isIntersecting) { io.disconnect(); event(name); return; }
+      });
+      io.observe(last);
+      if (보는중) 보는중.set(box, io);
+    } catch (e) {}
+  }
+
+  global.ChaeksaTrack = { sourceOf: sourceOf, event: event, watchEnd: watchEnd };
 })(window);
