@@ -10,7 +10,7 @@ const companionArt=new URL('art/jeongtong-companion/',document.currentScript.src
 let companionEnabled=true,companionObserver=null;
 function companion(host){
  if(companionObserver){companionObserver.disconnect();companionObserver=null;}
- const story=host.querySelector('.jtp-story'),hero=host.querySelector('.reader-hero>div');
+ const story=host.matches('.jtp-story')?host:host.querySelector('.jtp-story'),hero=host.querySelector('.reader-hero>div');
  if(!story||!hero)return;
  story.classList.add('jt-companion');story.classList.toggle('jt-companion-on',companionEnabled);
  function scene(parent,nodes,kind,pose){
