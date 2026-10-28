@@ -34,3 +34,4 @@
 | IMG-0026 | 홈 「읽을거리」 표지 — 햇살 드는 창가 자리에 웅크려 앉아 옛 책을 읽다가 「아, 그래서였구나」 하는 얼굴 | 적용됨(홈 「읽을거리」 칸 · og) | IMG-0026-read.md | out/IMG-0026.png | app/art/read-cover.webp |
 | IMG-0027 | 출산택일 소개 — 추천서를 건네는 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0027-taekil-advisor-offer.md | 삽화원본/taekil-advisor-offer-v1.png(로컬) | app/art/taekil-advisor-offer-v1.webp |
 | IMG-0028 | 출산택일 제작 설명 — 근거를 확인하는 같은 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0028-taekil-advisor-review.md | 삽화원본/taekil-advisor-review-v1.png(로컬) | app/art/taekil-advisor-review-v1.webp |
+| IMG-0029 | 오늘의 운세 — 아침 알림과 시계 | 생성·연결 완료, 통합 대기 | IMG-0029-today-home.md | 삽화원본/today-cover-v1.png(로컬) | app/art/today-cover-v1.webp |
