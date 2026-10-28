@@ -113,7 +113,7 @@
 .jtp .jt-companion-on .jt-guide-scene:before{content:"";position:absolute;right:-50px;top:80px;width:310px;height:310px;border:1px solid var(--line2);border-radius:50%;z-index:-1}
 .jtp .jt-companion-on .jt-guide-copy{display:block;position:relative;z-index:2;width:56%;padding-top:15px;padding-bottom:20px}
 .jtp .jt-companion-on .jt-guide-art{display:block;position:absolute;right:-30px;bottom:0;width:285px;height:400px;mask-image:linear-gradient(#000 85%,transparent);pointer-events:none}
-.jtp .jt-guide-art img{display:block;width:125%;max-width:none;height:auto;margin-left:-12.5%;aspect-ratio:1;transform:scaleX(-1)}
+.jtp .jt-guide-art img{display:block;width:100%;max-width:100%;height:auto;margin:0;aspect-ratio:1;transform:scaleX(-1)}
 .jtp .jt-companion-on .jt-guide-scene h1,.jtp .jt-companion-on .jt-guide-scene h2,.jtp .jt-companion-on .jt-guide-scene h3{font-family:var(--serif);font-size:32px;line-height:1.6;font-weight:500;letter-spacing:-.04em;text-wrap:initial;word-break:keep-all;overflow-wrap:anywhere;margin:12px 0 18px}
 .jtp .jt-companion-on .jt-guide-filter{display:block}
 .jtp .jt-companion-on .jt-guide-transition{min-height:370px;margin:0 -22px 20px;padding:0 22px;border-bottom:1px solid var(--line2)}
@@ -139,7 +139,13 @@
  .jtp .jt-companion-on .jt-guide-closing .jt-guide-art{width:224px;height:320px;right:-42px}
  .jtp .jt-companion-on .jt-guide-closing h2{font-size:24px}
 }
-.jtp .jt-companion-on .jt-guide-scene .jt-guide-art{height:auto;aspect-ratio:4/5;mask-image:linear-gradient(#000 96%,transparent)}
+.jtp .jt-companion-on .jt-guide-scene .jt-guide-art{height:auto;aspect-ratio:1;right:0;max-width:100%;mask-image:linear-gradient(#000 96%,transparent)}
+@container(max-width:500px){
+ .jtp .jt-companion-on .jt-guide-scene{min-height:0}
+ .jtp .jt-companion-on .jt-guide-scene .jt-guide-copy{width:100%;padding-bottom:0}
+ .jtp .jt-companion-on .jt-guide-scene .jt-guide-art{position:relative;inset:auto;width:100%;max-width:350px;margin:8px auto 0}
+ .jtp .jt-companion-on .jt-guide-scene:before{right:5%;top:auto;bottom:30px}
+}
 @media(prefers-reduced-motion:no-preference){.jtp .jt-guide-scene.is-visible img{animation:jt-guide-arrive .8s both}@keyframes jt-guide-arrive{from{opacity:0;transform:scaleX(-1) translateY(18px)}to{opacity:1;transform:scaleX(-1) translateY(0)}}}
 .jtp .jt-guide-art[hidden]{display:none}.jtp .jt-companion-on .jt-guide-no-art{min-height:0}.jtp .jt-companion-on .jt-guide-no-art .jt-guide-copy{width:100%}.jtp .jt-guide-no-art:before{display:none}
 @media print{.jtp .jt-guide-art,.jtp .jt-guide-controls{display:none!important}.jtp .jt-companion-on .jt-guide-scene,.jtp .jt-companion-on .jt-guide-copy{display:contents}.jtp .jt-guide-scene:before{display:none}}
