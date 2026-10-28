@@ -484,7 +484,7 @@
   function 경로(hash) {
     let t = String(hash || '').replace(/^#/, '');
     if (/^sheet-[a-z]+$/.test(t)) t = 'sheet';
-    if (!t || t === 'home' || t === 'gacha' || t === 'today') return '';
+    if (!t || t === 'home' || t === 'gacha') return '';
     if (t === 'form') return 'form';
     return /^[a-z][\w-]*$/.test(t) && document.querySelector('.tab[data-tab="' + t + '"]') ? t : null;
   }
@@ -612,7 +612,7 @@
     // 홈에서 아래 「홈」을 다시 누르는 것은 「맨 위로」라는 뜻이다. 그때만 자리를 잊는다.
     if (열린탭() === 'home') 홈자리 = (tab === 'home') ? 0 : 지금자리();
     // 유형 카드(789 유형·SSR 등급·시즌 카드)는 2026-09-04 삭제 — 「무슨 말인지도 모르더라」. 옛 링크는 홈으로.
-    if (tab === 'gacha' || tab === 'today') tab = 'home';   // 오늘 탭은 2026-09-13 에 걷었다 — 옛 링크는 홈으로
+    if (tab === 'gacha') tab = 'home';   // 10-28 사장님 「오늘의 운세 자체가 플랫폼을 벗어나」 — 오늘의 운세는 다시 홈 안의 탭(today)
     주소남기기(경로('#' + tab));   // 10-02 화면마다 주소(위 「화면마다 주소」)
     홈길(tab);
     if (tab === 'all' || tab === 'home') {
@@ -663,6 +663,7 @@
   function 탭그리기(tab) {
     // 시각을 다시 읽는다. 「지금」 표시와 오늘 간지가 로드 시각에 얼어 있었다.
     // 달력 탭은 2026-09-17 에 걷었다(사장님 「달력 삭제 — 설득력없음」). 날 점수(calendar.js)도 같이 나갔다.
+    if (tab === 'today') { try { const b = $('todayOut'); if (b && window.ChaeksaTodayView) window.ChaeksaTodayView.mount(b); } catch (e) { try { console.warn('오늘의 운세 탭:', e); } catch (x) {} } }
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
     if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
     if (tab === 'pair') { try { if (window.ChaeksaPairView) ChaeksaPairView.그리기($('pairBox'), profile); } catch (e) { try { console.warn('행동양식 궁합 탭:', e); } catch (x) {} } }   // 10-01 pair.js
