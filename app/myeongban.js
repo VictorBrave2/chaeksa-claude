@@ -144,6 +144,7 @@
     if (!R.filterStory) h += '<div class="end"><p class="line">' + esc(글('끝.줄', '')) + '</p><p class="why">' + esc(글('끝.풀이', '')) + '</p></div>';
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(글('공유.단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(글('공유.안내', '')) + '</p></div>';
     $('out').innerHTML = h;
+    if (window.ChaeksaZiweiCompanion) ChaeksaZiweiCompanion.mount($('out'));
   }
 
   // ── 누르면 열리는 칸
