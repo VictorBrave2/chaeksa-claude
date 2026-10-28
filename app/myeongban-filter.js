@@ -13,13 +13,13 @@
   function html(story) {
     if (!story || !Array.isArray(story.filters)) return '';
     if (story.editorial && window.ChaeksaZiweiEditorial) return ChaeksaZiweiEditorial.html(story);
+    story = window.ChaeksaZiweiEditorial?.present(story) || story;
     var filters = story.filters, stars = (story.mainStars || []).join(' · ');
     var h = '<article class="zf" aria-label="자미두수 · 당신에게 모인 좋은 조건">';
-    h += '<div class="zf-hero"><p class="zf-kicker">자미두수전서에서 읽은 당신</p><h2>옛 책이 좋게 본<br><em>당신의 모습.</em></h2>';
+    h += '<div class="zf-hero"><p class="zf-kicker">자미두수전서에서 읽은 당신</p><h2>' + esc(story.heading) + '</h2>';
     if (stars) h += '<p class="zf-stars">나를 보는 자리의 별 <strong>' + esc(stars) + '</strong></p>';
     else h += '<p class="zf-stars">나를 보는 자리에는 중심이 되는 열네 별이 없어요. 다른 자리의 별을 함께 살펴봐요.</p>';
     h += '<p class="zf-intro">당신의 별 지도에서<br>옛 책이 좋다고 한 조건들을 찾았어요.</p>';
-    if (filters.length) h += '<div class="zf-total"><span>아래 조건을 모두 갖춘 명반</span><strong>' + rate(story.percent) + '</strong><small>같은 기준으로 계산한 명반 중</small></div>';
     h += '</div>';
     if (filters.length) {
       h += '<section class="zf-filters" aria-labelledby="zf-filter-heading"><div class="zf-section-head"><p class="zf-kicker">하나씩 겹쳐 볼수록</p><h3 id="zf-filter-heading">좋게 본 조건이<br>하나씩 모였어요.</h3><p>각 비율은 위에서부터 이 줄까지, 모든 조건을 함께 갖춘 명반의 비율이에요.</p></div><ol class="zf-stack">';
@@ -32,7 +32,8 @@
       });
       h += '</ol></section>';
     }
-    h += '<section class="zf-conclusion"><p class="zf-kicker">당신에게 모인 좋은 조건</p><h3>' + esc(story.conclusion) + '</h3><p>' + esc(filters.length ? '옛 책이 좋게 본 조건 ' + filters.length + '가지가 당신의 명반에 함께 있어요.' : '이 목록에서 고른 좋은 조건은 확인되지 않았어요. 명반의 별을 눌러 나머지 풀이를 살펴보세요.') + '</p>';
+    h += '<section class="zf-conclusion"><p class="zf-kicker">당신에게 모인 좋은 조건</p><h3>' + esc(story.conclusion) + '</h3><p>' + esc(story.summary) + '</p>';
+    if (filters.length) h += '<div class="zf-total"><span>위 조건을 모두 갖춘 명반</span><strong>' + rate(story.percent) + '</strong><small>같은 기준으로 계산한 명반 중</small></div>';
     if (filters.length) h += '<p class="zf-closing">이것들이 옛 책이<br>당신을 좋게 본 이유예요.</p>';
     h += '</section><details class="zf-method"><summary>비율은 어떻게 계산했나요?</summary><p>같은 방법으로 계산한 여러 명반을 비교했어요. 첫 조건에 맞는 명반을 고른 뒤, 그 안에서 둘째 조건도 맞는 명반을 다시 골랐어요. 아래로 갈수록 앞의 조건들을 모두 갖춘 명반만 남아요.</p><p>' + esc(story.scheme) + ' · 총 ' + Number(story.sampleSize).toLocaleString('ko-KR') + '개.</p><p>이 숫자는 비교 자료에서 센 비율이에요. 실제 사람 몇 명 중 하나라는 뜻이나 능력 점수는 아니에요. 조건이 겹치면 다음 줄의 비율이 같을 수도 있어요. 비교 자료에서 같은 조합을 찾지 못하면 비율을 표시하지 않아요.</p><p>이 조건을 모두 갖춰야만 귀한 사람이라는 뜻은 아니에요.</p></details>';
     h += '<p class="zf-scope">여기에는 옛 책이 좋게 본 구절을 모았어요. 명반의 별이나 아래의 열두 분야 풀이에서는 좋고 나쁜 구절을 함께 읽을 수 있어요.</p></article>';
