@@ -35,29 +35,29 @@
       const assembled=T.조립(v,P), lines=assembled.칸[0].줄;
       const text=slot=>(lines.find(x=>x.자리===slot)||{}).글||'';
       const group=slot=>lines.filter(x=>x.자리===slot).map(x=>'<p>'+esc(x.글)+'</p>').join('');
-      const art='art/ziwei-companion/reading-v4.png';
+      const guide=(name,width,height,sizes,lazy)=>'<img data-today-guide src="art/today-guides/'+name+'.webp" srcset="art/today-guides/'+name+'-s.webp 480w, art/today-guides/'+name+'.webp '+width+'w" sizes="'+sizes+'" width="'+width+'" height="'+height+'" alt="" decoding="async"'+(lazy?' loading="lazy"':'')+'>';
       const first=v.첫줄, quietTitle=text('조용.한줄');
       const yLines=yv?T.조립(yv,P).칸[0].줄:[], yText=(yLines.find(x=>x.자리==='결과.한줄')||yLines.find(x=>x.자리==='첫줄.한줄')||{}).글||'';
       const yBox=yText?'<p class="today-yesterday"><span>어제 바라본 오늘</span>'+esc(yText)+(yv.때?' <small>'+clockRange(yv.때.시작분,yv.때.끝분)+'</small>':'')+'</p>':'';
       root.innerHTML='<div class="today-person"><label for="today-person">누구의 하루를 볼까요?</label><select id="today-person">'+list.map(p=>'<option value="'+esc(p.id)+'"'+(p.id===selected?' selected':'')+'>'+esc(p.name||'이름 없음')+'</option>').join('')+'</select></div>'
         +'<div class="today-refresh" hidden><span>새로운 하루가 시작됐어요.</span><button type="button" id="today-refresh">오늘 운세 보기</button></div>'
-        +'<article id="today-result"><section class="today-hero"><div class="today-hero-copy"><p class="today-kicker">오늘의 운세 · 사주로 읽는 오늘</p><time datetime="'+v.날짜+'"><span class="today-person-name">'+esc(person.name||'당신')+'</span>'+dateText(v.날짜)+' '+esc(v.요일)+'요일</time><h1>'+esc(text('결과.한줄')||(v.조용?quietTitle:(text('첫줄.사건')||text('첫줄.한줄'))))+'</h1>'+(v.때&&text('때.한줄')?'<p class="today-clock"><span>'+esc(text('때.이름'))+'</span>'+clockRange(v.때.시작분,v.때.끝분)+'</p>'+'<p class="today-hero-foot today-when">'+esc(text('때.한줄'))+(text('이음.뒤')?' '+esc(text('이음.뒤')):'')+'</p>':'')+(v.조용&&!text('결과.한줄')?'<p class="today-quiet-copy">'+esc(text('첫줄.한줄'))+'</p>':'')+(text('결과.한줄')?'':'<p class="today-hero-foot">'+(v.조용?'큰 변화보다 익숙한 흐름이 이어집니다.':first.쪽==='천간'?'오늘은 생각의 변화부터 읽어 보세요.':'오늘은 행동의 변화부터 읽어 보세요.')+'</p>')+'</div><img src="'+art+'" width="1254" height="1254" alt="" decoding="async"></section>'
+        +'<article id="today-result"><section class="today-hero"><div class="today-hero-copy"><p class="today-kicker">오늘의 운세 · 사주로 읽는 오늘</p><time datetime="'+v.날짜+'"><span class="today-person-name">'+esc(person.name||'당신')+'</span>'+dateText(v.날짜)+' '+esc(v.요일)+'요일</time><h1>'+esc(text('결과.한줄')||(v.조용?quietTitle:(text('첫줄.사건')||text('첫줄.한줄'))))+'</h1>'+(v.때&&text('때.한줄')?'<p class="today-clock"><span>'+esc(text('때.이름'))+'</span>'+clockRange(v.때.시작분,v.때.끝분)+'</p>'+'<p class="today-hero-foot today-when">'+esc(text('때.한줄'))+(text('이음.뒤')?' '+esc(text('이음.뒤')):'')+'</p>':'')+(v.조용&&!text('결과.한줄')?'<p class="today-quiet-copy">'+esc(text('첫줄.한줄'))+'</p>':'')+(text('결과.한줄')?'':'<p class="today-hero-foot">'+(v.조용?'큰 변화보다 익숙한 흐름이 이어집니다.':first.쪽==='천간'?'오늘은 생각의 변화부터 읽어 보세요.':'오늘은 행동의 변화부터 읽어 보세요.')+'</p>')+'</div>'+guide('forecast-m-v1',1254,1254,'(max-width: 800px) 128px, 240px',false)+'</section>'
         // 10-29 사장님 「구조가 뒤죽박죽인데 교통정리」 — 차례: 오늘 일어나는 일(제목 · 시간 · 누구와) → 생각 → 오늘 이렇게 해 보세요 → 왜(접힘: 누구 · 태도 · 둘째 흐름 · 바탕 · 근거) → 어제 바라본 오늘 → 이번 주. 목차 칩은 뺐다.
-        +'<section id="today-reading">'
+        +'<section id="today-reading"><div class="today-guided-reading">'+guide('thought-f-v1',1254,1254,'(max-width: 800px) 180px, 210px',true)+'<div class="today-guided-copy">'
         +(text('생각.한줄')?'<div class="today-second today-think-row"><span>생각에서는</span><p>'+esc(text('생각.한줄'))+(text('이음.앞')?' '+esc(text('이음.앞')):'')+'</p></div>':'')
         +'<aside class="today-action"><h2>오늘 이렇게 해 보세요</h2><p>'+esc(text('첫줄.행동'))+'</p></aside>'
-        +'<details class="today-basis"><summary>왜 내게 이런 하루일까요?</summary>'
+        +'</div></div><details class="today-basis"><summary>왜 내게 이런 하루일까요?</summary>'
         +'<p class="today-basis-label">오늘 마주하는 관계와 일</p><p class="today-actor">'+esc(text('때.상대')||text('첫줄.누구'))+'</p><p>'+esc(text('첫줄.일'))+'</p>'
         +(v.둘째줄?'<p class="today-basis-label">'+(v.둘째줄.쪽==='천간'?'생각에서는':'행동에서는')+'</p><p>'+esc(text('둘째줄.사건')||text('둘째줄.한줄'))+'</p>':'')
         +(group('바탕.한줄')?'<p class="today-basis-label">이번 달까지 이어진 바탕</p>'+group('바탕.한줄'):'')
         +'<p>'+esc(first.쪽==='천간'?'오늘 생각에 들어오는 십성은 ':'오늘 행동에 들어오는 십성은 ')+esc(first.십신)+'입니다. '+esc(meaning(first.십신))+objP(meaning(first.십신)||'을')+' 뜻합니다.</p><p>'+esc(first.상태==='이어짐'?'이번 달까지의 흐름이 오늘도 이어집니다.':natal[first.원국대비])+'</p>'+(v.빠짐.length?'<p>오늘 잠시 쉬어 가는 흐름</p>'+group('빠짐.한줄'):'')+'<p>태어난 날의 사주와 오늘의 날짜를 비교한 풀이입니다.</p></details></section>'
-        +yBox+'<section id="today-week" class="today-section"><p class="today-kicker">오늘부터 일곱 날</p><h2>내일은 무엇이 달라질까?</h2><p class="today-section-intro">‘힘을 쓸 날’은 생각과 행동의 변화가 가장 큰 날입니다. 운이 가장 좋은 날이라는 뜻은 아닙니다.</p><ol class="today-week">'+week.날들.map((d,i)=>{
+        +yBox+'<section id="today-week" class="today-section"><div class="today-week-intro"><div><p class="today-kicker">오늘부터 일곱 날</p><h2>내일은 무엇이 달라질까?</h2><p class="today-section-intro">‘힘을 쓸 날’은 생각과 행동의 변화가 가장 큰 날입니다. 운이 가장 좋은 날이라는 뜻은 아닙니다.</p></div>'+guide('week-pair-v1',1536,1024,'(max-width: 800px) 300px, 320px',true)+'</div><ol class="today-week">'+week.날들.map((d,i)=>{
           const strong=week.힘쓸날.includes(d.날짜), p=P[d.첫줄.열쇠], 띠=d.띠&&P[d.띠.열쇠]&&P[d.띠.열쇠][d.띠.필드];
           return '<li class="today-day'+(strong?' is-strong':'')+(d.조용?' is-quiet':'')+'"><div><time datetime="'+d.날짜+'">'+(i===0?'오늘':dateText(d.날짜))+'</time><span class="today-tag">'+(strong?'힘을 쓸 날':d.조용?'이어지는 하루':esc(d.요일)+'요일')+'</span></div><p>'+esc(띠||p.주한줄)+'</p></li>';
         }).join('')+'</ol>'+(month.달바뀜?'<div class="today-month"><p class="today-kicker">다음 흐름의 시작</p><h3>'+dateText(month.달바뀜.날짜)+'부터</h3>'+month.달바뀜.바탕.map(b=>'<p>'+esc(P[b.열쇠].한줄)+'</p>').join('')+'</div>':'')+'</section>'
         +'<section class="today-links"><h2>하루 너머의 나를 읽고 싶다면</h2><a href="when.html"><span>내 운은 언제 풀릴까? →</span><small>앞으로 10년의 흐름</small></a><a href="./#jeongtong"><span>정통사주 →</span><small>타고난 나의 모습</small></a><a href="myeongban.html"><span>정통자미두수 →</span><small>명반으로 읽는 나</small></a></section><p class="today-end" id="today-end">오늘의 운세 · 책사</p></article>';
       root.querySelectorAll('.today-subnav a').forEach(a=>{a.setAttribute('href',global.location.pathname+a.getAttribute('href'));});
-      root.querySelector('img').onerror=function(){this.hidden=true;};
+      root.querySelectorAll('img[data-today-guide]').forEach(img=>{img.onerror=function(){this.hidden=true;};});
       root.querySelector('#today-person').onchange=e=>{selected=e.target.value;try{people.setActive(selected);}catch(err){}render();};
       root.querySelector('#today-refresh').onclick=render;
       try{if(track)track.watchEnd(root,'today_end');}catch(e){}

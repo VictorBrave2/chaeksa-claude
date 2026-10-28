@@ -35,3 +35,6 @@
 | IMG-0027 | 출산택일 소개 — 추천서를 건네는 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0027-taekil-advisor-offer.md | 삽화원본/taekil-advisor-offer-v1.png(로컬) | app/art/taekil-advisor-offer-v1.webp |
 | IMG-0028 | 출산택일 제작 설명 — 근거를 확인하는 같은 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0028-taekil-advisor-review.md | 삽화원본/taekil-advisor-review-v1.png(로컬) | app/art/taekil-advisor-review-v1.webp |
 | IMG-0029 | 오늘의 운세 — 아침 알림과 시계 | 생성·연결 완료, 통합 대기 | IMG-0029-today-home.md | 삽화원본/today-cover-v1.png(로컬) | app/art/today-cover-v1.webp |
+| IMG-0030 | 오늘의 예고를 전하는 남신 | 생성됨(화면 연결 · 통합 대기) | IMG-0030-today-guide.md | 삽화원본/today-forecast-m-v1.png(로컬) | app/art/today-guides/forecast-m-v1.webp |
+| IMG-0031 | 생각과 행동을 설명하는 여신 | 생성됨(화면 연결 · 통합 대기) | IMG-0031-today-guide.md | 삽화원본/today-thought-f-v1.png(로컬) | app/art/today-guides/thought-f-v1.webp |
+| IMG-0032 | 다음 일주일을 함께 살펴보는 두 사람 | 생성됨(화면 연결 · 통합 대기) | IMG-0032-today-guide.md | 삽화원본/today-week-pair-v1.png(로컬) | app/art/today-guides/week-pair-v1.webp |
