@@ -45,6 +45,23 @@
     return { 날짜: 날짜글(date), 요일: 요일이름[date.getDay()], 일간: STEMS[ds], 원국, 층, 대운없음: !du };
   }
 
+  // 시운(R, date, lon) — 그날의 시진(10-29 사장님 「시운 층을 더해 사건에 시간대를 붙이고」). 시주 천간은 그날 일주 천간으로 정한다(engine.js calc 와 같은 식).
+  //   시계 시각 = 태양시 경계 − 그날 보정(solarOffsetMin · 경도 기본 127). 子시는 전날 밤 23시대에 들어 그날 일주를 따르지 않으므로 뺀다(丑 ~ 亥 열한 시진).
+  //   시작분 · 끝분 = 그날 0시부터 센 시계 분(엔진처럼 태양시를 분 단위로 반올림해 경계를 잡는다). 법전에 시운 조문은 아직 없다 — 이 층은 「언제」를 짚는 데만 쓴다.
+  function 시운(R, date, lon) {
+    const ds = R.pillars.day.stem, y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+    const F = E.dateFortune(y, m, d), L = lon == null ? 127 : lon, A = global.ChaeksaAstro;
+    const jd0 = Date.UTC(y, m - 1, d) / 86400000 + 2440587.5 - 9 / 24;   // 그날 한국 0시의 율리우스일
+    const 태양분 = (분) => Math.round(분 + (L - 135) * 4 + (A ? A.equationOfTime(jd0 + 분 / 1440) : 0));   // engine.js calc 와 같은 셈
+    const 경계 = (B) => { let 분 = Math.ceil(B - (L - 135) * 4 - (A ? A.equationOfTime(jd0 + B / 1440) : 0) - 0.5); while (태양분(분 - 1) >= B) 분--; while (태양분(분) < B) 분++; return 분; };
+    const out = [];
+    for (let b = 1; b < 12; b++) {
+      const st = ((F.day.stem % 5) * 2 + b) % 10;
+      out.push({ 간지: STEMS[st] + BRANCHES[b], 시작분: 경계((2 * b - 1) * 60), 끝분: 경계((2 * b + 1) * 60) - 1, 천간: 천간칸(ds, st), 지지: 지지칸(ds, b) });
+    }
+    return out;
+  }
+
   // 원국 대비 — 표시만: 같은 십신이 원국 겉(천간) · 속(지지 본기) · 없음 어디에 있나, 같은 무리의 다른 십신은 어디에 있나
   function 원국대비(원국, 십, 무) {
     const 겉 = 원국.천간.filter(c => c.십신 === 십).map(c => c.글자);
@@ -158,5 +175,5 @@
     };
   }
 
-  global.ChaeksaByeonhwa = { 층표, 변화, 말, 주, 무리이름 };
+  global.ChaeksaByeonhwa = { 층표, 시운, 변화, 말, 주, 무리이름 };
 })(typeof window !== 'undefined' ? window : globalThis);

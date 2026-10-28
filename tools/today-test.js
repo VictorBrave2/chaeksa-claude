@@ -3,15 +3,16 @@
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), A = path.join(__dirname, '../app');
 globalThis.window = globalThis;
-for (const f of ['engine.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'today-core.js', 'today-pieces.js']) eval(fs.readFileSync(path.join(A, f), 'utf8'));
+for (const f of ['astro.js', 'engine.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'today-core.js', 'today-pieces.js']) eval(fs.readFileSync(path.join(A, f), 'utf8'));
 const T = globalThis.ChaeksaToday, E = globalThis.ChaeksaEngine, P = globalThis.ChaeksaTodayPieces;
 const strict = process.argv.includes('--strict');
 let 실패 = 0, 통과 = 0;
 const ok = (c, m) => { if (c) 통과++; else { 실패++; console.log('  ✗ ' + m); } };
 
 // 1. 뼈대 지문 — 칸 차례 · 자리 · 조각 열쇠. 바꾸려면 사장님 결정 → 여기 지문 갱신.
+const B = globalThis.ChaeksaByeonhwa;
 const 지문 = crypto.createHash('sha256').update(JSON.stringify([T.뼈대, T.오늘필드, T.열쇠들()])).digest('hex').slice(0, 16);
-const 동결 = '4d089cbdf3b7a8fa';   // 10-28 첫 뼈대
+const 동결 = '3789af9c1a817bf6';   // 10-29 사장님 「나이 성별 시간 환경 등을 나열하고 변수에 맞는 문장」 (그 전 c7e2e0bc30df9fd7 「저녁 기록 칸을 빼고 시운 층을 더해」) (10-28 첫 뼈대 4d089cbdf3b7a8fa)
 ok(지문 === 동결 || 동결 === 'a', '뼈대 지문이 바뀜: ' + 지문 + ' (동결 ' + 동결 + ')');
 if (동결 === 'a') console.log('  · 뼈대 지문(처음):', 지문);
 
@@ -47,18 +48,49 @@ const R0 = 사람[0], 주 = T.이번주(R0, new Date(2026, 10, 1)), 달 = T.이�
 ok(주.날들.length === 7 && 주.힘쓸날.every(d => 주.날들.some(x => x.날짜 === d)), '이번주 일곱 날 · 힘쓸날');
 ok(달.달바뀜 && /^2026-1[12]-/.test(달.달바뀜.날짜), '이번달 바탕 바뀌는 날(11월 초 기준 12월 입절 무렵)');
 
-// 6. 기록 — 저장 · 다시 읽기 · 사람마다 따로 · 못 쓰는 저장소
-const mem = { d: {}, getItem(k) { return this.d[k] || null; }, setItem(k, v) { this.d[k] = String(v); } };
-const L = T.기록(mem), v1 = T.오늘(R0, new Date(2026, 10, 1));
-ok(L.예고('p1', v1) && L.답('p1', v1.날짜, '다름', 'x'.repeat(300)), '기록 쓰기');
-const h = T.기록(mem).하루('p1', v1.날짜);
-ok(h && h.예고.첫줄 === v1.첫줄.열쇠 && h.답 === '다름' && h.메모.length === 200, '기록 다시 읽기 · 메모 200자');
-ok(T.기록(mem).하루('p2', v1.날짜) === null, '다른 사람 기록이 섞임');
-ok(!L.답('p1', v1.날짜, '맞았어요'), '정해진 답 셋 밖을 받음');
-ok(T.기록(mem).달('p1', '2026-11').length === 1, '이번 달의 나');
-const 고장 = { getItem() { throw new Error('막힘'); }, setItem() { throw new Error('막힘'); } };
-let 안깨짐 = true; try { const B = T.기록(고장); B.예고('p1', v1); B.답('p1', v1.날짜, '비슷'); B.달('p1', '2026-11'); } catch (e) { 안깨짐 = false; }
-ok(안깨짐, '저장 못 하는 창에서 깨짐');
+// 6. 때(시운) — 시진 경계가 엔진 calc 의 시주와 맞고, 조용하지 않은 날은 늘 때가 있고, 열쇠가 조각표에 있다
+const 경계틀림 = [];
+for (let k = 0; k < 365; k += 7) { const t = new Date(2026, 0, 1 + k), y = t.getFullYear(), m = t.getMonth() + 1, d = t.getDate();
+  const 시 = B.시운(사람[0], new Date(y, m - 1, d));
+  for (const x of 시) for (const 분 of [x.시작분, x.끝분]) {
+    const r = E.calc({ year: y, month: m, day: d, hour: Math.floor(분 / 60), minute: 분 % 60, gender: 'M', longitude: 127, tzOffset: 9 });
+    if (E.STEMS[r.pillars.hour.stem] + E.BRANCHES[r.pillars.hour.branch] !== x.간지) 경계틀림.push(y + '-' + m + '-' + d + ' ' + 분 + '분 ' + x.간지);
+  }
+}
+ok(경계틀림.length === 0, '시진 경계가 엔진 시주와 다름 ' + 경계틀림.slice(0, 3).join(' · '));
+let 때없음 = 0, 때열쇠없음 = 0;
+for (const R of 사람.slice(0, 200)) for (let i = 0; i < 30; i++) { const v = T.오늘(R, new Date(2026, 10, 1 + i)); if ((!v.조용 || v.작용) && !v.때) 때없음++; if (v.때 && [v.때.때말열쇠, v.때.상대열쇠, v.때.일열쇠].some(k => !P[k])) 때열쇠없음++; }
+ok(때없음 === 0 && 때열쇠없음 === 0, '때 없음 ' + 때없음 + ' · 조각표에 없는 때 ' + 때열쇠없음);
+
+// 6b. 변수 — 나이 · 성별 · 요일이 문장을 가르고, 어떤 나이 · 성별에서도 때 한 줄이 빈 채로 나오지 않는다
+ok(T.붙이기('{상대|와} 어울리게 됩니다.', '이성') === '이성과 어울리게 됩니다.' && T.붙이기('{상대|와} 어울립니다.', '친구') === '친구와 어울립니다.' && T.붙이기('{상대|를} 챙깁니다.', '아이') === '아이를 챙깁니다.', '조사 붙이기');
+const 사례 = { 때: { 때말열쇠: '때말|주말|亥', 상대열쇠: '상대|재성|남|20|사적', 일열쇠: '일|재성|남|사적밤' }, 첫줄: { 열쇠: '새로|지지|정재|없음' }, 바탕: [], 빠짐: [] };
+const 사례줄 = (T.조립(사례, P).칸[0].줄.find(x => x.자리 === '때.한줄') || {}).글;
+ok(사례줄 === '오늘 밤, 이성과 어울리게 됩니다.', '20대 남 · 주말 밤 · 재성 = 「오늘 밤, 이성과 어울리게 됩니다.」 — 나온 것: ' + 사례줄);
+let 때빈 = 0; const 갈래 = new Set();
+for (let i = 0; i < 400; i++) {
+  const R = E.calc({ year: 1950 + (i * 7) % 63, month: 1 + i % 12, day: 1 + (i * 3) % 28, hour: (i * 5) % 24, minute: 0, gender: i % 2 ? 'F' : 'M', longitude: 127, tzOffset: 9 });
+  for (let k = 0; k < 14; k++) { const v = T.오늘(R, new Date(2026, 10, 1 + k)); if (!v.때) continue; const 줄 = T.조립(v, P).칸[0].줄.find(x => x.자리 === '때.한줄'); if (!줄 || !줄.글) 때빈++; else 갈래.add(줄.글); }
+}
+ok(때빈 === 0, '때 한 줄이 빈 채로 나옴 ' + 때빈);
+console.log('  · 때 한 줄 갈래(400명 × 14일): ' + 갈래.size);
+
+// 6c. 생각(천간) → 행동(지지) — 10-29 사장님 사례: 壬申 甲辰 丁卯 庚子(법전 39조에 이미 적힌 명식, 생일은 안 씀) · 대운 丁未 · 세운 丙午 · 월운 壬辰.
+//   4/29 癸酉 「떠나는 게 맞다고 생각」 = 천간 극함|비겁 · 4/30 甲戌 「떠남」 = 지지 합(午戌 반합)|비겁. 같은 무리(비겁)로 이어진다.
+const 층판 = (일운) => {
+  const ds = E.STEMS.indexOf('丁'), 칸 = (st) => { const n = E.tenGod(ds, st); return { 십신: E.TEN_GODS[n], 무리: ['비겁', '식상', '재성', '관성', '인성'][Math.floor(n / 2)] }; };
+  const 천 = c => Object.assign({ 글자: c }, 칸(E.STEMS.indexOf(c))), 지 = c => Object.assign({ 글자: c }, 칸(E.HIDDEN[E.BRANCHES.indexOf(c)][0]));
+  const 운 = [['대운', '丁未'], ['세운', '丙午'], ['월운', '壬辰'], ['일운', 일운]].map(([이름, g]) => ({ 이름, 천간: 천(g[0]), 지지: 지(g[1]) }));
+  return { 일간: '丁', 원국: { 천간: ['壬', '甲', '庚'].map(천), 지지: ['申', '辰', '卯', '子'].map(지) }, 층: 운 };
+};
+const 생29 = T.한쪽작용(층판('癸酉'), '천간'), 행30 = T.한쪽작용(층판('甲戌'), '지지');
+ok(생29 && 생29.방식 === '극함' && 생29.대상무리 === '비겁', '4/29 생각 = 극함|비겁 — 나온 것 ' + (생29 && 생29.열쇠));
+ok(행30 && 행30.방식 === '합' && 행30.대상무리 === '비겁', '4/30 행동 = 합|비겁(午戌) — 나온 것 ' + (행30 && 행30.열쇠));
+const 자오 = T.한쪽작용(층판('丙子'), '지지');
+ok(자오 && 자오.방식 !== '충', '10/29 丙子 — 子는 申子辰에 묶여 午와 충이 안 된다(법전 6조) — 나온 것 ' + (자오 && 자오.열쇠));
+let 앞있음 = 0, 뒤있음 = 0, 날수 = 0;
+for (const R of 사람.slice(0, 60)) for (let i = 0; i < 14; i++) { const v = T.오늘(R, new Date(2026, 10, 1 + i)); 날수++; if (v.이음.앞) 앞있음++; if (v.이음.뒤) 뒤있음++; }
+console.log('  · 이음: 생각이 7일 안에 행동으로 ' + (앞있음 / 날수 * 100).toFixed(0) + '% · 행동 앞에 생각이 있던 날 ' + (뒤있음 / 날수 * 100).toFixed(0) + '%');
 
 // 7. 조각표 빈 글
 const 전체빈 = [];

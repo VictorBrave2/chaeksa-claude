@@ -1,34 +1,42 @@
-// 오늘의 운세 사건 빈도 — 저녁 기록 답을 조각 열쇠마다 센다(10-28 사장님 「사건 빈도수를 측정하란 뜻이야」).
-//   node tools/today-freq.js [일수=90]
-// 읽는 법
-//   일어남 = 비슷 ÷ (비슷 + 다름 + 없음). 열쇠마다 낸다.
-//   바닥 = 모든 열쇠를 합친 일어남. 어떤 열쇠의 일어남이 바닥과 같으면 그 문장은 「누구에게나 그날 그만큼 일어나는 일」이다 —
-//   예고가 맞힌 게 아니라 원래 그만큼 일어난다. 바닥보다 높아야 그 날 · 그 사람을 가려낸 것이다.
-//   같은 십신끼리(대비 셋 합침) · 쪽끼리 묶은 줄도 낸다 — 열쇠 112개로 나누면 처음엔 표본이 모자란다.
-// 서버 값은 공개 anon 열쇠로 today_note_stats(server/migrate-42) 만 부른다.
-const fs = require('fs'), path = require('path');
-const cfg = fs.readFileSync(path.join(__dirname, '..', 'app', 'config.js'), 'utf8');
-const url = (cfg.match(/url:\s*'([^']+)'/) || [])[1], key = (cfg.match(/anonKey:\s*'([^']+)'/) || [])[1];
-const days = +process.argv[2] || 90;
-(async () => {
-  const r = await fetch(url + '/rest/v1/rpc/today_note_stats', { method: 'POST', headers: { apikey: key, Authorization: 'Bearer ' + key, 'content-type': 'application/json' }, body: JSON.stringify({ days }) });
-  if (!r.ok) { console.log('서버가 답하지 않음', r.status, (await r.text()).slice(0, 200), '\n→ server/migrate-42-today-note.sql 을 Supabase SQL 창에서 한 번 돌려야 한다.'); return; }
-  const rows = await r.json();
-  const 묶기 = (f) => { const m = {}; for (const x of rows) { const k = f(x); if (!k) continue; const o = m[k] || (m[k] = { 비슷: 0, 다름: 0, 없음: 0, 사람: 0 }); o[x.answer] = (o[x.answer] || 0) + x.n; o.사람 += x.people; } return m; };
-  const 율 = (o) => { const t = o.비슷 + o.다름 + o.없음; return t ? o.비슷 / t : 0; };
-  const 표 = (제목, m, 바닥) => {
-    console.log('\n' + 제목);
-    Object.entries(m).sort((a, b) => (b[1].비슷 + b[1].다름 + b[1].없음) - (a[1].비슷 + a[1].다름 + a[1].없음)).forEach(([k, o]) => {
-      const t = o.비슷 + o.다름 + o.없음, p = 율(o);
-      console.log('  ' + k.padEnd(22) + ' 답 ' + String(t).padStart(4) + ' · 비슷 ' + o.비슷 + ' 다름 ' + o.다름 + ' 없음 ' + o.없음 + ' · 일어남 ' + (p * 100).toFixed(0) + '%' + (바닥 != null && t >= 20 ? (p - 바닥 >= 0.1 ? '  ▲ 바닥보다 높음' : p - 바닥 <= -0.1 ? '  ▼ 바닥보다 낮음' : '  = 바닥과 같음') : (t < 20 ? '  (20 미만 — 아직 판단 안 함)' : '')));
-    });
-  };
-  const 전체 = 묶기(() => '전체')['전체'];
-  if (!전체) { console.log(days + '일 동안 저녁 기록이 아직 없다.'); return; }
-  const 바닥 = 율(전체);
-  console.log(days + '일 · 답 ' + (전체.비슷 + 전체.다름 + 전체.없음) + ' · 바닥(전체 일어남) ' + (바닥 * 100).toFixed(0) + '%');
-  표('조용한 날 / 아닌 날', 묶기((x) => x.quiet ? '조용한 날' : '변화 있는 날'), 바닥);
-  표('십신(쪽 · 대비 합침)', 묶기((x) => (x.key || '').split('|')[2]), 바닥);
-  표('쪽 + 십신', 묶기((x) => { const a = (x.key || '').split('|'); return a[1] + '|' + a[2]; }), 바닥);
-  표('조각 열쇠(화면 문장 하나)', 묶기((x) => x.key), 바닥);
-})();
+// 오늘의 운세 사건 빈도 — 엔진으로 잰다(10-28 사장님 「사건 빈도수를 측정하란 뜻이야」 · 「고객이 맞았어요 틀렸어요 하려고 재방문을 하냐고」).
+//   node tools/today-freq.js [사람=1000] [날=365]
+// 무작위 명식 × 2026-11-01 부터 하루하루 ChaeksaToday.오늘() 의 첫 줄(손님이 크게 읽는 문장)을 센다.
+//   하루 몫     = 모든 사람 · 모든 날 가운데 이 문장이 첫 줄인 몫
+//   1년에 받는 사람 = 1년 안에 한 번이라도 받는 사람 몫
+//   한 사람 날수 = 받는 사람의 1년 날수(가운데값)
+//   다시 오는 간격 = 같은 사람에게 다음에 다시 올 때까지 날수(가운데값, 이어 붙은 날은 한 번으로)
+// 결과는 copy-requests/ref/today-freq.json 에도 남긴다(글 담당이 「얼마나 드문 날인가」를 볼 수 있게).
+'use strict';
+const fs = require('fs'), path = require('path'), A = path.join(__dirname, '../app');
+globalThis.window = globalThis;
+for (const f of ['engine.js', 'sipseong.js', 'sipseong-byeonhwa.js', 'today-core.js']) eval(fs.readFileSync(path.join(A, f), 'utf8'));
+const T = globalThis.ChaeksaToday, E = globalThis.ChaeksaEngine;
+const N = +process.argv[2] || 1000, D = +process.argv[3] || 365;
+let seed = 777; const rnd = n => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed % n; };
+const 사람 = Array.from({ length: N }, () => E.calc({ year: 1960 + rnd(50), month: 1 + rnd(12), day: 1 + rnd(28), hour: rnd(24), minute: rnd(60), gender: rnd(2) ? 'F' : 'M', longitude: 127, tzOffset: 9 }));
+const 가운데 = a => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
+const 묶음 = { 열쇠: {}, 십신: {} };   // 이름 → { 날: 0, 사람날: [], 간격: [] }
+const 칸 = (m, k) => m[k] || (m[k] = { 날: 0, 사람날: [], 간격: [] });
+let 조용날 = 0;
+for (const R of 사람) {
+  const 이번 = { 열쇠: {}, 십신: {} };   // 이름 → 날 번호들
+  for (let i = 0; i < D; i++) {
+    const v = T.오늘(R, new Date(2026, 10, 1 + i));
+    if (v.조용) 조용날++;
+    const 이름 = { 열쇠: v.조용 ? '조용' : v.첫줄.열쇠, 십신: v.조용 ? '조용' : v.첫줄.쪽 + '|' + v.첫줄.십신 };
+    for (const g of ['열쇠', '십신']) { 칸(묶음[g], 이름[g]).날++; (이번[g][이름[g]] = 이번[g][이름[g]] || []).push(i); }
+  }
+  for (const g of ['열쇠', '십신']) for (const [k, 날들] of Object.entries(이번[g])) {
+    const c = 칸(묶음[g], k); c.사람날.push(날들.length);
+    let 앞 = null; for (const d of 날들) { if (앞 != null && d - 앞 > 1) c.간격.push(d - 앞); 앞 = d; }
+  }
+}
+const 전체 = N * D, 결과 = {};
+for (const g of ['십신', '열쇠']) {
+  결과[g] = Object.entries(묶음[g]).map(([k, c]) => ({ 이름: k, 하루몫: +(c.날 / 전체 * 100).toFixed(2), 받는사람: +(c.사람날.length / N * 100).toFixed(1), 한사람날수: 가운데(c.사람날), 다시오는간격: 가운데(c.간격) })).sort((a, b) => b.하루몫 - a.하루몫);
+  console.log('\n' + (g === '십신' ? '쪽 + 십신(대비 합침)' : '조각 열쇠(화면 문장 하나)') + ' — ' + N + '명 × ' + D + '일');
+  console.log('  이름'.padEnd(24) + '하루 몫  1년에 받는 사람  한 사람 날수  다시 오는 간격');
+  결과[g].forEach(r => console.log('  ' + r.이름.padEnd(22) + String(r.하루몫 + '%').padStart(7) + String(r.받는사람 + '%').padStart(14) + String(r.한사람날수 + '일').padStart(12) + String(r.다시오는간격 + '일').padStart(14)));
+}
+console.log('\n조용한 날 ' + (조용날 / 전체 * 100).toFixed(1) + '%');
+fs.writeFileSync(path.join(__dirname, '../copy-requests/ref/today-freq.json'), JSON.stringify({ 잰날: '2026-11-01부터 ' + D + '일', 사람: N, 조용한날: +(조용날 / 전체 * 100).toFixed(1), ...결과 }, null, 1));
