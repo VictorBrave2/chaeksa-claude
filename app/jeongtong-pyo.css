@@ -174,10 +174,10 @@
 
 /* Widen only the visible reading tab; hidden results must not resize other menus. */
 @media(min-width:760px){
- .wrap:has(.tab[data-tab="jeongtong"]:not(.hide) #jtOut .jt-companion){max-width:916px}
- .jtp .jtp-story.jt-companion{max-width:880px;padding-left:0;padding-right:0;margin-left:auto;margin-right:auto}
+ .wrap:has(.tab[data-tab="jeongtong"]:not(.hide) #jtOut .jt-companion){max-width:756px}
+ .jtp .jtp-story.jt-companion{max-width:720px;padding-left:0;padding-right:0;margin-left:auto;margin-right:auto}
  .jtp .jtp-story.jt-companion>:not(.reader-hero){max-width:720px;margin-left:auto;margin-right:auto}
- .jtp .jtp-story.jt-companion .reader-hero>div>.name-origin,.jtp .jtp-story.jt-companion .reader-hero>div>.reader-go{max-width:720px;margin-left:auto;margin-right:auto}
+ .wrap:has(.tab[data-tab="jeongtong"]:not(.hide) #jtOut .jt-companion)>header{padding-left:max(18px,calc((100vw - 720px)/2));padding-right:max(18px,calc((100vw - 720px)/2))}
  .jtp .jtp-story.jt-companion-on .jt-guide-opening h1{font-size:clamp(26px,3.4cqi,30px);line-height:1.55}
  .jtp .jtp-story.jt-companion-on .jt-guide-art{mask-image:none}
 }
@@ -185,3 +185,18 @@
 /* COPY-0019: personal conclusion first, comparison rates as supporting evidence. */
 .jtp .jtp-story .conclusion-ratio strong{font-family:var(--sans);font-size:18px;font-weight:500;letter-spacing:0;color:var(--ink2)}
 .jtp .jtp-story .filter-rate strong{font-size:18px;color:var(--ink2)}
+
+/* Keep the introduction, classical name and next step in one reading panel. */
+.jtp .jtp-story.jt-companion-on .jt-guide-controls{position:static;margin:0;min-height:44px}
+.jtp .jtp-story.jt-companion-on .jt-guide-opening .name-origin{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line);width:100%;font-size:12px}
+.jtp .jtp-story.jt-companion-on .jt-guide-opening .name-origin span{font-size:14px}
+.jtp .jtp-story.jt-companion-on .jt-guide-opening .reader-go{display:flex;width:fit-content;margin-top:10px;gap:14px;font-size:12px}
+.jtp .jtp-story.jt-companion-on .jt-guide-opening{margin-bottom:0}
+@container(min-width:620px){
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening{grid-template-columns:240px minmax(0,1fr);gap:0;align-items:center;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:var(--card)}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-art{width:240px;align-self:end}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-copy{min-width:0;padding:28px 28px 24px 20px;border:0;border-radius:0;box-shadow:none;background:transparent}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening h1{font-size:28px;line-height:1.55;text-wrap:balance}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening .hero-line{font-size:14px}
+ .jtp .jtp-story.jt-companion-on .jt-guide-opening.jt-guide-no-art{grid-template-columns:minmax(0,1fr)}
+}
