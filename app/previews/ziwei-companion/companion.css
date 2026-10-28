@@ -8,9 +8,9 @@ html{scroll-padding-top:82px}
 body>.wrap{padding-top:94px;padding-bottom:40px}
 .preview-footer{margin:35px auto 0;padding:18px 0;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);font-size:12px}
 .preview-footer a{color:var(--ink3);min-height:44px;display:flex;align-items:center}
-.guide-figure{width:100%;aspect-ratio:1/2;background:url('art/notebook-poses.png') 0 0/300% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
-.guide-figure[data-pose="1"]{background-position:50% 0}
-.guide-figure[data-pose="2"]{background-position:100% 0}
+.guide-figure{width:125%;margin-left:-12.5%;aspect-ratio:2/3;background:url('art/notebook-reading-v3.png') center top/100% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
+.guide-figure[data-pose="1"]{background-image:url('art/notebook-explaining-v3.png')}
+.guide-figure[data-pose="2"]{background-image:url('art/notebook-closing-v3.png')}
 .guide-art{display:none}
 .guide-scene,.guide-scene-copy{display:contents}
 .guide-transition h3{font-family:var(--serif);font-size:22px;margin:18px 0 25px;line-height:1.6;font-weight:500}
