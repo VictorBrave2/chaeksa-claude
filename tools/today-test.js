@@ -12,7 +12,7 @@ const ok = (c, m) => { if (c) 통과++; else { 실패++; console.log('  ✗ ' + 
 // 1. 뼈대 지문 — 칸 차례 · 자리 · 조각 열쇠. 바꾸려면 사장님 결정 → 여기 지문 갱신.
 const B = globalThis.ChaeksaByeonhwa;
 const 지문 = crypto.createHash('sha256').update(JSON.stringify([T.뼈대, T.오늘필드, T.열쇠들()])).digest('hex').slice(0, 16);
-const 동결 = '3789af9c1a817bf6';   // 10-29 사장님 「나이 성별 시간 환경 등을 나열하고 변수에 맞는 문장」 (그 전 c7e2e0bc30df9fd7 「저녁 기록 칸을 빼고 시운 층을 더해」) (10-28 첫 뼈대 4d089cbdf3b7a8fa)
+const 동결 = 'cc9079224e2f0ee3';   // 10-29 사장님 「나이 성별 시간 환경 등을 나열하고 변수에 맞는 문장」 (그 전 c7e2e0bc30df9fd7 「저녁 기록 칸을 빼고 시운 층을 더해」) (10-28 첫 뼈대 4d089cbdf3b7a8fa)
 ok(지문 === 동결 || 동결 === 'a', '뼈대 지문이 바뀜: ' + 지문 + ' (동결 ' + 동결 + ')');
 if (동결 === 'a') console.log('  · 뼈대 지문(처음):', 지문);
 
