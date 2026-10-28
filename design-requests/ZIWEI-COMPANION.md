@@ -24,7 +24,7 @@
 - 제목과 본문은 새로 쓰거나 복제하지 않고 기존 DOM을 장면 안으로 옮긴다. 데이터와 계산은 변경하지 않는다.
 - 캐릭터 숨기기를 누르면 장면 포장도 풀려 기존 본문 배치로 돌아간다.
 - 스크롤로 장면에 닿으면 인물이 짧게 나타난다. 모션 줄이기 설정을 따른다. 제작용 신 이름은 손님 화면에 표시하지 않는다.
-- 공개 견본 주소: https://chaeksa.kr/previews/ziwei-companion/?v=2#zd-reading
+- 공개 견본 주소: https://chaeksa.kr/previews/ziwei-companion/?v=3#zd-reading
 
 ## 이미지 기록
 
@@ -32,3 +32,12 @@
 
 최종 자산: `app/previews/ziwei-companion/art/notebook-poses.png`.
 생성 원본은 Codex generated_images에 보존하며 두 번의 프롬프트 전문은 같은 폴더의 `image-prompts.txt`에 기록한다.
+
+## 삽화 교체 (2026-10-28)
+
+사용자 지적: 화질이 낮고 가슴이 과장되며 내려보는 눈이 감겨 보인다.
+
+- 세 자세를 각각 1024×1536 RGBA 이미지로 재생성했다. 기존 시트는 보존한다.
+- 가슴의 볼륨을 줄이고 눈동자가 보이는 열린 눈으로 수정했다. 얼굴·단발·의상·수첩의 정체성은 유지한다.
+- 새 자산: art/notebook-reading-v3.png, notebook-explaining-v3.png, notebook-closing-v3.png.
+- 도구는 built-in image_gen, 프롬프트 전문은 art/image-prompts-v3.txt에 기록한다.
