@@ -1,6 +1,6 @@
 # IMG-0045 — 대가·보상 · 남신
 
-상태: 생성됨 · 표시 코드 연결, 통합 대기
+상태: 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인)
 
 - 방식: 내장 image_gen · 참조 이미지로 인물 유지 · 투명 배경
 - 참조: app/art/today-guides/forecast-m-v1.webp
