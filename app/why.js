@@ -30,15 +30,18 @@
   function 꺼냄(키, 날, 엔진) { try { const o = JSON.parse(global.localStorage.getItem('chaeksa.why.' + 키) || 'null'); return o && o.d === 날 && o.e === 엔진 ? o.v : null; } catch (e) { return null; } }
   function 둠(키, 날, 엔진, v) { try { global.localStorage.setItem('chaeksa.why.' + 키, JSON.stringify({ d: 날, e: 엔진, v })); } catch (e) {} }
 
-  function 항목(x, v, P, TP) {
+  function 항목(x, v, P, TP, sex, first) {
     const 글 = (TP[x.열쇠] || {}).한줄;
     if (!글) return '';
     const h = 잣대(x.보통);
     const 셈 = 토막([셈말(x.해마다, h, P), P.보통 ? 채움(P.보통, { 횟수: 셈말(x.보통, h, P) }) : '']);
     const 다음 = x.다음 && P.다음 ? 채움(P.다음, { 날: 날말(x.다음, v.오늘) }) : '';
-    return '<li class="why-item" data-key="' + esc(x.열쇠) + '"><p class="why-ev">' + esc(글) + '</p>'
+    // 그림은 표시 중인 사건 열쇠로만 고른다. 셈과 목록 순서는 그대로 둔다.
+    const art = (global.ChaeksaWhyArt || {})[x.열쇠];
+    const picture = art ? '<div class="why-art" aria-hidden="true"><img data-why-art src="art/today-events/' + esc(art.scene + '-' + sex + '-v' + art.version) + '-s.webp" width="480" height="480" alt="" decoding="async" loading="' + (first ? 'eager' : 'lazy') + '"></div>' : '';
+    return '<li class="why-item' + (picture ? ' why-has-art' : '') + '" data-key="' + esc(x.열쇠) + '">' + picture + '<div class="why-item-copy"><p class="why-ev">' + esc(글) + '</p>'
       + '<p class="why-n">' + (P.배 ? '<b>' + esc(채움(P.배, { n: 배수(x.배) })) + '</b> ' : '') + 셈 + '</p>'
-      + (다음 ? '<p class="why-g">' + 토막([다음]) + '</p>' : '') + '</li>';
+      + (다음 ? '<p class="why-g">' + 토막([다음]) + '</p>' : '') + '</div></li>';
   }
   function 근거(목록, v, P, TP) {
     if (!P.근거) return '';
@@ -70,6 +73,14 @@
       const 고르기 = list.length > 1 ? '<div class="why-person">' + (P.사람 ? '<label for="why-person">' + esc(P.사람) + '</label>' : '')
         + '<select id="why-person"' + (P.사람 ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(p.name || '') + '</option>').join('') + '</select></div>' : '';   // 「사람 바꾸기」 = 머리 줄 사람 칩과 같은 이름(index.html #btnPerson)
       const 달기 = () => {
+        if (root.querySelectorAll) root.querySelectorAll('img[data-why-art]').forEach(img => {
+          img.onerror = function () {
+            const item = this.closest('.why-item'), art = this.closest('.why-art');
+            if (art) art.remove();
+            if (item) item.classList.remove('why-has-art');
+          };
+          if (img.complete && !img.naturalWidth) img.onerror();
+        });
         const s = root.querySelector && root.querySelector('#why-person');
         if (!s) return;
         s.onchange = e => { selected = e.target.value; render(true); };
@@ -85,7 +96,7 @@
         root.innerHTML = 고르기 + '<section class="card jt-ch why-card">' + 머리
           + (v.높은.length && P.띠 ? '<div class="jt-answer why-band"><p>' + esc(P.띠) + '</p></div>' : '')
           + (P.머리말 ? '<p class="why-lead">' + esc(P.머리말) + '</p>' : '')
-          + '<ol class="why-list">' + 목록.map(x => 항목(x, v, P, TP)).join('') + '</ol>'
+          + '<ol class="why-list">' + 목록.map((x, i) => 항목(x, v, P, TP, prof.genderUnknown === true ? (i % 2 ? 'f' : 'm') : prof.gender === 'F' ? 'f' : prof.gender === 'M' ? 'm' : i % 2 ? 'f' : 'm', i === 0)).join('') + '</ol>'
           + 근거(목록, v, P, TP) + '</section>'
           + (오늘이름 ? '<div class="why-next">' + (P.끝말 ? '<p>' + esc(P.끝말) + '</p>' : '') + '<a href="#today">' + esc(오늘이름) + ' →</a></div>' : '');   // nav 는 쓰지 않는다(style.css 가 nav 를 바닥에 붙인다) · 주소는 #today — ./#today 는 /index.html 에서 쪽을 새로 부른다(홈 화면 앱)
         달기();
