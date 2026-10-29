@@ -44,7 +44,7 @@
     return (E.BRANCHES.indexOf(a) + E.BRANCHES.indexOf(b)) % 12 === 1 ? 1 : 0;
   }
   function 생극(ea, eb) { return ea === eb ? null : (ea + 1) % 5 === eb ? '생함' : (eb + 1) % 5 === ea ? '생받음' : (ea + 2) % 5 === eb ? '극함' : '극받음'; }
-  // 육조묶임(글) — 지지 줄(체 + 맨 끝 오늘 글자)을 법전 6조로 풀어 합에 쓰인 자리를 표시한다. 충을 막을 때만 쓴다(합 찾기는 그대로).
+  // 육조묶임(글) — 지지 줄(체 + 맨 끝 오늘 글자)을 법전 6조로 풀어 합에 쓰인 자리를 표시한다. 충을 막을 때 쓴다(합 찾기는 아래 육조짝).
   //   삼합 > 반합(같은 삼합 무리 두 글자 — 합힘과 같은 범위) > 육합. 한 지지는 하나와만(삼합 · 반합은 그 글자의 첫 자리 — engine.js resolveBranches 와 같은 법).
   //   더 센 합이 짝을 뺏으면 남은 자리는 풀려 충을 할 수 있다 — 6조 사례 「묘술합으로 묘유충이 안 일어났으나 시지 오화가 있어 오술삼합으로 묘유충이 성립된다」.
   //   이미 선 국(삼합 · 반합)과 같은 글자가 또 있으면 그 국에 든다 — 74조 10/29 「자수는 신자진 삼합이 되어 있어서 오라는 운이 들어오면 자오 충이 성립이 안된다」.
@@ -59,6 +59,21 @@
     글.forEach((c, i) => { if (!쓴[i] && 국글자[c]) 쓴[i] = true; });
     return 쓴;
   }
+  // 육조짝(글) — 같은 6조 맞춤에서 자리마다 실제로 짝이 된 자리들(결정함 37 · 10-30 사장님 「전부 추천대로」 — 합 찾기에도 「한 지지는 하나와만」).
+  //   오늘 글자(맨 끝)의 합은 6조 맞춤에서 실제로 선 합의 짝, 또는 같은 글자로 든 국(이미 선 국)의 다른 글자하고만 선다.
+  //   그 밖의 합 닿음(짝이 더 센 합에 이미 쓰임)은 합이 아니다 → 형 쌍(寅巳申 · 丑戌未 · 子卯)이면 형, 아니면 생극.
+  //   10-29 시험판과 같다 — today-test 31 그대로 · 사장님 사례 셋(4/30 午戌 · 10/29 子申 · 6조 卯酉) 고른 작용 같음 · 하루 고름 17.2% · 한 해 14.3% 바뀜(무작위 1,500명).
+  function 육조짝(글) {
+    const E = global.ChaeksaEngine, n = 글.length, 쓴 = new Array(n).fill(0), 짝들 = Array.from({ length: n }, () => []), 첫 = c => 글.indexOf(c), 후보 = [], bi = c => E.BRANCHES.indexOf(c), 선국 = [];
+    삼합무리.forEach(g => { const 자 = [...g].map(첫); if (자.every(i => i >= 0)) 후보.push({ 급: 3, 자, 국: g }); });
+    삼합무리.forEach(g => { const 자 = [...g].map(첫); for (let x = 0; x < 3; x++) for (let y = x + 1; y < 3; y++) if (자[x] >= 0 && 자[y] >= 0) 후보.push({ 급: 2, 자: [자[x], 자[y]], 국: g }); });
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (글[i] !== 글[j] && (bi(글[i]) + bi(글[j])) % 12 === 1) 후보.push({ 급: 1, 자: [i, j] });
+    후보.sort((x, y) => y.급 - x.급);
+    후보.forEach(c => { if (c.자.some(i => 쓴[i])) return; c.자.forEach(i => { 쓴[i] = 1; 짝들[i] = c.자.filter(j => j !== i); }); if (c.국) 선국.push(c); });
+    글.forEach((c, i) => { if (쓴[i]) return; const k = 선국.find(q => q.자.some(j => 글[j] === c)); if (k) { 쓴[i] = 2; 짝들[i] = k.자.filter(j => 글[j] !== c); } });
+    return 짝들;
+  }
+  const 형쌍 = (a, b) => ['寅巳', '巳申', '申寅', '丑戌', '戌未', '未丑', '子卯'].some(x => x === a + b || x[1] + x[0] === a + b);
   function 닿음(쪽, a, b) {
     const E = global.ChaeksaEngine;
     if (쪽 === '천간') {
@@ -124,9 +139,11 @@
     운.forEach(x => 체.push({ 글자: x[쪽].글자, 무리: x[쪽].무리, 자리: x.이름 }));
     const 글자들 = 체.map(g => g.글자);
     const 쓴 = 쪽 === '지지' ? 육조묶임(글자들.concat([나.글자])) : null;   // 6조 — 맨 끝(체.length)이 오늘 글자
+    const 오늘짝 = 쪽 === '지지' ? 육조짝(글자들.concat([나.글자]))[체.length] : null;   // 6조 — 오늘 글자의 합은 이 짝하고만(결정함 37)
     const 셈 = {};
     체.forEach((g, i) => {
       let 방 = 닿음(쪽, 나.글자, g.글자); if (!방) return;
+      if (방 === '합' && 오늘짝 && 오늘짝.indexOf(i) < 0) 방 = 형쌍(나.글자, g.글자) ? '형' : 생극(E.BRANCH_ELEM[E.BRANCHES.indexOf(나.글자)], E.BRANCH_ELEM[E.BRANCHES.indexOf(g.글자)]);
       if (방 === '충' && 쓴 && (쓴[체.length] || 쓴[i])) 방 = 생극(E.BRANCH_ELEM[E.BRANCHES.indexOf(나.글자)], E.BRANCH_ELEM[E.BRANCHES.indexOf(g.글자)]);
       if (!방) return;
       const c = (셈[방 + '|' + g.무리] = 셈[방 + '|' + g.무리] || { 자리: [], 힘: 0, 주자리: null, 주힘: -1 });
