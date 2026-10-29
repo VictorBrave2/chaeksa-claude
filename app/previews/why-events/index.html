@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><title>왜 내게만 · 문장과 삽화 견본</title><meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="why.css">
+<style>body{padding:0 0 50px}.why-preview{max-width:520px;margin:0 auto;padding:28px 14px}.preview-note{font-family:var(--sans);font-size:13px;color:var(--ink2);line-height:1.7;margin:0 0 24px}.preview-note strong{display:block;font-size:18px;color:var(--ink);margin-bottom:5px}.preview-all{margin-top:30px}.preview-all summary{cursor:pointer;font-weight:700;padding:15px 0}.preview-all .why-card{margin-top:15px}.preview-toggle{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.preview-toggle button{font:inherit;padding:9px 15px;border:1px solid var(--line2);border-radius:24px;background:var(--card);color:var(--ink);cursor:pointer}.preview-toggle button[aria-pressed=true]{border-color:var(--accent);background:var(--bg2)}</style></head>
+<body><main class="why-preview why-page"><p class="preview-note"><strong>문장과 삽화 적용 견본</strong>가상의 생년월일 두 개로 만든 운세입니다. 계산 기준일은 2026년 10월 30일입니다.</p><div id="whyOut"></div>
+<details class="preview-all"><summary>사건 문장 55개와 삽화 모두 보기</summary><div class="preview-toggle"><button type="button" data-art-sex="f" aria-pressed="true">여자 캐릭터</button><button type="button" data-art-sex="m" aria-pressed="false">남자 캐릭터</button></div><section class="card jt-ch why-card"><ol class="why-list" id="allEvents"></ol></section></details></main>
+<script src="astro.js"></script><script src="engine.js"></script><script src="sipseong.js"></script><script src="sipseong-byeonhwa.js"></script><script src="today-core.js"></script><script src="today-pieces.js"></script><script src="yaksok.js"></script><script src="why-core.js"></script><script src="why-pieces.js"></script><script src="why-art.js"></script><script src="why.js"></script>
+<script>
+(function(){
+  var profiles=[{id:'sample-f',name:'가상 인물 · 1985년생 여성',isSelf:true,birth:{year:1985,month:3,day:14,hour:9,minute:30,gender:'F',solarCorrection:false}},{id:'sample-m',name:'가상 인물 · 1972년생 남성',birth:{year:1972,month:11,day:2,hour:22,minute:5,gender:'M',solarCorrection:false}}];
+  var people={migrate:function(){},activeId:function(){return profiles[0].id;},list:function(){return profiles;},toProfile:function(p){return Object.assign({},p.birth);}};
+  ChaeksaWhyView.mount(document.getElementById('whyOut'),{people:people,clock:function(){return new Date(2026,9,30);},track:null});
+  var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+  var sex='f';
+  function all(){document.getElementById('allEvents').innerHTML=Object.keys(ChaeksaWhyArt).map(function(key){var a=ChaeksaWhyArt[key],text=ChaeksaTodayPieces[key].한줄;return '<li class="why-item why-has-art"><div class="why-art" aria-hidden="true"><img src="art/today-events/'+a.scene+'-'+sex+'-v'+a.version+'-s.webp" width="480" height="480" alt="" loading="lazy" decoding="async"></div><div class="why-item-copy"><p class="why-ev">'+esc(text)+'</p></div></li>';}).join('');document.querySelectorAll('[data-art-sex]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.artSex===sex));});}
+  document.querySelectorAll('[data-art-sex]').forEach(function(b){b.addEventListener('click',function(){sex=b.dataset.artSex;all();});});all();
+})();
+</script></body></html>
