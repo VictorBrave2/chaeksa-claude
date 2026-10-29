@@ -3,7 +3,7 @@
 | 칸 | 값 |
 |---|---|
 | 작업 ID | IMG-0064 |
-| 상태 | 요청 |
+| 상태 | 생성됨 |
 | 요청한 날 | 2026-10-29 |
 | 이 화면이 하려던 말 | 「왜 내게만 이런 일이 일어날까?」 → 「★★★ 사건 발생 빈도가 높습니다 ★★★」 — 나에게 유독 자주 일어나는 일이 있다(보통 사람의 몇 배). 목록 예: 「함께 먹은 밥값을 내가 냅니다」 · 「함께 쓰기로 한 돈을 내가 냅니다」 |
 | 그림이 보여 줄 것 | IMG-0063 과 같은 장면의 남자 판 — 친구들과 밥을 먹고 나서 계산대 앞에서 또 자기 카드를 내미는 20대 후반 남성, 「또 나야?」 웃픈 얼굴, 뒤로 먼저 나가는 친구들 |
@@ -37,3 +37,27 @@ No text, no letters, no numbers, no watermark. Original characters, not based on
 ## 기록
 
 - 2026-10-29 요청 — Claude Code(사장님 「codex 주문서 만들어줘」). 여자 판은 IMG-0063.
+
+## Codex 생성 기록 — 2026-10-29
+
+- 내장 image_gen 사용. PNG 원본 image-requests/out/IMG-0064.png (1024×1536), WebP app/art/why-cover-m.webp, 360px app/art/why-cover-m-s.webp.
+- 앞서 사장님이 정한 시대에 덜 묶이는 소품 기준을 적용해 카드·단말기 대신 천 주머니·동전 접시로 식사값을 치르는 장면을 표현.
+- 최신 오늘의 운세 표지 v2의 남녀 얼굴과 화풍을 참고하고, 이번 주문대로 일상복을 입힘. 친구 둘이 먼저 나가는 구도 유지.
+- 참조: app/art/today-cover-v2.webp(PR #6, 737f21eb) · app/art/taekil-main.webp(main).
+- PNG와 배포용 WebP를 함께 준비. 홈 연결·크기 반영·캐시 갱신은 주문서대로 Claude 담당.
+- 이 작업 ID는 PR #6의 다른 삽화와 중복되므로 통합 시 파일 이름 기준으로 구분 필요.
+
+### 실제 생성 프롬프트
+
+Use case: illustration-story. Production homepage cover illustration for the Korean service Chaeksa. Portrait 2:3, 1024x1536, opaque full-frame background.
+Input image 1: style and recurring guide identity reference, use only the requested lead person's face, hair and coloring. Input image 2: softness, warmth and domestic editorial manhwa visual reference, not a scene to copy.
+Scene: after a friendly meal in a cozy timeless Korean restaurant in warm late-afternoon sunshine, the lead is again the person left settling the group's bill. A wood counter fills a small part of the lower foreground, with a little shallow ceramic payment dish holding several plain coins, and a small open cloth purse resting beside it. A few used bowls and cups are visible on a table in the softly blurred background. Two adult friends in soft casual clothing are cheerfully leaving through the open doorway in the background, seen mainly from behind, with just one giving a relaxed farewell wave. Read as a humorous "me again?" moment, never resentment, anger, sadness or destitution.
+Main figure: attractive adult Korean in late twenties, face toward viewer with clearly OPEN eyes, one eyebrow lightly raised, a small crooked rueful smile, a tiny tilted head. Natural relaxed shoulders and graceful natural hand anatomy. One hand rests against the counter beside the payment dish, the other gently supports the open cloth purse from below. Fingers relaxed, not pinching, no pointing. Both shoulders fully within canvas with breathing room.
+Composition: medium portrait from waist up; lead's face and payment action both central in upper two-thirds, friends much smaller in rear doorway, easily readable at small homepage thumbnail size. Keep the payment dish just below the chest area, not at very bottom. No chopped shoulders. Do not add extra central figures.
+Style: premium Korean romance webtoon illustration, beautiful crisp detailed linework, very clear hair strands and eyes, soft dimensional cel shading, gentle warm ivory peach and wood tones, bright golden window light, clean edges, natural cloth texture. Not photoreal, not flat vector. The room should be bright and welcoming, not dark or nighttime.
+No text, letters, numbers, logos, brand marks, readable currency designs, speech balloons or watermarks. No phones, cards, card readers, calculators, electronic screens, cash registers, receipts, watches, clocks, calendars, weapons, suits or ties. Do not add floating particles or dark lower gradients.
+Lead identity: use the male guide's short tousled dark hair and warm brown eyes from image 1, adapted to everyday dress. He wears an ivory knit sweater with a relaxed muted teal casual overshirt, open neck; no suit or tie, natural elegant proportions. His relaxed half-smile says 'it is me paying again'. No fantasy robe, no ornate gold uniform.
+
+### 최종 편집 프롬프트
+
+Edit this exact illustration, preserving the same man, face, hairstyle, outfit, warm restaurant light, paying scene, friends leaving, purse, coin dish, opaque 2:3 frame and high resolution crisp Korean manhwa style. ONLY correct the framing: pull the camera back about 12 percent so BOTH complete shoulder contours are inside the frame with clear breathing room on the left and right, particularly his right shoulder on the viewer's left which is currently cut by the edge. Keep him central and face large enough for a homepage thumbnail, both hands naturally placed with the purse and dish. Preserve open eyes and the existing slight rueful smile. Keep the scene at the same aspect ratio 1024x1536. No new objects, no text, no phone, no card, no electronic device, no clock. Keep the full opaque background, not transparency.
