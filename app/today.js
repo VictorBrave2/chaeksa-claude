@@ -10,7 +10,7 @@
   const clockRange = (a, b) => { const t1 = clockText(a), t2 = clockText(b); return t1.slice(0, 2) === t2.slice(0, 2) ? t1 + ' ~ ' + t2.slice(3) : t1 + ' ~ ' + t2; };
   const objP = w => { const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<=11171&&c%28 ? '을' : '를'; };
   const natal = {겉:'타고난 사주에 드러나 있는 성향이 오늘 다시 더해집니다.',속:'타고난 사주 안에 있던 성향이 오늘 겉으로 드러납니다.',없음:'오늘 새로 들어오는 성향입니다. 평생의 성격을 뜻하지 않습니다.'};
-  // IMG-0033~0062: display-only associations to existing text keys; no fortune calculation.
+  // IMG-0033~0077: display-only associations to existing text keys; no fortune calculation.
   const eventScenes={
     "결과|국충|비겁": "departure",
     "결과|충|비겁": "departure",
@@ -23,13 +23,13 @@
     "결과|국충|관성": "work",
     "결과|형|관성": "work",
     "결과|생받음|재성": "work",
-    "끌림|식상|관성": "work",
+    "끌림|식상|관성": "completion",
     "끌림|관성|식상": "work",
-    "생각|합|식상": "work",
+    "생각|합|식상": "completion",
     "생각|합|관성": "work",
     "생각|생받음|재성": "work",
-    "결과|국충|인성": "reschedule",
-    "결과|충|식상": "reschedule",
+    "결과|국충|인성": "cancellation",
+    "결과|충|식상": "cancellation",
     "결과|충|관성": "reschedule",
     "생각|극받음|관성": "reschedule",
     "결과|충|재성": "expense",
@@ -52,13 +52,13 @@
     "결과|형|인성": "contact",
     "결과|생함|식상": "teamwork",
     "생각|생함|식상": "firm",
-    "결과|극함|비겁": "firm",
+    "결과|극함|비겁": "refusal",
     "결과|극함|관성": "firm",
     "결과|극받음|식상": "firm",
     "생각|극함|관성": "firm",
     "생각|극받음|식상": "firm",
     "결과|극함|식상": "quiet",
-    "결과|극받음|관성": "reschedule",
+    "결과|극받음|관성": "refusal",
     "결과|극받음|인성": "quiet",
     "생각|극함|식상": "quiet",
     "생각|극받음|인성": "quiet",
@@ -74,12 +74,12 @@
     "생각|생함|재성": "reward",
     "결과|생받음|관성": "support",
     "결과|생받음|인성": "support",
-    "결과|생함|비겁": "support",
-    "끌림|인성|비겁": "support",
+    "결과|생함|비겁": "sharing",
+    "끌림|인성|비겁": "sharing",
     "생각|합|인성": "support",
     "생각|생받음|관성": "support",
     "생각|생받음|인성": "support",
-    "생각|생함|비겁": "support",
+    "생각|생함|비겁": "sharing",
     "결과|생함|인성": "learning",
     "끌림|식상|인성": "learning",
     "끌림|인성|식상": "learning",
@@ -93,7 +93,8 @@
     "생각|극받음|비겁": "money-check",
     "생각|극받음|재성": "money-check"
   };
-  const eventDimensions={"contact-m":[1254,1254],"contact-f":[1254,1254],"firm-m":[1254,1254],"firm-f":[1254,1254],"argument-m":[1254,1254],"argument-f":[1254,1254],"reschedule-m":[1254,1254],"reschedule-f":[1254,1254],"departure-m":[1254,1254],"departure-f":[1254,1254],"expense-m":[1254,1254],"expense-f":[1254,1254],"reward-m":[1254,1254],"reward-f":[1254,1254],"money-check-m":[1254,1254],"money-check-f":[1254,1254],"agreement-m":[1254,1254],"agreement-f":[1254,1254],"teamwork-m":[1254,1254],"teamwork-f":[1254,1254],"support-m":[1254,1254],"support-f":[1254,1254],"work-m":[1254,1254],"work-f":[1254,1254],"documents-m":[1254,1254],"documents-f":[1254,1254],"learning-m":[1254,1254],"learning-f":[1254,1254],"quiet-m":[1254,1254],"quiet-f":[1254,1254]};
+  const eventDimensions={"contact-m":[1254,1254],"contact-f":[1254,1254],"firm-m":[1254,1254],"firm-f":[1254,1254],"argument-m":[1254,1254],"argument-f":[1254,1254],"reschedule-m":[1254,1254],"reschedule-f":[1254,1254],"departure-m":[1254,1254],"departure-f":[1254,1254],"expense-m":[1254,1254],"expense-f":[1254,1254],"reward-m":[1254,1254],"reward-f":[1254,1254],"money-check-m":[1254,1254],"money-check-f":[1254,1254],"agreement-m":[1254,1254],"agreement-f":[1254,1254],"teamwork-m":[1254,1254],"teamwork-f":[1254,1254],"support-m":[1254,1254],"support-f":[1254,1254],"work-m":[1254,1254],"work-f":[1254,1254],"documents-m":[1254,1254],"documents-f":[1254,1254],"learning-m":[1254,1254],"learning-f":[1254,1254],"quiet-m":[1254,1254],"quiet-f":[1254,1254],"cancellation-m":[1254,1254],"cancellation-f":[1254,1254],"refusal-m":[1254,1254],"refusal-f":[1254,1254],"completion-m":[1254,1254],"completion-f":[1254,1254],"sharing-m":[1254,1254],"sharing-f":[1254,1254]};
+  const eventVersions={"contact":2,"expense":2,"money-check":2};
   function mount(root, options) {
     if (!root) return;
     const opt=options||{}, T=global.ChaeksaToday, P=global.ChaeksaTodayPieces, people=opt.people||global.ChaeksaPeople;
@@ -126,7 +127,7 @@
         const line=lines.find(x=>x.자리===slot), scene=line&&line.글&&eventScenes[line.열쇠];
         const fallback=sex==='m'?'forecast-m-v1':'thought-f-v1';
         if(!scene)return guide(fallback,1254,1254,sizes,lazy);
-        const id=scene+'-'+sex, size=eventDimensions[id], base='art/today-events/'+id+'-v1';
+        const id=scene+'-'+sex, size=eventDimensions[id], base='art/today-events/'+id+'-v'+(eventVersions[scene]||1);
         return '<img data-today-guide data-today-event="'+scene+'" data-guide-fallback="'+fallback+'" src="'+base+'.webp" srcset="'+base+'-s.webp 480w, '+base+'.webp '+size[0]+'w" sizes="'+sizes+'" width="'+size[0]+'" height="'+size[1]+'" alt="" decoding="async"'+(lazy?' loading="lazy"':'')+'>';
       };
       const first=v.첫줄, quietTitle=text('조용.한줄');

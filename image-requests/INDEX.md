@@ -34,12 +34,12 @@
 | IMG-0026 | 홈 「읽을거리」 표지 — 햇살 드는 창가 자리에 웅크려 앉아 옛 책을 읽다가 「아, 그래서였구나」 하는 얼굴 | 적용됨(홈 「읽을거리」 칸 · og) | IMG-0026-read.md | out/IMG-0026.png | app/art/read-cover.webp |
 | IMG-0027 | 출산택일 소개 — 추천서를 건네는 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0027-taekil-advisor-offer.md | 삽화원본/taekil-advisor-offer-v1.png(로컬) | app/art/taekil-advisor-offer-v1.webp |
 | IMG-0028 | 출산택일 제작 설명 — 근거를 확인하는 같은 책사 | 적용됨(3e17fb9c · 실제 화면 확인) | IMG-0028-taekil-advisor-review.md | 삽화원본/taekil-advisor-review-v1.png(로컬) | app/art/taekil-advisor-review-v1.webp |
-| IMG-0029 | 오늘의 운세 — 아침 알림과 시계 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0029-today-home.md | 삽화원본/today-cover-v1.png(로컬) | app/art/today-cover-v1.webp |
+| IMG-0029 | 오늘의 운세 — 아침 알림과 시계 | 취소(IMG-0077 · 현대 소품 제외) | IMG-0029-today-home.md | 삽화원본/today-cover-v1.png(로컬) | app/art/today-cover-v1.webp |
 | IMG-0030 | 오늘의 예고를 전하는 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0030-today-guide.md | 삽화원본/today-forecast-m-v1.png(로컬) | app/art/today-guides/forecast-m-v1.webp |
 | IMG-0031 | 생각과 행동을 설명하는 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0031-today-guide.md | 삽화원본/today-thought-f-v1.png(로컬) | app/art/today-guides/thought-f-v1.webp |
 | IMG-0032 | 다음 일주일을 함께 살펴보는 두 사람 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0032-today-guide.md | 삽화원본/today-week-pair-v1.png(로컬) | app/art/today-guides/week-pair-v1.webp |
-| IMG-0033 | 연락·재확인 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0033-today-contact-m.md | 삽화원본/today-events/contact-m-v1.png(로컬) | app/art/today-events/contact-m-v1.webp |
-| IMG-0034 | 연락·재확인 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0034-today-contact-f.md | 삽화원본/today-events/contact-f-v1.png(로컬) | app/art/today-events/contact-f-v1.webp |
+| IMG-0033 | 연락·재확인 · 남신 | 취소(IMG-0063 · 현대 소품 제외) | IMG-0033-today-contact-m.md | 삽화원본/today-events/contact-m-v1.png(로컬) | app/art/today-events/contact-m-v1.webp |
+| IMG-0034 | 연락·재확인 · 여신 | 취소(IMG-0064 · 현대 소품 제외) | IMG-0034-today-contact-f.md | 삽화원본/today-events/contact-f-v1.png(로컬) | app/art/today-events/contact-f-v1.webp |
 | IMG-0035 | 단호한 대화 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0035-today-firm-m.md | 삽화원본/today-events/firm-m-v1.png(로컬) | app/art/today-events/firm-m-v1.webp |
 | IMG-0036 | 단호한 대화 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0036-today-firm-f.md | 삽화원본/today-events/firm-f-v1.png(로컬) | app/art/today-events/firm-f-v1.webp |
 | IMG-0037 | 말다툼·오해 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0037-today-argument-m.md | 삽화원본/today-events/argument-m-v1.png(로컬) | app/art/today-events/argument-m-v1.webp |
@@ -48,12 +48,12 @@
 | IMG-0040 | 계획·시간 변경 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0040-today-reschedule-f.md | 삽화원본/today-events/reschedule-f-v1.png(로컬) | app/art/today-events/reschedule-f-v1.webp |
 | IMG-0041 | 자리 이탈 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0041-today-departure-m.md | 삽화원본/today-events/departure-m-v1.png(로컬) | app/art/today-events/departure-m-v1.webp |
 | IMG-0042 | 자리 이탈 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0042-today-departure-f.md | 삽화원본/today-events/departure-f-v1.png(로컬) | app/art/today-events/departure-f-v1.webp |
-| IMG-0043 | 돈을 씀 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0043-today-expense-m.md | 삽화원본/today-events/expense-m-v1.png(로컬) | app/art/today-events/expense-m-v1.webp |
-| IMG-0044 | 돈을 씀 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0044-today-expense-f.md | 삽화원본/today-events/expense-f-v1.png(로컬) | app/art/today-events/expense-f-v1.webp |
+| IMG-0043 | 돈을 씀 · 남신 | 취소(IMG-0065 · 현대 소품 제외) | IMG-0043-today-expense-m.md | 삽화원본/today-events/expense-m-v1.png(로컬) | app/art/today-events/expense-m-v1.webp |
+| IMG-0044 | 돈을 씀 · 여신 | 취소(IMG-0066 · 현대 소품 제외) | IMG-0044-today-expense-f.md | 삽화원본/today-events/expense-f-v1.png(로컬) | app/art/today-events/expense-f-v1.webp |
 | IMG-0045 | 대가·보상 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0045-today-reward-m.md | 삽화원본/today-events/reward-m-v1.png(로컬) | app/art/today-events/reward-m-v1.webp |
 | IMG-0046 | 대가·보상 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0046-today-reward-f.md | 삽화원본/today-events/reward-f-v1.png(로컬) | app/art/today-events/reward-f-v1.webp |
-| IMG-0047 | 금액 확인·차질 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0047-today-money-check-m.md | 삽화원본/today-events/money-check-m-v1.png(로컬) | app/art/today-events/money-check-m-v1.webp |
-| IMG-0048 | 금액 확인·차질 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0048-today-money-check-f.md | 삽화원본/today-events/money-check-f-v1.png(로컬) | app/art/today-events/money-check-f-v1.webp |
+| IMG-0047 | 금액 확인·차질 · 남신 | 취소(IMG-0067 · 현대 소품 제외) | IMG-0047-today-money-check-m.md | 삽화원본/today-events/money-check-m-v1.png(로컬) | app/art/today-events/money-check-m-v1.webp |
+| IMG-0048 | 금액 확인·차질 · 여신 | 취소(IMG-0068 · 현대 소품 제외) | IMG-0048-today-money-check-f.md | 삽화원본/today-events/money-check-f-v1.png(로컬) | app/art/today-events/money-check-f-v1.webp |
 | IMG-0049 | 돈·거래 약속 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0049-today-agreement-m.md | 삽화원본/today-events/agreement-m-v1.png(로컬) | app/art/today-events/agreement-m-v1.webp |
 | IMG-0050 | 돈·거래 약속 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0050-today-agreement-f.md | 삽화원본/today-events/agreement-f-v1.png(로컬) | app/art/today-events/agreement-f-v1.webp |
 | IMG-0051 | 함께하기·분담 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0051-today-teamwork-m.md | 삽화원본/today-events/teamwork-m-v1.png(로컬) | app/art/today-events/teamwork-m-v1.webp |
@@ -68,3 +68,18 @@
 | IMG-0060 | 배움·방법 변경 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0060-today-learning-f.md | 삽화원본/today-events/learning-f-v1.png(로컬) | app/art/today-events/learning-f-v1.webp |
 | IMG-0061 | 멈춤·말을 아낌 · 남신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0061-today-quiet-m.md | 삽화원본/today-events/quiet-m-v1.png(로컬) | app/art/today-events/quiet-m-v1.webp |
 | IMG-0062 | 멈춤·말을 아낌 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0062-today-quiet-f.md | 삽화원본/today-events/quiet-f-v1.png(로컬) | app/art/today-events/quiet-f-v1.webp |
+| IMG-0063 | 연락·재확인 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0063-today-contact-m-timeless.md | 삽화원본/today-events/contact-m-v2.png(로컬) | app/art/today-events/contact-m-v2.webp |
+| IMG-0064 | 연락·재확인 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0064-today-contact-f-timeless.md | 삽화원본/today-events/contact-f-v2.png(로컬) | app/art/today-events/contact-f-v2.webp |
+| IMG-0065 | 돈을 씀 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0065-today-expense-m-timeless.md | 삽화원본/today-events/expense-m-v2.png(로컬) | app/art/today-events/expense-m-v2.webp |
+| IMG-0066 | 돈을 씀 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0066-today-expense-f-timeless.md | 삽화원본/today-events/expense-f-v2.png(로컬) | app/art/today-events/expense-f-v2.webp |
+| IMG-0067 | 금액 확인·차질 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0067-today-money-check-m-timeless.md | 삽화원본/today-events/money-check-m-v2.png(로컬) | app/art/today-events/money-check-m-v2.webp |
+| IMG-0068 | 금액 확인·차질 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0068-today-money-check-f-timeless.md | 삽화원본/today-events/money-check-f-v2.png(로컬) | app/art/today-events/money-check-f-v2.webp |
+| IMG-0069 | 계획 취소 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0069-today-cancellation-m-timeless.md | 삽화원본/today-events/cancellation-m-v1.png(로컬) | app/art/today-events/cancellation-m-v1.webp |
+| IMG-0070 | 계획 취소 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0070-today-cancellation-f-timeless.md | 삽화원본/today-events/cancellation-f-v1.png(로컬) | app/art/today-events/cancellation-f-v1.webp |
+| IMG-0071 | 거절·허락받지 못함 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0071-today-refusal-m-timeless.md | 삽화원본/today-events/refusal-m-v1.png(로컬) | app/art/today-events/refusal-m-v1.webp |
+| IMG-0072 | 거절·허락받지 못함 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0072-today-refusal-f-timeless.md | 삽화원본/today-events/refusal-f-v1.png(로컬) | app/art/today-events/refusal-f-v1.webp |
+| IMG-0073 | 일을 마무리함 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0073-today-completion-m-timeless.md | 삽화원본/today-events/completion-m-v1.png(로컬) | app/art/today-events/completion-m-v1.webp |
+| IMG-0074 | 일을 마무리함 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0074-today-completion-f-timeless.md | 삽화원본/today-events/completion-f-v1.png(로컬) | app/art/today-events/completion-f-v1.webp |
+| IMG-0075 | 도움을 나눔 · 남신 | 생성됨(연결 · 통합 대기) | IMG-0075-today-sharing-m-timeless.md | 삽화원본/today-events/sharing-m-v1.png(로컬) | app/art/today-events/sharing-m-v1.webp |
+| IMG-0076 | 도움을 나눔 · 여신 | 생성됨(연결 · 통합 대기) | IMG-0076-today-sharing-f-timeless.md | 삽화원본/today-events/sharing-f-v1.png(로컬) | app/art/today-events/sharing-f-v1.webp |
+| IMG-0077 | 오늘의 운세 홈 표지 | 생성됨(연결 · 통합 대기) | IMG-0077-today-cover-v2-timeless.md | 삽화원본/today-cover-v2.png(로컬) | app/art/today-cover-v2.webp |

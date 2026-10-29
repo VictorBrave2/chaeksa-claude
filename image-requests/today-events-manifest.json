@@ -5,9 +5,10 @@
       "scene": "contact",
       "label": "연락·재확인",
       "sex": "m",
+      "version": 2,
       "ref": "app/art/today-guides/forecast-m-v1.webp",
-      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a slim unbranded smartphone in one naturally relaxed hand at chest level, looks up from it to reader with raised eyebrow and alert questioning expression. Other arm holds a notebook. No smile of celebration. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
-      "source": "삽화원본/today-events/contact-m-v1.png",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: An open folded cream LETTER held in both hands at chest, looking up toward reader with one eyebrow raised and an attentive questioning expression. Only folded paper, NO phone or rectangular electronic object. Natural hands support bottom of paper. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/contact-m-v2.png",
       "width": 1254,
       "height": 1254
     },
@@ -16,9 +17,10 @@
       "scene": "contact",
       "label": "연락·재확인",
       "sex": "f",
+      "version": 2,
       "ref": "app/art/today-guides/thought-f-v1.webp",
-      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a slim unbranded smartphone in one naturally relaxed hand at chest level, looks up from it to reader with raised eyebrow and alert questioning expression. Other arm holds a notebook. No smile of celebration. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
-      "source": "삽화원본/today-events/contact-f-v1.png",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: An open folded cream LETTER held in both hands at chest, looking up toward reader with one eyebrow raised and an attentive questioning expression. Only folded paper, NO phone or rectangular electronic object. Natural hands support bottom of paper. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/contact-f-v2.png",
       "width": 1254,
       "height": 1254
     },
@@ -31,7 +33,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Upright square posture, chin level, unwavering direct eye contact, brows firm and mouth slightly open as making a clear objection. Both hands hold a CLOSED notebook against lower torso. Assertive, not furious. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/firm-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "firm-f",
@@ -42,7 +45,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Upright square posture, chin level, unwavering direct eye contact, brows firm and mouth slightly open as making a clear objection. Both hands hold a CLOSED notebook against lower torso. Assertive, not furious. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/firm-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "argument-m",
@@ -53,7 +57,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Arms folded naturally low across body, eyebrows drawn together, head turned slightly, lips parted in a frustrated explanation. Clearly irritated but composed, no weapon, no insulting gestures. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/argument-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "argument-f",
@@ -64,7 +69,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Arms folded naturally low across body, eyebrows drawn together, head turned slightly, lips parted in a frustrated explanation. Clearly irritated but composed, no weapon, no insulting gestures. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/argument-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "reschedule-m",
@@ -75,7 +81,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Looks with surprised concern between reader and an open appointment planner, one loose blank page raised from it and a gold pocket watch hanging at spine. Hands naturally support the planner from below, no pointing. Energetic slight head tilt. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/reschedule-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "reschedule-f",
@@ -86,7 +93,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Looks with surprised concern between reader and an open appointment planner, one loose blank page raised from it and a gold pocket watch hanging at spine. Hands naturally support the planner from below, no pointing. Energetic slight head tilt. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/reschedule-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "departure-m",
@@ -97,7 +105,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Three-quarter torso turned as if about to leave, looking back toward reader over shoulder with a small restrained apologetic smile. Closed book tucked under near arm. Full shoulders visible, strong departure silhouette, not grief. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/departure-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "departure-f",
@@ -108,16 +117,18 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Three-quarter torso turned as if about to leave, looking back toward reader over shoulder with a small restrained apologetic smile. Closed book tucked under near arm. Full shoulders visible, strong departure silhouette, not grief. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/departure-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "expense-m",
       "scene": "expense",
       "label": "돈을 씀",
       "sex": "m",
+      "version": 2,
       "ref": "app/art/today-guides/forecast-m-v1.webp",
-      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a small open ivory wallet low and a plain blank bank card supported naturally against its edge, looking at reader with slightly rueful resigned expression. No coins pouring out, no giant smile. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
-      "source": "삽화원본/today-events/expense-m-v1.png",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Extending a small tied embroidered CLOTH MONEY POUCH on both palms at lower chest, slightly rueful resigned expression, one plain antique-style round coin with no insignia peeks from the pouch. No wallet or card. Giving away payment, not celebrating. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/expense-m-v2.png",
       "width": 1254,
       "height": 1254
     },
@@ -126,9 +137,10 @@
       "scene": "expense",
       "label": "돈을 씀",
       "sex": "f",
+      "version": 2,
       "ref": "app/art/today-guides/thought-f-v1.webp",
-      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a small open ivory wallet low and a plain blank bank card supported naturally against its edge, looking at reader with slightly rueful resigned expression. No coins pouring out, no giant smile. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
-      "source": "삽화원본/today-events/expense-f-v1.png",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Extending a small tied embroidered CLOTH MONEY POUCH on both palms at lower chest, slightly rueful resigned expression, one plain antique-style round coin with no insignia peeks from the pouch. No wallet or card. Giving away payment, not celebrating. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/expense-f-v2.png",
       "width": 1254,
       "height": 1254
     },
@@ -141,7 +153,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a cream payment envelope against chest with natural hands, pleased warm confident smile with open eyes, upright shoulders and a small buoyant head tilt. Envelope has no marks or currency symbols. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/reward-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "reward-f",
@@ -152,16 +165,18 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a cream payment envelope against chest with natural hands, pleased warm confident smile with open eyes, upright shoulders and a small buoyant head tilt. Envelope has no marks or currency symbols. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/reward-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "money-check-m",
       "scene": "money-check",
       "label": "금액 확인·차질",
       "sex": "m",
+      "version": 2,
       "ref": "app/art/today-guides/forecast-m-v1.webp",
-      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Serious focused brows, comparing a blank narrow receipt with a small simple calculator held at lower torso, looking up at reader with questioning concern. Blank calculator screen, no text or digits. Natural relaxed grip. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
-      "source": "삽화원본/today-events/money-check-m-v1.png",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Looking concerned and thoughtful, holding a shallow small wooden dish containing a few plain antique coins and one partly empty cloth pouch; hands support the dish from below. The different small groups of coins suggest checking an amount. No calculator, receipt, abacus, electronic device, modern currency, or pointing. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/money-check-m-v2.png",
       "width": 1254,
       "height": 1254
     },
@@ -170,9 +185,10 @@
       "scene": "money-check",
       "label": "금액 확인·차질",
       "sex": "f",
+      "version": 2,
       "ref": "app/art/today-guides/thought-f-v1.webp",
-      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Serious focused brows, comparing a blank narrow receipt with a small simple calculator held at lower torso, looking up at reader with questioning concern. Blank calculator screen, no text or digits. Natural relaxed grip. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
-      "source": "삽화원본/today-events/money-check-f-v1.png",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Looking concerned and thoughtful, holding a shallow small wooden dish containing a few plain antique coins and one partly empty cloth pouch; hands support the dish from below. The different small groups of coins suggest checking an amount. No calculator, receipt, abacus, electronic device, modern currency, or pointing. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/money-check-f-v2.png",
       "width": 1254,
       "height": 1254
     },
@@ -185,7 +201,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Calm assured expression, slight knowing smile, holding a closed cream agreement folder with a thin gold ribbon horizontally toward reader using both hands underneath. Eyes directly open, invitation to agreement, no handshake or pointing. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/agreement-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "agreement-f",
@@ -196,7 +213,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Calm assured expression, slight knowing smile, holding a closed cream agreement folder with a thin gold ribbon horizontally toward reader using both hands underneath. Eyes directly open, invitation to agreement, no handshake or pointing. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/agreement-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "teamwork-m",
@@ -207,7 +225,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Friendly engaged smile, leaning slightly toward reader while holding two different slim notebooks together, teal and coral covers, as if ready to share the work. Both hands safely support books from below. One person only. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/teamwork-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "teamwork-f",
@@ -218,7 +237,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Friendly engaged smile, leaning slightly toward reader while holding two different slim notebooks together, teal and coral covers, as if ready to share the work. Both hands safely support books from below. One person only. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/teamwork-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "support-m",
@@ -229,7 +249,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Compassionate attentive expression, soft open eyes, offering a closed ivory book at lower chest with both hands underneath, body inclined forward slightly in reassurance. One person only, no pointing gesture. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/support-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "support-f",
@@ -240,7 +261,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Compassionate attentive expression, soft open eyes, offering a closed ivory book at lower chest with both hands underneath, body inclined forward slightly in reassurance. One person only, no pointing gesture. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/support-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "work-m",
@@ -251,7 +273,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Determined focused expression with slightly raised inner eyebrows, holding a stack of three cream folders securely under one arm while other hand rests naturally on top, slight forward leaning action. Not smiling in celebration. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/work-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "work-f",
@@ -262,7 +285,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Determined focused expression with slightly raised inner eyebrows, holding a stack of three cream folders securely under one arm while other hand rests naturally on top, slight forward leaning action. Not smiling in celebration. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/work-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "documents-m",
@@ -273,7 +297,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Attentively comparing two cream document sheets held together in front of chest, head upright and eyes looking toward reader, serious checking expression. No readable marks on sheets. Hands mostly hidden behind sheets. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/documents-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "documents-f",
@@ -284,7 +309,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Attentively comparing two cream document sheets held together in front of chest, head upright and eyes looking toward reader, serious checking expression. No readable marks on sheets. Hands mostly hidden behind sheets. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/documents-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "learning-m",
@@ -295,7 +321,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Curious animated face, eyes OPEN visibly interested, head slightly tilted, studying an open ivory reference book with a plain pencil resting along its spine, looking up toward reader as discovering an idea. Both hands support book below. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/learning-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "learning-f",
@@ -306,7 +333,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Curious animated face, eyes OPEN visibly interested, head slightly tilted, studying an open ivory reference book with a plain pencil resting along its spine, looking up toward reader as discovering an idea. Both hands support book below. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/learning-f-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "quiet-m",
@@ -317,7 +345,8 @@
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Quiet contemplative expression, lips closed, soft OPEN eyes looking at reader, relaxed shoulders. Holding a simple warm ceramic teacup with both hands low at chest, hands mostly hidden by cup. No wink or closed eyes. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/quiet-m-v1.png",
       "width": 1254,
-      "height": 1254
+      "height": 1254,
+      "version": 1
     },
     {
       "id": "quiet-f",
@@ -327,6 +356,103 @@
       "ref": "app/art/today-guides/thought-f-v1.webp",
       "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Quiet contemplative expression, lips closed, soft OPEN eyes looking at reader, relaxed shoulders. Holding a simple warm ceramic teacup with both hands low at chest, hands mostly hidden by cup. No wink or closed eyes. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
       "source": "삽화원본/today-events/quiet-f-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "version": 1
+    },
+    {
+      "id": "cancellation-m",
+      "scene": "cancellation",
+      "label": "계획 취소",
+      "sex": "m",
+      "version": 1,
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Holding a closed ivory planner with an untied loose silk ribbon falling from it. Eyes direct toward reader, disappointed slightly furrowed brow, lips gently pressed together; a small backward lean as a plan has fallen through. Both hands gently hold the planner, no torn paper or destructive act. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/cancellation-m-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "cancellation-f",
+      "scene": "cancellation",
+      "label": "계획 취소",
+      "sex": "f",
+      "version": 1,
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Holding a closed ivory planner with an untied loose silk ribbon falling from it. Eyes direct toward reader, disappointed slightly furrowed brow, lips gently pressed together; a small backward lean as a plan has fallen through. Both hands gently hold the planner, no torn paper or destructive act. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/cancellation-f-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "refusal-m",
+      "scene": "refusal",
+      "label": "거절·허락받지 못함",
+      "sex": "m",
+      "version": 1,
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Firm composed unsmiling face, chin slightly turned aside, holding a sealed folded paper offer against side of torso with arms naturally folded low; strong clear closed posture meaning refusal. Open eyes directed toward reader, no raised hand or finger gesture. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/refusal-m-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "refusal-f",
+      "scene": "refusal",
+      "label": "거절·허락받지 못함",
+      "sex": "f",
+      "version": 1,
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Firm composed unsmiling face, chin slightly turned aside, holding a sealed folded paper offer against side of torso with arms naturally folded low; strong clear closed posture meaning refusal. Open eyes directed toward reader, no raised hand or finger gesture. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/refusal-f-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "completion-m",
+      "scene": "completion",
+      "label": "일을 마무리함",
+      "sex": "m",
+      "version": 1,
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Holding a neatly finished ivory bound book already tied with a fine teal silk ribbon, relaxed shoulders and a quietly proud relieved smile, looking directly at reader as the job is finally complete. Both hands support the completed book horizontally from below. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/completion-m-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "completion-f",
+      "scene": "completion",
+      "label": "일을 마무리함",
+      "sex": "f",
+      "version": 1,
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Holding a neatly finished ivory bound book already tied with a fine teal silk ribbon, relaxed shoulders and a quietly proud relieved smile, looking directly at reader as the job is finally complete. Both hands support the completed book horizontally from below. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/completion-f-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "sharing-m",
+      "scene": "sharing",
+      "label": "도움을 나눔",
+      "sex": "m",
+      "version": 1,
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult handsome East Asian man with tousled dark hair, brown eyes, silver ear cuff, peacock-teal gold-trim coat and ivory lapels. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Warm generous engaged smile, slightly leaning toward reader, holding two equal small embroidered cloth pouches together on an open flat ivory cloth supported underneath by both hands, one teal pouch and one coral pouch. A visual invitation to share equally, no money symbols, no palms displayed separately. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/sharing-m-v1.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "sharing-f",
+      "scene": "sharing",
+      "label": "도움을 나눔",
+      "sex": "f",
+      "version": 1,
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. One standalone timeless daily-fortune guide illustration. Reference is the SAME fictional adult beautiful East Asian woman with short wavy dark bob, brown eyes, gold orbit hairpin, pearl drop earrings, coral robe with gold piping, modest ivory high-neck blouse and natural modest bust. Preserve exact face, hairstyle, outfit and crisp polished Korean romantic manhwa drawing style. NEW scene: Warm generous engaged smile, slightly leaning toward reader, holding two equal small embroidered cloth pouches together on an open flat ivory cloth supported underneath by both hands, one teal pouch and one coral pouch. A visual invitation to share equally, no money symbols, no palms displayed separately. Full waist-up character in square composition, both shoulder outlines and entire props inside canvas, transparent margin around sides and top. Hands naturally anatomically correct, no empty pinching or pointing gestures. Eyes open, clear irises. Fine precise linework and elegant cel shading, no blur or photography. TRUE transparent background, no scenery, furniture, cast shadow or haze. Timeless mythical guide world: NO smartphone, phone, tablet, screen, calculator, credit card, modern wallet, electronic device, branded product, modern office equipment, machine-made receipt, disposable packaging, logos, letters, digits, text, watermark, extra people or panels.",
+      "source": "삽화원본/today-events/sharing-f-v1.png",
       "width": 1254,
       "height": 1254
     }
@@ -343,13 +469,13 @@
     "결과|국충|관성": "work",
     "결과|형|관성": "work",
     "결과|생받음|재성": "work",
-    "끌림|식상|관성": "work",
+    "끌림|식상|관성": "completion",
     "끌림|관성|식상": "work",
-    "생각|합|식상": "work",
+    "생각|합|식상": "completion",
     "생각|합|관성": "work",
     "생각|생받음|재성": "work",
-    "결과|국충|인성": "reschedule",
-    "결과|충|식상": "reschedule",
+    "결과|국충|인성": "cancellation",
+    "결과|충|식상": "cancellation",
     "결과|충|관성": "reschedule",
     "생각|극받음|관성": "reschedule",
     "결과|충|재성": "expense",
@@ -372,13 +498,13 @@
     "결과|형|인성": "contact",
     "결과|생함|식상": "teamwork",
     "생각|생함|식상": "firm",
-    "결과|극함|비겁": "firm",
+    "결과|극함|비겁": "refusal",
     "결과|극함|관성": "firm",
     "결과|극받음|식상": "firm",
     "생각|극함|관성": "firm",
     "생각|극받음|식상": "firm",
     "결과|극함|식상": "quiet",
-    "결과|극받음|관성": "reschedule",
+    "결과|극받음|관성": "refusal",
     "결과|극받음|인성": "quiet",
     "생각|극함|식상": "quiet",
     "생각|극받음|인성": "quiet",
@@ -394,12 +520,12 @@
     "생각|생함|재성": "reward",
     "결과|생받음|관성": "support",
     "결과|생받음|인성": "support",
-    "결과|생함|비겁": "support",
-    "끌림|인성|비겁": "support",
+    "결과|생함|비겁": "sharing",
+    "끌림|인성|비겁": "sharing",
     "생각|합|인성": "support",
     "생각|생받음|관성": "support",
     "생각|생받음|인성": "support",
-    "생각|생함|비겁": "support",
+    "생각|생함|비겁": "sharing",
     "결과|생함|인성": "learning",
     "끌림|식상|인성": "learning",
     "끌림|인성|식상": "learning",
@@ -412,5 +538,95 @@
     "끌림|관성|재성": "money-check",
     "생각|극받음|비겁": "money-check",
     "생각|극받음|재성": "money-check"
+  },
+  "retired": [
+    {
+      "id": "contact-m",
+      "scene": "contact",
+      "label": "연락·재확인",
+      "sex": "m",
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a slim unbranded smartphone in one naturally relaxed hand at chest level, looks up from it to reader with raised eyebrow and alert questioning expression. Other arm holds a notebook. No smile of celebration. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
+      "source": "삽화원본/today-events/contact-m-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "reason": "현대 소품 제외 — v2로 교체"
+    },
+    {
+      "id": "contact-f",
+      "scene": "contact",
+      "label": "연락·재확인",
+      "sex": "f",
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a slim unbranded smartphone in one naturally relaxed hand at chest level, looks up from it to reader with raised eyebrow and alert questioning expression. Other arm holds a notebook. No smile of celebration. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
+      "source": "삽화원본/today-events/contact-f-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "reason": "현대 소품 제외 — v2로 교체"
+    },
+    {
+      "id": "expense-m",
+      "scene": "expense",
+      "label": "돈을 씀",
+      "sex": "m",
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a small open ivory wallet low and a plain blank bank card supported naturally against its edge, looking at reader with slightly rueful resigned expression. No coins pouring out, no giant smile. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
+      "source": "삽화원본/today-events/expense-m-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "reason": "현대 소품 제외 — v2로 교체"
+    },
+    {
+      "id": "expense-f",
+      "scene": "expense",
+      "label": "돈을 씀",
+      "sex": "f",
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Holding a small open ivory wallet low and a plain blank bank card supported naturally against its edge, looking at reader with slightly rueful resigned expression. No coins pouring out, no giant smile. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
+      "source": "삽화원본/today-events/expense-f-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "reason": "현대 소품 제외 — v2로 교체"
+    },
+    {
+      "id": "money-check-m",
+      "scene": "money-check",
+      "label": "금액 확인·차질",
+      "sex": "m",
+      "ref": "app/art/today-guides/forecast-m-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult handsome East Asian male guide: tousled short dark hair, brown eyes, silver ear cuff, peacock-teal coat with gold trim and ivory lapels. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Serious focused brows, comparing a blank narrow receipt with a small simple calculator held at lower torso, looking up at reader with questioning concern. Blank calculator screen, no text or digits. Natural relaxed grip. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
+      "source": "삽화원본/today-events/money-check-m-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "reason": "현대 소품 제외 — v2로 교체"
+    },
+    {
+      "id": "money-check-f",
+      "scene": "money-check",
+      "label": "금액 확인·차질",
+      "sex": "f",
+      "ref": "app/art/today-guides/thought-f-v1.webp",
+      "prompt": "Use case: identity-preserve / illustration-story. Production asset for a Korean daily-fortune website, one single standalone event illustration, not a sheet or collage. The attached image is a strict reference for the SAME fictional adult beautiful East Asian female guide: short dark wavy bob, brown eyes, gold orbit hairpin, pearl earrings, coral-rose outer robe with gold piping and a modest ivory high-neck blouse; natural modest bust. Preserve exact face identity, hairstyle, clothing colors and quality of clean romantic Korean manhwa linework. Change pose, facial expression, and prop to this scene: Serious focused brows, comparing a blank narrow receipt with a small simple calculator held at lower torso, looking up at reader with questioning concern. Blank calculator screen, no text or digits. Natural relaxed grip. Composition: waist-up single character with full head and BOTH shoulder outlines visible, generous 8 percent transparent margins on left/right/top, never cut outer arms at canvas edges. Square canvas. Crisp detailed eyes and hair, elegant cel shading, natural adult anatomy and relaxed hands, no pinching, pointing, or exaggerated hand gestures. The guide embodies the emotional tone of the event and speaks to the reader. TRUE transparent background, no scenery, table, floor, opaque glow, frame, speech balloon, captions, text, watermarks, extra people, photographic texture, blur, or chibi style.",
+      "source": "삽화원본/today-events/money-check-f-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "reason": "현대 소품 제외 — v2로 교체"
+    }
+  ],
+  "cover": {
+    "id": "today-cover",
+    "scene": "cover",
+    "label": "오늘의 운세 홈 표지",
+    "version": 2,
+    "ref": "app/art/today-guides/forecast-m-v1.webp",
+    "prompt": "Use case: illustration-story / identity-preserve. A polished vertical 2:3 Korean romantic manhwa cover for daily fortune. Use the exact two adult fictional guide identities and clothing in the two references: handsome tousled dark-haired man in peacock-teal and ivory gold-trim coat with silver ear cuff, and beautiful short dark-bob woman with orbit hairpin and pearl earrings in coral and ivory high-neck robe, modest proportions. These are colleagues speaking to the viewer, not a romantic couple. In a luminous timeless reading pavilion, the man in foreground holds an unfolded cream letter, looking toward viewer with an intrigued conversational smile; the woman slightly behind looks directly at viewer with open clear eyes while resting her closed notebook against torso. A small glass hourglass with sand and a bound book lie on a warm pale wooden ledge low in foreground. Soft bright morning sunlight, ivory paper colors and delicate plant shadows in background, elegant bright inviting mood, crisp exquisite faces. Keep faces large and clear in upper central crop, complete head and shoulder outlines. Hands natural mostly hidden behind letter and book. No smartphone, screens, calculators, credit cards, electrical objects, modern office furniture, packaging, labels, modern clocks, numbers, letters, caption, watermark or logo. No cloud fog covering faces or breasts emphasized. Rich but restrained details. One coherent vertical composition, opaque background.",
+    "source": "삽화원본/today-cover-v2.png",
+    "width": 1024,
+    "height": 1536,
+    "refs": [
+      "app/art/today-guides/forecast-m-v1.webp",
+      "app/art/today-guides/thought-f-v1.webp"
+    ],
+    "asset": "app/art/today-cover-v2.webp"
   }
 }
