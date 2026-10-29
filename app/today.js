@@ -10,20 +10,20 @@
   const clockRange = (a, b) => { const t1 = clockText(a), t2 = clockText(b); return t1.slice(0, 2) === t2.slice(0, 2) ? t1 + ' ~ ' + t2.slice(3) : t1 + ' ~ ' + t2; };
   const objP = w => { const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<=11171&&c%28 ? '을' : '를'; };
   const natal = {겉:'타고난 사주에 드러나 있는 성향이 오늘 다시 더해집니다.',속:'타고난 사주 안에 있던 성향이 오늘 겉으로 드러납니다.',없음:'오늘 새로 들어오는 성향입니다. 평생의 성격을 뜻하지 않습니다.'};
-  // IMG-0033~0101: display-only associations to existing text keys; no fortune calculation.
+  // IMG-0033~0133: display-only associations to existing text keys; no fortune calculation.
   const eventScenes={
-    "결과|국충|비겁": "departure",
+    "결과|국충|비겁": "disband",
     "결과|충|비겁": "departure",
     "끌림|비겁|식상": "departure",
     "끌림|비겁|재성": "departure",
     "끌림|비겁|관성": "departure",
     "끌림|비겁|인성": "homeward",
-    "생각|극함|비겁": "departure",
+    "생각|극함|비겁": "distance",
     "결과|국충|식상": "restart",
-    "결과|국충|관성": "work",
+    "결과|국충|관성": "reassignment",
     "결과|형|관성": "restart",
-    "결과|생받음|재성": "work",
-    "끌림|식상|관성": "completion",
+    "결과|생받음|재성": "workload",
+    "끌림|식상|관성": "deadline",
     "끌림|관성|식상": "work",
     "생각|합|식상": "completion",
     "생각|합|관성": "work",
@@ -38,9 +38,9 @@
     "결과|극받음|재성": "money-check",
     "결과|생함|관성": "hosting",
     "끌림|재성|비겁": "expense",
-    "끌림|재성|식상": "expense",
-    "끌림|재성|인성": "expense",
-    "끌림|인성|재성": "expense",
+    "끌림|재성|식상": "self-reward",
+    "끌림|재성|인성": "tuition",
+    "끌림|인성|재성": "repay",
     "생각|극함|재성": "hosting",
     "생각|극함|인성": "money-check",
     "생각|생함|관성": "hosting",
@@ -50,7 +50,7 @@
     "결과|형|비겁": "argument",
     "결과|형|식상": "explanation",
     "결과|형|인성": "contact",
-    "결과|생함|식상": "teamwork",
+    "결과|생함|식상": "storytelling",
     "생각|생함|식상": "firm",
     "결과|극함|비겁": "refusal",
     "결과|극함|관성": "firm",
@@ -58,15 +58,15 @@
     "생각|극함|관성": "firm",
     "생각|극받음|식상": "firm",
     "결과|극함|식상": "quiet",
-    "결과|극받음|관성": "refusal",
-    "결과|극받음|인성": "quiet",
+    "결과|극받음|관성": "permission-denied",
+    "결과|극받음|인성": "hold-tongue",
     "생각|극함|식상": "quiet",
     "생각|극받음|인성": "quiet",
-    "결과|생받음|비겁": "teamwork",
+    "결과|생받음|비겁": "ally",
     "끌림|식상|비겁": "teamwork",
-    "끌림|관성|비겁": "teamwork",
+    "끌림|관성|비겁": "delegation",
     "생각|합|비겁": "teamwork",
-    "생각|생받음|비겁": "teamwork",
+    "생각|생받음|비겁": "ally",
     "결과|생받음|식상": "payday",
     "결과|생함|재성": "payday",
     "끌림|식상|재성": "selling",
@@ -81,19 +81,19 @@
     "생각|생받음|인성": "gratitude",
     "생각|생함|비겁": "sharing",
     "결과|생함|인성": "learning",
-    "끌림|식상|인성": "learning",
+    "끌림|식상|인성": "change-method",
     "끌림|인성|식상": "craft",
     "생각|생함|인성": "learning",
     "끌림|재성|관성": "agreement",
     "생각|합|재성": "agreement",
-    "결과|국충|재성": "money-check",
+    "결과|국충|재성": "income-stop",
     "결과|형|재성": "money-check",
     "결과|극받음|비겁": "protect-share",
-    "끌림|관성|재성": "money-check",
+    "끌림|관성|재성": "budget",
     "생각|극받음|비겁": "protect-share",
     "생각|극받음|재성": "money-check"
   };
-  const eventDimensions={"contact-m":[1254,1254],"contact-f":[1254,1254],"firm-m":[1254,1254],"firm-f":[1254,1254],"argument-m":[1254,1254],"argument-f":[1254,1254],"reschedule-m":[1254,1254],"reschedule-f":[1254,1254],"departure-m":[1254,1254],"departure-f":[1254,1254],"expense-m":[1254,1254],"expense-f":[1254,1254],"reward-m":[1254,1254],"reward-f":[1254,1254],"money-check-m":[1254,1254],"money-check-f":[1254,1254],"agreement-m":[1254,1254],"agreement-f":[1254,1254],"teamwork-m":[1254,1254],"teamwork-f":[1254,1254],"support-m":[1254,1254],"support-f":[1254,1254],"work-m":[1254,1254],"work-f":[1254,1254],"documents-m":[1254,1254],"documents-f":[1254,1254],"learning-m":[1254,1254],"learning-f":[1254,1254],"quiet-m":[1254,1254],"quiet-f":[1254,1254],"cancellation-m":[1254,1254],"cancellation-f":[1254,1254],"refusal-m":[1254,1254],"refusal-f":[1254,1254],"completion-m":[1254,1254],"completion-f":[1254,1254],"sharing-m":[1254,1254],"sharing-f":[1254,1254],"homeward-m":[1254,1254],"homeward-f":[1254,1254],"hosting-m":[1254,1254],"hosting-f":[1254,1254],"payday-m":[1254,1254],"payday-f":[1254,1254],"selling-m":[1254,1254],"selling-f":[1254,1254],"ask-help-m":[1254,1254],"ask-help-f":[1254,1254],"gratitude-m":[1254,1254],"gratitude-f":[1254,1254],"submission-m":[1254,1254],"submission-f":[1254,1254],"missing-paper-m":[1254,1254],"missing-paper-f":[1254,1254],"explanation-m":[1254,1254],"explanation-f":[1254,1254],"protect-share-m":[1254,1254],"protect-share-f":[1254,1254],"restart-m":[1254,1254],"restart-f":[1254,1254],"craft-m":[1254,1254],"craft-f":[1254,1254]};
+  const eventDimensions={"contact-m":[1254,1254],"contact-f":[1254,1254],"firm-m":[1254,1254],"firm-f":[1254,1254],"argument-m":[1254,1254],"argument-f":[1254,1254],"reschedule-m":[1254,1254],"reschedule-f":[1254,1254],"departure-m":[1254,1254],"departure-f":[1254,1254],"expense-m":[1254,1254],"expense-f":[1254,1254],"reward-m":[1254,1254],"reward-f":[1254,1254],"money-check-m":[1254,1254],"money-check-f":[1254,1254],"agreement-m":[1254,1254],"agreement-f":[1254,1254],"teamwork-m":[1254,1254],"teamwork-f":[1254,1254],"support-m":[1254,1254],"support-f":[1254,1254],"work-m":[1254,1254],"work-f":[1254,1254],"documents-m":[1254,1254],"documents-f":[1254,1254],"learning-m":[1254,1254],"learning-f":[1254,1254],"quiet-m":[1254,1254],"quiet-f":[1254,1254],"cancellation-m":[1254,1254],"cancellation-f":[1254,1254],"refusal-m":[1254,1254],"refusal-f":[1254,1254],"completion-m":[1254,1254],"completion-f":[1254,1254],"sharing-m":[1254,1254],"sharing-f":[1254,1254],"homeward-m":[1254,1254],"homeward-f":[1254,1254],"hosting-m":[1254,1254],"hosting-f":[1254,1254],"payday-m":[1254,1254],"payday-f":[1254,1254],"selling-m":[1254,1254],"selling-f":[1254,1254],"ask-help-m":[1254,1254],"ask-help-f":[1254,1254],"gratitude-m":[1254,1254],"gratitude-f":[1254,1254],"submission-m":[1254,1254],"submission-f":[1254,1254],"missing-paper-m":[1254,1254],"missing-paper-f":[1254,1254],"explanation-m":[1254,1254],"explanation-f":[1254,1254],"protect-share-m":[1254,1254],"protect-share-f":[1254,1254],"restart-m":[1254,1254],"restart-f":[1254,1254],"craft-m":[1254,1254],"craft-f":[1254,1254],"disband-m":[1254,1254],"disband-f":[1254,1254],"distance-m":[1254,1254],"distance-f":[1254,1254],"workload-f":[1254,1254],"workload-m":[1254,1254],"reassignment-m":[1254,1254],"reassignment-f":[1254,1254],"tuition-m":[1254,1254],"tuition-f":[1254,1254],"self-reward-m":[1254,1254],"self-reward-f":[1254,1254],"repay-m":[1254,1254],"repay-f":[1254,1254],"income-stop-m":[1254,1254],"income-stop-f":[1254,1254],"budget-m":[1254,1254],"budget-f":[1254,1254],"storytelling-m":[1254,1254],"storytelling-f":[1254,1254],"ally-m":[1254,1254],"ally-f":[1254,1254],"delegation-m":[1254,1254],"delegation-f":[1254,1254],"permission-denied-m":[1254,1254],"permission-denied-f":[1254,1254],"change-method-m":[1254,1254],"change-method-f":[1254,1254],"deadline-m":[1254,1254],"deadline-f":[1254,1254],"hold-tongue-m":[1254,1254],"hold-tongue-f":[1254,1254]};
   const eventVersions={"contact":2,"expense":2,"money-check":2};
   function mount(root, options) {
     if (!root) return;
