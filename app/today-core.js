@@ -44,6 +44,21 @@
     return (E.BRANCHES.indexOf(a) + E.BRANCHES.indexOf(b)) % 12 === 1 ? 1 : 0;
   }
   function 생극(ea, eb) { return ea === eb ? null : (ea + 1) % 5 === eb ? '생함' : (eb + 1) % 5 === ea ? '생받음' : (ea + 2) % 5 === eb ? '극함' : '극받음'; }
+  // 육조묶임(글) — 지지 줄(체 + 맨 끝 오늘 글자)을 법전 6조로 풀어 합에 쓰인 자리를 표시한다. 충을 막을 때만 쓴다(합 찾기는 그대로).
+  //   삼합 > 반합(같은 삼합 무리 두 글자 — 합힘과 같은 범위) > 육합. 한 지지는 하나와만(삼합 · 반합은 그 글자의 첫 자리 — engine.js resolveBranches 와 같은 법).
+  //   더 센 합이 짝을 뺏으면 남은 자리는 풀려 충을 할 수 있다 — 6조 사례 「묘술합으로 묘유충이 안 일어났으나 시지 오화가 있어 오술삼합으로 묘유충이 성립된다」.
+  //   이미 선 국(삼합 · 반합)과 같은 글자가 또 있으면 그 국에 든다 — 74조 10/29 「자수는 신자진 삼합이 되어 있어서 오라는 운이 들어오면 자오 충이 성립이 안된다」.
+  //   10-29 전에는 「합 짝이 체에 하나라도 있으면 묶임」이라 6조 사례에서도 충을 막았다(한 해 충 1.9% → 고친 뒤 3.1% · 하루 0.6% → 1.3%, 무작위 1,500명).
+  function 육조묶임(글) {
+    const E = global.ChaeksaEngine, n = 글.length, 쓴 = 글.map(() => false), 첫 = c => 글.indexOf(c), 후보 = [], 국글자 = {};
+    삼합무리.forEach(g => { const 자 = g.split('').map(첫); if (자.every(i => i >= 0)) 후보.push({ 급: 3, 자 }); });
+    삼합무리.forEach(g => { const 자 = g.split('').map(첫); for (let x = 0; x < 3; x++) for (let y = x + 1; y < 3; y++) if (자[x] >= 0 && 자[y] >= 0) 후보.push({ 급: 2, 자: [자[x], 자[y]] }); });
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (글[i] !== 글[j] && (E.BRANCHES.indexOf(글[i]) + E.BRANCHES.indexOf(글[j])) % 12 === 1) 후보.push({ 급: 1, 자: [i, j] });
+    후보.sort((x, y) => y.급 - x.급);
+    후보.forEach(c => { if (c.자.some(i => 쓴[i])) return; c.자.forEach(i => { 쓴[i] = true; if (c.급 >= 2) 국글자[글[i]] = 1; }); });
+    글.forEach((c, i) => { if (!쓴[i] && 국글자[c]) 쓴[i] = true; });
+    return 쓴;
+  }
   function 닿음(쪽, a, b) {
     const E = global.ChaeksaEngine;
     if (쪽 === '천간') {
@@ -108,12 +123,11 @@
     if (쪽 === '천간') 체.push({ 글자: T.일간, 무리: '비겁', 자리: '나' });
     운.forEach(x => 체.push({ 글자: x[쪽].글자, 무리: x[쪽].무리, 자리: x.이름 }));
     const 글자들 = 체.map(g => g.글자);
-    const 묶임 = (a, 들) => 들.some(b => b !== a && 합힘(a, b));
-    const 나묶임 = 쪽 === '지지' && 묶임(나.글자, 글자들);
+    const 쓴 = 쪽 === '지지' ? 육조묶임(글자들.concat([나.글자])) : null;   // 6조 — 맨 끝(체.length)이 오늘 글자
     const 셈 = {};
     체.forEach((g, i) => {
       let 방 = 닿음(쪽, 나.글자, g.글자); if (!방) return;
-      if (방 === '충' && (나묶임 || 묶임(g.글자, 글자들.filter((h, j) => j !== i)))) 방 = 생극(E.BRANCH_ELEM[E.BRANCHES.indexOf(나.글자)], E.BRANCH_ELEM[E.BRANCHES.indexOf(g.글자)]);
+      if (방 === '충' && 쓴 && (쓴[체.length] || 쓴[i])) 방 = 생극(E.BRANCH_ELEM[E.BRANCHES.indexOf(나.글자)], E.BRANCH_ELEM[E.BRANCHES.indexOf(g.글자)]);
       if (!방) return;
       const c = (셈[방 + '|' + g.무리] = 셈[방 + '|' + g.무리] || { 자리: [], 힘: 0, 주자리: null, 주힘: -1 });
       c.자리.push(g.자리 + ' ' + g.글자);
