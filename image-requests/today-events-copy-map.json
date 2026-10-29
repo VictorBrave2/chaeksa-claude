@@ -26,7 +26,7 @@
   },
   {
     "key": "끌림|비겁|인성",
-    "scene": "departure",
+    "scene": "homeward",
     "text": "같이 있던 사람이 집안일 때문에 먼저 돌아갑니다."
   },
   {
@@ -36,7 +36,7 @@
   },
   {
     "key": "결과|국충|식상",
-    "scene": "work",
+    "scene": "restart",
     "text": "진행하던 일을 처음부터 다시 합니다."
   },
   {
@@ -46,7 +46,7 @@
   },
   {
     "key": "결과|형|관성",
-    "scene": "work",
+    "scene": "restart",
     "text": "이미 끝낸 일을 다시 하라는 말을 듣습니다."
   },
   {
@@ -106,7 +106,7 @@
   },
   {
     "key": "결과|극함|재성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "함께 먹은 밥값을 내가 냅니다."
   },
   {
@@ -121,7 +121,7 @@
   },
   {
     "key": "결과|생함|관성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "대접하는 자리에 돈을 씁니다."
   },
   {
@@ -146,7 +146,7 @@
   },
   {
     "key": "생각|극함|재성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "이번에는 내가 밥을 사야겠다고 생각합니다."
   },
   {
@@ -156,12 +156,12 @@
   },
   {
     "key": "생각|생함|관성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "대접할 자리에는 돈을 아끼지 않기로 합니다."
   },
   {
     "key": "결과|충|인성",
-    "scene": "documents",
+    "scene": "missing-paper",
     "text": "필요한 서류가 빠져 일을 미룹니다."
   },
   {
@@ -171,7 +171,7 @@
   },
   {
     "key": "끌림|인성|관성",
-    "scene": "documents",
+    "scene": "submission",
     "text": "서류를 정해진 기한에 맞춰 제출합니다."
   },
   {
@@ -181,7 +181,7 @@
   },
   {
     "key": "결과|형|식상",
-    "scene": "argument",
+    "scene": "explanation",
     "text": "내 말이 오해를 사 한 번 더 설명합니다."
   },
   {
@@ -276,17 +276,17 @@
   },
   {
     "key": "결과|생받음|식상",
-    "scene": "reward",
+    "scene": "payday",
     "text": "해 놓은 일의 대가를 받습니다."
   },
   {
     "key": "결과|생함|재성",
-    "scene": "reward",
+    "scene": "payday",
     "text": "내가 해 준 일로 돈을 받습니다."
   },
   {
     "key": "끌림|식상|재성",
-    "scene": "reward",
+    "scene": "selling",
     "text": "내가 만든 것을 팔기로 합니다."
   },
   {
@@ -296,7 +296,7 @@
   },
   {
     "key": "생각|생함|재성",
-    "scene": "reward",
+    "scene": "selling",
     "text": "내가 잘하는 일로 돈을 벌어 보기로 합니다."
   },
   {
@@ -321,17 +321,17 @@
   },
   {
     "key": "생각|합|인성",
-    "scene": "support",
+    "scene": "ask-help",
     "text": "혼자 해결하려던 일을 도움받기로 합니다."
   },
   {
     "key": "생각|생받음|관성",
-    "scene": "support",
+    "scene": "ask-help",
     "text": "윗사람에게 도움을 부탁하기로 합니다."
   },
   {
     "key": "생각|생받음|인성",
-    "scene": "support",
+    "scene": "gratitude",
     "text": "받은 도움에 고맙다는 말을 해야겠다고 생각합니다."
   },
   {
@@ -351,7 +351,7 @@
   },
   {
     "key": "끌림|인성|식상",
-    "scene": "learning",
+    "scene": "craft",
     "text": "배운 방법으로 직접 만들어 봅니다."
   },
   {
@@ -381,7 +381,7 @@
   },
   {
     "key": "결과|극받음|비겁",
-    "scene": "money-check",
+    "scene": "protect-share",
     "text": "받기로 한 내 몫을 다른 사람이 가져갑니다."
   },
   {
@@ -391,7 +391,7 @@
   },
   {
     "key": "생각|극받음|비겁",
-    "scene": "money-check",
+    "scene": "protect-share",
     "text": "남에게 뺏기기 전에 내 몫을 챙겨야겠다고 생각합니다."
   },
   {
