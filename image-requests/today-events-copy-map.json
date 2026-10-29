@@ -56,7 +56,7 @@
   },
   {
     "key": "끌림|식상|관성",
-    "scene": "work",
+    "scene": "completion",
     "text": "하려던 일을 상대가 정한 시간에 맞춰 끝냅니다."
   },
   {
@@ -66,7 +66,7 @@
   },
   {
     "key": "생각|합|식상",
-    "scene": "work",
+    "scene": "completion",
     "text": "미뤄 둔 일을 이번에는 끝내기로 합니다."
   },
   {
@@ -81,12 +81,12 @@
   },
   {
     "key": "결과|국충|인성",
-    "scene": "reschedule",
+    "scene": "cancellation",
     "text": "도움을 받기로 한 약속이 전부 취소됩니다."
   },
   {
     "key": "결과|충|식상",
-    "scene": "reschedule",
+    "scene": "cancellation",
     "text": "잡아 둔 계획을 취소합니다."
   },
   {
@@ -201,7 +201,7 @@
   },
   {
     "key": "결과|극함|비겁",
-    "scene": "firm",
+    "scene": "refusal",
     "text": "함께하자는 제안을 거절합니다."
   },
   {
@@ -231,7 +231,7 @@
   },
   {
     "key": "결과|극받음|관성",
-    "scene": "reschedule",
+    "scene": "refusal",
     "text": "하려던 일을 허락받지 못합니다."
   },
   {
@@ -311,12 +311,12 @@
   },
   {
     "key": "결과|생함|비겁",
-    "scene": "support",
+    "scene": "sharing",
     "text": "도움받은 것을 가까운 사람에게 나눠 줍니다."
   },
   {
     "key": "끌림|인성|비겁",
-    "scene": "support",
+    "scene": "sharing",
     "text": "나를 돕던 사람이 친구의 일도 함께 도와줍니다."
   },
   {
@@ -336,7 +336,7 @@
   },
   {
     "key": "생각|생함|비겁",
-    "scene": "support",
+    "scene": "sharing",
     "text": "도움받은 것을 가까운 사람과 나누기로 합니다."
   },
   {

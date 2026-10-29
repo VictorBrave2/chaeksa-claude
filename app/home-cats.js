@@ -24,7 +24,7 @@
       // 귀함·고전 이름은 정통사주로 통합. 총명함 집중 보기는 정통사주 안에서 연결한다.
       { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/myeongban-cover-{g}.webp', 작은: 'art/myeongban-cover-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
-    time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/today-cover-v1.webp', 작은: 'art/today-cover-v1-s.webp', 크기: [1024, 1536] }, { 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
+    time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/today-cover-v2.webp', 작은: 'art/today-cover-v2-s.webp', 크기: [1024, 1536] }, { 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/read-cover.webp', 작은: 'art/read-cover-s.webp', 크기: [1024, 1536] }],
     // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류.
     // 10-23 제 그림(IMG-0006 · 0007 밤 갈림길 불 켜진 문들, 남녀 두 벌 — 소개 쪽 머리와 같은 그림). 전에는 정통사주 15장(일) 컷을 빌려 썼다.
