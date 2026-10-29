@@ -136,5 +136,11 @@ ok(파일없음.length === 0, '오늘의 운세 그림 파일 없음: ' + 파일
 const 전체빈 = [];
 for (const k of 열) for (const f of Object.keys(P[k])) if (!P[k][f]) 전체빈.push(k + '.' + f);
 if (strict) ok(전체빈.length === 0, '빈 글 ' + 전체빈.length + '칸');
+// 10-29 「왜 내게만 이런 일이 일어날까?」는 이 엔진을 열두 해 센 보통값(why-core.js 보통표)과 견준다 — 엔진 파일이 바뀌면 보통값을 다시 잰다(실패로 막지는 않고 알린다).
+try {
+  const { 엔진지문 } = require('./why-base.js'), 판 = (fs.readFileSync(path.join(__dirname, '..', 'app', 'why-core.js'), 'utf8').match(/보통판 = (\{.*?\});/) || [])[1];
+  const 잰 = 판 ? JSON.parse(판).엔진 : '', 지금 = 엔진지문();
+  if (잰 !== 지금) console.log('  ! 알림: 엔진이 「왜 내게만」 보통값을 잰 뒤 바뀌었어요(' + 잰 + ' → ' + 지금 + ') — node tools/why-base.js --write 로 다시 재고 node tools/why-test.js');
+} catch (e) { console.log('  ! 알림: 왜 내게만 보통값 지문을 못 봤어요 — ' + e.message); }
 console.log(`통과 ${통과} · 실패 ${실패} · 조각표 빈 글 ${전체빈.length}칸 / 화면에 나온 빈 자리 ${빈.size}가지` + (strict ? '' : ' (빈 글은 --strict 에서만 실패)'));
 process.exit(실패 ? 1 : 0);

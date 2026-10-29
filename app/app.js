@@ -664,6 +664,8 @@
     // 시각을 다시 읽는다. 「지금」 표시와 오늘 간지가 로드 시각에 얼어 있었다.
     // 달력 탭은 2026-09-17 에 걷었다(사장님 「달력 삭제 — 설득력없음」). 날 점수(calendar.js)도 같이 나갔다.
     if (tab === 'today') { try { const b = $('todayOut'); if (b && window.ChaeksaTodayView) window.ChaeksaTodayView.mount(b); } catch (e) { try { console.warn('오늘의 운세 탭:', e); } catch (x) {} } }
+    // 10-29 「왜 내게만 이런 일이 일어날까?」 — 오늘의 운세 엔진을 열두 해 센 사건 빈도(why-core.js). 열 때마다 다시 그린다(같은 사람 · 같은 날은 why.js 가 기억).
+    if (tab === 'why') { try { const b = $('whyOut'); if (b && window.ChaeksaWhyView) window.ChaeksaWhyView.mount(b); } catch (e) { try { console.warn('왜 내게만 탭:', e); } catch (x) {} } }
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
     if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
     if (tab === 'pair') { try { if (window.ChaeksaPairView) ChaeksaPairView.그리기($('pairBox'), profile); } catch (e) { try { console.warn('행동양식 궁합 탭:', e); } catch (x) {} } }   // 10-01 pair.js

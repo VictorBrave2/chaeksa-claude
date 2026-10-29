@@ -110,6 +110,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css?v=db80489f5f">
 <link rel="stylesheet" href="today.css?v=1f23044365">
+<link rel="stylesheet" href="why.css?v=9a398a1998">
 <link rel="stylesheet" href="jeongtong-pyo.css?v=f55dde66b6">
 <link rel="stylesheet" href="jeongtong-share.css?v=ca57976dd3">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
@@ -458,6 +459,12 @@
       <div class="today-page"><div id="todayOut" data-plain="1"></div></div>
     </div>
 
+    <!-- 왜 내게만 이런 일이 일어날까?(10-29 사장님) — 오늘의 운세 엔진(today-core 하루작용)을 열두 해 세어 보통 사람보다 잦은 사건을 늘어놓는다. 값 why-core.js · 글 why-pieces.js + today-pieces.js · 그리기 why.js(ChaeksaWhyView). -->
+    <div class="tab hide" data-tab="why">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div class="why-page"><div id="whyOut" data-plain="1"></div></div>
+    </div>
+
     <!-- 정통사주 — 판정엔진 + 평생 관점 = 장마다 카드(63조). jeongtong.js 가 그린다. -->
     <div class="tab hide" data-tab="jeongtong">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
@@ -759,19 +766,22 @@
 <script src="sipseong-byeonhwa.js?v=eb243cca3a"></script>
 <script src="byeonhwa-jogak.js?v=ade331ebee"></script>
 <script src="byeonhwa.js?v=5008ee2370"></script>
-<script src="yaksok.js?v=922e1a86bc"></script>
+<script src="yaksok.js?v=f54b675075"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=a2c55abdcf"></script>
+<script src="home-cats.js?v=b535d23d85"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=4b8ab83494"></script>
 <script src="pay.js?v=b830dbd7bb"></script>
 <!-- 탭별 꾸러미 표 — app.js 가 돌 때 읽으므로 app.js 보다 위에 둔다(10-02: 아래에 두었더니 연애 · 사용설명서 · 우리 둘의 연애궁합 파일을 못 받음) -->
 <template id="kkureomi" data-all="sheet gunghap">
-<script src="today-core.js?v=b4dfe1a875" data-for="today"></script>
-<script src="today-pieces.js?v=d2b33f5efc" data-for="today"></script>
+<script src="today-core.js?v=b4dfe1a875" data-for="today why"></script>
+<script src="today-pieces.js?v=d2b33f5efc" data-for="today why"></script>
 <script src="today.js?v=79ca71c4f5" data-for="today"></script>
+<script src="why-core.js?v=01c6db6979" data-for="why"></script>
+<script src="why-pieces.js?v=ad53bd8f05" data-for="why"></script>
+<script src="why.js?v=c8b017c5e7" data-for="why"></script>
 <script src="saenggeuk.js?v=df8648d564" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="gise.js?v=d0f879078e" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="panjeong.js?v=389d38ced7" data-for="home jeongtong chongnon ssom taekil"></script>
@@ -835,7 +845,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=c607762053"></script>
+<script src="app.js?v=5d573e92f1"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가
