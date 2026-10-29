@@ -107,6 +107,16 @@ for (const R of 사람.slice(0, 120)) for (const s0 of [0, 7, 14]) {
 ok(띠겹 === 0, '이번 주 띠 이틀 연속 같은 글 ' + 띠겹 + ' / ' + 띠수);
 ok(누구다름 === 0, '때 줄이 있는데 누구(때.상대)가 비어 아래 「누구」가 다른 사람으로 나옴 ' + 누구다름);
 
+// 6e. 10-29 사건 그림(Codex PR 5 · IMG-0033~0062) — 제목(결과 · 끌림) · 생각 열쇠마다 장면이 붙고, 장면마다 남 · 여 그림이 있어야 한다.
+//     빠지면 화면은 일반 안내 그림으로 조용히 넘어가 아무도 모른다 — 열쇠를 늘리면 app/today.js eventScenes 에도 장면을 붙일 것.
+const 그림표 = JSON.parse((fs.readFileSync(path.join(A, 'today.js'), 'utf8').match(/const eventScenes=(\{[\s\S]*?\});/) || [0, '{}'])[1]);
+const 그림열쇠 = 열.filter(k => /^(결과|끌림|생각)\|/.test(k)), 그림없음 = 그림열쇠.filter(k => !그림표[k]);
+const 그림파일 = [...new Set(Object.values(그림표))].flatMap(s => ['m', 'f'].flatMap(g => ['today-events/' + s + '-' + g + '-v1.webp', 'today-events/' + s + '-' + g + '-v1-s.webp']))
+  .concat(['forecast-m-v1', 'thought-f-v1', 'week-pair-v1'].flatMap(n => ['today-guides/' + n + '.webp', 'today-guides/' + n + '-s.webp']));
+const 파일없음 = 그림파일.filter(f => !fs.existsSync(path.join(A, 'art', f)));
+ok(그림열쇠.length >= 80 && 그림없음.length === 0, '장면 그림이 안 붙은 열쇠 ' + 그림없음.length + ' / ' + 그림열쇠.length + ' — app/today.js eventScenes: ' + 그림없음.slice(0, 5).join(' · '));
+ok(파일없음.length === 0, '오늘의 운세 그림 파일 없음: ' + 파일없음.join(' · '));
+
 // 7. 조각표 빈 글
 const 전체빈 = [];
 for (const k of 열) for (const f of Object.keys(P[k])) if (!P[k][f]) 전체빈.push(k + '.' + f);
