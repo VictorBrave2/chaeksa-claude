@@ -1,0 +1,32 @@
+/* 「왜 내게만 이런 일이 일어날까?」 — 사이트 공통 블록 꼴(.card .jt-ch · .jt-head · .jt-answer · .jt-ev, style.css) 위에 목록만 더한다. 색은 style.css 변수만. */
+.why-page{color:var(--ink);font-family:var(--sans)}
+.why-page *{box-sizing:border-box}
+#whyOut{padding:4px 0 28px}
+.why-person{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:0 0 12px}
+.why-person label{font-size:var(--t1);color:var(--ink2)}
+.why-person select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:9px;min-height:44px;padding:8px 14px;max-width:70%}
+.why-card .why-title{font-family:var(--serif);font-weight:500;font-size:clamp(25px,6.2vw,34px);line-height:1.42;letter-spacing:-.035em;margin:2px 0 4px;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere;text-wrap:balance}
+.why-card .why-band p{margin:0;font-size:var(--t3);line-height:1.55;color:var(--ink);word-break:keep-all}
+.why-card .why-lead{margin:0 0 12px;font-size:var(--t3);line-height:1.75;color:var(--ink2)}
+.why-list{list-style:none;margin:4px 0 6px;padding:0;counter-reset:why}
+.why-item{counter-increment:why;position:relative;padding:15px 0 15px 40px;border-top:1px solid var(--line)}
+.why-item:first-child{border-top:0}
+.why-item::before{content:counter(why);position:absolute;left:0;top:16px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--accent);font-family:var(--serif);font-weight:700;font-size:var(--t2);display:flex;align-items:center;justify-content:center}
+.why-card .why-ev{margin:0 0 4px;font-family:var(--serif);font-size:var(--t4);line-height:1.6;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.why-card .why-n{margin:0;font-size:var(--t2);line-height:1.6;color:var(--ink2);word-break:keep-all}
+.why-card .why-n b{color:var(--accent);font-weight:700;margin-right:4px}
+.why-card .why-g{margin:2px 0 0;font-size:var(--t1);line-height:1.5;color:var(--ink3)}
+.why-card .why-basis p{font-size:var(--t2);line-height:1.75;color:var(--ink2);margin:2px 0 8px}
+.why-basis-list{margin:0 0 6px;padding-left:22px;font-size:var(--t2);line-height:1.8;color:var(--ink2)}
+.why-card .why-n span,.why-card .why-g span,.why-card .why-span span,.why-basis-list span{white-space:nowrap}
+.why-wait{display:grid;gap:12px;padding:14px 0 8px}
+.why-wait span{display:block;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--bg2),var(--line),var(--bg2));background-size:200% 100%;animation:whyWait 1.2s ease-in-out infinite}
+.why-wait span:nth-child(2){width:82%}.why-wait span:nth-child(3){width:64%}
+@keyframes whyWait{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media(prefers-reduced-motion:reduce){.why-wait span{animation:none}}
+.why-next{margin-top:4px}
+.why-next p{margin:0 0 8px;font-size:var(--t2);color:var(--ink2)}
+.why-next a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;padding:14px 18px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--card);color:var(--ink);font-weight:600;text-decoration:none}
+.why-next a:hover{border-color:var(--accent-line)}
+.why-page :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:420px){.why-card .why-ev{font-size:17px}.why-item{padding-left:36px}.why-item::before{width:26px;height:26px}}
