@@ -116,7 +116,7 @@
   },
   {
     "key": "결과|극받음|재성",
-    "scene": "expense",
+    "scene": "money-check",
     "text": "돈 문제를 처리하느라 쉴 시간을 놓칩니다."
   },
   {
@@ -151,7 +151,7 @@
   },
   {
     "key": "생각|극함|인성",
-    "scene": "expense",
+    "scene": "money-check",
     "text": "쉬는 것보다 돈 문제부터 해결하기로 합니다."
   },
   {
@@ -191,12 +191,12 @@
   },
   {
     "key": "결과|생함|식상",
-    "scene": "contact",
+    "scene": "teamwork",
     "text": "평소보다 내 이야기를 많이 합니다."
   },
   {
     "key": "생각|생함|식상",
-    "scene": "contact",
+    "scene": "firm",
     "text": "듣고만 있지 않고 내 생각을 말하기로 합니다."
   },
   {
@@ -231,7 +231,7 @@
   },
   {
     "key": "결과|극받음|관성",
-    "scene": "quiet",
+    "scene": "reschedule",
     "text": "하려던 일을 허락받지 못합니다."
   },
   {
