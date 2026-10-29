@@ -1524,6 +1524,12 @@ html[data-boot="landing"] #nav{display:grid!important}
 .home-doors .n{margin:12px 12px 0;font-size:17px;line-height:1.45}
 .home-doors .s{display:block;margin:6px 12px 0;font-size:14px;line-height:1.5}
 .home-doors .t{margin:auto 12px 0;padding:10px 0 12px;font-size:13px;line-height:1.45}
+/* 10-29 사장님 「홈 첫 화면에도 오늘의 운세 칸 올려줘」 — 칸이 홀수면 마지막 칸은 두 칸 너비로 눕힌다(그림 왼쪽 · 글 오른쪽). 옆자리가 비지 않게. */
+.home-doors .cat:last-child:nth-child(odd){grid-column:1/-1;display:grid;grid-template-columns:min(38%,170px) minmax(0,1fr);grid-template-rows:1fr auto auto auto 1fr;column-gap:16px}
+.home-doors .cat:last-child:nth-child(odd) .pic{grid-column:1;grid-row:1/-1;aspect-ratio:4/5}
+.home-doors .cat:last-child:nth-child(odd) .n{grid-column:2;grid-row:2;margin:0 14px 0 0}
+.home-doors .cat:last-child:nth-child(odd) .s{grid-column:2;grid-row:3;margin:6px 14px 0 0}
+.home-doors .cat:last-child:nth-child(odd) .t{grid-column:2;grid-row:4;margin:0 14px 0 0;padding:10px 0 0}
 .home-all-link{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card);color:var(--ink);font-size:16px;font-weight:700;text-decoration:none}
 .home-extra{margin:24px 0 12px;border-top:1px solid var(--line)}
 .home-extra>summary{cursor:pointer;padding:16px 4px;min-height:48px;font-size:16px;font-weight:700}

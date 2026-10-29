@@ -65,7 +65,7 @@
     return null;
   }
 
-  var 그림판 = 'v1508';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1509';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -105,7 +105,7 @@
     Object.keys(칸).some(function (분류) { return 칸[분류].some(function (c) { if (c.키 !== 키) return false; out = { b: { 키: 분류 }, c: c }; return true; }); });
     return out;
   }
-  // 처음 방문은 정통 풀이 두 칸과 목적별 입구. 재방문 홈은 전체 목록.
+  // 처음 방문은 정통 풀이 두 칸 + 오늘의 운세(10-29 사장님 「홈 첫 화면에도 오늘의 운세 칸 올려줘」 — 셋째 칸은 두 칸 너비로 눕는다, style.css .home-doors)와 목적별 입구. 재방문 홈은 전체 목록.
   function 그리기(el) {
     if (!el) return;
     var Y = global.ChaeksaYaksok, g = 성별();
@@ -115,7 +115,7 @@
       ['jeongtong', '내 일과 돈', '돈 버는 방식부터 살펴보세요', 'jtCh7'],
       ['when', '언제 나아질까?', '힘든 때와 풀리는 때를 살펴보세요']
     ];
-    var 정통 = ['jeongtong', 'myeongban'].map(function (key, i) {
+    var 정통 = ['jeongtong', 'myeongban', 'today'].map(function (key, i) {
       var x = 찾기(key);
       return 그림칸(x.b, x.c, i, i, g, Y);
     }).join('');
