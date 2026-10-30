@@ -103,7 +103,8 @@
     h += '<section class="three-eye">' + (글('근거줄') ? '<h3>' + esc(글('근거줄')) + '</h3>' : '')
       + '<div class="three-grid-wrap"><table class="three-grid"><thead><tr><th></th><th>' + esc(이름('카드')) + '</th><th>' + esc(이름('자미')) + '</th><th>' + esc(이름('사주')) + '</th></tr></thead><tbody>'
       + r.줄.map(x => { const 카 = c.자리.length > 0, 자 = x.카드자리와.자미.length > 0, 사 = x.카드자리와.사주.length > 0;
-        return '<tr' + (x.점 ? ' class="is-point"' : '') + '><th scope="row">' + esc(달말(x.달)) + '</th><td>' + (카 ? '●' : '·') + '</td><td>' + (자 ? '●' : '·') + '</td><td>' + (사 ? '●' : '·') + '</td></tr>'; }).join('')
+        // is-meet = 셋이 모였지만 고르지 않은 달(방향이 다르거나 더 먼 달)
+        return '<tr' + (x.점 ? ' class="is-point"' : x.카드자리와.셋.length ? ' class="is-meet"' : '') + '><th scope="row">' + esc(달말(x.달)) + '</th><td>' + (카 ? '●' : '·') + '</td><td>' + (자 ? '●' : '·') + '</td><td>' + (사 ? '●' : '·') + '</td></tr>'; }).join('')
       + '</tbody></table></div></section>';
     if (r.우연 && 글('우연말', { 점몫: r.우연.점몫, 남남몫: r.우연.남남몫, 사람: Number(r.우연.사람).toLocaleString('ko-KR') }))
       h += '<p class="three-chance">' + esc(글('우연말', { 점몫: r.우연.점몫, 남남몫: r.우연.남남몫, 사람: Number(r.우연.사람).toLocaleString('ko-KR') })) + '</p>';
