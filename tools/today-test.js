@@ -151,7 +151,9 @@ ok(경술.join(',') === '2026-09-08 戊寅,2026-10-09 庚寅,2026-11-08 庚寅',
 //     빠지면 화면은 일반 안내 그림으로 조용히 넘어가 아무도 모른다 — 열쇠를 늘리면 app/today.js eventScenes 에도 장면을 붙일 것.
 const 그림표 = JSON.parse((fs.readFileSync(path.join(A, 'today.js'), 'utf8').match(/const eventScenes=(\{[\s\S]*?\});/) || [0, '{}'])[1]);
 const 그림열쇠 = 열.filter(k => /^(결과|끌림|생각)\|/.test(k)), 그림없음 = 그림열쇠.filter(k => !그림표[k]);
-const 그림파일 = [...new Set(Object.values(그림표))].flatMap(s => ['m', 'f'].flatMap(g => ['today-events/' + s + '-' + g + '-v1.webp', 'today-events/' + s + '-' + g + '-v1-s.webp']))
+// 10-30 PR #6: 장면마다 판이 있다(eventVersions — 연락 · 지출 · 금액 확인 = v2). 화면과 같은 판을 찾는다.
+const 그림판 = JSON.parse((fs.readFileSync(path.join(A, 'today.js'), 'utf8').match(/const eventVersions=(\{[\s\S]*?\});/) || [0, '{}'])[1]);
+const 그림파일 = [...new Set(Object.values(그림표))].flatMap(s => ['m', 'f'].flatMap(g => ['today-events/' + s + '-' + g + '-v' + (그림판[s] || 1) + '.webp', 'today-events/' + s + '-' + g + '-v' + (그림판[s] || 1) + '-s.webp']))
   .concat(['forecast-m-v1', 'thought-f-v1', 'week-pair-v1'].flatMap(n => ['today-guides/' + n + '.webp', 'today-guides/' + n + '-s.webp']));
 const 파일없음 = 그림파일.filter(f => !fs.existsSync(path.join(A, 'art', f)));
 ok(그림열쇠.length >= 80 && 그림없음.length === 0, '장면 그림이 안 붙은 열쇠 ' + 그림없음.length + ' / ' + 그림열쇠.length + ' — app/today.js eventScenes: ' + 그림없음.slice(0, 5).join(' · '));
