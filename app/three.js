@@ -166,7 +166,7 @@
     let h = '<details class="jt-ev three-basis"><summary>' + esc(글('근거')) + '</summary>';
     // 타로 — 붙인 웨이트 낱말(그 물음을 직접 말할 때) · 카드 원문 · 창 원문(901줄)
     h += '<section class="three-eye"><h3>' + esc(점이름of(글, '타로')) + '</h3>' + 왜('세점.왜.타로.' + (타.직접 ? '직접' : '전체'))
-      + (타.붙임.length ? '<ul class="three-keys" lang="en">' + 타.붙임.map(x => '<li>' + esc(x.낱말) + ' <small>(Part III ' + esc(x.줄) + (x.절 ? ' ' + esc(x.절) : '') + ')</small></li>').join('') + '</ul>' : '')
+      + (타.붙임.length ? '<ul class="three-keys" lang="en">' + 타.붙임.map(x => '<li lang="en">' + esc(x.낱말) + ' <small>(Part III ' + esc(x.줄) + (x.절 ? ' ' + esc(x.절) : '') + ')</small></li>').join('') + '</ul>' : '')
       + '<blockquote class="three-src" lang="en">' + esc(c.원문) + '</blockquote>'
       + '<p class="three-ref" lang="en">Waite, The Pictorial Key to the Tarot · Part III ' + esc(c.줄) + (c.절 === '§4' ? ' §4' : '') + ' · ' + esc(c.이름en) + '</p>'
       + (원.창 ? '<blockquote class="three-src" lang="en">' + esc(원.창.글) + '</blockquote><p class="three-ref" lang="en">' + esc(원.창.줄) + '</p>' : '') + '</section>';
@@ -176,7 +176,7 @@
       h += '<p class="three-han">월운 ' + esc(사.월운) + ' · 세운 ' + esc(사.세운) + (사.대운 ? ' · 대운 ' + esc(사.대운) : '') + ' · ' + esc(때말(사.때.시작, 사.때.끝)) + '</p>'
         + (사.열쇠.length ? '<ul class="three-keys">' + 사.열쇠.map(k => '<li>' + esc([k.글자, k.방식, k.닿은.map(d => d.기둥 + ' ' + d.글자).join(' · '), k.무리].join(' · ')) + '</li>').join('') + '</ul>' : '')
         + (사.천간 ? '<ul class="three-keys"><li>' + esc([사.천간.글자, 사.천간.십신, 사.천간.무리].filter(Boolean).join(' · ')) + '</li></ul>' : '')
-        + (사.판정 && 사.판정.범주 ? '<p class="three-han">' + esc(사.판정.층.map(x => x.이름 + ' ' + x.간지).join(' · ') + ' → ' + 사.판정.범주 + (사.판정.격 ? ' · ' + 사.판정.격 : '')) + '</p>' : '');
+        + (사.판정 && 사.판정.범주 ? '<p class="three-han">' + esc(사.판정.층.map(x => x.이름 + ' ' + x.간지).join(' · ') + ' — ' + 사.판정.범주 + (사.판정.격 ? ' · ' + 사.판정.격 : '')) + '</p>' : '');
     }
     h += '</section>';
     // 자미 — 그달 斗君이 든 궁 · 별 · 그 궁의 斗君 줄 · 斗君 놓는 법
@@ -427,5 +427,5 @@
     render(false);
     return { render };
   }
-  global.ChaeksaThreeView = { mount, 때말, 날말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐 };
+  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움 };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31)
 })(typeof window !== 'undefined' ? window : globalThis);
