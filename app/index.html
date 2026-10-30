@@ -111,6 +111,7 @@
 <link rel="stylesheet" href="style.css?v=db80489f5f">
 <link rel="stylesheet" href="today.css?v=1f23044365">
 <link rel="stylesheet" href="why.css?v=9a398a1998">
+<link rel="stylesheet" href="three.css?v=ffe84d7de2">
 <link rel="stylesheet" href="jeongtong-pyo.css?v=f55dde66b6">
 <link rel="stylesheet" href="jeongtong-share.css?v=ca57976dd3">
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
@@ -465,6 +466,13 @@
       <div class="why-page"><div id="whyOut" data-plain="1"></div></div>
     </div>
 
+    <!-- 세 관점이 모인 한 점(10-30 사장님 「이 컨텐츠의 목적은 세 관점이 모인 하나의 점이야」) — 사주 · 자미두수 · 타로가 다음 달부터 24달 안 같은 달 · 같은 자리를 가리킨 칸 하나.
+         계산은 비공개 /api/three-eyes(lib/three-eyes.js) · 글 three-pieces.js(Codex) · 그리기 three.js(ChaeksaThreeView). 홈 칸은 글 · 표지가 온 뒤에 단다(그때까지 #three 로만). -->
+    <div class="tab hide" data-tab="three">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div class="three-page"><div id="threeOut" data-plain="1"></div></div>
+    </div>
+
     <!-- 정통사주 — 판정엔진 + 평생 관점 = 장마다 카드(63조). jeongtong.js 가 그린다. -->
     <div class="tab hide" data-tab="jeongtong">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
@@ -769,7 +777,7 @@
 <script src="yaksok.js?v=171e262271"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=780ba10523"></script>
+<script src="home-cats.js?v=19261f202f"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=4b8ab83494"></script>
@@ -782,6 +790,8 @@
 <script src="why-core.js?v=d27795f5cd" data-for="why"></script>
 <script src="why-pieces.js?v=e2a8caf1e2" data-for="why"></script>
 <script src="why.js?v=f731992145" data-for="why"></script>
+<script src="three-pieces.js?v=3408b0b18c" data-for="three"></script>
+<script src="three.js?v=d3e989e538" data-for="three"></script>
 <script src="saenggeuk.js?v=df8648d564" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="gise.js?v=d0f879078e" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="panjeong.js?v=389d38ced7" data-for="home jeongtong chongnon ssom taekil"></script>
@@ -845,7 +855,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=5d573e92f1"></script>
+<script src="app.js?v=20c63da351"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

@@ -1,0 +1,59 @@
+/* 「세 관점이 모인 한 점」 — 사이트 공통 블록 꼴(.card .jt-ch · .jt-head · .jt-answer · .jt-ev, style.css) 위에 카드 뽑기 · 24달 표만 더한다. 색은 style.css 변수만. */
+.three-page{color:var(--ink);font-family:var(--sans)}
+.three-page *{box-sizing:border-box}
+#threeOut{padding:4px 0 28px}
+.three-person{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:0 0 12px}
+.three-person label{font-size:var(--t1);color:var(--ink2)}
+.three-person select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:9px;min-height:44px;padding:8px 14px;max-width:70%}
+.three-card .three-title{font-family:var(--serif);font-weight:500;font-size:clamp(25px,6.2vw,34px);line-height:1.42;letter-spacing:-.035em;margin:2px 0 4px;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere;text-wrap:balance}
+.three-card .three-q{margin:0 0 14px;font-size:var(--t3);line-height:1.75;color:var(--ink2);word-break:keep-all}
+/* 카드 뽑기 — 뒤집힌 카드 일곱 */
+.three-window{margin:0 0 6px;font-size:var(--t2);color:var(--ink2);word-break:keep-all}
+.three-pick{margin:0 0 12px;font-size:var(--t3);line-height:1.6;color:var(--ink);word-break:keep-all}
+.three-backs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:4px 0 6px}
+.three-back{appearance:none;border:1px solid var(--line2);border-radius:10px;background:var(--card);padding:4px;aspect-ratio:2/3;max-width:100%;cursor:pointer;transition:transform .15s ease,border-color .15s ease}
+.three-back span{display:block;width:100%;height:100%;border-radius:7px;background:repeating-linear-gradient(45deg,var(--accent-line),var(--accent-line) 3px,transparent 3px,transparent 8px),var(--bg2)}
+.three-back:hover{transform:translateY(-3px);border-color:var(--accent)}
+@media(max-width:420px){.three-backs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* 뽑은 카드 */
+.three-drawn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:0 0 14px}
+.three-drawn-k{margin:0;font-size:var(--t1);color:var(--ink3)}
+.three-face{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:100%;padding:12px 16px;border:1px solid var(--line2);border-left:4px solid var(--accent);border-radius:var(--r2);background:var(--card)}
+.three-face b{font-family:var(--serif);font-size:var(--t4);font-weight:600;color:var(--ink);word-break:keep-all}
+.three-face small{font-size:var(--t1);color:var(--ink3)}
+.three-face.is-rev{border-left-style:dashed}
+.three-orient{font-size:var(--t1);color:var(--accent);font-weight:600}
+/* 결론 · 덧말 */
+.three-card .three-answer p{margin:0;word-break:keep-all}
+.three-card .three-kicker{font-size:var(--t1);color:var(--ink2);margin-bottom:4px}
+.three-card .three-point{font-family:var(--serif);font-size:var(--t4);line-height:1.55;color:var(--ink)}
+.three-card .three-why{margin-top:6px;font-size:var(--t2);line-height:1.65;color:var(--ink2)}
+.three-notes{list-style:none;margin:10px 0 4px;padding:0;display:grid;gap:6px}
+.three-notes li{font-size:var(--t2);line-height:1.65;color:var(--ink2);word-break:keep-all}
+.three-notes b{color:var(--ink);font-weight:600;margin-right:4px}
+.three-next,.three-keep{margin:10px 0 4px;font-size:var(--t2);line-height:1.65;color:var(--ink2);word-break:keep-all}
+/* 근거 접힘 */
+.three-eye{margin:4px 0 14px}
+.three-eye h3{margin:0 0 6px;font-size:var(--t2);font-weight:700;color:var(--ink)}
+.three-src{margin:0 0 4px;padding:8px 12px;border-left:3px solid var(--line2);background:var(--bg2);border-radius:0 8px 8px 0;font-size:var(--t2);line-height:1.7;color:var(--ink);overflow-wrap:anywhere}
+.three-ref,.three-han{margin:0 0 8px;font-size:var(--t1);line-height:1.6;color:var(--ink3);overflow-wrap:anywhere}
+.three-han{color:var(--ink2)}
+.three-keys{margin:0 0 6px;padding-left:20px;font-size:var(--t2);line-height:1.75;color:var(--ink2)}
+.three-grid-wrap{overflow-x:auto;max-width:100%}
+.three-grid{border-collapse:collapse;font-size:var(--t1);min-width:100%}
+.three-grid th,.three-grid td{padding:4px 10px;border-bottom:1px solid var(--line);text-align:center;color:var(--ink2);white-space:nowrap}
+.three-grid tbody th{text-align:left;font-weight:500}
+.three-grid tr.is-point th,.three-grid tr.is-point td{color:var(--accent);font-weight:700;background:var(--bg2)}
+.three-chance{margin:6px 0 2px;font-size:var(--t2);line-height:1.7;color:var(--ink2);word-break:keep-all}
+/* 기다림 · 막힘 · 기록 · 끝 */
+.three-need p{margin:0 0 10px;font-size:var(--t3);line-height:1.7;color:var(--ink2);word-break:keep-all}
+.three-wait{display:grid;gap:12px;padding:14px 0 8px}
+.three-wait span{display:block;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--bg2),var(--line),var(--bg2));background-size:200% 100%;animation:threeWait 1.2s ease-in-out infinite}
+.three-wait span:nth-child(2){width:82%}.three-wait span:nth-child(3){width:64%}
+@keyframes threeWait{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media(prefers-reduced-motion:reduce){.three-wait span{animation:none}.three-back{transition:none}}
+.three-record,.three-end{margin:4px 0 12px;padding:14px 16px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--card)}
+.three-record p,.three-end p{margin:0 0 10px;font-size:var(--t2);line-height:1.65;color:var(--ink);word-break:keep-all}
+.three-end p{margin:0}
+.three-record-btns{display:flex;flex-wrap:wrap;gap:8px}
+.three-page :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
