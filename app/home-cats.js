@@ -24,7 +24,9 @@
       // 귀함·고전 이름은 정통사주로 통합. 총명함 집중 보기는 정통사주 안에서 연결한다.
       { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/myeongban-cover-{g}.webp', 작은: 'art/myeongban-cover-{g}-s.webp', 크기: [1024, 1536] },
       // 10-29 「왜 내게만 이런 일이 일어날까?」(why 탭) — 제 표지 IMG-0063 · 0064(Codex · 남녀 두 벌 — 계산대에서 또 내가 밥값을 치르는 장면).
-      { 키: 'why', 탭: 'why', 그림: 'art/why-cover-{g}.webp', 작은: 'art/why-cover-{g}-s.webp', 크기: [1024, 1536] }],
+      { 키: 'why', 탭: 'why', 그림: 'art/why-cover-{g}.webp', 작은: 'art/why-cover-{g}-s.webp', 크기: [1024, 1536] },
+      // 10-30 「세 관점이 모인 한 점」(three 탭) — 제 표지 IMG-0065 · 0066(Codex · 남녀 두 벌 — 뒤집힌 카드 일곱 중 한 장을 집으려는 순간). 이름 · 한 줄은 장부(Codex 글 이름 · 물음).
+      { 키: 'three', 탭: 'three', 그림: 'art/three-cover-{g}.webp', 작은: 'art/three-cover-{g}-s.webp', 크기: [1024, 1536] }],
     // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
     time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/today-cover-v2.webp', 작은: 'art/today-cover-v2-s.webp', 크기: [1024, 1536] }, { 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/read-cover.webp', 작은: 'art/read-cover-s.webp', 크기: [1024, 1536] }],
@@ -133,7 +135,7 @@
     var Y = global.ChaeksaYaksok, g = 성별(), n = 0;
     var prefix = el.closest('[data-tab="home"]') ? 'home-catalog-' : 'all-catalog-';
     var 묶음들 = [
-      ['나를 알아보기', ['jeongtong', 'myeongban', 'today', 'why', 'when']],
+      ['나를 알아보기', ['jeongtong', 'myeongban', 'today', 'why', 'three', 'when']],
       ['아기 태어날 날과 시간', ['taekil']],
       ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],

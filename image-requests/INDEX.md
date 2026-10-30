@@ -70,8 +70,8 @@
 | IMG-0062 | 멈춤·말을 아낌 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0062-today-quiet-f.md | 삽화원본/today-events/quiet-f-v1.png(로컬) | app/art/today-events/quiet-f-v1.webp |
 | IMG-0063 | 「왜 내게만」 홈 표지 · 여(다시 식사값을 치름 — 「또 나야?」) | 생성됨 | IMG-0063-why-cover-f.md | image-requests/out/IMG-0063.png | app/art/why-cover-f.webp |
 | IMG-0064 | 「왜 내게만」 홈 표지 · 남(같은 장면) | 생성됨 | IMG-0064-why-cover-m.md | image-requests/out/IMG-0064.png | app/art/why-cover-m.webp |
-| IMG-0065 | 「세 관점이 모인 한 점」 홈 표지 · 여(뒤집힌 카드 일곱 중 한 장을 집으려는 순간 · 빛줄기 셋이 한 점으로) | 요청 | IMG-0065-three-eyes-cover-f.md | image-requests/out/IMG-0065.png | app/art/three-cover-f.webp |
-| IMG-0066 | 「세 관점이 모인 한 점」 홈 표지 · 남(같은 장면) | 요청 | IMG-0066-three-eyes-cover-m.md | image-requests/out/IMG-0066.png | app/art/three-cover-m.webp |
+| IMG-0065 | 「세 관점이 모인 한 점」 홈 표지 · 여(뒤집힌 카드 일곱 중 한 장을 집으려는 순간 · 빛줄기 셋이 한 점으로) | 적용됨(v1520 공개 배포 · 홈 「나를 알아보기」 칸 · 10-30 main 합침) | IMG-0065-three-eyes-cover-f.md | image-requests/out/IMG-0065.png | app/art/three-cover-f.webp |
+| IMG-0066 | 「세 관점이 모인 한 점」 홈 표지 · 남(같은 장면) | 적용됨(v1520 공개 배포 · 홈 「나를 알아보기」 칸 · 10-30 main 합침) | IMG-0066-three-eyes-cover-m.md | image-requests/out/IMG-0066.png | app/art/three-cover-m.webp |
 | IMG-0067 | 금액 확인·차질 · 남신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0067-today-money-check-m-timeless.md | 삽화원본/today-events/money-check-m-v2.png(로컬) | app/art/today-events/money-check-m-v2.webp |
 | IMG-0068 | 금액 확인·차질 · 여신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0068-today-money-check-f-timeless.md | 삽화원본/today-events/money-check-f-v2.png(로컬) | app/art/today-events/money-check-f-v2.webp |
 | IMG-0069 | 계획 취소 · 남신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0069-today-cancellation-m-timeless.md | 삽화원본/today-events/cancellation-m-v1.png(로컬) | app/art/today-events/cancellation-m-v1.webp |
