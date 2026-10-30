@@ -12,7 +12,15 @@
   'use strict';
   const API = 'https://chaeksa-behavior-core.vercel.app/api/three-eyes';
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const 채움 = (틀, 값) => String(틀 || '').replace(/\{([^{}]+)\}/g, (m, k) => (k in 값 ? 값[k] : m));
+  // 값 뒤(닫는 따옴표 너머까지) 조사를 값의 받침에 맞춘다 — 「‘{자리}’와」 → 「‘돈과 재산’과」. 사이트 공통 약속 {값|와} 도 받는다(today-core 붙이기와 같은 일).
+  const 받침of = s => { const t = String(s).replace(/[^가-힣]+$/, ''); if (!t) return -1; const c = t.charCodeAt(t.length - 1) - 0xAC00; return c >= 0 && c <= 11171 ? c % 28 : -1; };
+  const 조사짝 = { 와: ['과', '와'], 과: ['과', '와'], 을: ['을', '를'], 를: ['을', '를'], 은: ['은', '는'], 는: ['은', '는'], 이: ['이', '가'], 가: ['이', '가'] };
+  const 조사맞춤 = (v, 조) => { const b = 받침of(v); if (b < 0) return 조; if (조 === '으로' || 조 === '로') return b === 0 || b === 8 ? '로' : '으로'; const 짝 = 조사짝[조]; return 짝 ? 짝[b ? 0 : 1] : 조; };
+  const 채움 = (틀, 값) => String(틀 || '').replace(/\{([^{}|]+)(?:\|([^{}]*))?\}([’”」』)]*)((?:으로|로|와|과|을|를|은|는|이|가)(?=$|[\s.,!?:;]))?/g, (m, k, 붙, 닫, 뒤) => {
+    if (!(k in 값)) return m;
+    const v = String(값[k]);
+    return v + (붙 ? 조사맞춤(v, 붙) : '') + (닫 || '') + (뒤 ? 조사맞춤(v, 뒤) : '');
+  });
   const 열쇠보기 = () => { try { return /(?:^|[?&])keys(?:[=&]|$)/.test(String(global.location && global.location.search || '')); } catch (e) { return false; } };
   // 글(키, 값) — 조각에서 꺼내 값 자리를 채운다. 빈 칸이면 '' (?keys 면 〔키〕)
   function 글틀(P, 보기) {
@@ -102,9 +110,11 @@
     const 이름 = k => 글('줄이름.' + k);
     h += '<section class="three-eye">' + (글('근거줄') ? '<h3>' + esc(글('근거줄')) + '</h3>' : '')
       + '<div class="three-grid-wrap"><table class="three-grid"><thead><tr><th></th><th>' + esc(이름('카드')) + '</th><th>' + esc(이름('자미')) + '</th><th>' + esc(이름('사주')) + '</th></tr></thead><tbody>'
-      + r.줄.map(x => { const 카 = c.자리.length > 0, 자 = x.카드자리와.자미.length > 0, 사 = x.카드자리와.사주.length > 0;
-        // is-meet = 셋이 모였지만 고르지 않은 달(방향이 다르거나 더 먼 달)
-        return '<tr' + (x.점 ? ' class="is-point"' : x.카드자리와.셋.length ? ' class="is-meet"' : '') + '><th scope="row">' + esc(달말(x.달)) + '</th><td>' + (카 ? '●' : '·') + '</td><td>' + (자 ? '●' : '·') + '</td><td>' + (사 ? '●' : '·') + '</td></tr>'; }).join('')
+      + r.줄.map(x => { const 카 = c.자리.length > 0;
+        // 카드가 자리를 여럿 가리키면 자미 · 사주 칸에 그 자리 이름을 적는다 — 둘이 다른 자리를 가리킨 달이 ●●● 로 보여 「셋이 모였다」로 읽히지 않게(10-30 Codex 지적).
+        const 칸 = (a) => a.length ? (c.자리.length > 1 ? '<td class="is-names">' + esc(a.join(', ')) + '</td>' : '<td>●</td>') : '<td>·</td>';
+        // is-meet = 셋이 같은 자리에 모였지만 고르지 않은 달(방향이 다르거나 더 먼 달)
+        return '<tr' + (x.점 ? ' class="is-point"' : x.카드자리와.셋.length ? ' class="is-meet"' : '') + '><th scope="row">' + esc(달말(x.달)) + '</th><td>' + (카 ? '●' : '·') + '</td>' + 칸(x.카드자리와.자미) + 칸(x.카드자리와.사주) + '</tr>'; }).join('')
       + '</tbody></table></div></section>';
     if (r.우연 && 글('우연말', { 점몫: r.우연.점몫, 남남몫: r.우연.남남몫, 사람: Number(r.우연.사람).toLocaleString('ko-KR') }))
       h += '<p class="three-chance">' + esc(글('우연말', { 점몫: r.우연.점몫, 남남몫: r.우연.남남몫, 사람: Number(r.우연.사람).toLocaleString('ko-KR') })) + '</p>';
@@ -179,13 +189,19 @@
         let 안 = '';
         if (r && (상태 === '그대로' || 상태 === '지남')) {
           안 = 카드칸(r, 글, P) + 결론칸(r, 글) + 근거칸(r, 글);
-          if (상태 === '그대로' && 글('그대로', { 날: 날말(r.다음카드) })) 안 += '<p class="three-keep">' + esc(글('그대로', { 날: 날말(r.다음카드) })) + '</p>';
+          // 점이 있으면 그 때가 끝난 다음 날부터 새 카드(결정함 46) — 점이 없으면 결론칸의 「다음카드」 한 줄로 충분(같은 날짜를 두 번 쓰지 않음).
+          if (상태 === '그대로' && r.점) {
+            const 끝 = r.점.때.끝.split('-').map(Number), 새날 = 날글(new Date(끝[0], 끝[1] - 1, 끝[2] + 1));
+            if (글('그대로', { 날: 날말(새날) })) 안 += '<p class="three-keep">' + esc(글('그대로', { 날: 날말(새날) })) + '</p>';
+          }
         }
         let 뒤 = '';
         if (r && r.점 && 오늘 >= r.점.때.시작) 뒤 += 기록칸(r, 글, 저장.기록);
         if (상태 === '지남' || 상태 === '새카드') { if (상태 === '지남') 뒤 += 판(덱칸()); else 안 = 덱칸(); }
         if (상태 === '다시부름') 안 = '<div class="three-need"><p>' + esc(글('오류.연결')) + '</p><button type="button" class="btn ghost small" data-three-retry>' + esc(글('다시') || '↻') + '</button></div>';
-        root.innerHTML = 고르기 + 판(안) + 뒤 + (r && 글('끝말') ? '<div class="three-end"><p>' + esc(글('끝말')) + '</p></div>' : '');
+        // 끝 — 오늘의 운세로 잇는 고리(「왜 내게만」과 같은 꼴 · 이름은 장부에서). 주소는 #today — ./#today 는 쪽을 새로 부른다.
+        const Y = global.ChaeksaYaksok, 오늘이름 = (Y && Y.이름 && Y.이름('today')) || '';
+        root.innerHTML = 고르기 + 판(안) + 뒤 + (r && (글('끝말') || 오늘이름) ? '<div class="three-end">' + (글('끝말') ? '<p>' + esc(글('끝말')) + '</p>' : '') + (오늘이름 ? '<a href="#today">' + esc(오늘이름) + ' <span aria-hidden="true">→</span></a>' : '') + '</div>' : '');
         달기();
         try { if (r && track && track.watchEnd) track.watchEnd(root, 'three_end'); } catch (e) {}
       }

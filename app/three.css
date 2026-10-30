@@ -43,6 +43,7 @@
 .three-grid{border-collapse:collapse;font-size:var(--t1);min-width:100%}
 .three-grid th,.three-grid td{padding:4px 10px;border-bottom:1px solid var(--line);text-align:center;color:var(--ink2);white-space:nowrap}
 .three-grid tbody th{text-align:left;font-weight:500}
+.three-grid td.is-names{white-space:normal;word-break:keep-all;min-width:4.5em;line-height:1.45}
 .three-grid tr.is-meet th,.three-grid tr.is-meet td{color:var(--ink);font-weight:600}
 .three-grid tr.is-point th,.three-grid tr.is-point td{color:var(--accent);font-weight:700;background:var(--bg2)}
 .three-chance{margin:6px 0 2px;font-size:var(--t2);line-height:1.7;color:var(--ink2);word-break:keep-all}
@@ -56,5 +57,7 @@
 .three-record,.three-end{margin:4px 0 12px;padding:14px 16px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--card)}
 .three-record p,.three-end p{margin:0 0 10px;font-size:var(--t2);line-height:1.65;color:var(--ink);word-break:keep-all}
 .three-end p{margin:0}
+.three-end a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--accent);font-weight:600;text-decoration:none}
+.three-end p+a{margin-top:12px}
 .three-record-btns{display:flex;flex-wrap:wrap;gap:8px}
 .three-page :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
