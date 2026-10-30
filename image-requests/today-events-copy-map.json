@@ -1,7 +1,7 @@
 [
   {
     "key": "결과|국충|비겁",
-    "scene": "departure",
+    "scene": "disband",
     "text": "함께하던 모임이 흩어집니다."
   },
   {
@@ -26,37 +26,37 @@
   },
   {
     "key": "끌림|비겁|인성",
-    "scene": "departure",
+    "scene": "homeward",
     "text": "같이 있던 사람이 집안일 때문에 먼저 돌아갑니다."
   },
   {
     "key": "생각|극함|비겁",
-    "scene": "departure",
+    "scene": "distance",
     "text": "함께하던 사람과 거리를 두기로 합니다."
   },
   {
     "key": "결과|국충|식상",
-    "scene": "work",
+    "scene": "restart",
     "text": "진행하던 일을 처음부터 다시 합니다."
   },
   {
     "key": "결과|국충|관성",
-    "scene": "work",
+    "scene": "reassignment",
     "text": "맡고 있던 일이 한꺼번에 바뀝니다."
   },
   {
     "key": "결과|형|관성",
-    "scene": "work",
+    "scene": "restart",
     "text": "이미 끝낸 일을 다시 하라는 말을 듣습니다."
   },
   {
     "key": "결과|생받음|재성",
-    "scene": "work",
+    "scene": "workload",
     "text": "돈을 받는 대신 맡을 일이 늘어납니다."
   },
   {
     "key": "끌림|식상|관성",
-    "scene": "work",
+    "scene": "deadline",
     "text": "하려던 일을 상대가 정한 시간에 맞춰 끝냅니다."
   },
   {
@@ -66,7 +66,7 @@
   },
   {
     "key": "생각|합|식상",
-    "scene": "work",
+    "scene": "completion",
     "text": "미뤄 둔 일을 이번에는 끝내기로 합니다."
   },
   {
@@ -81,12 +81,12 @@
   },
   {
     "key": "결과|국충|인성",
-    "scene": "reschedule",
+    "scene": "cancellation",
     "text": "도움을 받기로 한 약속이 전부 취소됩니다."
   },
   {
     "key": "결과|충|식상",
-    "scene": "reschedule",
+    "scene": "cancellation",
     "text": "잡아 둔 계획을 취소합니다."
   },
   {
@@ -106,7 +106,7 @@
   },
   {
     "key": "결과|극함|재성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "함께 먹은 밥값을 내가 냅니다."
   },
   {
@@ -121,7 +121,7 @@
   },
   {
     "key": "결과|생함|관성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "대접하는 자리에 돈을 씁니다."
   },
   {
@@ -131,22 +131,22 @@
   },
   {
     "key": "끌림|재성|식상",
-    "scene": "expense",
+    "scene": "self-reward",
     "text": "하고 싶었던 일에 돈을 씁니다."
   },
   {
     "key": "끌림|재성|인성",
-    "scene": "expense",
+    "scene": "tuition",
     "text": "배우고 싶던 것을 배우는 데 돈을 냅니다."
   },
   {
     "key": "끌림|인성|재성",
-    "scene": "expense",
+    "scene": "repay",
     "text": "도움받은 대가로 돈을 건넵니다."
   },
   {
     "key": "생각|극함|재성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "이번에는 내가 밥을 사야겠다고 생각합니다."
   },
   {
@@ -156,12 +156,12 @@
   },
   {
     "key": "생각|생함|관성",
-    "scene": "expense",
+    "scene": "hosting",
     "text": "대접할 자리에는 돈을 아끼지 않기로 합니다."
   },
   {
     "key": "결과|충|인성",
-    "scene": "documents",
+    "scene": "missing-paper",
     "text": "필요한 서류가 빠져 일을 미룹니다."
   },
   {
@@ -171,7 +171,7 @@
   },
   {
     "key": "끌림|인성|관성",
-    "scene": "documents",
+    "scene": "submission",
     "text": "서류를 정해진 기한에 맞춰 제출합니다."
   },
   {
@@ -181,7 +181,7 @@
   },
   {
     "key": "결과|형|식상",
-    "scene": "argument",
+    "scene": "explanation",
     "text": "내 말이 오해를 사 한 번 더 설명합니다."
   },
   {
@@ -191,7 +191,7 @@
   },
   {
     "key": "결과|생함|식상",
-    "scene": "teamwork",
+    "scene": "storytelling",
     "text": "평소보다 내 이야기를 많이 합니다."
   },
   {
@@ -201,7 +201,7 @@
   },
   {
     "key": "결과|극함|비겁",
-    "scene": "firm",
+    "scene": "refusal",
     "text": "함께하자는 제안을 거절합니다."
   },
   {
@@ -231,12 +231,12 @@
   },
   {
     "key": "결과|극받음|관성",
-    "scene": "reschedule",
+    "scene": "permission-denied",
     "text": "하려던 일을 허락받지 못합니다."
   },
   {
     "key": "결과|극받음|인성",
-    "scene": "quiet",
+    "scene": "hold-tongue",
     "text": "하지 말라는 충고를 듣고 말을 멈춥니다."
   },
   {
@@ -251,7 +251,7 @@
   },
   {
     "key": "결과|생받음|비겁",
-    "scene": "teamwork",
+    "scene": "ally",
     "text": "함께하던 사람이 내 편을 들어 줍니다."
   },
   {
@@ -261,7 +261,7 @@
   },
   {
     "key": "끌림|관성|비겁",
-    "scene": "teamwork",
+    "scene": "delegation",
     "text": "혼자 맡았던 일을 나눠 하기로 합니다."
   },
   {
@@ -271,22 +271,22 @@
   },
   {
     "key": "생각|생받음|비겁",
-    "scene": "teamwork",
+    "scene": "ally",
     "text": "함께하는 사람이 내 편이라는 생각이 듭니다."
   },
   {
     "key": "결과|생받음|식상",
-    "scene": "reward",
+    "scene": "payday",
     "text": "해 놓은 일의 대가를 받습니다."
   },
   {
     "key": "결과|생함|재성",
-    "scene": "reward",
+    "scene": "payday",
     "text": "내가 해 준 일로 돈을 받습니다."
   },
   {
     "key": "끌림|식상|재성",
-    "scene": "reward",
+    "scene": "selling",
     "text": "내가 만든 것을 팔기로 합니다."
   },
   {
@@ -296,7 +296,7 @@
   },
   {
     "key": "생각|생함|재성",
-    "scene": "reward",
+    "scene": "selling",
     "text": "내가 잘하는 일로 돈을 벌어 보기로 합니다."
   },
   {
@@ -311,32 +311,32 @@
   },
   {
     "key": "결과|생함|비겁",
-    "scene": "support",
+    "scene": "sharing",
     "text": "도움받은 것을 가까운 사람에게 나눠 줍니다."
   },
   {
     "key": "끌림|인성|비겁",
-    "scene": "support",
+    "scene": "sharing",
     "text": "나를 돕던 사람이 친구의 일도 함께 도와줍니다."
   },
   {
     "key": "생각|합|인성",
-    "scene": "support",
+    "scene": "ask-help",
     "text": "혼자 해결하려던 일을 도움받기로 합니다."
   },
   {
     "key": "생각|생받음|관성",
-    "scene": "support",
+    "scene": "ask-help",
     "text": "윗사람에게 도움을 부탁하기로 합니다."
   },
   {
     "key": "생각|생받음|인성",
-    "scene": "support",
+    "scene": "gratitude",
     "text": "받은 도움에 고맙다는 말을 해야겠다고 생각합니다."
   },
   {
     "key": "생각|생함|비겁",
-    "scene": "support",
+    "scene": "sharing",
     "text": "도움받은 것을 가까운 사람과 나누기로 합니다."
   },
   {
@@ -346,12 +346,12 @@
   },
   {
     "key": "끌림|식상|인성",
-    "scene": "learning",
+    "scene": "change-method",
     "text": "조언을 듣고 하던 방법을 바꿉니다."
   },
   {
     "key": "끌림|인성|식상",
-    "scene": "learning",
+    "scene": "craft",
     "text": "배운 방법으로 직접 만들어 봅니다."
   },
   {
@@ -371,7 +371,7 @@
   },
   {
     "key": "결과|국충|재성",
-    "scene": "money-check",
+    "scene": "income-stop",
     "text": "들어오기로 한 돈이 끊깁니다."
   },
   {
@@ -381,17 +381,17 @@
   },
   {
     "key": "결과|극받음|비겁",
-    "scene": "money-check",
+    "scene": "protect-share",
     "text": "받기로 한 내 몫을 다른 사람이 가져갑니다."
   },
   {
     "key": "끌림|관성|재성",
-    "scene": "money-check",
+    "scene": "budget",
     "text": "맡은 일을 진행하려고 비용부터 정합니다."
   },
   {
     "key": "생각|극받음|비겁",
-    "scene": "money-check",
+    "scene": "protect-share",
     "text": "남에게 뺏기기 전에 내 몫을 챙겨야겠다고 생각합니다."
   },
   {
