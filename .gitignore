@@ -37,4 +37,8 @@ app/art/ss-*.png
 # 이미 들어간 40장은 원본이라 지우지 않았다. 손님 사이트에는 안 올라간다(.github/workflows/pages.yml 이 배포 묶음에서 뺀다).
 app/art/exec-*.png
 
+# 타로 덱 그림 원본 PNG(장당 약 3MB · 78장이면 약 230MB)와 시안 PNG — 저장소에 넣지 않는다(10-30, 저장소가 이미 약 510MB). 화면용은 app/art/tarot/<덱>/*.webp 만 넣는다.
+image-requests/out/tarot-deck-*/*.png
+app/previews/tarot-cards-*/**/*.png
+
 marketing/cards/*/그림/
