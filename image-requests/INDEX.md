@@ -70,3 +70,5 @@
 | IMG-0062 | 멈춤·말을 아낌 · 여신 | 적용됨(a4ef62ec · v1508 공개 배포 · 실제 화면 확인) | IMG-0062-today-quiet-f.md | 삽화원본/today-events/quiet-f-v1.png(로컬) | app/art/today-events/quiet-f-v1.webp |
 | IMG-0063 | 「왜 내게만」 홈 표지 · 여(다시 식사값을 치름 — 「또 나야?」) | 생성됨 | IMG-0063-why-cover-f.md | image-requests/out/IMG-0063.png | app/art/why-cover-f.webp |
 | IMG-0064 | 「왜 내게만」 홈 표지 · 남(같은 장면) | 생성됨 | IMG-0064-why-cover-m.md | image-requests/out/IMG-0064.png | app/art/why-cover-m.webp |
+| IMG-0065 | 「세 관점이 모인 한 점」 홈 표지 · 여(뒤집힌 카드 일곱 중 한 장을 집으려는 순간 · 빛줄기 셋이 한 점으로) | 요청 | IMG-0065-three-eyes-cover-f.md | image-requests/out/IMG-0065.png | app/art/three-cover-f.webp |
+| IMG-0066 | 「세 관점이 모인 한 점」 홈 표지 · 남(같은 장면) | 요청 | IMG-0066-three-eyes-cover-m.md | image-requests/out/IMG-0066.png | app/art/three-cover-m.webp |
