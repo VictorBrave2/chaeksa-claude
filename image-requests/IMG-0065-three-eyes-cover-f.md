@@ -47,3 +47,16 @@ Wardrobe: modest soft knit top in cream or light coral with a light cardigan, sm
 - 배포용 WebP: `app/art/three-cover-f.webp` — 1024×1536, 품질 90.
 - 작은 판: `app/art/three-cover-f-s.webp` — 360×540, 품질 88.
 - Sharp로 포맷 변환과 작은 판 축소만 적용했습니다. 홈 연결·캐시 갱신은 메인 담당입니다.
+
+## 표정 수정 — 2026-10-30 · 2판
+
+- 사용자 피드백: 여성 얼굴이 찡그려 보임.
+- 내장 image_gen 편집으로 안쪽으로 모인 눈썹과 긴장한 눈매를 풀고 편안한 미소로 수정했습니다.
+- 기존 PNG를 편집 대상으로 사용했습니다. 인물·의상·손·카드 일곱 장·빛줄기·구도는 보존하도록 지정했습니다.
+- 같은 납품 경로의 PNG·큰 WebP·360px WebP를 교체하고 견본의 여성 표지에 `?v=2`를 붙였습니다.
+
+### 편집 프롬프트 전문
+
+```text
+Use case: identity-preserve. Edit target: the attached existing Chaeksa female tarot cover. Make one localized facial-expression correction. She currently looks tense and slightly frowning because the inner eyebrows angle down toward the bridge of the nose. Change her to a visibly relaxed, friendly, quietly delighted expression, as if pleasantly choosing a card. Smooth and relax the brow area; make both eyebrows softly level with gentle natural curves, with NO inward V angle, NO knit brow, NO worried inner-brow lift. Open her eyes comfortably and soften the eyelids and gaze toward the viewer, without squinting. Give her a small warm symmetric smile with relaxed lips, not a smirk. Preserve her recognizable face, adult age, iris color, short dark hairstyle, accessories, face orientation, skin tone, cream knit and coral cardigan. Preserve the exact original scene, composition, crop, body shape, hand positions, seven face-down cards, three colored light ribbons, window, sunlight, and background. Only modify the eyebrows, tiny surrounding facial muscles, relaxed eyelids and smile as needed. Retain crisp detailed premium Korean romance-webtoon illustration. 1024x1536 portrait, opaque. No extra objects, no text, no watermark. Do not redraw the rest of the artwork.
+```
