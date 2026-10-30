@@ -666,6 +666,8 @@
     if (tab === 'today') { try { const b = $('todayOut'); if (b && window.ChaeksaTodayView) window.ChaeksaTodayView.mount(b); } catch (e) { try { console.warn('오늘의 운세 탭:', e); } catch (x) {} } }
     // 10-29 「왜 내게만 이런 일이 일어날까?」 — 오늘의 운세 엔진을 열두 해 센 사건 빈도(why-core.js). 열 때마다 다시 그린다(같은 사람 · 같은 날은 why.js 가 기억).
     if (tab === 'why') { try { const b = $('whyOut'); if (b && window.ChaeksaWhyView) window.ChaeksaWhyView.mount(b); } catch (e) { try { console.warn('왜 내게만 탭:', e); } catch (x) {} } }
+    // 10-30 「세 관점이 모인 한 점」 — 계산은 비공개 /api/three-eyes, 카드는 화면이 뽑는다(한 달에 한 장 — three.js 가 이 기기에 기억).
+    if (tab === 'three') { try { const b = $('threeOut'); if (b && window.ChaeksaThreeView) window.ChaeksaThreeView.mount(b); } catch (e) { try { console.warn('세 관점 탭:', e); } catch (x) {} } }
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
     if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
     if (tab === 'pair') { try { if (window.ChaeksaPairView) ChaeksaPairView.그리기($('pairBox'), profile); } catch (e) { try { console.warn('행동양식 궁합 탭:', e); } catch (x) {} } }   // 10-01 pair.js
