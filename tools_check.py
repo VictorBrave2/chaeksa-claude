@@ -638,18 +638,23 @@ def scan_three_q():
     except Exception as e:
         return [], ['물음마다 카드 풀이 꼴을 못 봤다: %s' % e], []
     # 남녀가 갈린 칸 — 자료표 §3 의 「**남(M)**」 줄
-    gendered = set()
+    gendered, ref_warn = set(), []
     ref = os.path.join(ROOT, 'copy-requests', 'ref', 'COPY-0026-question-cards.md')
     if os.path.exists(ref):
+        try:
+            ref_text = read(ref)
+        except Exception as e:   # 자료표가 깨져도 검사기 전체가 멈추지 않게(11-01 v1542 배포 뒤 검토)
+            ref_text = ''
+            ref_warn.append('자료표 copy-requests/ref/COPY-0026-question-cards.md 를 못 읽어 남녀 칸 확인을 건너뛰었다: %s' % e)
         q = None
-        for line in read(ref).split('\n'):
+        for line in ref_text.split('\n'):
             m = re.match(r'### `([a-z]+)`', line)
             if m:
                 q = m.group(1)
             m = re.match(r'\| `([A-Z]\d\d)\.(바로|거꾸로)` \|[^|]*\| \*\*남\(M\)\*\*', line)
             if m and q:
                 gendered.add((q, m.group(1), m.group(2)))
-    bad, warn, info = [], [], []
+    bad, warn, info = [], list(ref_warn), []
     for kind, tbl in zip(THREE_Q_KINDS, (got.get('a'), got.get('b'))):
         if tbl is None:
             continue

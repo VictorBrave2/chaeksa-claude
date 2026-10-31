@@ -541,10 +541,13 @@
     const 다보이게 = sel => {
       try {
         const el = root.querySelector(sel), 높 = +global.innerHeight || 0; if (!el || !높 || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function' || !상자있음(el)) return;
-        // 아래 끝 = 뒤집기 띠(네비 위에 붙음 — three.css bottom: 78px + safe-area) · 띠가 없으면 네비의 실제 위끝 - 6. 재서 쓴다(아이폰 홈 화면 앱은 safe-area 만큼 더 높다 · 전엔 84 · 92 고정).
+        // 아래 끝 = 뒤집기 띠가 붙을 자리(three.css sticky bottom: 78px + safe-area → 화면 높이 - bottom - 띠 높이) · 띠의 지금 위끝 · 네비의 실제 위끝 가운데 가장 위 - 6. 재서 쓴다(아이폰 홈 화면 앱은 safe-area 만큼 더 높다 · 전엔 84 · 92 고정).
+        //   11-01 v1542 배포 뒤 검토 고침(v1543) — 기다리는 사이 위로 올렸거나 홈에 다녀오면 띠가 아직 안 붙어 펼친 판 위끝에 묶여 있다. 그 위끝만 재면 덜 움직여, 다 움직인 뒤 붙은 띠가 판 아래 줄(4 · 7째)을 가렸다(360×640 · 54 ~ 69px). 붙기 전이어도 붙을 자리로 센다.
         const 위끝of = x => (x && typeof x.getBoundingClientRect === 'function' && 상자있음(x)) ? x.getBoundingClientRect().top : 0;
-        const 띠위 = 위끝of(root.querySelector('.three-flip-foot')), 네비위 = 위끝of(global.document && typeof global.document.getElementById === 'function' ? global.document.getElementById('nav') : null);
-        const 네비바닥 = 네비위 > 0 ? 네비위 - 6 : 높 - 92, 바닥 = 띠위 > 0 ? Math.min(띠위 - 6, 네비바닥) : 네비바닥;   // 띠가 아직 제자리(붙기 전 · 화면 밖)여도 네비 위를 넘지 않게
+        const 띠el = root.querySelector('.three-flip-foot'), 띠위 = 위끝of(띠el), 네비위 = 위끝of(global.document && typeof global.document.getElementById === 'function' ? global.document.getElementById('nav') : null);
+        let 띠붙을위 = 0;
+        if (띠위 > 0) { try { 띠붙을위 = 높 - (parseFloat(global.getComputedStyle(띠el).bottom) || 78) - 띠el.getBoundingClientRect().height; } catch (e) {} }
+        const 네비바닥 = 네비위 > 0 ? 네비위 - 6 : 높 - 92, 바닥 = 띠위 > 0 ? Math.min(띠위 - 6, 띠붙을위 > 0 ? 띠붙을위 - 6 : 네비바닥, 네비바닥) : 네비바닥;   // 띠가 아직 제자리(붙기 전 · 화면 밖)여도 네비 위를 넘지 않게
         const 위 = 84, r = el.getBoundingClientRect();   // 위 84 = three.css scroll-margin(머리줄)
         let d = 0;
         if (r.top < 위) d = r.top - 위; else if (r.bottom > 바닥) d = Math.min(r.bottom - 바닥, r.top - 위);
