@@ -502,6 +502,25 @@
     let 의식 = null, 포커스할 = '', 스크롤할 = null;   // 펼침 의식(섞기 · 떼기 — 이 화면에만, 저장 안 함) · 다시 그린 뒤 초점을 둘 단추 · 화면 안으로 부를 칸(D6 { sel, block })
     let 펼친 = null;   // 펼친 순간(D3 — 저장 안 함): { k: 사람|물음|달, 단계: '첫판' | '다시의식' | '둘판', 연(뒤집은 장 수), 뗀, 움직임 }. 물음 · 사람을 바꾸면 버린다.
     let 재고름 = null;   // 마지막으로 부른 고름 { k, 고름, 나 } — 못 받았을 때 새로 펼침 단추가 같은 열 장으로 다시 부른다
+    // 화면 자리(10-31 사장님 「카드고르면 스크롤이 올라가네」 · 결정함 89) — 다시 그릴 때 그 칸이 화면 같은 높이에 남게 한다(눌린 부채 · 고른 열 장 판이 손끝 아래 그대로).
+    //   열째를 고른 뒤 펼친 판은 고르던 판 자리 그대로 두고, 다 안 보일 때만(위 머리줄 · 아래 뒤집기 띠 · 네비에 가림) 가장 적게 움직인다 — 전엔 펼친 판 위끝을 늘 화면 위로 불렀다(D6 · 375 폰에서 110px 위로).
+    //   가짜 문서(시험 · 검사기 — getBoundingClientRect · scrollBy 없음)에선 조용히 넘어간다.
+    let 지킴 = null, 보일 = '';   // 지킴 { sel, top } — 다시 그린 뒤 그 칸을 이 화면 높이로 · 보일 — 다시 그린 뒤 그 칸이 다 보이게(가장 적게)
+    const 화면위of = sel => { try { const el = root.querySelector && root.querySelector(sel); return el && typeof el.getBoundingClientRect === 'function' ? { sel, top: el.getBoundingClientRect().top } : null; } catch (e) { return null; } };
+    const 제자리 = 지 => {
+      if (!지) return;
+      try { const el = root.querySelector(지.sel); if (!el || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function') return; const d = el.getBoundingClientRect().top - 지.top; if (Math.abs(d) >= 1) global.scrollBy(0, d); } catch (e) {}
+    };
+    const 다보이게 = sel => {
+      try {
+        const el = root.querySelector(sel), 높 = +global.innerHeight || 0; if (!el || !높 || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function') return;
+        const 띠 = root.querySelector('.three-flip-foot'), 띠높 = 띠 && typeof 띠.getBoundingClientRect === 'function' ? 띠.getBoundingClientRect().height : 0;
+        const 위 = 84, 아래 = 띠높 ? 84 + 띠높 : 92, r = el.getBoundingClientRect();   // 84 · 92 = three.css scroll-margin(위 머리줄 · 아래 네비) · 뒤집기 띠는 네비 위 78px 에 붙는다(+ 6)
+        let d = 0;
+        if (r.top < 위) d = r.top - 위; else if (r.bottom > 높 - 아래) d = Math.min(r.bottom - (높 - 아래), r.top - 위);
+        if (Math.abs(d) >= 1) global.scrollBy({ top: d, behavior: 움직임줄임() ? 'auto' : 'smooth' });
+      } catch (e) {}
+    };
     try { people.migrate(); selected = people.activeId(); } catch (e) {}
     사건('three3');
     function render(포커스) {
@@ -564,10 +583,12 @@
           if (더미) 더미.onclick = () => { if (섞) 섞음(); else if (뗌단추) 뗌(); else if (다뗌) 다시뗌(); };
           if (결과) 결과.onclick = 결과봄;
           if (새로) 새로.onclick = () => { if (!고른) return; const 재 = 재고름 && 재고름.k === 순간k() ? 재고름 : null; 펼쳐부르기(고른, 순간켬, 재 && 재.고름, 재 && 재.나); };   // 고른 열 장 그대로 다시 부름
-          const 스 = 스크롤할; 스크롤할 = null;
+          const 스 = 스크롤할, 지 = 지킴, 보 = 보일; 스크롤할 = null; 지킴 = null; 보일 = '';
+          제자리(지);   // 그 칸을 다시 그리기 전 화면 높이로(결정함 89)
           if (포커스할) { const el = root.querySelector(포커스할); 포커스할 = ''; if (el) try { el.focus({ preventScroll: true }); } catch (e) {} }   // 화면 옮김은 스크롤할만(판을 눌러 뒤집을 때 아래 단추로 튀지 않게)
           // D6 — 화면 안으로(움직임 줄이기면 바로). 가짜 문서(시험 · 검사기)엔 없으면 조용히 넘어간다.
           if (스) { const el = root.querySelector(스.sel); if (el && typeof el.scrollIntoView === 'function') try { el.scrollIntoView({ behavior: 움직임줄임() ? 'auto' : 'smooth', block: 스.block }); } catch (e) {} }
+          if (보) 다보이게(보);
         }
       };
       if (prof.hour == null) {   // 결정함 44 — 시는 무조건
@@ -628,7 +649,7 @@
         if (!(Number.isInteger(i) && i >= 0 && i <= 76) || 의.고름.includes(i)) return;
         의.고름.push(i); 의.움직임 = 'pick'; 떨림(8);
         if (의.고름.length >= 10) { const 고 = 의.고름.slice(); 의식 = null; 펼쳐부르기(고른, 순간켬, 고, 지금나()); return; }   // 열째 → 서버 부름 → 받으면 뒤집기(D3)
-        포커스할 = '[data-three-fan] button'; 그리기();
+        지킴 = 화면위of('[data-three-fan]'); 포커스할 = '[data-three-fan] button'; 그리기();   // 부채는 손끝 아래 그대로(결정함 89)
       }
       // 뒤집기 — 다음 장 하나(1 → 10). 열째 뒤에는 끝말 + 결과보기(다시면 다시말 + 섞기)를 화면 안으로.
       function 뒤집음() {
@@ -662,8 +683,10 @@
       //   고름이 있으면 기다리는 동안 고른 열 장이 놓인 판을 그대로 둔다(나 = 화면이 센 나).
       function 펼쳐부르기(q, 순간, 고, 나) {   // 순간 — 받으면 펼친 순간(D3)부터(의식 · 새로 펼침 단추). opt.펼침(시험 · 검사기)이면 바로 결과
         재고름 = 고 ? { k: 순간k(), 고름: 고.slice(), 나 } : null;
+        const 판자리 = 화면위of('[data-three-rite] .three-sp-board');   // 고르던 판(결정함 89) — 기다리는 동안에도 그 자리
         root.innerHTML = 고르기 + 판(물음칸() + (고 ? '<div class="three-rite three-picking" data-three-rite>' + 창줄() + 고르는판(나, 10, 'pick') + '</div>' : '')
           + '<div class="three-wait" aria-hidden="true"><span></span><span></span><span></span></div>' + (글('세점.펼침.기다림') ? '<p class="three-q">' + esc(글('세점.펼침.기다림')) + '</p>' : ''));
+        제자리(판자리);
         사건('three3_spread|' + q);
         const 받음 = res => {
           if (내차례 !== 차례) return;
@@ -674,7 +697,8 @@
             if (q !== 고른) return;
             if (순간) {   // 펼친 순간(D3) — 결과보기를 누를 때까지(이 화면에만 · 저장 안 함) · 뒤집기 단추에 초점 · D6 펼친 판을 화면 안으로
               펼친 = { k: 순간k(), 단계: '첫판', 연: 0, 뗀: -1, 움직임: '' };
-              포커스할 = '[data-three-flip]'; 스크롤할 = { sel: '[data-three-reveal]', block: 'start' };
+              const 판자리 = 화면위of('[data-three-rite] .three-sp-board');   // 기다리던 판(고른 열 장)의 지금 화면 높이 — 펼친 판을 그 자리에(결정함 89)
+              포커스할 = '[data-three-flip]'; 지킴 = 판자리 && { sel: '[data-three-reveal] .three-sp-board', top: 판자리.top }; 보일 = '[data-three-reveal] .three-sp-board';
               미리그림(j.펼침);
             }
             그리기();

@@ -132,6 +132,9 @@
       if (dntOn()) return;   // 방문과 같다 — Do Not Track 이면 사건도 안 남긴다(2026-09-22, 방침과 어긋나 있었다)
       if (!CFG.url || !CFG.anonKey) return;
       if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
+      // 11-01 방문 세기(hit)와 같은 거름 — 로봇 · 헤드리스 · 내(클로드) 캡처 · 검사(cap= · scan=)는 사건도 세지 않는다(헤드리스 시험이 three3 · three3_q 사건을 남겼다).
+      try { var q = new URLSearchParams(location.search); if (q.has('cap') || q.has('scan')) return; } catch (e) {}
+      try { if (navigator.webdriver || /bot|crawl|spider|slurp|headless|yeti|daum|bingpreview|facebookexternalhit|preview/i.test(navigator.userAgent || '')) return; } catch (e) {}
       var k = 'chaeksa.ev.' + name, today = new Date().toISOString().slice(0, 10);
       if (localStorage.getItem(k) === today) return;
       localStorage.setItem(k, today);
