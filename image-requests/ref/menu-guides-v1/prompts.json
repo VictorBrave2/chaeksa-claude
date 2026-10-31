@@ -1,0 +1,65 @@
+{
+  "mode": "Built-in image_gen; generate with identity/style reference images",
+  "date": "2026-10-31",
+  "references": [
+    "C:/Users/LEE/Desktop/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+    "C:/Users/LEE/Desktop/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+  ],
+  "basePrompt": "Create ONE finished portrait illustration for a website menu cover, vertical 2:3. Use the two reference images ONLY for the exact recurring adult male and adult female facial identities and Korean romance-fantasy illustration style. SAME adult faces: male has tousled wavy dark-brown hair, warm amber eyes, elegant angular face; female has long dark-brown hair, warm brown eyes, refined oval face. Preserve their attractive illustrated appearance, delicate crisp linework, polished jewel-like colors and believable painted light. This is a purpose-composed website thumbnail, NOT a tarot card: absolutely NO card frame, border, writing, numbers, letters, labels, logo or watermark. No pentacle motifs unless explicitly requested. Entire image filled with scene.\nIMPORTANT composition: waist-up or chest-up adult, face large and centered horizontally, top of hair at 16% of image height, face at 28-40%, and ONE big meaningful prop at 52-70%. Keep all essential face and prop within the central 70% width and central 65% height so it remains recognizable in a tiny 76px portrait thumbnail AND a landscape center crop. Both shoulders naturally visible. Broad simple background masses with atmosphere, less busy than references. Rich original colors, warm daylight, no faded or gray filter, not photorealistic, not 3D, not watercolor. Dress beautifully in period fantasy clothing appropriate to each scene, not identical to reference. Female chest modest and proportional, no cleavage. All eyes visibly OPEN and expressive, relaxed brow. Anatomically correct: exactly two arms per figure, no duplicated limbs, natural hands with five fingers if visible, avoid fingers pinching tiny objects. No smartphones, watches, modern devices or modern payment cards. No gloomy black background.",
+  "assets": [
+    {
+      "key": "jeongtong",
+      "name": "정통사주",
+      "scene": "Scene: the MALE identity alone, learned and assured guide in a sunlit library. Deep emerald robe over ivory high-collar shirt, gold understated embroidery, no crown. He faces the viewer three-quarter, an inviting confident subtle smile, clearly open amber eyes. An open substantial antique book is supported naturally in front of his chest at 60% of the picture height, hands largely behind book. One broad golden window and soft book-spines behind him. Warm emerald, ivory, gold palette. Book pages have faint abstract lines only, NO readable writing. Convey discovering who I am through an old book. Close enough for face and open-book silhouette to be obvious at tiny size.",
+      "generatedFile": "exec-43315c75-61f5-41d8-b8ff-93699ff3d3a7.png",
+      "sourcePath": "image-requests/ref/menu-guides-v1/jeongtong.png",
+      "fullPath": "app/art/menu-guides-v1/jeongtong.webp",
+      "smallPath": "app/art/menu-guides-v1/jeongtong-s.webp"
+    },
+    {
+      "key": "myeongban",
+      "name": "정통자미두수",
+      "scene": "Scene: the FEMALE identity alone in a luminous glass observatory during daylight. Long wavy dark-brown hair with a delicate small golden star-shaped hairpin, visibly open warm brown eyes looking toward the viewer, calm intelligent slight smile. Elegant deep sapphire blue high-neck dress with ivory sleeves and sparse gold star embroidery. She supports ONE large brass armillary sphere at chest level, broad circular gold orbits and a small central celestial globe, easily legible silhouette; hands below the sphere and naturally supported by a table. Background pale blue glass arches and sunlight with subtle star-chart motifs, no black night sky. Palette sapphire, cream, gold. Convey reading a person's celestial map. No book, no text.",
+      "generatedFile": "exec-1218a66b-2d2c-4d1d-b86d-c159abc1e8b3.png",
+      "sourcePath": "image-requests/ref/menu-guides-v1/myeongban.png",
+      "fullPath": "app/art/menu-guides-v1/myeongban.webp",
+      "smallPath": "app/art/menu-guides-v1/myeongban-s.webp"
+    },
+    {
+      "key": "today",
+      "name": "오늘의 운세",
+      "scene": "Scene: the FEMALE identity alone, encountering this morning's news in a bright terrace breakfast scene. Same face and long dark hair, partially tied back with a soft ribbon, lively open eyes and a gentle pleasantly surprised smile, not exaggerated. Elegant warm apricot blouse with jade green sash, modest neckline. She holds a large ivory sealed envelope naturally in both hands near chest level, with one round red wax seal and NO writing, angled slightly toward viewer. A teacup and soft breakfast-table edge lower foreground; sunlit flowering balcony and fresh morning sky in background. Palette apricot, fresh jade, creamy gold. The woman's face and prominent envelope are the central focus. No clock, no calendar, no phone.",
+      "generatedFile": "exec-4042f277-5a3c-4fb9-adf7-2b2c6da1cf75.png",
+      "sourcePath": "image-requests/ref/menu-guides-v1/today.png",
+      "fullPath": "app/art/menu-guides-v1/today.webp",
+      "smallPath": "app/art/menu-guides-v1/today-s.webp"
+    },
+    {
+      "key": "why",
+      "name": "왜 내게만 이런 일이",
+      "scene": "Scene: the MALE identity alone at the end of a meal in a warm sunlit fantasy dining hall. Same handsome face with wavy brown hair and open amber eyes. Wearing soft terracotta coat over cream linen, no crown. A slight rueful knowing smile and a mildly raised single eyebrow convey 'me again?' with NO scowl. He naturally holds an open plain dark leather coin purse above the table, one hand supporting it and the other resting beside a small tidy group of gold coins, at mid-lower chest level. A couple of blurred departing adult friends appear only as distant shapes near a doorway in background, without competing faces. Broad simple plate on table as secondary prop. Make his expression and coin purse clearly readable at small scale. No debit card, no till, no modern equipment, no text.",
+      "generatedFile": "exec-9485ebc0-f455-4421-b4ab-1a19c7f86f35.png",
+      "sourcePath": "image-requests/ref/menu-guides-v1/why.png",
+      "fullPath": "app/art/menu-guides-v1/why.webp",
+      "smallPath": "app/art/menu-guides-v1/why-s.webp"
+    },
+    {
+      "key": "three",
+      "name": "내 물음에 답하는 세 점",
+      "scene": "Scene: the FEMALE identity alone, a poised fortune-reader at a sunlit ivory stone table. Same long dark-brown hair and warm open eyes; face toward viewer and slight welcoming smile. Elegant muted ruby/wine red high-neck gown with ivory and gold trim, subtle hair ornament, no crown. She supports THREE LARGE overlapping illustrated cards in a gentle fan in front of her chest; all three are clearly visible and show simple symbolic gold images (sun, star, cup), with NO letters or numbers. Hands natural, mostly hidden behind cards, no pinching gesture. Behind, softly suggested elegant cream colonnade and a softly blurred brass celestial ring and closed old book. Palette ruby, ivory, warm gold. Cards and face dominate, rich polished romance-fantasy style.",
+      "generatedFile": "exec-47b45afb-5c58-4162-99f8-958c5e41cc7f.png",
+      "sourcePath": "image-requests/ref/menu-guides-v1/three.png",
+      "fullPath": "app/art/menu-guides-v1/three.webp",
+      "smallPath": "app/art/menu-guides-v1/three-s.webp"
+    },
+    {
+      "key": "when",
+      "name": "언제 풀릴까",
+      "scene": "Scene: the MALE identity alone at a sunlit open archway overlooking a broad ascending garden path. Same handsome wavy brown-haired face, open amber eyes looking upward slightly toward the path with a hopeful confident small smile. Elegant ivory and pale blue long coat with restrained gold trim, no crown. He holds a closed deep blue travel journal naturally against his torso, hands largely concealed by journal. Behind one shoulder, a SIMPLE strong sunlit stair/path shape rises toward an open golden gateway amid greenery, clearly indicating a difficult path opening ahead; no literal graph, no clock/calendar. Waist-up centered portrait, face large and clearly readable, broad soft landscape shapes. Palette sky blue, ivory, gold and distant green. Keep person center, do not turn back to viewer.",
+      "generatedFile": "exec-307204ab-3478-47c3-8d42-e8f694cbd3e3.png",
+      "sourcePath": "image-requests/ref/menu-guides-v1/when.png",
+      "fullPath": "app/art/menu-guides-v1/when.webp",
+      "smallPath": "app/art/menu-guides-v1/when-s.webp"
+    }
+  ]
+}
