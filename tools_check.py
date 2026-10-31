@@ -21,6 +21,10 @@
                     장부 글을 다른 파일에 그대로 옮겨 적은 곳 · 사장님 확인 대기는 확인(!). (2026-10-02 — pay.html 이
                     걷은 「맞아요/아니에요」 · 옛 판 30장을 계속 팔았고, 무료 범위를 걷은 뒤 「1장 무료」가 남았다)
 
+ 10) 타로 물음마다 카드 풀이  세점.펼침.물음카드뜻 · 물음카드말(결정함 90 · 11-01) — 없는 물음 · 카드 · 놓임 열쇠,
+                    빈 글 · {중괄호}(이 글은 값을 채우지 않고 그대로 찍힌다)는 막힘. 156면이 반만 찬 물음(화면은 그 물음을 켜지 않음) ·
+                    남녀가 갈린 칸(자료표 ref/COPY-0026-question-cards.md §3)에 글이 하나뿐인 곳은 확인(!).
+
 사용:  python tools_check.py
 막힘(X)이 하나라도 있으면 배포하지 않는다. 확인(!)은 눈으로 보고 판단한다.
 2026-09-20 부터 tools_bust.py 는 이 검사를 부르지 않는다(사장님 지시). 배포 전에 손으로 돌린다.
@@ -608,6 +612,103 @@ def scan_biz():
     return bad, len(pieces)
 
 
+THREE_Q = ('money', 'work', 'love', 'child', 'parent', 'people', 'move', 'home', 'body', 'mind')
+THREE_Q_KINDS = ('물음카드뜻', '물음카드말')
+THREE_CARDS = ['M%02d' % i for i in range(22)] + ['%s%02d' % (s, i) for s in 'WCSP' for i in range(1, 15)]
+
+
+def scan_three_q():
+    """(막힘 [글], 확인 [글], 요약 [글]) — 세점.펼침.물음카드뜻 · 물음카드말(결정함 90) 꼴."""
+    import json
+    import subprocess
+    p = os.path.join(APP, 'three-pieces.js')
+    if not os.path.exists(p):
+        return [], [], ['three-pieces.js 없음']
+    js = ("const fs=require('fs'),vm=require('vm');const c={};c.window=c;c.globalThis=c;vm.createContext(c);"
+          "vm.runInContext(fs.readFileSync(process.argv[1],'utf8'),c);"
+          "const P=c.ChaeksaThreePieces||{},f=(P['세점']&&P['세점']['펼침'])||{};"
+          "process.stdout.write(JSON.stringify({a:f['물음카드뜻']===undefined?null:f['물음카드뜻'],b:f['물음카드말']===undefined?null:f['물음카드말']}));")
+    try:
+        r = subprocess.run(['node', '-e', js, p], capture_output=True, timeout=60)
+        if r.returncode != 0:
+            return ['three-pieces.js 를 node 로 못 읽었다: %s' % r.stderr.decode('utf-8', 'replace')[:160]], [], []
+        got = json.loads(r.stdout.decode('utf-8'))
+    except FileNotFoundError:
+        return [], ['node 가 없어 물음마다 카드 풀이 꼴을 못 봤다'], []
+    except Exception as e:
+        return [], ['물음마다 카드 풀이 꼴을 못 봤다: %s' % e], []
+    # 남녀가 갈린 칸 — 자료표 §3 의 「**남(M)**」 줄
+    gendered = set()
+    ref = os.path.join(ROOT, 'copy-requests', 'ref', 'COPY-0026-question-cards.md')
+    if os.path.exists(ref):
+        q = None
+        for line in read(ref).split('\n'):
+            m = re.match(r'### `([a-z]+)`', line)
+            if m:
+                q = m.group(1)
+            m = re.match(r'\| `([A-Z]\d\d)\.(바로|거꾸로)` \|[^|]*\| \*\*남\(M\)\*\*', line)
+            if m and q:
+                gendered.add((q, m.group(1), m.group(2)))
+    bad, warn, info = [], [], []
+    for kind, tbl in zip(THREE_Q_KINDS, (got.get('a'), got.get('b'))):
+        if tbl is None:
+            continue
+        if not isinstance(tbl, dict):
+            bad.append('세점.펼침.%s 가 열쇠 묶음이 아니다' % kind)
+            continue
+        for q, t in tbl.items():
+            if q not in THREE_Q:
+                bad.append('세점.펼침.%s.%s — 없는 물음 열쇠(%s)' % (kind, q, ' · '.join(THREE_Q)))
+                continue
+            if not isinstance(t, dict):
+                bad.append('세점.펼침.%s.%s 가 카드 묶음이 아니다' % (kind, q))
+                continue
+            filled = 0
+            for cid, face in t.items():
+                if cid not in THREE_CARDS:
+                    bad.append('세점.펼침.%s.%s.%s — 없는 카드 열쇠' % (kind, q, cid))
+                    continue
+                if not isinstance(face, dict):
+                    bad.append('세점.펼침.%s.%s.%s 가 바로 · 거꾸로 묶음이 아니다' % (kind, q, cid))
+                    continue
+                for o, v in face.items():
+                    key = '세점.펼침.%s.%s.%s.%s' % (kind, q, cid, o)
+                    if o not in ('바로', '거꾸로'):
+                        bad.append('%s — 놓임은 바로 · 거꾸로뿐' % key)
+                        continue
+                    if isinstance(v, str):
+                        vals = [('', v)]
+                        if (q, cid, o) in gendered:
+                            warn.append('%s — 남녀가 갈린 칸인데 글이 하나다(자료표 §3 — { "M": … , "F": … })' % key)
+                    elif isinstance(v, dict):
+                        extra = [g for g in v if g not in ('M', 'F')]
+                        if extra:
+                            bad.append('%s — 남녀 칸 열쇠는 M · F 뿐(%s)' % (key, ', '.join(extra)))
+                        vals = [('.' + g, v[g]) for g in ('M', 'F') if g in v]
+                        if len(vals) < 2:
+                            warn.append('%s — 남녀 칸이 하나만 찼다(이 면은 빈 것으로 센다)' % key)
+                    else:
+                        bad.append('%s — 글이 아니다' % key)
+                        continue
+                    ok = True
+                    for g, t2 in vals:
+                        if not isinstance(t2, str) or not t2.strip():
+                            bad.append('%s%s — 빈 글' % (key, g))
+                            ok = False
+                        elif '{' in t2 or '}' in t2:
+                            bad.append('%s%s — {중괄호}가 있다(이 글은 값을 채우지 않고 그대로 찍힌다)' % (key, g))
+                            ok = False
+                        elif kind == '물음카드말' and not (3 <= len(t2.strip()) <= 24):
+                            warn.append('%s%s — 카드말 %d자(이름처럼 짧게 · 4 ~ 18자 안팎)' % (key, g, len(t2.strip())))
+                    if ok and len(vals) == (2 if isinstance(v, dict) else 1):
+                        filled += 1
+            if filled == 156:
+                info.append('%s.%s 156면 다 참 — 화면 켜짐' % (kind, q))
+            elif filled:
+                warn.append('세점.펼침.%s.%s %d/156면 — 다 차야 그 물음이 켜진다(지금은 일반 카드뜻 · 카드말)' % (kind, q, filled))
+    return bad, warn, info
+
+
 def main():
     막힘, 확인 = 0, 0
 
@@ -757,6 +858,19 @@ def main():
     확인 += len(s_warn)
     if not s_bad and not s_warn:
         print('  O 소개 쪽 · 미리보기 그림 · 사이트맵이 장부 · 쪽 목록과 같다')
+
+    print('\n10) 타로 물음마다 카드 풀이(세점.펼침.물음카드뜻 · 물음카드말 — 결정함 90)')
+    t_bad, t_warn, t_info = scan_three_q()
+    for x in t_bad:
+        print('  X ' + x)
+    for x in t_warn[:20]:
+        print('  ! ' + x)
+    if len(t_warn) > 20:
+        print('  ! …그 밖 %d곳' % (len(t_warn) - 20))
+    막힘 += len(t_bad)
+    확인 += len(t_warn)
+    if not t_bad and not t_warn:
+        print('  O ' + (' · '.join(t_info) if t_info else '아직 글 없음 — 모든 물음이 일반 카드뜻 · 카드말'))
 
     print('\n' + '─' * 52)
     print('막힘 %d · 확인 %d' % (막힘, 확인) + (' (그중 화면 금지말 %d곳)' % len(words) if words else ''))

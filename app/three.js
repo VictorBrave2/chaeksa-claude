@@ -27,6 +27,8 @@
  *   → 앞으로 6(691 가까운 앞날) · 3(683 이룰 최선 · 아직) → 끝 10(703). 줄 = 세점.펼침.이야기.<n>.<길|흉|섞임>({카드말} {카드} {물음} {놓임}) · 카드말 = 세점.펼침.카드말.<카드>.<놓임>
  *   · 막 머리 세점.펼침.이야기때.<지나온|지금|앞으로|끝> · 이야기머리({물음}). 판의 열 줄이 다 차야 그린다(반쯤 빈 이야기 없음 · ?keys 면 열쇠). 길흉은 줄 말투만 고른다 — 결론 셈은 열째 하나(73).
  *   자리: 펼친 순간 열째를 뒤집은 뒤(읽기 칸 아래 · 끝말 위) · 결과 열 장 접힘(판 그림 아래 · 자리 목록 위 · 다시 펼쳤으면 판마다).
+ *   11-01 물음마다 카드 풀이(결정함 90 · 사장님 「질문마다 바뀌는 카드의 해석이 필요해 보이는데」): 세점.펼침.물음카드뜻 · 물음카드말.<물음>.<카드>.<놓임> — 그 물음의 156면이 다 차면
+ *   그 물음에서만 카드뜻 · 카드말 대신 쓴다(읽기 칸 · 자리 목록 첫 줄 · 이야기 줄의 {카드말}). 자료표 copy-requests/ref/COPY-0026-question-cards.md(방향 없음 — 방향표는 비공개)
  * 10-31 더미 누름(결정함 86 — Codex PR #13 「카드 더미 직접 누름」에서 지금 흐름에 맞는 것만): 뒷면 더미를 눌러도 섞기 · 떼기(다시 떼기)가 된다 — 단추와 같은 일.
  * 10-31 배포 뒤 뜻 대조 고침(결정함 87 — v1536 검토에서 확인된 메인 몫 둘): 읽는법(「한 장씩 뒤집어 …」)은 펼친 순간 첫 장을 뒤집기 전에만 — 결과 열 장 접힘은 다 앞면이라 맞지 않아 뺐다.
  *   영향 줄은 1 ~ 9째만 — 10째는 바로 위 자리뜻.10(앞 영향이 모인 끝)과 끝말 · 다시말(길흉)이 이미 말해 한 자리에서 같은 말이 세 번이었다(주문서 영향 표 10행 탓).
@@ -104,6 +106,29 @@
   // ── 카드 그림(10-31) — 코덱스 타로 덱 chaeksa-v1: 앞면 78 + 공통 뒷면(image-requests/tarot-deck-v1/HANDOFF.md).
   //    뽑힌 앞면 한 장만 불러온다. 다시 그린 다섯 장(M00 · M10 · W05 · C01 · S06) 때문에 앞면은 모두 ?v=2. 모르는 id 는 그림 없이 글만.
   const 그림길 = 'art/tarot/chaeksa-v1/', 그림id = /^(?:M(?:0\d|1\d|2[01])|[WCSP](?:0[1-9]|1[0-4]))$/;
+  // 물음마다 카드 풀이(11-01 사장님 「질문마다 바뀌는 카드의 해석이 필요해 보이는데」 · 결정함 90) — 세점.펼침.물음카드뜻 · 물음카드말.<물음>.<카드>.<놓임>
+  //   = 글 하나, 또는 웨이트가 남녀를 갈라 말한 칸(자료표 §3 · 10칸)은 { M, F } — 손님 성별은 나 카드(671 — P11 · P13 여 · P12 · P14 남)로 안다(서버가 같은 성별로 방향을 냈다).
+  //   한 물음의 156면(78장 × 바로 · 거꾸로)이 다 차야 그 물음만 켠다 — 하나라도 비면 그 물음은 일반 카드뜻 · 카드말 그대로(반쯤 찬 물음 없음 · 꺼짐 길은 한 글자도 다르게 그리지 않는다).
+  //   뜻 · 말은 따로 켠다. ?keys 면 늘 켜고 빈 칸에 그 열쇠를 보인다(Codex 자리 확인). 길흉은 이 글이 아니라 엔진(길흉 줄 · 영향 줄 · 이야기 줄 말투)이 말한다.
+  const 물음칸 = Object.freeze(['물음카드뜻', '물음카드말']);
+  const 성별of = 나 => { const id = String((나 && 나.id) || ''); return /^P1[13]$/.test(id) ? 'F' : /^P1[24]$/.test(id) ? 'M' : ''; };
+  const 물음표of = (P, 종류, q) => { const t = P && P.세점 && P.세점.펼침 && P.세점.펼침[종류]; return t && typeof t === 'object' && q && t[q] && typeof t[q] === 'object' ? t[q] : null; };
+  const 면참 = v => (typeof v === 'string' && !!v) || (!!v && typeof v === 'object' && typeof v.M === 'string' && !!v.M && typeof v.F === 'string' && !!v.F);
+  const 물음켜짐 = (P, 종류, q) => { const t = 물음표of(P, 종류, q); return !!t && 카드들.every(id => !!t[id] && typeof t[id] === 'object' && 면참(t[id].바로) && 면참(t[id].거꾸로)); };
+  // 한 판을 그리는 동안 물음 · 성별 · 켜짐을 한 번 센다 → { 뜻(x), 말(x) } — 꺼졌거나 비면 ''(부른 쪽이 일반 글로)
+  function 물음맥of(r, P, 보기) {
+    const q = r && r.물음, g = 성별of(r && r.펼침 && r.펼침.나);
+    const 꺼냄 = 종 => {
+      const t = (보기 || 물음켜짐(P, 종, q)) ? (물음표of(P, 종, q) || {}) : null;
+      return x => {
+        if (!t || !x) return '';
+        const 면 = t[x.id] && typeof t[x.id] === 'object' ? t[x.id][x.놓임] : undefined, v = 면 && typeof 면 === 'object' ? (g ? 면[g] : undefined) : 면;
+        if (typeof v === 'string' && v) return v;
+        return 보기 ? '〔세점.펼침.' + 종 + '.' + q + '.' + x.id + '.' + x.놓임 + (면 && typeof 면 === 'object' ? '.' + (g || '?') : '') + '〕' : '';
+      };
+    };
+    return { 뜻: 꺼냄('물음카드뜻'), 말: 꺼냄('물음카드말') };
+  }
   const 뒷면그림 = '<img class="three-back-img" src="' + 그림길 + 'back-s.webp" alt="" decoding="async">';
   function 카드그림(id, 거꾸로) {
     if (!그림id.test(String(id))) return '';
@@ -366,9 +391,9 @@
     낱.forEach(w => { const k = w.줄 + '|' + (w.절 || ''); let g = 무리.find(m => m.k === k); if (!g) 무리.push(g = { k, 줄: w.줄, 절: w.절, 말: [] }); if (w.말 && !g.말.includes(w.말)) g.말.push(w.말); });
     return 무리.filter(g => g.말.length).map(g => g.말.map(m => '“' + esc(m) + '”').join(' · ') + ' <small>(Part III ' + esc(g.줄) + (g.절 === '§4' ? ' §4' : '') + ')</small>').join(' · ');
   };
-  function 풀이줄(x, n, 글, 물음, 카이름, 놓, 앞) {
+  function 풀이줄(x, n, 글, 물음, 카이름, 놓, 앞, 맥) {
     const 왜k = x.왜 || (x.직접 ? '직접' : '전체');
-    const 카뜻 = 글('세점.펼침.카드뜻.' + x.id + '.' + x.놓임);
+    const 카뜻 = (맥 && 맥.뜻(x)) || 글('세점.펼침.카드뜻.' + x.id + '.' + x.놓임);   // 그 물음 156면이 다 찼으면 물음카드뜻(결정함 90)
     const 영 = n === 10 ? '' : 글('세점.펼침.영향.' + n + '.' + x.길흉, { 카드: 카이름, 물음, 놓임: 놓 });   // 10째 = 자리뜻.10 · 끝말(다시말)이 말함(87)
     const 왜 = 글('세점.펼침.왜.' + 왜k, { 물음 });
     const 붙 = (x.붙임 || []).map(b => ({ 말: b.낱말, 줄: b.줄, 절: b.절 })), 본 = (x.뜻말 || []).map(m => ({ 말: m, 줄: x.줄, 절: x.절 }));
@@ -377,11 +402,11 @@
       + (왜 ? '<p class="' + 앞 + '-why">' + esc(왜) + '</p>' : '') + (원 ? '<p class="' + 앞 + '-src" lang="en">' + 원 + '</p>' : '');
   }
   // 읽기 칸 — 막 뒤집은 장. 위: 그림 + 자리 번호 · 자리 이름 · 자리뜻 · 카드 이름 · 놓임 · 그 물음 길흉 / 아래: 장 풀이 줄(결정함 84). 색 띠는 길흉(three.css data-gh).
-  function 읽기칸(x, n, 글, P, 끝, 새, 물음) {
+  function 읽기칸(x, n, 글, P, 끝, 새, 물음, 맥) {
     if (!x) return '';
     const 이름 = 글('세점.펼침.자리.' + n), 뜻 = 글('세점.펼침.자리뜻.' + n), gh = 글('세점.길흉말.' + x.길흉), 놓 = 글('놓임말.' + x.놓임), 카이름 = 카드이름of(x, P);
     const 그림 = 그림id.test(String(x.id)) ? '<div class="three-read-art"><img class="three-read-img' + (x.놓임 === '거꾸로' ? ' is-rev' : '') + '" src="' + 그림길 + x.id + '-s.webp?v=2" alt=""></div>' : '';
-    const 풀이 = 풀이줄(x, n, 글, 물음, 카이름, 놓, 'three-read');
+    const 풀이 = 풀이줄(x, n, 글, 물음, 카이름, 놓, 'three-read', 맥);
     return '<div class="three-read' + (끝 ? ' is-end' : '') + (새 ? ' is-in' : '') + '" data-gh="' + esc(x.길흉 || '') + '" aria-live="polite"><div class="three-read-top">' + 그림
       + '<div class="three-read-txt"><p class="three-read-pos"><span class="three-sp-no" aria-hidden="true">' + n + '</span>' + (이름 ? '<b>' + esc(이름) + '</b>' : '') + '</p>'
       + (뜻 ? '<p class="three-read-mean">' + esc(뜻) + '</p>' : '')
@@ -399,7 +424,7 @@
   // 손끝 떨림(고르기 · 뒤집기) — 움직임 줄이기면 없음 · 못 하는 기기는 조용히
   const 떨림 = p => { try { if (!움직임줄임() && global.navigator && typeof global.navigator.vibrate === 'function') global.navigator.vibrate(p); } catch (e) {} };
   // 자리 목록 — 자리마다 이름 · 그 물음 길흉말 → 자리뜻 → 카드 이름 · 놓임 → 장 풀이 줄(결정함 84). 1 ~ 9째 길흉은 보여 주기만(셈은 열째 하나 · 73).
-  function 자리목록(자리, 글, P, 끝n, 물음) {
+  function 자리목록(자리, 글, P, 끝n, 물음, 맥) {
     return '<ol class="three-sp-list">' + 자리수.map(n => {
       const x = 장of(자리, n); if (!x) return '';
       const 이름 = 글('세점.펼침.자리.' + n), 뜻 = 글('세점.펼침.자리뜻.' + n), gh = 글('세점.길흉말.' + x.길흉), 놓 = 글('놓임말.' + x.놓임), 카이름 = 카드이름of(x, P);
@@ -407,18 +432,18 @@
         + ((이름 || gh) ? '<p class="three-sp-pos">' + (이름 ? '<b>' + esc(이름) + '</b>' : '') + (이름 && gh ? ' ' : '') + (gh ? '<span class="three-sp-gh">' + esc(gh) + '</span>' : '') + '</p>' : '')
         + (뜻 ? '<p class="three-sp-mean">' + esc(뜻) + '</p>' : '')
         + '<p class="three-sp-card">' + esc(카이름) + (x.이름en ? ' <small lang="en">' + esc(x.이름en) + '</small>' : '') + (놓 ? ' <span class="three-sp-or">' + esc(놓) + '</span>' : '') + '</p>'
-        + 풀이줄(x, n, 글, 물음, 카이름, 놓, 'three-sp') + '</div></li>';
+        + 풀이줄(x, n, 글, 물음, 카이름, 놓, 'three-sp', 맥) + '</div></li>';
     }).join('') + '</ol>';
   }
   // 열 장 이야기(결정함 85) — 웨이트 자리 줄의 때 차례로 판의 열 장을 엮는다. 줄 하나라도 비면 '' (반쯤 빈 이야기는 그리지 않는다).
   const 이야기차례 = Object.freeze([['지나온', [4, 5]], ['지금', [1, 2, 7, 8, 9]], ['앞으로', [6, 3]], ['끝', [10]]]);
-  function 이야기칸(자리, 글, P, 물음) {
+  function 이야기칸(자리, 글, P, 물음, 맥) {
     const 막 = [];
     for (const [때, ns] of 이야기차례) {
       const 줄 = [];
       for (const n of ns) {
         const x = 장of(자리, n); if (!x) return '';
-        const 말 = 글('세점.펼침.카드말.' + x.id + '.' + x.놓임);
+        const 말 = (맥 && 맥.말(x)) || 글('세점.펼침.카드말.' + x.id + '.' + x.놓임);   // 그 물음 156면이 다 찼으면 물음카드말(결정함 90)
         const t = 말 ? 글('세점.펼침.이야기.' + n + '.' + x.길흉, { 카드말: 말, 카드: 카드이름of(x, P), 물음, 놓임: 글('놓임말.' + x.놓임) }) : '';
         if (!t) return '';
         줄.push('<p class="three-story-beat" data-gh="' + esc(x.길흉 || '') + '"><span class="three-sp-no" aria-hidden="true">' + n + '</span><span class="three-story-txt">' + esc(t) + '</span></p>');
@@ -461,10 +486,10 @@
         + (다시앞 ? '<button type="button" class="btn three-rite-btn" data-three-again-shuffle>' + esc(글('세점.펼침.섞기') || '⇄') + '</button>'
           : '<button type="button" class="btn three-rite-btn" data-three-reveal-go>' + esc(글('세점.펼침.결과보기') || '↓') + '</button>') + '</div>';
     }
-    const 물음 = 글('세점.물음말.' + r.물음), 법 = 연 === 0 && 단계 === '첫판' ? 글('세점.펼침.읽는법', { 물음 }) : '';   // 읽는법(결정함 84 · 87 · 88) — 첫 판 첫 장을 뒤집기 전에만 · 여기 하나(다시 펼친 둘째 판 앞엔 없음)
+    const 물음 = 글('세점.물음말.' + r.물음), 법 = 연 === 0 && 단계 === '첫판' ? 글('세점.펼침.읽는법', { 물음 }) : '', 맥 = 물음맥of(r, P, 열쇠보기());   // 읽는법(결정함 84 · 87 · 88) — 첫 판 첫 장을 뒤집기 전에만 · 여기 하나(다시 펼친 둘째 판 앞엔 없음)
     return '<div class="three-reveal" data-three-reveal><div class="three-reveal-main">' + 뒤집는판(나, 자리, 연, 순.움직임, 끝n)
-      + (연 > 0 ? 읽기칸(장of(자리, 연), 연, 글, P, 연 === 끝n, 순.움직임 === 'flip', 물음) : (법 ? '<p class="three-read-how">' + esc(법) + '</p>' : '')) + '</div>'
-      + (연 === 10 ? 이야기칸(자리, 글, P, 물음) : '') + 발 + '</div>';   // 열 장 이야기(결정함 85) — 열째를 뒤집은 뒤 · 끝말 위
+      + (연 > 0 ? 읽기칸(장of(자리, 연), 연, 글, P, 연 === 끝n, 순.움직임 === 'flip', 물음, 맥) : (법 ? '<p class="three-read-how">' + esc(법) + '</p>' : '')) + '</div>'
+      + (연 === 10 ? 이야기칸(자리, 글, P, 물음, 맥) : '') + 발 + '</div>';   // 열 장 이야기(결정함 85) — 열째를 뒤집은 뒤 · 끝말 위
   }
   // 결과(D2) — 궁정 열째(708)면 카드칸 바로 아래 한 줄. 원문은 근거 타로 칸에 이미 찍히는 열째 원문(c.원문)과 같아 따로 찍지 않는다.
   function 궁정줄(r, 글, P) {
@@ -476,14 +501,14 @@
   //   · 읽는법은 없다(87 — 열 장이 다 앞면이라 「뒤집어 …」가 맞지 않음 · 펼친 순간 첫 장 전에만)
   //   · [다시: 다시말 · 다시보기 · 둘째 판 그림 · 둘째 자리 목록] · 끝말. 다시 판을 따로 접지 않는다. 열째 강조는 길흉을 정한 판에만. 판머리가 비면 머리는 자리 이름 1 ~ 10 차례(값).
   function 열장칸(r, 글, P) {
-    const f = r.펼침, 둘 = 다시됨(f), 끝n = 둘 ? 0 : 10, 물음 = 글('세점.물음말.' + r.물음);
+    const f = r.펼침, 둘 = 다시됨(f), 끝n = 둘 ? 0 : 10, 물음 = 글('세점.물음말.' + r.물음), 맥 = 물음맥of(r, P, 열쇠보기());
     const 머리 = 글('세점.펼침.판머리', { 물음 }) || 자리수.map(n => 글('세점.펼침.자리.' + n)).filter(Boolean).join(' · ');
     let h = '<details class="jt-ev three-cards"><summary>' + esc(머리) + '</summary><div class="three-spread">'
-      + 판그림(f.나, f.자리, 끝n, false) + 이야기칸(f.자리, 글, P, 물음) + 자리목록(f.자리, 글, P, 끝n, 물음);
+      + 판그림(f.나, f.자리, 끝n, false) + 이야기칸(f.자리, 글, P, 물음, 맥) + 자리목록(f.자리, 글, P, 끝n, 물음, 맥);
     if (둘) {
       const 다시말 = 다시말of(r, 글, P), 보기 = 글('세점.펼침.다시보기');
       h += (다시말 ? '<p class="three-sp-again">' + esc(다시말) + '</p>' : '') + (보기 ? '<p class="three-sp-head">' + esc(보기) + '</p>' : '')
-        + 판그림(f.다시.나, f.다시.자리, 10, false) + 이야기칸(f.다시.자리, 글, P, 물음) + 자리목록(f.다시.자리, 글, P, 10, 물음);
+        + 판그림(f.다시.나, f.다시.자리, 10, false) + 이야기칸(f.다시.자리, 글, P, 물음, 맥) + 자리목록(f.다시.자리, 글, P, 10, 물음, 맥);
     }
     const 끝말 = 끝말of(r, 글, P);
     return h + (끝말 ? '<p class="three-sp-endline">' + esc(끝말) + '</p>' : '') + '</div></details>';
@@ -506,18 +531,23 @@
     //   열째를 고른 뒤 펼친 판은 고르던 판 자리 그대로 두고, 다 안 보일 때만(위 머리줄 · 아래 뒤집기 띠 · 네비에 가림) 가장 적게 움직인다 — 전엔 펼친 판 위끝을 늘 화면 위로 불렀다(D6 · 375 폰에서 110px 위로).
     //   가짜 문서(시험 · 검사기 — getBoundingClientRect · scrollBy 없음)에선 조용히 넘어간다.
     let 지킴 = null, 보일 = '';   // 지킴 { sel, top } — 다시 그린 뒤 그 칸을 이 화면 높이로 · 보일 — 다시 그린 뒤 그 칸이 다 보이게(가장 적게)
-    const 화면위of = sel => { try { const el = root.querySelector && root.querySelector(sel); return el && typeof el.getBoundingClientRect === 'function' ? { sel, top: el.getBoundingClientRect().top } : null; } catch (e) { return null; } };
+    // 11-01 배포 뒤 검토 고침 — 서버 답을 기다리는 사이 손님이 홈으로 가면 타로 탭이 숨는다(display:none · 상자 없음): 그땐 재지도 움직이지도 않는다(전엔 보이는 다른 화면이 84px 올라갔다).
+    const 상자있음 = el => !!el && (typeof el.getClientRects !== 'function' || el.getClientRects().length > 0);
+    const 화면위of = sel => { try { const el = root.querySelector && root.querySelector(sel); return el && typeof el.getBoundingClientRect === 'function' && 상자있음(el) ? { sel, top: el.getBoundingClientRect().top } : null; } catch (e) { return null; } };
     const 제자리 = 지 => {
       if (!지) return;
-      try { const el = root.querySelector(지.sel); if (!el || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function') return; const d = el.getBoundingClientRect().top - 지.top; if (Math.abs(d) >= 1) global.scrollBy(0, d); } catch (e) {}
+      try { const el = root.querySelector(지.sel); if (!el || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function' || !상자있음(el)) return; const d = el.getBoundingClientRect().top - 지.top; if (Math.abs(d) >= 1) global.scrollBy(0, d); } catch (e) {}
     };
     const 다보이게 = sel => {
       try {
-        const el = root.querySelector(sel), 높 = +global.innerHeight || 0; if (!el || !높 || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function') return;
-        const 띠 = root.querySelector('.three-flip-foot'), 띠높 = 띠 && typeof 띠.getBoundingClientRect === 'function' ? 띠.getBoundingClientRect().height : 0;
-        const 위 = 84, 아래 = 띠높 ? 84 + 띠높 : 92, r = el.getBoundingClientRect();   // 84 · 92 = three.css scroll-margin(위 머리줄 · 아래 네비) · 뒤집기 띠는 네비 위 78px 에 붙는다(+ 6)
+        const el = root.querySelector(sel), 높 = +global.innerHeight || 0; if (!el || !높 || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function' || !상자있음(el)) return;
+        // 아래 끝 = 뒤집기 띠(네비 위에 붙음 — three.css bottom: 78px + safe-area) · 띠가 없으면 네비의 실제 위끝 - 6. 재서 쓴다(아이폰 홈 화면 앱은 safe-area 만큼 더 높다 · 전엔 84 · 92 고정).
+        const 위끝of = x => (x && typeof x.getBoundingClientRect === 'function' && 상자있음(x)) ? x.getBoundingClientRect().top : 0;
+        const 띠위 = 위끝of(root.querySelector('.three-flip-foot')), 네비위 = 위끝of(global.document && typeof global.document.getElementById === 'function' ? global.document.getElementById('nav') : null);
+        const 네비바닥 = 네비위 > 0 ? 네비위 - 6 : 높 - 92, 바닥 = 띠위 > 0 ? Math.min(띠위 - 6, 네비바닥) : 네비바닥;   // 띠가 아직 제자리(붙기 전 · 화면 밖)여도 네비 위를 넘지 않게
+        const 위 = 84, r = el.getBoundingClientRect();   // 위 84 = three.css scroll-margin(머리줄)
         let d = 0;
-        if (r.top < 위) d = r.top - 위; else if (r.bottom > 높 - 아래) d = Math.min(r.bottom - (높 - 아래), r.top - 위);
+        if (r.top < 위) d = r.top - 위; else if (r.bottom > 바닥) d = Math.min(r.bottom - 바닥, r.top - 위);
         if (Math.abs(d) >= 1) global.scrollBy({ top: d, behavior: 움직임줄임() ? 'auto' : 'smooth' });
       } catch (e) {}
     };
@@ -890,5 +920,5 @@
     render(false);
     return { render };
   }
-  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움, 펼침켜짐, 펼침필수, 시그of, 서울날of, 자리수 };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31) · 펼침켜짐 · 펼침필수 · 시그of — 펼침 시험 · 검사기
+  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움, 펼침켜짐, 펼침필수, 시그of, 서울날of, 자리수, 물음칸, 물음켜짐, 물음맥of, 성별of };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31) · 펼침켜짐 · 펼침필수 · 시그of — 펼침 시험 · 검사기
 })(typeof window !== 'undefined' ? window : globalThis);
