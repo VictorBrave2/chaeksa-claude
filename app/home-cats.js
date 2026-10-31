@@ -20,15 +20,16 @@
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
       { 키: 'saram', 주소: 'saram.html', 그림: 'art/saram-cover.webp', 작은: 'art/saram-cover-s.webp', 크기: [1024, 1536] },
-      { 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/saju-main.webp', 작은: 'art/saju-main-s.webp', 크기: [1086, 1448] },
+      // 10-31 나를 알아보기 여섯 표지 — 킹·퀸의 얼굴과 그림체를 통일하고 메뉴마다 장면을 달리한다. 고객 성별과 무관하게 고정.
+      { 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/menu-guides-v1/jeongtong.webp', 작은: 'art/menu-guides-v1/jeongtong-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       // 귀함·고전 이름은 정통사주로 통합. 총명함 집중 보기는 정통사주 안에서 연결한다.
-      { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/myeongban-cover-{g}.webp', 작은: 'art/myeongban-cover-{g}-s.webp', 크기: [1024, 1536] },
-      // 10-29 「왜 내게만 이런 일이 일어날까?」(why 탭) — 제 표지 IMG-0063 · 0064(Codex · 남녀 두 벌 — 계산대에서 또 내가 밥값을 치르는 장면).
-      { 키: 'why', 탭: 'why', 그림: 'art/why-cover-{g}.webp', 작은: 'art/why-cover-{g}-s.webp', 크기: [1024, 1536] },
-      // 10-30 「세 관점이 모인 한 점」(three 탭) — 제 표지 IMG-0065 · 0066(Codex · 남녀 두 벌 — 뒤집힌 카드 일곱 중 한 장을 집으려는 순간). 이름 · 한 줄은 장부(Codex 글 이름 · 물음).
-      { 키: 'three', 탭: 'three', 그림: 'art/three-cover-{g}.webp', 작은: 'art/three-cover-{g}-s.webp', 크기: [1024, 1536] }],
-    // 10-05 「언제 나아지나」(when.html) — 사장님 「무료로 공개해」. 운 분류 첫 칸(지금 힘든 사람이 가장 먼저 묻는 것)
-    time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/today-cover-v2.webp', 작은: 'art/today-cover-v2-s.webp', 크기: [1024, 1536] }, { 키: 'when', 주소: 'when.html', 그림: 'art/when-cover-{g}.webp', 작은: 'art/when-cover-{g}-s.webp', 크기: [1024, 1536] }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
+      { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/menu-guides-v1/myeongban.webp', 작은: 'art/menu-guides-v1/myeongban-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      // 「왜 내게만 이런 일이 일어날까?」는 킹의 표지로 고정한다.
+      { 키: 'why', 탭: 'why', 그림: 'art/menu-guides-v1/why.webp', 작은: 'art/menu-guides-v1/why-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      // 「내 물음에 답하는 세 점」은 퀸의 표지로 고정한다. 이름·한 줄은 장부에서 받는다.
+      { 키: 'three', 탭: 'three', 그림: 'art/menu-guides-v1/three.webp', 작은: 'art/menu-guides-v1/three-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
+    // 오늘의 운세는 퀸, 앞으로의 운 흐름은 킹의 표지로 고정한다.
+    time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/menu-guides-v1/today.webp', 작은: 'art/menu-guides-v1/today-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }, { 키: 'when', 주소: 'when.html', 그림: 'art/menu-guides-v1/when.webp', 작은: 'art/menu-guides-v1/when-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/read-cover.webp', 작은: 'art/read-cover-s.webp', 크기: [1024, 1536] }],
     // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류.
     // 10-23 제 그림(IMG-0006 · 0007 밤 갈림길 불 켜진 문들, 남녀 두 벌 — 소개 쪽 머리와 같은 그림). 전에는 정통사주 15장(일) 컷을 빌려 썼다.
@@ -69,7 +70,7 @@
     return null;
   }
 
-  var 그림판 = 'v1524';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1528';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -80,7 +81,7 @@
     return '<a class="cat" href="' + esc(주소) + '" data-cat="' + esc(b.키) + '" data-i="' + i + '" data-key="' + esc(c.키) + '"'
       + (c.주소 ? '' : ' data-tab="' + esc(c.탭) + '"' + (c.곳 ? ' data-spot="' + esc(c.곳) + '"' : '')) + '>'
       + '<span class="pic"><img src="' + esc(원본) + '"' + (작은 ? ' srcset="' + esc(작은) + ' 360w, ' + esc(원본) + ' ' + c.크기[0] + 'w" sizes="' + (c.목록 ? '76px' : 칸폭) + '"' : '')
-      + ' alt="" width="' + c.크기[0] + '" height="' + c.크기[1] + '" decoding="async"' + 받기 + '>'
+      + ' alt="" width="' + c.크기[0] + '" height="' + c.크기[1] + '" decoding="async"' + (c.그림위치 ? ' style="object-position:' + esc(c.그림위치) + '"' : '') + 받기 + '>'
       + '</span><span class="n">' + esc(이름) + '</span>'   // 10-23 사장님 「나 · 아이 · 궁합 · 일과 자리 글씨들 때문에 삽화가 잘 안 보여」 — 분류 딱지(.k) 안 그리고, 제목은 그림 밖 아래로
       + (한줄 ? '<span class="s">' + esc(한줄) + '</span>' : '')
       + (딱지 ? '<span class="t">' + 딱지 + '</span>' : '') + '</a>';
