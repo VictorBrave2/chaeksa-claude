@@ -1,0 +1,46 @@
+/* PC menu scenes. Existing reading widths and all mobile layouts stay intact. */
+@media (min-width:1051px){
+  body[data-desktop-scene],body:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide)){
+    --desktop-scene:url("art/three-gallery/sunlit-gallery-v2.png");
+    --desktop-scene-width:max(100vw,1220px);
+    --desktop-scene-height:max(56.25vw,686.25px);
+    --desktop-scene-top:43px;
+  }
+  body:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide)){--desktop-scene-top:84px}
+  body[data-desktop-scene="library"],body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)){--desktop-scene:url("art/desktop-scenes/library-v1.png")}
+  body[data-desktop-scene="observatory"]{--desktop-scene:url("art/desktop-scenes/observatory-v1.png")}
+  body[data-desktop-scene="morning"],body:has(#app:not(.hide) > .tab:is([data-tab="today"],[data-tab="why"]):not(.hide)){--desktop-scene:url("art/desktop-scenes/morning-v1.png")}
+  body[data-desktop-scene="garden"],body:has(#app:not(.hide) > .tab:is([data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"]):not(.hide)){--desktop-scene:url("art/desktop-scenes/garden-v1.png")}
+  body[data-desktop-scene="birth"],body:has(#app:not(.hide) > .tab[data-tab="taekil"]:not(.hide)){--desktop-scene:url("art/desktop-scenes/birth-v1.png")}
+  body[data-desktop-scene]::before,body:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide))::before{
+    content:"";position:fixed;inset:var(--desktop-scene-top) 0 0;z-index:0;pointer-events:none;
+    background-image:var(--desktop-scene);background-position:center top;background-size:var(--desktop-scene-width) auto;background-repeat:no-repeat;
+    -webkit-mask-image:linear-gradient(#000 0,#000 calc(var(--desktop-scene-height) - 110px),transparent var(--desktop-scene-height));
+    mask-image:linear-gradient(#000 0,#000 calc(var(--desktop-scene-height) - 110px),transparent var(--desktop-scene-height));
+  }
+  /* A continuous paper surface also protects headings, notes and charts outside cards. */
+  body[data-desktop-scene] > :is(.doc,.wrap),body:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide)) > .wrap{
+    position:relative;z-index:1;background:var(--bg);box-shadow:0 12px 50px rgba(72,54,29,.08);
+  }
+  /* Header/nav/dialog z-index values remain in the existing shared stylesheet. */
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)) > .wrap{max-width:572px;background:transparent;box-shadow:none}
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)) > .wrap > header{padding-inline:max(18px,calc((100vw - 572px)/2 + 18px))}
+  .tab[data-tab="three"] .three-card{background:rgba(255,253,248,.97);border-color:var(--line2);box-shadow:0 20px 65px rgba(91,67,38,.10)}
+  .tab[data-tab="three"] .three-person{padding:6px 10px;background:rgba(255,253,248,.96);border-radius:var(--r2)}
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)) > .wrap > footer{padding:18px;background:rgba(255,253,248,.96);border-radius:var(--r2)}
+  /* The side scene takes over the introductory character role on desktop only. */
+  body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)) .jtp :is(.jt-guide-art,.jt-guide-controls){display:none!important}
+  body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)) .jtp .jtp-story.jt-companion-on .jt-guide-scene{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr);gap:0}
+  body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)) .jtp .jtp-story.jt-companion-on .jt-guide-copy{margin-top:0;max-width:none}
+  body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)) .jtp .jtp-story.jt-companion-on .jt-guide-opening .jt-guide-copy{padding:28px}
+  body[data-desktop-scene="observatory"] .zd :is(.guide-art,.zd-guide-controls){display:none!important}
+  body[data-desktop-scene="observatory"] .zd.zd-companion.companion-on .guide-scene{grid-template-areas:"copy";grid-template-columns:minmax(0,1fr);gap:0}
+  body[data-desktop-scene="observatory"] .zd.zd-companion.companion-on .guide-scene-copy{margin-top:0;max-width:none}
+  body[data-desktop-scene="observatory"] .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{padding:28px}
+  /* Event art carries meaning, so keep it and give the narrow reading column room. */
+  body:has(#app:not(.hide) > .tab[data-tab="today"]:not(.hide)) .today-page :is(.today-hero,.today-guided-reading,.today-week-intro){grid-template-columns:minmax(0,1fr);gap:16px}
+  body:has(#app:not(.hide) > .tab[data-tab="today"]:not(.hide)) .today-page :is(.today-hero,.today-guided-reading,.today-week-intro)>img{width:176px;max-width:100%;justify-self:center}
+}
+@media print{
+  body[data-desktop-scene]::before,body:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide))::before{display:none}
+}
