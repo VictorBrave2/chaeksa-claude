@@ -1515,7 +1515,7 @@ html[data-boot="landing"] #nav{display:grid!important}
 #nav a svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 #nav a:hover{color:var(--ink2)}
 #nav :is(button,a):focus-visible,.home-paths a:focus-visible,.catalog-list a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-.catalog-heading h1{margin:0;font-size:26px;line-height:1.4;word-break:keep-all}
+.catalog-heading h2{margin:0;font-size:26px;line-height:1.4;word-break:keep-all}
 .catalog-heading p{margin:10px 0 20px;color:var(--ink2);font-size:15px;line-height:1.6}
 .home-paths{text-align:left}
 .home-paths h2{font-size:19px;line-height:1.5;margin:0 0 14px}
