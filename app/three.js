@@ -638,6 +638,11 @@
       }
       const 키 = 저장열쇠3(prof);
       판3 = 꺼냄(키); if (!판3 || typeof 판3 !== 'object') 판3 = {};
+      // 엔진 v0.7(11-01 오전 · 옛 대 기준) 때 받아 둔 펼침은 그달 동안 다시 부르지 않는다 — 그 판의 등급 · 대낱말을 버리고 길흉만 쓴다(결정함 97 · 11-01 배포 뒤 검토).
+      //   화면은 대 규칙을 베끼지 않고 응답의 판만 본다. 길흉 · 셈은 판과 무관하게 그대로.
+      Object.keys(판3).forEach(k => { const s = 판3[k], j = s && typeof s === 'object' && s.응답; if (!j || !/^three-points v0\.7 /.test(String(j.판 || ''))) return;
+        const 걷 = x => { if (x && typeof x === 'object') { delete x.등급; delete x.대낱말; } }, f = j.펼침;
+        걷(j.점 && j.점.타로); if (f) { [].concat(f.자리 || [], (f.다시 && f.다시.자리) || []).forEach(걷); 걷(f.끝); } });
       if (!고른 && 물음차례.includes(판3._마지막)) 고른 = 판3._마지막;
       const 몸 = (q, 카드) => ({ year: prof.year, month: prof.month, day: prof.day, hour: prof.hour, minute: prof.minute || 0, gender: prof.gender === 'F' ? 'F' : 'M', place: prof.place || 'KR:서울',
         longitude: typeof prof.longitude === 'number' ? prof.longitude : undefined, tzOffset: typeof prof.tzOffset === 'number' ? prof.tzOffset : undefined, 물음: q, 카드 });
