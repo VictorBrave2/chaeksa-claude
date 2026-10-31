@@ -246,9 +246,9 @@
 .three-read-card b{font-weight:600}
 .three-read-card small{font-family:var(--sans);font-size:var(--t1);color:var(--ink3)}
 .three-card .three-read-txt p.three-read-gh{margin-top:2px;font-family:var(--serif);font-size:var(--t3);font-weight:700;line-height:1.5;color:var(--ink2)}
-.three-read[data-gh="길"] .three-read-gh{color:var(--wood)}
-.three-read[data-gh="흉"] .three-read-gh{color:var(--fire)}
-.three-read[data-gh="섞임"] .three-read-gh,.three-read[data-gh="변화"] .three-read-gh{color:var(--accent)}
+.three-card .three-read[data-gh="길"] p.three-read-gh{color:var(--wood)}   /* 11-01 — 바로 위 줄(0,3,1)의 color 가 덮어 늘 회색이었다(88 이야기 띠와 같은 꼴) */
+.three-card .three-read[data-gh="흉"] p.three-read-gh{color:var(--fire)}
+.three-card .three-read[data-gh="섞임"] p.three-read-gh,.three-card .three-read[data-gh="변화"] p.three-read-gh{color:var(--accent)}
 .three-card .three-read-txt p.three-read-mean{margin-top:2px;font-size:var(--t1);line-height:1.55;color:var(--ink3)}
 .three-read-body{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:grid;gap:6px;min-width:0}
 .three-card .three-read-body p{margin:0;word-break:keep-all;overflow-wrap:anywhere}
@@ -271,3 +271,7 @@
 .three-pile{cursor:pointer;-webkit-tap-highlight-color:transparent}   /* 결정함 86 — 더미를 눌러도 섞기 · 떼기 */
 @media(prefers-reduced-motion:reduce){.three-reveal>.three-story{animation:none}}
 @media(prefers-reduced-motion:reduce){.three-sp-board.is-anim .three-sp,.three-reveal-foot,.three-sp.is-arrive,.three-sp.is-next .three-sp-slot,.three-sp.is-next .three-sp-back,.three-sp.is-flip .three-sp-face,.three-read.is-in,.three-fan.is-spread .three-fan-card{animation:none}.three-sp.is-flip .three-sp-backface{display:none}.three-fan-card{transition:none}.three-pile .three-pile-img{animation:none!important}}
+/* 11-01 대길 · 대흉(결정함 95) — 바로 선 큰 카드의 길 · 흉. 글자색 · 띠 색은 data-gh 그대로 · 이름표를 테두리 칸으로, 띠를 굵게. */
+.three-card .three-pt[data-dae] .three-pt-gh,.three-card .three-sp-row[data-dae] .three-sp-gh,.three-card .three-read[data-dae] p.three-read-gh{display:inline-block;padding:0 .4em;border:1.5px solid currentColor;border-radius:4px;font-weight:800;letter-spacing:.03em}
+.three-read[data-dae]{border-left-width:6px}
+.three-card .three-story p.three-story-beat[data-dae]{border-left-width:5px}
