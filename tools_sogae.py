@@ -435,8 +435,9 @@ document.documentElement.setAttribute('data-theme','day');
     .sg-cover{{display:block;width:62vw;max-width:260px;margin:0 auto 16px}}
   }}
 </style>
+<link rel="stylesheet" href="desktop-scenes.css?v={ver}">
 </head>
-<body>
+<body data-desktop-scene="{desktop_scene}">
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <main class="doc sg" data-sogae="{key}">
 {body}
@@ -445,7 +446,7 @@ document.documentElement.setAttribute('data-theme','day');
 </body>
 </html>
 '''.format(title=E(제목), desc=E(설명), url=url, img=SITE + 'cards/og/' + key + '.jpg', mark=MARK, tab=I['탭'], ver=ver, key=key,
-           body='\n'.join(parts), tail=tail)
+           body='\n'.join(parts), tail=tail, desktop_scene='library' if key == 'jeongtong' else 'garden')
 
 
 # ───────────────────────── 미리보기 그림 ─────────────────────────
