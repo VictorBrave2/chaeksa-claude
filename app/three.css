@@ -226,7 +226,7 @@
 .three-sp.is-flip .three-sp-face{animation:threeFlipIn .26s ease-out .18s both}
 @keyframes threeFlipOut{to{transform:scaleX(0)}}
 @keyframes threeFlipIn{from{transform:scaleX(0)}to{transform:none}}
-.three-flip-foot{display:grid;justify-items:center;position:sticky;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:5;padding:8px 0 4px;background:linear-gradient(to top,var(--card) 70%,transparent)}   /* 아래 네비(높이 약 63px) 바로 위 */
+.three-flip-foot{display:grid;justify-items:center;position:sticky;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:5;padding:8px 0 4px;background:linear-gradient(to top,var(--card) 70%,transparent)}   /* 아래 네비(실측 높이 73.2px — v1535 배포 뒤 검토) 바로 위 */
 .three-flip-foot .three-rite-btn{margin-top:4px}
 .three-read{display:block;min-width:0;margin:6px 0 4px;padding:12px 14px;border:1px solid var(--line2);border-left:4px solid var(--line2);border-radius:var(--r2);background:var(--card)}
 .three-read[data-gh="길"]{border-left-color:var(--wood)}
@@ -257,4 +257,18 @@
 .three-card .three-read-body p.three-read-why{font-size:var(--t1);line-height:1.6;color:var(--ink2)}
 .three-card .three-read-body p.three-read-src{font-size:var(--t1);line-height:1.6;color:var(--ink3);font-style:italic}
 .three-card p.three-read-how{margin:6px 0 4px;font-size:var(--t2);line-height:1.7;color:var(--ink2);text-align:center;word-break:keep-all;overflow-wrap:anywhere}
+/* 열 장 이야기(결정함 85) — 때 차례 막(지나온 것 · 지금 · 앞으로 · 끝) · 줄마다 자리 번호 · 길흉 띠 */
+.three-story{display:grid;gap:10px;min-width:0;margin:10px 0 6px;padding:14px 14px 12px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--bg2)}
+.three-card .three-story p{margin:0;word-break:keep-all;overflow-wrap:anywhere}
+.three-card .three-story p.three-story-head{font-family:var(--serif);font-size:var(--t3);font-weight:700;line-height:1.5;color:var(--ink)}
+.three-story-act{display:grid;gap:6px;min-width:0}
+.three-card .three-story p.three-story-when{font-size:var(--t1);font-weight:700;letter-spacing:.04em;line-height:1.5;color:var(--accent)}
+.three-card .three-story p.three-story-beat{display:flex;align-items:flex-start;gap:8px;padding-left:8px;border-left:3px solid var(--line2);font-size:var(--t2);line-height:1.75;color:var(--ink)}
+.three-story-beat[data-gh="길"]{border-left-color:var(--wood)}
+.three-story-beat[data-gh="흉"]{border-left-color:var(--fire)}
+.three-story-beat[data-gh="섞임"]{border-left-color:var(--accent)}
+.three-story-txt{flex:1 1 auto;min-width:0}
+.three-reveal>.three-story{animation:threeReadIn .32s ease .3s both}
+.three-pile{cursor:pointer;-webkit-tap-highlight-color:transparent}   /* 결정함 86 — 더미를 눌러도 섞기 · 떼기 */
+@media(prefers-reduced-motion:reduce){.three-reveal>.three-story{animation:none}}
 @media(prefers-reduced-motion:reduce){.three-sp-board.is-anim .three-sp,.three-reveal-foot,.three-sp.is-arrive,.three-sp.is-next .three-sp-slot,.three-sp.is-next .three-sp-back,.three-sp.is-flip .three-sp-face,.three-read.is-in,.three-fan.is-spread .three-fan-card{animation:none}.three-sp.is-flip .three-sp-backface{display:none}.three-fan-card{transition:none}.three-pile .three-pile-img{animation:none!important}}
