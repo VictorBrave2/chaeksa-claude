@@ -278,16 +278,20 @@
   // 다시말(706 · D5) — {카드} = 첫 판 열째(애매해서 새 나가 된 카드) 하나뿐. 둘째 판 열째는 넘기지 않는다(펼친 순간에 둘째 판 결과를 미리 말하지 않게).
   const 다시말of = (r, 글, P) => 글('세점.펼침.다시말', { 카드: 카드이름of(장of(r.펼침.자리, 10), P) });
   const 움직임줄임 = () => { try { return !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } };
-  // 펼침 그림 — 웨이트 712 그림 꼴(「The Significator is here facing to the left」): 가운데 나 · 1 덮음(679) · 2 가로질러(681 · 90도) · 3 위(683) · 4 아래(685)
-  //   · 5 오른쪽(687 「behind」 — 바라보는 쪽의 반대) · 6 왼쪽(691 「before」) · 십자 오른쪽 기둥 7 ~ 10(695 아래에서 위로). 칸 자리는 three.css 격자.
+  // 펼침 그림 — 웨이트 712 그림 꼴: 가운데 나 · 1 덮음(679) · 2 가로질러(681 · 90도) · 3 위(683) · 4 아래(685)
+  //   · 5 = 나 카드가 등진 쪽(687 「behind」) · 6 = 나 카드가 바라보는 쪽(691 「before」) · 십자 오른쪽 기둥 7 ~ 10(695 아래에서 위로). 칸 자리는 three.css 격자.
+  //   기본은 712 그림(「The Significator is here facing to the left」) — 5 오른쪽 · 6 왼쪽. 나 카드 그림이 오른쪽을 보면 5 · 6 을 맞바꾼다(is-face-right).
+  //   큰 카드 · 보는 쪽을 말할 수 없는 카드(정면 · 마주 봄 · 사람 없음)는 미리 정한 왼쪽(689 N.B.).
   //   카드마다 작은 그림(-s.webp) · 거꾸로는 그림만 180도(2는 90도 · 거꾸로면 270도) · 자리 번호. 읽을 글은 자리 목록 · 끝말이 맡는다(그림은 aria-hidden).
   //   움직임 — 펼친 순간에만 차례로 놓인다(is-anim · CSS animation-delay --i · 움직임 줄이기면 없음). 근거 안 판은 움직임 없음 · 그림은 접힘을 열 때 부른다(lazy).
+  // 그림이 오른쪽을 보는 카드 — 덱 chaeksa-v1 작은 그림 56장을 둘이 따로 보고 갈린 다섯 장은 크게 봐서 정함(10-31). 덱 그림을 다시 그리면 이 표도 다시 본다.
+  const 오른쪽보는 = new Set(['C08', 'C10', 'C11', 'C12', 'C13', 'P02', 'P08', 'P09', 'P11', 'P13', 'P14', 'S06', 'S07', 'S11', 'S13', 'W02', 'W03', 'W06', 'W07', 'W09', 'W10', 'W11', 'W12']);
   function 판그림(나, 자리, 끝n, 움직임) {
     const 늦게 = 움직임 ? '' : ' loading="lazy"';
     const 그림 = (id, cls) => 그림id.test(String(id)) ? '<img class="three-sp-img' + cls + '" src="' + 그림길 + id + '-s.webp?v=2" alt=""' + 늦게 + ' decoding="async">' : '<span class="three-sp-img three-sp-none' + cls + '"></span>';
     const 칸 = n => { const x = 장of(자리, n);
       return '<div class="three-sp three-sp-' + n + (n === 끝n ? ' is-end' : '') + '" style="--i:' + n + '">' + 그림(x && x.id, (n === 2 ? ' is-cross' : '') + (x && x.놓임 === '거꾸로' ? ' is-rev' : '')) + '<span class="three-sp-n">' + n + '</span></div>'; };
-    return '<div class="three-sp-wrap"><div class="three-sp-board' + (움직임 ? ' is-anim' : '') + '" aria-hidden="true"><div class="three-sp-mid"><div class="three-sp three-sp-sig" style="--i:0">' + 그림(나 && 나.id, '') + '</div>' + 칸(1) + 칸(2) + '</div>'
+    return '<div class="three-sp-wrap"><div class="three-sp-board' + (움직임 ? ' is-anim' : '') + (나 && 오른쪽보는.has(String(나.id)) ? ' is-face-right' : '') + '" aria-hidden="true"><div class="three-sp-mid"><div class="three-sp three-sp-sig" style="--i:0">' + 그림(나 && 나.id, '') + '</div>' + 칸(1) + 칸(2) + '</div>'
       + 자리수.slice(2).map(n => 칸(n)).join('') + '</div></div>';
   }
   // 자리 목록 — 자리마다 이름 · 그 물음 길흉말 · 카드 이름 · 놓임 · 자리 뜻(있으면). 1 ~ 9째 길흉은 보여 주기만(셈은 열째 하나).
@@ -425,7 +429,7 @@
       const 의식of = () => { const k = 순간k(); if (!의식 || 의식.k !== k) 의식 = { k, 뗀: -1, 움직임: '' }; return 의식; };
       function 의식칸() {
         const 창 = 창말of(지금), 값 = { 창: 달말(창.첫) + ' ~ ' + 달말(창.끝), 물음: 글('세점.물음말.' + 고른) };
-        const 나 = 시그of(prof, 서울날of(지금)), 의 = 의식of();
+        const 나 = 시그of(prof, 서울날of(clock())), 의 = 의식of();   // 그릴 때마다 시계를 다시 읽는다 — 의식 중에 날이 바뀌어도 서버가 셀 나와 같게(만 40세 생일 자정)
         const 단추 = 의.뗀 < 0
           ? '<button type="button" class="btn three-rite-btn" data-three-shuffle>' + esc(글('세점.펼침.섞기') || '⇄') + '</button>'
           : 떼기단추of(글, 'data-three-cut', 의.뗀 + 1);
