@@ -1,6 +1,18 @@
 /* 책사 앱 UI v1 */
 (function () {
   'use strict';
+  // 10-31 사장님 「내 명식 결과를 초기화해줘 다시해보게」 — 주소 끝에 ?three-reset 이 붙어 오면 이 기기의 세 점 타로 기록(localStorage chaeksa.three.* —
+  //   사람 · 물음 · 달마다 뽑은 카드와 답)을 모두 지우고, 주소에서 그 말을 뺀 뒤 그대로 연다(화면 글 없음). 타로 기록은 이 기기에만 있어(서버는 저장 안 함) 밖에서 지울 수 없다.
+  //   주소시작()이 「뒤로」 바닥 주소를 잡기 전에 빼야 뒤로 갔다가 새로고침해도 또 지우지 않는다. 저장한 사람(생년월일) · 다른 기록은 그대로.
+  try {
+    if (/(?:^|[?&])three-reset(?:[=&]|$)/.test(location.search)) {
+      const 지울 = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('chaeksa.three.') === 0) 지울.push(k); }
+      지울.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+      const 남 = location.search.replace(/^\?/, '').split('&').filter(x => x && !/^three-reset(?:=|$)/.test(x)).join('&');
+      history.replaceState(history.state, '', location.pathname + (남 ? '?' + 남 : '') + location.hash);
+    }
+  } catch (e) {}
   // AI 는 window. 로 읽는다(10-02 멈춤 안전장치) — ai.js 하나를 못 받으면 예전엔 이 줄에서 앱 전체가 섰다.
   // 지금 ai.js 를 쓰는 곳은 걷은 기능과 개발용 설정 칸뿐이라, 없으면 그 칸만 비고 나머지는 그대로 돈다.
   // 10-02 개편 3묶음 — ai.js 는 이제 처음에 받지 않는다(탭별 꾸러미 ai · sheet · gunghap). 그래서 부를 때마다 읽는다(AI()).
