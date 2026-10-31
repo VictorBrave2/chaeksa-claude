@@ -216,24 +216,54 @@ def hero(slug):
          f' alt="" width="1024" height="1536" fetchpriority="high"></figure>\n')
     return css, f
 
+_hub = None
+def read_hub():
+    """read.html(사주 글 모음)의 h1 과 거기서 잇는 글 slug 들 — 빵부스러기 둘째 칸을 실제로 들어오는 길에 맞추려고(11-01)."""
+    global _hub
+    if _hub is None:
+        src = read(os.path.join(A, 'read.html'))
+        h1 = re.search(r'<h1>([^<]+)</h1>', src)
+        _hub = (html.unescape(h1.group(1)).strip() if h1 else '', set(re.findall(r'href="([a-z0-9-]+)\.html"', src)))
+    return _hub
+
+def crumbs(slug, title, url):
+    """빵부스러기(11-01) — 출산택일 글은 「출산택일」(taekil.html) 밑, read.html 이 잇는 사주 글은 그 쪽 밑, 나머지는 홈 바로 밑.
+    전에는 모든 글이 「출산택일」 밑이라 구글이 사주 「왜」 글까지 「chaeksa.kr › 출산택일」로 보였다(11-01 구글 화면)."""
+    path = [("책사", SITE)]
+    if slug.startswith('taekil-'):
+        path.append(("출산택일", SITE + "taekil.html"))
+    else:
+        이름, 잇는글 = read_hub()
+        if 이름 and slug in 잇는글:
+            path.append((이름, SITE + "read.html"))
+    path.append((title, url))
+    return [{"@type": "ListItem", "position": i + 1, "name": n, "item": u} for i, (n, u) in enumerate(path)]
+
+# 11-01 사주 글(출산택일이 아닌 글) 맨 위 뒤로가기 — 빵부스러기처럼 read.html(사주 궁금증 풀이)로 보낸다. 말은 Codex 몫(COPY-0027) —
+# 비어 있으면 지금 줄(← 출산택일 안내 · taekil.html) 그대로. read.html 이 잇지 않는 글(saju-accuracy-test · saju-glossary)도 지금 줄 그대로.
+뒤로_사주 = ''
+
+def 뒤로(slug):
+    if not slug.startswith('taekil-') and 뒤로_사주 and slug in read_hub()[1]:
+        return f'<a class="back" href="read.html">{html.escape(뒤로_사주)}</a>'
+    return '<a class="back" href="taekil.html">← 출산택일 안내</a>'
+
 def page(slug, title, desc, body, summary, faq, prev_next, related, img, published, modified, tags):
     hcss, hfig = hero(slug)
     url = SITE + slug + '.html'
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "Article", "headline": title, "description": desc, "url": url, "mainEntityOfPage": url,
          "datePublished": published, "dateModified": modified, "inLanguage": "ko-KR",
-         "author": {"@type": "Organization", "name": "책사", "url": SITE},
-         "publisher": {"@type": "Organization", "name": "책사", "url": SITE, "logo": {"@type": "ImageObject", "url": SITE + "icon-512.png"}},
-         "image": img[0], "keywords": ', '.join(tags[:10]), "about": "출산택일",
+         # 11-01 구글 「책사」 — 글쓴이 · 펴낸이를 홈 Organization(@id #org)과 같은 실체로 잇는다. about 은 출산택일 글만 출산택일, 사주 글은 사주.
+         "author": {"@type": "Organization", "@id": SITE + "#org", "name": "책사", "url": SITE},
+         "publisher": {"@type": "Organization", "@id": SITE + "#org", "name": "책사", "url": SITE, "logo": {"@type": "ImageObject", "url": SITE + "icon-512.png"}},
+         "image": img[0], "keywords": ', '.join(tags[:10]), "about": "출산택일" if slug.startswith('taekil-') else "사주",
          # GEO(2026-09-15): AI 답변 엔진이 집어 가는 문장을 명시한다 — 「이 글의 답 세 줄」이 abstract 이고 speakable 이다.
          "abstract": ' '.join(summary),
          "speakable": {"@type": "SpeakableSpecification", "cssSelector": [".note.answer", "h1"]},
          "citation": ["자평진전(청 심효첨)", "적천수(임철초 주석)", "궁통보감(통용 판본 조후용신표)", "삼명통회(만민영)"],
          "isAccessibleForFree": True},
-        {"@type": "BreadcrumbList", "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "책사", "item": SITE},
-            {"@type": "ListItem", "position": 2, "name": "출산택일", "item": SITE + "taekil.html"},
-            {"@type": "ListItem", "position": 3, "name": title, "item": url}]},
+        {"@type": "BreadcrumbList", "itemListElement": crumbs(slug, title, url)},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}]}
     ldjson = json.dumps(ld, ensure_ascii=False)
     nav = ''
@@ -258,6 +288,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="책사">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 {imgmeta}
@@ -296,7 +327,7 @@ def page(slug, title, desc, body, summary, faq, prev_next, related, img, publish
 <body{ ' class="tk-page"' if slug.startswith('taekil-') else ''}>
 { '<div class="mini-head" role="banner"><a class="logo" href="./" title="책사 홈으로"><i class="seal">策</i><span>책사</span></a></div>' if slug.startswith('taekil-') else '<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>'}
 <div class="doc">
-  <a class="back" href="taekil.html">← 출산택일 안내</a>
+  {뒤로(slug)}
   <h1>{html.escape(title)}</h1>
   <p class="meta">책사 · {modified} 갱신 · 계산은 chaeksa.kr(절기 시각·태어난 곳의 해 시각 보정), 기준은 본문에 공개</p>
 {hfig}  {summ}
@@ -392,15 +423,30 @@ PAGE_FAQ = {
     ],
 }
 
+V꼬리 = re.compile(r'\?v=[0-9A-Za-z]+')
+
+def _본문(s):
+    """<body> 부터 끝 — 손님 눈에 보이는 쪽. ?v= 꼬리는 배포(tools_bust --bump) 때 붙는 것이라 뺀다."""
+    i = s.find('<body')
+    return V꼬리.sub('', s[i:] if i >= 0 else s)
+
 def write_page(slug, make):
-    """글이 그대로면 파일을 안 쓴다 — 날짜만 바뀐 파일이 생기지 않게(09-22). 바뀌었으면 오늘 날짜로 쓰고 True."""
+    """글이 그대로면 파일을 안 쓴다 — 날짜만 바뀐 파일이 생기지 않게(09-22). 바뀌었으면 True.
+    11-01 ① 배포 때 붙는 ?v= 꼬리는 견줄 때 뺀다 — 전에는 꼬리 하나 때문에 돌릴 때마다 51편이 모두 「오늘 갱신」이 됐다.
+    ② 머리(<head> · JSON-LD)만 바뀌고 보이는 글이 그대로면 갱신 날짜(dateModified · 「갱신」)는 그대로 두고 다시 쓴다 —
+    구글은 글이 그대로인데 날짜만 새로 다는 것을 경고 신호로 본다(creating-helpful-content · publication-dates). 사이트맵 lastmod 는 오른다(구조화 데이터 고침)."""
     p = os.path.join(A, slug + '.html')
     old = read(p) if os.path.exists(p) else ''
     mm = re.search(r'"dateModified": "(\d{4}-\d{2}-\d{2})"', old)
     pm = re.search(r'"datePublished": "(\d{4}-\d{2}-\d{2})"', old)
     published = first_added(slug) or (pm.group(1) if pm else TODAY)
-    if old and mm and make(published, mm.group(1)) == old:
-        return False
+    if old and mm:
+        same = make(published, mm.group(1))
+        if V꼬리.sub('', same) == V꼬리.sub('', old):
+            return False
+        if _본문(same) == _본문(old):
+            write(p, same)
+            return True
     write(p, make(published, TODAY))
     return True
 

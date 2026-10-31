@@ -108,7 +108,7 @@
      10-31 승인한 PC 결과 제목에 쓰는 Serif 500을 추가했다. 모바일의 기존 글자 규칙은 그대로다. -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=db80489f5f">
+<link rel="stylesheet" href="style.css?v=c84c8e43e6">
 <link rel="stylesheet" href="today.css?v=1f23044365">
 <link rel="stylesheet" href="why.css?v=798f71d627">
 <link rel="stylesheet" href="three.css?v=26c6e78ff1">
@@ -118,13 +118,22 @@
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
 <link rel="preload" as="image" href="art/taekil-main.webp" imagesrcset="art/taekil-main-s.webp 360w, art/taekil-main.webp 1086w" imagesizes="(min-width:520px) 236px, calc((100vw - 48px)/2)" fetchpriority="high">
+<!-- 11-01 구글 「책사」 — 이름표 둘. ① Organization 을 따로 한 덩어리로(네이버 「사이트 연관채널」 예제가 단독 객체 — @graph 를 읽는지 문서로 확인 못 함).
+     sameAs = 사장님 유튜브(@chaeksa2026 채널 ID 주소 — 핸들이 바뀌어도 산다) · 네이버 블로그 withsajuai(이름 「책사」). 카카오 채널은 10-02 사장님 「카톡책사 삭제 ㄱㄱ」로 넣지 않는다.
+     상호 · 사업자번호 · 주소 · 메일은 아래 바닥글(통신판매업 표시)과 글자까지 같게 — 바닥글을 고치면 여기도. 전화는 넣지 않는다(10-02 손님 문의는 메일 한 곳).
+     ② WebSite.alternateName 은 짧은 이름 · 예비 이름 자리 — 구글 사이트 이름 문서대로 소문자 도메인을 예비로(전에는 꼬리말 「책사 — 나의 명리비서」). -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://chaeksa.kr/#org","name":"책사","url":"https://chaeksa.kr/",
+ "logo":"https://chaeksa.kr/icon-512.png","image":"https://chaeksa.kr/og.jpg",
+ "sameAs":["https://www.youtube.com/channel/UC31syqS9CzgNe9vpm2o2tdw","https://blog.naver.com/withsajuai"],
+ "legalName":"유코아 팔달","taxID":"745-68-00160","email":"dl4431@naver.com",
+ "address":{"@type":"PostalAddress","streetAddress":"매천로 2길19 상가 126동 1층 111호","addressLocality":"북구","addressRegion":"대구광역시","addressCountry":"KR"}}
+</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","@id":"https://chaeksa.kr/#website","url":"https://chaeksa.kr/",
-  "name":"책사","alternateName":"책사 — 나의 명리비서","inLanguage":"ko-KR",
+  "name":"책사","alternateName":["chaeksa.kr"],"inLanguage":"ko-KR","publisher":{"@id":"https://chaeksa.kr/#org"},
   "description":"제왕절개 날짜 · 시각을 고르는 출산택일은 무료 시뮬레이터와 유료 보고서로 봅니다. 생년월일시로 당신의 연애 모습과 그 사람이 연애 단계마다 하는 행동을 봅니다. 정통사주 · 정통궁합은 옛 책으로 풀이하고, 우리 둘의 연애궁합은 두 사람의 이야기를 그립니다. 정통사주 · 정통궁합 · 우리 둘의 연애궁합 · 출산택일 시뮬레이터는 가입 없이 무료입니다. 출산택일 보고서 · 결혼 전 궁합 점검 · 진로 보고서 · 연애 두 가지는 유료입니다. 연애 두 가지는 예시를 본 뒤 결제하세요."},
- {"@type":"Organization","@id":"https://chaeksa.kr/#org","name":"책사","url":"https://chaeksa.kr/",
-  "logo":"https://chaeksa.kr/icon-512.png","image":"https://chaeksa.kr/og.jpg"},
  {"@type":"Service","name":"출산택일 보고서","provider":{"@id":"https://chaeksa.kr/#org"},
   "areaServed":"KR","serviceType":"명리 택일",
   "description":"후보 날짜 전체를 두 고전의 기준으로 거릅니다(궁통보감·자평진전). 평생 운의 흐름(대운), 가족과 부딪히는 날, 수술 가능한 시간을 함께 살펴 근거를 문서에 적습니다. 점수·순위는 매기지 않습니다. 태어난 곳의 경도와 계절에 따른 해의 시각 차이(균시차)를 반영해 시각을 맞춥니다(진태양시 보정). 태어난 계절에 필요한 기운을 찾는 표도 원문과 대조합니다(궁통보감 조후용신표)."}
@@ -322,7 +331,7 @@
     </div>
     <div class="tab hide" data-tab="all">
       <div class="catalog-heading">
-        <h1>전체 보기</h1>
+        <h2>전체 보기</h2><!-- 11-01 h1 → h2: 탭이 닫혀 있어도 구글은 이 줄을 홈 둘째 머리글로 읽어 홈 설명을 「전체 보기 · …」로 시작했다. 모양은 style.css .catalog-heading h2 그대로. -->
         <p>보고 싶은 이야기를 골라 보세요.</p>
       </div>
       <div data-home-catalog></div>
@@ -778,7 +787,7 @@
 <script src="yaksok.js?v=356c2c6b4b"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=c648ef8902"></script>
+<script src="home-cats.js?v=a752714a2d"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=4b8ab83494"></script>
@@ -792,7 +801,7 @@
 <script src="why-pieces.js?v=e5e3b0c457" data-for="why"></script>
 <script src="why-art.js?v=aea146358e" data-for="why"></script>
 <script src="why.js?v=b5742ccff8" data-for="why"></script>
-<script src="three-pieces.js?v=46aea0133e" data-for="three"></script>
+<script src="three-pieces.js?v=a106011827" data-for="three"></script>
 <script src="three.js?v=af5a4bba59" data-for="three"></script>
 <script src="saenggeuk.js?v=df8648d564" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="gise.js?v=d0f879078e" data-for="home jeongtong chongnon ssom taekil"></script>

@@ -70,12 +70,15 @@
     return null;
   }
 
-  var 그림판 = 'v1544';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
+  // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
+  var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
+  var 그림판 = 'v1545';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
     var 원본 = c.그림.replace('{g}', g) + '?' + 그림판, 작은 = c.작은 ? c.작은.replace('{g}', g) + '?' + 그림판 : '';   // 10-24 그림 꼬리(판) — 같은 이름으로 바뀐 그림을 캐시가 물고 있지 않게(tools_bust --bump 가 올림)
-    var 주소 = c.주소 || (c.탭 && c.탭 !== 'home' ? './?go=' + c.탭 : '#');
+    var 주소 = c.주소 || (c.탭 && c.탭 !== 'home' ? (소개쪽[c.탭] || './?go=' + c.탭) : '#');
     // 첫 줄 둘은 바로 받고(첫 칸은 먼저), 그 아래는 화면에 다가오면 받는다.
     var 받기 = 차례 === 0 ? ' fetchpriority="high"' : 차례 < 4 ? '' : ' loading="lazy"';
     return '<a class="cat" href="' + esc(주소) + '" data-cat="' + esc(b.키) + '" data-i="' + i + '" data-key="' + esc(c.키) + '"'
