@@ -62,12 +62,24 @@
     return { 첫: 첫해 + '-' + 두(첫달), 끝: 끝.getFullYear() + '-' + 두(끝.getMonth() + 1) };
   }
 
+  // ── 카드 그림(10-31) — 코덱스 타로 덱 chaeksa-v1: 앞면 78 + 공통 뒷면(image-requests/tarot-deck-v1/HANDOFF.md).
+  //    뽑힌 앞면 한 장만 불러온다. 다시 그린 다섯 장(M00 · M10 · W05 · C01 · S06) 때문에 앞면은 모두 ?v=2. 모르는 id 는 그림 없이 글만.
+  const 그림길 = 'art/tarot/chaeksa-v1/', 그림id = /^(?:M(?:0\d|1\d|2[01])|[WCSP](?:0[1-9]|1[0-4]))$/;
+  const 뒷면그림 = '<img class="three-back-img" src="' + 그림길 + 'back-s.webp" alt="" decoding="async">';
+  function 카드그림(id, 거꾸로) {
+    if (!그림id.test(String(id))) return '';
+    const 큰 = 그림길 + id + '.webp?v=2', 작은 = 그림길 + id + '-s.webp?v=2';
+    return '<div class="three-card-media"><img class="three-card-img' + (거꾸로 ? ' is-rev' : '') + '" src="' + 큰 + '" srcset="' + 작은 + ' 320w, ' + 큰 + ' 960w"'
+      + ' sizes="(max-width:420px) 36vw, 200px" alt="" decoding="async"></div>';
+  }
+
   // ── 결과 그리기 ──
   function 카드칸(r, 글, P) {
-    const c = r.카드, 이름 = (P.카드이름 && P.카드이름[c.id]) || c.이름;
+    const c = r.카드, 이름 = (P.카드이름 && P.카드이름[c.id]) || c.이름, 그림 = 카드그림(c.id, c.놓임 === '거꾸로');
     return '<div class="three-drawn">' + (글('뽑은카드') ? '<p class="three-drawn-k">' + esc(글('뽑은카드')) + '</p>' : '')
+      + '<div class="three-drawn-row' + (그림 ? ' has-art' : '') + '">' + 그림
       + '<div class="three-face' + (c.놓임 === '거꾸로' ? ' is-rev' : '') + '"><b>' + esc(이름) + '</b><small lang="en">' + esc(c.이름en) + '</small>'
-      + (글('놓임말.' + c.놓임) ? '<span class="three-orient">' + esc(글('놓임말.' + c.놓임)) + '</span>' : '') + '</div></div>';
+      + (글('놓임말.' + c.놓임) ? '<span class="three-orient">' + esc(글('놓임말.' + c.놓임)) + '</span>' : '') + '</div></div></div>';
   }
   function 결론칸(r, 글) {
     if (r.점) {
@@ -255,7 +267,7 @@
         const 창 = 창말of(지금), 값 = { 창: 달말(창.첫) + ' ~ ' + 달말(창.끝), 물음: 글('세점.물음말.' + 고른) };
         return '<div class="three-deck">' + (글('세점.창말', 값) ? '<p class="three-window">' + esc(글('세점.창말', 값)) + '</p>' : '')
           + (글('세점.뽑기말', 값) ? '<p class="three-pick">' + esc(글('세점.뽑기말', 값)) + '</p>' : '')
-          + '<div class="three-backs">' + 덱.map((x, i) => '<button type="button" class="three-back" data-three-card="' + i + '" aria-label="' + esc(글('카드읽기', { n: i + 1 }) || (i + 1)) + '"><span></span></button>').join('') + '</div></div>';
+          + '<div class="three-backs">' + 덱.map((x, i) => '<button type="button" class="three-back" data-three-card="' + i + '" aria-label="' + esc(글('카드읽기', { n: i + 1 }) || (i + 1)) + '">' + 뒷면그림 + '</button>').join('') + '</div></div>';
       }
       function 그리기() {
         if (내차례 !== 차례) return;
@@ -367,7 +379,7 @@
         const 창 = 창말of(지금);
         return '<div class="three-deck">' + (글('창말', { 창: 달말(창.첫) + ' ~ ' + 달말(창.끝) }) ? '<p class="three-window">' + esc(글('창말', { 창: 달말(창.첫) + ' ~ ' + 달말(창.끝) })) + '</p>' : '')
           + (글('뽑기말') ? '<p class="three-pick">' + esc(글('뽑기말')) + '</p>' : '')
-          + '<div class="three-backs">' + 덱.map((x, i) => '<button type="button" class="three-back" data-three-card="' + i + '" aria-label="' + esc(글('카드읽기', { n: i + 1 }) || (i + 1)) + '"><span></span></button>').join('') + '</div></div>';
+          + '<div class="three-backs">' + 덱.map((x, i) => '<button type="button" class="three-back" data-three-card="' + i + '" aria-label="' + esc(글('카드읽기', { n: i + 1 }) || (i + 1)) + '">' + 뒷면그림 + '</button>').join('') + '</div></div>';
       }
       function 그리기() {
         if (내차례 !== 차례) return;

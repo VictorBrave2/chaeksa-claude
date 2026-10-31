@@ -11,9 +11,10 @@
 .three-window{margin:0 0 6px;font-size:var(--t2);color:var(--ink2);word-break:keep-all}
 .three-pick{margin:0 0 12px;font-size:var(--t3);line-height:1.6;color:var(--ink);word-break:keep-all}
 .three-backs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:4px 0 6px}
-.three-back{appearance:none;border:1px solid var(--line2);border-radius:10px;background:var(--card);padding:4px;aspect-ratio:2/3;max-width:100%;cursor:pointer;transition:transform .15s ease,border-color .15s ease}
-.three-back span{display:block;width:100%;height:100%;border-radius:7px;background:repeating-linear-gradient(45deg,var(--accent-line),var(--accent-line) 3px,transparent 3px,transparent 8px),var(--bg2)}
-.three-back:hover{transform:translateY(-3px);border-color:var(--accent)}
+.three-back{appearance:none;border:0;border-radius:8px;background:transparent;padding:0;aspect-ratio:7/12;max-width:100%;cursor:pointer;transition:transform .15s ease}
+.three-back-img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.three-back:hover{transform:translateY(-3px)}
+.three-back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:420px){.three-backs{grid-template-columns:repeat(4,minmax(0,1fr))}}
 /* 뽑은 카드 */
 .three-drawn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:0 0 14px}
@@ -22,6 +23,12 @@
 .three-face b{font-family:var(--serif);font-size:var(--t4);font-weight:600;color:var(--ink);word-break:keep-all}
 .three-face small{font-size:var(--t1);color:var(--ink3)}
 .three-face.is-rev{border-left-style:dashed}
+/* 카드 그림(10-31) — 7:12 틀 안에 통째로(자르지 않음) · 거꾸로는 그림만 돌리고 글은 바로 둔다 */
+.three-drawn-row{display:flex;align-items:center;gap:14px;max-width:100%}
+.three-card-media{flex:0 0 auto;width:clamp(116px,36vw,200px);aspect-ratio:7/12;max-width:100%}
+.three-card-img{display:block;width:100%;height:100%;object-fit:contain}
+.three-card-img.is-rev{transform:rotate(180deg)}
+.three-drawn-row.has-art .three-face{border:0;padding:0;background:transparent}
 .three-orient{font-size:var(--t1);color:var(--accent);font-weight:600}
 /* 결론 · 덧말 */
 .three-card .three-answer p{margin:0;word-break:keep-all}
