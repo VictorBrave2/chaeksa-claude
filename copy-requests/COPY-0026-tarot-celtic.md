@@ -674,3 +674,13 @@ PR #14(이야기 191칸 · 왜.전체 1칸) 메인 합침 · 공개 v1539 — �
 - 원문에서 사람 · 마음인 것을 거래 · 물건으로 바꾸지 않는다.
 
 끝나면: 새 가지 `codex/COPY-0026-question-fix`(PR #15 를 합친 main 에서) — 칸마다 전 → 후 · 까닭, [ref/COPY-0026-question-money.md](ref/COPY-0026-question-money.md) 의 해당 줄도 같이. `node` 로 `app/three-pieces.js` 가 깨지지 않는지 · `python tools_check.py` 10)이 막힘 0인지. 메인이 뜻 대조 · 화면 글 검사기 · 합치기 · 배포. INDEX.md 상태를 「제안됨」으로.
+
+
+### Codex 돈 카드 풀이 뜻 대조 고침 제안 — 2026-11-01
+
+상태: **제안됨** · 새 가지 `codex/COPY-0026-question-fix`(main에서 시작).
+
+- 주문한 12면 14칸(물음카드말 10·물음카드뜻 4)을 고쳤다.
+- [칸마다 전 → 후 · 까닭](ref/COPY-0026-question-money-fix.md).
+- [원고·원문 대조표](ref/COPY-0026-question-money.md)의 해당 행과 원문 인용을 함께 갱신했다.
+- node 구문·로딩 통과. python tools_check.py 전체 막힘 0·확인 69, 10) 막힘 0·확인 0 및 돈 뜻·말 각 156면 다 참. 세부 결과는 전후 기록의 「확인」 절. 메인 뜻 대조·합치기·배포 대기.
