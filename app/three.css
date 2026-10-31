@@ -184,7 +184,7 @@
 /* 결과 — 카드칸(결과보기 뒤 화면 안으로 · 초점 테는 .three-page :focus-visible) · 궁정말 한 줄(카드칸 바로 아래 — 그 카드에 붙은 말) */
 .three-card .three-drawn{scroll-margin-top:84px}
 .three-card p.three-sp-court{margin:-6px 0 14px;padding:1px 0 1px 10px;border-left:2px solid var(--accent);font-size:var(--t2);line-height:1.65;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
-/* 열 장 접힘(결정함 84 — 세 점 결론 아래 · 근거 위) 안 펼침 — 읽는법 · 판(움직임 없음 · 조금 작게) · 자리 목록(장 풀이 줄) · 다시말 · 다시보기 · 끝말 */
+/* 열 장 접힘(결정함 84 — 세 점 결론 아래 · 근거 위) 안 펼침 — 판(움직임 없음 · 조금 작게) · 열 장 이야기 · 자리 목록(장 풀이 줄) · 다시말 · 다시보기 · 끝말(읽는법은 없음 — 87) */
 .three-spread{margin:2px 0 14px}
 .three-cards .three-sp-board{max-width:260px}
 .three-card .three-spread p.three-sp-head{margin:6px 0 0;font-size:var(--t1);font-weight:700;line-height:1.6;color:var(--ink2);word-break:keep-all}
@@ -225,9 +225,9 @@
 .three-sp.is-flip .three-sp-face{animation:threeFlipIn .26s ease-out .18s both}
 @keyframes threeFlipOut{to{transform:scaleX(0)}}
 @keyframes threeFlipIn{from{transform:scaleX(0)}to{transform:none}}
-.three-flip-foot{display:grid;justify-items:center;position:sticky;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:5;padding:8px 0 4px;background:linear-gradient(to top,var(--card) 70%,transparent)}   /* 아래 네비(실측 높이 73.2px — v1535 배포 뒤 검토) 바로 위 */
+.three-flip-foot{display:grid;justify-items:center;position:sticky;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:5;padding:8px 0 4px;background:linear-gradient(to top,var(--card) 70%,transparent);box-shadow:0 6px 0 var(--card)}   /* 아래 네비(실측 높이 73.2px — v1535 배포 뒤 검토) 바로 위 · 띠 아래 4.8px 틈은 같은 색 그림자로 메움(88) */
 .three-flip-foot .three-rite-btn{margin-top:4px}
-.three-read{display:block;min-width:0;margin:6px 0 4px;padding:12px 14px;border:1px solid var(--line2);border-left:4px solid var(--line2);border-radius:var(--r2);background:var(--card)}
+.three-read{display:block;min-width:0;scroll-margin-top:84px;scroll-margin-bottom:92px;margin:6px 0 4px;padding:12px 14px;border:1px solid var(--line2);border-left:4px solid var(--line2);border-radius:var(--r2);background:var(--card)}
 .three-read[data-gh="길"]{border-left-color:var(--wood)}
 .three-read[data-gh="흉"]{border-left-color:var(--fire)}
 .three-read[data-gh="섞임"],.three-read[data-gh="변화"]{border-left-color:var(--accent)}
@@ -263,9 +263,9 @@
 .three-story-act{display:grid;gap:6px;min-width:0}
 .three-card .three-story p.three-story-when{font-size:var(--t1);font-weight:700;letter-spacing:.04em;line-height:1.5;color:var(--accent)}
 .three-card .three-story p.three-story-beat{display:flex;align-items:flex-start;gap:8px;padding-left:8px;border-left:3px solid var(--line2);font-size:var(--t2);line-height:1.75;color:var(--ink)}
-.three-story-beat[data-gh="길"]{border-left-color:var(--wood)}
-.three-story-beat[data-gh="흉"]{border-left-color:var(--fire)}
-.three-story-beat[data-gh="섞임"]{border-left-color:var(--accent)}
+.three-card .three-story p.three-story-beat[data-gh="길"]{border-left-color:var(--wood)}   /* 88 — 바로 위 줄(0,3,1)의 border-left 가 색을 덮어 늘 회색이었다 */
+.three-card .three-story p.three-story-beat[data-gh="흉"]{border-left-color:var(--fire)}
+.three-card .three-story p.three-story-beat[data-gh="섞임"]{border-left-color:var(--accent)}
 .three-story-txt{flex:1 1 auto;min-width:0}
 .three-reveal>.three-story{animation:threeReadIn .32s ease .3s both}
 .three-pile{cursor:pointer;-webkit-tap-highlight-color:transparent}   /* 결정함 86 — 더미를 눌러도 섞기 · 떼기 */
