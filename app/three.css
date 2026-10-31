@@ -187,3 +187,105 @@
 .three-card .three-spread p.three-sp-again{margin:2px 0 4px;padding-top:10px;border-top:1px solid var(--line);font-size:var(--t2);line-height:1.7;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
 .three-card .three-spread p.three-sp-endline{margin:0;padding-top:10px;border-top:1px solid var(--line);font-family:var(--serif);font-size:var(--t3);line-height:1.65;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
 @media(prefers-reduced-motion:reduce){.three-sp-board.is-anim .three-sp,.three-reveal-foot{animation:none}.three-pile .three-pile-img{animation:none!important}}
+
+/* Touch ritual: the same deck, with one visible response to each gesture. */
+.three-rite-row{max-width:430px;margin:6px auto 12px;gap:12px;align-items:center}
+.three-rite-row .three-sig{width:auto;max-width:100%;flex:0 1 auto;flex-direction:row;gap:12px;align-items:center}
+.three-rite-row .three-sig-img{width:52px;flex:0 0 52px;aspect-ratio:7/12;filter:drop-shadow(0 4px 8px rgba(76,55,24,.10))}
+.three-rite-row .three-sig figcaption{align-items:flex-start;text-align:left;min-width:0}
+.three-rite-row .three-sig figcaption b{font-size:13px}
+.three-rite-row .three-sig figcaption small{font-size:10px}
+.three-ritual-table{position:relative;max-width:430px;margin:0 auto;padding:10px 0 4px;isolation:isolate}
+.three-ritual-table::before{content:"";position:absolute;z-index:-1;left:8%;right:8%;top:24px;height:180px;border-radius:50%;background:radial-gradient(ellipse,rgba(182,143,67,.12),rgba(182,143,67,.035) 48%,transparent 72%);pointer-events:none}
+.three-fan{--fan-card-width:clamp(100px,25vw,126px);position:relative;width:100%;max-width:430px;height:clamp(232px,57vw,276px);margin:0 auto;container-type:inline-size;isolation:isolate;touch-action:pan-y}
+.three-fan-card{
+  --fan-step:calc((100cqw - var(--fan-card-width) * 1.85) / 12);
+  --fan-lift:0px;appearance:none;position:absolute;top:18px;left:50%;
+  width:var(--fan-card-width);height:calc(var(--fan-card-width) * 12 / 7);
+  margin:0;padding:0;border:0;border-radius:8px;background:transparent;
+  z-index:calc(20 - var(--fan-abs,0));opacity:1;cursor:pointer;
+  transform-origin:50% 50%;transform:translate(calc(-50% + var(--fan-i,0) * 1px),calc(var(--fan-abs,0) * .65px)) rotate(calc(var(--fan-i,0) * .5deg));
+  box-shadow:0 6px 14px rgba(55,39,18,.12);
+  transition:transform .22s ease,box-shadow .22s ease;touch-action:pan-y;-webkit-tap-highlight-color:transparent
+}
+.three-fan-card img{display:block;width:100%;height:100%;margin:0;object-fit:contain;border-radius:inherit;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.three-fan-card:disabled{opacity:1;cursor:default}
+.three-fan.is-closed .three-fan-card:disabled{pointer-events:none}
+.three-fan.is-open .three-fan-card,.three-fan.is-shuffle .three-fan-card,.three-fan.is-cut .three-fan-card{
+  z-index:calc(10 + var(--fan-z,0));
+  transform:translate(calc(-50% + var(--fan-i,0) * var(--fan-step)),calc(var(--fan-abs,0) * 4px + var(--fan-lift))) rotate(calc(var(--fan-i,0) * 4deg))
+}
+.three-fan.is-open .three-fan-card:enabled:focus-visible{--fan-lift:-20px;z-index:50;outline:2px solid var(--accent);outline-offset:5px;box-shadow:0 13px 23px rgba(86,58,19,.20)}
+@media(hover:hover){
+  .three-fan.is-open .three-fan-card:enabled:hover{--fan-lift:-20px;z-index:50;box-shadow:0 13px 23px rgba(86,58,19,.20)}
+}
+.three-fan.is-open .three-fan-card:enabled:active{--fan-lift:-14px;z-index:50}
+.three-fan:is(.is-shuffle,.is-cut) .three-fan-card{pointer-events:none;transition:none}
+.three-fan.is-shuffle .three-fan-card{animation:threeFanShuffle 1.05s cubic-bezier(.25,.7,.2,1) both}
+.three-fan.is-cut .three-fan-card{animation:threeFanCut .64s cubic-bezier(.25,.7,.2,1) both}
+@keyframes threeFanShuffle{
+  0%{transform:translate(calc(-50% + var(--fan-i,0) * 1px),calc(var(--fan-abs,0) * .65px)) rotate(calc(var(--fan-i,0) * .5deg))}
+  28%{transform:translate(calc(-50% + var(--cut-side,1) * 26px + var(--fan-i,0) * 2px),calc(12px + var(--fan-abs,0) * 2px)) rotate(calc(var(--cut-side,1) * -10deg))}
+  55%{transform:translate(calc(-50% + var(--cut-side,1) * -22px + var(--fan-i,0) * 1px),calc(var(--fan-abs,0) * 1px)) rotate(calc(var(--cut-side,1) * 8deg))}
+  76%{transform:translate(calc(-50% + var(--fan-i,0) * 2px),8px) rotate(calc(var(--fan-i,0) * 1deg))}
+  100%{transform:translate(calc(-50% + var(--fan-i,0) * var(--fan-step)),calc(var(--fan-abs,0) * 4px)) rotate(calc(var(--fan-i,0) * 4deg))}
+}
+@keyframes threeFanCut{
+  0%,100%{transform:translate(calc(-50% + var(--fan-i,0) * var(--fan-step)),calc(var(--fan-abs,0) * 4px)) rotate(calc(var(--fan-i,0) * 4deg))}
+  42%{transform:translate(calc(-50% + var(--fan-i,0) * var(--fan-step) * .65 + var(--cut-side,1) * 22px),calc(var(--fan-abs,0) * 3px - 12px)) rotate(calc(var(--fan-i,0) * 3deg + var(--cut-side,1) * 2deg))}
+  72%{transform:translate(calc(-50% + var(--fan-i,0) * var(--fan-step) * .82),calc(var(--fan-abs,0) * 3px + 5px)) rotate(calc(var(--fan-i,0) * 3deg))}
+}
+.three-cut-progress{display:flex;align-items:center;justify-content:center;gap:9px;margin:4px auto 11px}
+.three-cut-progress span{display:block;font-size:0;width:25px;height:3px;border-radius:3px;background:var(--line2);transition:background-color .2s ease,transform .2s ease}
+.three-cut-progress span.is-done{background:var(--accent);transform:scaleY(1.5)}
+.three-card .three-rite-hint{margin:8px auto 0;max-width:360px;text-align:center;color:var(--ink2);font-size:13px;line-height:1.7}
+.three-card p.three-sig-why{max-width:430px;margin:10px auto 4px;font-size:12px;line-height:1.75}
+.three-rite .three-rite-btn{display:block;width:fit-content;min-width:150px;max-width:100%;margin:14px auto 0}
+.three-rite .three-rite-btn:disabled{opacity:.58;cursor:wait}
+.three-turn-wait{position:relative;width:120px;margin:28px auto 26px;isolation:isolate}
+.three-turn-wait::before{content:"";position:absolute;inset:12px -22px -10px;z-index:-1;border-radius:50%;background:radial-gradient(ellipse,rgba(174,131,50,.16),transparent 72%);pointer-events:none}
+.three-turn-wait::after{content:"";display:block;width:32px;height:1px;margin:18px auto 0;background:var(--accent-line)}
+.three-turn-wait>img{display:block;width:120px;height:auto;margin:0;filter:drop-shadow(0 9px 16px rgba(60,41,18,.14))}
+
+/* Only the first reveal moves; the evidence board remains a static reading. */
+.three-reveal .three-sp-board{max-width:390px}
+.three-sp-board.is-anim .three-sp{
+  perspective:700px;animation:threeDealIn .54s cubic-bezier(.16,.74,.22,1) both;
+  animation-delay:calc(var(--i,0) * 160ms)
+}
+.three-sp-board.is-anim .three-sp-sig{animation:none;opacity:1;transform:none}
+.three-sp-board.is-anim .three-sp-10{animation-name:threeDealLast;animation-delay:2.15s}
+.three-sp-flip{position:absolute;inset:0;transform-style:preserve-3d}
+.three-sp-board.is-anim .three-sp-flip{
+  transform:rotateY(180deg);animation:threeTurnFace .56s cubic-bezier(.24,.62,.2,1) both;
+  animation-delay:calc(var(--i,0) * 160ms + 180ms)
+}
+.three-sp-board.is-anim .three-sp-10 .three-sp-flip{animation-delay:2.33s}
+.three-sp-flip>.three-sp-img,.three-sp-back{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.three-sp-back{position:absolute;inset:0;margin:auto;display:block;width:auto;height:auto;max-width:92%;max-height:94%;border-radius:3px;transform:rotateY(180deg)}
+.three-sp-back.is-cross{transform:rotateY(180deg) rotate(90deg) scale(.84)}
+@keyframes threeDealIn{
+  from{opacity:0;transform:translateY(46px) scale(.84)}
+  65%{opacity:1}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes threeDealLast{
+  from{opacity:0;transform:translateY(48px) scale(.82)}
+  62%{opacity:1;transform:translateY(-7px) scale(1.08)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes threeTurnFace{from{transform:rotateY(180deg)}to{transform:rotateY(0)}}
+.three-reveal-foot{visibility:hidden;animation:threeRevealReady .38s ease both;animation-delay:3s}
+@keyframes threeRevealReady{
+  from{visibility:hidden;opacity:0;transform:translateY(7px)}
+  to{visibility:visible;opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .three-fan-card,.three-cut-progress span{transition:none}
+  .three-fan.is-shuffle .three-fan-card,.three-fan.is-cut .three-fan-card{animation:none!important}
+  .three-sp-board.is-anim .three-sp,.three-sp-board.is-anim .three-sp-flip{animation:none!important}
+  .three-sp-board.is-anim .three-sp{opacity:1;transform:none}
+  .three-sp-board.is-anim .three-sp-flip{transform:none}
+  .three-sp-board.is-anim .three-sp-back{display:none}
+  .three-reveal-foot{animation:none!important;visibility:visible;opacity:1;transform:none}
+}

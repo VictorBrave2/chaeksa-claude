@@ -302,7 +302,7 @@
     const 늦게 = 움직임 ? '' : ' loading="lazy"';
     const 그림 = (id, cls) => 그림id.test(String(id)) ? '<img class="three-sp-img' + cls + '" src="' + 그림길 + id + '-s.webp?v=2" alt=""' + 늦게 + ' decoding="async">' : '<span class="three-sp-img three-sp-none' + cls + '"></span>';
     const 칸 = n => { const x = 장of(자리, n);
-      return '<div class="three-sp three-sp-' + n + (n === 끝n ? ' is-end' : '') + '" style="--i:' + n + '">' + 그림(x && x.id, (n === 2 ? ' is-cross' : '') + (x && x.놓임 === '거꾸로' ? ' is-rev' : '')) + '<span class="three-sp-n">' + n + '</span></div>'; };
+      return '<div class="three-sp three-sp-' + n + (n === 끝n ? ' is-end' : '') + '" style="--i:' + n + '">' + (움직임 ? '<div class="three-sp-flip">' : '') + 그림(x && x.id, (n === 2 ? ' is-cross' : '') + (x && x.놓임 === '거꾸로' ? ' is-rev' : '')) + (움직임 ? '<img class="three-sp-back' + (n === 2 ? ' is-cross' : '') + '" src="' + 그림길 + 'back-s.webp" alt=""></div>' : '') + '<span class="three-sp-n">' + n + '</span></div>'; };
     return '<div class="three-sp-wrap"><div class="three-sp-board' + (움직임 ? ' is-anim' : '') + (나 && 오른쪽보는.has(String(나.id)) ? ' is-face-right' : '') + '" aria-hidden="true"><div class="three-sp-mid"><div class="three-sp three-sp-sig" style="--i:0">' + 그림(나 && 나.id, '') + '</div>' + 칸(1) + 칸(2) + '</div>'
       + 자리수.slice(2).map(n => 칸(n)).join('') + '</div></div>';
   }
@@ -318,13 +318,27 @@
     }).join('') + '</ol>';
   }
   // 의식 꼴 — 처음 의식(나 = 화면이 센 나 · 나 글) · 다시 의식(나 = 첫 판 열째 · 글 없음 — D3 「새 나 카드 + 뒷면 더미 + 떼기 단추」)이 같은 꼴(three-rite). 나 카드는 늘 바로(앞면) · 뒷면 더미 셋.
-  function 의식틀(위, 나, 나이름, 왜말, 움직임, 단추) {
-    const 뒷 = '<img class="three-pile-img" src="' + 그림길 + 'back-s.webp" alt="" decoding="async">';
-    return '<div class="three-rite" data-three-rite>' + (위 || '') + '<div class="three-rite-row">'
+  // 카드 사이를 직접 누르는 의식. 누른 위치는 연출에만 쓰고 서버의 카드·순서·길흉은 그대로 사용한다.
+  function 의식틀(위, 나, 나이름, 왜말, 움직임, 단추, 의, 글) {
+    의 = 의 || { 뗀: -1 };
+    const 펼침 = 의.뗀 >= 0 || 움직임 === 'shuffle', 바쁨 = !!움직임;
+    const 위치 = Number.isInteger(의.위치) ? 의.위치 : 6;
+    const 안내 = 글('세점.펼침.' + (바쁨 ? (움직임 === 'shuffle' ? '섞는중' : '나누는중') : 펼침 ? '손길' : '준비'));
+    const 카드말 = n => 펼침 ? 글('세점.펼침.나눌곳', { n: n + 1 }) : 글('세점.펼침.섞기');
+    const 카드 = Array.from({ length: 13 }, (_, i) => '<button type="button" class="three-fan-card" data-three-deck-touch="' + i
+      + '" style="--fan-i:' + (i - 6) + ';--fan-abs:' + Math.abs(i - 6) + ';--fan-z:' + i + ';--cut-side:' + (i < 위치 ? -1 : 1)
+      + '" aria-label="' + esc(카드말(i)) + '"' + (바쁨 || (!펼침 && i !== 6) ? ' disabled' : '')
+      + (!펼침 && i !== 6 ? ' aria-hidden="true"' : '') + '><img src="' + 그림길 + 'back.webp" alt="" decoding="async" draggable="false"></button>').join('');
+    const 진행 = Math.max(0, Math.min(3, 의.뗀));
+    return '<div class="three-rite" data-three-rite aria-busy="' + 바쁨 + '">' + (위 || '') + '<div class="three-rite-row">'
       + (나 ? '<figure class="three-sig">' + (그림id.test(String(나.id)) ? '<img class="three-sig-img" src="' + 그림길 + 나.id + '-s.webp?v=2" alt="" decoding="async">' : '')
         + '<figcaption>' + (나이름 ? '<b>' + esc(나이름) + '</b>' + (나.이름en ? '<small lang="en">' + esc(나.이름en) + '</small>' : '') : '<b lang="en">' + esc(나.이름en || '') + '</b>') + '</figcaption></figure>' : '')
-      + '<div class="three-pile' + (움직임 ? ' is-' + 움직임 : '') + '" aria-hidden="true">' + 뒷 + 뒷 + 뒷 + '</div></div>'
-      + (왜말 ? '<p class="three-sig-why">' + esc(왜말) + '</p>' : '') + (단추 || '') + '</div>';
+      + '</div>'
+      + (안내 ? '<p class="three-rite-hint" role="status">' + esc(안내) + '</p>' : '')
+      + '<div class="three-ritual-table"><div class="three-fan ' + (펼침 ? 'is-open' : 'is-closed') + (움직임 ? ' is-' + 움직임 : '') + '">' + 카드 + '</div></div>'
+      + '<div class="three-cut-progress" aria-label="' + esc(글('세점.펼침.나눔수', { n: 진행 })) + '">' + [1, 2, 3].map(n => '<span' + (n <= 진행 ? ' class="is-done"' : '') + ' aria-hidden="true">' + n + '</span>').join('') + '</div>'
+      + (단추 ? 단추.replace('<button ', '<button ' + (바쁨 ? 'disabled ' : '')) : '')
+      + (왜말 ? '<p class="three-sig-why">' + esc(왜말) + '</p>' : '') + '</div>';
   }
   const 떼기단추of = (글, 속성, n) => '<button type="button" class="btn three-rite-btn" ' + 속성 + '>' + esc(글('세점.펼침.떼기', { n }) || n + ' / 3') + '</button>';
   // 펼친 순간(D3 — 저장 안 함) — 셋째 떼기 뒤 처음 보는 판. 결과(카드칸 · 세 점)는 결과보기를 누른 뒤에.
@@ -334,7 +348,7 @@
   //   둘판: 둘째 판 그림(차례로 놓임) → 끝말 + 결과보기
   function 펼친칸(r, 글, P, 순) {
     const f = r.펼침, 둘 = 다시됨(f), 단계 = 둘 ? 순.단계 : '첫판';
-    if (단계 === '다시의식') return 의식틀('', f.다시.나, 카드이름of(f.다시.나, P), '', 순.움직임, 떼기단추of(글, 'data-three-again-cut', 순.뗀 + 1));
+    if (단계 === '다시의식') return 의식틀('', f.다시.나, 카드이름of(f.다시.나, P), '', 순.움직임, 떼기단추of(글, 'data-three-again-cut', Math.max(0, 순.뗀) + 1), 순, 글);
     const 둘판 = 단계 === '둘판', 다시앞 = 둘 && !둘판, 줄 = 다시앞 ? 다시말of(r, 글, P) : 끝말of(r, 글, P);
     const 단추 = 다시앞
       ? '<button type="button" class="btn three-rite-btn" data-three-again-shuffle>' + esc(글('세점.펼침.섞기') || '⇄') + '</button>'
@@ -402,10 +416,17 @@
           const 단추 = sel => root.querySelector(sel);
           const 섞 = 단추('[data-three-shuffle]'), 뗌단추 = 단추('[data-three-cut]'), 새로 = 단추('[data-three-spread-retry]');
           const 다섞 = 단추('[data-three-again-shuffle]'), 다뗌 = 단추('[data-three-again-cut]'), 결과 = 단추('[data-three-reveal-go]');
-          if (섞) 섞.onclick = 섞음;
-          if (뗌단추) 뗌단추.onclick = 뗌;
+          if (섞) 섞.onclick = () => 섞음();
+          if (뗌단추) 뗌단추.onclick = () => 뗌(6);
           if (다섞) 다섞.onclick = 다시섞음;
-          if (다뗌) 다뗌.onclick = 다시뗌;
+          if (다뗌) 다뗌.onclick = () => 다시뗌(6);
+          모두('[data-three-deck-touch]').forEach(b => { b.onclick = () => {
+            if (b.disabled) return;
+            const i = +b.getAttribute('data-three-deck-touch');
+            if (펼친 && 펼친.k === 순간k() && 펼친.단계 === '다시의식') 다시뗌(i);
+            else if (의식of().뗀 < 0) 섞음();
+            else 뗌(i);
+          }; });
           if (결과) 결과.onclick = 결과봄;
           if (새로) 새로.onclick = () => { if (고른) 펼쳐부르기(고른, 순간켬); };
           const 스 = 스크롤할; 스크롤할 = null;
@@ -445,33 +466,54 @@
         const 단추 = 의.뗀 < 0
           ? '<button type="button" class="btn three-rite-btn" data-three-shuffle>' + esc(글('세점.펼침.섞기') || '⇄') + '</button>'
           : 떼기단추of(글, 'data-three-cut', 의.뗀 + 1);
-        return 의식틀(글('세점.창말', 값) ? '<p class="three-window">' + esc(글('세점.창말', 값)) + '</p>' : '', 나, 카드이름of(나, P), 나 ? 글('세점.펼침.나.' + 나.계급) : '', 의.움직임, 단추);
+        return 의식틀(글('세점.창말', 값) ? '<p class="three-window">' + esc(글('세점.창말', 값)) + '</p>' : '', 나, 카드이름of(나, P), 나 ? 글('세점.펼침.나.' + 나.계급) : '', 의.움직임, 단추, 의, 글);
       }
-      function 섞음() { const 의 = 의식of(); if (의.뗀 >= 0) return; 의.뗀 = 0; 의.움직임 = 'shuffle'; 포커스할 = '[data-three-cut]'; 그리기(); }
-      function 뗌() {
-        const 의 = 의식of(); if (의.뗀 < 0 || !고른) return;
-        의.뗀++;
-        if (의.뗀 >= 3) { 의식 = null; 펼쳐부르기(고른, 순간켬); return; }   // 셋째 떼기 뒤 서버 부름 → 받으면 펼친 순간(D3)
-        의.움직임 = 'cut'; 포커스할 = '[data-three-cut]'; 그리기();
+      // 모든 동작은 끝난 뒤 다음 단계로 진행한다. 질문·사람·화면이 바뀌면 늦은 완료 콜백은 버린다.
+      function 손동작(의, 종류, 위치, 마침) {
+        if (의.움직임) return;
+        const k = 순간k();
+        의.위치 = Number.isInteger(위치) ? 위치 : 6;
+        if (움직임줄임()) { 마침(); return; }
+        의.움직임 = 종류;
+        그리기();
+        global.setTimeout(() => {
+          if (내차례 !== 차례 || k !== 순간k() || (의 !== 의식 && 의 !== 펼친) || root.isConnected === false) return;
+          의.움직임 = '';
+          마침();
+        }, 종류 === 'shuffle' ? 1050 : 640);
       }
-      // 펼친 순간(D3) — 다시 섞기(다시 의식 시작 · 사건 three3_again|물음) → 다시 떼기 셋 → 둘째 판 → 결과보기(D6 카드칸을 화면 안으로).
-      //   누름은 카드를 정하지 않는다(서버가 이미 둘째 판을 냈다). 상태는 저장하지 않는다.
+      function 섞음() {
+        const 의 = 의식of(); if (의.뗀 >= 0 || 의.움직임) return;
+        손동작(의, 'shuffle', 6, () => { 의.뗀 = 0; 포커스할 = '[data-three-deck-touch="6"]'; 그리기(); });
+      }
+      function 뗌(위치) {
+        const 의 = 의식of(); if (의.뗀 < 0 || !고른 || 의.움직임) return;
+        손동작(의, 'cut', 위치, () => {
+          의.뗀++;
+          if (의.뗀 >= 3) { 의식 = null; 펼쳐부르기(고른, 순간켬); return; }
+          포커스할 = '[data-three-deck-touch="' + 의.위치 + '"]'; 그리기();
+        });
+      }
+      // 다시 펼침도 같은 세 번 나누기. 이미 받은 둘째 판을 보여 주며 결과를 다시 뽑지 않는다.
       function 다시섞음() {
         if (!펼친 || 펼친.k !== 순간k() || 펼친.단계 !== '첫판') return;
-        Object.assign(펼친, { 단계: '다시의식', 뗀: 0, 움직임: 'shuffle' }); 포커스할 = '[data-three-again-cut]'; 스크롤할 = { sel: '[data-three-rite]', block: 'nearest' };
+        Object.assign(펼친, { 단계: '다시의식', 뗀: -1, 움직임: '' });
         사건('three3_again|' + 고른);
-        그리기();
+        스크롤할 = { sel: '[data-three-rite]', block: 'nearest' };
+        손동작(펼친, 'shuffle', 6, () => { 펼친.뗀 = 0; 포커스할 = '[data-three-deck-touch="6"]'; 그리기(); });
       }
-      function 다시뗌() {
-        if (!펼친 || 펼친.k !== 순간k() || 펼친.단계 !== '다시의식') return;
-        펼친.뗀++;
-        if (펼친.뗀 >= 3) { Object.assign(펼친, { 단계: '둘판', 움직임: '' }); 포커스할 = '[data-three-reveal-go]'; 스크롤할 = { sel: '[data-three-reveal]', block: 'start' }; 그리기(); return; }
-        펼친.움직임 = 'cut'; 포커스할 = '[data-three-again-cut]'; 그리기();
+      function 다시뗌(위치) {
+        if (!펼친 || 펼친.k !== 순간k() || 펼친.단계 !== '다시의식' || 펼친.뗀 < 0 || 펼친.움직임) return;
+        손동작(펼친, 'cut', 위치, () => {
+          펼친.뗀++;
+          if (펼친.뗀 >= 3) { Object.assign(펼친, { 단계: '둘판', 움직임: '' }); 포커스할 = ''; 스크롤할 = { sel: '[data-three-reveal]', block: 'start' }; 그리기(); return; }
+          포커스할 = '[data-three-deck-touch="' + 펼친.위치 + '"]'; 그리기();
+        });
       }
       function 결과봄() { 펼친 = null; 포커스할 = '.three-drawn'; 스크롤할 = { sel: '.three-drawn', block: 'start' }; 그리기(); }
       // 펼침 부름 — 몸 + 「펼침: true」(카드 없음). 받은 뒤에만 둔다(부르기 전엔 카드가 없다) — 못 받으면 오류 + 새로 펼침 단추.
       function 펼쳐부르기(q, 순간) {   // 순간 — 받으면 펼친 순간(D3)부터(의식 · 새로 펼침 단추). opt.펼침(시험 · 검사기)이면 바로 결과
-        root.innerHTML = 고르기 + 판(물음칸() + '<div class="three-wait" aria-hidden="true"><span></span><span></span><span></span></div>' + (글('세점.펼침.기다림') ? '<p class="three-q">' + esc(글('세점.펼침.기다림')) + '</p>' : ''));
+        root.innerHTML = 고르기 + 판(물음칸() + '<div class="three-turn-wait" aria-hidden="true"><img src="' + 그림길 + 'back.webp" alt=""></div>' + (글('세점.펼침.기다림') ? '<p class="three-q">' + esc(글('세점.펼침.기다림')) + '</p>' : ''));
         사건('three3_spread|' + q);
         const 받음 = res => {
           if (내차례 !== 차례) return;
@@ -482,7 +524,7 @@
             if (q !== 고른) return;
             if (순간) {   // 펼친 순간(D3) — 결과보기를 누를 때까지(이 화면에만 · 저장 안 함) · D6 펼친 판을 화면 안으로
               펼친 = { k: 순간k(), 단계: '첫판', 뗀: -1, 움직임: '' };
-              포커스할 = 다시됨(j.펼침) ? '[data-three-again-shuffle]' : '[data-three-reveal-go]'; 스크롤할 = { sel: '[data-three-reveal]', block: 'start' };
+              포커스할 = ''; 스크롤할 = { sel: '[data-three-reveal]', block: 'start' };
             }
             그리기();
             return;
@@ -517,6 +559,7 @@
       }
       function 고름(k) {
         if (!물음차례.includes(k)) return;
+        if (k === 고른 && ((의식 && 의식.움직임) || (펼친 && 펼친.움직임))) return;
         if (켜펼 && k !== 고른) { 의식 = null; 펼친 = null; }   // 펼침 의식 · 펼친 순간은 물음을 바꾸면 버린다(돌아오면 의식은 처음부터 · 받은 펼침은 결과로)
         고른 = k; 판3._마지막 = k; 둠(키, 판3);
         사건('three3_q|' + k);
