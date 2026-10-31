@@ -96,3 +96,18 @@
 .three-do ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .three-do li{font-size:var(--t2);line-height:1.65;color:var(--ink);word-break:keep-all}
 .three-do b{margin-right:4px}
+/* PC 회랑 — 승인한 킹·퀸 원화, 세 점을 열었을 때만 표시. 좁은 화면은 기존 종이 바탕. */
+@media (min-width:1051px){
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide))::before{
+    content:"";position:fixed;inset:84px 0 0;z-index:0;pointer-events:none;
+    background:url("art/three-gallery/sunlit-gallery-v2.png") center top / 100% auto no-repeat;
+    -webkit-mask-image:linear-gradient(#000 0,#000 calc(56.25vw - 110px),transparent 56.25vw);
+    mask-image:linear-gradient(#000 0,#000 calc(56.25vw - 110px),transparent 56.25vw);
+  }
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)) > .wrap{max-width:572px;z-index:1}
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)) > .wrap > header{padding-inline:max(18px,calc((100vw - 572px)/2 + 18px))}
+  .tab[data-tab="three"] .three-card{background:rgba(255,253,248,.97);border-color:var(--line2);box-shadow:0 20px 65px rgba(91,67,38,.10)}
+  .tab[data-tab="three"] .three-person{padding:6px 10px;background:rgba(255,253,248,.96);border-radius:var(--r2)}
+  body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)) > .wrap > footer{padding:18px;background:rgba(255,253,248,.96);border-radius:var(--r2)}
+}
+@media print{body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide))::before{display:none}}
