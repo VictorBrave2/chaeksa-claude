@@ -217,6 +217,10 @@
   const 세점켜짐 = (P, 보기) => 보기 || !!(P.세점 && P.세점.물음말 && 물음차례.some(k => P.세점.물음말[k]));
   const 저장열쇠3 = b => 'chaeksa.three.v2.' + 해시([b.year, b.month, b.day, b.hour, b.minute || 0, b.gender, b.place || '', b.longitude == null ? '' : b.longitude].join('|'));
   const 점이름of = (글, k) => 글('세점.점이름.' + k) || 글('줄이름.' + 옛줄이름[k]);
+  // 대길 · 대흉(11-01 결정함 95 · 엔진 v0.7) — 이름표는 등급(세점.길흉말.대길 · 대흉) · 색은 길흉(data-gh) 그대로 · 대이면 data-dae(three.css 테두리 칸).
+  //   v0.7 전에 이 기기에 저장된 판은 등급이 없어 길흉 그대로 보인다(규칙을 화면에 베끼지 않는다 — 엔진이 정한 값만).
+  const 등급말 = (글, x) => (x && x.등급 && 글('세점.길흉말.' + x.등급)) || 글('세점.길흉말.' + (x && x.길흉));
+  const 대속 = x => (x && /^대/.test(x.등급 || '')) ? ' data-dae="' + esc(x.등급) + '"' : '';
   const 갈래of = (r, k) => (k === '사주' && r.점.사주.정함 === '문없음') ? '문없음' : r.점[k].길흉;   // 일어남 · 할일 칸의 끝 열쇠
   function 점때(r, k, 글) {
     const z = r.점[k];
@@ -230,8 +234,8 @@
   function 세점결론칸(r, 글) {
     const 물음 = 글('세점.물음말.' + r.물음);
     const 줄 = 점차례.map(k => {
-      const z = r.점[k], 갈래 = 갈래of(r, k), 길흉 = 갈래 === '문없음' ? 글('세점.사주없음') : 글('세점.길흉말.' + z.길흉), 일 = 글('세점.일어남.' + r.물음 + '.' + k + '.' + 갈래);
-      return '<li class="three-pt" data-gh="' + esc(z.길흉) + '"><div class="three-pt-head"><span class="three-pt-name">' + esc(점이름of(글, k)) + '</span>'
+      const z = r.점[k], 갈래 = 갈래of(r, k), 길흉 = 갈래 === '문없음' ? 글('세점.사주없음') : 등급말(글, z), 일 = 글('세점.일어남.' + r.물음 + '.' + k + '.' + 갈래);
+      return '<li class="three-pt" data-gh="' + esc(z.길흉) + '"' + 대속(z) + '><div class="three-pt-head"><span class="three-pt-name">' + esc(점이름of(글, k)) + '</span>'
         + '<span class="three-pt-when">' + esc(점때(r, k, 글)) + '</span>' + (길흉 ? '<b class="three-pt-gh">' + esc(길흉) + '</b>' : '') + '</div>'
         + (일 ? '<p class="three-pt-what">' + esc(일) + '</p>' : '') + '</li>';
     }).join('');
@@ -327,9 +331,12 @@
   const 다시됨 = f => !!(f.다시 && Array.isArray(f.다시.자리) && f.끝 && +f.끝.펼침 === 2);   // 둘째 펼침의 열째가 길흉을 정했나
   const 끝장of = r => (다시됨(r.펼침) ? 장of(r.펼침.다시.자리, 10) : 장of(r.펼침.자리, 10)) || r.카드;   // 길흉을 정한 열째
   // 끝말(703 · 705 · D5) — {카드} = 길흉을 정한 열째 · {놓임} = 놓임말 · {길흉} = 세점.길흉말(= 타로 점의 길흉)
+  //   {길흉} 은 등급말(대길 · 대흉 — 결정함 95) · 대이면 끝에 대말 한 줄(Codex 칸 「세점.펼침.대말.대길 | 대흉」 · {카드} · 비면 건너뜀).
   function 끝말of(r, 글, P) {
-    const f = r.펼침, 끝장 = 끝장of(r), 끝길흉 = (f.끝 && f.끝.길흉) || (r.점 && r.점.타로 && r.점.타로.길흉) || '';
-    return 글('세점.펼침.끝말', { 카드: 카드이름of(끝장, P), 놓임: 글('놓임말.' + (끝장 && 끝장.놓임)), 길흉: 글('세점.길흉말.' + 끝길흉) });
+    const f = r.펼침, 끝장 = 끝장of(r), 끝 = (f.끝 && f.끝.길흉) ? f.끝 : ((r.점 && r.점.타로) || {});
+    const 말 = 글('세점.펼침.끝말', { 카드: 카드이름of(끝장, P), 놓임: 글('놓임말.' + (끝장 && 끝장.놓임)), 길흉: 등급말(글, 끝) });
+    const 대 = /^대/.test(끝.등급 || '') ? 글('세점.펼침.대말.' + 끝.등급, { 카드: 카드이름of(끝장, P) }) : '';
+    return 말 && 대 ? 말 + ' ' + 대 : 말;
   }
   // 다시말(706 · D5) — {카드} = 첫 판 열째(애매해서 새 나가 된 카드) 하나뿐. 둘째 판 열째는 넘기지 않는다(펼친 순간에 둘째 판 결과를 미리 말하지 않게).
   const 다시말of = (r, 글, P) => 글('세점.펼침.다시말', { 카드: 카드이름of(장of(r.펼침.자리, 10), P) });
@@ -404,10 +411,10 @@
   // 읽기 칸 — 막 뒤집은 장. 위: 그림 + 자리 번호 · 자리 이름 · 자리뜻 · 카드 이름 · 놓임 · 그 물음 길흉 / 아래: 장 풀이 줄(결정함 84). 색 띠는 길흉(three.css data-gh).
   function 읽기칸(x, n, 글, P, 끝, 새, 물음, 맥) {
     if (!x) return '';
-    const 이름 = 글('세점.펼침.자리.' + n), 뜻 = 글('세점.펼침.자리뜻.' + n), gh = 글('세점.길흉말.' + x.길흉), 놓 = 글('놓임말.' + x.놓임), 카이름 = 카드이름of(x, P);
+    const 이름 = 글('세점.펼침.자리.' + n), 뜻 = 글('세점.펼침.자리뜻.' + n), gh = 등급말(글, x), 놓 = 글('놓임말.' + x.놓임), 카이름 = 카드이름of(x, P);
     const 그림 = 그림id.test(String(x.id)) ? '<div class="three-read-art"><img class="three-read-img' + (x.놓임 === '거꾸로' ? ' is-rev' : '') + '" src="' + 그림길 + x.id + '-s.webp?v=2" alt=""></div>' : '';
     const 풀이 = 풀이줄(x, n, 글, 물음, 카이름, 놓, 'three-read', 맥);
-    return '<div class="three-read' + (끝 ? ' is-end' : '') + (새 ? ' is-in' : '') + '" data-gh="' + esc(x.길흉 || '') + '" aria-live="polite"><div class="three-read-top">' + 그림
+    return '<div class="three-read' + (끝 ? ' is-end' : '') + (새 ? ' is-in' : '') + '" data-gh="' + esc(x.길흉 || '') + '"' + 대속(x) + ' aria-live="polite"><div class="three-read-top">' + 그림
       + '<div class="three-read-txt"><p class="three-read-pos"><span class="three-sp-no" aria-hidden="true">' + n + '</span>' + (이름 ? '<b>' + esc(이름) + '</b>' : '') + '</p>'
       + (뜻 ? '<p class="three-read-mean">' + esc(뜻) + '</p>' : '')
       + '<p class="three-read-card"><b>' + esc(카이름) + '</b>' + (x.이름en ? ' <small lang="en">' + esc(x.이름en) + '</small>' : '') + (놓 ? ' <span class="three-sp-or">' + esc(놓) + '</span>' : '') + '</p>'
@@ -427,8 +434,8 @@
   function 자리목록(자리, 글, P, 끝n, 물음, 맥) {
     return '<ol class="three-sp-list">' + 자리수.map(n => {
       const x = 장of(자리, n); if (!x) return '';
-      const 이름 = 글('세점.펼침.자리.' + n), 뜻 = 글('세점.펼침.자리뜻.' + n), gh = 글('세점.길흉말.' + x.길흉), 놓 = 글('놓임말.' + x.놓임), 카이름 = 카드이름of(x, P);
-      return '<li class="three-sp-row' + (n === 끝n ? ' is-end' : '') + '" data-gh="' + esc(x.길흉 || '') + '"><span class="three-sp-no" aria-hidden="true">' + n + '</span><div class="three-sp-txt">'
+      const 이름 = 글('세점.펼침.자리.' + n), 뜻 = 글('세점.펼침.자리뜻.' + n), gh = 등급말(글, x), 놓 = 글('놓임말.' + x.놓임), 카이름 = 카드이름of(x, P);
+      return '<li class="three-sp-row' + (n === 끝n ? ' is-end' : '') + '" data-gh="' + esc(x.길흉 || '') + '"' + 대속(x) + '><span class="three-sp-no" aria-hidden="true">' + n + '</span><div class="three-sp-txt">'
         + ((이름 || gh) ? '<p class="three-sp-pos">' + (이름 ? '<b>' + esc(이름) + '</b>' : '') + (이름 && gh ? ' ' : '') + (gh ? '<span class="three-sp-gh">' + esc(gh) + '</span>' : '') + '</p>' : '')
         + (뜻 ? '<p class="three-sp-mean">' + esc(뜻) + '</p>' : '')
         + '<p class="three-sp-card">' + esc(카이름) + (x.이름en ? ' <small lang="en">' + esc(x.이름en) + '</small>' : '') + (놓 ? ' <span class="three-sp-or">' + esc(놓) + '</span>' : '') + '</p>'
@@ -446,7 +453,7 @@
         const 말 = (맥 && 맥.말(x)) || 글('세점.펼침.카드말.' + x.id + '.' + x.놓임);   // 그 물음 156면이 다 찼으면 물음카드말(결정함 90)
         const t = 말 ? 글('세점.펼침.이야기.' + n + '.' + x.길흉, { 카드말: 말, 카드: 카드이름of(x, P), 물음, 놓임: 글('놓임말.' + x.놓임) }) : '';
         if (!t) return '';
-        줄.push('<p class="three-story-beat" data-gh="' + esc(x.길흉 || '') + '"><span class="three-sp-no" aria-hidden="true">' + n + '</span><span class="three-story-txt">' + esc(t) + '</span></p>');
+        줄.push('<p class="three-story-beat" data-gh="' + esc(x.길흉 || '') + '"' + 대속(x) + '><span class="three-sp-no" aria-hidden="true">' + n + '</span><span class="three-story-txt">' + esc(t) + '</span></p>');
       }
       const 머 = 글('세점.펼침.이야기때.' + 때);
       막.push('<div class="three-story-act">' + (머 ? '<p class="three-story-when">' + esc(머) + '</p>' : '') + 줄.join('') + '</div>');
