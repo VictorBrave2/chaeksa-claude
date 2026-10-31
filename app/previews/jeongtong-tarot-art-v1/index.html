@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>정통사주 · 타로 화풍 비교 견본 | 책사</title>
+<link rel="stylesheet" href="preview.css">
+<script src="preview.js" defer></script>
+</head>
+<body>
+<header class="preview-toolbar">
+  <div class="preview-title"><strong>정통사주 · 삽화 견본</strong><p>기존 결과에서 첫 삽화와 PC 배경을 비교합니다.</p></div>
+  <div class="preview-options">
+    <div class="switch" role="group" aria-label="비교할 그림">
+      <button type="button" data-art="original" aria-pressed="false">기존 그림</button>
+      <button type="button" data-art="new" aria-pressed="true">새 그림</button>
+    </div>
+    <div class="switch" role="group" aria-label="화면 크기">
+      <button type="button" data-device="auto" aria-pressed="true">현재 화면</button>
+      <button type="button" data-device="mobile" aria-pressed="false">휴대폰</button>
+      <button type="button" data-device="desktop" aria-pressed="false">PC</button>
+    </div>
+  </div>
+</header>
+<p class="preview-status" id="preview-status" role="status" aria-live="polite">견본을 불러오고 있습니다.</p>
+<main class="preview-stage" id="preview-stage" aria-label="정통사주 화면 비교">
+  <div class="frame-space" id="frame-space">
+    <iframe id="reading-frame" title="정통사주 삽화 비교 화면" src="reading.html?art=new" referrerpolicy="no-referrer"></iframe>
+  </div>
+</main>
+<noscript><p class="noscript-note">그림을 비교하려면 자바스크립트를 켜 주세요.</p></noscript>
+</body>
+</html>
