@@ -102,6 +102,11 @@ def 받침(w):
 def read(p): return open(p, 'rb').read().decode('utf-8').replace('\r\n', '\n')
 def write(p, s): open(p, 'wb').write(s.replace('\n', '\r\n').encode('utf-8'))
 def strip(s): return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', s)).strip()
+# 11-01 v1545 뒤 검토 — 손으로 고친 설명(Codex)을 생성기가 160자로 잘라 되돌리지 않게, 그 쪽 설명은 이것을 그대로 쓴다.
+#   taekil-price: COPY-0017(d4aae20d) 설명 177자 — 환불 문장까지(v1545 가 잘라 138자가 됐던 것).
+DESC = {
+    'taekil-price': "답부터 드리면, 책사의 출산택일 보고서는 한 건에 99,000원입니다(부가세 포함). 출산 가능 범위의 모든 날과 시각을 비교해 가장 추천하는 시간을 고릅니다. 가족의 사주를 함께 살피고, 선정 이유와 병원에 전달할 시계 시각을 보고서에 적습니다. 보고서를 처음 열어 보시기 전에는 이유를 묻지 않고 전액 환불합니다.",
+}
 def cut(s, n=160):
     """설명(description)은 160자 안쪽에서 문장 끝으로 자른다 — 낱말 가운데서 끊지 않게."""
     if len(s) <= n: return s
@@ -423,7 +428,8 @@ PAGE_FAQ = {
     ],
 }
 
-V꼬리 = re.compile(r'\?v=[0-9A-Za-z]+')
+# 11-01 검토 — 배포 꼬리는 .css · .js 뒤의 ?v= 뿐(tools_bust). 글 속 youtube.com/watch?v=… 같은 링크는 견줌에서 빼지 않는다.
+V꼬리 = re.compile(r'(?<=\.css)\?v=[0-9A-Za-z]+|(?<=\.js)\?v=[0-9A-Za-z]+')
 
 def _본문(s):
     """<body> 부터 끝 — 손님 눈에 보이는 쪽. ?v= 꼬리는 배포(tools_bust --bump) 때 붙는 것이라 뺀다."""
@@ -440,7 +446,7 @@ def write_page(slug, make):
     mm = re.search(r'"dateModified": "(\d{4}-\d{2}-\d{2})"', old)
     pm = re.search(r'"datePublished": "(\d{4}-\d{2}-\d{2})"', old)
     published = first_added(slug) or (pm.group(1) if pm else TODAY)
-    if old and mm:
+    if old and mm and mm.group(1) >= published:   # 11-01 검토 — 펴낸 날이 갱신 날보다 늦어지면(자정 넘김 등) 옛 갱신 날을 쓰지 않는다
         same = make(published, mm.group(1))
         if V꼬리.sub('', same) == V꼬리.sub('', old):
             return False
@@ -492,7 +498,7 @@ def build():
             pn = ((gts[k - 1], lab(gts[k - 1])) if k > 0 else None, (gts[k + 1], lab(gts[k + 1])) if k + 1 < len(gts) else None)
             label = f'궁통보감으로 본 {ym[0]}년 {ym[1]}월 — 이 달 아이에게 필요한 글자'
         else:
-            desc = cut(strip(' '.join(summ)))
+            desc = DESC.get(slug) or cut(strip(' '.join(summ)))
         faq = [(short, ' '.join(summ))] + PAGE_FAQ.get(slug, GEN_FAQ)
         if slug == 'saju-glossary':
             # 용어 쪽(10-03) — 칸마다 「X란」 제목 + 첫 문단 정의문을 질문 · 답 한 쌍으로(AI 가 낱말 하나씩 따로 집어 가게).
