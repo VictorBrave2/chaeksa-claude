@@ -107,16 +107,15 @@
 .three-sig figcaption b{font-family:var(--serif);font-size:var(--t2);font-weight:600;line-height:1.4;color:var(--ink);word-break:keep-all}
 .three-sig figcaption b[lang="en"]{font-family:var(--sans);font-size:var(--t1)}
 .three-sig figcaption small{font-size:var(--t1);line-height:1.4;color:var(--ink3)}
-.three-pile{position:relative;flex:0 0 auto;width:clamp(88px,27vw,124px);aspect-ratio:7/12}
-.three-pile-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.three-pile-img:nth-child(1){transform:translate(-6px,6px)}
-.three-pile-img:nth-child(2){transform:translate(-3px,3px)}
-.three-pile.is-shuffle .three-pile-img:nth-child(1){animation:threeShufA .6s ease}
-.three-pile.is-shuffle .three-pile-img:nth-child(3){animation:threeShufB .6s ease}
-.three-pile.is-cut .three-pile-img:nth-child(3){animation:threeCut .45s ease}
-@keyframes threeShufA{0%,100%{transform:translate(-6px,6px)}45%{transform:translate(-42%,4px) rotate(-7deg)}}
-@keyframes threeShufB{0%,100%{transform:none}45%{transform:translate(42%,-4px) rotate(7deg)}}
-@keyframes threeCut{0%,100%{transform:none}45%{transform:translate(16%,-20%) rotate(4deg)}}
+.three-pile{position:relative;flex:0 0 auto;width:clamp(88px,27vw,124px);aspect-ratio:7/12;isolation:isolate}
+.three-pile-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:translate(calc(var(--o,0) * -1px),calc(var(--o,0) * 1px))}
+/* 10-31 결정함 83 — 섞기: 여섯 장을 홀 · 짝 둘로 갈라 좌우로 벌렸다 엇갈려 모으기 두 번(1.15초) · 떼기: 위 세 장을 들어 옆으로 옮겨 밑으로(.75초) */
+.three-pile.is-shuffle .three-pile-img:nth-child(odd){animation:threeRifL 1.15s ease-in-out both;animation-delay:calc(var(--o,0) * 12ms)}
+.three-pile.is-shuffle .three-pile-img:nth-child(even){animation:threeRifR 1.15s ease-in-out both;animation-delay:calc(var(--o,0) * 12ms)}
+.three-pile.is-cut .three-pile-img:nth-child(n+4){animation:threeCutTop .75s ease-in-out both}
+@keyframes threeRifL{0%,46%,100%{transform:translate(calc(var(--o,0) * -1px),calc(var(--o,0) * 1px))}16%,28%{transform:translate(-46%,5px) rotate(-9deg)}64%,76%{transform:translate(-32%,2px) rotate(-6deg)}}
+@keyframes threeRifR{0%,46%,100%{transform:translate(calc(var(--o,0) * -1px),calc(var(--o,0) * 1px))}16%,28%{transform:translate(46%,-5px) rotate(9deg)}64%,76%{transform:translate(32%,-2px) rotate(6deg)}}
+@keyframes threeCutTop{0%{transform:translate(calc(var(--o,0) * -1px),calc(var(--o,0) * 1px));z-index:1}36%{transform:translate(60%,-14%) rotate(6deg);z-index:1}50%{transform:translate(60%,-2%) rotate(3deg);z-index:-1}100%{transform:translate(calc(var(--o,0) * -1px),calc(var(--o,0) * 1px));z-index:-1}}
 .three-card p.three-sig-why{margin:0 0 4px;font-size:var(--t2);line-height:1.65;color:var(--ink2);text-align:center;word-break:keep-all}
 .three-rite-btn{margin-top:12px}
 /* 펼침 그림 — 칸 7 : 12 : 7 : 1 : 7(6 앞 · 십자 가운데 · 5 뒤 · 틈 · 기둥) · 반줄 8(카드 하나 = 반줄 둘 = 7:12). 판 비 34:48 이라 폭 따라 늘고 줄어
@@ -171,19 +170,91 @@
 .three-sp-card small{font-size:var(--t1);color:var(--ink3)}
 .three-sp-or{font-size:var(--t1);font-weight:600;color:var(--accent)}
 .three-card .three-sp-txt p.three-sp-mean{font-size:var(--t1);line-height:1.55;color:var(--ink3)}
+/* 장 풀이 줄(결정함 84) — 카드뜻 · 영향 · 왜 · 원문 낱말(영어 그대로) */
+.three-card .three-sp-txt p.three-sp-line,.three-card .three-sp-txt p.three-sp-eff{margin-top:4px;color:var(--ink);line-height:1.65}
+.three-card .three-sp-txt p.three-sp-why{margin-top:4px;font-size:var(--t1);line-height:1.6;color:var(--ink2)}
+.three-card .three-sp-txt p.three-sp-src{margin-top:4px;font-size:var(--t1);line-height:1.55;color:var(--ink3);font-style:italic}
+.three-sp-src small,.three-read-src small{font-style:normal;color:var(--ink3)}
 /* 펼친 순간(D3) — 판이 다 놓인 뒤(열째 1.1초 + .42초 무렵) 끝말 + 결과보기(다시 펼침이면 다시말 + 섞기)가 떠오른다 */
 .three-reveal{margin:2px 0 6px;scroll-margin-top:84px;scroll-margin-bottom:92px}
 .three-reveal .three-sp-wrap{margin:6px 0 12px}
-.three-reveal-foot{display:grid;justify-items:center;text-align:center;animation:threeFoot .45s ease both;animation-delay:1.4s}
+.three-reveal-foot{display:grid;justify-items:center;text-align:center;scroll-margin-bottom:92px;animation:threeFoot .45s ease both;animation-delay:.45s}   /* 열째를 뒤집은 뒤 · 아래 네비에 가리지 않게 */
 .three-card p.three-reveal-line{margin:0;max-width:100%;font-family:var(--serif);font-size:var(--t3);line-height:1.7;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
 @keyframes threeFoot{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 /* 결과 — 카드칸(결과보기 뒤 화면 안으로 · 초점 테는 .three-page :focus-visible) · 궁정말 한 줄(카드칸 바로 아래 — 그 카드에 붙은 말) */
 .three-card .three-drawn{scroll-margin-top:84px}
 .three-card p.three-sp-court{margin:-6px 0 14px;padding:1px 0 1px 10px;border-left:2px solid var(--accent);font-size:var(--t2);line-height:1.65;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
-/* 근거 접힘 안 펼침 — 판머리 · 판(움직임 없음 · 조금 작게) · 자리 목록 · 다시말 · 다시보기 · 끝말 */
+/* 열 장 접힘(결정함 84 — 세 점 결론 아래 · 근거 위) 안 펼침 — 읽는법 · 판(움직임 없음 · 조금 작게) · 자리 목록(장 풀이 줄) · 다시말 · 다시보기 · 끝말 */
 .three-spread{margin:2px 0 14px}
-.three-basis .three-sp-board{max-width:260px}
+.three-cards .three-sp-board{max-width:260px}
+.three-card .three-spread p.three-sp-how{margin:4px 0 2px;font-size:var(--t2);line-height:1.7;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
 .three-card .three-spread p.three-sp-head{margin:6px 0 0;font-size:var(--t1);font-weight:700;line-height:1.6;color:var(--ink2);word-break:keep-all}
 .three-card .three-spread p.three-sp-again{margin:2px 0 4px;padding-top:10px;border-top:1px solid var(--line);font-size:var(--t2);line-height:1.7;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
 .three-card .three-spread p.three-sp-endline{margin:0;padding-top:10px;border-top:1px solid var(--line);font-family:var(--serif);font-size:var(--t3);line-height:1.65;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
-@media(prefers-reduced-motion:reduce){.three-sp-board.is-anim .three-sp,.three-reveal-foot{animation:none}.three-pile .three-pile-img{animation:none!important}}
+/* 10-31 고르기 · 뒤집기(결정함 83 — 사장님 「타로 카드 뽑는 게 재미가 없네」) — 고르는 판 · 부채꼴 77장 · 뒤집는 판 · 읽기 칸. 색은 style.css 변수만. */
+.three-picking .three-sp-board{max-width:250px}
+.three-sp-slot{width:86%;height:88%;border:1.5px dashed var(--line2);border-radius:4px;background:transparent}
+.three-sp.is-next .three-sp-slot{border-color:var(--accent);animation:threeSlot 1.3s ease-in-out infinite}
+@keyframes threeSlot{50%{border-color:var(--line2)}}
+.three-sp.is-arrive{animation:threeArrive .38s cubic-bezier(.2,.8,.3,1) both}
+@keyframes threeArrive{from{opacity:0;transform:translateY(80%) scale(.8)}to{opacity:1;transform:none}}
+.three-sp-board.is-pick .three-sp.is-empty .three-sp-n{opacity:.55}
+.three-sp-board.is-pick .three-sp.is-next .three-sp-n{opacity:1;background:var(--accent);border-color:var(--accent);color:var(--card)}
+.three-card p.three-fan-say{margin:2px 0 0;font-size:var(--t2);line-height:1.6;color:var(--ink2);text-align:center;word-break:keep-all}
+.three-card p.three-fan-count{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;margin:6px 0 0;font-size:var(--t2);line-height:1.5;color:var(--ink);text-align:center;word-break:keep-all}
+.three-fan-no{min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--accent);color:var(--card);font-size:var(--t1);font-weight:700;line-height:22px;text-align:center}
+.three-fan-count b{font-weight:700}
+.three-fan-of{font-size:var(--t1);color:var(--ink3);font-variant-numeric:tabular-nums}
+/* 부채꼴 — 카드 폭 --fw · 돌림 반지름 --fr(카드 위끝에서 아래 돌림점까지) · -50 ~ 50도. 375px 폰에서 폭 약 290px · 높이 약 150px. 고른 장은 빠져 자리가 빈다. */
+.three-fan{--fw:clamp(40px,11.5vw,52px);--fr:clamp(150px,44vw,230px);position:relative;scroll-margin-top:84px;scroll-margin-bottom:92px;height:calc(22px + var(--fr) * .36 + var(--fw) * 1.5);max-width:100%;margin:2px 0 4px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.three-fan-card{position:absolute;left:50%;top:18px;width:var(--fw);aspect-ratio:7/12;margin:0 0 0 calc(var(--fw) / -2);padding:0;border:1px solid var(--line2);border-radius:4px;background:var(--bg2) url(art/tarot/chaeksa-v1/back-s.webp) center/cover no-repeat;box-shadow:-1px 1px 0 var(--line);transform-origin:50% var(--fr);transform:rotate(calc(var(--a,0) * 1deg));cursor:pointer;transition:transform .14s ease}
+@media(hover:hover){.three-fan-card:hover{transform:rotate(calc(var(--a,0) * 1deg)) translateY(-14px)}}
+.three-fan-card:active{transform:rotate(calc(var(--a,0) * 1deg)) translateY(-16px)}
+.three-fan-card:focus-visible{outline:2px solid var(--accent);outline-offset:1px;transform:rotate(calc(var(--a,0) * 1deg)) translateY(-14px)}
+.three-fan.is-spread .three-fan-card{animation:threeFanIn .75s cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--k,0) * 4ms)}
+@keyframes threeFanIn{from{opacity:0;transform:rotate(0deg)}25%{opacity:1}to{opacity:1;transform:rotate(calc(var(--a,0) * 1deg))}}
+/* 뒤집는 판 + 읽기 칸 — 늘 한 단(판 위 · 읽기 칸 아래 — 장 풀이 줄이 길어 두 단이면 읽기 칸이 좁다 · 결정함 84) */
+.three-reveal-main{display:grid;gap:2px;align-items:start}
+.three-sp-board.is-flipping{max-width:270px}
+.three-sp-wrap[data-three-flipboard]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.three-sp.is-next .three-sp-back{outline:2px solid var(--accent);outline-offset:2px;animation:threeNext 1.3s ease-in-out infinite}
+@keyframes threeNext{50%{outline-color:transparent}}
+.three-sp-face,.three-sp-backface{position:absolute;inset:0;display:block}
+.three-sp.is-flip{z-index:3}
+.three-sp-mid>.three-sp-2{z-index:4}   /* 가로지른 2(681 「crosses」)는 1 위 — 1을 막 뒤집을 때도 */
+.three-sp.is-flip .three-sp-backface{animation:threeFlipOut .2s ease-in both}
+.three-sp.is-flip .three-sp-face{animation:threeFlipIn .26s ease-out .18s both}
+@keyframes threeFlipOut{to{transform:scaleX(0)}}
+@keyframes threeFlipIn{from{transform:scaleX(0)}to{transform:none}}
+.three-flip-foot{display:grid;justify-items:center;position:sticky;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:5;padding:8px 0 4px;background:linear-gradient(to top,var(--card) 70%,transparent)}   /* 아래 네비(높이 약 63px) 바로 위 */
+.three-flip-foot .three-rite-btn{margin-top:4px}
+.three-read{display:block;min-width:0;margin:6px 0 4px;padding:12px 14px;border:1px solid var(--line2);border-left:4px solid var(--line2);border-radius:var(--r2);background:var(--card)}
+.three-read[data-gh="길"]{border-left-color:var(--wood)}
+.three-read[data-gh="흉"]{border-left-color:var(--fire)}
+.three-read[data-gh="섞임"],.three-read[data-gh="변화"]{border-left-color:var(--accent)}
+.three-read.is-end{border-color:var(--accent);border-left-width:4px}
+.three-read.is-in{animation:threeReadIn .32s ease .3s both}
+@keyframes threeReadIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.three-read-top{display:flex;align-items:flex-start;gap:14px;min-width:0}
+.three-read-art{flex:0 0 auto;width:clamp(72px,21vw,100px);aspect-ratio:7/12}
+.three-read-img{display:block;width:100%;height:100%;object-fit:contain}
+.three-read-img.is-rev{transform:rotate(180deg)}
+.three-read-txt{flex:1 1 auto;min-width:0}
+.three-card .three-read-txt p{margin:0;word-break:keep-all;overflow-wrap:anywhere}
+.three-card .three-read-txt p.three-read-pos{display:flex;align-items:center;gap:6px;font-size:var(--t1);line-height:1.5;color:var(--ink2)}
+.three-read-pos b{font-weight:700}
+.three-card .three-read-txt p.three-read-card{margin-top:4px;font-family:var(--serif);font-size:var(--t3);line-height:1.5;color:var(--ink)}
+.three-read-card b{font-weight:600}
+.three-read-card small{font-family:var(--sans);font-size:var(--t1);color:var(--ink3)}
+.three-card .three-read-txt p.three-read-gh{margin-top:2px;font-family:var(--serif);font-size:var(--t3);font-weight:700;line-height:1.5;color:var(--ink2)}
+.three-read[data-gh="길"] .three-read-gh{color:var(--wood)}
+.three-read[data-gh="흉"] .three-read-gh{color:var(--fire)}
+.three-read[data-gh="섞임"] .three-read-gh,.three-read[data-gh="변화"] .three-read-gh{color:var(--accent)}
+.three-card .three-read-txt p.three-read-mean{margin-top:2px;font-size:var(--t1);line-height:1.55;color:var(--ink3)}
+.three-read-body{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:grid;gap:6px;min-width:0}
+.three-card .three-read-body p{margin:0;word-break:keep-all;overflow-wrap:anywhere}
+.three-card .three-read-body p.three-read-line,.three-card .three-read-body p.three-read-eff{font-size:var(--t2);line-height:1.7;color:var(--ink)}
+.three-card .three-read-body p.three-read-why{font-size:var(--t1);line-height:1.6;color:var(--ink2)}
+.three-card .three-read-body p.three-read-src{font-size:var(--t1);line-height:1.6;color:var(--ink3);font-style:italic}
+.three-card p.three-read-how{margin:6px 0 4px;font-size:var(--t2);line-height:1.7;color:var(--ink2);text-align:center;word-break:keep-all;overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){.three-sp-board.is-anim .three-sp,.three-reveal-foot,.three-sp.is-arrive,.three-sp.is-next .three-sp-slot,.three-sp.is-next .three-sp-back,.three-sp.is-flip .three-sp-face,.three-read.is-in,.three-fan.is-spread .three-fan-card{animation:none}.three-sp.is-flip .three-sp-backface{display:none}.three-fan-card{transition:none}.three-pile .three-pile-img{animation:none!important}}
