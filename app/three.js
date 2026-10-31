@@ -198,12 +198,13 @@
   function 세점근거칸(r, 글, 펼) {   // 펼 — 켈틱 펼침 근거(펼근거 · D2 — 타로 칸 h3 바로 다음). 한 장 응답 · 꺼짐이면 '' (글자 하나 다르지 않게)
     const c = r.카드, 원 = r.원문 || {}, 타 = r.점.타로, 사 = r.점.사주, 자 = r.점.자미, 왜 = 키 => 글(키) ? '<p class="three-why2">' + esc(글(키)) + '</p>' : '';
     let h = '<details class="jt-ev three-basis"><summary>' + esc(글('근거')) + '</summary>';
-    // 타로 — (펼침이면 맨 앞에 판 · 자리 목록 · 끝말) · 붙인 웨이트 낱말(그 물음을 직접 말할 때) · 카드 원문 · 창 원문(901줄)
+    // 타로 — (펼침이면 맨 앞에 판 · 자리 목록 · 끝말) · 붙인 웨이트 낱말(그 물음을 직접 말할 때) · 카드 원문 · 창 원문(901줄 — 한 장 응답만)
+    //   켈틱 펼침엔 901줄을 싣지 않는다 — §8(마흔두 장 · 정한 물음이 없을 때의 법) 줄이라 §7 판의 원문 근거가 아니다(결정함 77 「근거에서 걷는다」 · 10-31 배포 뒤 뜻 대조). 한 장 응답은 글자 그대로.
     h += '<section class="three-eye"><h3>' + esc(점이름of(글, '타로')) + '</h3>' + (펼 || '') + 왜('세점.왜.타로달.' + (타.직접 ? '직접' : '전체'))
       + (타.붙임.length ? '<ul class="three-keys" lang="en">' + 타.붙임.map(x => '<li lang="en">' + esc(x.낱말) + ' <small>(Part III ' + esc(x.줄) + (x.절 ? ' ' + esc(x.절) : '') + ')</small></li>').join('') + '</ul>' : '')
       + '<blockquote class="three-src" lang="en">' + esc(c.원문) + '</blockquote>'
       + '<p class="three-ref" lang="en">Waite, The Pictorial Key to the Tarot · Part III ' + esc(c.줄) + (c.절 === '§4' ? ' §4' : '') + ' · ' + esc(c.이름en) + '</p>'
-      + (원.창 ? '<blockquote class="three-src" lang="en">' + esc(원.창.글) + '</blockquote><p class="three-ref" lang="en">' + esc(원.창.줄) + '</p>' : '') + '</section>';
+      + (원.창 && !펼 ? '<blockquote class="three-src" lang="en">' + esc(원.창.글) + '</blockquote><p class="three-ref" lang="en">' + esc(원.창.줄) + '</p>' : '') + '</section>';
     // 사주 — 그달 문을 연 열쇠(엔진 이름표) · 판정 층과 범주(법전 40 · 57조 이름)
     h += '<section class="three-eye"><h3>' + esc(점이름of(글, '사주')) + '</h3>' + 왜('세점.왜.사주.' + 사.정함);
     if (사.달) {
