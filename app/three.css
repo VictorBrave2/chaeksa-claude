@@ -187,7 +187,6 @@
 /* 열 장 접힘(결정함 84 — 세 점 결론 아래 · 근거 위) 안 펼침 — 읽는법 · 판(움직임 없음 · 조금 작게) · 자리 목록(장 풀이 줄) · 다시말 · 다시보기 · 끝말 */
 .three-spread{margin:2px 0 14px}
 .three-cards .three-sp-board{max-width:260px}
-.three-card .three-spread p.three-sp-how{margin:4px 0 2px;font-size:var(--t2);line-height:1.7;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
 .three-card .three-spread p.three-sp-head{margin:6px 0 0;font-size:var(--t1);font-weight:700;line-height:1.6;color:var(--ink2);word-break:keep-all}
 .three-card .three-spread p.three-sp-again{margin:2px 0 4px;padding-top:10px;border-top:1px solid var(--line);font-size:var(--t2);line-height:1.7;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
 .three-card .three-spread p.three-sp-endline{margin:0;padding-top:10px;border-top:1px solid var(--line);font-family:var(--serif);font-size:var(--t3);line-height:1.65;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
