@@ -403,17 +403,17 @@ him = 나 카드 = 손님(남녀 모두) — 성별 낱말 없이 쓴다.
 2. 카드 이름 · 영어 이름 · `놓임말`
 3. `세점.길흉말` — 그 물음에서 이 장 하나의 길흉
 4. 가는 선 아래: `카드뜻.<카드>.<놓임>` (위 절의 156칸 — 이제 결과 접힘 자리 줄에도 나온다 · **맨 먼저 채울 칸**)
-5. **`영향.<n>.<길|흉|섞임>`** — 이 자리에서 이 카드(이 길흉)가 그 물음에 무엇을 하나
+5. **`영향.<n>.<길|흉|섞임>`**(1 ~ 9째만 — 10째 줄엔 없음 · 87) — 이 자리에서 이 카드(이 길흉)가 그 물음에 무엇을 하나
 6. **`왜.<직접|전체|엇갈림>`** — 그 길흉을 무엇으로 읽었나
 7. 원문 낱말 줄(웨이트 영어 그대로 · 「Part III 줄」 — 메인 값 · 글 칸 아님): 직접이면 그 물음을 말한 낱말 · 전체면 카드 본뜻 낱말 · 엇갈림이면 둘 다
 
-첫 장을 뒤집기 전(뒷면 판만 있을 때) 판 아래 한 줄: **`읽는법`** — 나오는 곳은 여기 하나뿐(v1538 · 결정함 87).
+첫 장을 뒤집기 전(뒷면 판만 있을 때) 판 아래 한 줄: **`읽는법`** — 나오는 곳은 여기 하나뿐(v1538 · 결정함 87). 다시 펼친 둘째 판 앞에는 다시 내지 않는다(v1539 · 결정함 88 — 같은 사람이 방금 읽었다).
 결과 쪽: 세 점 결론 바로 아래에 새 접힘(머리 = `판머리`) — 안에 판 그림 · 열 장 이야기(85) · 자리 열 줄(줄마다 위 1 ~ 7 — 10째 줄엔 5 영향 없음) · `끝말`. 근거 접힘은 그 아래(타로 칸에서 판 · 자리 목록이 빠졌다). v1538에서 이 접힘의 `읽는법`을 뺐다 — 열 장이 다 앞면이라 「한 장씩 뒤집어 …」가 맞지 않았다(결정함 87).
 
 | 칸 | 할 일 | 값 | 뜻(메인) |
 |---|---|---|---|
 | `세점.펼침.카드뜻.<카드>.<바로\|거꾸로>` (위 절 · 156칸) | 맨 먼저 | 없음 | 위 절 그대로(판정 말 없이 그 카드 그 놓임의 본뜻). 원문 줄은 위 절 표. |
-| `세점.펼침.영향.<1~10>.<길\|흉\|섞임>` (새 · 30칸) | 빈 칸 → 글 | `{카드}` 그 장 카드 이름(「완드 페이지(시종)」 꼴) · `{물음}` 주제 낱말(`세점.물음말` 열 가지) · `{놓임}` 「바로」 · 「거꾸로」 | 아래 표 — 자리 n의 웨이트 자리 줄이 말하는 것을, 그 장 길흉 쪽으로 한두 문장. `{카드}` · `{놓임}`은 안 써도 된다(바로 위 줄에 있음) — 쓰면 조사는 `{카드\|이}` 꼴로 붙인다(받침 자동). |
+| `세점.펼침.영향.<1~10>.<길\|흉\|섞임>` (새 · 30칸 — 화면은 1 ~ 9째만 · 10째 세 칸은 v1538부터 안 씀 · 87) | 빈 칸 → 글 | `{카드}` 그 장 카드 이름(「완드 페이지(시종)」 꼴) · `{물음}` 주제 낱말(`세점.물음말` 열 가지) · `{놓임}` 「바로」 · 「거꾸로」 | 아래 표 — 자리 n의 웨이트 자리 줄이 말하는 것을, 그 장 길흉 쪽으로 한두 문장. `{카드}` · `{놓임}`은 안 써도 된다(바로 위 줄에 있음) — 쓰면 조사는 `{카드\|이}` 꼴로 붙인다(받침 자동). |
 | `세점.펼침.왜.<직접\|전체\|엇갈림>` (새 · 3칸) | 빈 칸 → 글 | `{물음}` | 직접: 이 카드의 웨이트 원문이 그 물음을 직접 말해서 그 말로 길흉을 읽었다(바로 아래 영어 낱말이 그 말). 전체: 놓인 방향과 이 손님 성별에 맞춰 봐도 그 물음을 말한 원문 낱말이 없어(다른 성별 몫 낱말만 있는 칸 포함 — COPY-0025 끝 절 3 · 근거 접힘 `세점.왜.타로달.전체`와 같은 좁힘) 카드 전체 뜻의 방향으로 읽었다(아래 낱말 = 카드 본뜻). 엇갈림: 웨이트가 덧붙인 뜻(§4)만 그 물음을 말하는데 본뜻과 방향이 달라 「길흉 함께」로 읽었다(아래에 둘 다). 근거 접힘의 `세점.왜.타로달.*`(열째 하나)와 다른 칸 — 이것은 장마다 · 짧게. |
 | `세점.펼침.읽는법` (새 · 1칸) | 빈 칸 → 글 | `{물음}` (안 써도 됨) | 열째가 이 일의 결과이고 1 ~ 9째는 그 결과에 이르는 영향(703 「the final result, the culmination which is brought about by the influences shewn by the other cards」)이라는 것 · 한 장씩 뒤집으면 자리마다 뜻이 나온다는 것. 1 ~ 9째 길흉이 결론 셈에 안 들어간다는 말은 `끝말`이 이미 한다 — 되풀이하지 않는다. **v1538(결정함 87)**: 나오는 곳은 펼친 순간 첫 장을 뒤집기 전 하나뿐. 1 → 10 차례를 일이 거치는 과정 · 단계로 말하지 않는다 — 열 자리는 때가 서로 다른 영향이다(이야기 때 차례 4 5 → 1 2 7 8 9 → 6 3 → 10 · 85). |
 
@@ -440,7 +440,7 @@ him = 나 카드 = 손님(남녀 모두) — 성별 낱말 없이 쓴다.
 - 열 가지 `{물음}` 어느 것이 와도 홀로 읽히게(주제 낱말이지 물음 문장이 아니다 — 위 절 2 판머리와 같은 함정).
 - 비면 줄이 없다 — 칸을 다 못 채워도 채운 칸만 나온다.
 
-열쇠 꼴(모두 `세점` → `펼침` 안): `"영향": { "1": { "길": "…", "흉": "…", "섞임": "…" }, …, "10": { … } }` · `"왜": { "직접": "…", "전체": "…", "엇갈림": "…" }` · `"읽는법": "…"`.
+열쇠 꼴(모두 `세점` → `펼침` 안): `"영향": { "1": { "길": "…", "흉": "…", "섞임": "…" }, …, "9": { … } }`(`"10"`은 남아 있어도 화면에 안 나옴 · 87) · `"왜": { "직접": "…", "전체": "…", "엇갈림": "…" }` · `"읽는법": "…"`.
 숫자(엔진 v0.6 · 카드 156 × 물음 10 × 남녀 = 3,120): 왜 직접 316 · 전체 2,773 · 엇갈림 31 — 손님 대부분은 「전체」를 본다.
 열쇠 보기: 주소 끝 `?keys` 로 열면 빈 새 칸 자리에 〔세점.펼침.영향.1.길〕처럼 열쇠 이름이 보인다.
 
@@ -463,7 +463,7 @@ him = 나 카드 = 손님(남녀 모두) — 성별 낱말 없이 쓴다.
 
 나오는 곳 둘:
 
-1. 펼친 순간 — 열째를 뒤집은 뒤, 열째 읽기 칸 아래 · `끝말` 위.
+1. 펼친 순간 — 열째를 뒤집은 뒤, 열째 읽기 칸 아래 · `끝말`(다시 펼칠 첫 판이면 `다시말` + 섞기 단추) 위.
 2. 결과 열 장 접힘(`판머리`) 안 — 판 그림 아래 · 자리 열 줄 위. 다시 펼쳤으면 첫 판 · 둘째 판에 하나씩.
 
 이야기 차례(메인 추론 — 웨이트 자리 줄의 때 낱말을 따라 줄을 세운다. 번호는 판의 자리 번호 그대로 앞에 붙는다):
@@ -480,14 +480,15 @@ him = 나 카드 = 손님(남녀 모두) — 성별 낱말 없이 쓴다.
 | 칸 | 수 | 값 | 뜻(메인) |
 |---|---|---|---|
 | `세점.펼침.카드말.<카드>.<바로\|거꾸로>` | 156 | 없음 | 그 카드 그 놓임의 본뜻을 **이름처럼 짧은 명사구**로(4 ~ 18자 안팎). 원문은 위 `카드뜻` 156칸과 같은 줄(Codex 전후표 `ref/COPY-0026-card-readings.md`) — 카드뜻 문장의 첫 뜻을 줄인 것. 엇갈리는 뜻이 함께 있는 카드는 「A, 또는 B」처럼 둘 다 짧게. 판정 말(길 · 흉 · 좋은 · 나쁜 · 유리 · 불리) 없이. 어느 줄 틀에 넣어도 말이 되게 — 동사로 끝내지 않는다. |
-| `세점.펼침.이야기.<1~10>.<길\|흉\|섞임>` | 30 | `{카드말}`(꼭 씀) · `{물음}` · `{카드}` · `{놓임}` | 한 줄 = 그 자리의 역할 + 그 장의 카드말 + 그 장 길흉 쪽. 뜻은 위 절 `영향` 30칸 표와 같다(같은 원문 줄) — 다만 이번엔 **카드말이 그 자리를 채우는 내용**이다(예: 1 길 = 지금 이 일을 둘러싼 분위기가 {카드말}이고 그것이 이 일을 돕는다). 앞뒤 줄과 이어 읽히게(막 차례대로 한 사람이 들려주는 이야기). |
+| `세점.펼침.이야기.<1~10>.<길\|흉\|섞임>` | 30 | `{카드말}`(꼭 씀) · `{물음}` · `{카드}` · `{놓임}` | 한 줄 = 그 자리의 역할 + 그 장의 카드말 + 그 장 길흉 쪽. 뜻은 위 절 `영향` 30칸 표와 같다(같은 원문 줄) — 다만 이번엔 **카드말이 그 자리를 채우는 내용**이다(예: 1 길 = 지금 이 일을 둘러싼 분위기가 {카드말}이고 그것이 이 일을 돕는다). 앞뒤 줄과 이어 읽히게(막 차례대로 한 사람이 들려주는 이야기). **10도 꼭 채운다** — `영향.10`은 안 쓰지만 `이야기.10`은 쓴다(한 줄이라도 비면 이야기 전체가 안 나옴). |
 | `세점.펼침.이야기때.<지나온\|지금\|앞으로\|끝>` | 4 | 없음 | 막 머리 — 지나온 것 · 지금 · 앞으로 · 끝을 뜻하는 짧은 말. |
 | `세점.펼침.이야기머리` | 1 | `{물음}` | 이야기 맨 위 한 줄 — 「그 물음을 두고 뽑은 열 장이 들려주는 이야기」라는 뜻. `판머리`와 같은 말을 되풀이하지 않는다. |
 
 꼭 지킬 것:
 
 - 1 ~ 9째 길흉은 줄 말투(돕는다 · 막는다 · 둘 다)만 고른다 — 타로 점의 결론(열째)을 바꾸지 않는다(결정함 73). 「이 카드 때문에 결과가 …」 금지.
-- 10 줄은 `끝말`(결과를 정한 카드 · 길흉)도, 열째 읽기 칸의 `자리뜻.10`(「앞 영향 끝의 마지막 결과」)도 되풀이하지 않는다 — 앞 막들이 모여 닿은 끝에 그 장의 `{카드말}`이 놓였다는 것만(705).
+- 10 줄은 앞 막들이 그 장의 `{카드말}`에 모인다(그 장이 앞의 것을 다 품는다)는 것만 말한다(705 「It should embody whatsoever you may have divined from the other cards」). 「끝 · 마지막 · 결과」와 판정 · 길흉 낱말은 쓰지 않는다 — 바로 위 막 머리 `이야기때.끝`, 열째 읽기 칸의 `자리뜻.10`, 아래 `끝말`(다시 펼칠 첫 판이면 `다시말`)이 그 말을 한다(v1539 · 결정함 88 — 「모여 닿는 끝」은 막 머리 「…끝」 바로 아래에서 같은 말이 됨). 세 칸(길 · 흉 · 섞임)은 같아도 된다.
+- 10.섞임은 대개 다시 펼칠 첫 판에 놓인다(열째가 그 물음에 흔들리면 그 장을 새 나로 다시 펼침 — 706) — 바로 아래 `다시말`이 「다시 펼친다」를 말하므로 「그렇게 끝난다 · 정해졌다 · 마무리된다」처럼 닫는 말을 쓰지 않는다.
 - 9 흉 = 두려움(일어날 일이 아님) · 3 = 아직 이루지 않은 최선 · 2 길 = 두 갈래(걸림이 크지 않다 / 그 좋은 것이 이 일에선 좋음을 내지 않는다 — 하나로 정하지 않는다) · 5 = 지나가는 것 · 6 = 가까운 앞날.
 - 웨이트 자리 줄과 카드 원문이 말하는 것까지만 — 사건(누가 · 언제 · 얼마)을 지어내지 않는다.
 - 읽기 칸의 `영향` 줄을 그대로 옮기지 않는다(같은 사람이 두 곳을 다 본다).
@@ -501,22 +502,40 @@ him = 나 카드 = 손님(남녀 모두) — 성별 낱말 없이 쓴다.
 
 | 칸 | 원문(Part III 줄) | 지금 글에서 틀린 곳 | 맞는 뜻 |
 |---|---|---|---|
-| `카드뜻.M14.거꾸로` | 454 「Reversed: Things connected with churches, religions, sects, the priesthood, sometimes even the priest who will marry the Querent; also disunion, unfortunate combinations, competing interests.」 | 「때로는 질문한 사람의 혼례를 맡을 성직자」가 빠졌다. 연애·결혼 물음은 이 낱말 하나로 길을 읽고, 아래 원문 낱말 줄에 그대로 낸다(엔진 직접). 지금 한국어로는 길로 읽은 까닭(결혼)이 안 보인다. | 교회 · 종교 · 교파 · 성직에 얽힌 일, 때로는 질문한 사람의 혼례를 맡을 성직자까지 — 곧 그 사람의 결혼이 걸린 뜻. 거기에 갈라짐 · 맞지 않는 결합 · 이해 충돌 |
-| `카드뜻.M13.바로` | 452 「End, mortality, destruction, corruption; also, for a man, the loss of a benefactor; for a woman, many contrarieties; for a maid, failure of marriage projects.」 | 성별 뜻 셋이 빠졌다. 여자 손님의 연애·결혼 물음은 「for a maid, failure of marriage projects」로 흉을 읽고 원문 낱말 줄에 낸다(엔진 직접) — 그 위 한국어에 결혼 말이 없다. | 끝 · 죽음 · 파괴 · 썩어 무너짐. 그리고 남자에겐 도와주던 사람(후원자)을 잃음 · 여자에겐 여러 일이 어긋남 · 결혼 전 여자에겐 결혼 계획이 이루어지지 않음(여사제 M02처럼 성별 뜻을 싣는다) |
-| `카드뜻.M01.거꾸로` | 428 「Reversed: Physician, Magus, mental disease, disgrace, disquiet.」 | Magus를 카드 이름과 같은 「마법사」로 옮겨, 「마법사」 카드 바로 아래 「의사나 마법사를 가리키는 카드」가 된다(제 이름 되풀이 · 「마법사가 누구냐」고 되묻게 됨). 몸 물음은 이 낱말 줄로 읽는다. | Magus는 의사와 나란히 놓인 현실의 사람 — 비술 · 옛 지혜에 밝은 사람(술사 · 현자). 카드 이름과 다른 말로, 현실에서 알아볼 수 있는 사람으로. 그리고 정신의 병 · 불명예 · 불안 |
+| `카드뜻.M14.거꾸로` | 454 「Reversed: Things connected with churches, religions, sects, the priesthood, sometimes even the priest who will marry the Querent; also disunion, unfortunate combinations, competing interests.」 | 「때로는 질문한 사람의 혼례를 맡을 성직자」가 빠졌다. 연애·결혼 물음은 이 낱말 하나로 길을 읽고, 아래 원문 낱말 줄에 그대로 낸다(엔진 직접). 지금 한국어로는 길로 읽은 까닭(결혼)이 안 보인다. | 교회 · 종교 · 교파 · 성직에 얽힌 일, 때로는 질문한 사람의 혼례를 맡을 성직자까지 — 곧 그 사람의 결혼이 걸린 뜻. 거기에 갈라짐 · 불운한 결합(unfortunate combinations) · 이해 충돌 |
+| `카드뜻.M13.바로` | 452 「End, mortality, destruction, corruption; also, for a man, the loss of a benefactor; for a woman, many contrarieties; for a maid, failure of marriage projects.」 | 성별 뜻 셋이 빠졌다. 여자 손님의 연애·결혼 물음은 「for a maid, failure of marriage projects」로 흉을 읽고 원문 낱말 줄에 낸다(엔진 직접) — 그 위 한국어에 결혼 말이 없다. (메인 추론 · 사장님 검수 대상 — 손님은 생년월일만 넣어 혼인 여부를 모르므로 엔진은 여자 손님 모두에 maid 줄을 쓴다 · 결정함 88) | 끝 · 죽음 · 파괴 · 썩어 무너짐. 그리고 남자에겐 도와주던 사람(후원자)을 잃음 · 여자에겐 여러 일이 어긋남 · 결혼 전 여자에겐 결혼 계획이 이루어지지 않음(여사제 M02처럼 성별 뜻을 싣는다) |
+| `카드뜻.M01.거꾸로` | 428 「Reversed: Physician, Magus, mental disease, disgrace, disquiet.」 | Magus를 카드 이름과 같은 「마법사」로 옮겨, 「마법사」 카드 바로 아래 「의사나 마법사를 가리키는 카드」가 된다(제 이름 되풀이 · 「마법사가 누구냐」고 되묻게 됨). 몸 물음은 이 낱말 줄로 읽는다. | Magus는 의사와 나란히 놓인 현실의 사람 — 비술에 밝은 사람(술사 · 현자). 「옛 지혜」는 원문에 없다. 카드 이름과 다른 말로, 현실에서 알아볼 수 있는 사람으로. 그리고 정신의 병 · 불명예 · 불안 |
 | `카드뜻.M06.바로` | 438 「6. The Lovers.—Attraction, love, beauty, trials overcome.」 | 「서로에게 끌리는 마음」 — 원문은 끌림(Attraction)일 뿐 「서로」가 없다(연애 물음 길의 근거 줄 바로 위라 「상대도 끌린다」로 읽힌다). trials를 「시험」으로 옮겨 exam으로도 읽힌다(같은 파일 M12는 「시련」). | 끌림 · 사랑 · 아름다움, 그리고 이겨 낸 시련. 끌림이 서로의 것이라고 정하지 않는다 |
-| `카드뜻.W13.바로` | 40 「… Also, love of money, or a certain success in business.」 | 「사업의 확실한 성공」 — 관사 붙은 a certain은 「얼마간의 · 어느 정도의」다(웨이트 552 「a qualified success may be expected … Reversed: A certain success following wise administration」 — 제한된 성공을 a certain success로 다시 받음). 「확실한 성공」은 세계 M21 「Assured success」(470)의 말이다. 원문의 「또는(or)」도 「과 … 도」로 바뀌었다. | 돈을 중히 여기는 마음, 또는 사업에서 거두는 얼마간의 성공. 보장의 뜻(확실한 · 반드시)은 없다 |
-| `카드뜻.W05.바로` | 96 「It is mimic warfare, and hereto correspond the Divinatory Meanings: Imitation, as, for example, sham fight, but also the strenuous competition and struggle of the search after riches and fortune. In this sense it connects with the battle of life. Hence some attributions say that it is a card of gold, gain, opulence.」 | 첫 뜻 「흉내 · 시늉뿐인 싸움(sham fight)」이 통째로 빠지고, 「but also」 뒤의 둘째 뜻만 남았다. | 첫 뜻: 흉내 — 겉으로만 하는 싸움(모의 싸움). 다음: 재물과 운을 좇는 치열한 경쟁 · 삶의 싸움. 그래서 일부 풀이는 금 · 이득 · 부로 읽는다 |
-| `카드뜻.S09.바로` | 264 「Divinatory Meanings: Death, failure, miscarriage, delay, deception, disappointment, despair.」 | 「죽음과 유산」 — 「유산」이 遺産(물려받는 재산)으로 읽힌다. 같은 파일 P04 바로(397 「gift, legacy, inheritance」)는 遺産 뜻의 「유산」이라, 한 판에 둘이 나오면 같은 낱말이 다른 뜻이 된다. | miscarriage = 임신 중 아이를 잃음(流産), 또는 일이 도중에 어그러짐. 遺産으로 읽히지 않게 |
-| `카드뜻.S02.바로` | 313 「Divinatory Meanings: Conformity and the equipoise which it suggests, courage, friendship, concord in a state of arms; another reading gives tenderness, affection, intimacy. The suggestion of harmony and other favourable readings must be considered in a qualified manner, as Swords generally are not symbolical of beneficent forces in human affairs.」 | 「in a state of arms」(무기를 든 채)를 빼고 그냥 「화합」이라 했다. 화합 · 애정 같은 좋은 풀이는 조건을 달아 읽으라는 원문 문장도 빠졌다. | 따름과 그것이 뜻하는 균형 · 용기 · 우정 · 무기를 든 채(긴장 속에서) 지키는 화합. 다정함 · 애정 · 친밀함으로 읽는 풀이도 그 단서를 달고(원문 까닭: 소드는 대개 사람 일에 이로운 힘이 아님) |
+| `카드뜻.W13.바로` | 40 「… Also, love of money, or a certain success in business.」 | 「사업의 확실한 성공」 — 관사 붙은 a certain은 「얼마간의 · 어느 정도의」다(웨이트 552 「a qualified success may be expected … Reversed: A certain success following wise administration」 — 제한된 성공을 a certain success로 다시 받음). 「확실한 성공」은 세계 M21 「Assured success」(470)의 말이다. 원문의 「또는(or)」도 「과 … 도」로 바뀌었다. | 끝 대목만: 돈을 중히 여기는 마음, 또는 사업에서 거두는 얼마간의 성공. 보장의 뜻(확실한 · 반드시)은 없다. 그 앞의 뜻(40 앞부분)과 차례는 그대로 둔다 |
+| `카드뜻.W05.바로` | 96 「It is mimic warfare, and hereto correspond the Divinatory Meanings: Imitation, as, for example, sham fight, but also the strenuous competition and struggle of the search after riches and fortune. In this sense it connects with the battle of life. Hence some attributions say that it is a card of gold, gain, opulence.」 | 첫 뜻 「흉내 · 시늉뿐인 싸움(sham fight)」이 통째로 빠지고, 「but also」 뒤의 둘째 뜻만 남았다. | 첫 뜻: 흉내 — 겉으로만 하는 싸움(모의 싸움). 다음: 재물과 부(riches and fortune — 여기 fortune은 운이 아니라 부)를 좇는 치열한 경쟁 · 삶의 싸움. 그래서 일부 풀이는 금 · 이득 · 부로 읽는다 |
+| `카드뜻.S09.바로` | 264 「Divinatory Meanings: Death, failure, miscarriage, delay, deception, disappointment, despair.」 | 「죽음과 유산」 — 「유산」이 遺産(물려받는 재산)으로 읽힌다. 같은 파일 P04 바로(397 「gift, legacy, inheritance」)는 遺産 뜻의 「유산」이라, 한 판에 둘이 나오면 같은 낱말이 다른 뜻이 된다. | 원문 차례 그대로: 죽음 · 실패 · 임신 중 아이를 잃음(또는 일이 도중에 어그러짐) · 지연 · 속임 · 실망 · 절망 — 첫 뜻은 죽음. 「유산」이라는 낱말은 쓰지 않는다(물려받는 재산으로 읽힘) · 손님 글에 한자를 넣지 않는다 |
+| `카드뜻.S02.바로` | 313 「Divinatory Meanings: Conformity and the equipoise which it suggests, courage, friendship, concord in a state of arms; another reading gives tenderness, affection, intimacy. The suggestion of harmony and other favourable readings must be considered in a qualified manner, as Swords generally are not symbolical of beneficent forces in human affairs.」 | 「in a state of arms」(무기를 든 채)를 빼고 그냥 「화합」이라 했다. 화합 · 애정 같은 좋은 풀이는 조건을 달아 읽으라는 원문 문장도 빠졌다. | 어울림(맞춤 — Conformity · 「따름」이 아님)과 그것이 뜻하는 균형 · 용기 · 우정 · 무기를 든 채(긴장 속에서) 지키는 화합. 다정함 · 애정 · 친밀함으로 읽는 풀이도 있다. 끝에 웨이트의 주의를 판정 말 없이 그대로 싣는다 — 화합 같은 풀이는 조건을 달아 읽는다, 소드는 대개 사람 일에서 선한 힘을 상징하지 않기 때문(313 끝 문장) |
 | `카드뜻.S03.거꾸로` | 306 「Reversed: Mental alienation, error, loss, distraction, disorder, confusion.」 | 첫 뜻 Mental alienation(정신이 온전하지 못함)을 「정신의 혼란」으로 약하게 옮겨, 끝 낱말 confusion(혼란)과 같은 말이 됐다. | 정신이 온전하지 못함 · 잘못 · 잃음 · 정신이 흩어짐 · 무질서 · 혼란 — 첫 뜻이 가장 세다 |
-| `카드뜻.S03.바로` | 306 「Three swords piercing a heart; cloud and rain behind. Divinatory Meanings: Removal, absence, delay, division, rupture, dispersion, and all that the design signifies naturally, being too simple and obvious to call for specific enumeration.」 | 「그림이 저절로 뜻하는 모든 것」(칼 셋에 꿰뚫린 심장 · 뒤의 구름과 비)이 뜻의 한 몫인데 빠졌다. | 떠나감 · 부재 · 지연 · 갈라짐 · 끊어짐 · 흩어짐, 그리고 그림 그대로의 뜻 — 칼에 꿰뚫린 마음의 아픔 · 슬픔 |
-| `카드뜻.S14.바로` | 229 「He sits in judgment … Divinatory Meanings: Whatsoever arises out of the idea of judgment and all its connexions—power, command, authority, militant intelligence, law, offices of the crown, and so forth.」 | judgment를 「판단」(혼자 내리는 결정)으로 옮겼다. 원문에 없는 「힘과 권위, 맞서 싸우는 지성이 중심」 — 딸린 것을 중심으로 올렸다. | 뿌리는 재판 · 심판(옳고 그름을 가려 판결함 — 그림의 왕은 재판하는 자리에 앉음). 거기서 나오는 것 모두 — 힘 · 명령 · 권위 · 싸움에 쓰는 지성 · 법 · 나라의 관직 |
+| `카드뜻.S03.바로` | 306 「Three swords piercing a heart; cloud and rain behind. Divinatory Meanings: Removal, absence, delay, division, rupture, dispersion, and all that the design signifies naturally, being too simple and obvious to call for specific enumeration.」 | 「그림이 저절로 뜻하는 모든 것」(칼 셋에 꿰뚫린 심장 · 뒤의 구름과 비)이 뜻의 한 몫인데 빠졌다. | 떠나감 · 부재 · 지연 · 갈라짐 · 끊어짐 · 흩어짐, 그리고 「그림이 저절로 뜻하는 모든 것」 — 칼 셋에 꿰뚫린 심장 · 뒤의 구름과 비. 「아픔 · 슬픔」은 원문 낱말이 아니라 그림에서 읽은 것(메인 추론)이니 「그림 그대로」로만 쓴다 |
+| `카드뜻.S14.바로` | 229 「He sits in judgment … Divinatory Meanings: Whatsoever arises out of the idea of judgment and all its connexions—power, command, authority, militant intelligence, law, offices of the crown, and so forth.」 | judgment를 「판단」(혼자 내리는 결정)으로 옮겼다. 원문에 없는 「힘과 권위, 맞서 싸우는 지성이 중심」 — 딸린 것을 중심으로 올렸다. | 뿌리는 재판 · 판결(옳고 그름을 가려 판결함 — 그림의 왕은 재판하는 자리에 앉음 · 「심판」은 메이저 M20 카드 이름이라 쓰지 않는다). 거기서 나오는 것 모두 — 힘 · 명령 · 권위 · 싸움에 쓰는 지성 · 법 · 나라의 관직 |
 | `카드뜻.P14.바로` | 327 「Divinatory Meanings: Valour, realizing intelligence, business and normal intellectual aptitude, sometimes mathematical gifts and attainments of this kind; success in these paths.」 | 「용기와 생각을 현실로 옮기는 지성」 — 우리말로는 「[용기와 생각]을 현실로 옮긴다」로 읽혀, 용기가 이 왕의 성질이 아니라 옮길 대상이 된다. | 두 성질이 나란히 — 용기, 그리고 생각을 현실로 이루어 내는 지성. 그 뒤로 사업 감각 · 보통의 지적 능력 · 때로 수학적 재능 · 그 길에서의 성공 |
 | `읽는법` | 703 「the final result, the culmination which is brought about by the influences shewn by the other cards」 | 「이 일이 어떤 과정을 거치는지」 — 1 → 10 차례를 일이 거치는 단계로 읽게 한다. 열 자리는 과정의 단계가 아니라 때가 서로 다른 영향이다(이야기 차례 4 5 → 1 2 7 8 9 → 6 3 → 10 · 85). | 1 ~ 9째는 열째(결과)를 빚는 영향이고 열째가 그 끝(703) · 한 장씩 뒤집으면 자리마다 뜻이 나온다. 이제 첫 장을 뒤집기 전에만 나온다(87) |
 
 열쇠 꼴(모두 `세점` → `펼침` 안): `"카드말": { "M00": { "바로": "…", "거꾸로": "…" }, … }` · `"이야기": { "1": { "길": "…", "흉": "…", "섞임": "…" }, …, "10": { … } }` · `"이야기때": { "지나온": "…", "지금": "…", "앞으로": "…", "끝": "…" }` · `"이야기머리": "…"`. 모두 191칸.
-열쇠 보기: 주소 끝 `?keys` — 빈 칸 자리에 〔세점.펼침.이야기.1.길〕 · 〔세점.펼침.카드말.P07.바로〕처럼 열쇠 이름이 보인다(열째를 뒤집은 뒤 · 결과 열 장 접힘).
+열쇠 보기: 주소 끝 `?keys` — 빈 칸 자리에 〔세점.펼침.이야기.1.길〕 · 〔세점.펼침.카드말.P07.바로〕처럼 열쇠 이름이 보인다(열째를 뒤집은 뒤 · 결과 열 장 접힘). 카드말 열쇠는 그 이야기 줄이 차 있어야 보인다(카드말은 줄 안의 값 — 줄이 비면 줄 열쇠만 보인다).
 화면 동작은 메인 몫 — PR #13(카드 더미 직접 나누기 · 자동으로 차례 뒤집기)은 v1534(결정함 83 — 부채꼴에서 열 장 고르기 · 한 장씩 뒤집기)가 같은 일을 이미 해 합치지 않았다. 「더미를 직접 누름」만 지금 흐름에 옮겼다(결정함 86).
 
 끝나면: 새 가지 `codex/COPY-0026-story`(새 PR) — 채울 차례 같이 고칠 것(왜.전체 1 · 뜻 대조 13 — 카드말이 고친 카드뜻을 따르게 먼저) → 카드말 156 → 이야기 30 → 이야기때 4 → 이야기머리 1. 칸마다 전 → 후 · 까닭(카드말은 원문 줄). `node` 로 `app/three-pieces.js` 가 깨지지 않는지 본다. 메인이 뜻 대조 · 화면 글 검사기 · 합치기 · 배포. INDEX.md 상태를 「제안됨」으로.
+끝나면: 새 가지 `codex/COPY-0026-story`(새 PR) — 채울 차례 카드말 156 → 이야기 30 → 이야기때 4 → 이야기머리 1. 칸마다 전 → 후 · 까닭(카드말은 원문 줄). `node` 로 `app/three-pieces.js` 가 깨지지 않는지 본다. 메인이 뜻 대조 · 화면 글 검사기 · 합치기 · 배포. INDEX.md 상태를 「제안됨」으로.
+
+### Codex 열 장 이야기 제안 — 2026-10-31
+
+상태: 적용됨(v1539 · PR #14 메인 합침) · `codex/COPY-0026-story`. 카드말 156 → 이야기 30 → 이야기때 4 → 이야기머리 1, 새 191칸 작성. `세점.펼침.왜.전체`도 놓인 방향·이용자 성별에 맞는 원문으로 좁혔다. [칸별 전후·출처·까닭](ref/COPY-0026-story-changes.md). 합치기·화면 검사·배포는 메인 담당.
+
+## 10-31 v1539 — 이야기 합침 뒤 다음 PR(결정함 88)
+
+PR #14(이야기 191칸 · 왜.전체 1칸) 메인 합침 · 공개 v1539 — 이야기가 켜졌다. PR #14는 v1537 바탕이라 위 「같이 고칠 것 둘」 13칸은 아직 그대로다.
+
+다음 PR — 새 가지 `codex/COPY-0026-fix`(새 PR):
+
+1. 위 「같이 고칠 것 둘」 13칸(카드뜻 12 · 읽는법 1) — 「맞는 뜻」은 v1539에서 다듬었다(S09 원문 차례 · 한자 없이 · S02 어울림 · W05 재물과 부 · S14 재판 · 판결 · M01 「옛 지혜」 뺌 · S03 바로 그림 · M14 불운한 결합).
+2. 카드말 — 고친 카드뜻이 첫 뜻을 바꾸면 그 카드말도 함께(S09 바로는 첫 뜻이 죽음).
+3. `이야기.10` 세 칸 — 위 「꼭 지킬 것」 10 줄 규칙(v1539 다시 씀): 「끝 · 마지막 · 결과」 없이 앞 막들이 그 장의 {카드말}에 모인다는 것만. 10.섞임에 닫는 말 금지.
+4. 배포 뒤 검토에서 더 나오는 것은 이 절 아래에 붙인다(같은 PR).
+
+끝나면: 칸마다 전 → 후 · 까닭. `node` 로 `app/three-pieces.js` 가 깨지지 않는지 본다. 메인이 뜻 대조 · 화면 글 검사기 · 합치기 · 배포. INDEX.md 상태를 「제안됨」으로.
