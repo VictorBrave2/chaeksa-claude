@@ -142,6 +142,8 @@
 .three-sp-3,.three-sp-4{margin:0 20.833%}   /* 12칸 넓이 가운데 열에서 카드 폭(7)만 — 번호가 카드 귀에 붙게 */
 .three-sp-5{grid-column:3;grid-row:4/span 2}
 .three-sp-6{grid-column:1;grid-row:4/span 2}
+.three-sp-board.is-face-right .three-sp-5{grid-column:1}   /* 나 카드 그림이 오른쪽을 보면 등진 쪽(5 · 687)이 왼쪽 */
+.three-sp-board.is-face-right .three-sp-6{grid-column:3}   /* 바라보는 쪽(6 · 691)이 오른쪽 */
 .three-sp-7{grid-column:5;grid-row:7/span 2}
 .three-sp-8{grid-column:5;grid-row:5/span 2}
 .three-sp-9{grid-column:5;grid-row:3/span 2}
