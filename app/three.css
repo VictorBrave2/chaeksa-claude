@@ -82,14 +82,14 @@
 .three-pt-name{font-size:var(--t1);font-weight:700;color:var(--ink2);min-width:4.5em}
 .three-pt-when{flex:1 1 auto;min-width:0;font-size:var(--t2);color:var(--ink);word-break:keep-all}
 .three-pt-gh{font-family:var(--serif);font-size:var(--t3);font-weight:700;color:var(--ink2);word-break:keep-all}
-.three-pt[data-gh="길"] .three-pt-gh{color:var(--wood)}
+.three-pt[data-gh="길"] .three-pt-gh{color:var(--wood-ink)}   /* 11-01 검토 — 길 글자는 --wood-ink(흰 바탕 4.8:1 · --wood 는 4.2:1이라 AA 4.5 미만) · 띠 · 테두리는 --wood */
 .three-pt[data-gh="흉"] .three-pt-gh{color:var(--fire)}
 .three-pt[data-gh="섞임"] .three-pt-gh,.three-pt[data-gh="변화"] .three-pt-gh{color:var(--accent)}
 .three-card .three-answer p.three-pt-what{margin-top:4px;font-size:var(--t2);line-height:1.65;color:var(--ink2)}
 .three-card .three-answer p.three-tally{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-family:var(--serif);font-size:var(--t4);line-height:1.5;color:var(--ink)}
 .three-card .three-answer p.three-same{margin-top:4px;font-size:var(--t2);line-height:1.6;color:var(--ink2)}
 .three-why2{margin:0 0 8px;font-size:var(--t2);line-height:1.65;color:var(--ink2);word-break:keep-all}
-.three-grid td[data-gh="길"]{color:var(--wood)}
+.three-grid td[data-gh="길"]{color:var(--wood-ink)}
 .three-grid td[data-gh="흉"]{color:var(--fire)}
 .three-do{margin:4px 0 12px;padding:14px 16px;border:1px solid var(--line2);border-radius:var(--r2);background:var(--card)}
 .three-do .three-kicker{margin:0 0 6px;font-size:var(--t1);color:var(--ink2)}
@@ -163,7 +163,7 @@
 .three-card .three-sp-txt p.three-sp-pos{color:var(--ink)}
 .three-sp-pos b{font-weight:700;margin-right:6px}
 .three-sp-gh{font-family:var(--serif);font-weight:700;color:var(--ink2);white-space:nowrap}
-.three-sp-row[data-gh="길"] .three-sp-gh{color:var(--wood)}
+.three-sp-row[data-gh="길"] .three-sp-gh{color:var(--wood-ink)}
 .three-sp-row[data-gh="흉"] .three-sp-gh{color:var(--fire)}
 .three-sp-row[data-gh="섞임"] .three-sp-gh,.three-sp-row[data-gh="변화"] .three-sp-gh{color:var(--accent)}
 .three-card .three-sp-txt p.three-sp-card{color:var(--ink)}
@@ -246,7 +246,7 @@
 .three-read-card b{font-weight:600}
 .three-read-card small{font-family:var(--sans);font-size:var(--t1);color:var(--ink3)}
 .three-card .three-read-txt p.three-read-gh{margin-top:2px;font-family:var(--serif);font-size:var(--t3);font-weight:700;line-height:1.5;color:var(--ink2)}
-.three-card .three-read[data-gh="길"] p.three-read-gh{color:var(--wood)}   /* 11-01 — 바로 위 줄(0,3,1)의 color 가 덮어 늘 회색이었다(88 이야기 띠와 같은 꼴) */
+.three-card .three-read[data-gh="길"] p.three-read-gh{color:var(--wood-ink)}   /* 11-01 — 바로 위 줄(0,3,1)의 color 가 덮어 늘 회색이었다(88 이야기 띠와 같은 꼴) */
 .three-card .three-read[data-gh="흉"] p.three-read-gh{color:var(--fire)}
 .three-card .three-read[data-gh="섞임"] p.three-read-gh,.three-card .three-read[data-gh="변화"] p.three-read-gh{color:var(--accent)}
 .three-card .three-read-txt p.three-read-mean{margin-top:2px;font-size:var(--t1);line-height:1.55;color:var(--ink3)}

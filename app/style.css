@@ -10,7 +10,7 @@
   --ink:#2b261f; --ink2:#595145; --ink3:#7a7060;
   --accent:#88651f; --accent2:#745319; --accent-soft:rgba(136,101,31,.075); --accent-line:rgba(136,101,31,.26);
   --seal-bg:linear-gradient(145deg,#dcb765,#a8791f); --seal-ink:#2b261f;
-  --wood:#4a8560; --fire:#b13a48; --earth:#a07c3a; --metal:#7b7686; --water:#4272a6;
+  --wood:#4a8560; --wood-ink:#427a58; --fire:#b13a48; --earth:#a07c3a; --metal:#7b7686; --water:#4272a6;
   --g3-bg:#f3e6c6; --g3-ink:#7d4a1c; --g2-bg:#e3ece2; --g0-bg:#f6dde2; --g0-ink:#973f52;
   --g3:#c98b3f; --g2:#6ba272; --g1:#c4bba8; --g0:#c07060;
   --shadow:0 3px 16px rgba(75,57,29,.07);
