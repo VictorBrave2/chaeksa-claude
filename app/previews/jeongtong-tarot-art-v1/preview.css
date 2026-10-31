@@ -1,0 +1,19 @@
+:root{color-scheme:light;--paper:#f8f5ed;--ink:#2b261f;--muted:#756b5d;--line:#dfd4c1;--accent:#88651f;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;min-width:280px;height:100%;background:var(--paper);color:var(--ink)}
+body{display:flex;flex-direction:column;overflow:hidden}
+.preview-toolbar{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);background:#fffdf8}
+.preview-title strong{font-size:15px;font-weight:650}
+.preview-title p{margin:5px 0 0;font-size:12px;line-height:1.55;color:var(--muted);word-break:keep-all}
+.preview-options{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.switch{display:flex;padding:3px;border:1px solid var(--line);border-radius:12px;background:#f5f0e6}
+.switch button{min-height:38px;padding:8px 13px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:12px;white-space:nowrap;cursor:pointer}
+.switch button[aria-pressed="true"]{background:#fffdf8;color:var(--ink);box-shadow:0 1px 4px #4b391d15}
+.switch button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.preview-status{flex:none;margin:0;padding:7px 20px;font-size:11px;line-height:1.5;color:var(--muted);background:#f8f5ed}
+.preview-stage{position:relative;flex:1;min-height:0;overflow:hidden;display:flex;justify-content:center;align-items:flex-start;padding:0 12px 12px}
+.frame-space{position:relative;flex:none;overflow:hidden;background:var(--paper);box-shadow:0 0 0 1px #ded4c3}
+#reading-frame{position:absolute;inset:0 auto auto 0;display:block;max-width:none;border:0;background:var(--paper);transform-origin:left top}
+.noscript-note{padding:20px}
+@media(max-width:720px){.preview-toolbar{align-items:flex-start;flex-direction:column;padding:12px;gap:10px}.preview-title p{margin-top:4px}.preview-options{gap:6px}.switch button{min-height:40px;padding:8px 11px}.preview-status{padding:6px 12px}.preview-stage{padding:0 6px 6px}}
+@media(prefers-reduced-motion:no-preference){.switch button{transition:background-color .15s,color .15s}}
