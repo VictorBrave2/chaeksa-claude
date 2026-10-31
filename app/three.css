@@ -96,3 +96,92 @@
 .three-do ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .three-do li{font-size:var(--t2);line-height:1.65;color:var(--ink);word-break:keep-all}
 .three-do b{margin-right:4px}
+/* 10-31 켈틱 펼침(웨이트 §7) — 나 카드 · 섞기 · 떼기 의식(처음 · 다시 같은 꼴), 펼친 순간(판이 차례로 놓임 → 끝말 + 결과보기), 결과 카드칸 아래 궁정말 한 줄,
+   근거 접힘 안 판 · 자리 목록 · 다시 판 · 끝말(움직임 없음). 색은 style.css 변수만(낮 · 밤 그대로). p 는 .jt-ch p(글자 16 · 줄 1.9 · 아래 10)를 이기도록 .three-card 를 앞에 붙인다.
+   화면 안으로 부르는 칸(의식 · 펼친 판 · 결과 카드칸 — three.js D6)은 위 머리줄 · 아래 네비(둘 다 고정)에 가리지 않게 scroll-margin. */
+.three-rite{margin:0 0 6px;scroll-margin-top:84px;scroll-margin-bottom:92px}
+.three-rite-row{display:flex;align-items:flex-start;justify-content:center;gap:clamp(18px,7vw,40px);margin:8px 0 10px}
+.three-sig{margin:0;flex:0 0 auto;width:clamp(88px,27vw,124px);display:flex;flex-direction:column;align-items:center;gap:6px}
+.three-sig-img{display:block;width:100%;aspect-ratio:7/12;object-fit:contain}
+.three-sig figcaption{display:flex;flex-direction:column;align-items:center;gap:1px;max-width:100%;text-align:center}
+.three-sig figcaption b{font-family:var(--serif);font-size:var(--t2);font-weight:600;line-height:1.4;color:var(--ink);word-break:keep-all}
+.three-sig figcaption b[lang="en"]{font-family:var(--sans);font-size:var(--t1)}
+.three-sig figcaption small{font-size:var(--t1);line-height:1.4;color:var(--ink3)}
+.three-pile{position:relative;flex:0 0 auto;width:clamp(88px,27vw,124px);aspect-ratio:7/12}
+.three-pile-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.three-pile-img:nth-child(1){transform:translate(-6px,6px)}
+.three-pile-img:nth-child(2){transform:translate(-3px,3px)}
+.three-pile.is-shuffle .three-pile-img:nth-child(1){animation:threeShufA .6s ease}
+.three-pile.is-shuffle .three-pile-img:nth-child(3){animation:threeShufB .6s ease}
+.three-pile.is-cut .three-pile-img:nth-child(3){animation:threeCut .45s ease}
+@keyframes threeShufA{0%,100%{transform:translate(-6px,6px)}45%{transform:translate(-42%,4px) rotate(-7deg)}}
+@keyframes threeShufB{0%,100%{transform:none}45%{transform:translate(42%,-4px) rotate(7deg)}}
+@keyframes threeCut{0%,100%{transform:none}45%{transform:translate(16%,-20%) rotate(4deg)}}
+.three-card p.three-sig-why{margin:0 0 4px;font-size:var(--t2);line-height:1.65;color:var(--ink2);text-align:center;word-break:keep-all}
+.three-rite-btn{margin-top:12px}
+/* 펼침 그림 — 칸 7 : 12 : 7 : 1 : 7(6 앞 · 십자 가운데 · 5 뒤 · 틈 · 기둥) · 반줄 8(카드 하나 = 반줄 둘 = 7:12). 판 비 34:48 이라 폭 따라 늘고 줄어
+   375px 폰에서도 가로로 넘치지 않는다(아주 좁으면 이 상자 안에서만 밀림). 십자 = 3(반줄 2 ~ 3) · 가운데(4 ~ 5) · 4(6 ~ 7), 기둥 7 ~ 10 은 아래에서 위로. */
+.three-sp-wrap{max-width:100%;overflow-x:auto;overflow-y:hidden;margin:4px 0 12px;padding:3px 0}
+.three-sp-board{display:grid;grid-template-columns:7fr 12fr 7fr 1fr 7fr;grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:34/48;width:100%;min-width:232px;max-width:340px;margin:0 auto}
+.three-sp{position:relative;min-width:0;min-height:0}
+/* 펼친 순간에만(.is-anim) — 나(--i 0) → 1 ~ 10 차례로 놓인다. 줄어든 채 나타남 — 판 밖으로 밀려나지 않게(세로 스크롤 막대 없음) */
+.three-sp-board.is-anim .three-sp{animation:threeSpIn .42s ease both;animation-delay:calc(var(--i,0) * 110ms)}
+@keyframes threeSpIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.three-sp-img{position:absolute;inset:0;margin:auto;display:block;width:auto;height:auto;max-width:92%;max-height:94%;border-radius:3px}
+.three-sp-img.is-rev{transform:rotate(180deg)}
+.three-sp-img.is-cross{transform:rotate(90deg) scale(.84)}
+.three-sp-img.is-cross.is-rev{transform:rotate(270deg) scale(.84)}
+.three-sp-none{width:86%;height:88%;border:1px dashed var(--line2);background:var(--bg2)}
+.three-sp-mid{grid-column:2;grid-row:4/span 2;position:relative;min-width:0;min-height:0}
+.three-sp-mid>.three-sp{position:absolute;top:0;bottom:0;width:58.333%}
+.three-sp-sig{left:1%}
+.three-sp-1{right:1%}
+.three-sp-2{left:20.833%}
+.three-sp-3{grid-column:2;grid-row:2/span 2}
+.three-sp-4{grid-column:2;grid-row:6/span 2}
+.three-sp-3,.three-sp-4{margin:0 20.833%}   /* 12칸 넓이 가운데 열에서 카드 폭(7)만 — 번호가 카드 귀에 붙게 */
+.three-sp-5{grid-column:3;grid-row:4/span 2}
+.three-sp-6{grid-column:1;grid-row:4/span 2}
+.three-sp-7{grid-column:5;grid-row:7/span 2}
+.three-sp-8{grid-column:5;grid-row:5/span 2}
+.three-sp-9{grid-column:5;grid-row:3/span 2}
+.three-sp-10{grid-column:5;grid-row:1/span 2}
+.three-sp-n{position:absolute;top:0;left:0;z-index:2;min-width:18px;height:18px;padding:0 4px;border-radius:9px;border:1px solid var(--line2);background:var(--card);color:var(--ink2);font-size:var(--t1);font-weight:700;line-height:16px;text-align:center}
+.three-sp-1 .three-sp-n{left:auto;right:0}
+.three-sp-2 .three-sp-n{top:50%;left:-14%;transform:translateY(-50%)}
+.three-sp.is-end .three-sp-n{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.three-sp.is-end .three-sp-img{outline:2px solid var(--accent);outline-offset:1px}
+/* 자리 목록 */
+.three-sp-list{list-style:none;margin:0 0 10px;padding:0}
+.three-sp-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.three-sp-row:first-child{border-top:0}
+.three-sp-no{flex:0 0 auto;min-width:22px;height:22px;margin-top:1px;border-radius:11px;border:1px solid var(--line2);background:var(--card);color:var(--ink2);font-size:var(--t1);font-weight:700;line-height:20px;text-align:center}
+.three-sp-row.is-end .three-sp-no{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.three-sp-txt{flex:1 1 auto;min-width:0}
+.three-card .three-sp-txt p{margin:0;font-size:var(--t2);line-height:1.6;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+.three-card .three-sp-txt p.three-sp-pos{color:var(--ink)}
+.three-sp-pos b{font-weight:700;margin-right:6px}
+.three-sp-gh{font-family:var(--serif);font-weight:700;color:var(--ink2);white-space:nowrap}
+.three-sp-row[data-gh="길"] .three-sp-gh{color:var(--wood)}
+.three-sp-row[data-gh="흉"] .three-sp-gh{color:var(--fire)}
+.three-sp-row[data-gh="섞임"] .three-sp-gh,.three-sp-row[data-gh="변화"] .three-sp-gh{color:var(--accent)}
+.three-card .three-sp-txt p.three-sp-card{color:var(--ink)}
+.three-sp-card small{font-size:var(--t1);color:var(--ink3)}
+.three-sp-or{font-size:var(--t1);font-weight:600;color:var(--accent)}
+.three-card .three-sp-txt p.three-sp-mean{font-size:var(--t1);line-height:1.55;color:var(--ink3)}
+/* 펼친 순간(D3) — 판이 다 놓인 뒤(열째 1.1초 + .42초 무렵) 끝말 + 결과보기(다시 펼침이면 다시말 + 섞기)가 떠오른다 */
+.three-reveal{margin:2px 0 6px;scroll-margin-top:84px;scroll-margin-bottom:92px}
+.three-reveal .three-sp-wrap{margin:6px 0 12px}
+.three-reveal-foot{display:grid;justify-items:center;text-align:center;animation:threeFoot .45s ease both;animation-delay:1.4s}
+.three-card p.three-reveal-line{margin:0;max-width:100%;font-family:var(--serif);font-size:var(--t3);line-height:1.7;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+@keyframes threeFoot{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* 결과 — 카드칸(결과보기 뒤 화면 안으로 · 초점 테는 .three-page :focus-visible) · 궁정말 한 줄(카드칸 바로 아래 — 그 카드에 붙은 말) */
+.three-card .three-drawn{scroll-margin-top:84px}
+.three-card p.three-sp-court{margin:-6px 0 14px;padding:1px 0 1px 10px;border-left:2px solid var(--accent);font-size:var(--t2);line-height:1.65;color:var(--ink2);word-break:keep-all;overflow-wrap:anywhere}
+/* 근거 접힘 안 펼침 — 판머리 · 판(움직임 없음 · 조금 작게) · 자리 목록 · 다시말 · 다시보기 · 끝말 */
+.three-spread{margin:2px 0 14px}
+.three-basis .three-sp-board{max-width:260px}
+.three-card .three-spread p.three-sp-head{margin:6px 0 0;font-size:var(--t1);font-weight:700;line-height:1.6;color:var(--ink2);word-break:keep-all}
+.three-card .three-spread p.three-sp-again{margin:2px 0 4px;padding-top:10px;border-top:1px solid var(--line);font-size:var(--t2);line-height:1.7;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.three-card .three-spread p.three-sp-endline{margin:0;padding-top:10px;border-top:1px solid var(--line);font-family:var(--serif);font-size:var(--t3);line-height:1.65;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){.three-sp-board.is-anim .three-sp,.three-reveal-foot{animation:none}.three-pile .three-pile-img{animation:none!important}}
