@@ -1,9 +1,8 @@
 /* Decorative scenes around the current user's existing editorial headings. */
 (function(){
  'use strict';
- const poses=['welcome.png','reading.png','closing.png'];
- const artBase=new URL('art/ziwei-tarot-v1/',document.currentScript.src).href;
  const mobileArt=new URL('art/content-tarot-v2/',document.currentScript.src).href;
+ const guideArt=new URL('art/des-0022/ziwei-guide-v1.webp',document.currentScript.src).href;
  let observer=null,enabled=true;
  function scene(parent,nodes,kind,pose){
   if(!parent||!nodes.length)return;
@@ -11,8 +10,8 @@
   const copy=document.createElement('div');copy.className='guide-scene-copy';
   parent.insertBefore(stage,nodes[0]);nodes.forEach(node=>copy.append(node));stage.append(copy);
   const art=document.createElement('div');art.className='guide-art';art.setAttribute('aria-hidden','true');
-  const image=document.createElement('img');image.className='guide-figure';image.src=artBase+poses[pose];
-  image.alt='';image.width=1254;image.height=1254;image.loading=pose===0?'eager':'lazy';image.decoding='async';
+  const image=document.createElement('img');image.className='guide-figure';image.src=guideArt;
+  image.alt='';image.width=1024;image.height=1536;image.loading=pose===0?'eager':'lazy';image.decoding='async';
   image.onerror=()=>{art.hidden=true;stage.classList.add('guide-no-art');};
   if(pose===0){
    const picture=document.createElement('picture'),source=document.createElement('source');
