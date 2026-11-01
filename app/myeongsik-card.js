@@ -57,6 +57,18 @@
     const E = global.ChaeksaEngine; if (!E || !R || !R.pillars) return '';
     const pre = opt.pre == null ? 'msc-' : opt.pre, c = (n) => n.split(' ').map(x => pre + x).join(' ');
     const P = R.pillars, gods = R.analysis && R.analysis.gods || {}, 순 = ['hour', 'day', 'month', 'year'], 머리 = { hour: '시', day: '일', month: '월', year: '년' };
+    // DES-0022: opt.pre로만 선택. 보고서의 html/css와 기존 msc 표는 그대로 둔다.
+    if (pre === 'mwk-') {
+      const letter = (p, stem) => {
+        if (!p) return '<div class="mwk-letter"><b>—</b><small>—</small></div>';
+        const n=stem?p.stem:p.branch, e=(stem?E.STEM_ELEM:E.BRANCH_ELEM)[n];
+        return '<div class="mwk-letter mwk-e'+e+'"><b lang="zh">'+(stem?E.STEMS:E.BRANCHES)[n]+'</b><small>'+(stem?E.STEMS_KO:E.BRANCHES_KO)[n]+'('+오행한[e]+')</small></div>';
+      };
+      return '<div class="mwk-card">'+(opt.sub?'<p class="mwk-sub">'+esc(opt.sub)+'</p>':'')+'<div class="mwk-deck">'+순.map(k=>{
+        const p=P[k],g=gods[k]||{};
+        return '<section class="mwk-pillar'+(k==='day'?' mwk-me':'')+'" aria-label="'+머리[k]+' 기둥">'+'<div class="mwk-crown"><span>'+머리[k]+'</span></div><div class="mwk-body">'+letter(p,true)+'<span class="mwk-divider" aria-hidden="true"></span>'+letter(p,false)+'</div><div class="mwk-foot"><span>'+(p?(k==='day'?esc(opt.나||'일간'):esc(g.stem||'')):'—')+'</span><span>'+esc(p?g.branch||'':'—')+'</span></div></section>';
+      }).join('')+'</div></div>';
+    }
     const 칸 = (k, 줄) => {
       const p = P[k];
       if (!p) return '<td class="' + c(줄 === 'gan' || 줄 === 'ji' ? 줄 : 'god') + '"></td>';

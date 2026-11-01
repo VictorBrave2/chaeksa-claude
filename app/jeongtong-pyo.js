@@ -54,8 +54,7 @@ function 원국(host,input){
   const E=global.ChaeksaEngine,C=global.ChaeksaMyeongsikCard;if(!E||!C||!C.원국표||host.querySelector('.jtp-wongook'))return;
   const p={year:input.year,month:input.month,day:input.day,hour:input.hour,minute:input.minute||0,gender:input.gender==='F'?'F':'M',longitude:input.longitude,tzOffset:input.tzOffset,solarCorrection:input.solarCorrection!==false};
   if(p.longitude==null&&global.ChaeksaPlaces&&input.place){const q=global.ChaeksaPlaces.resolve(input.place);if(q){p.longitude=q.lon;p.tzOffset=q.tzOffset;}}
-  const h=C.원국표(E.calc(p),{pre:'msc-'});if(!h)return;
-  C.꾸밈('msc-');
+  const h=C.원국표(E.calc(p),{pre:'mwk-'});if(!h)return;
   const box=document.createElement('section');box.className='jtp-wongook';box.innerHTML=h;
   const hero=host.querySelector('.hero');if(hero)hero.before(box);else host.prepend(box);
  }catch(_){}
