@@ -34,10 +34,10 @@
   if(ending)scene(ending,[...ending.children].filter(el=>el.matches('p,h3')),'guide-closing',2);
   const end=document.createElement('section');end.className='zd-mobile-ending';end.setAttribute('aria-label','정통자미두수 마침');
   end.innerHTML='<p class="mobile-ending-label">정통자미두수 · 마침</p><figure><img src="'+mobileArt+'observatory-ending.webp" width="1024" height="1536" alt="" loading="lazy" decoding="async"></figure><p class="mobile-ending-title">이번 풀이는<br>여기까지입니다.</p><p>필요할 때 다시 펼쳐 보세요.</p><a href="./">홈으로</a>';
-  end.querySelector('img').onerror=()=>{end.querySelector('figure').hidden=true;};reading.append(end);
+  end.querySelector('img').onerror=()=>{end.querySelector('figure').hidden=true;};root.append(end);
   const controls=document.createElement('div');controls.className='zd-guide-controls';
   const toggle=document.createElement('button');toggle.type='button';toggle.className='zd-guide-toggle';
-  function update(){reading.classList.toggle('companion-on',enabled);toggle.setAttribute('aria-pressed',String(enabled));toggle.textContent=enabled?'삽화 숨기기':'삽화 보기';}
+  function update(){reading.classList.toggle('companion-on',enabled);end.classList.toggle('is-art-visible',enabled);toggle.setAttribute('aria-pressed',String(enabled));toggle.textContent=enabled?'삽화 숨기기':'삽화 보기';}
   toggle.onclick=()=>{enabled=!enabled;update();};update();controls.append(toggle);hero.prepend(controls);
   if('IntersectionObserver' in window){
    observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}}),{threshold:.15});
