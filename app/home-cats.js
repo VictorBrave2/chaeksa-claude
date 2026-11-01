@@ -73,7 +73,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1562';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1563';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
