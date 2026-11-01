@@ -31,7 +31,8 @@
 - `body/prompt-manifest-ss.json`
 - `prompt-manifest-special-body.json`
 - `prompt-manifest-mobile.json`, `prompt-manifest-endings.json`
-- 정통사주 추가 제작 기록은 `body/` 및 이 폴더의 `*jt*.json`에 장면별로 남깁니다.
+- 정통사주 격 20장: `prompt-manifest-jt-gyeok.json`
+- 정통사주 추가 본문: `body/manifest-jt-chapters-a.json`(17), `body/manifest-jt-chapters-b.json`(8), `body/manifest-jt-chapters-c.json`(4), `prompt-manifest-jt-chapters-d.json`(4)
 
 각 기록에는 실제 제출 프롬프트 또는 공통 프롬프트와 개별 장면, 참조 파일, 생성 원본, 채택 파일, 눈으로 확인한 내용이 있습니다. 처음 생성했지만 얼굴 기준이 달라 채택하지 않은 표지는 해당 기록에서 구분합니다.
 

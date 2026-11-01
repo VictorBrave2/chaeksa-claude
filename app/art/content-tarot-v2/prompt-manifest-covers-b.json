@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "batch": "covers-b",
+  "date": "2026-11-01",
+  "generator": "built-in image_gen",
+  "generation_calls": 5,
+  "identity_policy": "Latest user correction: P14 male and P13 female are the exclusive approved identity and style references. Earlier old-cover identity instruction was cancelled before any generation call.",
+  "source_policy": "Original five covers and P14/P13 were viewed. Original covers supplied scene context only; generation used P14/P13 exclusively.",
+  "processing": "Full RGB WebP quality 92 method 6. Proportional Lanczos 360px derivative WebP quality 90 method 6. No cropping or compositing.",
+  "visual_review": "All five generated outputs inspected directly. Approved tarot faces, full heads, distinct scene actions, no borders/text/electronics/timepieces/pinching gestures observed. Fine illustrative jewellery and ornate textiles retained.",
+  "tests_run": false,
+  "assets": [
+    {
+      "key": "taekil",
+      "prompt": "Use case: identity-preserve. Create ONE completely new full-bleed portrait illustration, 2:3, ideally 1024x1536. Approved tarot references define BOTH exact character identity and rendering. The man must be recognisably the SAME P14 KING: exact slim angular face, straight nose, amber brown eyes, dark tousled hair, youthful adult age. The woman must be recognisably the SAME P13 QUEEN: exact fine oval face, brown almond eyes, delicate nose and mouth, long dark brown wavy hair, youthful adult age. Preserve approved face proportions faithfully; do not substitute generic webtoon faces. Match their precise delicate ink contours, densely drawn natural textile detail, sophisticated layered pigment, luminous warm natural light, dimensional romantic tarot illustration. Reinterpret these approved actors in the requested everyday old-world scene, without royal crowns or thrones. ALL visible hands anatomically plausible with relaxed whole-hand poses. NO phones, clocks, watches, laptops, screens or electronics. NO pinching fingers or hands holding tiny props. NO text, letters, numbers, fake writing, logos, watermarks, card borders, frames, title bands, pentacles, collage or split screen. One coherent new composition, not a tarot card layout.\nInput images: reference 1 P14 is the father's exact identity and style; reference 2 P13 is the mother's exact identity and style. Scene: the approved young couple as new parents, sitting close together on a broad stone bench in a secluded sunlit courtyard garden. The mother securely cradles a sleeping newborn swaddled in ivory linen with both arms across her lap. The father's relaxed open palm rests gently on her shoulder, while his other hand lies flat on his knee. Both lovingly look toward the infant, all three faces visible. The mother wears soft lavender and ivory layered natural linen with restrained embroidered trim, her long dark hair loosely braided back. The father wears cream shirt and muted deep green waistcoat, no jewellery needed. A flowering young tree, folded blanket and empty woven cradle beside the bench quietly establish a birth and family theme. Full complete heads in upper middle, comfortably wide crop showing torsos and baby, atmospheric foliage and stone courtyard to bottom. No calendar, puzzle, fortune diagram or kitchen.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "reviewed_old_cover": "app/art/taekil-main.webp",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-002b6706-dcf4-4ca8-946c-c3d949c97880.png",
+      "output": "app/art/content-tarot-v2/taekil-cover.webp",
+      "small_output": "app/art/content-tarot-v2/taekil-cover-s.webp",
+      "visual_review": {
+        "identity": "P14 + P13",
+        "reviewed": true
+      },
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 568506,
+      "small_bytes": 97510
+    },
+    {
+      "key": "saram",
+      "prompt": "Use case: identity-preserve. Create ONE completely new full-bleed portrait illustration, 2:3, ideally 1024x1536. Approved tarot references define BOTH exact character identity and rendering. The man must be recognisably the SAME P14 KING: exact slim angular face, straight nose, amber brown eyes, dark tousled hair, youthful adult age. The woman must be recognisably the SAME P13 QUEEN: exact fine oval face, brown almond eyes, delicate nose and mouth, long dark brown wavy hair, youthful adult age. Preserve approved face proportions faithfully; do not substitute generic webtoon faces. Match their precise delicate ink contours, densely drawn natural textile detail, sophisticated layered pigment, luminous warm natural light, dimensional romantic tarot illustration. Reinterpret these approved actors in the requested everyday old-world scene, without royal crowns or thrones. ALL visible hands anatomically plausible with relaxed whole-hand poses. NO phones, clocks, watches, laptops, screens or electronics. NO pinching fingers or hands holding tiny props. NO text, letters, numbers, fake writing, logos, watermarks, card borders, frames, title bands, pentacles, collage or split screen. One coherent new composition, not a tarot card layout.\nInput image: P14 is this man's exact identity and style. Scene about a person's wider relationships: the approved man stands beside an open wrought-iron garden gate in an old stone courtyard, turned three-quarters toward the viewer, warm and gently welcoming. One relaxed open hand lies on the broad wooden gate post, his other arm naturally at his side. Behind him several empty wooden chairs gather around a circular tea table, suggesting room for social connection. No additional people and no letter exchange. Wear a pale lavender linen shirt and dark embroidered waistcoat, no watch or crown. Full head at upper third, framing to upper thighs, generous architectural environment, wisteria and softly lit garden. Do not copy the reference throne or pose.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "reviewed_old_cover": "app/art/saram-cover.webp",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-e084c149-6357-4103-bad1-ef48e9665982.png",
+      "output": "app/art/content-tarot-v2/saram-cover.webp",
+      "small_output": "app/art/content-tarot-v2/saram-cover-s.webp",
+      "visual_review": {
+        "identity": "P14",
+        "reviewed": true
+      },
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 644180,
+      "small_bytes": 104712
+    },
+    {
+      "key": "read",
+      "prompt": "Use case: identity-preserve. Create ONE completely new full-bleed portrait illustration, 2:3, ideally 1024x1536. Approved tarot references define BOTH exact character identity and rendering. The man must be recognisably the SAME P14 KING: exact slim angular face, straight nose, amber brown eyes, dark tousled hair, youthful adult age. The woman must be recognisably the SAME P13 QUEEN: exact fine oval face, brown almond eyes, delicate nose and mouth, long dark brown wavy hair, youthful adult age. Preserve approved face proportions faithfully; do not substitute generic webtoon faces. Match their precise delicate ink contours, densely drawn natural textile detail, sophisticated layered pigment, luminous warm natural light, dimensional romantic tarot illustration. Reinterpret these approved actors in the requested everyday old-world scene, without royal crowns or thrones. ALL visible hands anatomically plausible with relaxed whole-hand poses. NO phones, clocks, watches, laptops, screens or electronics. NO pinching fingers or hands holding tiny props. NO text, letters, numbers, fake writing, logos, watermarks, card borders, frames, title bands, pentacles, collage or split screen. One coherent new composition, not a tarot card layout.\nInput image: P13 is this woman's exact identity and style. Scene about reading and learning: a narrow old library passage opens onto a sunlit stone balcony. The approved woman stands at a carved reading lectern, three-quarter frontal view, thoughtfully looking down at one large open book resting fully on the lectern. Both hands lie relaxed and flat on the broad outer edges of the lectern, away from pages, no page-turning or small prop. Ivory woven blouse, muted lavender long skirt, long dark hair loosely gathered with a simple red floral ribbon, no crown. Full head and hair clearly seen. Shelves of aged unlabelled leather books behind her, ivy and distant rooftops beyond balcony. The book has only paper grain, no writing. Dense fine line detail, clear warm afternoon light, different pose from the tarot card.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "reviewed_old_cover": "app/art/read-cover.webp",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-e2881a12-afec-4cd5-8432-74ca7bcc49e2.png",
+      "output": "app/art/content-tarot-v2/read-cover.webp",
+      "small_output": "app/art/content-tarot-v2/read-cover-s.webp",
+      "visual_review": {
+        "identity": "P13",
+        "reviewed": true
+      },
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 532776,
+      "small_bytes": 92182
+    },
+    {
+      "key": "ilgyeol-f",
+      "prompt": "Use case: identity-preserve. Create ONE completely new full-bleed portrait illustration, 2:3, ideally 1024x1536. Approved tarot references define BOTH exact character identity and rendering. The man must be recognisably the SAME P14 KING: exact slim angular face, straight nose, amber brown eyes, dark tousled hair, youthful adult age. The woman must be recognisably the SAME P13 QUEEN: exact fine oval face, brown almond eyes, delicate nose and mouth, long dark brown wavy hair, youthful adult age. Preserve approved face proportions faithfully; do not substitute generic webtoon faces. Match their precise delicate ink contours, densely drawn natural textile detail, sophisticated layered pigment, luminous warm natural light, dimensional romantic tarot illustration. Reinterpret these approved actors in the requested everyday old-world scene, without royal crowns or thrones. ALL visible hands anatomically plausible with relaxed whole-hand poses. NO phones, clocks, watches, laptops, screens or electronics. NO pinching fingers or hands holding tiny props. NO text, letters, numbers, fake writing, logos, watermarks, card borders, frames, title bands, pentacles, collage or split screen. One coherent new composition, not a tarot card layout.\nInput image: P13 is this woman's exact identity and style. Scene about finding work that fits: the approved woman stands in a bright old-world textile design studio, thoughtfully surveying wide cream and lavender cloth rolls on a substantial wooden worktable. One open palm lies flat on a large folded cloth and the other hand rests flat on the broad table edge, no tools held. One waist-high loom and carefully stacked fabric in background, tall arched window overlooking a quiet garden. Ivory blouse with a modest red patterned neck scarf and muted violet long skirt, finely drawn practical fabrics and subtle embroidery. Long dark-brown wavy hair tied loosely low, same queen face without crown. Calm slight confident smile. Undivided medium composition, head and body upper two thirds. No office crowd, paper piles or technology.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "reviewed_old_cover": "app/art/ilgyeol-f.webp",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-369726e4-c7fa-4f72-97c0-8619abd54f8c.png",
+      "output": "app/art/content-tarot-v2/ilgyeol-f-cover.webp",
+      "small_output": "app/art/content-tarot-v2/ilgyeol-f-cover-s.webp",
+      "visual_review": {
+        "identity": "P13",
+        "reviewed": true
+      },
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 516502,
+      "small_bytes": 89956
+    },
+    {
+      "key": "ilgyeol-m",
+      "prompt": "Use case: identity-preserve. Create ONE completely new full-bleed portrait illustration, 2:3, ideally 1024x1536. Approved tarot references define BOTH exact character identity and rendering. The man must be recognisably the SAME P14 KING: exact slim angular face, straight nose, amber brown eyes, dark tousled hair, youthful adult age. The woman must be recognisably the SAME P13 QUEEN: exact fine oval face, brown almond eyes, delicate nose and mouth, long dark brown wavy hair, youthful adult age. Preserve approved face proportions faithfully; do not substitute generic webtoon faces. Match their precise delicate ink contours, densely drawn natural textile detail, sophisticated layered pigment, luminous warm natural light, dimensional romantic tarot illustration. Reinterpret these approved actors in the requested everyday old-world scene, without royal crowns or thrones. ALL visible hands anatomically plausible with relaxed whole-hand poses. NO phones, clocks, watches, laptops, screens or electronics. NO pinching fingers or hands holding tiny props. NO text, letters, numbers, fake writing, logos, watermarks, card borders, frames, title bands, pentacles, collage or split screen. One coherent new composition, not a tarot card layout.\nInput image: P14 is this man's exact identity and style. Scene about finding work that fits: the approved man stands at a broad wooden architect's workbench in a quiet old stone workshop, carefully studying a complete wooden model of a modest house and its garden. The model rests fully on the table. His two open relaxed hands rest on separate broad edges of the workbench, away from the model, no tools in hand. Pale blue linen shirt with sleeves rolled to forearm and a dark practical vest, no wristwatch or crown. Vaulted workshop, shelves with large simple wood blocks, tall window with warm afternoon light. Three-quarter frontal portrait, full head within upper third, enough environment and complete worktable to communicate profession. No measurements or writing on paper, no magical objects, no office crowd.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "reviewed_old_cover": "app/art/ilgyeol-m.webp",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-26f5dd9a-82b7-4448-bdd0-a39467cacf80.png",
+      "output": "app/art/content-tarot-v2/ilgyeol-m-cover.webp",
+      "small_output": "app/art/content-tarot-v2/ilgyeol-m-cover-s.webp",
+      "visual_review": {
+        "identity": "P14",
+        "reviewed": true
+      },
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 424354,
+      "small_bytes": 76094
+    }
+  ]
+}

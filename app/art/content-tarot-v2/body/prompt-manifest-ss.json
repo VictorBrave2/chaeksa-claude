@@ -1,0 +1,1621 @@
+{
+  "batch": "ss-body-36",
+  "status": "complete",
+  "count": 36,
+  "tool": "built-in image_gen",
+  "referencePolicy": "P14/P13 타로 얼굴·화풍만 정체성 기준. 원화는 장면·감정·등장수 육안 확인용으로만 사용. 각 자산 1회 생성.",
+  "encoding": {
+    "full": "ffmpeg libwebp quality=92 compression_level=6; 원본 크기 보존",
+    "small": "ffmpeg scale=360:-1:flags=lanczos libwebp quality=90 compression_level=6",
+    "crop": false,
+    "originalPng": "도구 원래 저장 위치에 보존"
+  },
+  "scope": "삽화와 이 기록만 작성. 소비 코드·git·branch·tests 작업 없음.",
+  "limitations": [
+    "전자기기 금지에 따라 앱/전화/노트북 장면은 서신·작업 자료로 옮김.",
+    "그림만으로 실제 앱·회사 등 현대 서비스 자체를 표시하지 않으며 소비 문장이 맥락을 설명한다.",
+    "부수적 군중 수는 주연 및 활동 의미를 유지하는 범위에서 정리.",
+    "생성된 의상·장신구는 일부 프롬프트보다 화려하지만 P14/P13 정체성과 섬세한 타로 화풍 유지."
+  ],
+  "assets": [
+    {
+      "key": "ss-again-1",
+      "originalSource": "app/art/ss-again-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q39 상대 M",
+          "question_id": "q39",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "재회 1: 헤어진 까닭",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "old: solitary man at night food stall, inward troubled mood; retain one male and reflection on why separation happened.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly ONE man (P14), no woman. In a quiet rain-cleared stone courtyard outside a shuttered pottery workshop at blue dusk, he sits on a low step with an untouched wrapped keepsake beside him, hands resting separately on his knees. He looks toward the empty opposite step, thoughtful and regretful, not crying. Deep forest tailored coat, ivory open collar, thin gold embroidery. Warm lanterns and damp rose-colored stone, new location and seated posture. A remembered relationship has ended; do not depict a reunion or success.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-a4c432cb-5131-4cbf-9ab8-6c136f47d321.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-again-1.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 566558
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-again-1-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 96280
+        }
+      ],
+      "visualReview": "비 갠 도자기 마당에서 홀로 관계를 돌아보는 남성. 얼굴과 무릎 위 손 자연스러움."
+    },
+    {
+      "key": "ss-again-2",
+      "originalSource": "app/art/ss-again-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q32 상대 F",
+          "question_id": "q32",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "재회 2: 다시 연락",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "old: solitary woman contemplating an incoming phone call; preserve one female and hesitation about recontact, replace electronics with correspondence.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly ONE woman (P13). On a sunlit window seat inside a small olive-green stationery room, she turns toward an unsealed cream envelope resting openly in her palm, other hand on her lap, cautiously hopeful and uncertain about contacting someone again. Dusty rose dress and ivory sleeves, a simple gold floral hairpin. A closed letter box and untouched second envelope on a side table, no writing visible. Show a decision to reconnect, not a received successful reply.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-d4468472-ddc2-4510-9cd9-ca91e56baa26.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-again-2.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 546942
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-again-2-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 93842
+        }
+      ],
+      "visualReview": "햇빛 드는 방의 창가에서 봉투를 생각하는 여성. 얼굴과 봉투·무릎 위 손 자연스러움."
+    },
+    {
+      "key": "ss-again-3",
+      "originalSource": "app/art/ss-again-3.webp",
+      "consumers": [
+        {
+          "menu": "love",
+          "scene": "이별과 재회",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "재회 3: 다시 만나 바꿀 것",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 재회",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "old: man and woman facing one another beneath blossoms after separation; preserve two adults and tentative renewed dialogue.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO adults, P14 man and P13 woman. They meet again at the entrance to a seaside glasshouse after rain, standing a respectful arm's length apart and talking with tentative warm eye contact. He wears a navy travelling jacket with brass fastenings, she a sage dress and cream shawl. Both hands relaxed and visible, no embrace or promise. New pale blue glasshouse, damp paving and tiny spring flowers, soft early daylight. Convey another conversation and willingness to change, not guaranteed reconciliation.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-3ad047da-0742-4c04-a6ed-1684eb66c592.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-again-3.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 603418
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-again-3-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 99184
+        }
+      ],
+      "visualReview": "바닷가 온실에서 조심스럽게 다시 이야기하는 남녀. 서로 분리된 자연스러운 손과 두 얼굴 유지."
+    },
+    {
+      "key": "ss-early-1",
+      "originalSource": "app/art/ss-early-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q09 상대 M",
+          "question_id": "q09",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 1: 사귄 뒤 달라짐",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 초반",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "old: woman beside newly dating man occupied with laptop, wondering why his attentiveness changed; preserve two central adults, no electronics/background clones.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO adults, P14 man and P13 woman. Newly dating couple at a terracotta-roof craft studio table. He is absorbed in sorting unlettered workshop sketches laid flat, hands resting near the papers; she sits alongside with a small expectant half-smile, looking at him and waiting for attention. He wears rolled ivory sleeves and indigo waistcoat; she warm apricot embroidered dress. No computers, no phones, no background people. Bright lateral window light, artisan shelves and clay vases. The slight mismatch of attention is clear without hostility.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-a7471c4b-7c04-46a6-9153-7dbec93eec04.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-1.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 480772
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-1-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 85798
+        }
+      ],
+      "visualReview": "작업 중인 남성과 관심을 기다리는 여성. 도면·도자기 작업으로 전자기기 대체. 얼굴·손 명료."
+    },
+    {
+      "key": "ss-early-2",
+      "originalSource": "app/art/ss-early-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q08 상대 F",
+          "question_id": "q08",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 2: 연락 빈도",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "old: split woman waiting for contact, man asleep; preserve one woman and one man with different communication rhythms, no electronics.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO adults, P13 woman awake and P14 man resting, in a carefully composed two-room story scene separated by a natural doorway, no comic panels or borders. Foreground woman at an ivory writing desk holds a closed unlettered envelope and looks toward an empty correspondence tray, patient but concerned; beyond the doorway on the other side the man has fallen asleep on a cushioned settee after work, hands loosely resting on his blanket. Her pearl-blue house dress and his loose cream shirt are modest. Warm dusk light, muted violet shadows, delicate brass oil lamp, no clock or device. Different rhythms of contact, no deliberate rejection.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-800a31d5-7e6c-4c0a-a499-4f87870a0d49.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-2.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 499554
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-2-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 87968
+        }
+      ],
+      "visualReview": "서신을 기다리는 여성과 문 너머 쉬는 남성. 연락 리듬 차이, 손·두 얼굴 자연스러움."
+    },
+    {
+      "key": "ss-early-3",
+      "originalSource": "app/art/ss-early-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q26 상대 M",
+          "question_id": "q26",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q26 상대 F",
+          "question_id": "q26",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 3: 첫 다툼",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남녀가 밤 카페 앞에서 팔짱을 끼고 마주서며 첫 다툼의 방어적 긴장을 보인다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. First disagreement in an open-air mosaic workshop courtyard at late afternoon. They stand on opposite sides of a waist-high table with a partly assembled blue mosaic, angled toward each other with visible space between them. Man in ochre rolled-sleeve linen and dark green trousers has one open relaxed hand resting on the table, jaw tense but respectful. Woman in burgundy embroidered vest over cream blouse has both palms resting on the table edge, hurt restrained gaze toward him. Both clear three-quarter faces, no crossed arms, no aggression. Sunlit terracotta walls and scattered blue tiles on the table, full floor below. A quiet disagreement in a young relationship, not breakup or danger.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-df61550a-9022-4082-afe3-1134b6f0226a.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-3.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 556286
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-3-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 101026
+        }
+      ],
+      "visualReview": "모자이크 탁자 양쪽에서 긴장된 눈맞춤. 양손·얼굴 자연스럽고 두 주연 구별됨."
+    },
+    {
+      "key": "ss-early-4",
+      "originalSource": "app/art/ss-early-4.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q24 상대 F",
+          "question_id": "q24",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 4: 내 서운함 말하기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "계단에 앉은 남녀가 대화한다. 남자가 손바닥을 펴 설명하고 여자는 턱에 손을 대며 따뜻하게 듣는다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. Expressing one's hurt and being heard. They sit side by side but turned toward one another on a curved stone bench under an amber-leaf pergola in a riverside courtyard. P13 woman in muted teal long dress speaks earnestly with one open palm on her own chest and the other on her lap. P14 man in charcoal-blue soft coat listens attentively leaning slightly toward her, both relaxed hands resting on knees. Her expression mixes vulnerability and hope, his soft attentive concern. Clear separated hands, no touching or clasped fingers. Late autumn sunlight, ochre leaves, warm pale stone. Faces large enough to read; feet and bench lower in frame.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-51569c95-0013-414b-90cc-cbeb5981971f.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-4.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 657132
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-4-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 101514
+        }
+      ],
+      "visualReview": "가슴에 손을 댄 여성과 듣는 남성. 양쪽 얼굴·손 형태 명료. 의상은 의도보다 화려하나 색과 장소 구별됨."
+    },
+    {
+      "key": "ss-early-5",
+      "originalSource": "app/art/ss-early-5.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q45 상대 F",
+          "question_id": "q45",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 5: 상대의 서운함",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "실내 탁자에서 여자가 도면을 보여주며 이야기하고 남자는 턱 근처 손을 대고 생각한다. 파국보다 의견을 듣는 분위기다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. Listening to the other person's disappointment while making plans. An intimate textile atelier in morning light. Woman in russet wrap dress sits at the near side of a broad sewing table and explains a concern using an open hand over two fabric swatches, no writing. Man in cream shirt and midnight waistcoat sits across her, no fist near mouth, hands flat and easy on table, quietly serious gaze on her face. A half-sewn tapestry on side wall and folded cloth in baskets. Her face expressive and candid, his patient and reflective, no smiles that erase the hurt. Distinct elegant clothing, natural body positions, both faces unobstructed.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-c4c5594d-caa8-41bd-a02d-8b64ac69371b.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-5.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 528692
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-early-5-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 91294
+        }
+      ],
+      "visualReview": "천을 두고 서운함을 설명하는 여성과 경청하는 남성. 펼친 손 자연스럽고 얼굴 정체성 유지."
+    },
+    {
+      "key": "ss-give",
+      "originalSource": "app/art/ss-give.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q03 상대 M",
+          "question_id": "q03",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "서로 원하는 것 주고받기·일반 공유카드",
+          "source": "app/ssom-card.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 둘",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "야외 의자에서 남자가 따뜻한 종이컵을 건네고 여자가 기쁘게 두 손을 내민다. 작은 돌봄을 주고받는 장면.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. Mutual care as an exchange, not a one-sided gift. In a mountain inn's sheltered porch at blue dawn, woman in soft plum wool dress gently lays a folded warm amber shawl on the bench beside the man. Man in deep blue travel tunic sets a broad-handled ceramic cup of warm tea on the bench beside her. Hands never overlap: her palm rests on folded shawl, his palm rests beside cup after setting it down. They share warm small smiles and eye contact, visible faces. A simple wooden bench and a small tray with bread, misty pines behind; plain ceramic cup without branding, no modern takeaway container. Comfortable adult proportions.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-50be51d1-973c-4cb7-8969-44ad2d03be69.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-give.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 570482
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-give-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 93512
+        }
+      ],
+      "visualReview": "숄과 차가 놓인 여관 벤치에서 서로 미소. 손이 겹치지 않으며 얼굴 유지. 선물 전달 직후로 읽힘."
+    },
+    {
+      "key": "ss-her",
+      "originalSource": "app/art/ss-her.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q01 상대 F",
+          "question_id": "q01",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q12 상대 F",
+          "question_id": "q12",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "그 사람의 끌림과 좋아하는 행동",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "밝게 웃는 여자가 뒤돌아보며 손바닥을 펴 다가오라고 부른다. 배경 행인은 부수적이다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly ONE lead, P13 woman alone. Her appealing warmth and welcoming initiative. In a sun-dappled orchard passage beside a small ceramics studio, she has just turned back toward the viewer with a lively friendly smile and an inviting open palm at waist height, fingers relaxed and naturally separated. She wears an elegant dusty coral traveling dress with ivory embroidery and a light moss-green scarf, no crown. Her long chestnut hair moves softly, recognizable refined P13 face and brown eyes. A wooden gate stands partly open ahead, climbing apricot branches and handmade empty pots at sides. A three-quarter standing pose, no other people, no throne, no book, no oversized cleavage. Rich full scene to bottom.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-83182821-244e-47f6-89ff-a1c4ca905169.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-her.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 630782
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-her-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 103498
+        }
+      ],
+      "visualReview": "과수원 공방 길에서 뒤돌아 열린 손을 내밈. 단독 여성 얼굴·손이 선명함."
+    },
+    {
+      "key": "ss-hold",
+      "originalSource": "app/art/ss-hold.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "안고 갈 것과 맞출 것",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "밤거리에서 남녀가 나란히 걸으며 맞잡은 손과 대화로 서로 안고 갈 관계를 보여준다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female walking slowly side by side through a covered canal arcade on a rainy evening. A gentle conversation about living with differences; woman speaks with a small lively smile, man looks toward her thoughtfully. Their elbows are comfortably linked, individual hands resting relaxed and separate, no entwined fingers. He wears a moss-grey fitted traveling coat, she wears a deep wine cloak over muted ivory dress; avoid fur collars, crowns and heavy jewelry. Both recognizable faces clear three-quarter view. Reflections in turquoise water at side, amber hanging oil lanterns, aged brick vaults, moss, cobbled walkway all the way to bottom. No castle, mountains, throne or café.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-82c6928f-c437-466a-9052-0b03f0173638.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-hold.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 621072
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-hold-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 101354
+        }
+      ],
+      "visualReview": "운하 회랑을 팔짱 끼고 걸으며 대화. 얼굴과 팔 연결이 자연스럽고 중복 손 없음."
+    },
+    {
+      "key": "ss-marry-1",
+      "originalSource": "app/art/ss-marry-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q41 상대 M",
+          "question_id": "q41",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "결혼 1: 결혼해도 되는지",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 결혼",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "여자가 밤 산책길에서 팔을 펴 뒤돌아 웃고 남자가 뒤에서 작은 반지상자를 쥐며 결혼을 생각한다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female. Considering marriage during a quiet walk in a walled pear orchard at twilight. They have paused facing each other at a low pale-stone balustrade. The man stands foreground left three-quarter face, a CLOSED small blue velvet ring box placed on the stone beside his relaxed hand, expression tender but contemplative. The woman stands right in lavender flowing dress and small ivory shawl, glancing back at him with bright trust, one palm loosely resting on the balustrade, no proposal kneeling, no open ring in fingers. His clothing pearl-grey embroidered jacket, no black fur, no crown. Blossoming orchard and lavender sky, no mountains/castles. Depict a possible shared future, not an already completed wedding.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-1e6cdabb-d706-4391-8456-257fa43c88e6.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-1.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 580690
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-1-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 100242
+        }
+      ],
+      "visualReview": "닫힌 반지상자 옆에서 진지한 시선 교환. 얼굴·손 명료, 청혼 완료 장면으로 단정되지 않음."
+    },
+    {
+      "key": "ss-marry-2",
+      "originalSource": "app/art/ss-marry-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q43 상대 M",
+          "question_id": "q43",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q43 상대 F",
+          "question_id": "q43",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "결혼 2: 같이 살 때 부딪힘",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "함께 이사한 방에서 여자는 책을 정리하며 밝게 말하고 남자는 체크리스트를 보며 차분히 계획한다. 함께 살 때의 다른 방식.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female unpacking a shared home, showing different habits with mild tension and hope. In a bright attic apartment with blue-grey sloped beams and a round window onto rooftops, woman in sage cotton day dress has set colorful bowls loosely on an open shelf and turns to him mid-conversation. Man in unadorned oatmeal shirt and russet waistcoat kneels beside an open wooden trunk, sorting folded linens in very neat rows, looking up at her with an earnest slightly puzzled expression. Hands simple: hers flat on shelf edge, his palms resting on folded linens. No paper checklist or writing. Keep P14/P13 facial identity but REMOVE royal costume, crowns, fur, necklaces. Woven rug and wooden boxes fill bottom, no castle view.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-21ada494-0e9d-4f2d-896c-1160e5c9a292.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-2.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 467334
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-2-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 86044
+        }
+      ],
+      "visualReview": "이삿짐과 선반 정리의 다른 방식. 실용 의상과 주연 얼굴 일치, 손 자연스러움."
+    },
+    {
+      "key": "ss-marry-3",
+      "originalSource": "app/art/ss-marry-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q36 상대 M",
+          "question_id": "q36",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q41 상대 F",
+          "question_id": "q41",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "결혼 3: 결혼 이야기 꺼내기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "식사 자리에서 남자는 조심스럽게 결혼 이야기를 꺼내고 여자는 두 손으로 얼굴을 받치며 기대 섞여 듣는다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female having an intimate serious conversation about marriage, without rings or proposal. They sit across the corner of a small round breakfast table in a quiet lakeside boathouse, overcast silver morning light from an open window, hanging oars on wall. The man in dark petrol-blue simple tunic leans forward slightly with one relaxed open hand on table, speaking carefully. The woman in rose-grey blouse with tiny floral embroidery listens with hopeful calm, hands comfortably folded flat on her lap, face unobstructed. Two plain tea bowls and a plate of pears, no wine. Expressive clear faces. No crowns, fur collars, lavish necklaces, palace or castle, varied practical clothing. Warm wood, pale blue lake, reed beds, full scene.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-82b92dc7-646d-4146-a7f5-4042c21df041.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-3.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 505920
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-3-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 85842
+        }
+      ],
+      "visualReview": "배 창고 찻자리에서 조심스런 대화. 편 손과 무릎 위 손 명료. 외부에 산 풍경은 있으나 앞선 장소와 구별됨."
+    },
+    {
+      "key": "ss-marry-4",
+      "originalSource": "app/art/ss-marry-4.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "결혼 4: 집안일과 역할",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "주방에서 남자는 설거지하고 여자는 컵을 닦으며 웃는다. 집안일을 함께 나누는 장면.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female sharing household work with equal ease. A cheerful sunlit rustic kitchen at midday with green tiled sink and pale yellow walls. He wears a rolled-sleeve cream shirt and a BLUE LINEN APRON, no jewelry or fur, washing a single shallow ceramic plate in a stone basin with both palms supporting its edges, no contorted grip. She wears a terracotta simple dress and a light natural linen apron, placing a neatly dried bowl on an open wooden shelf with one palm under the bowl and other supporting its side. They smile toward each other with recognizable faces, not looking at viewer. Herbs above window, cloth towels, simple pottery, wooden lower cabinets. Full scene no blank gradient; no appliances, screens, chrome modern faucet or visible writing.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-13d04cb6-5c57-46ea-b914-af3a7cf2aae5.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-4.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 595146
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-marry-4-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 93246
+        }
+      ],
+      "visualReview": "남녀 모두 앞치마를 입고 설거지·그릇 정리를 나눔. 손과 그릇 경계 명료, 얼굴 유지."
+    },
+    {
+      "key": "ss-me",
+      "originalSource": "app/art/ss-me.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q32 상대 M",
+          "question_id": "q32",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q46 상대 M",
+          "question_id": "q46",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "나의 끌림과 좋아하는 행동",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남자가 창가에 혼자 앉아 휴대전화 내용을 생각하며 바라본다. 차분하고 마음을 가늠하는 분위기.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly ONE lead P14 male, seated alone on a low window seat in a quiet rain-blue conservatory before sunrise, reflecting on what draws him to someone. A sealed warm ivory envelope lies on the cushion beside his open palm, a single camellia stem in an earthen vase nearby. He gazes down thoughtfully with a barely perceptible warm smile, clear face at three-quarter angle, no reflection duplicating his face. Comfortable plum linen shirt with subtle cuff embroidery and grey trousers, REMOVE crown, fur, armor and jewelry. Ferns and patterned blue floor tiles, pale blue dawn, old glass panes, gentle oil lamp glow, no night city skyline. Both hands visible naturally resting, no gripping small object.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-257fce45-55f5-40e6-ba8e-8bee4fcec702.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-me.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 565820
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-me-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 93952
+        }
+      ],
+      "visualReview": "창가에서 서신을 곁에 두고 마음을 생각하는 단독 남성. 얼굴과 두 손 자연스러움."
+    },
+    {
+      "key": "ss-meet-app",
+      "originalSource": "app/art/ss-meet-app.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q04 상대 M",
+          "question_id": "q04",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q04 상대 F",
+          "question_id": "q04",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 2: 데이팅 앱",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "떨어진 두 공간의 남녀가 휴대전화로 대화하며 기대와 즐거움을 느낀다. 직접 만나기 전 연락의 시작.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female in TWO DISTINCT private writing rooms, visually connected by matching small crimson ribbon tied around their closed envelopes; this depicts mutual introduction through correspondence BEFORE meeting face to face. One cohesive portrait composition divided naturally by a broad vertical architectural pier, no comic outlines or card frame. Left man in deep teal casual shirt sits at a pale-wood desk with a gentle curious expression, right woman in cream day dress with coral sash reclines on a window bench smiling at an envelope held flat upon her lap by an open palm. All envelopes sealed, no readable writing or portraits. Their faces clear at similar scale, not facing one another in same room. Amber evening left, lilac morning right. No fur, crowns, armor or necklaces. Full furniture and floor down to bottom, no electronics.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-1f31e6dd-2596-426e-935d-351a4e2efcb8.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-app.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 557342
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-app-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 92758
+        }
+      ],
+      "visualReview": "분리된 공간의 남녀와 봉투를 잇는 붉은 리본. 얼굴·손 명료. 전자기기 금지에 따라 앱 자체가 아니라 만나기 전 매개된 연락을 환상 삽화로 표현."
+    },
+    {
+      "key": "ss-meet-blind",
+      "originalSource": "app/art/ss-meet-blind.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q40 상대 F",
+          "question_id": "q40",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 1: 소개팅",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 시작전",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "카페에서 처음 가까워지는 남녀. 여자가 여행 사진을 휴대전화로 보여주며 활기 있게 말하고 남자는 관심 있게 듣는다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female meeting for a first arranged introduction in an elegant botanical tea pavilion, with shy curiosity and comfortable distance. The woman has just arrived and stands beside a wicker chair, one relaxed palm on its back, smiling hello to the seated man who rises slightly with a welcoming open palm. A small watercolor landscape postcard rests face up on table without any letters; two porcelain tea bowls and a small pastry. The woman wears a periwinkle day dress with light apricot scarf, man a forest-green simple jacket over white shirt. No heavy jewelry, crowns, fur or palace clothes. Pink climbing roses and green glass canopy, cool overcast daylight. Both three-quarter faces fully visible, not touching, no phones.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-a7e77826-718a-4161-b527-6fc61e74aa81.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-blind.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 577280
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-blind-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 100380
+        }
+      ],
+      "visualReview": "첫인사 순간의 서 있는 여성과 앉은 남성. 손과 의자 경계 명료, 인물 정체성 유지."
+    },
+    {
+      "key": "ss-meet-club",
+      "originalSource": "app/art/ss-meet-club.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q31 상대 F",
+          "question_id": "q31",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 6: 학교·대외활동",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "학교·활동 공간에서 여자가 보드에 설명하고 남자는 자료를 보며 함께 과제를 한다. 시계·노트북이 있었다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO ADULT leads P14 male and P13 female collaborating on an academy community project, a first connection through shared activity. A sunlit brick art-school workshop with large arched windows and work stools, NO royal palace. Woman in sky-blue rolled-sleeve blouse and simple brown skirt stands at a large tabletop wooden model of a public garden, explaining enthusiastically with an open palm beside model. Man in charcoal collarless shirt stands on opposite side, attentive and slightly smiling, both palms flat on table. His face upper left, hers upper right, bodies angled naturally. Small wooden pavilion models, plain green felt grass shapes, plant pots; no words, charts, numbers or clocks. Practical clothes, no necklaces/crowns/fur. Clean fingers, model between but not blocking faces.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-9267fdff-b370-4a2e-a9d7-8fe5b34a8580.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-club.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 494530
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-club-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 89122
+        }
+      ],
+      "visualReview": "모형 정원을 함께 연구하는 두 성인. 얼굴·손 명료, 조각 흉상은 주연 복제가 아님."
+    },
+    {
+      "key": "ss-meet-office",
+      "originalSource": "app/art/ss-meet-office.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q33 상대 M",
+          "question_id": "q33",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 4: 회사",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "회사에서 여자가 일정판을 설명하고 남자는 노트하며 업무를 함께 한다. 동료 사이의 시작.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 male and P13 female working as professional colleagues in a coastal merchant guild office; mutual respect before romance. This is a working room, no throne or royal audience. Man in slate-blue tailored waistcoat over cream shirt stands at a tall map cabinet with a large unlettered harbor drawing laid flat. Woman in burgundy tailored long coat and ivory high-neck blouse stands beside him indicating a wooden ship model on the table with her open palm, sharing an idea. Man looks at her attentively, his hand resting on the cabinet edge, no pen pinching gesture. Both recognizable three-quarter faces, friendly professional expressions, comfortable space. Shelves of rolled plain parchment, harbor ropes and sail shapes outside broad window, blue-grey daylight with ochre wood, full scene to bottom. No electronics, clocks, written labels, crowns, fur or jewelry.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-83b9afaa-48c8-4db6-a8f1-c3d4c0e21c04.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-office.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 589696
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-office-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 97146
+        }
+      ],
+      "visualReview": "항구 도면·배 모형을 보며 논의. 양쪽 얼굴·손 자연스러움. 회사는 환상세계의 실무 공간으로 옮김."
+    },
+    {
+      "key": "ss-meet-party",
+      "originalSource": "app/art/ss-meet-party.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q03 상대 F",
+          "question_id": "q03",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q34 상대 M",
+          "question_id": "q34",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 3: 친구 모임",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "친구들과 식탁에 모여 생일 케이크를 놓고 여자가 즐겁게 이야기하며 남자가 바라본다. 주연 둘과 주변 친구 여러 명.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: FIVE adults total: TWO foreground leads P14 man and P13 woman plus THREE secondary friends shown only from behind/soft side silhouettes, no copied lead faces. Meeting through a small friends' gathering in a terracotta rooftop courtyard under apricot dusk. Woman in cream blouse and vivid jade skirt tells an amusing story with one relaxed open hand, man in indigo linen jacket listens with a quiet fond smile. They sit across corner of a wide round table, NOT a romantic date alone. Secondary friends have visibly different hair: cropped silver curls, short black hair, auburn braid; faces obscured naturally and smaller. A fruit tart, shared ceramic plates and tea pitcher, hanging paper lanterns lit by candles, no numbered birthday candles, bottles with labels or electronics. Simple festive clothing no crowns, fur or jewels. Full courtyard paving below.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-7151cb34-06d0-42de-938b-76258a0b6511.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-party.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 506686
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-party-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 91856
+        }
+      ],
+      "visualReview": "주연 둘과 서로 다른 뒷모습 친구 셋의 식탁. 얼굴·손 명료, 조연 주연 복제 없음. 원본의 부수적 군중은 정리."
+    },
+    {
+      "key": "ss-meet-run",
+      "originalSource": "app/art/ss-meet-run.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q33 상대 F",
+          "question_id": "q33",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 5: 취미 모임",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남녀가 강가 운동 모임에서 준비운동하고 주변 참가자가 있다. 여자는 밝게 웃으며 팔을 당기고 남자는 음료를 챙긴다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: FOUR adults total: TWO clear foreground leads P14 man and P13 woman and TWO small distant companions with backs to camera, distinct short grey and braided black hair, no lead clones. Meeting through an outdoor hiking club on a fern-filled woodland trail at fresh morning. Leads have paused near a low stone wall, man in simple sage long-sleeve hiking tunic and dark trousers rests one boot on a low rock while checking the path ahead, woman in rust-red short walking jacket and practical cream trousers smiles toward him, stretching both arms gently down and back with relaxed hands, no complicated crossed fingers. Plain canvas packs and leather water flasks resting on wall, no modern sports brands. No royal gowns, fur, necklaces, phones, watches or screens. Early mist among giant trees, dappled cool greens, trail extends lower frame. Cheerful connection through activity, not injury.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-20910bd3-10a8-4211-9170-0dbc223d6d5d.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-run.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 641440
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-meet-run-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 106970
+        }
+      ],
+      "visualReview": "등산 모임 주연 둘과 뒤쪽 동료 둘. 운동의 즐거움 유지, 손과 얼굴 자연스러움. 러닝을 걷기 취미로 옮김."
+    },
+    {
+      "key": "ss-shake-1",
+      "originalSource": "app/art/ss-shake-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q27 상대 F",
+          "question_id": "q27",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "흔들림 1: 만남 지속·헤어짐 고민",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "여자가 밤 버스 창가에 혼자 앉아 관계를 계속할지 고민한다. 창 반사와 조용한 외로움.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly ONE P13 woman alone inside a quiet wooden passenger carriage of a non-modern ferry at rainy blue twilight, considering whether to continue a relationship. She sits by a large window overlooking blurred water and distant shore lamps, gaze turned outward but full three-quarter face visible, thoughtful sadness without tears or smile. One palm flat on wooden window ledge, other relaxed on her lap, no face reflection. Muted mauve traveling dress and charcoal shawl, loose recognizable chestnut waves, no royal jewels, crown or fur. Empty opposite bench and a modest travel bag show quiet distance, not danger. Cool slate and violet palette, only a small soft amber oil lamp; DO NOT turn into bright sunny scene, no skyline towers or electronics. Full boat interior to bottom.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-150a190e-eba1-410c-b293-dd4eff11e022.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-shake-1.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 471630
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-shake-1-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 74324
+        }
+      ],
+      "visualReview": "배 창가에서 혼자 생각하는 여성. 얼굴과 두 손 자연스럽고 차분한 슬픔이 유지됨."
+    },
+    {
+      "key": "ss-shake-2",
+      "originalSource": "app/art/ss-shake-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q27 상대 M",
+          "question_id": "q27",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "흔들림 2: 견디지 못하는 까닭",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남자가 실내 책상 앞에서 양손으로 머리를 감싸며 힘들어한다. 함께 찍은 사진이 있고 관계의 부담을 생각한다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly ONE P14 man alone in a small stone reading room on a stormy night, strained by a relationship and trying to understand what he cannot bear. He sits on a low stool with elbows on thighs, only ONE relaxed hand across his brow while keeping his eyes/nose/jaw visible, the other open hand resting on his knee. Expression weary and troubled, no smile, no injury or violent despair. A folded crimson scarf lies on the empty chair opposite as memory of the absent partner, no portrait or duplicate figure. Ash-grey plain shirt with sleeves rolled and dark brown trousers, no royal jewelry, crown, fur or armor. Blue rain light from narrow high window, a single amber oil lamp in niche, half-open shutters and a woven rug fill scene. Clearly legible face and hands despite moody lighting; no words or electronics.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-94d9e861-3a60-401f-b13c-31e3036ee90c.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-shake-2.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 500626
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-shake-2-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 82024
+        }
+      ],
+      "visualReview": "어두운 방에서 이마에 손을 대고 고민하는 남성. 얼굴이 가려지지 않으며 손가락 자연스러움."
+    },
+    {
+      "key": "ss-shake-3",
+      "originalSource": "app/art/ss-shake-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q24 상대 M",
+          "question_id": "q24",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "관계가 흔들릴 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "흔들림 3: 더 노력할 곳",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 흔들림",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "밤 벤치 양끝에 떨어져 앉은 남녀. 남자가 사이를 좁히려 손을 내밀지만 여자는 시선을 낮추어 관계의 거리와 노력할 곳을 보여준다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman in a quiet unheated orangery after rain at deep blue dusk, acknowledging distance and beginning a difficult conversation. They sit on TWO separate wooden chairs facing at an angle, an empty small table between them, enough visible space for tension. Man in muted navy soft jacket leans forward slightly offering one open hand above his own knee, does not reach into her body space. Woman in muted wine-grey dress sits upright with her hands on her lap, eyes lowered but turned slightly toward him, sad attentive expression. Their faces unmistakable and clear, no smile, tears, anger or touching. Potted orange trees, wet slate floor and glass roof with raindrops, restrained dim amber lamps, cool blue-grey color dominant. No palace decorations, crowns, fur, large necklace or electronics. Full floor to bottom.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-60ce3b11-a420-4cfa-a087-c1ea5bda337e.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-shake-3.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 584194
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-shake-3-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 93122
+        }
+      ],
+      "visualReview": "서로 떨어진 두 의자에서 어려운 대화. 손 접촉 없이 거리와 경청 표현, 얼굴·손 명료."
+    },
+    {
+      "key": "ss-sseom-1",
+      "originalSource": "app/art/ss-sseom-1.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "썸 1: 그 사람이 내게 끌리는 점",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남자가 여자의 목도리를 챙겨 주고 여자는 놀랍고 설레는 눈빛으로 바라본다. 작은 배려에서 생기는 끌림.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. A small considerate action that makes attraction visible. On the sheltered porch of a snowy mountain waystation, man in dark olive wool coat gently lays a warm folded cream blanket over the back of the woman's chair, both his open palms flat on its corners far apart, no pinching cloth or touching her neck. Woman in midnight-blue modest traveling dress has just turned her head up toward him with surprised tender eyes and a shy smile, hands resting separately on lap. Their recognizable faces large and clear, natural hands. Rust-colored scarf already around her shoulders, no giant jewels or crowns. Background frosted glass and faint falling snow, warm terracotta stove with no clock or electronics; a ceramic teapot on low stool. Full interior porch floor.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-4fc15989-348e-4791-bb22-29a4226e0562.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-1.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 616354
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-1-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 96126
+        }
+      ],
+      "visualReview": "담요를 걸쳐주는 배려. 여성의 설렘과 남성의 조심스러움, 얼굴·손 자연스러움. 손은 담요를 넓게 쥐는 형태."
+    },
+    {
+      "key": "ss-sseom-2",
+      "originalSource": "app/art/ss-sseom-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q20 상대 F",
+          "question_id": "q20",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 2: 내가 그 사람에게 끌리는 까닭",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "앞서 가는 여자가 밝게 웃고 뒤의 남자는 부드럽게 바라본다. 자연스럽고 활기찬 모습에 끌림.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. Attraction to the other's spontaneous joy. They walk on a breezy coastal headland path above a turquoise sea in early summer; foreground woman in airy peach dress and simple ivory short cape laughs softly while turning toward him, one relaxed arm extended to feel the breeze, not reaching toward viewer. Man one step behind in simple cream shirt and dark teal waistcoat watches her with an affectionate almost-smile, hands relaxed at sides. No touching, no jewelry or crowns, no scarf-gripping, no staged royal portrait. Long chestnut hair and clothing move with breeze. Wildflowers and pale cliffs, deep turquoise sea, no castle or mountain background. Faces unobscured, fingers natural, full path to bottom.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-c17e9172-5113-4122-abae-b4955c349a14.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-2.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 558610
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-2-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 96230
+        }
+      ],
+      "visualReview": "바닷길에서 바람을 느끼며 웃는 여성과 이를 바라보는 남성. 얼굴·손 명료."
+    },
+    {
+      "key": "ss-sseom-3",
+      "originalSource": "app/art/ss-sseom-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q06 상대 M",
+          "question_id": "q06",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 3: 먼저 다가가기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "밤 횡단보도 앞에서 여자가 남자를 올려다보며 조심스럽게 말을 건다. 먼저 다가가는 설렘.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman. A woman takes the first small step to speak to a man, gentle initiative not seduction. In a quiet printmaker's shop doorway on a misty morning, woman in ochre short cape over cream dress has paused one step closer to the man, facing him with nervous hopeful smile, one open palm held at waist as greeting, other hand resting on her satchel strap without pinching. Man in plum simple linen jacket stands by a shelf of unlettered art prints, turning toward her with receptive attention, both hands relaxed. Space between bodies, both three-quarter faces entirely visible. Wooden print blocks, hanging botanical paper images with NO letters, cobblestone doorway and muted red brick. No jewelry, fur, phones, streetlights or signal devices.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-02954e61-8b98-4b61-baa4-45cdc24f552b.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-3.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 573522
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-3-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 90744
+        }
+      ],
+      "visualReview": "판화 가게 문에서 먼저 건네는 인사. 열린 손과 반응하는 남성의 얼굴 명료."
+    },
+    {
+      "key": "ss-sseom-4",
+      "originalSource": "app/art/ss-sseom-4.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q05 상대 M",
+          "question_id": "q05",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 4: 연락 방식",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "화면을 나눈 남녀가 연락한다. 여자는 말풍선·하트가 많고 남자는 짧게 답하며 연락 방식 차이가 드러난다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman in separated writing alcoves of an imagined correspondence house, depicting different communication styles without judging either. NOT a face-to-face conversation. Natural architectural division with an off-center wooden pillar, no drawn comic border. Woman left in coral blouse and cream skirt smiles expressively toward a tray holding several small sealed envelopes with assorted plain colored ribbons; both open hands rest near the tray. Man right in slate-blue shirt considers ONE simple sealed cream envelope on a small dark desk, a restrained gentle smile, one palm resting beside it and one on his lap. Both clear recognizable faces at similar size. Woman's space bright lilac windowlight with flowers, man's quieter warm lamplight. No writing visible, no speech balloons, emojis, hearts, phones, screens, clocks, quills in fingers, crowns or fur. Full scene to bottom.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-3c0e7d3b-6e9c-4310-9546-e7a2ac4433c3.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-4.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 522824
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-4-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 86560
+        }
+      ],
+      "visualReview": "분리된 공간에서 서로 다른 양과 장식의 봉투로 연락 방식 표현. 얼굴·손 명료, 말풍선·전자기기 없음."
+    },
+    {
+      "key": "ss-sseom-5",
+      "originalSource": "app/art/ss-sseom-5.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "썸 5: 첫 데이트",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 썸",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남녀가 밤 음식 노점에서 음식을 기다리며 여자는 즐거워하고 남자는 함께 웃는다. 첫 데이트의 가벼운 기쁨.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO main leads P14 man and P13 woman at a cheerful evening market bakery stall on their first date. ONE secondary baker visible only as cropped torso and apron far behind counter, no duplicated or new prominent face. Woman in deep turquoise short cloak over ivory day dress leans forward slightly with delighted anticipation at a tray of steaming fruit pastries, palms gently placed apart on counter edge. Man beside her in copper-brown jacket and simple cream shirt smiles at her, one hand resting flat on counter, other at his side. Their faces clear with shy emerging affection, comfortable space. Copper warming trays, woven bread baskets, striped plum canvas awning, stone lane with warm oil lanterns, blue dusk beyond; no modern packaging or appliances. No crowns, fur collars, heavy jewelry, writings, signage, numbered prices or electronics. Full stall wood and ground visible below.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-99ad82e3-9c9f-496f-a1d1-c3ca23670e44.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-5.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 546322
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-5-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 95974
+        }
+      ],
+      "visualReview": "시장 제과점의 첫 데이트. 즐거운 기대가 분명하고 주연 얼굴·손 명료. 제빵사는 얼굴 없는 몸 일부만 등장."
+    },
+    {
+      "key": "ss-sseom-6",
+      "originalSource": "app/art/ss-sseom-6.webp",
+      "consumers": [
+        {
+          "menu": "love",
+          "scene": "썸을 탈 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 6: 가까워지며 맞출 것",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "빗속 우산 아래 남녀가 가까이 붙어 여자가 웃으며 이야기한다. 한 우산을 나누며 가까워지는 장면.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman sharing shelter during a soft spring shower, learning to match each other's pace. They stand under ONE wide traditional waxed-cloth umbrella at a quiet flower nursery gate. Man in muted teal short coat holds its wooden handle with a simple whole-hand grip at chest level, shaft to side of faces, other hand down. Woman in warm rose dress with ivory shawl stands close but not touching his hand, looking up at him with a shy delighted smile, her palms naturally resting on a closed woven flower basket at waist. He tilts umbrella slightly toward her and smiles softly. Both faces clearly visible. Rain beads, mint-green painted gate, terracotta pots, cool grey sky and warm doorway light. No city scene, phones, crown or fur. Natural hands without overlapping fingers.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-054b64ba-62a7-49c6-8fb6-2e8ff32c85c6.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-6.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 679714
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-sseom-6-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 104144
+        }
+      ],
+      "visualReview": "비 오는 화원 앞 한 우산을 나누는 남녀. 손의 우산 손잡이·바구니 잡기가 자연스럽고 얼굴 유지."
+    },
+    {
+      "key": "ss-steady-1",
+      "originalSource": "app/art/ss-steady-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q37 상대 M",
+          "question_id": "q37",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "권태가 왔을 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 1: 설렘이 줄어듦",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남녀가 같은 소파에 담요를 덮고 있으나 각자 휴대전화에 집중한다. 편안함 속 설렘이 줄어든 일상.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman on opposite ends of a comfortable couch in a lived-in quiet sitting room on a grey afternoon. Familiar togetherness with diminished excitement: both calm, slightly distracted, not hostile, not smiling at each other. Woman in soft oatmeal knitted cardigan and muted pink skirt quietly looks at an unlettered botanical picture sheet resting flat on her lap; man in simple dark sage shirt looks out of window while a closed plain book rests beside him. Their relaxed hands visible separately on lap/couch arm, no device or writing. Shared patchwork blanket across knees, slightly rumpled cushions, two mismatched ceramic cups on low table, small fire in stone hearth. Full scene to floor, window has rainy garden not palace, no crown, jewelry, fur or clocks.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-2258f172-d989-435f-9e9f-2f356e227755.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-1.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 607224
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-1-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 95800
+        }
+      ],
+      "visualReview": "같은 소파에서 각자 다른 곳에 시선을 둔 익숙한 일상. 얼굴·손 명료. 생성 결과에 잠든 개·고양이가 생활 배경으로 추가됨."
+    },
+    {
+      "key": "ss-steady-2",
+      "originalSource": "app/art/ss-steady-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q25 상대 M",
+          "question_id": "q25",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q25 상대 F",
+          "question_id": "q25",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 2: 같은 다툼 반복",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남녀가 탁자에서 도표를 놓고 같은 문제를 다투고 있다. 여자는 두 손을 펴고 남자는 종이를 보이며 설명한다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman in a repeated domestic disagreement, contained frustration rather than aggression. A modest kitchen breakfast nook at late evening, warm low lamp and slate-blue shadows. They sit opposite each other at a small square table, woman in plain dusty-blue blouse raises ONE open palm as she repeats a point, other palm on table. Man in russet rolled-sleeve shirt has one hand spread flat on table and other resting against cheek, face weary and defensive but respectful. Both brows subtly tense, no smiles, no shouting, eyes visible. Two untouched plain cups, folded dish towels and a small basket between them, circular worn mark on wood hints routine, no written diagrams. No phones, knives, clocks, crowns or jeweled costume. Full room to bottom, distinct faces and anatomically simple fingers.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-20e0e07a-f57e-4a1f-905a-42a36128eabc.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-2.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 431542
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-2-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 80696
+        }
+      ],
+      "visualReview": "주방 식탁에서 반복되는 다툼. 열린 손과 지친 표정, 두 사람의 얼굴·손 명료."
+    },
+    {
+      "key": "ss-steady-3",
+      "originalSource": "app/art/ss-steady-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q37 상대 F",
+          "question_id": "q37",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q45 상대 M",
+          "question_id": "q45",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 3: 서로 바라는 것의 어긋남",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "갈림길에서 서로 다른 방향으로 선 남녀가 뒤돌아본다. 바라는 방향이 어긋나지만 단정적 이별은 아니다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman pausing at the junction of two paths in a high walled garden on an overcast autumn morning, considering different wishes. They are still near one another, NOT leaving or severing ties: man left turned slightly toward a shaded brick walkway, woman right turned slightly toward a sunlit open meadow gate, both looking back at EACH OTHER with questioning thoughtful faces, no beaming smiles or tears. His coat muted grey-green, her dress plum with pale blue traveling cape, simple clothing no crowns/fur/jewels. Hands relaxed at sides fully visible. Two unmarked arched openings and a central old tree visually show different directions, NO signposts/arrows/writing. Garden walls, fallen leaves and stone path fill bottom. Faces large enough to read, thoughtful unresolved relationship.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-35375f16-0a7b-46d6-9c0b-b1f7764cf52b.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-3.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 698458
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-3-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 101734
+        }
+      ],
+      "visualReview": "서로 다른 길목 앞에서 다시 눈맞춤. 인물 거리·손·얼굴 자연스러우며 결별 장면으로 단정하지 않음."
+    },
+    {
+      "key": "ss-steady-4",
+      "originalSource": "app/art/ss-steady-4.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q20 상대 M",
+          "question_id": "q20",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "오래 함께할 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 4: 오래 갈 수 있는지",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 안정기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "남녀가 담요를 함께 덮고 여자가 남자 어깨에 기대 웃는다. 오랜 친밀함과 편안함.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: Exactly TWO leads P14 man and P13 woman resting together on a broad cushioned wooden swing under the eaves of a quiet country cottage at blue nightfall, representing lasting companionship. Woman in soft ivory dress and slate shawl leans her head naturally against his shoulder with a small peaceful smile, man in warm brown simple shirt sits relaxed and gazes gently toward the garden. His nearer arm rests comfortably along the back of swing behind her, hand visible away from her face; her two hands lie relaxed on a shared checked blanket across their knees, no interlaced fingers. Familiar warmth without a wedding or promise of outcome. Subtle warm oil lantern, clematis vines, dark garden with fireflies, deep navy and muted amber palette, no city skyline, crowns, fur, electronics, clocks or writing. Clear recognizable faces, full swing and floor.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-746a1c75-893e-47de-a113-6959291e1c9d.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-4.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 564090
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-steady-4-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 95060
+        }
+      ],
+      "visualReview": "처마 아래 그네에서 어깨에 기대어 쉼. 팔·손 연결과 두 얼굴 자연스럽고 편안함이 드러남."
+    },
+    {
+      "key": "ss-then-now",
+      "originalSource": "app/art/ss-then-now.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q23 상대 F",
+          "question_id": "q23",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q38 상대 M",
+          "question_id": "q38",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "사이=으뜸 공유카드",
+          "source": "app/ssom-card.js"
+        }
+      ],
+      "otherInScopeUses": [],
+      "originalVisualReview": "그때의 설레는 첫 만남과 지금의 익숙한 일상이 양쪽에 함께 있다. 같은 남녀가 두 시점으로 반복되며 여자가 뒤에서 기대고 남자는 휴대전화를 본다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration for a relationship reading, preferably 1024x1536. Use supplied tarot image(s) ONLY as authoritative face and drawing-style references: P14 is the adult male lead, P13 the adult female lead. Preserve their recognizable long/angular male face, amber eyes and tousled chestnut hair, and refined oval female face, almond brown eyes and long chestnut waves. Do NOT use the old contemporary illustration's faces. Costume, pose and setting must fit the scene below.\nPrecise modern fantasy tarot illustration: elegant fine 2D linework, clear faces, intricate fabric, convincing wood/stone and metallic details, warm ivory and jewel accents, luminous nuanced colors. Adult believable proportions. The emotion and action should be legible as a small image. Compose faces in upper two thirds, complete heads and natural simple hands, no pinching gestures, no extra fingers. Full scene to bottom, no dark blank lower half, no card border, no text/letters/numbers/signature/watermark. No phones, screens, computers, electronic devices, watches or clocks. No random extra people; no cloning leads into background extras. This is a new scene, not a royal throne portrait. Render only the character count specified.\nSCENE: A two-moment temporal montage of the SAME TWO adults P14 male and P13 female, so FOUR total depictions, explicitly NOT four different people. One portrait illustration with a soft natural vine-covered arch dividing earlier LEFT and present RIGHT, no comic frame or text. Earlier left: the same couple standing a little apart on a spring stone bridge, P13 in pale peach dress smiling up toward P14 in simple deep green coat, both relaxed hands at sides, fresh shy eye contact. Present right: the same couple in a familiar warm kitchen, P13 in cream blouse resting one open palm lightly on P14's shoulder from beside him; seated P14 in dark blue linen shirt has been looking at a closed blank-covered book on table and turns slightly toward her, quiet familiarity rather than neglect; her other palm rests on table, no tangled arms. Preserve exactly their facial identity in both moments, heads distinct and visible, no other people. Full coherent architecture and flooring, restrained detailed tarot style, no phones/clocks, numbers, text, crowns or fur.",
+      "toolCalls": 1,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-3ca2ab10-7037-4675-8c49-eae86ba5e3bd.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/ss-then-now.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 632590
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/ss-then-now-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 99738
+        }
+      ],
+      "visualReview": "그때/지금의 같은 두 주연을 두 장면에 반복. 네 얼굴의 정체성이 유지되며 현재 장면의 어깨·팔 손 접촉이 자연스러움."
+    }
+  ]
+}
