@@ -51,7 +51,7 @@
 
   /** 11-02 원국표 — 엔진 결과(ChaeksaEngine.calc) 하나로 여덟 글자 표만(정통사주 맨 위 · 사장님 「명식을 보여주고 분석을 시작해야 신뢰도」).
    *  차례 시 · 일 · 월 · 년(10-21) · 칸 이름 「정(화)」(10-23) · 위 줄 천간 십신 · 아래 줄 지지 십신 · 일간 칸은 테두리. 판정 없음 — 그리기만. 꾸밈은 css(pre) 그대로.
-   *  opt = { pre: 'msc-', label, sub, 나: 일간 칸 위 이름(기본 '일간') } */
+   *  opt = { pre: 'msc-', label(없으면 머리 줄 없음), sub, 나: 일간 칸 위 이름(기본 '일간') } */
   function 원국표(R, opt) {
     opt = opt || {};
     const E = global.ChaeksaEngine; if (!E || !R || !R.pillars) return '';
@@ -66,7 +66,7 @@
       return '<td class="' + c('god') + '">' + esc((gods[k] || {}).branch || '') + '</td>';
     };
     const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';
-    return '<div class="' + c('card') + '"><div class="' + c('k') + '">' + esc(opt.label || '사주 여덟 글자(명식)') + '</div>'
+    return '<div class="' + c('card') + '">' + (opt.label ? '<div class="' + c('k') + '">' + esc(opt.label) + '</div>' : '')   // 11-02 사장님 「사주 여덟글자(명식) 글자를 지워도 좋을 듯」 — 머리 글은 넘겨줄 때만
       + (opt.sub ? '<p class="' + c('sub') + '">' + esc(opt.sub) + '</p>' : '')
       + '<table><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table></div>';
   }
