@@ -736,6 +736,7 @@
         else {
           const s3 = 판3[고른], f = s3 && s3.응답 && s3.응답.펼침;
           포커스할 = f && 다시됨(f) && 펼친.단계 === '첫판' ? '[data-three-again-shuffle]' : '[data-three-reveal-go]';
+          if (!(f && 다시됨(f) && 펼친.단계 === '첫판')) 사건('three3_flip10|' + 고른);   // 길흉을 정한 열째를 뒤집음(결정함 111 — 열 장 종합 앞 기준값 · 펼친 순간 완주의 분모)
           스크롤할 = { sel: '.three-reveal .three-read', block: 'start' };   // 88 — 열째 풀이 칸을 화면 위로(이야기가 끝말 위에 붙어 끝말로 부르면 열째 풀이가 위로 밀려났다) · 이야기 · 끝말은 그 아래로 읽어 내려감
         }
         그리기();
@@ -754,7 +755,7 @@
         if (펼친.뗀 >= 3) { Object.assign(펼친, { 단계: '둘판', 연: 0, 움직임: 'deal' }); 포커스할 = '[data-three-flip]'; 스크롤할 = { sel: '[data-three-reveal]', block: 'start' }; 그리기(); return; }   // 책사가 놓은 둘째 판 → 뒤집기
         펼친.움직임 = 'cut'; 포커스할 = '[data-three-again-cut]'; 그리기();
       }
-      function 결과봄() { 펼친 = null; 포커스할 = '.three-drawn'; 스크롤할 = { sel: '.three-drawn', block: 'start' }; 그리기(); }
+      function 결과봄() { 사건('three3_go|' + 고른); 펼친 = null; 포커스할 = '.three-drawn'; 스크롤할 = { sel: '.three-drawn', block: 'start' }; 그리기(); }
       // 펼침 부름 — 몸 + 「펼침: true」(카드 없음) + 고름(고른 자리 열 · 결정함 83 — 없으면 서버가 맨 위 열 장). 받은 뒤에만 둔다(부르기 전엔 카드가 없다) — 못 받으면 오류 + 새로 펼침 단추.
       //   고름이 있으면 기다리는 동안 고른 열 장이 놓인 판을 그대로 둔다(나 = 화면이 센 나).
       function 펼쳐부르기(q, 순간, 고, 나) {   // 순간 — 받으면 펼친 순간(D3)부터(의식 · 새로 펼침 단추). opt.펼침(시험 · 검사기)이면 바로 결과
