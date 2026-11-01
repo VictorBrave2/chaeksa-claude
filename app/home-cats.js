@@ -27,7 +27,9 @@
       // 「왜 내게만 이런 일이 일어날까?」는 킹의 표지로 고정한다.
       { 키: 'why', 탭: 'why', 그림: 'art/menu-guides-v1/why.webp', 작은: 'art/menu-guides-v1/why-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       // 「내 물음에 답하는 세 점」은 퀸의 표지로 고정한다. 이름·한 줄은 장부에서 받는다.
-      { 키: 'three', 탭: 'three', 그림: 'art/menu-guides-v1/three.webp', 작은: 'art/menu-guides-v1/three-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
+      { 키: 'three', 탭: 'three', 그림: 'art/menu-guides-v1/three.webp', 작은: 'art/menu-guides-v1/three-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      // 11-02 정통타로(사장님 「타로를 정통타로로 빼고 + 3관점으로 연결」) — 표지는 제 그림이 올 때까지 여사제 카드(art/tarot/chaeksa-v1/M02).
+      { 키: 'tarot', 탭: 'tarot', 그림: 'art/tarot/chaeksa-v1/M02.webp', 작은: 'art/tarot/chaeksa-v1/M02-s.webp', 크기: [1000, 1573], 그림위치: '50% 22%' }],
     // 오늘의 운세는 퀸, 앞으로의 운 흐름은 킹의 표지로 고정한다.
     time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/menu-guides-v1/today.webp', 작은: 'art/menu-guides-v1/today-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }, { 키: 'when', 주소: 'when.html', 그림: 'art/menu-guides-v1/when.webp', 작은: 'art/menu-guides-v1/when-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
     learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/content-tarot-v2/read-cover.webp', 작은: 'art/content-tarot-v2/read-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
@@ -73,7 +75,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1570';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1572';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -118,20 +120,21 @@
     if (!el) return;
     var Y = global.ChaeksaYaksok, g = 성별();
     var 입구 = [
+      ['today'],   // 11-02 사장님 「오늘의 운세 한칸 내리고」 — 첫 줄은 정통 셋 + 세 관점, 오늘의 운세는 바로가기 맨 앞(이름 · 한 줄은 칸 그대로)
       ['taekil', '아기 태어날 날과 시간', '가능한 범위에서 가장 좋은 시간을 골라 드려요'],
       ['chongnon', '우리 둘, 잘 맞을까?', '두 사람의 잘 맞는 점과 부딪히는 점'],
       ['jeongtong', '내 일과 돈', '돈 버는 방식부터 살펴보세요', 'jtCh7'],
       ['when', '언제 나아질까?', '힘든 때와 풀리는 때를 살펴보세요']
     ];
     // 11-02 둘러보기 「홈에 타로로 들어가는 문이 없다」 — 세 관점(타로 · 사주 · 자미두수)을 첫 화면 나를 알아보기에(넷이라 두 칸씩 두 줄). 이름 · 한 줄은 장부 그대로.
-    var 정통 = ['jeongtong', 'myeongban', 'today', 'three'].map(function (key, i) {
+    var 정통 = ['jeongtong', 'myeongban', 'tarot', 'three'].map(function (key, i) {
       var x = 찾기(key);
       return 그림칸(x.b, x.c, i, i, g, Y);
     }).join('');
     el.innerHTML = '<section class="home-paths" aria-label="나를 알아보기"><h2>나를 알아보기</h2><div class="cats home-doors">' + 정통 + '</div></section>'
       + '<section class="home-paths" aria-label="목적별 바로가기"><h2>바로 보고 싶은 이야기</h2><div class="cats home-doors">' + 입구.map(function (r, i) {
       var x = 찾기(r[0]);
-      return 그림칸(x.b, Object.assign({}, x.c, { 표시명: r[1], 설명: r[2], 곳: r[3] }), i, i, g, Y);
+      return 그림칸(x.b, Object.assign({}, x.c, r[1] ? { 표시명: r[1], 설명: r[2], 곳: r[3] } : {}), i, i, g, Y);
     }).join('') + '</div><a class="home-all-link" href="#all">전체 보기 <span aria-hidden="true">→</span></a></section>';
     if (Y) Y.값채우기(el);
     길달기(el);
@@ -140,7 +143,7 @@
     var Y = global.ChaeksaYaksok, g = 성별(), n = 0;
     var prefix = el.closest('[data-tab="home"]') ? 'home-catalog-' : 'all-catalog-';
     var 묶음들 = [
-      ['나를 알아보기', ['jeongtong', 'myeongban', 'today', 'why', 'three', 'when']],
+      ['나를 알아보기', ['jeongtong', 'myeongban', 'tarot', 'three', 'today', 'why', 'when']],
       ['아기 태어날 날과 시간', ['taekil']],
       ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],

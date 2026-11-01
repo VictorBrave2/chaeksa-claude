@@ -1549,3 +1549,7 @@ html[data-boot="landing"] #nav{display:grid!important}
 
 /* Returning home is the complete catalog. */
 .home-paths+.home-paths{margin-top:28px}
+
+/* 11-02 정통 시리즈 맨 아래 → 세 관점(to-three.js) */
+.to-three{max-width:600px;margin:36px auto 8px;padding:24px 16px 0;border-top:1px solid var(--line2);text-align:center}
+.to-three-say{margin:0 0 12px;color:var(--ink2);line-height:1.6}
