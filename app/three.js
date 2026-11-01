@@ -304,6 +304,16 @@
   const 펼침필수 = Object.freeze(['나.Page', '나.Knight', '나.Queen', '나.King', '섞기', '떼기', '결과보기']
     .concat(자리수.map(n => '자리.' + n), 자리수.map(n => '자리뜻.' + n), ['끝말', '다시말', '궁정말', '끝카드']).map(k => '세점.펼침.' + k));   // 시험 · 화면 검사기도 쓴다(ChaeksaThreeView.펼침필수)
   const 펼침켜짐 = (P, 보기) => 보기 || 펼침필수.every(키 => { let v = P; for (const k of 키.split('.')) v = v && typeof v === 'object' ? v[k] : undefined; return typeof v === 'string' && !!v; });
+  // 열 장 융복합(11-01 사장님 「마지막 종합해석은 10장의 융복합적인 해석을 바란건데」 「진행」 · 웨이트 703 · 705 · 비공개 docs/136):
+  //   서버 펼침.융합 = { 끝, 띠(받침 · 갈림 · 맞섬 · 섞임), 같은, 반대, 섞임, 짝[{ 이름, 앞, 뒤, 꼴 }] } — 셈은 서버(엔진). 화면은 칸을 고르고 카드말을 끼울 뿐.
+  //   Codex 칸 55(COPY-0028): 머리 · 이야기접힘 · 다시판 · 결론.섞임 · 결론.<길|흉>.<받침|갈림|맞섬> · 짝.<흐름|걸림|목표|마음|나>.<앞>.<뒤>(길 · 흉 · 섞임).
+  //   55칸이 다 차야 켜진다(?keys 면 열쇠) — 그 전엔 지금 화면 그대로(이야기도 펼친 채). 켜지면 열째 풀이 아래 한 단락 · 열 장 이야기는 그 아래 접힘.
+  const 융합짝이름 = Object.freeze(['흐름', '걸림', '목표', '마음', '나']), 융합쪽 = Object.freeze(['길', '흉', '섞임']);
+  const 융합필수 = Object.freeze(['머리', '이야기접힘', '다시판', '결론.섞임']
+    .concat(['길', '흉'].reduce((o, a) => o.concat(['받침', '갈림', '맞섬'].map(b => '결론.' + a + '.' + b)), []))
+    .concat(융합짝이름.reduce((o, p) => o.concat(융합쪽.reduce((o2, a) => o2.concat(융합쪽.map(b => '짝.' + p + '.' + a + '.' + b)), [])), []))
+    .map(k => '세점.펼침.융합.' + k));
+  const 융합켜짐 = (P, 보기) => 보기 || 융합필수.every(키 => { let v = P; for (const k of 키.split('.')) v = v && typeof v === 'object' ? v[k] : undefined; return typeof v === 'string' && !!v; });
   // 나 카드(671 · 673) — 펜타클 궁정. 671 글자: 「A Knight should be chosen … if the subject of inquiry is a man of forty years old and upward; a King … for any male
   //   who is under that age; a Queen for a woman who is over forty years; and a Page for any female of less age」.
   //   남녀 모두 만 40세부터 윗계급(10-31 메인 추론 D1): 남 만 40 이상 Knight(P12) · 40 미만 King(P14) · 여 만 40 이상 Queen(P13) · 40 미만 Page(P11).
@@ -525,7 +535,25 @@
     const 물음 = 글('세점.물음말.' + r.물음), 법 = 연 === 0 && 단계 === '첫판' ? 글('세점.펼침.읽는법', { 물음 }) : '', 맥 = 물음맥of(r, P, 열쇠보기());   // 읽는법(결정함 84 · 87 · 88) — 첫 판 첫 장을 뒤집기 전에만 · 여기 하나(다시 펼친 둘째 판 앞엔 없음)
     return '<div class="three-reveal" data-three-reveal><div class="three-reveal-main">' + 뒤집는판(나, 자리, 연, 순.움직임, 끝n)
       + (연 > 0 ? 읽기칸(장of(자리, 연), 연, 글, P, 연 === 끝n, 순.움직임 === 'flip', 물음, 맥) : (법 ? '<p class="three-read-how">' + esc(법) + '</p>' : '')) + '</div>'
-      + (연 === 10 ? 이야기칸(자리, 글, P, 물음, 맥) : '') + 발 + '</div>';   // 열 장 이야기(결정함 85) — 열째를 뒤집은 뒤 · 끝말 위
+      + (연 === 10 ? (() => {   // 11-01 융복합 — 켜지면 단락 + 이야기 접힘, 꺼지면 지금 그대로
+        const 융 = 끝n === 10 ? 융합칸(f, 자리, 글, P, 물음, 맥, 둘판) : '', 이 = 이야기칸(자리, 글, P, 물음, 맥);
+        if (!융) return 이;
+        const 접 = 글('세점.펼침.융합.이야기접힘', { 물음 });
+        return 융 + (이 ? '<details class="three-story-fold"><summary>' + esc(접) + '</summary>' + 이 + '</details>' : '');
+      })() : '') + 발 + '</div>';   // 열 장 이야기(결정함 85) — 열째를 뒤집은 뒤 · 끝말 위
+  }
+  // 열 장 융복합 칸 — 길흉을 정한 판(첫 판 · 다시면 둘째 판)의 열째를 뒤집은 뒤. 칸 머리 → [다시 편 판 안내] → 결론(띠) → 짝 다섯(카드말 두 개를 {앞} · {뒤}로).
+  function 융합칸(f, 자리, 글, P, 물음, 맥, 둘판) {
+    const u = f && f.융합;
+    if (!u || !융합켜짐(P, 열쇠보기())) return '';
+    const 말of = n => { const x = 장of(자리, n); return x ? ((맥 && 맥.말(x)) || 글('세점.펼침.카드말.' + x.id + '.' + x.놓임)) : ''; };
+    const 줄 = [u.띠 === '섞임' ? 글('세점.펼침.융합.결론.섞임', { 물음 }) : 글('세점.펼침.융합.결론.' + u.끝 + '.' + u.띠, { 물음, 같은: u.같은, 반대: u.반대 })];
+    (u.짝 || []).forEach(p => { const a = 말of(p.앞), b = 말of(p.뒤); if (a && b) 줄.push(글('세점.펼침.융합.짝.' + p.이름 + '.' + p.꼴, { 앞: a, 뒤: b, 물음 })); });
+    const 몸 = 줄.filter(Boolean);
+    if (!몸.length) return '';
+    const 머리 = 글('세점.펼침.융합.머리', { 물음 }), 다시 = 둘판 ? 글('세점.펼침.융합.다시판') : '';
+    return '<div class="three-fuse" data-three-fuse data-band="' + esc(u.띠) + '">' + (머리 ? '<p class="three-fuse-head">' + esc(머리) + '</p>' : '')
+      + (다시 ? '<p class="three-fuse-again">' + esc(다시) + '</p>' : '') + 몸.map((t, i) => '<p class="three-fuse-line' + (i ? '' : ' is-lead') + '">' + esc(t) + '</p>').join('') + '</div>';
   }
   // 결과(D2) — 궁정 열째(708)면 카드칸 바로 아래 한 줄. 원문은 근거 타로 칸에 이미 찍히는 열째 원문(c.원문)과 같아 따로 찍지 않는다.
   function 궁정줄(r, 글, P) {
@@ -967,5 +995,5 @@
     render(false);
     return { render };
   }
-  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움, 펼침켜짐, 펼침필수, 시그of, 서울날of, 자리수, 물음칸, 물음켜짐, 물음맥of, 성별of, 옛대지문 };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31) · 펼침켜짐 · 펼침필수 · 시그of — 펼침 시험 · 검사기
+  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움, 펼침켜짐, 펼침필수, 융합켜짐, 융합필수, 시그of, 서울날of, 자리수, 물음칸, 물음켜짐, 물음맥of, 성별of, 옛대지문 };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31) · 펼침켜짐 · 펼침필수 · 시그of — 펼침 시험 · 검사기
 })(typeof window !== 'undefined' ? window : globalThis);
