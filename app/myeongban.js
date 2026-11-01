@@ -92,8 +92,7 @@
       var E = window.ChaeksaEngine, C = window.ChaeksaMyeongsikCard; if (!지금 || !E || !C || !C.원국표) return '';
       var b = 지금.body, p = { year: b.year, month: b.month, day: b.day, hour: b.hour, minute: b.minute || 0, gender: b.gender === 'F' ? 'F' : 'M' };
       var pl = window.ChaeksaPlaces && ChaeksaPlaces.resolve ? ChaeksaPlaces.resolve(b.place) : null; if (pl) { p.longitude = pl.lon; p.tzOffset = pl.tzOffset; }
-      C.꾸밈('msc-');
-      return '<section class="mb-wongook">' + C.원국표(E.calc(p), { pre: 'msc-' }) + '</section>';
+      return '<section class="mb-wongook">' + C.원국표(E.calc(p), { pre: 'mwk-' }) + '</section>';
     } catch (e) { return ''; }
   }
   // ── 명반 그리기

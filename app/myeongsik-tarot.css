@@ -1,0 +1,24 @@
+/* DES-0022 — 현대적인 명식 카드 견본 */
+.mwk-card{container-type:inline-size;width:100%;max-width:600px;margin:0 auto;color:var(--ink)}
+.mwk-deck{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(6px,1.8cqi,12px);align-items:center;padding:16px 0 12px}
+.mwk-pillar{position:relative;overflow:hidden;min-width:0;height:clamp(240px,55cqi,310px);display:grid;grid-template-rows:36px 1fr 48px;padding:8px 5px 5px;border:1px solid var(--line2);border-radius:14px;background-color:var(--card);background-image:linear-gradient(to bottom,color-mix(in srgb,var(--card) 76%,transparent),color-mix(in srgb,var(--card) 70%,transparent)),url("art/des-0022/card-temple-v2.webp");background-size:auto,540% 100%;background-position:center,4.3% center;background-repeat:no-repeat;isolation:isolate;animation:mwk-arrive .55s both}
+.mwk-pillar:before{content:none}
+.mwk-ornament{display:none}
+.mwk-crown{display:flex;align-items:center;justify-content:center;z-index:1}
+.mwk-crown span{display:grid;place-items:center;min-width:28px;height:28px;padding:0 5px;border-radius:50%;background:var(--bg2);color:var(--ink2);font-family:var(--sans);font-size:12px;font-weight:600;line-height:1}
+.mwk-body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:0;z-index:1}
+.mwk-letter{display:flex;flex-direction:column;align-items:center;text-align:center;line-height:1}
+.mwk-letter b{display:block;font-family:var(--serif);font-size:clamp(25px,6.6cqi,36px);font-weight:500;line-height:1.15;order:2;opacity:.8}
+.mwk-letter small{display:block;margin-bottom:4px;font-family:var(--sans);font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap;order:1}
+.mwk-divider{width:4px;height:4px;border-radius:50%;background:var(--line2);flex:none}
+.mwk-foot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin:0 3px 2px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3);line-height:1.25;white-space:nowrap;z-index:1}
+.mwk-foot span:first-child{color:var(--ink2);font-weight:600}
+.mwk-pillar:nth-child(2){background-position:center,27.4% center;animation-delay:.08s}
+.mwk-pillar:nth-child(3){background-position:center,50% center}
+.mwk-pillar:nth-child(4){background-position:center,73% center}
+.mwk-pillar:nth-child(3){animation-delay:.16s}.mwk-pillar:nth-child(4){animation-delay:.24s}
+@keyframes mwk-arrive{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.mwk-pillar{animation:none}}
+.mwk-e0{color:var(--wood)}.mwk-e1{color:var(--fire)}.mwk-e2{color:var(--earth)}.mwk-e3{color:var(--metal)}.mwk-e4{color:var(--water)}
+.mwk-sub{font-size:12px;color:var(--ink3);margin-bottom:10px}
+@media(min-width:600px){.mwk-pillar{grid-template-rows:42px 1fr 56px}.mwk-foot{font-size:14px}.mwk-letter small{font-size:15px}.mwk-body{gap:12px}}
