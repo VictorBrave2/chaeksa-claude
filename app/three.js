@@ -234,19 +234,19 @@
     const 음 = k === '자미' && z.음력 ? { 음력: '음력 ' + z.음력.연 + '년 ' + (z.음력.윤달 ? '윤' : '') + z.음력.월 + '월', 음력해: '음력 ' + z.음력.연 + '년' } : {};
     return 글('세점.때.' + k, Object.assign({ 달: 달말(z.달), 때 }, 음)) || 때;
   }
-  function 세점결론칸(r, 글) {
-    const 물음 = 글('세점.물음말.' + r.물음);
-    const 줄 = 점차례.map(k => {
+  function 세점결론칸(r, 글, 점들) {   // 점들 — 정통타로(보기 '타로')면 ['타로'] · 셈 · 같은 달 줄은 셋을 볼 때만
+    const 물음 = 글('세점.물음말.' + r.물음), 셋 = !점들;
+    const 줄 = (점들 || 점차례).map(k => {
       const z = r.점[k], 갈래 = 갈래of(r, k), 길흉 = 갈래 === '문없음' ? 글('세점.사주없음') : 등급말(글, z), 일 = 글('세점.일어남.' + r.물음 + '.' + k + '.' + 갈래);
       return '<li class="three-pt" data-gh="' + esc(z.길흉) + '"' + 대속(z) + '><div class="three-pt-head"><span class="three-pt-name">' + esc(점이름of(글, k)) + '</span>'
         + '<span class="three-pt-when">' + esc(점때(r, k, 글)) + '</span>' + (길흉 ? '<b class="three-pt-gh">' + esc(길흉) + '</b>' : '') + '</div>'
         + (일 ? '<p class="three-pt-what">' + esc(일) + '</p>' : '') + '</li>';
     }).join('');
-    const 셈 = 글('세점.셈', { 길: r.셈.길, 흉: r.셈.흉 }), 같은 = r.같은달 ? 글('세점.같은달', { 달: 달말(r.점.사주.달) }) : '';
+    const 셈 = 셋 ? 글('세점.셈', { 길: r.셈.길, 흉: r.셈.흉 }) : '', 같은 = 셋 && r.같은달 ? 글('세점.같은달', { 달: 달말(r.점.사주.달) }) : '';
     return '<div class="jt-answer three-answer">' + (글('세점.결론머리', { 물음 }) ? '<p class="three-kicker">' + esc(글('세점.결론머리', { 물음 })) + '</p>' : '')
       + '<ul class="three-pts">' + 줄 + '</ul>' + (셈 ? '<p class="three-tally">' + esc(셈) + '</p>' : '') + (같은 ? '<p class="three-same">' + esc(같은) + '</p>' : '') + '</div>';
   }
-  function 세점근거칸(r, 글, 펼침임) {   // 펼침임 — 켈틱 펼침 결과(판 · 열 장 풀이는 바로 위 열장칸 · 결정함 84). 한 장 응답 · 꺼짐이면 false(글자 하나 다르지 않게)
+  function 세점근거칸(r, 글, 펼침임, 타로만) {   // 타로만 — 정통타로(보기 '타로'): 타로 칸 하나 · 사주 · 자미 · 24달 표 없음   // 펼침임 — 켈틱 펼침 결과(판 · 열 장 풀이는 바로 위 열장칸 · 결정함 84). 한 장 응답 · 꺼짐이면 false(글자 하나 다르지 않게)
     const c = r.카드, 원 = r.원문 || {}, 타 = r.점.타로, 사 = r.점.사주, 자 = r.점.자미, 왜 = 키 => 글(키) ? '<p class="three-why2">' + esc(글(키)) + '</p>' : '';
     let h = '<details class="jt-ev three-basis"><summary>' + esc(글('근거')) + '</summary>';
     // 타로 — 붙인 웨이트 낱말(그 물음을 직접 말할 때) · 카드 원문(펼침이면 길흉을 정한 열째) · 창 원문(901줄 — 한 장 응답만)
@@ -256,6 +256,7 @@
       + '<blockquote class="three-src" lang="en">' + esc(c.원문) + '</blockquote>'
       + '<p class="three-ref" lang="en">Waite, The Pictorial Key to the Tarot · Part III ' + esc(c.줄) + (c.절 === '§4' ? ' §4' : '') + ' · ' + esc(c.이름en) + '</p>'
       + (원.창 && !펼침임 ? '<blockquote class="three-src" lang="en">' + esc(원.창.글) + '</blockquote><p class="three-ref" lang="en">' + esc(원.창.줄) + '</p>' : '') + '</section>';
+    if (타로만) return h + '</details>';
     // 사주 — 그달 문을 연 열쇠(엔진 이름표) · 판정 층과 범주(법전 40 · 57조 이름)
     h += '<section class="three-eye"><h3>' + esc(점이름of(글, '사주')) + '</h3>' + 왜('세점.왜.사주.' + 사.정함);
     if (사.달) {
@@ -282,8 +283,8 @@
       + '</tbody></table></div></section>';
     return h + '</details>';
   }
-  function 세점할일칸(r, 글) {
-    const 줄 = 점차례.map(k => { const t = 글('세점.할일.' + r.물음 + '.' + k + '.' + 갈래of(r, k)); return t ? '<li><b>' + esc(점이름of(글, k)) + '</b> ' + esc(t) + '</li>' : ''; }).filter(Boolean);
+  function 세점할일칸(r, 글, 점들) {
+    const 줄 = (점들 || 점차례).map(k => { const t = 글('세점.할일.' + r.물음 + '.' + k + '.' + 갈래of(r, k)); return t ? '<li><b>' + esc(점이름of(글, k)) + '</b> ' + esc(t) + '</li>' : ''; }).filter(Boolean);
     if (!줄.length) return '';
     return '<div class="three-do">' + (글('세점.할일머리') ? '<p class="three-kicker">' + esc(글('세점.할일머리')) + '</p>' : '') + '<ul>' + 줄.join('') + '</ul></div>';
   }
@@ -582,9 +583,12 @@
     const people = opt.people || global.ChaeksaPeople, clock = opt.clock || (() => new Date()), track = 'track' in opt ? opt.track : global.ChaeksaTrack;
     const 부름 = opt.부름 || (body => global.fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       .then(res => res.json().then(j => ({ ok: res.ok, j }), () => ({ ok: false, j: { 코드: '계산' } }))));
-    const 사건 = name => { try { if (track) track.event(name); } catch (e) {} };
+    const 타로만 = opt.보기 === '타로', 점들 = 타로만 ? ['타로'] : null;   // 11-02 정통타로 — 같은 계산 · 같은 저장, 타로 점만 · 맨 아래 세 관점으로(to-three.js)
+    const 사건 = name => { try { if (track) track.event(타로만 ? String(name).replace(/^three3/, 'tarot3') : name); } catch (e) {} };
     const 켜펼 = 펼침켜짐(P, 열쇠보기()), 순간켬 = opt.펼침 !== true;   // 10-31 켈틱 펼침 — 꺼져 있으면 아래는 한 장 판 그대로 · opt.펼침(화면 검사기 · 시험)이면 펼친 순간 없이 결과
-    const 머리 = '<div class="jt-head"><h1 class="three-title">' + esc(글('세점.이름')) + '</h1></div>' + (글('세점.물음') ? '<p class="three-q">' + esc(글('세점.물음')) + '</p>' : '');
+    const 장부이름 = k => { try { return (global.ChaeksaYaksok && global.ChaeksaYaksok.이름(k)) || ''; } catch (e) { return ''; } };
+    const 이름말 = 타로만 ? (글('정통타로.이름') || 장부이름('tarot')) : 글('세점.이름'), 물음말 = 타로만 ? 글('정통타로.물음') : 글('세점.물음');   // 정통타로 머리 글은 Codex(three-pieces 「정통타로」) — 비면 장부 이름만
+    const 머리 = '<div class="jt-head"><h1 class="three-title">' + esc(이름말) + '</h1></div>' + (물음말 ? '<p class="three-q">' + esc(물음말) + '</p>' : '');
     const 판 = (안) => '<section class="card jt-ch three-card">' + 머리 + (안 || '') + '</section>';
     if (!people) { root.innerHTML = 판(); return; }
     let selected = '', 차례 = 0, 고른 = 물음차례.includes(opt.물음) ? opt.물음 : '';
@@ -639,6 +643,7 @@
         if (넣기) 넣기.onclick = () => { try { const b = global.document.getElementById('btnPerson'); if (b) b.click(); } catch (e) {} };
         const 모두 = sel => (root.querySelectorAll ? Array.from(root.querySelectorAll(sel)) : []);
         모두('[data-three-q]').forEach(b => { b.onclick = () => 고름(b.getAttribute('data-three-q')); });
+        모두('[data-to-three]').forEach(a => { a.onclick = () => 사건('to_three|tarot'); });   // 정통타로 → 세 관점
         모두('[data-three-card]').forEach(b => { b.onclick = () => 뽑음(+b.getAttribute('data-three-card')); });
         const 다시 = root.querySelector('[data-three-retry]');
         if (다시) 다시.onclick = () => { const s3 = 판3 && 판3[고른]; if (s3 && s3.카드) 부르기(고른, s3.카드); };
@@ -827,10 +832,11 @@
         if (순) 안 += 펼친칸(r, 글, P, 순);
         else if (상태 === '그대로') {
           // 결과(D2 · 결정함 84): 카드칸(펼침이면 머리 = 길흉을 정한 열째) · 궁정말 → 세 점 결론 → [열 장 접힘(판 · 장 풀이 · 끝말)] → 근거 접힘 → 할 일 → 다음 카드
-          안 += (펼 ? 카드칸(r, 글, P, 글('세점.펼침.끝카드'), ' tabindex="-1"') + 궁정줄(r, 글, P) : 카드칸(r, 글, P)) + 세점결론칸(r, 글) + (펼 ? 열장칸(r, 글, P) : '') + 세점근거칸(r, 글, !!펼) + 세점할일칸(r, 글)
+          안 += (펼 ? 카드칸(r, 글, P, 글('세점.펼침.끝카드'), ' tabindex="-1"') + 궁정줄(r, 글, P) : 카드칸(r, 글, P)) + 세점결론칸(r, 글, 점들) + (펼 ? 열장칸(r, 글, P) : '') + 세점근거칸(r, 글, !!펼, 타로만) + 세점할일칸(r, 글, 점들)
             + (글('세점.다음카드', { 날: 날말(r.다음카드) }) ? '<p class="three-next">' + esc(글('세점.다음카드', { 날: 날말(r.다음카드) })) + '</p>' : '');
           const Y = global.ChaeksaYaksok, 오늘이름 = (Y && Y.이름 && Y.이름('today')) || '';
-          if (글('끝말') || 오늘이름) 뒤 = '<div class="three-end">' + (글('끝말') ? '<p>' + esc(글('끝말')) + '</p>' : '') + (오늘이름 ? '<a href="#today">' + esc(오늘이름) + ' <span aria-hidden="true">→</span></a>' : '') + '</div>';
+          if (타로만) 뒤 = (global.ChaeksaToThree && global.ChaeksaToThree.칸('tarot')) || '';   // 정통타로 맨 아래 → 세 관점(뽑은 카드는 같은 저장이라 세 관점에 그대로)
+          else if (글('끝말') || 오늘이름) 뒤 = '<div class="three-end">' + (글('끝말') ? '<p>' + esc(글('끝말')) + '</p>' : '') + (오늘이름 ? '<a href="#today">' + esc(오늘이름) + ' <span aria-hidden="true">→</span></a>' : '') + '</div>';
         } else if (상태 === '새카드') 안 += 켜펼 ? 의식칸() : 덱칸();
         else if (상태 === '다시부름') 안 += '<div class="three-need"><p>' + esc(글('오류.연결')) + '</p><button type="button" class="btn ghost small" data-three-retry>' + esc(글('다시') || '↻') + '</button></div>';
         root.innerHTML = 고르기 + 판(안) + 뒤;

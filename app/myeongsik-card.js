@@ -49,6 +49,28 @@
       + '<div class="' + c('foot') + '"><span>책사 · chaeksa.kr</span><span>세 고전이 각자 본 것 · 점수로 합치지 않습니다</span></div></div>';
   }
 
+  /** 11-02 원국표 — 엔진 결과(ChaeksaEngine.calc) 하나로 여덟 글자 표만(정통사주 맨 위 · 사장님 「명식을 보여주고 분석을 시작해야 신뢰도」).
+   *  차례 시 · 일 · 월 · 년(10-21) · 칸 이름 「정(화)」(10-23) · 위 줄 천간 십신 · 아래 줄 지지 십신 · 일간 칸은 테두리. 판정 없음 — 그리기만. 꾸밈은 css(pre) 그대로.
+   *  opt = { pre: 'msc-', label, sub, 나: 일간 칸 위 이름(기본 '일간') } */
+  function 원국표(R, opt) {
+    opt = opt || {};
+    const E = global.ChaeksaEngine; if (!E || !R || !R.pillars) return '';
+    const pre = opt.pre == null ? 'msc-' : opt.pre, c = (n) => n.split(' ').map(x => pre + x).join(' ');
+    const P = R.pillars, gods = R.analysis && R.analysis.gods || {}, 순 = ['hour', 'day', 'month', 'year'], 머리 = { hour: '시', day: '일', month: '월', year: '년' };
+    const 칸 = (k, 줄) => {
+      const p = P[k];
+      if (!p) return '<td class="' + c(줄 === 'gan' || 줄 === 'ji' ? 줄 : 'god') + '"></td>';
+      if (줄 === 'top') return '<td class="' + c('god') + '">' + (k === 'day' ? esc(opt.나 || '일간') : esc((gods[k] || {}).stem || '')) + '</td>';
+      if (줄 === 'gan') return '<td class="' + c('gan e' + E.STEM_ELEM[p.stem] + (k === 'day' ? ' me' : '')) + '">' + E.STEMS[p.stem] + '<small>' + E.STEMS_KO[p.stem] + '(' + 오행한[E.STEM_ELEM[p.stem]] + ')</small></td>';
+      if (줄 === 'ji') return '<td class="' + c('ji e' + E.BRANCH_ELEM[p.branch]) + '">' + E.BRANCHES[p.branch] + '<small>' + E.BRANCHES_KO[p.branch] + '(' + 오행한[E.BRANCH_ELEM[p.branch]] + ')</small></td>';
+      return '<td class="' + c('god') + '">' + esc((gods[k] || {}).branch || '') + '</td>';
+    };
+    const 줄 = (종류) => '<tr>' + 순.map(k => 칸(k, 종류)).join('') + '</tr>';
+    return '<div class="' + c('card') + '"><div class="' + c('k') + '">' + esc(opt.label || '사주 여덟 글자(명식)') + '</div>'
+      + (opt.sub ? '<p class="' + c('sub') + '">' + esc(opt.sub) + '</p>' : '')
+      + '<table><tr>' + 순.map(k => '<th>' + 머리[k] + '</th>').join('') + '</tr>' + 줄('top') + 줄('gan') + 줄('ji') + 줄('bot') + '</table></div>';
+  }
+
   /** 앞말(pre)을 붙인 카드 꾸밈 — 보고서 쪽은 낮 · 밤 어느 바탕이든 종이 카드 그대로(myeongsik.html 과 같은 색). 폰 폭에 맞게 줄인다. */
   function css(pre) {
     const p = '.' + (pre || 'msc-');
@@ -80,5 +102,5 @@
     const s = document.createElement('style'); s.textContent = css(pre); document.head.appendChild(s);
   }
 
-  global.ChaeksaMyeongsikCard = { html, css, 꾸밈 };
+  global.ChaeksaMyeongsikCard = { html, css, 꾸밈, 원국표 };
 })(window);
