@@ -10,7 +10,6 @@
 | COPY-0004 | 손님이 읽는 글 전부 — 화면마다 astra 한 바퀴(검수 목록 없이) | 요청 | COPY-0004-all-screens.md | codex/COPY-0004-<묶음> |
 | COPY-0015 | 남은 손님 문장 셋(썸 원고 · 월별 머리 24 · 짚어 둔 자리) | 적용됨(v1440) | 2026-10-24 |
 | COPY-0016 | 출산택일 길 전체 — 산모 한 사람에게 말하듯(gil · geul · wol) | 적용됨 | 2026-10-25 |
-
 | COPY-0017 | 출산택일 — 최고의 날과 시간 약속 · 고객님/호칭 생략 | 적용됨(비공개 v0.2 운영 배포 완료, 견본 재생성, 공개 견본 v1456 배포 완료(실제 화면 확인), 안내 한 줄과 캐시 v1457 후속 반영) | COPY-0017-taekil-best-time.md | 현재 작업 폴더 |
 | COPY-0019 | 정통사주 · 자미두수 — 사람마다 · 메뉴마다 다른 결론(빈말 24% · 같은 끝 결론) | 적용됨(10-28 빈말 0% · 끝 결론 1위 사주 6.9% · 자미 5.6%) | COPY-0019-two-readings-distinct.md | 2026-10-28 |
 | COPY-0020 | 「오늘의 운세」 첫 제작 — 세게 · 뭉개지 않게 — 오늘 · 가까운 변화 · 저녁 기록(today.html) | 적용됨(10-28 · 475칸 · today.html 라이브) | COPY-0020-today-story.md | 2026-10-28 |
@@ -24,5 +23,5 @@
 | COPY-0026-질문② | 물음별 카드 풀이 — 연애·결혼 156면(남녀 7면) · 일 156면 · 마음 156면 | 적용됨(v1555 · 11-01 main 합침 · PR #25 · 뜻 대조 고칠 것 요청 — COPY-0026 끝 절 「11-01 v1555 뒤 아홉 물음」) | [완료 기록](ref/COPY-0026-question-2-completion.md) · [연애](ref/COPY-0026-question-love.md) · [일](ref/COPY-0026-question-work.md) · [마음](ref/COPY-0026-question-mind.md) | codex/COPY-0026-question-2 |
 | COPY-0026-question-3 | 물음별 타로 풀이 묶음 ③ — 몸·곁의 사람·자식 936칸(남녀 분기 포함 942문자열) · [몸](ref/COPY-0026-question-body.md) · [곁의 사람](ref/COPY-0026-question-people.md) · [자식](ref/COPY-0026-question-child.md) | 적용됨(v1555 · 11-01 main 합침 · PR #24 · 뜻 대조 고칠 것 요청 — COPY-0026 끝 절 「11-01 v1555 뒤 아홉 물음」) | COPY-0026-tarot-celtic.md 끝 절 「다음 아홉 물음에도」 | codex/COPY-0026-question-3 |
 | COPY-0026-④ | 물음별 타로 카드 풀이 — 부모·집안 어른(parent) · 집·땅·재산(home) · 떠남·바깥(move), 각 긴 풀이 156 + 짧은 말 156 = 936칸 | 적용됨(v1555 · 11-01 main 합침 · PR #26 · 뜻 대조 고칠 것 요청 — COPY-0026 끝 절 「11-01 v1555 뒤 아홉 물음」) | [묶음 ④ 완료·검사](ref/COPY-0026-question-4-completion.md) · [부모](ref/COPY-0026-question-parent.md) · [집](ref/COPY-0026-question-home.md) · [떠남](ref/COPY-0026-question-move.md) | codex/COPY-0026-question-4 |
-
 | COPY-0026-general-fix | v1539 뒤 일반 카드뜻·카드말·읽는법·이야기 47칸 고침 · 최신 낱말 옮김표 일반 12칸 포함 | 제안됨 | [전후·까닭](ref/COPY-0026-general-fix.md) | codex/COPY-0026-fix |
+| COPY-0026-질문②-fix | v1555 뒤 뜻 대조 — 연애 101 · 일 87 · 마음 117 · 돈 19, 합계 324칸 | 제안됨 | [전후·까닭·검사](ref/COPY-0026-question-2-fix.md) · 지정표 291칸 누락 0 · 원고표 일치 · tools_check 막힘 0 | codex/COPY-0026-question-2-fix |
