@@ -230,6 +230,13 @@
   ['gaY', 'gaM', 'gaD'].forEach(function (id) { $(id).addEventListener('input', 바꿈표); });
   $('gaLeap').addEventListener('change', 바꿈표);
   $('gaNoTime').addEventListener('change', 시간칸);
+  // 11-01 지금 하는 일 · 들어온 제안 칸 — 글(ilgyeol-work-copy.js)이 다 차야 보인다. 빈 글이면 지금 화면 그대로
+  (function () {
+    var W = window.ChaeksaIlgyeolWorkCopy || {}, 칸 = ['머리', '도움', '지금일', '지금일보기', '제안', '제안보기'];
+    if (!$('workWrap') || !칸.every(function (k) { return typeof W[k] === 'string' && W[k].trim(); })) return;
+    $('workHead').textContent = W.머리; $('workHelp').textContent = W.도움; $('workNowL').textContent = W.지금일; $('workOfferL').textContent = W.제안;
+    $('workNow').placeholder = W.지금일보기; $('workOffer').placeholder = W.제안보기; $('workWrap').hidden = false;
+  })();
 
   // ── 신청서(intake) — 주문에 붙는 꼴. 머리 주석의 꼴 그대로. 생년월일은 양력으로, 음력 입력은 따로 적는다 ──
   function 신청서(p, pn) {
@@ -246,7 +253,10 @@
       if (b.lunarInput.leap) person.윤달 = true;
     }
     if (시모름) person.시모름 = true;
-    return { v: 1, product: 상품, person: person, agreedAt: new Date().toISOString() };
+    var 신 = { v: 1, product: 상품, person: person, agreedAt: new Date().toISOString() };
+    var 일칸 = $('workWrap');   // 11-01 지금 하는 일 · 들어온 제안(안 써도 됨) — 서버 lib/ilgyeol-report.js 환경읽기가 intake.work 를 읽는다
+    if (일칸 && !일칸.hidden) { var 지금 = ($('workNow').value || '').trim().slice(0, 60), 제안 = ($('workOffer').value || '').trim().slice(0, 60); if (지금 || 제안) 신.work = { now: 지금, offer: 제안 }; }
+    return 신;
   }
 
   // ── 초안 채우기 · 적을 때마다 남기기 ──
