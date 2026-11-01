@@ -221,6 +221,9 @@
   //   v0.7 전에 이 기기에 저장된 판은 등급이 없어 길흉 그대로 보인다(규칙을 화면에 베끼지 않는다 — 엔진이 정한 값만).
   const 등급말 = (글, x) => (x && x.등급 && 글('세점.길흉말.' + x.등급)) || 글('세점.길흉말.' + (x && x.길흉));
   const 대속 = x => (x && /^대/.test(x.등급 || '')) ? ' data-dae="' + esc(x.등급) + '"' : '';
+  // 옛 대 표의 카드지문(11-01 배포 뒤 검토 2 · 3바퀴 전 — 그 뒤 걷은 대 칸이 남은 표). 이 지문으로 받아 둔 펼침은 v0.7 판처럼 등급 · 대낱말 · 대곳을 버린다(결정함 100).
+  //   대 표를 다시 갈라 대 칸이 바뀌면 바뀌기 전 카드지문을 여기에 더한다(엔진 시험 ⑯ 이 알려 주고 · 화면 글 검사기 ⑤ 가 그려 본다).
+  const 옛대지문 = Object.freeze(['83fa5e4d9284', '8e25ef77a8a7']);
   const 갈래of = (r, k) => (k === '사주' && r.점.사주.정함 === '문없음') ? '문없음' : r.점[k].길흉;   // 일어남 · 할일 칸의 끝 열쇠
   function 점때(r, k, 글) {
     const z = r.점[k];
@@ -395,14 +398,25 @@
   //   글 칸은 Codex · 비면 그 줄만 건너뛴다. 원문 낱말 줄은 웨이트 영어 그대로(값) — 직접: 그 물음을 말한 낱말(붙임) · 전체: 카드 본뜻 낱말(뜻말) · 엇갈림: 둘 다(덧뜻 §4 낱말 + 본뜻 낱말).
   //   같은 줄 · 같은 절 낱말은 한 묶음(“…” · “…” (Part III 줄 [§4])). 옛 응답(v0.5 — 왜 · 뜻말 없음)은 직접이면 붙임만 · 아니면 줄 없음.
   //   대(11-01 v1551 뒤) — 대인 장은 엔진 대낱말을 굵게(<b>) · 보이는 낱말에 없으면 엔진 대곳(그 낱말의 줄 · 절) 묶음에 더한다. 대곳이 없는 옛 판은 굵게만(규칙을 화면에 베끼지 않는다).
-  const 굵게 = (m, 대들) => {   // 낱말 m 안의 대낱말을 <b>로(앞에서부터 · 같은 자리면 긴 것) · 나머지는 esc
-    let 남 = String(m), h = '';
-    for (;;) {
-      let 곳 = -1, 말 = '';
-      (대들 || []).forEach(w => { const i = w ? 남.indexOf(w) : -1; if (i >= 0 && (곳 < 0 || i < 곳 || (i === 곳 && w.length > 말.length))) { 곳 = i; 말 = w; } });
-      if (곳 < 0) return h + esc(남);
-      h += esc(남.slice(0, 곳)) + '<b>' + esc(말) + '</b>'; 남 = 남.slice(곳 + 말.length);
+  //   낱말 경계 — 대낱말이 영문 글자 · 숫자에 맞붙은 자리(예: “rest” 가 “interest” 안)는 그 낱말로 치지 않는다(11-01 배포 뒤 검토).
+  const 글자 = /[A-Za-z0-9]/;
+  const 찾기 = (s, w, 부터) => {
+    for (let i = s.indexOf(w, 부터 || 0); i >= 0; i = s.indexOf(w, i + 1)) {
+      if (!(i > 0 && 글자.test(s.charAt(i - 1)) && 글자.test(w.charAt(0))) && !(글자.test(s.charAt(i + w.length)) && 글자.test(w.charAt(w.length - 1)))) return i;
     }
+    return -1;
+  };
+  //   굵게 — 낱말 m 안의 대낱말 자리를 다 찾아 겹치거나 맞닿은 자리는 하나로 합쳐 <b> · 나머지는 esc(문자열 아닌 값 · 빈 글은 건너뜀)
+  const 굵게 = (m, 대들) => {
+    const s = String(m), 칸 = [];
+    (대들 || []).forEach(w => { if (typeof w !== 'string' || !w) return; for (let i = 찾기(s, w); i >= 0; i = 찾기(s, w, i + w.length)) 칸.push([i, i + w.length]); });
+    if (!칸.length) return esc(s);
+    칸.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+    const 합 = [];
+    칸.forEach(([a, b]) => { const z = 합[합.length - 1]; if (z && a <= z[1]) z[1] = Math.max(z[1], b); else 합.push([a, b]); });
+    let h = '', p = 0;
+    합.forEach(([a, b]) => { h += esc(s.slice(p, a)) + '<b>' + esc(s.slice(a, b)) + '</b>'; p = b; });
+    return h + esc(s.slice(p));
   };
   const 낱말묶음 = (낱, 대들) => {
     const 무리 = [];
@@ -418,7 +432,7 @@
     const 보임 = 왜k === '직접' ? (붙.length ? 붙 : 본) : 왜k === '엇갈림' ? 붙.concat(본) : 본;
     const 대 = /^대/.test(x.등급 || '') && Array.isArray(x.대낱말) ? x.대낱말 : [], 곳 = Array.isArray(x.대곳) && x.대곳.length === 대.length ? x.대곳 : [];
     const 더 = 대.map((w, i) => ({ 말: w, 줄: 곳[i] && 곳[i].줄, 절: 곳[i] && 곳[i].절 }))
-      .filter(d => typeof d.말 === 'string' && d.말 && d.줄 != null && !보임.some(s => s.줄 === d.줄 && (s.절 || '') === (d.절 || '') && String(s.말).includes(d.말)));
+      .filter(d => typeof d.말 === 'string' && d.말 && d.줄 != null && !보임.some(s => s.줄 === d.줄 && (s.절 || '') === (d.절 || '') && 찾기(String(s.말), d.말) >= 0));
     const 원 = 낱말묶음(보임.concat(더), 대.filter(w => typeof w === 'string' && w));
     return (카뜻 ? '<p class="' + 앞 + '-line">' + esc(카뜻) + '</p>' : '') + (영 ? '<p class="' + 앞 + '-eff">' + esc(영) + '</p>' : '')
       + (왜 ? '<p class="' + 앞 + '-why">' + esc(왜) + '</p>' : '') + (원 ? '<p class="' + 앞 + '-src" lang="en">' + 원 + '</p>' : '');
@@ -652,10 +666,10 @@
       }
       const 키 = 저장열쇠3(prof);
       판3 = 꺼냄(키); if (!판3 || typeof 판3 !== 'object') 판3 = {};
-      // 엔진 v0.7(11-01 오전 · 옛 대 기준) 때 받아 둔 펼침은 그달 동안 다시 부르지 않는다 — 그 판의 등급 · 대낱말을 버리고 길흉만 쓴다(결정함 97 · 11-01 배포 뒤 검토).
-      //   화면은 대 규칙을 베끼지 않고 응답의 판만 본다. 길흉 · 셈은 판과 무관하게 그대로.
-      Object.keys(판3).forEach(k => { const s = 판3[k], j = s && typeof s === 'object' && s.응답; if (!j || !/^three-points v0\.7 /.test(String(j.판 || ''))) return;
-        const 걷 = x => { if (x && typeof x === 'object') { delete x.등급; delete x.대낱말; } }, f = j.펼침;
+      // 엔진 v0.7(11-01 오전 · 옛 대 기준) 때 받아 둔 펼침과 옛 대 표(옛대지문)로 받아 둔 펼침은 그달 동안 다시 부르지 않는다 — 그 판의 등급 · 대낱말 · 대곳을 버리고 길흉만 쓴다(결정함 97 · 100 · 11-01 배포 뒤 검토).
+      //   화면은 대 규칙을 베끼지 않고 응답의 판 · 카드지문만 본다. 길흉 · 셈은 판과 무관하게 그대로.
+      Object.keys(판3).forEach(k => { const s = 판3[k], j = s && typeof s === 'object' && s.응답; if (!j || !(/^three-points v0\.7 /.test(String(j.판 || '')) || 옛대지문.includes(String(j.카드지문 || '')))) return;
+        const 걷 = x => { if (x && typeof x === 'object') { delete x.등급; delete x.대낱말; delete x.대곳; } }, f = j.펼침;
         걷(j.점 && j.점.타로); if (f) { [].concat(f.자리 || [], (f.다시 && f.다시.자리) || []).forEach(걷); 걷(f.끝); } });
       if (!고른 && 물음차례.includes(판3._마지막)) 고른 = 판3._마지막;
       const 몸 = (q, 카드) => ({ year: prof.year, month: prof.month, day: prof.day, hour: prof.hour, minute: prof.minute || 0, gender: prof.gender === 'F' ? 'F' : 'M', place: prof.place || 'KR:서울',
@@ -950,5 +964,5 @@
     render(false);
     return { render };
   }
-  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움, 펼침켜짐, 펼침필수, 시그of, 서울날of, 자리수, 물음칸, 물음켜짐, 물음맥of, 성별of };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31) · 펼침켜짐 · 펼침필수 · 시그of — 펼침 시험 · 검사기
+  global.ChaeksaThreeView = { mount, 때말, 날말, 달말, 창말of, 카드들, 섞은일곱, 물음차례, 세점켜짐, 채움, 펼침켜짐, 펼침필수, 시그of, 서울날of, 자리수, 물음칸, 물음켜짐, 물음맥of, 성별of, 옛대지문 };   // 달말 · 채움 — 화면 글 검사기가 글 조각 전부를 보기 값으로 채워 본다(10-31) · 펼침켜짐 · 펼침필수 · 시그of — 펼침 시험 · 검사기
 })(typeof window !== 'undefined' ? window : globalThis);
