@@ -1,0 +1,126 @@
+{
+  "request": "IMG-0138",
+  "date": "2026-11-02",
+  "mode": "built-in image_gen",
+  "status": "generated and saved locally; not deployed",
+  "identityReference": "app/art/tarot/chaeksa-v1/P13.webp",
+  "identityNote": "Request omitted art/ from P13 path; resolved actual file. P13 face authority. Approved welcome reused for consistency.",
+  "assets": [
+    {
+      "key": "welcome",
+      "name": "맞이하기",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-74e622be-3af3-47df-a9fe-4c289ab9ea60.png",
+      "output": "app/art/jeongtong-tarot-v1/f/welcome.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "prompt": "Use case: identity-preserve illustration-story. Produce one finished production illustration for Chaeksa traditional saju, premium contemporary romantic-fantasy TAROT linework matching the reference exactly, clean finely delineated hair, fine gold embroidery, warm rich original colors, crisp face, no photographic or oil-painting style. Image 1 (P13 Queen of Pentacles) is the ONLY FACE IDENTITY and style authority: exactly the same young adult queen's refined oval face, almond amber-brown eyes, petite nose and lips, long chestnut half-up wavy hair, delicate gold floral hair ornaments and pearl/red-gem earrings. Same recognizable woman, not a new face, not a generic goddess, no short bob. Her eyes must be visibly OPEN, natural calm expression, not a frown. Image 2 is the EDIT TARGET for pose, composition, garments and props only; replace only the male character with this queen. Keep the deep emerald, ivory and antique gold scholar clothing and its modest high collar, natural restrained bust, the book, original light and framing. Exactly two arms, anatomically plausible hands naturally holding or resting on book; no pinching gestures, extra limbs, fused fingers, detached fingers. No text, lettering, numbers, logo, watermark, UI, tarot card border or card title, phones, clocks or electronic screens. Do not borrow the red gown, pentacle coin, rabbit or card frame from reference 1. Asset 1/5 WELCOME. Square transparent PNG, target1254x1254. Match image2's centered chest/waist-up portrait and open emerald-and-gold book held with BOTH hands across the lower chest. Face lifted toward reader, gentle attentive half-smile. Keep full hair outline within canvas, both shoulders readable, sleeves terminate naturally at lower canvas. Maintain the book size and placement in lower third and enough breathing space around head. Use actual alpha transparency behind the character, not a painted checkerboard or a white rectangle. No background scenery.",
+      "references": [
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/jeongtong-tarot-v1/welcome.png"
+      ],
+      "originalCopy": "image-requests/out/IMG-0138/welcome.png"
+    },
+    {
+      "key": "reading",
+      "name": "책 읽기",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-c8eeebf2-f8d8-4b5f-becd-b350921c235f.png",
+      "output": "app/art/jeongtong-tarot-v1/f/reading.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "prompt": "Use case: identity-preserve illustration-story. Produce one finished production illustration for Chaeksa traditional saju, premium contemporary romantic-fantasy TAROT linework matching the reference exactly, clean finely delineated hair, fine gold embroidery, warm rich original colors, crisp face, no photographic or oil-painting style. Image 1 (P13 Queen of Pentacles) is the ONLY FACE IDENTITY and style authority: exactly the same young adult queen's refined oval face, almond amber-brown eyes, petite nose and lips, long chestnut half-up wavy hair, delicate gold floral hair ornaments and pearl/red-gem earrings. Same recognizable woman, not a new face, not a generic goddess, no short bob. Her eyes must be visibly OPEN, natural calm expression, not a frown. Image 2 is the EDIT TARGET for pose, composition, garments and props only; replace only the male character with this queen. Keep the deep emerald, ivory and antique gold scholar clothing and its modest high collar, natural restrained bust, the book, original light and framing. Exactly two arms, anatomically plausible hands naturally holding or resting on book; no pinching gestures, extra limbs, fused fingers, detached fingers. No text, lettering, numbers, logo, watermark, UI, tarot card border or card title, phones, clocks or electronic screens. Do not borrow the red gown, pentacle coin, rabbit or card frame from reference 1. Asset 2/5 READING. Square1254x1254 PNG with actual alpha-transparent background. Match male reading reference composition: centered upper-body portrait, head inclined a little toward a complete open dark green/gold book held in BOTH hands at chest level, book top tilted slightly upward to viewer's right. She reads attentively, eyes looking DOWN toward pages but eyelids visibly OPEN so she is not asleep. The whole recognizable P13 face and long hair remain crisp. Same emerald/ivory/gold high-collar robe. Image3 is the approved female WELCOME from this same series: match her exact facial proportions, hair ornaments, outfit details, palette and rendering; only change pose/gaze and book tilt to the male reading target. Keep the target's canvas occupancy, framing and position. No scenery or white/checkerboard backdrop, genuine transparent PNG.",
+      "references": [
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/jeongtong-tarot-v1/reading.png",
+        "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-74e622be-3af3-47df-a9fe-4c289ab9ea60.png"
+      ],
+      "originalCopy": "image-requests/out/IMG-0138/reading.png"
+    },
+    {
+      "key": "closing",
+      "name": "책을 덮고 마무리",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-7c01674a-9d23-46e3-a6f9-4a0a42f5f417.png",
+      "output": "app/art/jeongtong-tarot-v1/f/closing.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "prompt": "Use case: identity-preserve illustration-story. Produce one finished production illustration for Chaeksa traditional saju, premium contemporary romantic-fantasy TAROT linework matching the reference exactly, clean finely delineated hair, fine gold embroidery, warm rich original colors, crisp face, no photographic or oil-painting style. Image 1 (P13 Queen of Pentacles) is the ONLY FACE IDENTITY and style authority: exactly the same young adult queen's refined oval face, almond amber-brown eyes, petite nose and lips, long chestnut half-up wavy hair, delicate gold floral hair ornaments and pearl/red-gem earrings. Same recognizable woman, not a new face, not a generic goddess, no short bob. Her eyes must be visibly OPEN, natural calm expression, not a frown. Image 2 is the EDIT TARGET for pose, composition, garments and props only; replace only the male character with this queen. Keep the deep emerald, ivory and antique gold scholar clothing and its modest high collar, natural restrained bust, the book, original light and framing. Exactly two arms, anatomically plausible hands naturally holding or resting on book; no pinching gestures, extra limbs, fused fingers, detached fingers. No text, lettering, numbers, logo, watermark, UI, tarot card border or card title, phones, clocks or electronic screens. Do not borrow the red gown, pentacle coin, rabbit or card frame from reference 1. Asset 3/5 CLOSING. Square1254x1254 PNG with genuine alpha-transparent background. Match male closing target's centered upper-body portrait with a CLOSED dark green/gold book held VERTICALLY against torso using two relaxed overlapping hands, lower center. Head gently inclined, warm small composed smile looking directly toward reader with visibly OPEN eyes. End of consultation. Image3 is approved female WELCOME from same series: match her exact facial proportions, long half-up chestnut waves, floral ornaments/earrings, emerald/ivory/gold high-collar robe and illustration rendering. Only change her pose and book state to the closing target. Keep target's framing, position and canvas occupancy. Two arms and two natural hands, no pinching gesture. No scenery, no white or checkerboard background.",
+      "references": [
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/jeongtong-tarot-v1/closing.png",
+        "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-74e622be-3af3-47df-a9fe-4c289ab9ea60.png"
+      ],
+      "originalCopy": "image-requests/out/IMG-0138/closing.png"
+    },
+    {
+      "key": "library-mobile",
+      "name": "모바일 시작 배경",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-ff8986cb-e9a2-4ce0-ad8e-4fa0a4d266f6.png",
+      "output": "app/art/content-tarot-v2/library-mobile-f.webp",
+      "size": [
+        1024,
+        1536
+      ],
+      "alpha": false,
+      "prompt": "Use case: identity-preserve illustration-story. Produce one finished production illustration for Chaeksa traditional saju, premium contemporary romantic-fantasy TAROT linework matching the reference exactly, clean finely delineated hair, fine gold embroidery, warm rich original colors, crisp face, no photographic or oil-painting style. Image 1 (P13 Queen of Pentacles) is the ONLY FACE IDENTITY and style authority: exactly the same young adult queen's refined oval face, almond amber-brown eyes, petite nose and lips, long chestnut half-up wavy hair, delicate gold floral hair ornaments and pearl/red-gem earrings. Same recognizable woman, not a new face, not a generic goddess, no short bob. Her eyes must be visibly OPEN, natural calm expression, not a frown. Image 2 is the EDIT TARGET for pose, composition, garments and props only; replace only the male character with this queen. Keep the deep emerald, ivory and antique gold scholar clothing and its modest high collar, natural restrained bust, the book, original light and framing. Exactly two arms, anatomically plausible hands naturally holding or resting on book; no pinching gestures, extra limbs, fused fingers, detached fingers. No text, lettering, numbers, logo, watermark, UI, tarot card border or card title, phones, clocks or electronic screens. Do not borrow the red gown, pentacle coin, rabbit or card frame from reference 1. Asset 4/5 MOBILE INTRODUCTION BACKGROUND. Output1024x1536, portrait2:3, OPAQUE complete library scene. Preserve input2's camera, architecture, light, desk perspective and placement of guide in upper half. Replace man with exact P13 queen, seated and holding a complete OPEN book with both hands; gaze toward reader, eyelids clearly open. Keep book and hands entirely within top52%. Top hair around y10%, face center about y21%; bottom48% remains EMPTY QUIET IVORY MARBLE TABLE with subtle warm veins only, no person, hands, props, books or flowers extending into bottom half. Do not enlarge or lower the figure. Same green/ivory/gold high-neck scholar clothes, natural restrained bust. Image3 is the approved WELCOME in this series; match her facial identity, long wavy half-up hair, floral ornaments, earrings and robe details. Preserve bookshelves, ivory gothic arches, small white flowers and daylight in image2. Rich original color with crisp fine tarot illustration detail, no haze over face. No border or title. The big empty lower desk is essential for mobile result text overlay.",
+      "references": [
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/content-tarot-v2/library-mobile.webp",
+        "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-74e622be-3af3-47df-a9fe-4c289ab9ea60.png"
+      ],
+      "originalCopy": "image-requests/out/IMG-0138/library-mobile.png",
+      "iterations": [
+        {
+          "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-94ea8867-9519-4dc6-b873-a0fd8d2ea038.png",
+          "status": "not adopted: person and book too low"
+        },
+        {
+          "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-b5e84ca0-9db7-4dc4-90b3-96b480b766ca.png",
+          "prompt": "Use case: precise-object-edit / identity-preserve. Correct ONLY the composition of image 2, the female mobile library illustration. Image 1 is the P13 QUEEN facial identity; image3 is original male scene's precise placement reference, NOT a face reference. Keep image2's same woman's face, long chestnut hair, ornaments, emerald/ivory/gold robe, open book, natural hands, architecture, sunlight and drawing quality. Portrait1024x1536. The female figure is currently too low: raise the book, hands, shoulders and desk boundary approximately70px so the entire person and book finish by y=790 (51.5% height). Preserve a small distant seated figure, do not zoom in. Place top of her hair near y=110, face center near y=285, open book center near y=650; hands must be ABOVE y=780. Table begins at y=790 and ALL of the bottom746px stays empty ivory marble desk with soft subtle warm veins, no figure or objects. Gently reduce overall seated figure scale if needed to maintain natural proportions and her hairstyle without elongating torso or cropping shoulders. This clear lower48.5% is required for website text overlay. Match male original image3's table horizon with slightly MORE empty bottom space, not less. Queen must retain exact image2's recognisable face and detailed style, no identity changes. Two hands naturally holding book. Opaque full scene. No text, symbols as text, tarot border, numbers, phones or clocks.",
+          "status": "not adopted: outfit neckline and gaze drift"
+        },
+        {
+          "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-ff8986cb-e9a2-4ce0-ad8e-4fa0a4d266f6.png",
+          "prompt": "Use case: identity-preserve precise-object-edit. This is ONE narrow correction to IMAGE1, a finished female mobile library painting. KEEP EXACTLY image1's layout, distant seated woman's size, empty lower ivory desk occupying about47% of frame, desk horizon, book position, hands, library and lighting. Fix the female scholar's clothing and gaze to match IMAGE2 (approved female welcome). She must wear image2's CLOSED HIGH COLLAR EMERALD AND IVORY SCHOLAR ROBE with antique gold botanical embroidery. NO exposed chest or low neckline. Copy image2's same long chestnut half-up hair and exactly the same recognizable adult Queen face with her warm amber-brown eyes visibly OPEN, looking gently toward the reader rather than down. Do not change identity, head size or head position; only lift the eye gaze and modest high-collar clothing. Do NOT lower or enlarge the character; do NOT change the table or put any objects in the empty lower half. Book remains OPEN and in both natural hands in upper half. No new people or arms or fingers, no pinching gesture. One portrait1024x1536 opaque finished contemporary fantasy tarot illustration matching image2's crisp gold and hair linework, rich green/ivory colors. No lettering, numbers, tarot border, watermark, logo, phones or clocks.",
+          "references": [
+            "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-b5e84ca0-9db7-4dc4-90b3-96b480b766ca.png",
+            "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-74e622be-3af3-47df-a9fe-4c289ab9ea60.png"
+          ],
+          "status": "adopted: high collar restored, reader-facing gaze, desk area approx47% as original"
+        }
+      ]
+    },
+    {
+      "key": "library-ending",
+      "name": "페이지 마침 배경",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-4d04a76a-1bbd-46e7-9661-781453f53729.png",
+      "output": "app/art/content-tarot-v2/library-ending-f.webp",
+      "size": [
+        1024,
+        1536
+      ],
+      "alpha": false,
+      "prompt": "Use case: identity-preserve illustration-story. Produce one finished production illustration for Chaeksa traditional saju, premium contemporary romantic-fantasy TAROT linework matching the reference exactly, clean finely delineated hair, fine gold embroidery, warm rich original colors, crisp face, no photographic or oil-painting style. Image 1 (P13 Queen of Pentacles) is the ONLY FACE IDENTITY and style authority: exactly the same young adult queen's refined oval face, almond amber-brown eyes, petite nose and lips, long chestnut half-up wavy hair, delicate gold floral hair ornaments and pearl/red-gem earrings. Same recognizable woman, not a new face, not a generic goddess, no short bob. Her eyes must be visibly OPEN, natural calm expression, not a frown. Image 2 is the EDIT TARGET for pose, composition, garments and props only; replace only the male character with this queen. Keep the deep emerald, ivory and antique gold scholar clothing and its modest high collar, natural restrained bust, the book, original light and framing. Exactly two arms, anatomically plausible hands naturally holding or resting on book; no pinching gestures, extra limbs, fused fingers, detached fingers. No text, lettering, numbers, logo, watermark, UI, tarot card border or card title, phones, clocks or electronic screens. Do not borrow the red gown, pentacle coin, rabbit or card frame from reference 1. Asset 5/5 PAGE ENDING. Output1024x1536 portrait2:3 OPAQUE complete bright library scene. Preserve image2's library, walnut desk on viewer's right, perspective, composition, mid-thigh portrait and book placement. Replace the man with exact P13 queen; one relaxed hand lies naturally on the CLOSED green/gold book on the desk, the other hangs naturally at her side. Exactly two arms, two natural hands, no pinching, no extra book. Gentle direct eye contact with eyes clearly open, warm composed small smile: the reading is finished. Same emerald/ivory finely gold-embroidered scholar high-collar clothing, natural restrained bust, no fur cape. Image3 is approved WELCOME from this same set: maintain her exact facial identity, long chestnut half-up wavy hair, gold floral ornaments, pearl/red-gem earrings and green robe detailing. Keep head, shoulders, hands and book fully visible. Preserve original background's book shelves, white flowers, daylight ivory arch and distant garden landscape. No cropping/zooming in. Crisp premium tarot rendering, original rich color, no letters or tarot frame.",
+      "references": [
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/Desktop/chaeksa-main-wt/app/art/content-tarot-v2/library-ending.webp",
+        "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-74e622be-3af3-47df-a9fe-4c289ab9ea60.png"
+      ],
+      "originalCopy": "image-requests/out/IMG-0138/library-ending.png"
+    }
+  ],
+  "review": {
+    "face": "P13 queen features, long chestnut half-up waves, gold floral ornaments, amber eyes maintained as visual reference",
+    "anatomy": "All five visually reviewed: two arms, natural hands/book holds, no pinching gesture.",
+    "format": "Original dimensions preserved; three true alpha PNG and two lossless WebP.",
+    "mobile": "Bottom approx47% empty table, matching original male composition; no text in image.",
+    "integration": "Existing app/jeongtong-pyo.js female paths already correspond to all five outputs. No rendering, engine, or copy changes."
+  }
+}
