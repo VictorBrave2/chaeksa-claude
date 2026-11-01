@@ -681,6 +681,8 @@
     if (tab === 'why') { try { const b = $('whyOut'); if (b && window.ChaeksaWhyView) window.ChaeksaWhyView.mount(b); } catch (e) { try { console.warn('왜 내게만 탭:', e); } catch (x) {} } }
     // 10-30 「세 관점이 모인 한 점」 — 계산은 비공개 /api/three-eyes, 카드는 화면이 뽑는다(한 달에 한 장 — three.js 가 이 기기에 기억).
     if (tab === 'three') { try { const b = $('threeOut'); if (b && window.ChaeksaThreeView) window.ChaeksaThreeView.mount(b); } catch (e) { try { console.warn('세 관점 탭:', e); } catch (x) {} } }
+    // 11-02 정통타로 — 세 관점과 같은 화면 · 같은 저장, 타로 점만(보기: '타로') · 맨 아래 세 관점으로.
+    if (tab === 'tarot') { try { const b = $('tarotOut'); if (b && window.ChaeksaThreeView) window.ChaeksaThreeView.mount(b, { 보기: '타로' }); } catch (e) { try { console.warn('정통타로 탭:', e); } catch (x) {} } }
     if (tab === 'jeongtong') { try { const b = $('jtOut'); if (b && window.ChaeksaJeongtong && profile) window.ChaeksaJeongtong.그리기(b, profile); } catch (e) {} }
     if (tab === 'love') { try { if (window.ChaeksaLoveView) ChaeksaLoveView.그리기($('loveBox'), profile); } catch (e) { try { console.warn('연애 속의 나 탭:', e); } catch (x) {} } }
     if (tab === 'pair') { try { if (window.ChaeksaPairView) ChaeksaPairView.그리기($('pairBox'), profile); } catch (e) { try { console.warn('행동양식 궁합 탭:', e); } catch (x) {} } }   // 10-01 pair.js

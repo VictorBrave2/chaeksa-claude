@@ -54,6 +54,7 @@ function resultView(host,r,input){
  global.ChaeksaJeongtongShare?.attach(host,view);
  global.ChaeksaJeongtongEvidence?.attach(host.parentElement,input);
  companion(host,input&&input.gender==='F'?'F':'M');
+ global.ChaeksaToThree?.달기(host.closest('.jtp')||host,'jeongtong');   // 11-02 맨 아래 → 세 관점(to-three.js)
 }
 function oldContent(container,input){
  const d=document.createElement('details');d.className='jtp-legacy';
