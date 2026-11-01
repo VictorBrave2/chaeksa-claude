@@ -272,8 +272,8 @@
       // 「돌아가서 보기」가 홈으로만 가서, 산 화면을 못 찾았다(2026-09-11 검토). 앱은 주소 뒤 #탭이름 으로
       // 그 탭을 바로 연다(app.js goHash). 2026-10-01 — 앱에서 열리는 유료는 연애 탭 둘뿐이다.
       var 갈곳 = { love_full: './#love', love_pair: './#pair' }[code] || './';   // 행동양식 궁합은 제 탭(pair.js)으로 — 돌아가면 산 쌍을 바로 쓴다
-      if (code === 'ilgyeol') 갈곳 = 'ilgyeol-report.html?o=' + encodeURIComponent(orderId);   // 10-22 「나는 뭐해 먹고 살까?」 — 주문마다 결과 쪽. 그 쪽이 만들기 → 바로 띄운다
-      if (code === 'gyeolhon') 갈곳 = 'gyeolhon.html';   // 10-22 결정 25 결혼상대 점검(카카오페이) — 보고서는 책사가 만들어 메일로 보내니 돌아갈 곳은 소개 쪽
+      if (code === 'ilgyeol') 갈곳 = 'ilgyeol-report.html?o=' + encodeURIComponent(orderId);   // 10-22 「내게 맞는 일과 돈」 — 주문마다 결과 쪽. 그 쪽이 만들기 → 바로 띄운다
+      if (code === 'gyeolhon') 갈곳 = 'gyeolhon.html';   // 10-22 결정 25 결혼 전 궁합 점검(카카오페이) — 보고서는 책사가 만들어 메일로 보내니 돌아갈 곳은 소개 쪽
       // 결제는 됐는데 우리 기록이 안 된 경우(api/pay.js saved:false · SAVE_FAILED). 그냥 「끝났습니다」로 보이지 않게 따로 그린다.
       var 기록안됨 = r.saved === false || !!r.saveWarning;
       // 시험 결제(카카오 TC CID · 토스 test_ 키) — 돈이 안 빠졌고, 이 주문으로는 보고서를 만들지 않는다.
@@ -320,10 +320,10 @@
         + '<p class="warn" style="margin-top:-12px">이 주문번호는 홈 화면 맨 위 오른쪽 「설정」 → 「내 결제」에서 언제든 다시 볼 수 있어요.</p>'
         + (code === 'taekil'
             ? '<figure class="hero"><img src="art/content-tarot-v2/body/taekil-report.webp" alt="" width="1024" height="1536"></figure><div id="taekil-slot"></div>'   // 10-02 「켜는 날」 — 자동 보고서 길(자동만들기)이 이 자리를 채운다. 옛 접수 길도 같은 자리. 10-23 그림(IMG-0003)
-            : (연애 || 일결)   // 10-22 「나는 뭐해 먹고 살까?」도 연애처럼 — 신청서는 결제 전에 주문에 붙었고, 결과 쪽(ilgyeol-report.html)이 만들어 바로 띄운다
+            : (연애 || 일결)   // 10-22 「내게 맞는 일과 돈」도 연애처럼 — 신청서는 결제 전에 주문에 붙었고, 결과 쪽(ilgyeol-report.html)이 만들어 바로 띄운다
               ? '<p class="warn" id="goSay">' + (저절로 ? '3초 뒤에 저절로 넘어가요.' : '') + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>'
                 + (저절로 ? '<p id="stayRow"><button class="btn sub" id="stay" type="button">여기 머물기</button></p>' : '')
-              : 결혼 ? '<p><a class="btn go" href="gyeolhon.html">결혼상대 점검 소개로 돌아가기</a></p>'   // 10-22 결제 = 접수. 열어 볼 화면이 없다
+              : 결혼 ? '<p><a class="btn go" href="gyeolhon.html">결혼 전 궁합 점검 소개로 돌아가기</a></p>'   // 10-22 결제 = 접수. 열어 볼 화면이 없다
               : '<p>결제하신 내용이 앱에서 열렸습니다.'
                 + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>')
         + (r.receipt ? '<p><a class="btn sub" href="' + esc(r.receipt) + '" target="_blank" rel="noopener">영수증 보기</a></p>' : '')
@@ -341,7 +341,7 @@
       };
       if (code === 'taekil') { if (자동택일) 자동만들기(orderId); else 접수(orderId); }
       if (code === 'ilgyeol') { try { localStorage.removeItem('chaeksa.ilgyeol.draft'); } catch (e) {} }   // 10-22 진로 보고서 — 결제 뒤 신청 초안은 지운다(신청서는 주문에 붙었다)
-      if (code === 'gyeolhon') { try { localStorage.removeItem('chaeksa.gyeolhon.draft'); } catch (e) {} }   // 10-22 결혼상대 점검 — 결제 뒤 신청 초안은 지운다(신청서는 주문에 붙었다)
+      if (code === 'gyeolhon') { try { localStorage.removeItem('chaeksa.gyeolhon.draft'); } catch (e) {} }   // 10-22 결혼 전 궁합 점검 — 결제 뒤 신청 초안은 지운다(신청서는 주문에 붙었다)
       if (저절로) {
         var 남은 = 3, 말 = document.getElementById('goSay'), 머물 = document.getElementById('stay');
         var 째깍 = setInterval(function () {
