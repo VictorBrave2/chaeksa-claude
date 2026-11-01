@@ -175,6 +175,7 @@
 .three-card .three-sp-txt p.three-sp-why{margin-top:4px;font-size:var(--t1);line-height:1.6;color:var(--ink2)}
 .three-card .three-sp-txt p.three-sp-src{margin-top:4px;font-size:var(--t1);line-height:1.55;color:var(--ink3);font-style:italic}
 .three-sp-src small,.three-read-src small{font-style:normal;color:var(--ink3)}
+.three-sp-src b,.three-read-src b{font-weight:700;color:var(--ink)}
 /* 펼친 순간(D3) — 판이 다 놓인 뒤(열째 1.1초 + .42초 무렵) 끝말 + 결과보기(다시 펼침이면 다시말 + 섞기)가 떠오른다 */
 .three-reveal{margin:2px 0 6px;scroll-margin-top:84px;scroll-margin-bottom:92px}
 .three-reveal .three-sp-wrap{margin:6px 0 12px}
