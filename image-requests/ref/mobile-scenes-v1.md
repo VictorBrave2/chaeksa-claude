@@ -32,3 +32,12 @@
 
 ## 살핀 범위
 생성 결과와 로컬 브라우저 비교판에서 작은 세로 화면·좁은 세로 화면·가로·폴더블의 구도를 직접 보았다. 실제 휴대폰 기종별 확인이나 자동 테스트는 실행하지 않았다. 모든 모바일 환경을 검증했다고 보고하지 않는다.
+
+## 11-01 마무리 장면 추가
+- 사용자 제안: 페이지 끝에도 삽화를 두어 끝났음을 알아볼 수 있게 한다.
+- 마지막 본문·원문 접힘 뒤에 닫힌 책을 든 기존 남녀 삽화를 놓았다.
+- 문장: 「이번 풀이는 여기까지입니다. / 필요할 때 다시 펼쳐 보세요.」
+- 다음 행동은 다른 관점의 견본과 홈 두 곳만 둔다.
+- 별도 이미지 생성 없이 jeongtong-tarot-v1/closing.png와 ziwei-tarot-v1/closing.png를 WebP로 인코딩해 재사용한다.
+- 끝 삽화는 늦게 불러오며, 그림 숨기기 설정과 이미지 실패 처리도 적용한다.
+- 직접 보기: /previews/mobile-scenes-v1/?scene=library#library-ending, /previews/mobile-scenes-v1/?scene=observatory#observatory-ending.
