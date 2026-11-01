@@ -1,0 +1,663 @@
+{
+  "version": 1,
+  "date": "2026-11-01",
+  "scope": "홈 질문에서 접근하는 정통사주 1~9화 기본 그림 추가 17장. 3·4회는 격별 그림 부재 시 기본 fallback.",
+  "face_policy": "주인공 남성 P14 / 여성 P13 정확한 얼굴과 타로 화풍. 원화는 장면 확인에만 쓰고 생성 참조는 P14/P13만 사용.",
+  "source_policy": "app/jt-webtoon.js 회별 질문, app/jt-webtoon-2.js 장면·답, app/ssom-vn.html 기본 장면 분기. 새 예언이나 개인 결과를 더하지 않는다.",
+  "tool": "built-in image_gen.imagegen",
+  "call_policy": "자산마다 1회 생성. 손 결함이 발견되면 승인된 수정 편집만 별도 기록.",
+  "encoding": {
+    "full": "WebP quality92 method6",
+    "small": "360px wide Lanczos, WebP quality90 method6"
+  },
+  "assets": [
+    {
+      "key": "jt-01-born-f",
+      "chapter": 1,
+      "gender": "F",
+      "label": "태어난 계절 · 문밖의 날씨를 살피는 아침",
+      "source_reason": "공통 1회: 현관에서 겉옷을 들었다 놓는 계절의 장면. 단정된 개인 결과 없이 계절과 옷차림을 함께 살핀다.",
+      "scene": "The P13 woman stands inside a rustic pale stone cottage doorway in early spring, looking at fresh green buds and lingering snow on distant hills. A light sage cloak is draped naturally over her bent forearm, while a thicker blue wool cloak remains on a wooden peg. She is deciding how to dress for a changeable morning, thoughtful expression, not heroic. Ivory linen blouse and muted terracotta long skirt, hair loosely down, no crown or jewelry. View from inside across the threshold; small basket of spring branches, soft clear morning light. Her hands relaxed, only one whole hand visible supporting the folded fabric. Make the scene fresh and specific to considering seasonal weather.",
+      "original": "app/art/jt-01-born-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 woman only.\nThe P13 woman stands inside a rustic pale stone cottage doorway in early spring, looking at fresh green buds and lingering snow on distant hills. A light sage cloak is draped naturally over her bent forearm, while a thicker blue wool cloak remains on a wooden peg. She is deciding how to dress for a changeable morning, thoughtful expression, not heroic. Ivory linen blouse and muted terracotta long skirt, hair loosely down, no crown or jewelry. View from inside across the threshold; small basket of spring branches, soft clear morning light. Her hands relaxed, only one whole hand visible supporting the folded fabric. Make the scene fresh and specific to considering seasonal weather.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-ffe7689c-f2ae-4977-aea4-2df2d572de6a.png",
+      "output": "app/art/content-tarot-v2/body/jt-01-born-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-01-born-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 도면의 선은 그림으로만 표시.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 587204,
+      "small_bytes": 87240
+    },
+    {
+      "key": "jt-01-born-m",
+      "chapter": 1,
+      "gender": "M",
+      "label": "태어난 계절 · 가을 문턱에서 고른 겉옷",
+      "source_reason": "공통 1회: 현관의 겉옷 선택을 남성 장면으로 별도 구성. 태어난 계절 질문의 일반 도입이며 특정 계절 판정이 아니다.",
+      "scene": "The P14 man pauses under the deep timber porch of an old hillside house on a cool golden autumn morning. He looks toward leaves drifting across a long orchard path, a heavy charcoal cloak casually folded over one forearm, lighter coat on a nearby peg. He is deciding whether the morning needs the warmer coat. Plain dark teal waistcoat and cream shirt, practical brown trousers, no crown, no royal costume. Three-quarter view, head to below knees with generous scene context, simple relaxed five-finger hand resting on the folded cloak. Rich warm leaves outside against cool stone interior; do not repeat a generic palace terrace.",
+      "original": "app/art/jt-01-born-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 man only.\nThe P14 man pauses under the deep timber porch of an old hillside house on a cool golden autumn morning. He looks toward leaves drifting across a long orchard path, a heavy charcoal cloak casually folded over one forearm, lighter coat on a nearby peg. He is deciding whether the morning needs the warmer coat. Plain dark teal waistcoat and cream shirt, practical brown trousers, no crown, no royal costume. Three-quarter view, head to below knees with generous scene context, simple relaxed five-finger hand resting on the folded cloak. Rich warm leaves outside against cool stone interior; do not repeat a generic palace terrace.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-5eda49bf-17ef-4be6-9747-e7fd60e2782d.png",
+      "output": "app/art/content-tarot-v2/body/jt-01-born-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-01-born-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 도면의 선은 그림으로만 표시.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 630972,
+      "small_bytes": 97374
+    },
+    {
+      "key": "jt-02-push-f",
+      "chapter": 2,
+      "gender": "F",
+      "label": "가장 강한 마음 · 늘 같은 아침의 순서",
+      "source_reason": "공통 2회: 눈뜨자마자 반복하는 순서, 격별 2회: 책임·돈·배움·표현 등 내면의 우선순위. 전자기기를 물과 책의 아침 준비로 치환한다.",
+      "scene": "The P13 woman starts her familiar morning routine in a modest attic bedroom lit by slanted dawn sunlight. She sits at a wooden bedside table with a ceramic water jug and cup closest to her, a closed unmarked book next to them, and a neatly folded work apron beyond: a clear quiet order of daily priorities. She looks at these objects with intent as she decides what comes first. Muted blue linen dress, loose dark wavy hair, no accessories or royal costume. One hand resting naturally on her lap, the other loosely around a large ceramic cup with a whole-hand grip, no pinching or splayed fingers. A rumpled simple bed and open skylight in the background. Grounded daily life, no magical symbols.",
+      "original": "app/art/jt-02-push-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 woman only.\nThe P13 woman starts her familiar morning routine in a modest attic bedroom lit by slanted dawn sunlight. She sits at a wooden bedside table with a ceramic water jug and cup closest to her, a closed unmarked book next to them, and a neatly folded work apron beyond: a clear quiet order of daily priorities. She looks at these objects with intent as she decides what comes first. Muted blue linen dress, loose dark wavy hair, no accessories or royal costume. One hand resting naturally on her lap, the other loosely around a large ceramic cup with a whole-hand grip, no pinching or splayed fingers. A rumpled simple bed and open skylight in the background. Grounded daily life, no magical symbols.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-34e7199f-d8a9-44ee-a64b-d398e28d66a0.png",
+      "output": "app/art/content-tarot-v2/body/jt-02-push-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-02-push-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 도면의 선은 그림으로만 표시.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 517352,
+      "small_bytes": 84324
+    },
+    {
+      "key": "jt-02-push-m",
+      "chapter": 2,
+      "gender": "M",
+      "label": "가장 강한 마음 · 하루를 여는 준비",
+      "source_reason": "공통 2회의 되풀이되는 아침 준비를 남성 장면으로 따로 구성. 격별 강한 마음에 대한 질문을 보여 주되 한 답을 확정하지 않는다.",
+      "scene": "The P14 man begins his ordinary morning in a small old-world kitchen before work. He stands beside a broad stone basin and a table arranged with water pitcher, simple bread, blank leather notebook and folded brown apron. He has finished washing and calmly considers the next step in his always-familiar routine, gaze thoughtful toward the table. Plain rolled-sleeve ivory shirt and dark green trousers, hair naturally tousled, no crown, no embroidered royal garments. One hand loosely rests on the table edge with fingers together, other arm relaxed by his side. Early blue-gold light through a small square window, tiled floor, copper cooking pot. A distinct domestic scene about inner priorities, no electronic device.",
+      "original": "app/art/jt-02-push-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 man only.\nThe P14 man begins his ordinary morning in a small old-world kitchen before work. He stands beside a broad stone basin and a table arranged with water pitcher, simple bread, blank leather notebook and folded brown apron. He has finished washing and calmly considers the next step in his always-familiar routine, gaze thoughtful toward the table. Plain rolled-sleeve ivory shirt and dark green trousers, hair naturally tousled, no crown, no embroidered royal garments. One hand loosely rests on the table edge with fingers together, other arm relaxed by his side. Early blue-gold light through a small square window, tiled floor, copper cooking pot. A distinct domestic scene about inner priorities, no electronic device.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-7e35151f-ca1d-4bfe-b0f3-673469a4343d.png",
+      "output": "app/art/content-tarot-v2/body/jt-02-push-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-02-push-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 도면의 선은 그림으로만 표시.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 536806,
+      "small_bytes": 87826
+    },
+    {
+      "key": "jt-03-seat-f",
+      "chapter": 3,
+      "gender": "F",
+      "label": "일할 때의 나 · 공동 작업대의 자리",
+      "source_reason": "격 3회 열 갈래의 업무 역할을 아우르는 기본 그림. 특정 격의 답 대신 공동 작업대에서 맡을 일을 살피는 장면으로 구성한다. 격 그림이 없는 경우의 살아 있는 fallback.",
+      "scene": "The P13 woman has just taken a seat at a long shared guild workshop table, considering which part of the day's work will be hers. The table has blank rolled plans, a closed ledger, a small wooden model and folded fabric, suggesting different kinds of work without selecting a single personality outcome. Two empty stools beside her imply colleagues. She wears a practical burgundy tunic over ivory sleeves with a simple belt, dark wavy hair tucked behind one ear, exact P13 face. One relaxed forearm on the table, other hand resting on her lap; no tools pinched between fingers. Sunlight enters tall plain workshop windows, shelves and exposed timber beams. Three-quarter eye-level composition with her face large enough to preserve identity; no fantasy throne, crown or ornamental card motifs.",
+      "original": "app/art/jt-03-seat-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 woman only.\nThe P13 woman has just taken a seat at a long shared guild workshop table, considering which part of the day's work will be hers. The table has blank rolled plans, a closed ledger, a small wooden model and folded fabric, suggesting different kinds of work without selecting a single personality outcome. Two empty stools beside her imply colleagues. She wears a practical burgundy tunic over ivory sleeves with a simple belt, dark wavy hair tucked behind one ear, exact P13 face. One relaxed forearm on the table, other hand resting on her lap; no tools pinched between fingers. Sunlight enters tall plain workshop windows, shelves and exposed timber beams. Three-quarter eye-level composition with her face large enough to preserve identity; no fantasy throne, crown or ornamental card motifs.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-4184a7bb-6b1c-4a5a-8ed3-be34c557b448.png",
+      "output": "app/art/content-tarot-v2/body/jt-03-seat-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-03-seat-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 도면의 선은 그림으로만 표시.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 424004,
+      "small_bytes": 82502
+    },
+    {
+      "key": "jt-03-seat-m",
+      "chapter": 3,
+      "gender": "M",
+      "label": "일할 때의 나 · 일을 나누는 공방",
+      "source_reason": "격 3회 업무 역할 열 갈래의 기본 그림. 작업을 나누는 공방의 한 자리에 앉아 자신이 맡을 일을 생각한다. 격별 그림이 없는 경우 기본 fallback.",
+      "scene": "The P14 man sits upright at one end of a busy traditional bookbinding workshop, quietly considering his place among the work. A broad counter in front of him holds blank sheets, closed plain books, folded cloth and empty trays, while two distant softly rendered adult colleagues work at separate benches. He has a thoughtful attentive expression, not a king's pose. Wear a plain slate-blue waistcoat over an unadorned ivory shirt and a brown leather apron folded at his waist. One forearm resting on the counter with a relaxed hand, the other resting on his thigh. Side-on three-quarter composition, his exact face clearly visible, shelves of binding materials and north-facing diffuse window light. Avoid the previous cottage/flower terrace layout; no decorative flowers.",
+      "original": "app/art/jt-03-seat-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man sits upright at one end of a busy traditional bookbinding workshop, quietly considering his place among the work. A broad counter in front of him holds blank sheets, closed plain books, folded cloth and empty trays, while two distant softly rendered adult colleagues work at separate benches. He has a thoughtful attentive expression, not a king's pose. Wear a plain slate-blue waistcoat over an unadorned ivory shirt and a brown leather apron folded at his waist. One forearm resting on the counter with a relaxed hand, the other resting on his thigh. Side-on three-quarter composition, his exact face clearly visible, shelves of binding materials and north-facing diffuse window light. Avoid the previous cottage/flower terrace layout; no decorative flowers.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-8e502c56-ff65-435a-9479-edffb5e7decf.png",
+      "output": "app/art/content-tarot-v2/body/jt-03-seat-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-03-seat-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 조연은 장면에 맞는 연장자·동료로 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 403564,
+      "small_bytes": 71948
+    },
+    {
+      "key": "jt-04-good-bad-f",
+      "chapter": 4,
+      "gender": "F",
+      "label": "잘하는 일과 막히는 일 · 작업을 돌아보는 시간",
+      "source_reason": "격 4회 장점과 걸리는 지점을 함께 묻는 기본 그림. 완성품과 미완성 작업을 함께 살피며 특정 격의 답을 단정하지 않는다.",
+      "scene": "The P13 woman pauses inside a sunlit ceramic studio to assess her day's work: several finished elegant clay vases stand on a shelf to her left, while a large unfinished clay bowl and a few folded trial sketches wait on the table to her right. Her thoughtful look moves between what is done and what still requires effort, neither despairing nor triumphant. Muted plum linen dress and simple cream work apron, long dark wavy hair falling behind shoulders. Three-quarter standing view with a whole hand resting loosely on the broad table edge, other arm relaxed at her waist; she is not sculpting, no pinching. Earthen walls, kiln mouth in distant background, grounded work space, no palace, no extravagant embroidery, no fantasy motifs. Blank sketches or purely pictorial marks without writing.",
+      "original": "app/art/jt-04-good-bad-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman pauses inside a sunlit ceramic studio to assess her day's work: several finished elegant clay vases stand on a shelf to her left, while a large unfinished clay bowl and a few folded trial sketches wait on the table to her right. Her thoughtful look moves between what is done and what still requires effort, neither despairing nor triumphant. Muted plum linen dress and simple cream work apron, long dark wavy hair falling behind shoulders. Three-quarter standing view with a whole hand resting loosely on the broad table edge, other arm relaxed at her waist; she is not sculpting, no pinching. Earthen walls, kiln mouth in distant background, grounded work space, no palace, no extravagant embroidery, no fantasy motifs. Blank sketches or purely pictorial marks without writing.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-a8e38770-637e-4a3d-b65a-d145318bd680.png",
+      "output": "app/art/content-tarot-v2/body/jt-04-good-bad-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-04-good-bad-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 조연은 장면에 맞는 연장자·동료로 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 506512,
+      "small_bytes": 86222
+    },
+    {
+      "key": "jt-04-good-bad-m",
+      "chapter": 4,
+      "gender": "M",
+      "label": "잘하는 일과 막히는 일 · 완성과 미완성 사이",
+      "source_reason": "격 4회의 잘하는 점·어려운 점을 함께 살피는 질문. 남성은 목공 작업으로 별도 장면 구성, 한 성향의 정답을 확정하지 않는다.",
+      "scene": "The P14 man stands in a spacious woodworker's workshop, comparing a beautifully completed wooden chair with a half-assembled chair and unfinished boards nearby. He studies the remaining work with a small thoughtful frown, showing both accomplishment and a point where he has paused. Exact P14 face, plain forest-green shirt with rolled sleeves, rough brown work apron, no royal ornaments. Both hands relaxed: one whole palm lightly resting on the finished chair's broad back rail, other arm hanging naturally, five digits each. Afternoon light from high windows, sawdust and sturdy bench, tools lying safely in a rack rather than held, restrained ochre/green palette. Single everyday scene, no labels or writing, no machinery.",
+      "original": "app/art/jt-04-good-bad-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man stands in a spacious woodworker's workshop, comparing a beautifully completed wooden chair with a half-assembled chair and unfinished boards nearby. He studies the remaining work with a small thoughtful frown, showing both accomplishment and a point where he has paused. Exact P14 face, plain forest-green shirt with rolled sleeves, rough brown work apron, no royal ornaments. Both hands relaxed: one whole palm lightly resting on the finished chair's broad back rail, other arm hanging naturally, five digits each. Afternoon light from high windows, sawdust and sturdy bench, tools lying safely in a rack rather than held, restrained ochre/green palette. Single everyday scene, no labels or writing, no machinery.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-dda0b6c1-b805-4241-9b1d-7e43253cfef9.png",
+      "output": "app/art/content-tarot-v2/body/jt-04-good-bad-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-04-good-bad-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 조연은 장면에 맞는 연장자·동료로 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 466140,
+      "small_bytes": 83802
+    },
+    {
+      "key": "jt-05-who-f",
+      "chapter": 5,
+      "gender": "F",
+      "label": "나를 받쳐 주는 것 · 처음 건네받은 믿음",
+      "source_reason": "공통 5회: 처음 뽑힌 날, 될 것 같아서 기회를 받았던 기억. 여성 주인공을 환대하는 연장자의 장면으로 신뢰와 뒷받침을 보여 준다.",
+      "scene": "The P13 woman arrives at a traditional textile atelier for her first day and receives a quiet welcoming gesture from an older female master craftswoman standing beside a large loom. The elder has silver hair and is clearly an older secondary character, not a copy of P13. The young woman looks pleasantly surprised and cautiously hopeful as the elder indicates an empty ready workbench with an easy open whole-hand gesture. P13 wears a simple dusty-rose dress with ivory sleeves and carries a folded linen apron on one forearm, other hand relaxed over the fabric. Both women's full faces and hands have natural anatomy. Soft cloudy morning light, tall rolls of woven cloth, wooden beams and a plain stool waiting. Emphasize being trusted and given a place, no modern office, no crown, no gilded palace.",
+      "original": "app/art/jt-05-who-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman arrives at a traditional textile atelier for her first day and receives a quiet welcoming gesture from an older female master craftswoman standing beside a large loom. The elder has silver hair and is clearly an older secondary character, not a copy of P13. The young woman looks pleasantly surprised and cautiously hopeful as the elder indicates an empty ready workbench with an easy open whole-hand gesture. P13 wears a simple dusty-rose dress with ivory sleeves and carries a folded linen apron on one forearm, other hand relaxed over the fabric. Both women's full faces and hands have natural anatomy. Soft cloudy morning light, tall rolls of woven cloth, wooden beams and a plain stool waiting. Emphasize being trusted and given a place, no modern office, no crown, no gilded palace.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-dc433d6e-9096-4d95-ac34-9deee74f5c1d.png",
+      "output": "app/art/content-tarot-v2/body/jt-05-who-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-05-who-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 조연은 장면에 맞는 연장자·동료로 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 503492,
+      "small_bytes": 88576
+    },
+    {
+      "key": "jt-05-who-m",
+      "chapter": 5,
+      "gender": "M",
+      "label": "나를 받쳐 주는 것 · 일을 맡기는 신뢰",
+      "source_reason": "공통 5회: 능력을 믿고 처음 기회를 준 사람. 남성 주인공을 맞이하는 작업장의 연장자를 배치해 뒷받침을 별도로 표현한다.",
+      "scene": "The P14 man has just been welcomed into an old masonry design workshop by an older male foreman with silver hair and a short grey beard. The foreman stands at a sturdy workbench with a large wooden architectural model and an unopened plain folio already set down, giving the young man a quiet trusting nod. P14 stands in the foreground turned three quarters toward him, exact face clear, expression surprised then encouraged. He wears a simple charcoal waistcoat, ivory shirt and practical trousers; one hand gently rests on his own bag's wide strap at waist level with a relaxed whole-hand grip, other arm down. The older man's arms rest naturally on the bench, no pointing, pinching or handshakes. High stone arch windows and stacked blocks, cool morning light and warm wood, a working place with no plants or palace ornaments.",
+      "original": "app/art/jt-05-who-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man has just been welcomed into an old masonry design workshop by an older male foreman with silver hair and a short grey beard. The foreman stands at a sturdy workbench with a large wooden architectural model and an unopened plain folio already set down, giving the young man a quiet trusting nod. P14 stands in the foreground turned three quarters toward him, exact face clear, expression surprised then encouraged. He wears a simple charcoal waistcoat, ivory shirt and practical trousers; one hand gently rests on his own bag's wide strap at waist level with a relaxed whole-hand grip, other arm down. The older man's arms rest naturally on the bench, no pointing, pinching or handshakes. High stone arch windows and stacked blocks, cool morning light and warm wood, a working place with no plants or palace ornaments.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-2871ca2f-a8ad-4435-ab3f-f576f42820e7.png",
+      "output": "app/art/content-tarot-v2/body/jt-05-who-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-05-who-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 조연은 장면에 맞는 연장자·동료로 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 466128,
+      "small_bytes": 80442
+    },
+    {
+      "key": "jt-06-steady-m",
+      "chapter": 6,
+      "gender": "M",
+      "label": "든든함과 흔들림 · 다시 앉은 책상",
+      "source_reason": "성패 6회 네 갈래: 같은 책상으로 돌아옴·거슬림·붙잡아 줌·기다림. 기본 장면은 익숙한 자리에 다시 앉아 상태를 살피는 순간으로 정한다.",
+      "scene": "The P14 man has returned to his familiar desk in a compact stone study after a restless day. Through a rain-streaked window one sees dark departing clouds and a thin band of clear morning sky, but inside the desk is solid and quiet. He sits squarely with both feet on the floor, an unmarked closed folio in front of him and several unfinished blank papers to one side. Thoughtful calm expression, a little tired rather than triumphant; he is checking where he stands. Wear a simple pale grey shirt and russet vest, no crown or royal embroidery. One hand rests naturally palm-down on the closed folio with five digits, the other rests on his knee. Straightforward three-quarter portrait framing head to knees, bookshelf, worn desk, no flower decorations, no magical signs or prediction text.",
+      "original": "app/art/jt-06-steady-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man has returned to his familiar desk in a compact stone study after a restless day. Through a rain-streaked window one sees dark departing clouds and a thin band of clear morning sky, but inside the desk is solid and quiet. He sits squarely with both feet on the floor, an unmarked closed folio in front of him and several unfinished blank papers to one side. Thoughtful calm expression, a little tired rather than triumphant; he is checking where he stands. Wear a simple pale grey shirt and russet vest, no crown or royal embroidery. One hand rests naturally palm-down on the closed folio with five digits, the other rests on his knee. Straightforward three-quarter portrait framing head to knees, bookshelf, worn desk, no flower decorations, no magical signs or prediction text.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-ddd7db97-7e74-41dc-9cca-406c7872262f.png",
+      "output": "app/art/content-tarot-v2/body/jt-06-steady-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-06-steady-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 461880,
+      "small_bytes": 73822
+    },
+    {
+      "key": "jt-07-shake-f",
+      "chapter": 7,
+      "gender": "F",
+      "label": "흔드는 것과 붙잡는 것 · 바람이 든 방",
+      "source_reason": "공통 7회: 흔들리는 날 방을 둘러보며 붙잡을 것을 찾는 장면. 바람 든 방과 단단한 작업대로 새로 구성하며 구응 유무를 단정하지 않는다.",
+      "scene": "The P13 woman stands in a modest upper room as a sudden strong breeze billows the linen curtains through an open window. A few loose blank sheets have shifted across a broad wooden table; she pauses with one whole hand flat on a closed book resting over the remaining sheets, looking around thoughtfully for what is stable. Her other arm hangs naturally, no frantic danger or magic. A muted moss-green long dress and plain ivory shawl, exact P13 face and long dark wavy hair moving slightly with the wind. Cool overcast light, warm timber floors, simple stone walls, one sturdy chair. Show a literal unsettling day and a physical point of steadiness without dramatic rescue or romance. Full head, medium-full figure, natural five-finger hand; no texts, phones or tiny-object grip.",
+      "original": "app/art/jt-07-shake-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman stands in a modest upper room as a sudden strong breeze billows the linen curtains through an open window. A few loose blank sheets have shifted across a broad wooden table; she pauses with one whole hand flat on a closed book resting over the remaining sheets, looking around thoughtfully for what is stable. Her other arm hangs naturally, no frantic danger or magic. A muted moss-green long dress and plain ivory shawl, exact P13 face and long dark wavy hair moving slightly with the wind. Cool overcast light, warm timber floors, simple stone walls, one sturdy chair. Show a literal unsettling day and a physical point of steadiness without dramatic rescue or romance. Full head, medium-full figure, natural five-finger hand; no texts, phones or tiny-object grip.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-bfcd68fa-dbd2-4586-8b33-e0ec78ac53c3.png",
+      "output": "app/art/content-tarot-v2/body/jt-07-shake-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-07-shake-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 480888,
+      "small_bytes": 80592
+    },
+    {
+      "key": "jt-07-shake-m",
+      "chapter": 7,
+      "gender": "M",
+      "label": "흔드는 것과 붙잡는 것 · 바람 앞의 난간",
+      "source_reason": "공통 7회의 불안한 날 붙잡을 것을 찾는 마음, 원화의 난간 장면을 바닷바람 드는 목조 쉼터로 바꾼다. 누구의 도움이 생긴다는 추가 예언은 없다.",
+      "scene": "The P14 man pauses under a weathered timber shelter on a windy coastal footpath. One relaxed whole hand rests on a thick wooden railing while his coat and dark hair are moved by a gust; he looks inward and uncertain, considering what is unsettling him and what can hold steady. The sea is choppy beyond, with low grey clouds and a little light on the far horizon. His face remains clear, exact P14 identity. Plain deep navy wool coat, ivory shirt, grey trousers and practical boots, no crown, no flowers or jewels. Other hand tucked naturally into coat pocket. Medium-full composition, grounded posture, no falling, no peril, no rescuer. Precise textures of old wood, rough sea grass and wool, rich quiet blue and umber palette.",
+      "original": "app/art/jt-07-shake-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man pauses under a weathered timber shelter on a windy coastal footpath. One relaxed whole hand rests on a thick wooden railing while his coat and dark hair are moved by a gust; he looks inward and uncertain, considering what is unsettling him and what can hold steady. The sea is choppy beyond, with low grey clouds and a little light on the far horizon. His face remains clear, exact P14 identity. Plain deep navy wool coat, ivory shirt, grey trousers and practical boots, no crown, no flowers or jewels. Other hand tucked naturally into coat pocket. Medium-full composition, grounded posture, no falling, no peril, no rescuer. Precise textures of old wood, rough sea grass and wool, rich quiet blue and umber palette.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-77c91a7c-b247-4992-ae52-55b7cd223ff1.png",
+      "output": "app/art/content-tarot-v2/body/jt-07-shake-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-07-shake-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 610948,
+      "small_bytes": 83560
+    },
+    {
+      "key": "jt-08-power-f",
+      "chapter": 8,
+      "gender": "F",
+      "label": "하루를 버티는 힘 · 돌아오는 길의 숨",
+      "source_reason": "공통 8회: 몸이 무거워도 늘 다니는 길로 하루를 이어 간다. 지하철·전자기기 없이 걸어서 돌아오는 일상으로 새 장면을 만든다.",
+      "scene": "The P13 woman pauses briefly on a broad shallow stone step along a familiar village path at dusk after a working day. A simple cloth work bag rests beside her on the step; she is seated with shoulders gently relaxed, taking an ordinary breath before continuing home. Expression quietly tired but present, not crying or smiling triumphantly. Wear a plain muted blue-grey dress with cream shawl and sturdy shoes, long dark wavy hair, exact P13 face. Both hands rest naturally together on her lap without interlacing, normal five digits, no props held. Warm lit cottage windows in the distance and cool evening sky over low rooftops, no electronics or bright shop signs. Full head and seated body, ample everyday surroundings, no flower palace or throne. The feeling is conserving strength and continuing an ordinary day.",
+      "original": "app/art/jt-08-power-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman pauses briefly on a broad shallow stone step along a familiar village path at dusk after a working day. A simple cloth work bag rests beside her on the step; she is seated with shoulders gently relaxed, taking an ordinary breath before continuing home. Expression quietly tired but present, not crying or smiling triumphantly. Wear a plain muted blue-grey dress with cream shawl and sturdy shoes, long dark wavy hair, exact P13 face. Both hands rest naturally together on her lap without interlacing, normal five digits, no props held. Warm lit cottage windows in the distance and cool evening sky over low rooftops, no electronics or bright shop signs. Full head and seated body, ample everyday surroundings, no flower palace or throne. The feeling is conserving strength and continuing an ordinary day.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-5d3ffcff-596c-4e71-93ec-0100637d3877.png",
+      "output": "app/art/content-tarot-v2/body/jt-08-power-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-08-power-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 577108,
+      "small_bytes": 98018
+    },
+    {
+      "key": "jt-08-power-m",
+      "chapter": 8,
+      "gender": "M",
+      "label": "하루를 버티는 힘 · 익숙한 계단을 오르며",
+      "source_reason": "공통 8회: 평소 길을 따라 하루를 넘기는 몸에 밴 버릇. 남성은 일을 마치고 익숙한 계단에서 잠시 쉬는 장면으로 구별한다.",
+      "scene": "The P14 man climbs the broad stone steps of an old hillside town on his familiar route home, stopping for a moment beside a low stone wall to catch his breath. A worn brown shoulder satchel rests at his hip. He looks toward the next few steps with quiet resolve and a little fatigue, no hero pose. Plain olive shirt with rolled sleeves, dark trousers, simple boots; exact P14 face, tousled dark hair. One hand loosely rests on the wall with fingers together, the other rests against the wide satchel strap, no pinching or pointing. Late afternoon ochre light on plaster walls, narrow street turning uphill, hanging laundry rather than flowers, no electronics, vehicles, watches or signage. Medium-full side three-quarter composition, natural anatomy and distinct setting from the female evening rest scene.",
+      "original": "app/art/jt-08-power-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man climbs the broad stone steps of an old hillside town on his familiar route home, stopping for a moment beside a low stone wall to catch his breath. A worn brown shoulder satchel rests at his hip. He looks toward the next few steps with quiet resolve and a little fatigue, no hero pose. Plain olive shirt with rolled sleeves, dark trousers, simple boots; exact P14 face, tousled dark hair. One hand loosely rests on the wall with fingers together, the other rests against the wide satchel strap, no pinching or pointing. Late afternoon ochre light on plaster walls, narrow street turning uphill, hanging laundry rather than flowers, no electronics, vehicles, watches or signage. Medium-full side three-quarter composition, natural anatomy and distinct setting from the female evening rest scene.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-3108c520-a16c-4f06-a1db-3942a59c19bb.png",
+      "output": "app/art/content-tarot-v2/body/jt-08-power-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-08-power-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 586320,
+      "small_bytes": 100036
+    },
+    {
+      "key": "jt-09-shadow-f",
+      "chapter": 9,
+      "gender": "F",
+      "label": "버릇과 도움 · 누구에게 먼저 말할까",
+      "source_reason": "공통 9회: 큰일 난 날 누구에게 먼저 연락할지 떠올리는 장면. 휴대전화를 편지와 사람의 기억으로 바꾸되 귀인·신살의 특정 결과를 확정하지 않는다.",
+      "scene": "The P13 woman sits at a small writing table after a difficult day, thoughtfully deciding whom she could turn to. Several folded blank letters lie before her, and a small open keepsake box contains a few modest painted portrait miniatures of older relatives and friends. These are tiny simple painted pictures, no text or photographs or electronic screen. She is not writing and holds no pen: one relaxed whole hand rests on the closed edge of the box, the other rests on her lap. Exact P13 face visible in three-quarter view, expression reflective with a trace of worry. Simple cream blouse and deep plum skirt, a soft blue shawl over the chair. Quiet candlelit room at blue dusk, a single brass candleholder, plain plaster wall and rain-dark window. Make a grounded personal moment about habitual ties and who may help, no mystical guardian, no promise of rescue, no giant flowers.",
+      "original": "app/art/jt-09-shadow-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman sits at a small writing table after a difficult day, thoughtfully deciding whom she could turn to. Several folded blank letters lie before her, and a small open keepsake box contains a few modest painted portrait miniatures of older relatives and friends. These are tiny simple painted pictures, no text or photographs or electronic screen. She is not writing and holds no pen: one relaxed whole hand rests on the closed edge of the box, the other rests on her lap. Exact P13 face visible in three-quarter view, expression reflective with a trace of worry. Simple cream blouse and deep plum skirt, a soft blue shawl over the chair. Quiet candlelit room at blue dusk, a single brass candleholder, plain plaster wall and rain-dark window. Make a grounded personal moment about habitual ties and who may help, no mystical guardian, no promise of rescue, no giant flowers.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-48f07439-39a1-41c2-82a7-be3c97b0071b.png",
+      "output": "app/art/content-tarot-v2/body/jt-09-shadow-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-09-shadow-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 배경 초상과 조연은 주인공과 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 448286,
+      "small_bytes": 76580
+    },
+    {
+      "key": "jt-09-shadow-m",
+      "chapter": 9,
+      "gender": "M",
+      "label": "버릇과 도움 · 익숙한 문 앞에서",
+      "source_reason": "공통 9회: 급할 때 찾을 사람과 평소 행동을 돌아보는 질문. 반복되는 밤거리 원화 대신 익숙한 사람을 찾아갈지 망설이는 문 앞을 새로 구성한다.",
+      "scene": "The P14 man stands under the sheltered archway of a modest old neighborhood inn on a rainy evening, hesitating before going in to talk to familiar people. Beyond the open wooden doorway, two softly rendered older friends sit by a hearth in the background, no main couple and no romantic implication. He looks toward the warm room with a thoughtful vulnerable expression, his exact P14 face clearly seen in three-quarter profile. Plain brown travelling coat over a deep blue shirt and grey trousers; bag sits beside his feet, both arms relaxed naturally with one hand in a coat pocket and the other lightly resting on the broad doorway timber. Warm interior candlelight and cool damp stone outside, no modern street lamps, vehicles, phone, clock or signs. Show the moment of considering whom to turn to, not a miraculous rescue or supernatural shadow.",
+      "original": "app/art/jt-09-shadow-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man stands under the sheltered archway of a modest old neighborhood inn on a rainy evening, hesitating before going in to talk to familiar people. Beyond the open wooden doorway, two softly rendered older friends sit by a hearth in the background, no main couple and no romantic implication. He looks toward the warm room with a thoughtful vulnerable expression, his exact P14 face clearly seen in three-quarter profile. Plain brown travelling coat over a deep blue shirt and grey trousers; bag sits beside his feet, both arms relaxed naturally with one hand in a coat pocket and the other lightly resting on the broad doorway timber. Warm interior candlelight and cool damp stone outside, no modern street lamps, vehicles, phone, clock or signs. Show the moment of considering whom to turn to, not a miraculous rescue or supernatural shadow.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-3450eba5-4cfc-4ff1-8e8c-eba296f0de5f.png",
+      "output": "app/art/content-tarot-v2/body/jt-09-shadow-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-09-shadow-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 배경 초상과 조연은 주인공과 구별.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 622564,
+      "small_bytes": 93570
+    }
+  ],
+  "generation_calls": 17,
+  "distinct_assets": 17
+}

@@ -1,0 +1,21 @@
+{
+  "tool": "built-in image_gen",
+  "identityReferences": [
+    "P14.webp",
+    "P13.webp"
+  ],
+  "scenes": [
+    {
+      "key": "library",
+      "prompt": "Use case: identity-preserve. Create the revised MOBILE introduction artwork for Chaeksa traditional saju. Input 1 is the ONLY male face and illustrated art-style authority: keep precisely this tarot King of Pentacles facial identity, warm amber eyes, tousled chestnut hair, defined jaw, fine detailed fantasy tarot linework. Input 2 supplies COMPOSITION ONLY, not its face. Preserve input2's portrait 2:3 composition exactly: upper half contains an elegant library and a seated male guide holding an open complete book; bottom 50% is a large quiet ivory marble desk foreground, without any objects or text, so mobile content can overlap. The top of his hair around y=10%, entire face around y=18%, book fully within upper half, BOTH shoulders and both natural five-finger hands visible and uncropped. Use the first input King's exact face, no softer substitute boy face. His open eyes meet the reader calmly. Deep emerald and ivory tailored scholar robes with finely drawn gold embroidery; warm natural sunlight, bookshelves and light stone arches, no modern devices, no speech bubble, no title, no border, no numbers, no tarot frame. Opaque background, rich crisp detailing with naturally restrained contrast in bottom half. Do not enlarge the figure or move him down the page.",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-ed55a62b-2357-4c45-8e30-d8196f92a828.png",
+      "output": "app/art/content-tarot-v2/library-mobile.webp"
+    },
+    {
+      "key": "observatory",
+      "prompt": "Use case: identity-preserve. Revise the MOBILE introduction for Chaeksa Ziwei reading. Input 1 is the ONLY female face and illustrated style authority: preserve precisely tarot Queen of Pentacles identity, warm amber eyes, delicate defined face, LONG chestnut half-up wavy hair and small gold floral hairpiece, detailed fantasy tarot drawing. Input 2 supplies COMPOSITION ONLY: do NOT use its bob haircut or its face. Keep portrait 2:3 and the distant seated figure plus complete open book entirely within the upper 52%, the bottom 48% a quiet large ivory marble desk foreground with no objects or writing, suitable for mobile content overlap. Head at x50%,y18%; complete shoulders, two anatomically natural five-finger hands and the whole open celestial book visible. The long-haired Queen in modest high-neck deep blue and ivory astronomer's embroidered robes, restrained natural proportions, gently looking at the viewer with clearly OPEN eyes. Light airy observatory with tall windows, a gold armillary sphere at the far side, white blossoms and daytime sky. Rich crisp warm gold/details, original colours, no devices, no text, no numerals, no card frame, no speech bubble. Keep female facial identity exactly from input1; long hair flowing down shoulders, not a bob. Do not enlarge or lower the figure. Opaque background.",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-8fadd7c9-177f-442d-9b4e-b92d2f1e4a77.png",
+      "output": "app/art/content-tarot-v2/observatory-mobile.webp"
+    }
+  ]
+}

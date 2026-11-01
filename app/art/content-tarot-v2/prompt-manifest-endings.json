@@ -1,0 +1,27 @@
+{
+  "mode": "built-in image_gen",
+  "date": "2026-11-01",
+  "identity": "P14 King / P13 Queen — user clarification, 2026-11-01",
+  "assets": [
+    {
+      "key": "library-ending",
+      "file": "library-ending.webp",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-d68c2afe-adc9-4e9c-9a0b-62bf708055e0.png",
+      "prompt": "Use case: identity-preserve, illustration-story. Create a NEW portrait 2:3 ending illustration for a Korean divination reading website.\nImage 1 is the ONLY male identity and linework reference: the young adult KING OF PENTACLES. Preserve EXACTLY his angular elegant face, narrow amber eyes, distinctive layered chestnut hair and gold laurel ornament. Image 2 is only the desired closed-book ending composition and library location; do NOT use image 2's man's face.\nThe exact king from image 1, with contemporary finely drawn fantasy tarot rendering, stands beside a walnut desk in a bright royal library and places his relaxed left palm on one closed green book with ribbon bookmark. The reading is finished. His other arm hangs naturally. Exactly two arms and natural fingers. He looks gently at the reader, eyes clearly open, composed small smile. An emerald coat with precise antique gold vine embroidery over an ivory shirt, no huge fur cape, no new facial identity. Mid-thigh framing, head/shoulders/hands/closed book completely visible, breathing space around. A quieter library side room with ivory arch, warm wood shelves and soft garden view, original rich colours, crisp illustrated detail, no haze. A complete setting, not a character cutout. No letters, numbers, tarot border, UI, clocks, phones, watermark, pinching gesture. Opaque single portrait.",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "key": "observatory-ending",
+      "file": "observatory-ending.webp",
+      "source": "C:/Users/LEE/.codex/generated_images/01a16428-04ce-71b0-8883-27571db8bd33/exec-f75f4e50-a94a-4570-ac6d-252195e95716.png",
+      "prompt": "Use case: identity-preserve illustration-story. A portrait 2:3 reading-completed scene for Chaeksa's Ziwei website.\nReference 1 is the ONLY face identity: QUEEN OF PENTACLES. Preserve this queen's exact refined oval young adult face, almond amber-brown eyes, petite nose/lips and long chestnut half-up waves. Reference 2 is only a scene/action sketch; replace its short-haired woman entirely with the long-haired queen from reference 1. Never retain the short bob, never merge the two faces.\nNew detailed contemporary romantic fantasy tarot illustration: the long-haired queen looks warmly toward the reader with clearly open eyes, after finishing the star chart. She stands at a compact ivory desk in a bright observatory. One hand rests naturally flat on a closed rolled constellation parchment; the other hand rests relaxed on the desk beside a shallow brass tool tray. Two natural arms/hands, no object pinching or pointing. Sapphire and ivory embroidered astronomer's gown with fine gold motifs, modest high neckline and natural small bust, original queen's gold flower hair ornaments and pearl earrings. Mid-thigh framing; both shoulders, hands, chart fully in picture. Elegant curved daytime-blue windows and a small brass armillary globe on far side, quiet sunlit ivory architecture. Entire setting natural, no pasted cutout. Use the crisp hair/face/drapery/gold linework and rich colouring of reference 1, no photographic or oil-painting style.\nNo printed words, numbers, tarot frame, clocks, phones, extra people, watermark. Closed rolled chart and orderly desk clearly signal the consultation has ended. Single opaque portrait.",
+      "dimensions": [
+        1024,
+        1536
+      ]
+    }
+  ]
+}
