@@ -143,3 +143,4 @@
 | IMG-0135 | 연락·재확인 · 여신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0135-today-contact-f-timeless.md | 삽화원본/today-events/contact-f-v2.png(로컬) | app/art/today-events/contact-f-v2.webp |
 | IMG-0136 | 돈을 씀 · 남신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0136-today-expense-m-timeless.md | 삽화원본/today-events/expense-m-v2.png(로컬) | app/art/today-events/expense-m-v2.webp |
 | IMG-0137 | 돈을 씀 · 여신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0137-today-expense-f-timeless.md | 삽화원본/today-events/expense-f-v2.png(로컬) | app/art/today-events/expense-f-v2.webp |
+| IMG-0139 | 홈 표지 정통타로 · 남신 · 열 장 켈틱 펼침 | 요청 | IMG-0139-menu-tarot-cover.md | image-requests/out/IMG-0139/ | app/art/menu-guides-v1/tarot.webp |
