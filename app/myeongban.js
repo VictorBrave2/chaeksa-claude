@@ -151,6 +151,7 @@
     h += '<div class="share-row"><button type="button" class="btn ghost small" data-share="1">' + esc(글('공유.단추', '이 화면 친구에게 보내기')) + '</button><p class="why" id="shareMsg">' + esc(글('공유.안내', '')) + '</p></div>';
     $('out').innerHTML = h;
     if (window.ChaeksaZiweiCompanion) ChaeksaZiweiCompanion.mount($('out'));
+    if (window.ChaeksaToThree) ChaeksaToThree.달기($('out'), 'myeongban');   // 11-02 맨 아래 → 세 관점(to-three.js)
   }
 
   // ── 누르면 열리는 칸

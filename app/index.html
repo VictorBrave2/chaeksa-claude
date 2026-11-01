@@ -108,7 +108,7 @@
      10-31 승인한 PC 결과 제목에 쓰는 Serif 500을 추가했다. 모바일의 기존 글자 규칙은 그대로다. -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=5f5d3b0395">
+<link rel="stylesheet" href="style.css?v=107061ae3c">
 <link rel="stylesheet" href="today.css?v=1f23044365">
 <link rel="stylesheet" href="why.css?v=798f71d627">
 <link rel="stylesheet" href="three.css?v=970888f5f7">
@@ -484,6 +484,12 @@
       <div class="three-page"><div id="threeOut" data-plain="1"></div></div>
     </div>
 
+    <!-- 정통타로(11-02 사장님 「타로를 정통타로로 빼고 + 3관점으로 연결」) — 세 관점과 같은 계산 · 같은 저장(three.js 보기: '타로'). 타로 점 하나만 보이고 맨 아래에서 세 관점으로. -->
+    <div class="tab hide" data-tab="tarot">
+      <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div class="three-page"><div id="tarotOut" data-plain="1"></div></div>
+    </div>
+
     <!-- 정통사주 — 판정엔진 + 평생 관점 = 장마다 카드(63조). jeongtong.js 가 그린다. -->
     <div class="tab hide" data-tab="jeongtong">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
@@ -785,10 +791,11 @@
 <script src="sipseong-byeonhwa.js?v=eb243cca3a"></script>
 <script src="byeonhwa-jogak.js?v=ade331ebee"></script>
 <script src="byeonhwa.js?v=5008ee2370"></script>
-<script src="yaksok.js?v=184b571c25"></script>
+<script src="yaksok.js?v=6e4417cdb9"></script>
+<script src="to-three.js?v=d50f13243e"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=599a5e131a"></script>
+<script src="home-cats.js?v=c67494ee87"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=4b8ab83494"></script>
@@ -802,8 +809,8 @@
 <script src="why-pieces.js?v=e5e3b0c457" data-for="why"></script>
 <script src="why-art.js?v=aea146358e" data-for="why"></script>
 <script src="why.js?v=b5742ccff8" data-for="why"></script>
-<script src="three-pieces.js?v=8362aa2810" data-for="three"></script>
-<script src="three.js?v=6f6f7569f9" data-for="three"></script>
+<script src="three-pieces.js?v=8362aa2810" data-for="three tarot"></script>
+<script src="three.js?v=2d4fe850df" data-for="three tarot"></script>
 <script src="saenggeuk.js?v=df8648d564" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="gise.js?v=d0f879078e" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="panjeong.js?v=389d38ced7" data-for="home jeongtong chongnon ssom taekil"></script>
@@ -841,7 +848,7 @@
 <script src="jeongtong-classic-reading.js?v=ef886463d5" data-for="jeongtong"></script>
 <script src="jeongtong-distinct-reading.js?v=35f67494cd" data-for="jeongtong"></script>
 <script src="jeongtong-model-reading.js?v=76a35bedd9" data-for="jeongtong"></script>
-<script src="jeongtong-pyo.js?v=fc0a54c589" data-for="jeongtong"></script>
+<script src="jeongtong-pyo.js?v=475873e80d" data-for="jeongtong"></script>
 <script src="gunghap-gwanjeom.js?v=8760d7107c" data-for="chongnon"></script>
 <script src="ssom-gwanjeom.js?v=958eca8d96" data-for="jeongtong ssom"></script>
 <script src="ssom-baram.js?v=b3a4364fd1" data-for="jeongtong ssom"></script>
@@ -867,7 +874,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=80b4a45480"></script>
+<script src="app.js?v=c5498b0ca2"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가
