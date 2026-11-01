@@ -117,7 +117,7 @@
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
-<link rel="preload" as="image" href="art/taekil-main.webp" imagesrcset="art/taekil-main-s.webp 360w, art/taekil-main.webp 1086w" imagesizes="(min-width:520px) 236px, calc((100vw - 48px)/2)" fetchpriority="high">
+<link rel="preload" as="image" href="art/content-tarot-v2/taekil-cover.webp" imagesrcset="art/content-tarot-v2/taekil-cover-s.webp 360w, art/content-tarot-v2/taekil-cover.webp 1024w" imagesizes="(min-width:520px) 236px, calc((100vw - 48px)/2)" fetchpriority="high">
 <!-- 11-01 구글 「책사」 — 이름표 둘. ① Organization 을 따로 한 덩어리로(네이버 「사이트 연관채널」 예제가 단독 객체 — @graph 를 읽는지 문서로 확인 못 함).
      sameAs = 사장님 유튜브(@chaeksa2026 채널 ID 주소 — 핸들이 바뀌어도 산다) · 네이버 블로그 withsajuai(이름 「책사」). 카카오 채널은 10-02 사장님 「카톡책사 삭제 ㄱㄱ」로 넣지 않는다.
      상호 · 사업자번호 · 주소 · 메일은 아래 바닥글(통신판매업 표시)과 글자까지 같게 — 바닥글을 고치면 여기도. 전화는 넣지 않는다(10-02 손님 문의는 메일 한 곳).
@@ -139,7 +139,8 @@
   "description":"후보 날짜 전체를 두 고전의 기준으로 거릅니다(궁통보감·자평진전). 평생 운의 흐름(대운), 가족과 부딪히는 날, 수술 가능한 시간을 함께 살펴 근거를 문서에 적습니다. 점수·순위는 매기지 않습니다. 태어난 곳의 경도와 계절에 따른 해의 시각 차이(균시차)를 반영해 시각을 맞춥니다(진태양시 보정). 태어난 계절에 필요한 기운을 찾는 표도 원문과 대조합니다(궁통보감 조후용신표)."}
 ]}
 </script>
-<link rel="stylesheet" href="desktop-scenes.css?v=5f13603cbd">
+<link rel="stylesheet" href="desktop-scenes.css?v=f9072424ef">
+  <script src="scene-art.js?v=ee9559b412"></script>
 </head>
 <body class="has-head">
 <noscript>
@@ -644,7 +645,7 @@
 <!-- 사람 추가/수정 -->
 <div class="modal hide" id="personForm">
   <div class="sheet">
-    <div class="gc-cut" id="pfCut"><img src="art/jt-13-heart-m.webp" alt="" loading="lazy"><div class="gc-bubble"><b>책사</b><span id="pfSay">그 사람은요? 생년월일만 있으면 돼요.</span></div></div>
+    <div class="gc-cut" id="pfCut"><img src="art/content-tarot-v2/body/jt-13-heart-m.webp" alt="" loading="lazy"><div class="gc-bubble"><b>책사</b><span id="pfSay">그 사람은요? 생년월일만 있으면 돼요.</span></div></div>
     <h3 id="pfTitle" class="hide">그 사람을 적어 주세요</h3>
     <!-- 10-02 생년월일은 필요한 만큼만 — 콘텐츠로 들어오다 이 창이 뜨면(사용설명서 · 궁합의 그 사람 · 그 사람만 넣어 둔 손님의 내 생년월일)
          무엇을 하러 넣는지와 필요한 것(상품 약속 장부 필요 칸)을 한 줄. app.js 사람폼열기가 채운다. -->
@@ -784,10 +785,10 @@
 <script src="sipseong-byeonhwa.js?v=eb243cca3a"></script>
 <script src="byeonhwa-jogak.js?v=ade331ebee"></script>
 <script src="byeonhwa.js?v=5008ee2370"></script>
-<script src="yaksok.js?v=356c2c6b4b"></script>
+<script src="yaksok.js?v=184b571c25"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=c0aba63ab0"></script>
+<script src="home-cats.js?v=10f0c846b3"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=4b8ab83494"></script>
@@ -806,8 +807,8 @@
 <script src="saenggeuk.js?v=df8648d564" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="gise.js?v=d0f879078e" data-for="home jeongtong chongnon ssom taekil"></script>
 <script src="panjeong.js?v=389d38ced7" data-for="home jeongtong chongnon ssom taekil"></script>
-<script src="love.js?v=af67c9bf5c" data-for="love pair"></script>
-<script src="pair.js?v=1e5af06368" data-for="pair"></script>
+<script src="love.js?v=a7aaea452b" data-for="love pair"></script>
+<script src="pair.js?v=53d0140cab" data-for="pair"></script>
 <script src="questions.js?v=fa8908b2be" data-for=""></script>
 <script src="wongook.js?v=9d46091ba7" data-for=""></script>
 <script src="seolmyeongseo.js?v=bb0caafd0f" data-for="home jeongtong"></script>
@@ -854,9 +855,9 @@
 <script src="jt-webtoon-2.js?v=d43e567545" data-for="jeongtong ssom"></script>
 <script src="ssom-score.js?v=625adf2976" data-for="jeongtong ssom"></script>
 <script src="ssom-score-mal.js?v=cddbd64694" data-for="jeongtong ssom"></script>
-<script src="ssom-card.js?v=6ff27477e6" data-for="jeongtong ssom"></script>
+<script src="ssom-card.js?v=cfeed8eaab" data-for="jeongtong ssom"></script>
 <script src="ssom-card-mal.js?v=079126e249" data-for="jeongtong ssom"></script>
-<script src="ssom.js?v=a06b5580a1" data-for="ssom"></script>
+<script src="ssom.js?v=87b25b7aae" data-for="ssom"></script>
 <script src="gunghap-1cheung.js?v=96493c2910" data-for="chongnon"></script>
 <script src="gunghap-chongnon.js?v=9805681302" data-for="chongnon"></script>
 <script src="taekilsim.js?v=fbda3c54dc" data-for="taekil"></script>
@@ -866,7 +867,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=760e7e6d05"></script>
+<script src="app.js?v=80b4a45480"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "batch": "jt-chapters-d",
+  "count": 4,
+  "date": "2026-11-01",
+  "generator": "image_gen.imagegen",
+  "source_policy": "P14/P13 얼굴·머리·화풍 고정. 각 기존 삽화는 먼저 육안으로 읽고 분위기만 참조. app/jt-webtoon-2.js의 19회 조건별 돌아옴/안 돌아옴과 20회 격·성패별 현 위치를 읽어, 특정 결과를 확정하지 않는 회고 장면을 각각 작성.",
+  "content_sources": [
+    "app/jt-webtoon.js:83–92",
+    "app/jt-webtoon-2.js 공통 19회",
+    "app/jt-webtoon-2.js 격 20회",
+    "app/jt-webtoon-2.js 성패 20회"
+  ],
+  "identity_sources": {
+    "male": "app/art/tarot/chaeksa-v1/P14.webp",
+    "female": "app/art/tarot/chaeksa-v1/P13.webp"
+  },
+  "format": {
+    "full": [
+      1024,
+      1536
+    ],
+    "small": [
+      360,
+      540
+    ],
+    "encoding": "FFmpeg libwebp quality 92 compression_level 6; small scale=360:-1:flags=lanczos"
+  },
+  "assets": [
+    {
+      "key": "jt-19-return-f",
+      "topic": "원래의 나로는 언제 돌아올까요?",
+      "source": "app/art/jt-19-return-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/jt-19-return-f.webp"
+      ],
+      "prompt": "Create one portrait 1024x1536 narrative illustration, fully painted to all edges with no blank bottom gradient. Precise luminous contemporary Korean romance-fantasy art matching reference1. Reference1 is the ONLY authoritative face, eye shape/color, proportions, hair identity and art style. Woman is exactly P13 with LONG flowing wavy dark brown hair; man exactly P14 with full voluminous tousled wavy dark-brown hair and nape strands, amber almond eyes and lean angular face. Never blend identity with reference2. Reference2 is old illustration ONLY for its quiet reflective emotion, never reuse its face, haircut, background or composition. Create a distinct NEW scene below. Face and naturally open eyes are clearly readable on mobile. Exactly two arms and anatomically natural five-finger hands, supported relaxed gestures, no pinching small things or hand on cheek. Restrained practical period-fantasy clothes, not a crown or royal costume. NO phones, screens, computers, clocks, watches, electronics, cars, readable writing, letters, numerals, logos, tarot cards, borders or watermarks. No guaranteed fortune, prize, wealth or victory. Chapter19 asks whether/when one's changed life returns to their original pattern, with several conditional outcomes; show remembering familiar self, NOT a guaranteed homecoming. P13 sits beside an open low cedar keepsake chest in a quiet attic room. A large old hand-painted botanical sketchbook rests flat on her lap; a newer incomplete sketchbook lies open beside her on a broad wooden windowseat. Her left open hand gently rests on the old page, her right palm supports the book edge, no page pinching. She pauses between the familiar old drawings and her current work, gazing reflectively toward the morning window; uncertain tender recognition, no triumphant smile. Warm rose linen dress, long brown waves spilling forward over shoulders, close three-quarter waist-up framing with both books visible. Tall roofbeams, pale winter light and a few fresh leaves on a potted branch make layers of time visible, without a calendar or dates.",
+      "scene": "Chapter19 asks whether/when one's changed life returns to their original pattern, with several conditional outcomes; show remembering familiar self, NOT a guaranteed homecoming. P13 sits beside an open low cedar keepsake chest in a quiet attic room. A large old hand-painted botanical sketchbook rests flat on her lap; a newer incomplete sketchbook lies open beside her on a broad wooden windowseat. Her left open hand gently rests on the old page, her right palm supports the book edge, no page pinching. She pauses between the familiar old drawings and her current work, gazing reflectively toward the morning window; uncertain tender recognition, no triumphant smile. Warm rose linen dress, long brown waves spilling forward over shoulders, close three-quarter waist-up framing with both books visible. Tall roofbeams, pale winter light and a few fresh leaves on a potted branch make layers of time visible, without a calendar or dates.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-fcf34820-fde8-46a8-9a7e-6a208d082bb2.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-19-return-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-19-return-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "generation_calls": 1,
+      "qa": "육안: P13 긴 웨이브 머리/P14 풍성한 웨이브 머리와 얼굴, 선명한 눈, 정상 손·팔 확인. 현대 전자기기·시계·문자·타로 테두리 없음."
+    },
+    {
+      "key": "jt-19-return-m",
+      "topic": "원래의 나로는 언제 돌아올까요?",
+      "source": "app/art/jt-19-return-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/jt-19-return-m.webp"
+      ],
+      "prompt": "Create one portrait 1024x1536 narrative illustration, fully painted to all edges with no blank bottom gradient. Precise luminous contemporary Korean romance-fantasy art matching reference1. Reference1 is the ONLY authoritative face, eye shape/color, proportions, hair identity and art style. Woman is exactly P13 with LONG flowing wavy dark brown hair; man exactly P14 with full voluminous tousled wavy dark-brown hair and nape strands, amber almond eyes and lean angular face. Never blend identity with reference2. Reference2 is old illustration ONLY for its quiet reflective emotion, never reuse its face, haircut, background or composition. Create a distinct NEW scene below. Face and naturally open eyes are clearly readable on mobile. Exactly two arms and anatomically natural five-finger hands, supported relaxed gestures, no pinching small things or hand on cheek. Restrained practical period-fantasy clothes, not a crown or royal costume. NO phones, screens, computers, clocks, watches, electronics, cars, readable writing, letters, numerals, logos, tarot cards, borders or watermarks. No guaranteed fortune, prize, wealth or victory. Chapter19 asks whether/when one's changed life returns to their original pattern; depict thoughtful comparison of past and present, not an assured return. P14 stands at the edge of a modest old craft studio, holding a folded worn indigo work apron broadly with both palms at waist height, no pinched strap. On the table beside him lie an old wood carving and unfinished new carving, tools resting safely unused. He looks at the familiar apron with open thoughtful eyes, remembering the way he once worked, no triumphant homecoming. Warm late-afternoon light through a dusty high window, muted ochre shirt and simple charcoal travel vest, full tousled P14 hair, close three-quarter upper-body view. Open doorway to a quiet courtyard in background, rich wood textures. The focus is his inward question about his original way of living; no guaranteed date, written answer, or supernatural transformation.",
+      "scene": "Chapter19 asks whether/when one's changed life returns to their original pattern; depict thoughtful comparison of past and present, not an assured return. P14 stands at the edge of a modest old craft studio, holding a folded worn indigo work apron broadly with both palms at waist height, no pinched strap. On the table beside him lie an old wood carving and unfinished new carving, tools resting safely unused. He looks at the familiar apron with open thoughtful eyes, remembering the way he once worked, no triumphant homecoming. Warm late-afternoon light through a dusty high window, muted ochre shirt and simple charcoal travel vest, full tousled P14 hair, close three-quarter upper-body view. Open doorway to a quiet courtyard in background, rich wood textures. The focus is his inward question about his original way of living; no guaranteed date, written answer, or supernatural transformation.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-360a37e1-7d5c-41eb-9160-55e794d9a594.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-19-return-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-19-return-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "generation_calls": 1,
+      "qa": "육안: P13 긴 웨이브 머리/P14 풍성한 웨이브 머리와 얼굴, 선명한 눈, 정상 손·팔 확인. 현대 전자기기·시계·문자·타로 테두리 없음."
+    },
+    {
+      "key": "jt-20-where-f",
+      "topic": "그래서 지금 나는 어디쯤 와 있을까요?",
+      "source": "app/art/jt-20-where-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/jt-20-where-f.webp"
+      ],
+      "prompt": "Create one portrait 1024x1536 narrative illustration, fully painted to all edges with no blank bottom gradient. Precise luminous contemporary Korean romance-fantasy art matching reference1. Reference1 is the ONLY authoritative face, eye shape/color, proportions, hair identity and art style. Woman is exactly P13 with LONG flowing wavy dark brown hair; man exactly P14 with full voluminous tousled wavy dark-brown hair and nape strands, amber almond eyes and lean angular face. Never blend identity with reference2. Reference2 is old illustration ONLY for its quiet reflective emotion, never reuse its face, haircut, background or composition. Create a distinct NEW scene below. Face and naturally open eyes are clearly readable on mobile. Exactly two arms and anatomically natural five-finger hands, supported relaxed gestures, no pinching small things or hand on cheek. Restrained practical period-fantasy clothes, not a crown or royal costume. NO phones, screens, computers, clocks, watches, electronics, cars, readable writing, letters, numerals, logos, tarot cards, borders or watermarks. No guaranteed fortune, prize, wealth or victory. Chapter20 is a reflective overview: where am I now after the life and work I have lived? No single good/bad outcome can be fixed. P13 stands at a peaceful hillside pavilion balcony at blue hour, a broad simple hand-drawn landscape map spread across a stone parapet showing an unlabelled path from nearby village through hills and onward, no letters or numbers. Both of her relaxed hands rest naturally on separate map corners. She raises her gaze from the map to the real village lights and winding road below, calm but questioning, no summit victory. Deep moss-green travelling dress and cream shawl, LONG brown waves over both shoulders, eyes clear in warm lantern glow. Three-quarter waist-up framing, face large, map lower foreground, lived-in village and unfinished road in distance. This is taking stock of the present, not prediction or choosing a lucky direction.",
+      "scene": "Chapter20 is a reflective overview: where am I now after the life and work I have lived? No single good/bad outcome can be fixed. P13 stands at a peaceful hillside pavilion balcony at blue hour, a broad simple hand-drawn landscape map spread across a stone parapet showing an unlabelled path from nearby village through hills and onward, no letters or numbers. Both of her relaxed hands rest naturally on separate map corners. She raises her gaze from the map to the real village lights and winding road below, calm but questioning, no summit victory. Deep moss-green travelling dress and cream shawl, LONG brown waves over both shoulders, eyes clear in warm lantern glow. Three-quarter waist-up framing, face large, map lower foreground, lived-in village and unfinished road in distance. This is taking stock of the present, not prediction or choosing a lucky direction.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-2e731351-1334-4281-ad88-77bddf631085.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-20-where-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-20-where-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "generation_calls": 1,
+      "qa": "육안: P13 긴 웨이브 머리/P14 풍성한 웨이브 머리와 얼굴, 선명한 눈, 정상 손·팔 확인. 현대 전자기기·시계·문자·타로 테두리 없음."
+    },
+    {
+      "key": "jt-20-where-m",
+      "topic": "그래서 지금 나는 어디쯤 와 있을까요?",
+      "source": "app/art/jt-20-where-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사//app/art/jt-20-where-m.webp"
+      ],
+      "prompt": "Create one portrait 1024x1536 narrative illustration, fully painted to all edges with no blank bottom gradient. Precise luminous contemporary Korean romance-fantasy art matching reference1. Reference1 is the ONLY authoritative face, eye shape/color, proportions, hair identity and art style. Woman is exactly P13 with LONG flowing wavy dark brown hair; man exactly P14 with full voluminous tousled wavy dark-brown hair and nape strands, amber almond eyes and lean angular face. Never blend identity with reference2. Reference2 is old illustration ONLY for its quiet reflective emotion, never reuse its face, haircut, background or composition. Create a distinct NEW scene below. Face and naturally open eyes are clearly readable on mobile. Exactly two arms and anatomically natural five-finger hands, supported relaxed gestures, no pinching small things or hand on cheek. Restrained practical period-fantasy clothes, not a crown or royal costume. NO phones, screens, computers, clocks, watches, electronics, cars, readable writing, letters, numerals, logos, tarot cards, borders or watermarks. No guaranteed fortune, prize, wealth or victory. Chapter20 is a reflective overview: where am I now after all the work and changes? Outcomes vary; avoid triumph or despair. P14 sits sideways on a sturdy inn windowseat overlooking a quiet harbour at night. An open journey journal with only small unlabelled landscape sketches and blank margins rests on his lap; his left hand rests open across the lower page and his right palm rests on the seat, no writing gesture. Nearby on the seat are a closed older journal and a plain travel satchel. He looks out with clear open amber eyes at several small boats resting and distant roads beyond the harbour, weighing what has brought him here and what remains. Slate-blue shirt and soft rust waistcoat, full tousled P14 hair with nape strands. Warm oil lamp inside contrasts with indigo water, close three-quarter waist-up framing. No phone, clock, modern city tower or completed-destiny symbol. A quiet pause in an ongoing life.",
+      "scene": "Chapter20 is a reflective overview: where am I now after all the work and changes? Outcomes vary; avoid triumph or despair. P14 sits sideways on a sturdy inn windowseat overlooking a quiet harbour at night. An open journey journal with only small unlabelled landscape sketches and blank margins rests on his lap; his left hand rests open across the lower page and his right palm rests on the seat, no writing gesture. Nearby on the seat are a closed older journal and a plain travel satchel. He looks out with clear open amber eyes at several small boats resting and distant roads beyond the harbour, weighing what has brought him here and what remains. Slate-blue shirt and soft rust waistcoat, full tousled P14 hair with nape strands. Warm oil lamp inside contrasts with indigo water, close three-quarter waist-up framing. No phone, clock, modern city tower or completed-destiny symbol. A quiet pause in an ongoing life.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-de8601ed-3a86-4113-8018-0db85d486278.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-20-where-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-20-where-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "generation_calls": 1,
+      "qa": "육안: P13 긴 웨이브 머리/P14 풍성한 웨이브 머리와 얼굴, 선명한 눈, 정상 손·팔 확인. 현대 전자기기·시계·문자·타로 테두리 없음."
+    }
+  ]
+}

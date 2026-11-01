@@ -68,9 +68,9 @@
 ]}
 </script>
 <style>/* 10-13 출산택일 「왜」 네 장면(taekil-why.js) — 한 번 움직이고 멈춤, 손가락으로 넘김 */#twhy{margin:18px 0 22px}.tw-in{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;box-shadow:var(--shadow);animation:twIn .45s ease-out both}.tw-k{margin:0;font-size:12px;color:var(--ink3);letter-spacing:.08em}.tw-h{margin:4px 0 10px;font-family:var(--serif);font-size:1.25rem;font-weight:700;color:var(--ink)}.tw-t{margin:12px 0 0;line-height:1.8;color:var(--ink)}.tw-end{margin:14px 0 0;padding:12px 14px;border-left:3px solid var(--accent);font-family:var(--serif);font-weight:700;line-height:1.7;color:var(--ink)}.tw-art{min-height:120px;display:flex;flex-direction:column;justify-content:center}.tw-ex{margin:6px 0 0;font-size:12px;color:var(--ink3)}.tw-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tw-two small{display:block;font-size:12px;color:var(--ink2);margin-bottom:6px}.tw-pil{display:flex;gap:4px}.tw-gz{flex:1;text-align:center;padding:8px 0;border:1px solid var(--line2);border-radius:8px;font-family:var(--serif);font-size:1.05rem;writing-mode:vertical-rl;letter-spacing:.1em;height:64px;display:flex;align-items:center;justify-content:center}.tw-flip{border-color:var(--accent);color:var(--accent);font-weight:700;animation:twFlip .9s .5s ease-in-out both}.tw-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tw-d{text-align:center;padding:7px 0;border-radius:6px;background:var(--bg2);font-size:13px;color:var(--ink2)}.tw-cal.pick .tw-d{animation:twDim .4s calc(var(--i)*35ms) both}.tw-cal.pick .tw-d.keep{animation:twKeep .5s calc(var(--i)*35ms + .3s) both}.tw-cal.sift .tw-d{animation:twOut .35s calc(var(--i)*60ms + .2s) both}.tw-cal.sift .tw-d.keep{animation:twGlow .6s 1.6s both}.tw-rep p{margin:0 0 8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);animation:twIn .5s both}.tw-rep p+p{animation-delay:.25s}.tw-rep small{color:var(--ink3)}.tw-btns{display:flex;gap:8px;margin-top:14px}.tw-btns button,.tw-go{flex:1;padding:12px;border-radius:999px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:1px solid var(--line2);background:var(--card);color:var(--ink2)}.tw-next,.tw-go{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}@keyframes twIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes twFlip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}@keyframes twDim{to{opacity:.25}}@keyframes twKeep{from{opacity:.25}to{opacity:1;background:var(--accent-soft);color:var(--accent);font-weight:700}}@keyframes twOut{to{opacity:.12}}@keyframes twGlow{from{opacity:.12}to{opacity:1;background:var(--accent);color:#fff;font-weight:700}}@media (prefers-reduced-motion:reduce){#twhy *{animation-duration:1ms!important;animation-delay:0s!important}}</style>
-<link rel="stylesheet" href="desktop-scenes.css?v=5f13603cbd">
+<link rel="stylesheet" href="desktop-scenes.css?v=f9072424ef">
 </head>
-<body class="tk-page tk-has-cta" data-desktop-scene="birth">
+<body class="tk-page tk-has-cta" data-desktop-scene="birth" data-desktop-content="birth">
 <div class="mini-head" role="banner"><a class="logo" href="./" title="책사 홈으로"><i class="seal">策</i><span>책사</span></a></div>
 <div class="doc">
   <h1>출산택일</h1>
@@ -87,7 +87,7 @@
   <a class="btn cta" href="./taekil-apply.html">보고서 신청하기</a>
   <!-- 견본(10-02 개편 3묶음) — 99,000원 보고서를 결제 전에 눈으로 보게. 지어낸 가족으로 만든 보고서 앞부분(taekil-sample.html). -->
   <a class="btn ghost cta tk-sample-cta" href="taekil-sample.html?from=site-taekil">보고서 견본 먼저 보기 <span>지어낸 가족으로 만든 보고서 한 벌 전체 →</span></a>
-  <figure class="tk-illustration"><img src="art/taekil-advisor-offer-v1.webp" srcset="art/taekil-advisor-offer-v1-s.webp 660w, art/taekil-advisor-offer-v1.webp 1320w" sizes="(max-width: 660px) calc(100vw - 36px), 624px" alt="고객을 바라보며 추천서를 건네는 책사" width="1320" height="880" loading="lazy" decoding="async"></figure>
+  <figure class="tk-illustration"><img src="art/content-tarot-v2/body/taekil-advisor-offer-v1.webp" srcset="art/content-tarot-v2/body/taekil-advisor-offer-v1-s.webp 660w, art/content-tarot-v2/body/taekil-advisor-offer-v1.webp 1536w" sizes="(max-width: 660px) calc(100vw - 36px), 624px" alt="고객을 바라보며 추천서를 건네는 책사" width="1536" height="1024" loading="lazy" decoding="async"></figure>
 
   <div id="twhy" aria-label="출산택일을 왜 하나 — 네 장면"></div>
 
@@ -149,7 +149,7 @@
 
   <h2>보고서는 이렇게 만듭니다</h2>
   <p>자동으로 계산한 보고서는 <b>책사가 한 번 더 확인한 뒤</b> 열어 드립니다. 출산 날짜와 시간은 한 번 지나면 되돌릴 수 없기 때문입니다.</p>
-  <figure class="tk-illustration report"><img src="art/taekil-advisor-review-v1.webp" srcset="art/taekil-advisor-review-v1-s.webp 660w, art/taekil-advisor-review-v1.webp 1320w" sizes="(max-width: 660px) calc(100vw - 36px), 624px" alt="고전과 보고서를 펼쳐 선정 근거를 확인하는 책사" width="1320" height="880" loading="lazy" decoding="async"></figure>
+  <figure class="tk-illustration report"><img src="art/content-tarot-v2/body/taekil-advisor-review-v1.webp" srcset="art/content-tarot-v2/body/taekil-advisor-review-v1-s.webp 660w, art/content-tarot-v2/body/taekil-advisor-review-v1.webp 1536w" sizes="(max-width: 660px) calc(100vw - 36px), 624px" alt="고전과 보고서를 펼쳐 선정 근거를 확인하는 책사" width="1536" height="1024" loading="lazy" decoding="async"></figure>
   <ul>
     <li><b>1단계 · 아이 사주 자체</b> — 후보 기간의 모든 날 모든 시각에서 아이 사주를 계산해, 두 고전이 꺼리는 글자 조합이 없는 시각만 남깁니다(궁통보감 · 자평진전).</li>
     <li><b>2단계 · 10년마다 바뀌는 흐름과 가족</b> — 아이 성별에 따라 달라지는 10년 단위 운의 흐름(대운)을 함께 살펴보고, 부모 · 형제의 사주와 부딪히는 날을 뺍니다.</li>
@@ -239,7 +239,7 @@
 <script src="config.js?v=71396c29ad"></script>
 <script src="track.js?v=6dba667933"></script>
 <script>try { if (window.ChaeksaTrack && ChaeksaTrack.event) ChaeksaTrack.event('sheet'); } catch (e) {}</script><!-- 10-10 깔때기 ③ 유료 장 엶(sheet) — 유료 소개 · 견본 쪽을 열면 하루 한 번(track.js). 화면은 안 바뀐다 -->
-<script src="yaksok.js?v=356c2c6b4b"></script>
+<script src="yaksok.js?v=184b571c25"></script>
 <script src="taekil-why-copy.js?v=3d9504bce9"></script>
 <script src="taekil-why.js?v=ce07912d6a"></script>
 <script src="cloud.js?v=bee1b9298c"></script>

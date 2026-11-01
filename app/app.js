@@ -1,6 +1,7 @@
 /* 책사 앱 UI v1 */
 (function () {
   'use strict';
+  function sceneArtUrl(key, small) { return window.ChaeksaSceneArt ? window.ChaeksaSceneArt.url(key, small) : 'art/' + key + (small ? '-s' : '') + '.webp'; }
   // 10-31 사장님 「내 명식 결과를 초기화해줘 다시해보게」 — 주소 끝에 ?three-reset 이 붙어 오면 이 기기의 세 점 타로 기록(localStorage chaeksa.three.* —
   //   사람 · 물음 · 달마다 뽑은 카드와 답)을 모두 지우고, 주소에서 그 말을 뺀 뒤 그대로 연다(화면 글 없음). 타로 기록은 이 기기에만 있어(서버는 저장 안 함) 밖에서 지울 수 없다.
   //   주소시작()이 「뒤로」 바닥 주소를 잡기 전에 빼야 뒤로 갔다가 새로고침해도 또 지우지 않는다. 저장한 사람(생년월일) · 다른 기록은 그대로.
@@ -210,7 +211,7 @@
     $('pfH').disabled = $('pfMi').disabled = $('pfNoTime').checked;
     // 09-25 새 사람은 내 반대 성별이 기본. 10-02 내 생년월일 칸(나칸)은 첫 입력 칸(#g)처럼 여성이 먼저 — 지금 보는 사람이 그 사람이라 반대로 두면 틀린다.
     $('pfG').value = b.gender || (나칸 ? 'F' : (profile && profile.gender === 'M' ? 'F' : 'M'));
-    if (나칸) { const im = $('pfCut') && $('pfCut').querySelector('img'); if (im) { im.style.opacity = 1; im.src = 모양.표지 || 'art/love-main.webp'; } }   // 내 칸 그림 = 고른 콘텐츠 표지(원본)
+    if (나칸) { const im = $('pfCut') && $('pfCut').querySelector('img'); if (im) { im.style.opacity = 1; im.src = 모양.표지 || 'art/content-tarot-v2/love-cover.webp'; } }   // 내 칸 그림 = 고른 콘텐츠 표지(원본)
     else { try { 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); } catch (e) {} }
     $('pfGUnknown').checked = !!b.genderUnknown;
     $('pfG').disabled = $('pfGUnknown').checked;
@@ -1842,7 +1843,7 @@
       { id: 'geunamja', tab: 'geunamja', k: 'jaemul', 사이: '돈과 생활', 제목: '이 남자, 나한테 돈을 쓸까요?', 소개: '그래서 나한테 도움이 되나요?', 띠: 띠기본, 값: '9,900원' },
     ];
     // 여덟 장도 콘텐츠마다 한 장(art/story-<id>-s.webp)을 쓴다 — 책사 얼굴은 2026-09-12 밤에 다 지웠다. 없으면 글자 표지.
-    이야기.forEach(f => { if (!f.썸) f.썸 = 'art/story-' + f.id + '-s.webp'; });
+    이야기.forEach(f => { if (!f.썸) f.썸 = sceneArtUrl('story-' + f.id, true); });
     // 새 이야기(질문 하나 + 썸네일 하나, 7일 무료 · 30일 유료)를 앞에 세운다 — stories.js 에 한 줄 더하면 진열대에 선다.
     // 갈래 카드(docs/37) — 판정은 갈래 8개인데 제목을 74개로 늘렸던 것을 접는다(09-14 사장님 「같은 답을 다른 제목으로」). 세부 상황은 이야기 화면 안의 칩.
     try {
@@ -1853,7 +1854,7 @@
           if (!subs.length) return null;
           const 사이들 = subs.map(st => st.사이).filter((x, i, a) => a.indexOf(x) === i);
           return { id: 'gl-' + g.키, tab: 'story', 갈래: g.키, story: subs[0].id, k: subs[0].k, 사이: 사이들[0], 사이들,
-                   제목: g.날고르기, 소개: g.이름 + ' · 상황 ' + subs.length + '가지', 띠: '무료', 값: '오늘부터 7일', 썸: 'art/story-' + subs[0].id + '-s.webp' };
+                   제목: g.날고르기, 소개: g.이름 + ' · 상황 ' + subs.length + '가지', 띠: '무료', 값: '오늘부터 7일', 썸: sceneArtUrl('story-' + subs[0].id, true) };
         }).filter(Boolean);
         이야기.push(...갈래카드);   // 9,900원 여덟 장이 앞, 무료 갈래 카드가 뒤(사장님 09-14 「9900원 결제 애들 상위로」)
       }
@@ -2217,7 +2218,7 @@
   // ?go=탭 처리는 파일 끝 「시작」으로 옮겼다(10-02). 여기서 하면 뒤의 showLanding · start 가 덮어써 홈 목록이 떴다.
   // 입력 컷 — 성별을 고르면 그림이 바뀐다(나: ss-me · ss-her / 그 사람: story-jigeum · story-sns)
   // 09-26 큰 판(1024) — 작은 판은 폼 폭에서 흐렸다. (주석을 줄 가운데 넣어 뒤가 잘렸던 것 고침 — feedback-edit-closing-quote 같은 종류)
-  const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = 'art/' + (그림[g.value] || 그림.F) + '.webp'; if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
+  const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = sceneArtUrl(그림[g.value] || 그림.F); if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
   // 첫 만남 입력 칸의 컷(#fcCut)은 10-02 걷었다(맨 위 그림 .fc-art 가 대신한다). 그 사람 칸(#pfCut)만 성별로 바뀐다.
   if ($('pfG')) $('pfG').addEventListener('change', () => { if (사람폼누구 !== 'me') 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); });   // 10-02 내 칸은 콘텐츠 표지 그대로
 

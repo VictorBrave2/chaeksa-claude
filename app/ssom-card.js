@@ -3,6 +3,7 @@
  * 규칙(사장님 09-26): 내 언행이 상대가 바라는 것을 채우면 상대가 나를 더 매력적으로 느낀다 → 채워지는 쪽이 더 끌린다.
  * 문장은 ChaeksaSsomCardMal(작가). 그림은 canvas(1080×1350) → 저장 · 카톡 공유. 생년월일은 카드 · 주소에 안 싣는다. 받은 사람 링크 ?go=ssom&from=card-ssom */
 (function (global) {
+  function sceneArtUrl(key, small) { return global.ChaeksaSceneArt ? global.ChaeksaSceneArt.url(key, small) : 'art/' + key + (small ? '-s' : '') + '.webp'; }
   const E = global.ChaeksaEngine, S = global.ChaeksaSsom, SC = global.ChaeksaSsomScore;
   // 언행 다섯 갈래 말은 작가 원고(ssom-card-mal.js 언행)에서 읽는다
   const 언행말 = (k) => ((global.ChaeksaSsomCardMal || {}).언행 || {})[k] || '';
@@ -44,7 +45,7 @@
   function 카드(나R, 그R) {
     const r = 재기(나R, 그R), m = 문장(r); if (!m) return '';
     const 컷 = r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give';
-    return '<div class="card ss-card" id="ssCard"><img class="ss-card-cut" src="art/' + 컷 + '-s.webp" alt="">'
+    return '<div class="card ss-card" id="ssCard"><img class="ss-card-cut" src="' + sceneArtUrl(컷, true) + '" srcset="' + sceneArtUrl(컷, true) + ' 360w, ' + sceneArtUrl(컷) + ' 1024w" sizes="(max-width:600px) calc(100vw - 36px), 560px" alt="" loading="lazy" decoding="async">'
       + '<p class="ss-card-lead">' + esc(m.사이) + '</p><p class="ss-card-line">' + esc(m.당신줄) + '</p><p class="ss-card-line">' + esc(m.그줄) + '</p>' + (m.비슷풀이 ? '<p class="ss-card-line ss-card-tip">' + esc(m.비슷풀이) + '</p>' : '')
       + '<div class="ss-card-btns"><button type="button" class="btn ghost small" id="ssCardShare">카톡으로 보내기</button><button type="button" class="btn ghost small" id="ssCardSave">이미지로 저장</button></div></div>';
   }
@@ -57,7 +58,7 @@
     canvas.width = W; canvas.height = H; const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#161433'; ctx.fillRect(0, 0, W, H);
     const 컷 = r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give';
-    await new Promise(res => { const im = new Image(); im.onload = () => { const ch = 700, s = Math.max(W / im.width, ch / im.height), w = im.width * s, h = im.height * s; ctx.drawImage(im, (W - w) / 2, -(h - ch) * 0.15, w, h); const g = ctx.createLinearGradient(0, ch - 260, 0, ch); g.addColorStop(0, 'rgba(22,20,51,0)'); g.addColorStop(1, '#161433'); ctx.fillStyle = g; ctx.fillRect(0, ch - 260, W, 260); res(); }; im.onerror = res; im.src = 'art/' + 컷 + '.webp'; });
+    await new Promise(res => { const im = new Image(); im.onload = () => { const ch = 700, s = Math.max(W / im.width, ch / im.height), w = im.width * s, h = im.height * s; ctx.drawImage(im, (W - w) / 2, -(h - ch) * 0.15, w, h); const g = ctx.createLinearGradient(0, ch - 260, 0, ch); g.addColorStop(0, 'rgba(22,20,51,0)'); g.addColorStop(1, '#161433'); ctx.fillStyle = g; ctx.fillRect(0, ch - 260, W, 260); res(); }; im.onerror = res; im.src = sceneArtUrl(컷); });
     ctx.textAlign = 'center'; ctx.fillStyle = '#f7f3ff'; ctx.font = '700 58px ' + SERIF;
     let y = wrap(ctx, m.사이, W / 2, 760, 900, 76);
     ctx.font = '400 36px ' + SANS; ctx.fillStyle = '#d8d3ea';
@@ -72,7 +73,7 @@
     const el = box.querySelector('#ssCard'); if (!el) return;
     const c = document.createElement('canvas');
     const nm = 이름 && 이름 !== '우리' ? 이름 : 보낸이;
-    const go = async (mode) => { try { await 그리기(c, 나R, 그R, nm); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=ssom&from=card-ssom'; if (mode === 'share') { const r = 재기(나R, 그R), m = 문장(r, nm); const ok = await SH.kakaoShare({ title: m.사이, text: m.당신줄 + ' ' + m.그줄, image: 'https://chaeksa.kr/art/kakao/' + (r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give') + '.jpg', url, button: m.단추.받은사람 }); if (!ok) { await SH.share(c, 이름 || '우리', '우리 둘의 연애궁합', '우리 둘 사이 · 책사', url); 링크띠(el); } } else await SH.save(c, 이름 || '우리', '우리 둘의 연애궁합'); } catch (e) {} };
+    const go = async (mode) => { try { await 그리기(c, 나R, 그R, nm); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=ssom&from=card-ssom'; if (mode === 'share') { const r = 재기(나R, 그R), m = 문장(r, nm); const ok = await SH.kakaoShare({ title: m.사이, text: m.당신줄 + ' ' + m.그줄, image: 'https://chaeksa.kr/art/content-tarot-v2/body/' + (r.사이 === '으뜸' ? 'ss-then-now' : 'ss-give') + '.jpg', url, button: m.단추.받은사람 }); if (!ok) { await SH.share(c, 이름 || '우리', '우리 둘의 연애궁합', '우리 둘 사이 · 책사', url); 링크띠(el); } } else await SH.save(c, 이름 || '우리', '우리 둘의 연애궁합'); } catch (e) {} };
     const b1 = el.querySelector('#ssCardShare'), b2 = el.querySelector('#ssCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile() && !global.CHAEKSA_KAKAO_JS_KEY) b1.textContent = '카톡으로 보내기(이미지를 저장해 보내세요)';
@@ -92,7 +93,7 @@
   }
   function 정통카드(R) {
     const r = 정통재기(R); if (!r) return '';
-    return '<div class="card ss-card" id="jtCard"><img class="ss-card-cut" src="art/' + r.컷 + '-s.webp" alt=""><p class="ss-card-lead">' + esc(r.한줄) + '</p>' + 네기둥줄(R)
+    return '<div class="card ss-card" id="jtCard"><img class="ss-card-cut" src="' + sceneArtUrl(r.컷, true) + '" srcset="' + sceneArtUrl(r.컷, true) + ' 360w, ' + sceneArtUrl(r.컷) + ' 1024w" sizes="(max-width:600px) calc(100vw - 36px), 560px" alt="" loading="lazy" decoding="async"><p class="ss-card-lead">' + esc(r.한줄) + '</p>' + 네기둥줄(R)
       + '<div class="ss-card-btns"><button type="button" class="btn ghost small" id="jtCardShare">카톡으로 보내기</button><button type="button" class="btn ghost small" id="jtCardSave">이미지로 저장</button></div></div>';
   }
   async function 정통그리기(canvas, R, 이름) {
@@ -100,7 +101,7 @@
     if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
     canvas.width = W; canvas.height = H; const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#161433'; ctx.fillRect(0, 0, W, H);
-    await new Promise(res => { const im = new Image(); im.onload = () => { const ch = 860, s = Math.max(W / im.width, ch / im.height), w = im.width * s, h = im.height * s; ctx.drawImage(im, (W - w) / 2, 0, w, h); const g = ctx.createLinearGradient(0, ch - 260, 0, ch); g.addColorStop(0, 'rgba(22,20,51,0)'); g.addColorStop(1, '#161433'); ctx.fillStyle = g; ctx.fillRect(0, ch - 260, W, 260); res(); }; im.onerror = res; im.src = 'art/' + r.컷 + '.webp'; });
+    await new Promise(res => { const im = new Image(); im.onload = () => { const ch = 860, s = Math.max(W / im.width, ch / im.height), w = im.width * s, h = im.height * s; ctx.drawImage(im, (W - w) / 2, 0, w, h); const g = ctx.createLinearGradient(0, ch - 260, 0, ch); g.addColorStop(0, 'rgba(22,20,51,0)'); g.addColorStop(1, '#161433'); ctx.fillStyle = g; ctx.fillRect(0, ch - 260, W, 260); res(); }; im.onerror = res; im.src = sceneArtUrl(r.컷); });
     ctx.textAlign = 'center'; ctx.fillStyle = '#f7f3ff'; ctx.font = '700 58px ' + SERIF;
     wrap(ctx, 이름 ? r.한줄.replace(/^당신은/, 이름 + (받침(이름) ? '은' : '는')) : r.한줄, W / 2, 940, 900, 76);
     ctx.font = '700 40px ' + SERIF; ctx.fillStyle = '#e6c98a'; ctx.fillText('내 것도 보기', W / 2, H - 150);
@@ -111,7 +112,7 @@
     const el = box.querySelector('#jtCard'); if (!el) return;
     const c = document.createElement('canvas'), nm = 이름 && 이름 !== '우리' ? 이름 : '';
     const 보낼이름 = nm || 보낸이;   // 받은 사람에게 가는 그림 · 카카오 글은 「당신은」 대신 이름이나 「보낸 사람」
-    const go = async (mode) => { try { await 정통그리기(c, R, 보낼이름); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=jeongtong&from=card-jt'; if (mode === 'share') { const r = 정통재기(R), 한줄 = r.한줄.replace(/^당신은/, 보낼이름 + (받침(보낼이름) ? '은' : '는')); const ok = await SH.kakaoShare({ title: 한줄, text: '생년월일시면 3초 · 책사', image: 'https://chaeksa.kr/art/kakao/' + r.컷 + '.jpg', url, button: '내 것도 보기' }); if (!ok) { await SH.share(c, nm || '나', '정통사주', '내 타고난 기운 · 책사', url); 링크띠(el); } } else await SH.save(c, nm || '나', '정통사주'); } catch (e) {} };
+    const go = async (mode) => { try { await 정통그리기(c, R, 보낼이름); const SH = global.ChaeksaShare; if (!SH) return; const url = 'https://chaeksa.kr/?go=jeongtong&from=card-jt'; if (mode === 'share') { const r = 정통재기(R), 한줄 = r.한줄.replace(/^당신은/, 보낼이름 + (받침(보낼이름) ? '은' : '는')); const ok = await SH.kakaoShare({ title: 한줄, text: '생년월일시면 3초 · 책사', image: 'https://chaeksa.kr/art/content-tarot-v2/body/' + r.컷 + '.jpg', url, button: '내 것도 보기' }); if (!ok) { await SH.share(c, nm || '나', '정통사주', '내 타고난 기운 · 책사', url); 링크띠(el); } } else await SH.save(c, nm || '나', '정통사주'); } catch (e) {} };
     const b1 = el.querySelector('#jtCardShare'), b2 = el.querySelector('#jtCardSave');
     if (b1) b1.onclick = () => go('share'); if (b2) b2.onclick = () => go('save');
     if (b1 && global.ChaeksaShare && !global.ChaeksaShare.canShareFile() && !global.CHAEKSA_KAKAO_JS_KEY) b1.textContent = '카톡으로 보내기(이미지를 저장해 보내세요)';

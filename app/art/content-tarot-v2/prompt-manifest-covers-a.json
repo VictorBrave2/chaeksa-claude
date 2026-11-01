@@ -1,0 +1,166 @@
+{
+  "date": "2026-11-01",
+  "method": "Built-in image_gen, one initial scene generation and one user-directed P14/P13 identity correction per asset. ffmpeg used only for WebP encoding and 360px thumbnail scaling.",
+  "face_policy": "Final approved identity: tarot P14 male, P13 female. Earlier old-cover identity instruction was superseded by explicit user clarification.",
+  "assets": [
+    {
+      "key": "love",
+      "menu": "love",
+      "content_source": "app/love.html:68",
+      "content": "연애할 때 내가 하는 말과 행동",
+      "initial": {
+        "reference": "app/art/love-cover.webp",
+        "prompt": "Use case: identity-preserve. Create ONE completely new finished website menu-cover illustration, portrait 2:3, ideally 1024x1536. The supplied reference is the OLD cover and is the sole authority for ALL character identities. Preserve the same recognizable adult faces, eye shapes and colors, nose, lips, jaw, hair color and hairstyle; never replace them with generic tarot King/Queen or other people. Retain every original visible person, with exactly two arms each and correct anatomy. Change the scene, poses, and clothing as specified. Art style: exceptionally precise contemporary Korean romance-fantasy illustration with the sumptuous painted detail and luminous jewel colors of a premium tarot illustration, fine crisp contours, coherent natural anatomy, realistic fabric light, clearly open sharp eyes. Not photographic, not 3D, not chibi, not blurred. Entire frame is a scenic illustration: no tarot border, no writing, no numbers, no logo/watermark. No phone, watch, clock, modern electronic device. No pinching tiny objects, no tiny ring held between fingertips. Natural supported/open hands, exactly five fingers if fully shown. Keep both eyes readable and faces central in the upper-middle half; avoid heads near edges. New composition clearly different from old cover, with faces large enough for small 76px thumbnail and a central landscape crop. Rich bright daylight, sophisticated color, no sepia haze. Preserve BOTH the exact dark-haired woman with softly swept up hair and the exact dark-haired man from the old wedding cover. This cover is 'Me in love': the woman's own emotional reaction is the narrative focus. New scene: a luminous ivory-and-rose fantasy garden loggia, the couple standing side by side at a carved stone balustrade. She has just offered him a small bouquet held with both hands naturally around its broad cloth-wrapped base at waist level, and pauses with a shy surprised warm smile as she notices her own courage. He has turned toward her, receiving her gesture with a gentle attentive expression; his hands simply rest on the balustrade, do not overlap hers. Her same face is seen three-quarter clearly, his same face also visible. Distinct romantic but non-wedding attire: her rose high-neck flowing dress and his ivory embroidered tunic with muted mauve waistcoat, no veil or suit. Close waist-up double portrait, face heights around 32% and 27% of frame. A large unbusy warm sky and carved ivory arches, modest flowers only as background. No additional people. Convey my behavior and feeling when I express love, not a completed wedding.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-75ee2fe9-316e-44be-a598-544138e52af8.png",
+        "status": "superseded identity only"
+      },
+      "final": {
+        "edit_target": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-75ee2fe9-316e-44be-a598-544138e52af8.png",
+        "identity_references": [
+          "app/art/tarot/chaeksa-v1/P14.webp",
+          "app/art/tarot/chaeksa-v1/P13.webp"
+        ],
+        "prompt": "Use case: identity-preserve and style-transfer. Edit IMAGE 1, the newly composed menu scene. IMAGE 1 is ONLY the authority for scene, character count, body arrangement, poses, props, clothing design, lighting, composition and aspect ratio; its present facial identities are NOT approved and MUST be REPLACED. IMAGE 2 (King of Pentacles P14) is the authoritative exact MALE facial identity and hair reference. Any IMAGE 3 (Queen of Pentacles P13) is the authoritative exact FEMALE facial identity and hair reference. Apply ONLY those approved tarot people, no other identities. Recreate the man's P14 handsome long angular facial proportions, sharp refined jaw and nose, amber-brown almond eyes, natural defined brows and tousled wavy dark-brown hair. Recreate the woman's P13 refined oval face, elegant almond-shaped warm brown eyes, fine straight nose, soft defined lips, and LONG wavy dark-brown hair partly swept back like P13. No short bob, no auburn hair, no childlike round face. Translate their head angle and expression to the existing scene while retaining recognizable identical P14/P13 facial identity; do not simply preserve IMAGE 1 faces. Match P14/P13's precise luxurious contemporary fantasy illustration style, fine painted contour, saturated jewel colors, crisp detailed open eyes and natural luminous skin. Preserve the current new scene and specific narrative, all existing character bodies and props. Do NOT import tarot throne, pentacle, staff, crown, card frame or lettering into the scene. Do not move the figures or alter the overall crop; 2:3 portrait, 1024x1536. Preserve normal anatomy and five fingers where visible; two arms each. No text, numbers, watermark, phone, clock, watch, electronics, pinching tiny objects, extra limbs or additional people. Scene lock: preserve exactly the TWO visible adults and their arrangement. Replace the male face/hair with P14 and female face/hair with P13, specifically add her long dark-brown waves in place of any short or gathered old hairstyle. Keep her shy bouquet-offering scene and his attentive response at the garden balustrade; clothes stay rose and ivory/mauve.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-4732096c-f5a7-4fe0-be09-e4807a5b2485.png",
+        "full": "app/art/content-tarot-v2/love-cover.webp",
+        "small": "app/art/content-tarot-v2/love-cover-s.webp",
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "small_dimensions": [
+          360,
+          540
+        ]
+      },
+      "visual_review": "Viewed generated result: approved tarot facial/hair identities applied, scene and people count preserved, open clear eyes, coherent limbs and hands, no text or modern electronics."
+    },
+    {
+      "key": "pair",
+      "menu": "pair",
+      "content_source": "app/pair.html:68",
+      "content": "연애 열두 단계마다 그 사람이 어떻게 할지",
+      "initial": {
+        "reference": "app/art/pair-cover.webp",
+        "prompt": "Use case: identity-preserve. Create ONE completely new finished website menu-cover illustration, portrait 2:3, ideally 1024x1536. The supplied reference is the OLD cover and is the sole authority for ALL character identities. Preserve the same recognizable adult faces, eye shapes and colors, nose, lips, jaw, hair color and hairstyle; never replace them with generic tarot King/Queen or other people. Retain every original visible person, with exactly two arms each and correct anatomy. Change the scene, poses, and clothing as specified. Art style: exceptionally precise contemporary Korean romance-fantasy illustration with the sumptuous painted detail and luminous jewel colors of a premium tarot illustration, fine crisp contours, coherent natural anatomy, realistic fabric light, clearly open sharp eyes. Not photographic, not 3D, not chibi, not blurred. Entire frame is a scenic illustration: no tarot border, no writing, no numbers, no logo/watermark. No phone, watch, clock, modern electronic device. No pinching tiny objects, no tiny ring held between fingertips. Natural supported/open hands, exactly five fingers if fully shown. Keep both eyes readable and faces central in the upper-middle half; avoid heads near edges. New composition clearly different from old cover, with faces large enough for small 76px thumbnail and a central landscape crop. Rich bright daylight, sophisticated color, no sepia haze. Preserve the ONE exact young adult male face, tousled dark hair, warm brown eyes and smiling lips from this cover. The foreground companion is represented only by their original partial hand/forearm, never add a new visible face. This cover means 'How that person behaves in a relationship'. New scene: at a sunlit late-summer garden pavilion dinner, this same man stands behind an ornately carved empty chair and draws it out for the viewer, one broad palm resting naturally on the top of the chair back and the other arm relaxed at his side. Viewer's companion hand rests naturally on the table edge in foreground without interacting with his hands. He looks directly toward the viewer with alert affectionate open eyes and an attentive smile. Period-fantasy clothing: warm copper and cream embroidered jacket over a modest linen collar. A broad table edge with two ceramic place settings below, soft emerald ivy and golden open colonnade behind. Face chest-up centered at 30-40% image height, chair silhouette legible at 60%. NOT seated cheek-in-palm, no phone or watch or glass modern tower. No additional people or faces.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-6fad95e1-b656-49f3-aadf-f9b1b437ed60.png",
+        "status": "superseded identity only"
+      },
+      "final": {
+        "edit_target": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-6fad95e1-b656-49f3-aadf-f9b1b437ed60.png",
+        "identity_references": [
+          "app/art/tarot/chaeksa-v1/P14.webp"
+        ],
+        "prompt": "Use case: identity-preserve and style-transfer. Edit IMAGE 1, the newly composed menu scene. IMAGE 1 is ONLY the authority for scene, character count, body arrangement, poses, props, clothing design, lighting, composition and aspect ratio; its present facial identities are NOT approved and MUST be REPLACED. IMAGE 2 (King of Pentacles P14) is the authoritative exact MALE facial identity and hair reference. Any IMAGE 3 (Queen of Pentacles P13) is the authoritative exact FEMALE facial identity and hair reference. Apply ONLY those approved tarot people, no other identities. Recreate the man's P14 handsome long angular facial proportions, sharp refined jaw and nose, amber-brown almond eyes, natural defined brows and tousled wavy dark-brown hair. Recreate the woman's P13 refined oval face, elegant almond-shaped warm brown eyes, fine straight nose, soft defined lips, and LONG wavy dark-brown hair partly swept back like P13. No short bob, no auburn hair, no childlike round face. Translate their head angle and expression to the existing scene while retaining recognizable identical P14/P13 facial identity; do not simply preserve IMAGE 1 faces. Match P14/P13's precise luxurious contemporary fantasy illustration style, fine painted contour, saturated jewel colors, crisp detailed open eyes and natural luminous skin. Preserve the current new scene and specific narrative, all existing character bodies and props. Do NOT import tarot throne, pentacle, staff, crown, card frame or lettering into the scene. Do not move the figures or alter the overall crop; 2:3 portrait, 1024x1536. Preserve normal anatomy and five fingers where visible; two arms each. No text, numbers, watermark, phone, clock, watch, electronics, pinching tiny objects, extra limbs or additional people. Scene lock: the man pulls out a carved chair at a garden dinner, looking directly at the viewer; replace this ONE visible face and hair with P14. Keep the original partial companion hand at the bottom; do not add a female head or second body. Keep copper/cream clothing and the chair and dinner composition.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-1ef624d9-3ed2-4c72-8815-cecc4ce01164.png",
+        "full": "app/art/content-tarot-v2/pair-cover.webp",
+        "small": "app/art/content-tarot-v2/pair-cover-s.webp",
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "small_dimensions": [
+          360,
+          540
+        ]
+      },
+      "visual_review": "Viewed generated result: approved tarot facial/hair identities applied, scene and people count preserved, open clear eyes, coherent limbs and hands, no text or modern electronics."
+    },
+    {
+      "key": "gyeolhon",
+      "menu": "gyeolhon",
+      "content_source": "app/gyeolhon.html:90",
+      "content": "함께 가도 되는지, 맞춰야 하는지, 결혼 전 다시 생각해야 하는지",
+      "initial": {
+        "reference": "app/art/gyeolhon-cover.webp",
+        "prompt": "Use case: identity-preserve. Create ONE completely new finished website menu-cover illustration, portrait 2:3, ideally 1024x1536. The supplied reference is the OLD cover and is the sole authority for ALL character identities. Preserve the same recognizable adult faces, eye shapes and colors, nose, lips, jaw, hair color and hairstyle; never replace them with generic tarot King/Queen or other people. Retain every original visible person, with exactly two arms each and correct anatomy. Change the scene, poses, and clothing as specified. Art style: exceptionally precise contemporary Korean romance-fantasy illustration with the sumptuous painted detail and luminous jewel colors of a premium tarot illustration, fine crisp contours, coherent natural anatomy, realistic fabric light, clearly open sharp eyes. Not photographic, not 3D, not chibi, not blurred. Entire frame is a scenic illustration: no tarot border, no writing, no numbers, no logo/watermark. No phone, watch, clock, modern electronic device. No pinching tiny objects, no tiny ring held between fingertips. Natural supported/open hands, exactly five fingers if fully shown. Keep both eyes readable and faces central in the upper-middle half; avoid heads near edges. New composition clearly different from old cover, with faces large enough for small 76px thumbnail and a central landscape crop. Rich bright daylight, sophisticated color, no sepia haze. Preserve BOTH exact adult faces from the reference: dark-haired man with warm brown eyes and the woman with brown hair in the same low gathered hairstyle and loose face-framing strands, retain her recognizable profile and facial structure. New scene: in an elegant sunlit marriage-preparation chamber with muted plum drapes, they sit close at a small round table and thoughtfully examine two large plain parchment sheets laid FLAT beside a small OPEN ring box. The rings remain resting in the box; no pinching or holding them. This is a considered conversation before choosing marriage, not a wedding ceremony or a walking date. Both faces clearly visible in three-quarter view and eyes open; he looks from the parchment toward her, she returns his thoughtful gaze. Their open hands rest on separate broad table areas, no overlapping arms. His sage-and-ivory embroidered period coat and her lavender high-neck period gown retain their own personalities. Couple occupies upper central 65%; table and ring box lower middle. Warm clear daylight, intimate but serious hopeful mood, no floating symbols, no letters on parchment, no extra people.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-640af360-ee79-48a0-bc1e-e555f31711b8.png",
+        "status": "superseded identity only"
+      },
+      "final": {
+        "edit_target": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-640af360-ee79-48a0-bc1e-e555f31711b8.png",
+        "identity_references": [
+          "app/art/tarot/chaeksa-v1/P14.webp",
+          "app/art/tarot/chaeksa-v1/P13.webp"
+        ],
+        "prompt": "Use case: identity-preserve and style-transfer. Edit IMAGE 1, the newly composed menu scene. IMAGE 1 is ONLY the authority for scene, character count, body arrangement, poses, props, clothing design, lighting, composition and aspect ratio; its present facial identities are NOT approved and MUST be REPLACED. IMAGE 2 (King of Pentacles P14) is the authoritative exact MALE facial identity and hair reference. Any IMAGE 3 (Queen of Pentacles P13) is the authoritative exact FEMALE facial identity and hair reference. Apply ONLY those approved tarot people, no other identities. Recreate the man's P14 handsome long angular facial proportions, sharp refined jaw and nose, amber-brown almond eyes, natural defined brows and tousled wavy dark-brown hair. Recreate the woman's P13 refined oval face, elegant almond-shaped warm brown eyes, fine straight nose, soft defined lips, and LONG wavy dark-brown hair partly swept back like P13. No short bob, no auburn hair, no childlike round face. Translate their head angle and expression to the existing scene while retaining recognizable identical P14/P13 facial identity; do not simply preserve IMAGE 1 faces. Match P14/P13's precise luxurious contemporary fantasy illustration style, fine painted contour, saturated jewel colors, crisp detailed open eyes and natural luminous skin. Preserve the current new scene and specific narrative, all existing character bodies and props. Do NOT import tarot throne, pentacle, staff, crown, card frame or lettering into the scene. Do not move the figures or alter the overall crop; 2:3 portrait, 1024x1536. Preserve normal anatomy and five fingers where visible; two arms each. No text, numbers, watermark, phone, clock, watch, electronics, pinching tiny objects, extra limbs or additional people. Scene lock: preserve exactly the TWO visible adults and their arrangement. Replace the male face/hair with P14 and female face/hair with P13, specifically add her long dark-brown waves in place of any short or gathered old hairstyle. Keep their thoughtful pre-marriage conversation at the table with TWO blank parchment sheets and the open ring box; rings stay in the box, not fingers. Clothes stay lavender and sage/ivory.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-a3253048-58ae-4bed-92e0-d7fc60534017.png",
+        "full": "app/art/content-tarot-v2/gyeolhon-cover.webp",
+        "small": "app/art/content-tarot-v2/gyeolhon-cover-s.webp",
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "small_dimensions": [
+          360,
+          540
+        ]
+      },
+      "visual_review": "Viewed generated result: approved tarot facial/hair identities applied, scene and people count preserved, open clear eyes, coherent limbs and hands, no text or modern electronics."
+    },
+    {
+      "key": "gunghap",
+      "menu": "chongnon",
+      "content_source": "app/gunghap-chongnon.html:68",
+      "content": "두 사람이 잘 맞는 곳과 부딪히는 곳",
+      "initial": {
+        "reference": "app/art/gunghap-main.webp",
+        "prompt": "Use case: identity-preserve. Create ONE completely new finished website menu-cover illustration, portrait 2:3, ideally 1024x1536. The supplied reference is the OLD cover and is the sole authority for ALL character identities. Preserve the same recognizable adult faces, eye shapes and colors, nose, lips, jaw, hair color and hairstyle; never replace them with generic tarot King/Queen or other people. Retain every original visible person, with exactly two arms each and correct anatomy. Change the scene, poses, and clothing as specified. Art style: exceptionally precise contemporary Korean romance-fantasy illustration with the sumptuous painted detail and luminous jewel colors of a premium tarot illustration, fine crisp contours, coherent natural anatomy, realistic fabric light, clearly open sharp eyes. Not photographic, not 3D, not chibi, not blurred. Entire frame is a scenic illustration: no tarot border, no writing, no numbers, no logo/watermark. No phone, watch, clock, modern electronic device. No pinching tiny objects, no tiny ring held between fingertips. Natural supported/open hands, exactly five fingers if fully shown. Keep both eyes readable and faces central in the upper-middle half; avoid heads near edges. New composition clearly different from old cover, with faces large enough for small 76px thumbnail and a central landscape crop. Rich bright daylight, sophisticated color, no sepia haze. Preserve BOTH exact adult facial identities and hairstyles from the reference: long dark-haired woman with same delicate face and dangling floral hair ornament, and wavy ash-dark-brown-haired man with the same angular face and gray-brown eyes. New scene expresses compatibility and differences: they stand on the SAME side of a broad sunlit jade-and-ivory stone table in a fantasy palace garden, facing each other three-quarter. On the table lie TWO LARGE distinct interlocking carved wooden shapes, one walnut and one pale maple, which they are carefully aligning at their broad edges to see where they fit. Shapes are simple, substantial, a single pair, no puzzle clutter. Each person places one relaxed whole hand flat on their own piece; other hands remain naturally resting at sides or table edge. Their expression is interested, thoughtful, mutually attentive, not a triumphant guaranteed match. She wears pale jade-and-peach embroidered robes and he deep teal with ivory trim. Strong warm daylight over water garden behind, no night, no moon/sun split, no red strings, no back-to-back pose. Upper-body couple with both faces around 30-40% frame height and clearly visible open eyes; broad table at lower middle. No additional people.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-c9bc54d8-e6f6-431e-b936-93cd66759f64.png",
+        "status": "superseded identity only"
+      },
+      "final": {
+        "edit_target": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-c9bc54d8-e6f6-431e-b936-93cd66759f64.png",
+        "identity_references": [
+          "app/art/tarot/chaeksa-v1/P14.webp",
+          "app/art/tarot/chaeksa-v1/P13.webp"
+        ],
+        "prompt": "Use case: identity-preserve and style-transfer. Edit IMAGE 1, the newly composed menu scene. IMAGE 1 is ONLY the authority for scene, character count, body arrangement, poses, props, clothing design, lighting, composition and aspect ratio; its present facial identities are NOT approved and MUST be REPLACED. IMAGE 2 (King of Pentacles P14) is the authoritative exact MALE facial identity and hair reference. Any IMAGE 3 (Queen of Pentacles P13) is the authoritative exact FEMALE facial identity and hair reference. Apply ONLY those approved tarot people, no other identities. Recreate the man's P14 handsome long angular facial proportions, sharp refined jaw and nose, amber-brown almond eyes, natural defined brows and tousled wavy dark-brown hair. Recreate the woman's P13 refined oval face, elegant almond-shaped warm brown eyes, fine straight nose, soft defined lips, and LONG wavy dark-brown hair partly swept back like P13. No short bob, no auburn hair, no childlike round face. Translate their head angle and expression to the existing scene while retaining recognizable identical P14/P13 facial identity; do not simply preserve IMAGE 1 faces. Match P14/P13's precise luxurious contemporary fantasy illustration style, fine painted contour, saturated jewel colors, crisp detailed open eyes and natural luminous skin. Preserve the current new scene and specific narrative, all existing character bodies and props. Do NOT import tarot throne, pentacle, staff, crown, card frame or lettering into the scene. Do not move the figures or alter the overall crop; 2:3 portrait, 1024x1536. Preserve normal anatomy and five fingers where visible; two arms each. No text, numbers, watermark, phone, clock, watch, electronics, pinching tiny objects, extra limbs or additional people. Scene lock: preserve exactly the TWO visible adults and their arrangement. Replace the male face/hair with P14 and female face/hair with P13, specifically add her long dark-brown waves in place of any short or gathered old hairstyle. Keep the two adults comparing large walnut and maple interlocking wooden shapes on the jade stone table; each relaxed open hand remains on its own shape. Clothes stay pale jade/peach and deep teal.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-4c7f6a26-74ae-4d29-885c-acb5f5d45299.png",
+        "full": "app/art/content-tarot-v2/gunghap-cover.webp",
+        "small": "app/art/content-tarot-v2/gunghap-cover-s.webp",
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "small_dimensions": [
+          360,
+          540
+        ]
+      },
+      "visual_review": "Viewed generated result: approved tarot facial/hair identities applied, scene and people count preserved, open clear eyes, coherent limbs and hands, no text or modern electronics."
+    },
+    {
+      "key": "ssom",
+      "menu": "ssom",
+      "content_source": "app/ssom.html:68",
+      "content": "내가 바라는 사랑과 그 사람의 행동이 만나는 이야기",
+      "initial": {
+        "reference": "app/art/ssom-main.webp",
+        "prompt": "Use case: identity-preserve. Create ONE completely new finished website menu-cover illustration, portrait 2:3, ideally 1024x1536. The supplied reference is the OLD cover and is the sole authority for ALL character identities. Preserve the same recognizable adult faces, eye shapes and colors, nose, lips, jaw, hair color and hairstyle; never replace them with generic tarot King/Queen or other people. Retain every original visible person, with exactly two arms each and correct anatomy. Change the scene, poses, and clothing as specified. Art style: exceptionally precise contemporary Korean romance-fantasy illustration with the sumptuous painted detail and luminous jewel colors of a premium tarot illustration, fine crisp contours, coherent natural anatomy, realistic fabric light, clearly open sharp eyes. Not photographic, not 3D, not chibi, not blurred. Entire frame is a scenic illustration: no tarot border, no writing, no numbers, no logo/watermark. No phone, watch, clock, modern electronic device. No pinching tiny objects, no tiny ring held between fingertips. Natural supported/open hands, exactly five fingers if fully shown. Keep both eyes readable and faces central in the upper-middle half; avoid heads near edges. New composition clearly different from old cover, with faces large enough for small 76px thumbnail and a central landscape crop. Rich bright daylight, sophisticated color, no sepia haze. Preserve BOTH exact adult faces from the reference, especially the woman's distinct SHORT AUBURN BOB, brown eyes, soft small lips, and the man's dark-brown side-swept hair, long refined nose, warm brown eyes and smile. Do not change the auburn bob into a long-haired tarot queen. New scene: a bright garden colonnade immediately after a passing shower. The same man, in an ivory-and-sky-blue fantasy tunic, gently lays one side of a broad blue cloak over her shoulders as she takes one small step closer, surprised and pleased by this concrete caring action. She wears a modest coral-and-cream period dress, her auburn bob fully visible. Both faces seen three-quarter and open eyes looking at one another. Cloak is supported over his bent forearm, laid broadly over her shoulder; no pinching cloth and no crossing/tangled fingers. Her two hands rest naturally together near waist, clearly separate from his. Compose waist-up couple, large sharp faces near upper-middle, protective cloak as a single easy-to-read diagonal mass, a rain-wet stone arch and luminous pale garden behind. Warm sunlight glints in the receding rain, no gloomy weather. Not a café, no cheek resting on hands, no cups, no phone, no umbrella, no extra people. This illustrates a hoped-for affection met by his actual gesture, not a wedding.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-f487a92c-d665-4f0f-95e2-2164449874f8.png",
+        "status": "superseded identity only"
+      },
+      "final": {
+        "edit_target": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-f487a92c-d665-4f0f-95e2-2164449874f8.png",
+        "identity_references": [
+          "app/art/tarot/chaeksa-v1/P14.webp",
+          "app/art/tarot/chaeksa-v1/P13.webp"
+        ],
+        "prompt": "Use case: identity-preserve and style-transfer. Edit IMAGE 1, the newly composed menu scene. IMAGE 1 is ONLY the authority for scene, character count, body arrangement, poses, props, clothing design, lighting, composition and aspect ratio; its present facial identities are NOT approved and MUST be REPLACED. IMAGE 2 (King of Pentacles P14) is the authoritative exact MALE facial identity and hair reference. Any IMAGE 3 (Queen of Pentacles P13) is the authoritative exact FEMALE facial identity and hair reference. Apply ONLY those approved tarot people, no other identities. Recreate the man's P14 handsome long angular facial proportions, sharp refined jaw and nose, amber-brown almond eyes, natural defined brows and tousled wavy dark-brown hair. Recreate the woman's P13 refined oval face, elegant almond-shaped warm brown eyes, fine straight nose, soft defined lips, and LONG wavy dark-brown hair partly swept back like P13. No short bob, no auburn hair, no childlike round face. Translate their head angle and expression to the existing scene while retaining recognizable identical P14/P13 facial identity; do not simply preserve IMAGE 1 faces. Match P14/P13's precise luxurious contemporary fantasy illustration style, fine painted contour, saturated jewel colors, crisp detailed open eyes and natural luminous skin. Preserve the current new scene and specific narrative, all existing character bodies and props. Do NOT import tarot throne, pentacle, staff, crown, card frame or lettering into the scene. Do not move the figures or alter the overall crop; 2:3 portrait, 1024x1536. Preserve normal anatomy and five fingers where visible; two arms each. No text, numbers, watermark, phone, clock, watch, electronics, pinching tiny objects, extra limbs or additional people. Scene lock: preserve exactly the TWO visible adults and their arrangement. Replace the male face/hair with P14 and female face/hair with P13, specifically add her long dark-brown waves in place of any short or gathered old hairstyle. Keep the caring gesture of the man draping a blue cloak over her shoulders in the bright rain-cleared garden loggia. IMPORTANT: replace the old auburn bob woman with the exact LONG dark-haired P13 Queen. Maintain the cloak and their softly attentive gazes. Keep his broad grip natural without pinching.",
+        "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-bd642abe-2f70-46a4-8493-f22bff005f26.png",
+        "full": "app/art/content-tarot-v2/ssom-cover.webp",
+        "small": "app/art/content-tarot-v2/ssom-cover-s.webp",
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "small_dimensions": [
+          360,
+          540
+        ]
+      },
+      "visual_review": "Viewed generated result: approved tarot facial/hair identities applied, scene and people count preserved, open clear eyes, coherent limbs and hands, no text or modern electronics."
+    }
+  ]
+}
