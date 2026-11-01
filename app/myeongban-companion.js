@@ -1,8 +1,8 @@
 /* Decorative scenes around the current user's existing editorial headings. */
 (function(){
  'use strict';
- const poses=['welcome-v4.png','reading-v4.png','closing-v4.png'];
- const artBase=new URL('art/ziwei-companion/',document.currentScript.src).href;
+ const poses=['welcome.png','reading.png','closing.png'];
+ const artBase=new URL('art/ziwei-tarot-v1/',document.currentScript.src).href;
  let observer=null,enabled=true;
  function scene(parent,nodes,kind,pose){
   if(!parent||!nodes.length)return;

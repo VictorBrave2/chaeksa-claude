@@ -120,7 +120,8 @@
       const assembled=T.조립(v,P), lines=assembled.칸[0].줄;
       const text=slot=>(lines.find(x=>x.자리===slot)||{}).글||'';
       const group=slot=>lines.filter(x=>x.자리===slot).map(x=>'<p>'+esc(x.글)+'</p>').join('');
-      const guide=(name,width,height,sizes,lazy)=>'<img data-today-guide src="art/today-guides/'+name+'.webp" srcset="art/today-guides/'+name+'-s.webp 480w, art/today-guides/'+name+'.webp '+width+'w" sizes="'+sizes+'" width="'+width+'" height="'+height+'" alt="" decoding="async"'+(lazy?' loading="lazy"':'')+'>';
+      const guidePath=name=>'art/today-tarot-v1/'+name.replace(/-v1$/,'')+'.png';
+      const guide=(name,width,height,sizes,lazy)=>'<img data-today-guide src="'+guidePath(name)+'" width="'+width+'" height="'+height+'" alt="" decoding="async"'+(lazy?' loading="lazy"':'')+'>';
       // The displayed text key selects the scene; date only alternates the narrator.
       const narrator=Number(v.날짜.replace(/-/g,''))%2?'m':'f';
       const eventGuide=(slot,sex,sizes,lazy)=>{
@@ -151,7 +152,7 @@
         }).join('')+'</ol>'+(month.달바뀜?'<div class="today-month"><p class="today-kicker">다음 흐름의 시작</p><h3>'+dateText(month.달바뀜.날짜)+'부터</h3>'+month.달바뀜.바탕.map(b=>'<p>'+esc(P[b.열쇠].한줄)+'</p>').join('')+'</div>':'')+'</section>'
         +'<section class="today-links"><h2>하루 너머의 나를 읽고 싶다면</h2><a href="when.html"><span>내 운은 언제 풀릴까? →</span><small>앞으로 10년의 흐름</small></a><a href="./#jeongtong"><span>정통사주 →</span><small>타고난 나의 모습</small></a><a href="myeongban.html"><span>정통자미두수 →</span><small>명반으로 읽는 나</small></a></section><p class="today-end" id="today-end">오늘의 운세 · 책사</p></article>';
       root.querySelectorAll('.today-subnav a').forEach(a=>{a.setAttribute('href',global.location.pathname+a.getAttribute('href'));});
-      root.querySelectorAll('img[data-today-guide]').forEach(img=>{img.onerror=function(){const fallback=this.dataset.guideFallback;if(fallback){delete this.dataset.guideFallback;this.removeAttribute('srcset');this.src='art/today-guides/'+fallback+'.webp';}else{this.hidden=true;}};});
+      root.querySelectorAll('img[data-today-guide]').forEach(img=>{img.onerror=function(){const fallback=this.dataset.guideFallback;if(fallback){delete this.dataset.guideFallback;this.removeAttribute('srcset');this.src=guidePath(fallback);}else{this.hidden=true;}};});
       root.querySelector('#today-person').onchange=e=>{selected=e.target.value;try{people.setActive(selected);}catch(err){}render();};
       root.querySelector('#today-refresh').onclick=render;
       try{if(track)track.watchEnd(root,'today_end');}catch(e){}
