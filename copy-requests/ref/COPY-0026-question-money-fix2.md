@@ -14,7 +14,7 @@ M13 짝 칸은 원래 「수입의 끝」이라, 긴 풀이에서 수입이라�
 |---|---|---|---|
 | `세점.펼침.물음카드말.money.M02.바로` | 숨은 거래 사정과 끈기 | 숨은 돈 사정과 끈기 | “Secrets, mystery, the future as yet unrevealed” · “silence, tenacity” · “wisdom, science” (430) — Secrets, mystery(비밀 일반)를 「거래」의 숨은 사정으로 좁힘 — 진행 중인 거래가 있다고 전제 → 새 문장은 돈 전반의 범위에서 같은 뜻을 전한다. |
 | `세점.펼침.물음카드말.money.M09.바로` | 금전 거래의 배신과 속임수 | 돈을 둘러싼 배신과 속임수 | “especially treason, dissimulation, roguery, corruption” (444) — treason · dissimulation · roguery · corruption(배신 · 숨김 · 속임 · 부패 일반)이 일어나는 자리를 「금전 거래」로 좁힘 → 새 문장은 돈 전반의 범위에서 같은 뜻을 전한다. |
-| `세점.펼침.물음카드뜻.money.M13.바로` | 수입과 거래의 끝, 재산이 파괴되는 상태를 가리킵니다. | 돈이 걸린 일의 끝과 재산의 파괴·부패를 가리킵니다. | “End, mortality, destruction, corruption” (452) — End(끝 일반)를 「수입과 거래의 끝」으로 — 끝나는 대상을 수입(벌이의 흐름) · 거래로 정함 → 새 문장은 돈 전반의 범위에서 같은 뜻을 전한다. |
+| `세점.펼침.물음카드뜻.money.M13.바로` | 수입과 거래의 끝, 재산이 파괴되는 상태를 가리킵니다. | 돈이 걸린 일의 끝과 파괴, 돈을 둘러싼 부패를 가리킵니다. | “End, mortality, destruction, corruption” (452) — End(끝 일반)를 「수입과 거래의 끝」으로 — 끝나는 대상을 수입(벌이의 흐름) · 거래로 정함 → 새 문장은 돈 전반의 범위에서 같은 뜻을 전한다. |
 | `세점.펼침.물음카드말.money.M13.바로` | 수입의 끝과 재산의 파괴 | 돈이 걸린 일의 끝과 재산의 파괴 | §2 “End, mortality, destruction, corruption” (452) — 같은 면의 긴 풀이와 맞추기 위한 짝 칸 보완. 원문에 없는 수입 중단으로 좁히지 않고 돈이 걸린 일의 끝으로 넓힌다. |
 | `세점.펼침.물음카드뜻.money.M18.바로` | 거래 속에 감춰진 적의와 속임수, 돈을 위태롭게 하는 위험을 가리킵니다. | 돈 문제에 감춰진 적의와 속임수, 헐뜯음과 위험을 가리킵니다. | “Hidden enemies, danger, calumny” · “deception” (462) — Hidden enemies · deception이 숨어 있는 자리를 「거래 속」으로 좁힘 → 새 문장은 돈 전반의 범위에서 같은 뜻을 전한다. |
 | `세점.펼침.물음카드말.money.M18.바로` | 거래 속의 속임수와 숨은 위험 | 돈 문제에 숨은 속임수와 위험 | “Hidden enemies, danger, calumny” · “deception” (462) — deception → 「거래 속의」 속임수 → 새 문장은 돈 전반의 범위에서 같은 뜻을 전한다. |
