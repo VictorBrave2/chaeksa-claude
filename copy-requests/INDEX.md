@@ -26,3 +26,4 @@
 | COPY-0026-④ | 물음별 타로 카드 풀이 — 부모·집안 어른(parent) · 집·땅·재산(home) · 떠남·바깥(move), 각 긴 풀이 156 + 짧은 말 156 = 936칸 | 적용됨(v1555 · 11-01 main 합침 · PR #26 · 뜻 대조 고칠 것 요청 — COPY-0026 끝 절 「11-01 v1555 뒤 아홉 물음」) | [묶음 ④ 완료·검사](ref/COPY-0026-question-4-completion.md) · [부모](ref/COPY-0026-question-parent.md) · [집](ref/COPY-0026-question-home.md) · [떠남](ref/COPY-0026-question-move.md) | codex/COPY-0026-question-4 |
 | COPY-0026-general-fix | v1539 뒤 일반 카드뜻·카드말·읽는법·이야기 47칸 고침 · 최신 낱말 옮김표 일반 12칸 포함 | 제안됨 | [전후·까닭](ref/COPY-0026-general-fix.md) | codex/COPY-0026-fix |
 | COPY-0026-질문②-fix | v1555 뒤 뜻 대조 — 연애 101 · 일 87 · 마음 117 · 돈 19, 합계 324칸 | 제안됨 | [전후·까닭·검사](ref/COPY-0026-question-2-fix.md) · 지정표 291칸 누락 0 · 원고표 일치 · tools_check 막힘 0 | codex/COPY-0026-question-2-fix |
+| COPY-0026-④-fix | v1555 뒤 부모·집·떠남 뜻 대조 — 지정 177 + 같은 규칙 91 = 268칸, 직접 뜻·낱말·첫 뜻·원문 조건 고침 | 제안됨 | [전체 전후·까닭과 검사](ref/COPY-0026-question-4-fix.md) | codex/COPY-0026-question-4-fix |
