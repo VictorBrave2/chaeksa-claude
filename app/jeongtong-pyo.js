@@ -6,7 +6,7 @@ if(!Old||!Old.그리기)return;
 const legacyDraw=Old.그리기;
 const API='https://chaeksa-behavior-core.vercel.app/api/jt-pyo';
 const cache=new Map(),pending=new WeakMap();
-const companionArt=new URL('art/jeongtong-companion/',document.currentScript.src).href;
+const companionArt=new URL('art/jeongtong-tarot-v1/',document.currentScript.src).href;
 let companionEnabled=true,companionObserver=null;
 function companion(host){
  if(companionObserver){companionObserver.disconnect();companionObserver=null;}
@@ -18,7 +18,7 @@ function companion(host){
   const stage=document.createElement('div');stage.className='jt-guide-scene '+kind;
   const copy=document.createElement('div');copy.className='jt-guide-copy';parent.insertBefore(stage,nodes[0]);nodes.forEach(node=>copy.append(node));stage.append(copy);
   const art=document.createElement('div');art.className='jt-guide-art';art.setAttribute('aria-hidden','true');
-  const image=document.createElement('img');image.src=companionArt+pose+'-v4.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
+  const image=document.createElement('img');image.src=companionArt+pose+'.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
   image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};art.append(image);stage.append(art);
  }
  scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1,.hero-line,.name-origin,.reader-go')),'jt-guide-opening','welcome');

@@ -12,7 +12,7 @@
   body[data-desktop-scene]:has(> .doc){--desktop-paper-width:660px}
   body[data-desktop-scene]:has(.zd-companion),body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide) #jtOut .jt-companion){--desktop-paper-width:756px}
   body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)){--desktop-paper-width:572px}
-  body[data-desktop-scene="library"],body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)){--desktop-scene:url("art/desktop-scenes/library-v1.png")}
+  body[data-desktop-scene="library"],body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)){--desktop-scene:url("art/jeongtong-tarot-v1/library.png")}
   body[data-desktop-scene="observatory"]{--desktop-scene:url("art/desktop-scenes/observatory-v1.png")}
   body[data-desktop-scene="morning"],body:has(#app:not(.hide) > .tab:is([data-tab="today"],[data-tab="why"]):not(.hide)){--desktop-scene:url("art/desktop-scenes/morning-v1.png")}
   body[data-desktop-scene="garden"],body:has(#app:not(.hide) > .tab:is([data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"]):not(.hide)){--desktop-scene:url("art/desktop-scenes/garden-v1.png")}

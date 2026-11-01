@@ -6,6 +6,7 @@
   const sceneNames = { welcome: '첫', reading: '중간', closing: '마지막' };
   const guideImages = new Map();
   const newLibrary = '../../art/jeongtong-tarot-v1/library.png';
+  const originalLibrary = '../../art/desktop-scenes/library-v1.png';
   let selected = new URLSearchParams(location.search).get('art') === 'original' ? 'original' : 'new';
   let loaded = false, requestVersion = 0;
   let companionEnabled = true, companionObserver = null;
@@ -36,7 +37,7 @@
     if (selected === 'new') {
       document.body.style.setProperty('--desktop-scene', 'url("' + new URL(newLibrary, location.href).href + '")');
     } else {
-      document.body.style.removeProperty('--desktop-scene');
+      document.body.style.setProperty('--desktop-scene', 'url("' + new URL(originalLibrary, location.href).href + '")');
     }
     if (!loaded) return;
     report('');
