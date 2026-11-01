@@ -678,7 +678,7 @@ PR #14(이야기 191칸 · 왜.전체 1칸) 메인 합침 · 공개 v1539 — �
 
 ### Codex 돈 카드 풀이 뜻 대조 고침 제안 — 2026-11-01
 
-상태: **제안됨** · 새 가지 `codex/COPY-0026-question-fix`(main에서 시작).
+상태: **적용됨**(v1545 · PR #16 합침 · 메인 뜻 대조 14칸 맞음 — W09 바로 짧은 말은 v1551 · PR #20에서 「금전 처리 지연도 따르는, 압박을 버티는 힘」으로 다시 고침) · 가지 `codex/COPY-0026-question-fix`(main에서 시작).
 
 - 주문한 12면 14칸(물음카드말 10·물음카드뜻 4)을 고쳤다.
 - [칸마다 전 → 후 · 까닭](ref/COPY-0026-question-money-fix.md).
@@ -727,3 +727,110 @@ PR #14(이야기 191칸 · 왜.전체 1칸) 메인 합침 · 공개 v1539 — �
 | `세점.펼침.물음카드말.money.W09.바로` | 거래 지연도 따르는, 압박을 버티는 힘 | 금전 처리 지연도 따르는, 압박을 버티는 힘 | 지연되는 것은 금전 처리임을 밝히고, 압박을 버티는 힘이 주된 뜻인 명사구를 유지한다. |
 
 검사: node --check app/three-pieces.js 및 Node 로딩 통과. 기준 main과 문장표를 대조해 옛 대말 2칸 삭제·대까닭 2칸 추가·W09 2칸 수정만 확인했다. 새 까닭은 각 한 문장·{카드} 한 곳이며 W09 긴 풀이는 지정 문장과 같고 원고표 두 칸도 일치한다. python tools_check.py 종료 0 · 전체 막힘 0 · 확인 69, 10) 막힘 0 · 확인 0 및 돈 뜻·말 각 156면 다 참. git diff --check 통과. 원고 PR로 제안하며 메인 합치기·배포 대기.
+
+
+## 11-01 v1551 뒤 돈 카드 풀이 다시 대조 — 「거래」로 좁힌 43칸 · 고칠 것(결정함 90)
+
+v1551(PR #20)에서 W09 바로의 「거래 지연」을 「금전 처리 지연」으로 고쳤다 — 늦어지는 것을 거래 하나로 정하지 않는다. 같은 꼴이 다른 칸에도 있는지 켜진 돈 312칸(물음카드뜻 156 · 물음카드말 156)을 웨이트 원문 줄과 한 칸씩 다시 맞대 봤다. 라이브 글과 [원고표](ref/COPY-0026-question-money.md)는 312칸이 글자까지 같다.
+
+같은 꼴이 43칸(물음카드뜻 23 · 물음카드말 20)에 남아 있다. 원문은 무엇이 끝나는지 · 늦어지는지 · 어디서 속이는지 말하지 않는데, 글이 그 자리를 「거래 · 돈거래」로 정했다. 진행 중인 거래가 없는 손님도 거래 사건을 기대하게 된다. 뿌리는 [원고표](ref/COPY-0026-question-money.md) 「원고 기준」 첫 줄 「다른 132면은 §2 본뜻 낱말을 돈의 관리·거래·지출·재정 상태로 해석했다」 — 거래를 기본으로 옮겨도 되는 말로 열어 두었다.
+
+문장은 Codex 몫이다 — 아래는 무엇이 왜 걸리는지와 맞는 뜻만 적었다. 앞 절들의 꼭 지킬 것(판정 말 없이 · 원문에 없는 사건 · 사람 · 숫자 없이 · 중괄호 없이)은 그대로다.
+
+### 규칙 — 「거래」는 웨이트가 말한 칸에서만
+
+- 「거래 · 돈거래 · 금전 거래」는 웨이트가 trade · commerce · business · barter · negotiations · dealings 를 말한 일곱 면에서만 쓴다: W03 바로(trade, commerce) · W07 바로(negotiations, barter) · P07 바로(money, business, barter) · P14 바로(business) · C11 바로(also … directed to business) · C14 바로(man of business) · S02 거꾸로(§4 Dealings with rogues). 이 일곱 면은 지금 글 그대로.
+- 나머지는 원문 낱말이 가리키는 일을 돈 전반(돈이 들고 나는 일 · 돈 문제 · 재정 · 살림 · 재산)의 일로 옮긴다. 끝 · 지연 · 끊김 · 배신 · 속임 · 철회 · 무너짐 · 장애 · 계략 · 소식 · 떠남 · 반대 · 마무리 · 새 관계 · 숨은 사정이 일어나는 자리를 거래 하나로 정하지 않는다.
+- 「돈거래」는 흔히 돈을 빌려주고 빌리는 일로 읽힌다 — 웨이트가 빌림을 말한 칸은 P07 거꾸로 · P08 거꾸로(§4)뿐이다.
+- 「수입」 · 「집안 재산」도 같은 꼴이다 — 원문이 그 대상을 말하지 않으면 넓은 돈 말로(M13 바로 “End” → 「수입과 거래의 끝」 · W11 바로 “family intelligence” → 「집안 재산의 소식」).
+- 원문에서 사람 · 성품 · 몸의 움직임인 것을 거래로 바꾸지 않는다 — W12 바로(“Departure … emigration” · “Change of residence” → 「돈거래에서 물러남」) · C13 거꾸로(“one not to be trusted” → 「믿기 어려운 돈거래」) · W14 바로 말(“honest and conscientious” → 「정직한 거래」).
+- 거래가 태도 · 능력 · 판단의 범위이거나 넓은 돈 말과 나란히 있는 칸(26칸)은 읽기에 해가 없어 그대로 둔다. 「돈을 주고받는 일 · 관계」 같은 넓은 말도 그대로 써도 된다.
+
+### 고칠 칸 43
+
+열쇠 앞에는 `세점.펼침.`이 붙는다. 「좁힌 곳」 = 원문 낱말 → 지금 글이 정한 대상. 짝 칸(뜻 · 말) 가운데 하나만 걸린 면은 고친 뒤에도 두 칸이 같은 뜻이게.
+
+| 칸 | 지금 | 웨이트 원문(줄) | 좁힌 곳 |
+|---|---|---|---|
+| `물음카드말.money.M02.바로` | 숨은 거래 사정과 끈기 | “Secrets, mystery, the future as yet unrevealed” · “silence, tenacity” · “wisdom, science” (430) | Secrets, mystery(비밀 일반)를 「거래」의 숨은 사정으로 좁힘 — 진행 중인 거래가 있다고 전제 |
+| `물음카드말.money.M09.바로` | 금전 거래의 배신과 속임수 | “especially treason, dissimulation, roguery, corruption” (444) | treason · dissimulation · roguery · corruption(배신 · 숨김 · 속임 · 부패 일반)이 일어나는 자리를 「금전 거래」로 좁힘 |
+| `물음카드뜻.money.M13.바로` | 수입과 거래의 끝, 재산이 파괴되는 상태를 가리킵니다. | “End, mortality, destruction, corruption” (452) | End(끝 일반)를 「수입과 거래의 끝」으로 — 끝나는 대상을 수입(벌이의 흐름) · 거래로 정함 |
+| `물음카드뜻.money.M18.바로` | 거래 속에 감춰진 적의와 속임수, 돈을 위태롭게 하는 위험을 가리킵니다. | “Hidden enemies, danger, calumny” · “deception” (462) | Hidden enemies · deception이 숨어 있는 자리를 「거래 속」으로 좁힘 |
+| `물음카드말.money.M18.바로` | 거래 속의 속임수와 숨은 위험 | “Hidden enemies, danger, calumny” · “deception” (462) | deception → 「거래 속의」 속임수 |
+| `물음카드뜻.money.M18.거꾸로` | 수입과 지출의 흐름이 안정되지 않고 자주 달라지는 모습입니다. 거래에서의 속임수도 담되 바로 놓였을 때보다는 정도가 덜합니다. | “Instability, inconstancy” · “lesser degrees of deception” (462) | lesser degrees of deception의 자리를 「거래에서」로 좁힘 |
+| `물음카드뜻.money.W05.거꾸로` | 돈을 두고 벌어지는 소송과 분쟁, 거래의 속임수를 가리킵니다. 서로의 주장이나 거래 내용이 어긋나는 모습도 함께 읽습니다. | “Litigation, disputes, trickery, contradiction” (96) | trickery → 「거래의」 속임수, contradiction → 「거래 내용」이 어긋남(주장과 나란히) |
+| `물음카드말.money.W05.거꾸로` | 금전 분쟁과 거래의 속임수 | “Litigation, disputes, trickery, contradiction” (96) | trickery → 「거래의」 속임수 |
+| `물음카드뜻.money.W06.거꾸로` | 거래의 배신과 끝을 알기 어려운 지연을 가리킵니다. 돈을 두고 느끼는 불안과 두려움도 함께 읽습니다. | “Apprehension, fear” · “treachery, disloyalty” · “indefinite delay” (89) | treachery, disloyalty · indefinite delay를 「거래의」 배신 · 지연으로 좁힘 |
+| `물음카드말.money.W06.거꾸로` | 거래의 배신과 지연, 불안 | “Apprehension, fear” · “treachery, disloyalty” · “indefinite delay” (89) | 배신 · 지연을 모두 「거래의」 일로 묶음 |
+| `물음카드말.money.W08.바로` | 속도를 내는 거래와 성취 | “Activity in undertakings” · “speed towards an end which promises assured felicity” (75) | Activity in undertakings · swiftness(벌인 일 전반의 빠른 움직임)를 「거래」의 속도로 좁힘 |
+| `물음카드뜻.money.W09.거꾸로` | 재정을 뒤흔드는 어려움과 재난, 돈거래를 가로막는 장애로 읽습니다. | “Obstacles, adversity, calamity” (68) | Obstacles(장애 일반)를 「돈거래를 가로막는」 장애로 — 막히는 대상을 돈거래로 정함 |
+| `물음카드뜻.money.W10.거꾸로` | 돈 문제에서 뜻이 어긋나거나 일이 막히는 모습입니다. 거래 뒤에서 꾸며지는 계략도 포함합니다. | “Contrarieties, difficulties, intrigues” (61) | intrigues(계략 일반)를 「거래 뒤에서」 꾸며지는 것으로 좁힘 |
+| `물음카드말.money.W10.거꾸로` | 어긋나는 돈거래와 숨은 계략 | “Contrarieties, difficulties, intrigues” (61) | Contrarieties(어긋남 일반)를 「돈거래」의 어긋남으로 좁힘 |
+| `물음카드뜻.money.W11.바로` | 돈거래에 관한 연락과 전달, 집안의 재산에 관한 소식을 가리킵니다. | “an envoy, a postman” · “favourable testimony” · “family intelligence” (54) | an envoy, a postman(전하는 이 · 우편)을 「돈거래에 관한」 연락으로, family intelligence(집안 소식)를 「집안의 재산에 관한」 소식으로 좁힘 |
+| `물음카드말.money.W11.바로` | 돈거래와 집안 재산의 소식 | “an envoy, a postman” · “favourable testimony” · “family intelligence” (54) | 전갈 · 집안 소식을 「돈거래와 집안 재산의」 소식으로 좁힘 |
+| `물음카드뜻.money.W11.거꾸로` | 돈거래에 관한 발표나 듣기 괴로운 금전 소식을 가리킵니다. | “Anecdotes, announcements, evil news” (54) | announcements(알림 일반)를 「돈거래에 관한」 발표로 좁힘 |
+| `물음카드말.money.W11.거꾸로` | 거래 발표와 괴로운 금전 소식 | “Anecdotes, announcements, evil news” (54) | announcements → 「거래 발표」 — 계약 · 인수 같은 거래 공표를 떠올리게 함 |
+| `물음카드뜻.money.W12.바로` | 기존의 돈거래에서 물러나거나 돈을 다루던 자리를 비우는 움직임으로 읽습니다. | “Departure, absence, flight, emigration” · “Change of residence” (47) | Departure, absence, flight, emigration, change of residence(몸이 떠남 · 이주 · 이사)를 「돈거래에서 물러남」으로 바꿈 |
+| `물음카드말.money.W12.바로` | 돈거래에서 떠남과 자리 비움 | “Departure, absence, flight, emigration” · “Change of residence” (47) | Departure → 「돈거래에서 떠남」 |
+| `물음카드뜻.money.W12.거꾸로` | 이어오던 거래가 끊기거나 중단되고, 돈을 둘러싼 입장이 갈라지는 모습입니다. | “Rupture, division, interruption, discord” (47) | Rupture, interruption(끊김 · 중단 일반)을 「이어오던 거래」의 끊김으로 좁힘 |
+| `물음카드말.money.W12.거꾸로` | 거래의 단절과 금전적 불화 | “Rupture, division, interruption, discord” (47) | Rupture → 「거래의 단절」 |
+| `물음카드뜻.money.C03.거꾸로` | 돈거래를 빠르게 처리하고 마무리하는 모습입니다. 즐거움을 좇는 지나친 지출이라는 뜻도 함께 읽습니다. | “Expedition, dispatch, achievement” · “pleasures of the senses” (208) | Expedition, dispatch, achievement, end(일을 빨리 처리해 이룸 · 끝남)를 「돈거래」의 처리 · 마무리로 좁힘 |
+| `물음카드말.money.C03.거꾸로` | 거래의 마무리와 과소비 | “Expedition, dispatch, achievement” · “pleasures of the senses” (208) | dispatch, achievement, end → 「거래의 마무리」 |
+| `물음카드뜻.money.C04.거꾸로` | 돈을 다루는 새로운 지식과, 전에 없던 거래 관계를 가리킵니다. 익숙한 방식과 다른 내용을 배우고 접하는 모습입니다. | “Novelty, presage, new instruction, new relations” (201) | new relations(새 관계 일반)를 「거래 관계」로 좁힘 |
+| `물음카드말.money.C04.거꾸로` | 새 금전 지식과 거래 관계 | “Novelty, presage, new instruction, new relations” (201) | new relations → 「거래 관계」 |
+| `물음카드뜻.money.C12.거꾸로` | 돈을 두고 겉과 속이 다른 말을 하거나 교묘하게 속이는 행위를 가리킵니다. 거래 사기와 기만이 중심입니다. | “Trickery, artifice, subtlety, swindling, duplicity, fraud” (145) | swindling, fraud를 「거래 사기」로 좁히고 그것을 칸의 중심으로 못 박음 |
+| `물음카드말.money.C12.거꾸로` | 돈거래의 기만과 사기 | “Trickery, artifice, subtlety, swindling, duplicity, fraud” (145) | Trickery … fraud가 일어나는 자리를 「돈거래」로 좁힘 |
+| `물음카드뜻.money.C13.거꾸로` | 겉으로 드러난 모습만으로는 믿기 어려운 돈거래를 가리킵니다. 금전 문제에 드러나는 부정과 불명예, 타락을 함께 읽습니다. | “one not to be trusted; perverse woman; vice, dishonour, depravity” (138) | one not to be trusted(믿을 수 없는 사람)를 「믿기 어려운 돈거래」로 바꿈 |
+| `물음카드말.money.C13.거꾸로` | 믿기 어려운 거래와 부정 | “one not to be trusted; perverse woman; vice, dishonour, depravity” (138) | one not to be trusted → 「믿기 어려운 거래」 |
+| `물음카드뜻.money.S03.바로` | 돈이 얽힌 관계에서의 떠남과 부재를 가리킵니다. 거래의 지연과 단절, 재산이 나뉘고 흩어지는 뜻도 담습니다. | “Removal, absence, delay, division, rupture, dispersion” (306) | delay, rupture(늦어짐 · 끊김 일반)를 「거래의」 지연 · 단절로 좁힘 |
+| `물음카드말.money.S04.바로` | 재산을 살피며 거래에서 물러남 | “Vigilance, retreat, solitude, hermit's repose, exile, tomb and coffin” (299) | retreat(물러남 일반)를 「거래에서」 물러남으로 좁힘 |
+| `물음카드뜻.money.S05.바로` | 거래의 철회와 손실, 돈 문제로 명예가 무너지는 상황을 가리킵니다. | “Degradation, destruction, revocation, infamy, dishonour, loss” (292) | revocation(취소 · 철회 일반)을 「거래의」 철회로 좁힘 |
+| `물음카드말.money.S05.바로` | 거래의 철회와 재산의 상실 | “Degradation, destruction, revocation, infamy, dishonour, loss” (292) | revocation → 「거래의 철회」 |
+| `물음카드뜻.money.S05.거꾸로` | 돈을 둘러싼 거래가 무너지고 재산을 잃는 뜻입니다. 돈 문제로 명예가 손상되는 뜻도 바로 놓였을 때와 같습니다. | “The same; burial and obsequies” (292) | The same(= 바로의 파괴 · 상실)의 무너짐을 「돈을 둘러싼 거래」의 무너짐으로 좁힘 |
+| `물음카드뜻.money.S08.바로` | 돈에 관한 달갑지 않은 소식과 비난, 거래를 둘러싼 충돌과 헐뜯음을 가리킵니다. | “Bad news” · “censure” · “conflict, calumny” (271) | conflict, calumny(충돌 · 중상 일반)를 「거래를 둘러싼」 것으로 좁힘 |
+| `물음카드뜻.money.S08.거꾸로` | 돈에 관한 합의나 거래에 맞서는 반대와, 믿음을 저버리는 배신을 가리킵니다. | “opposition” · “treachery” (271) | opposition(반대 일반)을 「돈에 관한 합의나 거래에 맞서는」 반대로 좁힘 |
+| `물음카드말.money.S08.거꾸로` | 금전 거래의 반대와 배신 | “opposition” · “treachery” (271) | opposition · treachery 둘 다 「금전 거래」에 묶음 |
+| `물음카드뜻.money.S12.바로` | 돈을 다룰 실력과 재산을 지키려는 용기를 가리킵니다. 돈을 놓고 격하게 맞서 싸우거나 거래를 파괴하는 뜻도 함께 있습니다. | “Skill, bravery, capacity, defence, address” · “enmity, wrath, war, destruction, opposition, resistance, ruin” (243) | destruction, ruin(파괴 · 파멸 일반)을 「거래를 파괴하는」 것으로 좁힘 |
+| `물음카드뜻.money.S13.거꾸로` | 돈을 놓고 품는 악의와 편협함, 거래에서 교묘하게 꾸미는 속임수를 가리킵니다. | “Malice, bigotry, artifice” · “deceit” (236) | artifice, deceit(술책 · 속임 일반)를 「거래에서」의 속임수로 좁힘 |
+| `물음카드뜻.money.P04.거꾸로` | 돈을 주고받는 일의 결론이 나지 않고 미뤄지거나, 거래에 반대가 걸린 상태를 가리킵니다. | “Suspense, delay, opposition” (397) | opposition(반대 일반)을 「거래에」 걸린 반대로 좁힘 |
+| `물음카드말.money.P04.거꾸로` | 미뤄진 돈 거래와 반대 | “Suspense, delay, opposition” (397) | Suspense, delay(미정 · 늦어짐 일반)를 「돈 거래」가 미뤄짐으로 좁힘 |
+| `물음카드말.money.W14.바로` | 정직한 거래와 뜻밖의 상속 소식 | “Dark man, friendly” · “honest and conscientious” · “unexpected heritage” (33) | honesty(정직이라는 성품)를 「정직한 거래」라는 일로 바꿈 |
+
+43칸 가운데 20칸은 두 검토가 모두 걸었고, 23칸은 한쪽이 「돈 물음이니 거래로 옮겨도 된다」고 봤다. 위 규칙(거래는 웨이트가 말한 칸에서만 — W09 바로 고침과 같은 기준)으로 보면 43칸 모두 같은 꼴이라 함께 고친다.
+
+### 같이 고칠 것 넷
+
+1. `물음카드뜻.money.M08.바로` · `물음카드말.money.M08.바로` — 지금 「돈 문제를 직접 다룰 힘과 실행력을 가리킵니다. 돈 앞에서 위축되지 않는 용기와 넉넉한 태도도 함께 담습니다.」 · 「돈 앞의 용기와 너그러움」
+   - 걸리는 곳: 원문(442) “Power, energy, action, courage, magnanimity; also complete success and honours.”의 뒤쪽 “also complete success and honours”(온전한 성공과 영예)가 두 칸 모두 빠졌다.
+   - 맞는 뜻: 지금 뜻에, 돈이 걸린 일이 온전히 이루어지고 그 일로 인정받는다는 뜻을 더한다. 짧은 말도 용기 · 너그러움과 이룸이 함께 보이게.
+2. `물음카드뜻.money.S13.바로` — 지금 「재산의 상실과 결핍, 돈과 얽힌 관계의 단절을 가리킵니다.」
+   - 걸리는 곳: 「재산의 상실」(잃음)은 원문(236)에 없다 — 원문은 “absence … privation, separation”(없음 · 모자람 · 갈라짐)이다. 짧은 말 「재산의 결핍과 금전 관계의 단절」은 맞다.
+   - 맞는 뜻: 돈이 없거나 모자란 상태와, 돈으로 얽힌 관계가 갈라짐. 잃는 사건으로 만들지 않는다.
+3. `물음카드말.money.C10.거꾸로` — 지금 「거짓된 마음의 안락과 분노·폭력」
+   - 걸리는 곳: v1545 고침에서 사람 쪽(거짓된 마음)은 맞게 옮겼는데 돈 쪽이 빠져, 돈 물음 이야기 줄에서 돈과 상관없는 말로 읽힌다. 긴 풀이 「돈을 정직하게 다루지 않으면서도 편안함을 누리는 모습입니다. 돈을 둘러싼 분노와 폭력도 함께 가리킵니다.」는 맞다.
+   - 맞는 뜻: 긴 풀이와 같은 범위 — 돈을 정직하게 다루지 않으면서 편히 지냄과, 돈을 둘러싼 분노 · 폭력. 거래로 좁히지 않는다.
+4. `세점.펼침.대까닭.대길` · `세점.펼침.대까닭.대흉` — 지금 「결과 카드 {카드}의 뜻이 이 질문에서 …」
+   - 걸리는 곳: 화면은 이 까닭을 끝말 「마지막 결과를 뜻하는 열 번째 카드 {카드}가 {놓임} 놓였으며, 판정은 ‘{길흉}’입니다. …」 바로 뒤에 붙인다 — 같은 카드 이름이 두 문장 사이에 되풀이된다.
+   - 맞는 뜻: 앞 문장이 이미 카드 이름을 말했으니 여는 말에서 이름을 되풀이하지 않는다(`{카드}`는 빼도 된다). 나머지(책사의 질문별 기준 · 큰 성취 / 큰 손실이나 무너짐 · 한 문장)는 그대로(결정함 97).
+
+### 다음 아홉 물음에도(같은 걸림이 되풀이되지 않게)
+
+- 「거래」처럼 그 물음 안의 한 가지 일로 좁히지 않는다 — 원문 낱말이 그 대상을 말하지 않으면 그 물음의 넓은 말로 옮긴다.
+- 원문 줄을 반만 옮기지 않는다 — “also …” · “especially …” 뒤에 오는 낱말도 그 카드 그 놓임의 뜻이다(M08 바로 “also complete success and honours”).
+- 원문보다 세게 옮기지 않는다(모자람 “privation”을 잃음으로 만들지 않는다). 원문보다 약하게 돌려 말하지도 않는다 — §3 낱말이 듣기 괴로운 칸(예: 자식 물음 S13 바로 “sterility”)도 그 낱말을 먼저 옮긴다.
+- 원문에서 사람 · 성품 · 몸의 움직임인 것을 그 물음의 물건 · 일로 바꾸지 않는다.
+- 남녀가 갈린 칸(자료표 §3 「남(M) · 여(F)」 두 줄 — `love` 7 · `people` 2 · `child` 1)은 `{ "M": "…", "F": "…" }`. 11-01부터 글 하나면 검사기가 막는다(tools_check 10) — 글 하나면 남녀 손님에게 같은 글이 나간다).
+
+### 끝나면
+
+이 절 고침: 최신 main에서 새 가지 `codex/COPY-0026-question-fix2` — 칸마다 전 → 후 · 까닭은 `ref/COPY-0026-question-money-fix2.md`에. [원고표](ref/COPY-0026-question-money.md)는 해당 행과 「원고 기준」 첫 줄(거래를 기본으로 연 말), 그 행들의 「옮긴 근거」 칸도 같이. `node` 로 `app/three-pieces.js` 가 깨지지 않는지 · `python tools_check.py` 10)이 막힘 0인지. 메인이 뜻 대조 · 화면 글 검사기 · 합치기 · 배포. INDEX.md 상태를 「제안됨」으로.
+
+나머지 아홉 물음(주문은 위 「11-01 물음마다 카드 풀이」 절 그대로 · 이 절의 「다음 아홉 물음에도」를 지킨다)은 이 고침과 따로, 세 물음씩 가지를 나눈다(차례는 메인 추천 — 손님이 많이 고를 물음부터):
+
+| 묶음 | 물음 | 가지 |
+|---|---|---|
+| ② | 연애 · 결혼(`love` — 남녀 칸 7) · 일(`work`) · 마음(`mind`) | `codex/COPY-0026-question-2` |
+| ③ | 몸(`body`) · 곁의 사람(`people` — 남녀 칸 2) · 자식(`child` — 남녀 칸 1) | `codex/COPY-0026-question-3` |
+| ④ | 부모(`parent`) · 집(`home`) · 떠남(`move`) | `codex/COPY-0026-question-4` |
+
+물음마다 `ref/COPY-0026-question-<물음>.md`(돈과 같은 꼴). 한 물음의 156면(물음카드뜻 · 물음카드말 따로 · 남녀 칸은 M · F 둘 다)이 다 차야 그 물음이 켜진다 — 묶음 PR이 합쳐지는 대로 그 물음만 켜진다.

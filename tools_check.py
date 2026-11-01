@@ -684,7 +684,7 @@ def scan_three_q():
                     if isinstance(v, str):
                         vals = [('', v)]
                         if (q, cid, o) in gendered:
-                            warn.append('%s — 남녀가 갈린 칸인데 글이 하나다(자료표 §3 — { "M": … , "F": … })' % key)
+                            bad.append('%s — 남녀가 갈린 칸인데 글이 하나다(자료표 §3 — { "M": … , "F": … } · 글 하나면 남녀 손님에게 같은 글이 나간다)' % key)
                     elif isinstance(v, dict):
                         extra = [g for g in v if g not in ('M', 'F')]
                         if extra:
