@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko" data-scene="library">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f8f5ed">
+  <title>정통사주 · 모바일 배경 견본 · 책사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="scene.css">
+  <script src="scene.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#reading">본문으로 건너뛰기</a>
+  <header class="masthead">
+    <a class="brand" href="../../index.html" aria-label="책사 처음 화면"><span class="seal" aria-hidden="true">策</span><span>책사</span></a>
+    <details class="reading-options">
+      <summary>읽기 설정</summary>
+      <div class="option-panel">
+        <button type="button" id="font-toggle" aria-pressed="false">글자 크게</button>
+        <button type="button" id="art-toggle" aria-pressed="false">그림 숨기기</button>
+      </div>
+    </details>
+  </header>
+  <nav class="scene-menu" aria-label="견본 메뉴">
+    <a href="?scene=library" data-scene-link="library" aria-current="page">정통사주</a>
+    <a href="?scene=observatory" data-scene-link="observatory">정통자미두수</a>
+  </nav>
+  <main id="reading" tabindex="-1">
+    <article class="scene" data-scene-panel="library" aria-labelledby="library-title">
+      <div class="scene-intro">
+        <figure class="scene-art">
+          <img src="../../art/mobile-scenes-v1/library-mobile-v2.webp" width="1024" height="1536" alt="" fetchpriority="high" decoding="async">
+          <p class="art-fallback" role="status" hidden>그림을 불러오지 못했어요.<br>아래 글은 계속 읽을 수 있어요.</p>
+        </figure>
+        <div class="intro-paper">
+          <p class="sample-label">기존 본문으로 보는 화면 견본</p>
+          <h1 id="library-title">정통사주</h1>
+          <p class="intro-lead">옛 책이 좋게 본 내 조건과<br class="wide-break"> 앞으로의 운</p>
+          <a class="read-link" href="#library-body">본문 읽기 <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="reading-paper" id="library-body">
+        <!-- Existing copy: jeongtong.html. No birth data or calculated reading is loaded. -->
+        <p class="opening">옛 책이 좋게 본 조건 가운데 내 사주에 해당하는 것을 하나씩 모아 봅니다. 같은 조건을 모두 갖춘 비교 사주의 비율을 확인하고, 앞으로 같은 글자가 들어오는 해·달·날·시간과 10년 운을 읽습니다. 조건별 원문과 내 사주 근거, 돈·연애·일을 다룬 자세한 풀이 12장도 펼쳐 볼 수 있습니다.</p>
+        <nav class="reading-toc" aria-label="정통사주 견본 차례">
+          <p>차례</p>
+          <a href="#library-one"><span>01</span> 타고난 사주와 앞으로의 조건</a>
+          <a href="#library-two"><span>02</span> 내 사주와 운의 글자 연결하기</a>
+          <a href="#library-three"><span>03</span> 고전 원문과 내 사주 근거</a>
+        </nav>
+        <section class="chapter" id="library-one" aria-labelledby="library-one-title">
+          <p class="chapter-number">01</p>
+          <h2 id="library-one-title">타고난 사주와<br>앞으로 살펴볼 조건</h2>
+          <p>태어난 사주의 글자와, 앞으로 들어오는 글자를 함께 봅니다.</p>
+          <div class="copy-example">
+            <p class="example-label">기존 풀이 문장 예시</p>
+            <!-- Existing copy: jeongtong-prose.js, unchanged replacement text. -->
+            <p>사주의 기본 구성이 제대로 갖춰져 있어요. 자평진전에서 좋게 본 상태예요.</p>
+            <p>필요한 글자가 사주에 있어요. 궁통보감에서 좋게 본 상태예요.</p>
+          </div>
+          <p class="sample-note">이 견본은 기존 문장을 옮긴 화면 예시입니다. 개인의 사주를 계산한 결과가 아닙니다.</p>
+        </section>
+        <section class="chapter" id="library-two" aria-labelledby="library-two-title">
+          <p class="chapter-number">02</p>
+          <h2 id="library-two-title">내 사주와 운의<br>글자 연결하기</h2>
+          <p>태어날 때 사주에 없던 글자도 운이 바뀌면 들어와요.</p>
+          <p>운이 바뀌어도 타고난 사주의 짜임은 그대로예요(구조 유지).</p>
+          <div class="copy-example">
+            <p class="example-label">기존 풀이 문장 예시</p>
+            <p>이 글자는 당신을 뜻하는 기운에 힘을 보태요(생).</p>
+            <p>이 글자는 당신을 뜻하는 기운을 누르려 해요. 하지만 다른 글자가 막아서 당신에게 닿지 못해요(제복).</p>
+          </div>
+        </section>
+        <section class="chapter" id="library-three" aria-labelledby="library-three-title">
+          <p class="chapter-number">03</p>
+          <h2 id="library-three-title">고전 원문과<br>내 사주 근거</h2>
+          <p>책은 힘이 너무 세면 눌러 주고, 부족하면 보태 줘야 한다고 했어요.</p>
+          <p>삼명통회는 모든 것이 생겨나고 사라지는 모습을 사람이 태어나고 죽는 과정에 빗댔어요.</p>
+          <details class="source-note">
+            <summary>견본에 사용한 기존 문장</summary>
+            <p>정통사주 안내와 기존 쉬운 풀이에서 옮겼습니다. 개인 정보와 새 계산 결과를 넣지 않았습니다.</p>
+            <a href="../../jeongtong.html">정통사주 안내 보기 ↗</a>
+          </details>
+        </section>
+      </div>
+    </article>
+    <article class="scene" data-scene-panel="observatory" aria-labelledby="observatory-title" hidden>
+      <div class="scene-intro">
+        <figure class="scene-art">
+          <img src="../../art/mobile-scenes-v1/observatory-mobile-v2.webp" width="1024" height="1536" alt="" decoding="async">
+          <p class="art-fallback" role="status" hidden>그림을 불러오지 못했어요.<br>아래 글은 계속 읽을 수 있어요.</p>
+        </figure>
+        <div class="intro-paper">
+          <p class="sample-label">기존 본문으로 보는 화면 견본</p>
+          <h1 id="observatory-title">정통자미두수</h1>
+          <p class="intro-lead">별들이 그린<br class="wide-break"> 당신의 귀한 자리</p>
+          <a class="read-link" href="#observatory-body">본문 읽기 <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="reading-paper" id="observatory-body">
+        <!-- Existing copy: myeongban-copy.js, page introduction and palace/star descriptions. -->
+        <p class="opening">태어난 해 · 달 · 날 · 시로 열두 칸짜리 표(명반)를 그려 사람을 보는 옛 방법이에요(자미두수). 어느 칸에 어느 별이 놓였는지를 봐요.</p>
+        <p>당신의 명반에서 칸이나 별을 누르세요. 그 자리에 관한 옛 책의 원문과 쉬운 풀이가 나와요(《자미두수전서》).</p>
+        <p class="sample-note">이 견본은 기존 문장을 옮긴 화면 예시입니다. 개인의 명반을 계산한 결과가 아닙니다.</p>
+        <nav class="reading-toc" aria-label="정통자미두수 견본 차례">
+          <p>차례</p>
+          <a href="#observatory-one"><span>01</span> 당신의 타고난 바탕</a>
+          <a href="#observatory-two"><span>02</span> 삶의 열두 분야</a>
+          <a href="#observatory-three"><span>03</span> 옛 책에 적힌 별의 뜻</a>
+        </nav>
+        <section class="chapter" id="observatory-one" aria-labelledby="observatory-one-title">
+          <p class="chapter-number">01</p>
+          <h2 id="observatory-one-title">당신의<br>타고난 바탕</h2>
+          <p>당신의 타고난 바탕을 보는 자리예요. 열두 칸의 첫 자리이고, 나머지 열한 칸은 여기서부터 차례로 놓여요.</p>
+          <p>당신의 바탕을 보는 칸(명궁)과 짝을 이루는 자리예요(신궁). 태어난 달에서 시만큼 앞으로 세어 정해요(卷二 安身命例).</p>
+          <div class="copy-example">
+            <p class="example-label">기존 안내 문장 예시</p>
+            <p>열두 칸의 첫 자리(명궁)가 태어난 달과 시로 정해지기 때문에, 태어난 시각이 꼭 있어야 해요.</p>
+          </div>
+        </section>
+        <section class="chapter" id="observatory-two" aria-labelledby="observatory-two-title">
+          <p class="chapter-number">02</p>
+          <h2 id="observatory-two-title">삶의<br>열두 분야</h2>
+          <dl class="reading-list">
+            <div><dt>돈</dt><dd>돈 — 벌고 쓰는 재물을 보는 자리예요.</dd></div>
+            <div><dt>일</dt><dd>일 — 옛 책은 벼슬과 그 대가로 받는 급여(官祿)를 보는 자리로 적었어요. 벼슬이 없는 지금은 직장과 맡은 일을 보는 자리예요.</dd></div>
+            <div><dt>바깥</dt><dd>바깥 — 집을 떠나 밖에서 겪는 일, 옮겨 다니는 일을 보는 자리예요.</dd></div>
+            <div><dt>마음과 복</dt><dd>마음과 복 — 마음이 편한지, 누리는 복이 있는지를 보는 자리예요.</dd></div>
+          </dl>
+        </section>
+        <section class="chapter" id="observatory-three" aria-labelledby="observatory-three-title">
+          <p class="chapter-number">03</p>
+          <h2 id="observatory-three-title">옛 책에 적힌<br>별의 뜻</h2>
+          <div class="copy-example">
+            <p class="example-label">자미 · 기존 별 설명</p>
+            <p>하늘 가운데의 으뜸 별이자 별들의 임금이에요(자미 · 帝座). 사람의 삶을 이끄는 별이에요(人生主宰).</p>
+          </div>
+          <details class="source-note">
+            <summary>견본에 사용한 기존 문장</summary>
+            <p>정통자미두수의 안내와 궁·별 설명에서 옮겼습니다. 개인 정보와 새 계산 결과를 넣지 않았습니다.</p>
+            <a href="../../myeongban.html">정통자미두수 안내 보기 ↗</a>
+          </details>
+        </section>
+      </div>
+    </article>
+    <noscript><p class="script-note">기본 정통사주 견본을 보고 있습니다. 메뉴 전환과 읽기 설정은 자바스크립트를 켜면 사용할 수 있습니다.</p></noscript>
+  </main>
+  <footer class="preview-footer"><p>책사 · 모바일 배경 견본</p><a href="board.html">화면 크기 비교판 ↗</a><a href="#reading">맨 위로 ↑</a></footer>
+</body>
+</html>

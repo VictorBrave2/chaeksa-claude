@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>모바일 배경 · 화면 크기 비교판 · 책사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="scene.css">
+  <link rel="stylesheet" href="board.css">
+  <script src="board.js" defer></script>
+</head>
+<body class="comparison-board">
+  <header class="board-mast">
+    <a class="brand" href="index.html"><span class="seal" aria-hidden="true">策</span><span>책사</span></a>
+    <div><p class="board-eyebrow">모바일 배경 견본</p><h1>화면 크기 비교판</h1></div>
+  </header>
+  <main class="board-main">
+    <p class="board-note">각 화면 안에서 아래로 내려 본문까지 볼 수 있습니다. 실제 휴대폰에서는 <a id="direct-preview" href="index.html?scene=library" target="_blank" rel="noopener">견본 직접 보기 ↗</a>를 열어 주세요.</p>
+    <div class="board-controls">
+      <fieldset><legend>메뉴</legend><div class="board-menu"><button type="button" data-board-scene="library" aria-pressed="true">정통사주</button><button type="button" data-board-scene="observatory" aria-pressed="false">정통자미두수</button></div></fieldset>
+      <label class="device-picker" for="device-select">화면 크기<select id="device-select"><option value="all">모든 크기</option value="small">작은 휴대폰 · 320 × 568</option><option value="narrow">좁은 휴대폰 · 360 × 740</option><option value="phone">휴대폰 · 390 × 844</option><option value="large">큰 휴대폰 · 430 × 932</option><option value="fold">펼친 화면 · 768 × 900</option><option value="landscape">가로 화면 · 844 × 390</option></select></label>
+    </div>
+    <p id="board-status" class="board-status" role="status">정통사주 · 모든 크기</p>
+    <div id="devices" class="device-grid" aria-label="크기별 견본 화면"></div>
+    <noscript><p>크기 비교판은 자바스크립트를 켜면 표시됩니다. <a href="index.html">견본 직접 보기</a></p></noscript>
+  </main>
+</body>
+</html>
