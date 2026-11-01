@@ -86,6 +86,16 @@
     return !내 || 셋.indexOf(내) >= 0;
   }
 
+  // ── 11-02 사장님 「자미두수에도 명식표 넣어」 — 결과 맨 위에 사주 여덟 글자 표(정통사주와 같은 myeongsik-card.js 원국표 · 공개 엔진). 판정 없음.
+  function 원국표() {
+    try {
+      var E = window.ChaeksaEngine, C = window.ChaeksaMyeongsikCard; if (!지금 || !E || !C || !C.원국표) return '';
+      var b = 지금.body, p = { year: b.year, month: b.month, day: b.day, hour: b.hour, minute: b.minute || 0, gender: b.gender === 'F' ? 'F' : 'M' };
+      var pl = window.ChaeksaPlaces && ChaeksaPlaces.resolve ? ChaeksaPlaces.resolve(b.place) : null; if (pl) { p.longitude = pl.lon; p.tzOffset = pl.tzOffset; }
+      C.꾸밈('msc-');
+      return '<section class="mb-wongook">' + C.원국표(E.calc(p), { pre: 'msc-' }) + '</section>';
+    } catch (e) { return ''; }
+  }
   // ── 명반 그리기
   function 명식짧게() {
     if (!지금) return '';
@@ -133,7 +143,7 @@
   }
   function 그리기() {
     var R = 결과; if (!R) return;
-    var M = R.명반, h = '';
+    var M = R.명반, h = 원국표();
     h += '<div class="mb-top"><div class="sec">' + esc(글('명반.머리', '당신의 명반')) + '</div><p class="why">' + esc(M.해범위[0] + '~' + M.해범위[1]) + '</p></div>';
     var 종류 = []; (M.경계 || []).forEach(function (말) { var k = 경계종류(말); if (k && 종류.indexOf(k) < 0) 종류.push(k); });
     if ((M.경계 || []).length) h += '<div class="mb-edge"><p>' + esc(글('명반.경계', '')) + '</p>' + 종류.map(function (k) { return '<p>' + esc(글('명반.경계종류.' + k, '')) + '</p>'; }).join('') + '</div>';
