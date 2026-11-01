@@ -1,0 +1,66 @@
+{
+  "generator": "built-in image_gen",
+  "mode": "edit",
+  "createdAt": "2026-11-01",
+  "scope": "오늘의 운세 고정 안내 삽화 3장. 원본 얼굴, 인원, 포즈, 색상과 소품을 유지하고 승인 welcome 화풍의 선·명암·직물·금장 질감 적용.",
+  "generationCalls": 3,
+  "entries": [
+    {
+      "id": "forecast-m",
+      "prompt": "Edit image 1, the existing transparent male daily-forecast guide, using image 2 ONLY as an illustration rendering/material reference. Image 1 is the absolute identity, pose, expression, palette and prop reference. Preserve his exact adult Korean face, jaw, warm brown eyes, gaze, small open-lipped smile, head tilt, tousled charcoal hairstyle, silver ear cuff, hand and arm placement, open ivory book, chain and compass medallion. Keep the teal coat, ivory lapels and black underlayer of image 1; do not replace teal with the dark green from image 2. Upgrade only the illustration finish and fantasy garment craftsmanship to the same sophisticated tarot-deck quality as image 2: delicate precise linework, fine individual hair strands, soft dimensional facial shading, tactile teal velvet/silk brocade, ivory jacquard, detailed raised gold botanical embroidery along collar/lapels/sleeve edges, subtle metallic highlights, beautiful physically coherent folds. Keep the original outfit silhouette and balance; the teal remains dominant, do not bury it under solid gold. Refine the ivory book's gilded corner decoration without changing its shape or grip. One adult man, exactly two anatomically coherent arms and hands, each naturally connected from shoulder to wrist and each correctly holding the existing book. No new pose, no extra fingers, no detached limbs, no pinching gesture. Preserve original square composition and torso framing, do not clip more of head or shoulders. Clean genuine alpha transparency around the figure, no colored edge fringe, no background scenery, no text, letters, numerals, card border, watermark or modern object. High-resolution sharp finished bitmap with natural softly luminous lighting; no blur or painted haze. This is the same character in the same scene, not a redesign.",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/today-guides/forecast-m-v1.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jeongtong-tarot-v1/welcome.png"
+      ],
+      "source": "C:/Users/LEE/.codex/generated_images/01a18b36-b8e4-7323-9588-03d91b84dc9a/exec-6678e113-58f8-474f-834e-b2cafe5224b0.png",
+      "destination": "app/art/today-tarot-v1/forecast-m.png",
+      "width": 1254,
+      "height": 1254,
+      "transparentBackground": true,
+      "reviewNotes": [
+        "기존 남성 얼굴·헤어·눈·표정과 열린 책을 잡은 양손·팔 위치 유지.",
+        "청록 코트, 아이보리 라펠, 검정 속옷, 나침반 장식 유지. 청록 직물 결, 금장 자수, 금속 명암을 보강.",
+        "투명 PNG 알파 채널 확인(샘플 최솟값 0)."
+      ]
+    },
+    {
+      "id": "thought-f",
+      "prompt": "Edit image 1, the existing transparent female thought-guide portrait. Image 1 is the absolute identity, expression, pose, palette and prop reference. Use image 2 ONLY for the quality of rendering, fine linework, dimensional shading and ornate fabric/metal treatment; do not copy its male face, green colors, masculine clothing or open-book pose. Preserve the exact adult Korean woman's warm brown eyes, forward gaze, short wavy charcoal bob, gentle small open-lipped smile, head tilt, natural modest bust and body proportions, gold orbit-and-pearl hair ornament, pearl earrings, ivory high-neck blouse, coral dusty-rose robe and burgundy waist. Preserve her two hands holding the same closed ivory book diagonally against her body, with the existing hourglass chain charm. Upgrade only material richness and illustration craft to the approved sophisticated tarot fantasy style: soft precise fine lines, individual hair strands, luminous restrained dimensional shading, tactile dusty-rose silk/velvet brocade with fine raised gold botanical embroidery along robe panels/edges, luminous ivory jacquard blouse and cuffs, polished tiny golden ornaments and natural folds. Keep the original rose hue and feminine garment silhouette; avoid exposed cleavage or enlarged chest. Two correct shoulders, exactly two naturally connected arms and two hands, grip and visible fingers anatomically coherent; no extra limb or pinching gesture. Keep original square composition and torso framing, do not crop the head or shoulders more tightly. Genuine clean alpha transparency around figure, no colored fringe, no backdrop, no text/letters/numbers, no card border, no watermark, no modern accessory. High resolution, crisp detailed finished image, no blur or haze. Preserve the same woman and the same scene while improving the material finish.",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/today-guides/thought-f-v1.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jeongtong-tarot-v1/welcome.png"
+      ],
+      "source": "C:/Users/LEE/.codex/generated_images/01a18b36-b8e4-7323-9588-03d91b84dc9a/exec-c74d23d9-0f9f-45d2-aec3-03c915a40aba.png",
+      "destination": "app/art/today-tarot-v1/thought-f.png",
+      "width": 1254,
+      "height": 1254,
+      "transparentBackground": true,
+      "reviewNotes": [
+        "기존 여성 얼굴·짧은 단발·눈·표정·진주 장식과 닫힌 책을 안은 양손·팔 위치 유지.",
+        "분홍 로브·아이보리 블라우스·버건디 허리 색상 유지. 직물 결·꽃 금장 자수 보강, 체형 과장 없음.",
+        "투명 PNG 알파 채널 확인(샘플 최솟값 0)."
+      ]
+    },
+    {
+      "id": "week-pair",
+      "prompt": "Edit image 1, the existing two-person transparent weekly-guide illustration. Preserve its exact composition and characters: the same adult Korean man on viewer left leaning slightly toward their shared open book, the same adult Korean woman on viewer right leaning beside him, their exact faces, head angles, gazes, friendly gentle open-lipped smiles, hairstyles, their proportions, existing two-person spacing and hand/arm positions. The male keeps his wavy charcoal hair, silver ear cuff, teal coat, ivory lapels and black underlayer; the female keeps her short charcoal bob, gold orbit-and-pearl ornament, pearl earrings, dusty-rose robe, ivory high-neck blouse and modest natural bust. Image 2 is the newly approved individual version of this exact man and image 3 is the newly approved individual version of this exact woman. Match their identity and upgraded clothing workmanship across scenes: the man's precise teal floral brocade and raised gold botanical lapel/cuff embroidery, the woman's rose silk/velvet floral brocade and golden botanical borders, both ivory jacquard inner fabric, restrained metallic highlights, delicate fine linework, dimensional soft facial shading and crisp hair detail. Their colors and clothing designs must clearly match images 2 and 3, while the pose remains image 1. Keep the large shared open ivory book with teal spine, hanging gold chain and compass medallion. Preserve exactly SEVEN empty decorative gold outlined panels across the visible book covers, four on the left and three on the right; no writing inside. The visible male hand grips the left lower book edge and the woman's visible forearm supports the right edge with the hand naturally occluded behind the book as in image 1. Every arm connects naturally from its own shoulder through the elbow and wrist; exactly two arms per person, no extra visible hands or detached limbs, do not invent hands where the book obscures them. Preserve the existing landscape 3:2 framing, headroom and torso scale; no tighter crop. True clean transparent alpha background everywhere outside the figures/book, remove all colored rectangular background remnants and edge fringe; no scenery, table, text, numbers, border, watermark, new prop or modern object. High resolution and sharp final art, soft but detailed tarot-deck fantasy rendering with luxurious fabric texture. Same two people and same weekly-reading scene, only the illustration finish/material richness updated.",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/today-guides/week-pair-v1.webp",
+        "C:/Users/LEE/.codex/generated_images/01a18b36-b8e4-7323-9588-03d91b84dc9a/exec-6678e113-58f8-474f-834e-b2cafe5224b0.png",
+        "C:/Users/LEE/.codex/generated_images/01a18b36-b8e4-7323-9588-03d91b84dc9a/exec-c74d23d9-0f9f-45d2-aec3-03c915a40aba.png"
+      ],
+      "source": "C:/Users/LEE/.codex/generated_images/01a18b36-b8e4-7323-9588-03d91b84dc9a/exec-fbff7870-4cac-40df-af8b-3e8939babeef.png",
+      "destination": "app/art/today-tarot-v1/week-pair.png",
+      "width": 1536,
+      "height": 1024,
+      "transparentBackground": true,
+      "reviewNotes": [
+        "남성 왼쪽·여성 오른쪽과 기존 기울기·시선·표정 유지. 앞서 생성한 단독 삽화를 참조하여 청록/분홍 직물과 금장 일치.",
+        "남성 왼쪽 책 잡은 손과 여성 오른쪽 책 뒤로 가려진 손의 원래 배치 유지. 새 떠다니는 손·팔 없음.",
+        "책의 금장 빈 칸 4+3=7개, 나침반 펜던트·금빛 사슬 유지.",
+        "투명 PNG 알파 채널 확인(샘플 최솟값 0). 미리보기의 어두운/유색 여백은 실제 투명도와 구분하여 사용."
+      ]
+    }
+  ],
+  "implementationStatus": "이미지와 이 기록만 작성. 앱 코드 연결, 테스트, 커밋, 배포는 담당하지 않음."
+}
