@@ -15,3 +15,5 @@
 | DES-0008 | 정통사주 · 이름·도형·비율·인생 흐름 스크롤 견본 | 적용됨 | DES-0008-jeongtong-identity.md | main |
 
 | DES-0009 | 밤낮 전환 제거 · 밝은 종이·먹색·금색 통일 | 적용됨 | DES-0009-paper-theme.md | main |
+
+| DES-0022 | 명식표를 타로 카드 네 장으로(정통사주 · 정통자미두수 맨 위) | 요청 | DES-0022-myeongsik-tarot-cards.md | design/DES-0022 |
