@@ -122,3 +122,6 @@
  .zd.zd-companion.companion-on .guide-opening h2{font-size:26px}
  .zd.zd-companion.companion-on .guide-opening.guide-no-art{grid-template-columns:minmax(0,1fr)}
 }
+
+/* 자미두수 중간 장면은 마침 삽화의 인물과 같은 모습으로 보여 준다. */
+.zd.zd-companion .guide-transition .guide-art img,.zd.zd-companion .guide-closing .guide-art img{object-fit:cover;object-position:50% 8%}
