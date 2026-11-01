@@ -99,6 +99,12 @@
       return 결과.칸[k] ? '<button type="button" class="' + cls + '" data-cell="' + esc(k) + '" aria-label="' + esc(별쉬운(화)) + '">' + esc(c) + '</button>' : '<em class="' + cls + '">' + esc(c) + '</em>';
     }).join('');
   }
+  // 11-02 원서대로 첫 10년 운은 부모궁 · 형제궁에서 시작해 명궁에는 백 살 넘은 운이 온다(엔진 10-04 결정) — 첫 운에서 100년 넘게 뒤인 운은 해를 찍지 않는다.
+  function 산운(d) {
+    if (!d) return false;
+    var 첫 = Math.min.apply(null, (결과.명반.궁 || []).map(function (x) { return x.대한 ? x.대한.시작해 : Infinity; }));
+    return d.시작해 - 첫 < 100;
+  }
   function 궁칸(g) {
     var M = 결과.명반, a = 자리[g.지지] || [1, 1], 사화 = {}, 놓인 = {};
     (g.사화 || []).forEach(function (x) { (사화[x.별] = 사화[x.별] || []).push(x.화); });
@@ -119,7 +125,7 @@
     var 딱들 = (g.보좌 || []).map(function (s) { return 딱(s, false); }).concat((g.살성 || []).map(function (s) { return 딱(s, true); }));
     Object.keys(사화).forEach(function (s) { if (!놓인[s]) 딱들.push('<span class="mb-srow">' + 화딱지(사화[s], g.이름) + '</span>'); });   // 주성 · 보좌 · 살성 밖의 별에 붙은 사화(없어야 맞다)
     h += '<div class="mb-sub">' + 딱들.join('') + '</div>';
-    if (g.대한) {
+    if (산운(g.대한)) {
       var now = g.대한.끝해 >= M.해범위[0] && g.대한.시작해 <= M.해범위[1];
       h += '<div class="mb-dh' + (now ? ' now' : '') + '">10년 운 ' + g.대한.시작해 + '~' + String(g.대한.끝해).slice(-2) + '</div>';
     }
@@ -286,7 +292,7 @@
     if (buttons.length) h += '<div class="sec">별을 눌러 더 알아보기</div><div class="sh-stars">' + buttons.join('') + '</div>';
     var cell = g.궁줄 || {}, lines = 실제줄(궁줄글[name] || {}, cell, '');
     if (lines.length) h += '<div class="sec">다른 조건까지 살펴본 풀이</div><p class="why">태어난 시간이나 다른 별의 위치에 따라 함께 해당하는 구절이에요.</p>' + lines.map(function (l) { return 풀이줄(l); }).join('');
-    if (g.대한) h += '<details class="fold"><summary>이 자리의 10년 운</summary><p class="mb-line">' + esc(g.대한.시작해 + '~' + g.대한.끝해 + '년') + '</p><p class="why">운은 10년마다 다른 자리로 옮겨 가요. 이를 대한이라고 불러요. 이 기간에는 이 자리의 별을 함께 읽어요.</p></details>';
+    if (산운(g.대한)) h += '<details class="fold"><summary>이 자리의 10년 운</summary><p class="mb-line">' + esc(g.대한.시작해 + '~' + g.대한.끝해 + '년') + '</p><p class="why">운은 10년마다 다른 자리로 옮겨 가요. 이를 대한이라고 불러요. 이 기간에는 이 자리의 별을 함께 읽어요.</p></details>';
     h += 근거접힘('이 자리 풀이의 고전 원문', cell.걸림 || [], '각 풀이가 나온 고전 구절이에요.');
     h += 근거접힘('내게 해당하는지 아직 모르는 구절', cell.일부 || [], '조건을 모두 확인하지 못해 내게 해당한다고 확정하지 않은 구절이에요.');
     h += 근거접힘('다른 별 배치에서의 풀이', cell.안걸림 || [], '내 명반과 조건이 달라 해당하지 않는 구절이에요.');

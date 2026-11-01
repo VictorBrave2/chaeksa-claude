@@ -9,7 +9,9 @@ const cache=new Map(),pending=new WeakMap();
 const companionArt=new URL('art/jeongtong-tarot-v1/',document.currentScript.src).href;
 const mobileArt=new URL('art/content-tarot-v2/',document.currentScript.src).href;
 let companionEnabled=true,companionObserver=null;
-function companion(host){
+// 11-02 안내 인물은 손님 성별을 따른다(content-tarot-v2 얼굴 기준: 남 킹 · 여 퀸). 여자 그림(f/ · -f.webp)이 아직 없으면 지금 그림으로 돌아간다.
+function companion(host,gender){
+ const fem=gender==='F',fa=fem?'f/':'',fm=fem?'-f':'';
  if(companionObserver){companionObserver.disconnect();companionObserver=null;}
  const story=host.matches('.jtp-story')?host:host.querySelector('.jtp-story'),hero=host.querySelector('.reader-hero>div');
  if(!story||!hero)return;
@@ -19,11 +21,11 @@ function companion(host){
   const stage=document.createElement('div');stage.className='jt-guide-scene '+kind;
   const copy=document.createElement('div');copy.className='jt-guide-copy';parent.insertBefore(stage,nodes[0]);nodes.forEach(node=>copy.append(node));stage.append(copy);
   const art=document.createElement('div');art.className='jt-guide-art';art.setAttribute('aria-hidden','true');
-  const image=document.createElement('img');image.src=companionArt+pose+'.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
-  image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};
+  const image=document.createElement('img');image.src=companionArt+fa+pose+'.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
+  image.onerror=()=>{if(fem&&!image.dataset.back){image.dataset.back='1';const src=art.querySelector('source');if(src)src.srcset=mobileArt+'library-mobile.webp';image.src=companionArt+pose+'.png';return;}art.hidden=true;stage.classList.add('jt-guide-no-art');};
   if(pose==='welcome'){
    const picture=document.createElement('picture'),source=document.createElement('source');
-   source.media='(max-width:1050px)';source.srcset=mobileArt+'library-mobile.webp';source.width=1024;source.height=1536;
+   source.media='(max-width:1050px)';source.srcset=mobileArt+'library-mobile'+fm+'.webp';source.width=1024;source.height=1536;
    picture.append(source,image);art.append(picture);
   }else art.append(image);
   stage.append(art);
@@ -36,8 +38,8 @@ function companion(host){
  const page=host.closest('.jtp');
  if(page&&!page.querySelector('.jtp-mobile-ending')){
   const end=document.createElement('section');end.className='jtp-mobile-ending';end.setAttribute('aria-label','정통사주 마침');
-  end.innerHTML='<p class="mobile-ending-label">정통사주 · 마침</p><figure><img src="'+mobileArt+'library-ending.webp" width="1024" height="1536" alt="" loading="lazy" decoding="async"></figure><p class="mobile-ending-title">이번 풀이는<br>여기까지입니다.</p><p>필요할 때 다시 펼쳐 보세요.</p><a href="./">홈으로</a>';
-  end.querySelector('img').onerror=()=>{end.querySelector('figure').hidden=true;};page.append(end);
+  end.innerHTML='<p class="mobile-ending-label">정통사주 · 마침</p><figure><img src="'+mobileArt+'library-ending'+fm+'.webp" width="1024" height="1536" alt="" loading="lazy" decoding="async"></figure><p class="mobile-ending-title">이번 풀이는<br>여기까지입니다.</p><p>필요할 때 다시 펼쳐 보세요.</p><a href="./">홈으로</a>';
+  {const ei=end.querySelector('img');ei.onerror=()=>{if(fem&&!ei.dataset.back){ei.dataset.back='1';ei.src=mobileArt+'library-ending.webp';return;}end.querySelector('figure').hidden=true;};}page.append(end);
  }
  const controls=document.createElement('div');controls.className='jt-guide-controls';
  const toggle=document.createElement('button');toggle.type='button';toggle.className='jt-guide-toggle';
@@ -51,7 +53,7 @@ function resultView(host,r,input){
  global.ChaeksaNameSeason.mount(host,view);
  global.ChaeksaJeongtongShare?.attach(host,view);
  global.ChaeksaJeongtongEvidence?.attach(host.parentElement,input);
- companion(host);
+ companion(host,input&&input.gender==='F'?'F':'M');
 }
 function oldContent(container,input){
  const d=document.createElement('details');d.className='jtp-legacy';
