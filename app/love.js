@@ -15,18 +15,18 @@
   //    바탕색 = 그림 위쪽 60%에서 뽑은 가장 많은 색을 옅게(낮은 #f6f3f4 쪽, 밤은 #161433 쪽으로 84% 섞음 — python PIL, 10-01). 그림을 바꾸면 색도 다시 뽑는다.
   //    줄인 그림(-s)은 쓰지 않는다(09-30 사장님 「삽화 화질을 줄이지 않았으면」). 행동양식 궁합(pair.js)도 이 표를 쓴다.
   var 장그림 = {
-    '마음에 드는 사람이 생겼을 때': ['art/story-maeum.webp', [1024, 1536], '#dfdeea', '#222248'],
-    '썸을 탈 때': ['art/ss-sseom-6.webp', [1024, 1536], '#ebe0dd', '#2f253b'],
-    '연애가 시작됐을 때': ['art/story-first-touch.webp', [1024, 1536], '#ebe1dd', '#2f263b'],
-    '연락과 애정표현': ['art/story-contact.webp', [1024, 1536], '#ebe1dd', '#2f263b'],
-    '질투와 신뢰': ['art/story-jealous.webp', [1024, 1536], '#ebdfdd', '#2f233b'],
-    '싸웠을 때': ['art/story-fight.webp', [1024, 1536], '#ebdcde', '#2f213c'],
-    '관계가 흔들릴 때': ['art/ss-shake-3.webp', [1024, 1536], '#ebdcea', '#2f2148'],
-    '권태가 왔을 때': ['art/ss-steady-1.webp', [1024, 1536], '#ebe1dd', '#2f263b'],
-    '이별과 재회': ['art/ss-again-3.webp', [1024, 1536], '#ebdfdd', '#2f243b'],
-    '오래 함께할 때': ['art/ss-steady-4.webp', [1024, 1536], '#ebe0dd', '#2f253b']
+    '마음에 드는 사람이 생겼을 때': ['art/content-tarot-v2/body/story-maeum.webp', [1024, 1536], '#dfdeea', '#222248'],
+    '썸을 탈 때': ['art/content-tarot-v2/body/ss-sseom-6.webp', [1024, 1536], '#ebe0dd', '#2f253b'],
+    '연애가 시작됐을 때': ['art/content-tarot-v2/body/story-first-touch.webp', [1024, 1536], '#ebe1dd', '#2f263b'],
+    '연락과 애정표현': ['art/content-tarot-v2/body/story-contact.webp', [1024, 1536], '#ebe1dd', '#2f263b'],
+    '질투와 신뢰': ['art/content-tarot-v2/body/story-jealous.webp', [1024, 1536], '#ebdfdd', '#2f233b'],
+    '싸웠을 때': ['art/content-tarot-v2/body/story-fight.webp', [1024, 1536], '#ebdcde', '#2f213c'],
+    '관계가 흔들릴 때': ['art/content-tarot-v2/body/ss-shake-3.webp', [1024, 1536], '#ebdcea', '#2f2148'],
+    '권태가 왔을 때': ['art/content-tarot-v2/body/ss-steady-1.webp', [1024, 1536], '#ebe1dd', '#2f263b'],
+    '이별과 재회': ['art/content-tarot-v2/body/ss-again-3.webp', [1024, 1536], '#ebdfdd', '#2f243b'],
+    '오래 함께할 때': ['art/content-tarot-v2/body/ss-steady-4.webp', [1024, 1536], '#ebe0dd', '#2f253b']
   };
-  var 표지그림 = ['art/love-cover.webp', [1086, 1448], '#f1e6d8', '#352b35'];
+  var 표지그림 = ['art/content-tarot-v2/love-cover.webp', [1024, 1536], '#f1e6d8', '#352b35'];
   var 기본그림 = [null, null, '#efe9ec', '#221f45'];   // 표에 없는 장 이름 — 그림 없이 글 머리만
 
   // 기다림 네 단계(10-01 흐름) — 걸린 시간(초)으로 넘어간다. 서버 진행을 재는 것이 아니다. 다만 질문이 이미 왔으면(덜됨) 셋째 단계부터 보인다(질문 고르기는 끝났다).
@@ -287,7 +287,7 @@
         return;
       }
       // 카카오 링크가 먼저(그림을 그릴 필요가 없다). 안 되면 그림 카드를 그려 폰 공유 창으로, 공유 창이 없으면 저장한다.
-      SH.kakaoShare({ title: 한줄, text: ((Y && Y.홈한줄('love')) || '연애할 때 내가 하는 말과 행동') + ' · 책사', image: 'https://chaeksa.kr/art/kakao/love-cover.jpg', url: 보낼주소, button: 보낼단추 }).then(function (ok) {
+      SH.kakaoShare({ title: 한줄, text: ((Y && Y.홈한줄('love')) || '연애할 때 내가 하는 말과 행동') + ' · 책사', image: 'https://chaeksa.kr/art/content-tarot-v2/love-cover.jpg', url: 보낼주소, button: 보낼단추 }).then(function (ok) {
         if (ok) return;
         return 카드그리기(c, 한줄).then(function () { return SH.share(c, '나', '연애', 한줄 + ' · 책사', 보낼주소); }).then(function (보냄) {
           안내(보냄 ? '링크도 복사해 뒀어요 — 카톡 글칸에 붙여 넣으면 그림이랑 같이 가요.' : '그림을 저장했어요. 카톡에 그림을 올리고 이 주소도 같이 보내 주세요: ' + 보낼주소);

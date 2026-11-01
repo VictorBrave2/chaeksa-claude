@@ -8,9 +8,10 @@
  * 다만 상품 약속(미리 보는 것 · 만드는 시간 · 결제하면 받는 것 · 보관 · 환불)은 상품 약속 장부(yaksok.js pair 줄) 한 곳이다 — pay.html 과 같은 말. */
 (function (global) {
   'use strict';
+  function sceneArtUrl(key, small) { return global.ChaeksaSceneArt ? global.ChaeksaSceneArt.url(key, small) : 'art/' + key + (small ? '-s' : '') + '.webp'; }
   var API = 'https://chaeksa-behavior-core.vercel.app';
   var 동의키 = 'chaeksa.manualConsent', 결과키 = 'chaeksa.manual.', 고른키 = 'chaeksa.pair.pick';
-  var 표지그림 = ['art/story-friend-to-lover.webp', [1024, 1536], '#e0dedf', '#100d0e'];   // 10-02 사장님 「적절한 삽화로 재배치」 — 이어폰을 나눠 끼고 그 사람을 몰래 바라보는 장면(짝짓기 일꾼 추천)
+  var 표지그림 = ['art/content-tarot-v2/body/story-friend-to-lover.webp', [1024, 1536], '#e0dedf', '#100d0e'];   // 10-02 사장님 「적절한 삽화로 재배치」 — 친구 사이에서 서로를 새롭게 바라보는 장면(짝짓기 일꾼 추천)
   // 질문마다 배경 삽화(10-02 사장님 「웹툰 + 미연시 · 질문에 어울리는 삽화」) — 질문 id: [그 사람이 남자일 때, 여자일 때](art/ 이름, .webp 뺌).
   // 그림 보기 일꾼 8명이 삽화 162장에 장면 설명을 달고, 짝짓기 일꾼이 질문 47개에 골랐다(10-02). 바꾸려면 이 표 한 줄만.
   var 장그림 = {
@@ -64,7 +65,7 @@
   };
   function 그림키(c, 성) { if (c.bg) return c.bg; var p = 장그림[c.id]; return p ? p[성 === 'F' ? 1 : 0] : null; }
   function 삽화(키) {
-    return 키 ? '<img src="art/' + esc(키) + '.webp" alt="" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;border-radius:var(--r2);margin:0 0 12px">' : '';
+    return 키 ? '<img src="' + esc(sceneArtUrl(키)) + '" alt="" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;border-radius:var(--r2);margin:0 0 12px">' : '';
   }
   // 장면으로 보기(미연시, ssom-vn.html?m=1) — 받은 글을 그대로 넘긴다(주소에 싣지 않고 이 탭 sessionStorage 로만).
   function 장면으로(장들, 그이름, 성) {

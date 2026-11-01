@@ -50,6 +50,7 @@
   .toc-i{display:flex;gap:12px;align-items:baseline;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);padding:11px 2px;font-size:15px;cursor:pointer}
   .toc-i span{opacity:.5;font-size:12px;min-width:18px}.toc-i.now{color:var(--accent)}.toc-i.now span{opacity:1}
 </style>
+  <script src="scene-art.js"></script>
 </head>
 <body>
 <div class="stage" id="stage">
@@ -104,10 +105,10 @@
   else if (jt && jt.a) { v = { a: jt.a, 견본: !!jt.견본 }; document.title = '정통사주 — 장면으로 보기 · 책사'; }
   const $ = (id) => document.getElementById(id);
   const bgs = [$('bgA'), $('bgB')]; let 앞 = 0, 지금배경 = '';
-  const 배경바꾸기 = (u) => { if (!u || u === 지금배경) return; 지금배경 = u; 앞 ^= 1; bgs[앞].style.backgroundImage = 'url(art/' + u + '.webp)'; bgs[앞].classList.add('on'); bgs[앞 ^ 1].classList.remove('on'); };
+  const 배경바꾸기 = (u) => { if (!u || u === 지금배경) return; 지금배경 = u; 앞 ^= 1; bgs[앞].style.backgroundImage = 'url(' + window.ChaeksaSceneArt.url(u) + ')'; bgs[앞].classList.add('on'); bgs[앞 ^ 1].classList.remove('on'); };
   // 10-02 개편 — 다음 그림을 미리 받아 둔다(장면을 넘길 때 멈칫하지 않게). 같은 그림은 한 번만 부른다. 원본 그대로(줄인 그림 아님).
   const 받은그림 = {}, 받는중 = [];
-  const 미리받기 = (u) => { if (!u || 받은그림[u] || u === 지금배경) return; 받은그림[u] = 1; const im = new Image(); im.decoding = 'async'; im.src = 'art/' + u + '.webp'; 받는중.push(im); };
+  const 미리받기 = (u) => { if (!u || 받은그림[u] || u === 지금배경) return; 받은그림[u] = 1; const im = new Image(); im.decoding = 'async'; im.src = window.ChaeksaSceneArt.url(u); 받는중.push(im); };
   for (let i = 0; i < 14; i++) { const p = document.createElement('i'); p.className = 'petal'; p.style.left = Math.random() * 110 + '%'; p.style.animationDuration = 7 + Math.random() * 8 + 's'; p.style.animationDelay = -Math.random() * 12 + 's'; p.style.opacity = .4 + Math.random() * .5; $('petals').appendChild(p); }
   const 굵 = (x) => x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
   function 돌아가기() { if (document.referrer && history.length > 1) history.back(); else location.href = mn ? './#pair' : jt && jt.a ? './?go=jeongtong' : 'ssom.html'; }

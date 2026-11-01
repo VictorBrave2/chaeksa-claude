@@ -319,7 +319,7 @@
         // 10-02 개편 3묶음 — 이 주문번호는 이 화면에만 한 번 보였다. 설정 창 「내 결제」(app.js · pay.js 내결제)에서 언제든 다시 본다.
         + '<p class="warn" style="margin-top:-12px">이 주문번호는 홈 화면 맨 위 오른쪽 「설정」 → 「내 결제」에서 언제든 다시 볼 수 있어요.</p>'
         + (code === 'taekil'
-            ? '<figure class="hero"><img src="art/taekil-report.webp" alt="" width="1024" height="1536"></figure><div id="taekil-slot"></div>'   // 10-02 「켜는 날」 — 자동 보고서 길(자동만들기)이 이 자리를 채운다. 옛 접수 길도 같은 자리. 10-23 그림(IMG-0003)
+            ? '<figure class="hero"><img src="art/content-tarot-v2/body/taekil-report.webp" alt="" width="1024" height="1536"></figure><div id="taekil-slot"></div>'   // 10-02 「켜는 날」 — 자동 보고서 길(자동만들기)이 이 자리를 채운다. 옛 접수 길도 같은 자리. 10-23 그림(IMG-0003)
             : (연애 || 일결)   // 10-22 「나는 뭐해 먹고 살까?」도 연애처럼 — 신청서는 결제 전에 주문에 붙었고, 결과 쪽(ilgyeol-report.html)이 만들어 바로 띄운다
               ? '<p class="warn" id="goSay">' + (저절로 ? '3초 뒤에 저절로 넘어가요.' : '') + '</p><p><a class="btn go" href="' + 갈곳 + '">바로 보러 가기</a></p>'
                 + (저절로 ? '<p id="stayRow"><button class="btn sub" id="stay" type="button">여기 머물기</button></p>' : '')

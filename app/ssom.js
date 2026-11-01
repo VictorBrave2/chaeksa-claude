@@ -1,5 +1,6 @@
 /* 썸 궁합 화면 — 명리는 ssom-gwanjeom.js(72조), 글은 ssom-wongo.js. 이 파일은 그리기만 한다. */
 (function (global) {
+  function sceneArtUrl(key, small) { return global.ChaeksaSceneArt ? global.ChaeksaSceneArt.url(key, small) : 'art/' + key + (small ? '-s' : '') + '.webp'; }
   const E = global.ChaeksaEngine, S = global.ChaeksaSsom, W = global.ChaeksaSsomWongo || {};
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 줄 = (t) => {
@@ -195,7 +196,7 @@
     box.querySelectorAll('details.ss-q').forEach(d => {
       const sm = d.querySelector('summary'); if (!sm) return;
       const 번 = /^([1-4])\. /.exec(sm.textContent), 그림 = 번 ? 총론그림[+번[1] - 1] : (곳[k++] || [])[0];
-      if (그림 && !d.querySelector('.ss-cut')) sm.insertAdjacentHTML('afterend', '<img class="ss-cut" src="art/' + 그림 + '-s.webp" alt="" loading="lazy">');
+      if (그림 && !d.querySelector('.ss-cut')) sm.insertAdjacentHTML('afterend', '<img class="ss-cut" src="' + sceneArtUrl(그림, true) + '" srcset="' + sceneArtUrl(그림, true) + ' 360w, ' + sceneArtUrl(그림) + ' 1024w" sizes="(max-width:600px) calc(100vw - 36px), 560px" alt="" loading="lazy" decoding="async">');
       d.open = true;
     });
   }
@@ -275,7 +276,7 @@
     sel.classList.add('ss-sel-hidden');
     let box = (sel.closest('label') || sel).parentNode.querySelector('.ss-pick');
     if (!box) { box = document.createElement('div'); box.className = 'ss-pick'; box.setAttribute('role', 'radiogroup'); (sel.closest('label') || sel).insertAdjacentElement('afterend', box); }
-    const 그리 = () => { box.innerHTML = 고름칸.map(([v, 이름, 말, 그림]) => '<button type="button" role="radio" aria-checked="' + (sel.value === v) + '" class="ss-pk' + (sel.value === v ? ' on' : '') + '" data-v="' + v + '"><img src="art/' + 그림 + '-s.webp" alt="" loading="lazy"><b>' + 이름 + '</b><small>' + 말 + '</small></button>').join('');
+    const 그리 = () => { box.innerHTML = 고름칸.map(([v, 이름, 말, 그림]) => '<button type="button" role="radio" aria-checked="' + (sel.value === v) + '" class="ss-pk' + (sel.value === v ? ' on' : '') + '" data-v="' + v + '"><img src="' + sceneArtUrl(그림, true) + '" srcset="' + sceneArtUrl(그림, true) + ' 360w, ' + sceneArtUrl(그림) + ' 1024w" sizes="(max-width:600px) 30vw, 180px" alt="" loading="lazy" decoding="async"><b>' + 이름 + '</b><small>' + 말 + '</small></button>').join('');
       box.querySelectorAll('.ss-pk').forEach(b => b.onclick = () => { if (sel.value === b.dataset.v) return; sel.value = b.dataset.v; 그리(); sel.dispatchEvent(new Event('change', { bubbles: true })); }); };
     그리(); sel.addEventListener('change', 그리); sel._그리 = 그리;
   }

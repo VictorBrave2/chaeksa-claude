@@ -61,45 +61,45 @@ HOME_PANELS = ['love', 'pair', 'chongnon', 'jeongtong', 'taekil']
 # 글 미리보기에 얹는 삽화 — 쪽 이름: art/ 그림. 표에 없으면 그 글이 걸린 read.html 칸(h2)의 첫 낱말로 고른다(SECTION_ART).
 # 그림 원본은 지우지도 줄이지도 않는다 — 미리보기 그림 안에서만 잘라 쓴다.
 ART = {
-    'how-good-is-my-saju': 'art/jt-04-good-bad-f.webp',
-    'why-day-master-is-me': 'art/jt-05-who-f.webp',
-    'why-four-pillars': 'art/jt-01-born-f.webp',
-    'why-five-elements': 'art/jt-15-work-f.webp',
-    'why-sixty': 'art/jt-18-ten-years-f.webp',
-    'why-day-starts-11pm': 'art/jt-13-heart-f.webp',
-    'why-ipchun-new-year': 'art/jt-g-bigyeon-f.webp',
-    'why-2026-byeongo': 'art/jt-02-push-f.webp',
-    'why-gyeok-is-my-role': 'art/jt-03-seat-f.webp',
-    'why-rootless-letters': 'art/jt-09-shadow-f.webp',
-    'why-hap-dies': 'art/jt-16-alone-together-f.webp',
-    'why-chung-happens': 'art/jt-07-shake-f.webp',
-    'why-ai-three-classics': 'art/jt-g-pyeongwan-f.webp',
-    'dohwa': 'art/ss-her.webp',
-    'hongyeom': 'art/story-say-love.webp',
-    'gwaegang': 'art/jt-08-power-f.webp',
-    'baekho': 'art/jt-06-steady-f.webp',
-    'read': 'art/read-cover.webp',
-    'taekil-apply': 'art/taekil-main.webp',
-    'when': 'art/when-cover-f.webp',   # 10-06 「언제 나아지나」 카톡 미리보기 — 홈 칸과 같은 그림
+    'how-good-is-my-saju': 'art/content-tarot-v2/body/jt-04-good-bad-f.webp',
+    'why-day-master-is-me': 'art/content-tarot-v2/body/jt-05-who-f.webp',
+    'why-four-pillars': 'art/content-tarot-v2/body/jt-01-born-f.webp',
+    'why-five-elements': 'art/content-tarot-v2/body/jt-15-work-f.webp',
+    'why-sixty': 'art/content-tarot-v2/body/jt-18-ten-years-f.webp',
+    'why-day-starts-11pm': 'art/content-tarot-v2/body/jt-13-heart-f.webp',
+    'why-ipchun-new-year': 'art/content-tarot-v2/body/jt-g-bigyeon-f.webp',
+    'why-2026-byeongo': 'art/content-tarot-v2/body/jt-02-push-f.webp',
+    'why-gyeok-is-my-role': 'art/content-tarot-v2/body/jt-03-seat-f.webp',
+    'why-rootless-letters': 'art/content-tarot-v2/body/jt-09-shadow-f.webp',
+    'why-hap-dies': 'art/content-tarot-v2/body/jt-16-alone-together-f.webp',
+    'why-chung-happens': 'art/content-tarot-v2/body/jt-07-shake-f.webp',
+    'why-ai-three-classics': 'art/content-tarot-v2/body/jt-g-pyeongwan-f.webp',
+    'dohwa': 'art/content-tarot-v2/body/ss-her.webp',
+    'hongyeom': 'art/content-tarot-v2/body/story-say-love.webp',
+    'gwaegang': 'art/content-tarot-v2/body/jt-08-power-f.webp',
+    'baekho': 'art/content-tarot-v2/body/jt-06-steady-f.webp',
+    'read': 'art/content-tarot-v2/read-cover.webp',
+    'taekil-apply': 'art/content-tarot-v2/taekil-cover.webp',
+    'when': 'art/menu-guides-v1/when.webp',   # 홈 칸과 같은 타로 화풍 그림
     'brain': 'art/brain-cover-f.webp',  # 10-06 「옛 책이 본 내 머리」 — 홈 칸과 같은 그림
-    'saram': 'art/saram-cover.webp',  # 10-12 「내 사람들」
+    'saram': 'art/content-tarot-v2/saram-cover.webp',  # 10-12 「내 사람들」
     'gyeokgi': 'art/gyeokgi-cover-f.webp',  # 10-11 「옛 책은 내 명식을 반겼을까」
     'gwi': 'art/gwi-cover-f.webp',  # 10-10 「나는 귀한 사람일까」 — 홈 칸과 같은 그림(정관 칸)
-    'myeongban': 'art/myeongban-cover-f.webp',  # 10-10 「내 명반에는 무엇이 적혀 있을까」 — 홈 칸과 같은 그림(편관 칸)
-    'gyeolhon': 'art/gyeolhon-cover.webp',  # 10-07 「결혼상대 점검」 — 홈 칸 · 소개 쪽 머리와 같은 상견례 컷
-    'gyeolhon-apply': 'art/gyeolhon-apply.webp',  # 10-23 결혼상대 점검 신청 쪽(IMG-0005 신청 컷과 같은 그림) — 전에는 og.jpg(출산택일 카드)
-    'ilgyeol': 'art/ilgyeol-f.webp',  # 10-23 「나는 뭐해 먹고 살까?」 소개(IMG-0006 머리 그림 · 홈 칸과 같은 그림) — 전에는 og.jpg
-    'ilgyeol-apply': 'art/ilgyeol-f.webp',  # 10-23 진로 신청 쪽 — 소개 쪽과 같은 그림
-    'taekil-sample': 'art/taekil-report.webp',  # 10-23 출산택일 견본(IMG-0003 머리 그림과 같은 그림)
+    'myeongban': 'art/menu-guides-v1/myeongban.webp',  # 홈 칸과 같은 타로 화풍 그림
+    'gyeolhon': 'art/content-tarot-v2/gyeolhon-cover.webp',  # 10-07 「결혼상대 점검」 — 홈 칸 · 소개 쪽 머리와 같은 상견례 컷
+    'gyeolhon-apply': 'art/content-tarot-v2/body/gyeolhon-apply.webp',  # 10-23 결혼상대 점검 신청 쪽(IMG-0005 신청 컷과 같은 그림) — 전에는 og.jpg(출산택일 카드)
+    'ilgyeol': 'art/content-tarot-v2/ilgyeol-f-cover.webp',  # 10-23 「나는 뭐해 먹고 살까?」 소개(IMG-0006 머리 그림 · 홈 칸과 같은 그림) — 전에는 og.jpg
+    'ilgyeol-apply': 'art/content-tarot-v2/ilgyeol-f-cover.webp',  # 10-23 진로 신청 쪽 — 소개 쪽과 같은 그림
+    'taekil-sample': 'art/content-tarot-v2/body/taekil-report.webp',  # 10-23 출산택일 견본(IMG-0003 머리 그림과 같은 그림)
 }
 # 10-23 출산택일 질문 글 열두 편(tools_jeongbon.py 가 만드는 taekil-*) — 머리 그림(IMG-0004)과 같은 그림으로 미리보기. 값 쪽은 소개 쪽 그림(IMG-0001).
 # 달 글(월별 · 궁통보감)은 명식 카드가 제 그림이라 여기 없다(tools_jeongbon og_image). 새 질문 글이 생기면 여기 한 줄.
 TAEKIL_ARTICLES = ['taekil-cesarean-date', 'taekil-one-day-time', 'taekil-son-or-daughter', 'taekil-first-child', 'taekil-how-to-choose', 'taekil-solar-time',
                    'taekil-verify', 'taekil-why-different', 'taekil-doctor-schedule', 'taekil-fate-vs-timing', 'taekil-lunar-december', 'taekil-price']
 for _s in TAEKIL_ARTICLES:
-    ART.setdefault(_s, 'art/taekil-hero.webp' if _s == 'taekil-price' else 'art/taekil-read.webp')
-SECTION_ART = {'왜': 'art/jt-g-jeongin-f.webp', '신살': 'art/ss-her.webp', '연애': 'art/love-cover.webp', '출산택일': 'art/taekil-main.webp'}
-DEFAULT_ART = 'art/jt-05-who-f.webp'
+    ART.setdefault(_s, 'art/content-tarot-v2/body/taekil-hero.webp' if _s == 'taekil-price' else 'art/content-tarot-v2/body/taekil-read.webp')
+SECTION_ART = {'왜': 'art/content-tarot-v2/body/jt-g-jeongin-f.webp', '신살': 'art/content-tarot-v2/body/ss-her.webp', '연애': 'art/content-tarot-v2/love-cover.webp', '출산택일': 'art/content-tarot-v2/taekil-cover.webp'}
+DEFAULT_ART = 'art/content-tarot-v2/body/jt-05-who-f.webp'
 # read.html 밖에서 미리보기를 붙일 쪽 — 쪽 이름: 칸 말(그 쪽이 read.html 의 어느 칸 말을 쓰나)
 EXTRA_CARDS = {'taekil-apply': '출산택일', 'read': None, 'when': '무료', 'brain': '무료', 'saram': '무료', 'myeongban': '무료', 'gyeolhon': '결혼상대 점검',
                'gyeolhon-apply': '결혼상대 점검', 'ilgyeol': None, 'ilgyeol-apply': None, 'taekil-sample': '출산택일'}   # 10-23 제 카드가 없던 쪽
@@ -437,7 +437,7 @@ document.documentElement.setAttribute('data-theme','day');
 </style>
 <link rel="stylesheet" href="desktop-scenes.css?v={ver}">
 </head>
-<body data-desktop-scene="{desktop_scene}">
+<body data-desktop-scene="{desktop_scene}" data-desktop-content="{key}">
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <main class="doc sg" data-sogae="{key}">
 {body}
