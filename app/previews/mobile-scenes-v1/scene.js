@@ -50,5 +50,11 @@
     });
     if (image.complete && image.naturalWidth === 0) failed();
   });
+  document.querySelectorAll('.ending-art img').forEach(image => {
+    const failed = () => image.parentElement.classList.add('is-unavailable');
+    image.addEventListener('error', failed);
+    image.addEventListener('load', () => image.parentElement.classList.remove('is-unavailable'));
+    if (image.complete && image.naturalWidth === 0) failed();
+  });
   showScene(params.get('scene'));
 })();
