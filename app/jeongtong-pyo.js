@@ -7,6 +7,7 @@ const legacyDraw=Old.그리기;
 const API='https://chaeksa-behavior-core.vercel.app/api/jt-pyo';
 const cache=new Map(),pending=new WeakMap();
 const companionArt=new URL('art/jeongtong-tarot-v1/',document.currentScript.src).href;
+const mobileArt=new URL('art/content-tarot-v2/',document.currentScript.src).href;
 let companionEnabled=true,companionObserver=null;
 function companion(host){
  if(companionObserver){companionObserver.disconnect();companionObserver=null;}
@@ -19,16 +20,28 @@ function companion(host){
   const copy=document.createElement('div');copy.className='jt-guide-copy';parent.insertBefore(stage,nodes[0]);nodes.forEach(node=>copy.append(node));stage.append(copy);
   const art=document.createElement('div');art.className='jt-guide-art';art.setAttribute('aria-hidden','true');
   const image=document.createElement('img');image.src=companionArt+pose+'.png';image.alt='';image.width=1254;image.height=1254;image.loading=pose==='welcome'?'eager':'lazy';image.decoding='async';
-  image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};art.append(image);stage.append(art);
+  image.onerror=()=>{art.hidden=true;stage.classList.add('jt-guide-no-art');};
+  if(pose==='welcome'){
+   const picture=document.createElement('picture'),source=document.createElement('source');
+   source.media='(max-width:1050px)';source.srcset=mobileArt+'library-mobile.webp';source.width=1024;source.height=1536;
+   picture.append(source,image);art.append(picture);
+  }else art.append(image);
+  stage.append(art);
  }
  scene(hero,[...hero.children].filter(x=>x.matches('.eyebrow,h1,.hero-line,.name-origin,.reader-go')),'jt-guide-opening','welcome');
  const second=host.querySelectorAll('.classic-filter')[1]?.querySelector('.filter-reading');
  if(second){second.classList.add('jt-guide-filter');const copy=second.firstElementChild;scene(copy,[...copy.children].filter(x=>x.matches('.filter-name,h3')),'jt-guide-transition','reading');}
  const ending=host.querySelector('.filter-conclusion');
  if(ending)scene(ending,[...ending.children].filter(x=>x.matches('.conclusion-seal,p,h2')),'jt-guide-closing','closing');
+ const page=host.closest('.jtp');
+ if(page&&!page.querySelector('.jtp-mobile-ending')){
+  const end=document.createElement('section');end.className='jtp-mobile-ending';end.setAttribute('aria-label','정통사주 마침');
+  end.innerHTML='<p class="mobile-ending-label">정통사주 · 마침</p><figure><img src="'+mobileArt+'library-ending.webp" width="1024" height="1536" alt="" loading="lazy" decoding="async"></figure><p class="mobile-ending-title">이번 풀이는<br>여기까지입니다.</p><p>필요할 때 다시 펼쳐 보세요.</p><a href="./">홈으로</a>';
+  end.querySelector('img').onerror=()=>{end.querySelector('figure').hidden=true;};page.append(end);
+ }
  const controls=document.createElement('div');controls.className='jt-guide-controls';
  const toggle=document.createElement('button');toggle.type='button';toggle.className='jt-guide-toggle';
- function update(){story.classList.toggle('jt-companion-on',companionEnabled);toggle.setAttribute('aria-pressed',String(companionEnabled));toggle.textContent=companionEnabled?'삽화 숨기기':'삽화 보기';}
+ function update(){story.classList.toggle('jt-companion-on',companionEnabled);page?.classList.toggle('jtp-mobile-art-on',companionEnabled);toggle.setAttribute('aria-pressed',String(companionEnabled));toggle.textContent=companionEnabled?'삽화 숨기기':'삽화 보기';}
  toggle.onclick=()=>{companionEnabled=!companionEnabled;update();};update();controls.append(toggle);hero.prepend(controls);
  if('IntersectionObserver' in window){companionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');companionObserver.unobserve(entry.target);}}),{threshold:.15});story.querySelectorAll('.jt-guide-scene').forEach(x=>companionObserver.observe(x));}
 }
