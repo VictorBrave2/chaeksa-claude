@@ -47,10 +47,24 @@ function companion(host,gender){
  toggle.onclick=()=>{companionEnabled=!companionEnabled;update();};update();controls.append(toggle);hero.prepend(controls);
  if('IntersectionObserver' in window){companionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');companionObserver.unobserve(entry.target);}}),{threshold:.15});story.querySelectorAll('.jt-guide-scene').forEach(x=>companionObserver.observe(x));}
 }
+// 11-02 사장님 「정통사주 상단에 명식을 보여주고 분석을 시작해야 신뢰도가 있지 않을까?」 — 목차 줄 아래 · 첫 결론 위에 여덟 글자 표(myeongsik-card.js 원국표).
+//   서버(jt-pyo)와 같은 공개 엔진 · 같은 입력(경도 · 시간대 · 진태양시 보정)으로 센다. 판정 없음.
+function 원국(host,input){
+ try{
+  const E=global.ChaeksaEngine,C=global.ChaeksaMyeongsikCard;if(!E||!C||!C.원국표||host.querySelector('.jtp-wongook'))return;
+  const p={year:input.year,month:input.month,day:input.day,hour:input.hour,minute:input.minute||0,gender:input.gender==='F'?'F':'M',longitude:input.longitude,tzOffset:input.tzOffset,solarCorrection:input.solarCorrection!==false};
+  if(p.longitude==null&&global.ChaeksaPlaces&&input.place){const q=global.ChaeksaPlaces.resolve(input.place);if(q){p.longitude=q.lon;p.tzOffset=q.tzOffset;}}
+  const h=C.원국표(E.calc(p),{pre:'msc-'});if(!h)return;
+  C.꾸밈('msc-');
+  const box=document.createElement('section');box.className='jtp-wongook';box.innerHTML=h;
+  const hero=host.querySelector('.hero');if(hero)hero.before(box);else host.prepend(box);
+ }catch(_){}
+}
 function resultView(host,r,input){
  if(!r.story?.filterStory||!global.ChaeksaNameSeason)throw new Error('story unavailable');
  const view=global.ChaeksaJeongtongModelReading?.applyModel(r.story)||r.story;
  global.ChaeksaNameSeason.mount(host,view);
+ 원국(host,input);
  global.ChaeksaJeongtongShare?.attach(host,view);
  global.ChaeksaJeongtongEvidence?.attach(host.parentElement,input);
  companion(host,input&&input.gender==='F'?'F':'M');

@@ -232,3 +232,7 @@
  .jtp .jtp-story.jt-companion-on .jt-guide-opening h1{font-size:26px}
  .jtp .jtp-story.jt-companion-on .jt-guide-opening.jt-guide-no-art{grid-template-columns:minmax(0,1fr)}
 }
+
+/* 11-02 정통사주 맨 위 여덟 글자 표(myeongsik-card.js 원국표 · 꾸밈 msc-) */
+.jtp-wongook{max-width:600px;margin:0 auto 28px;padding:0 16px}
+.jtp-wongook .msc-card{margin:0 auto}
