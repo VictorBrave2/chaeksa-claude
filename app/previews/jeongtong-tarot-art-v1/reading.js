@@ -2,10 +2,12 @@
   'use strict';
   const host = document.getElementById('result');
   const originalArt = '../../art/jeongtong-companion/';
-  const newWelcome = '../../art/jeongtong-tarot-v1/welcome.png';
+  const newArt = '../../art/jeongtong-tarot-v1/';
+  const sceneNames = { welcome: '첫', reading: '중간', closing: '마지막' };
+  const guideImages = new Map();
   const newLibrary = '../../art/jeongtong-tarot-v1/library.png';
   let selected = new URLSearchParams(location.search).get('art') === 'original' ? 'original' : 'new';
-  let welcomeImage = null, loaded = false, requestVersion = 0;
+  let loaded = false, requestVersion = 0;
   let companionEnabled = true, companionObserver = null;
 
   function report(problem, ready) {
@@ -16,16 +18,20 @@
     }, location.origin === 'null' ? '*' : location.origin);
   }
 
+  function artSource(pose) {
+    return selected === 'new' ? newArt + pose + '.png' : originalArt + pose + '-v4.png';
+  }
+
   function chooseArt(value) {
     if (value !== 'new' && value !== 'original') return;
     selected = value;
     const version = ++requestVersion;
-    const desiredWelcome = selected === 'new' ? newWelcome : originalArt + 'welcome-v4.png';
-    if (welcomeImage) {
-      welcomeImage.closest('.jt-guide-art').hidden = false;
-      welcomeImage.closest('.jt-guide-scene').classList.remove('jt-guide-no-art');
-      if (welcomeImage.getAttribute('src') !== desiredWelcome) welcomeImage.src = desiredWelcome;
-    }
+    guideImages.forEach((image, pose) => {
+      const desired = artSource(pose);
+      image.closest('.jt-guide-art').hidden = false;
+      image.closest('.jt-guide-scene').classList.remove('jt-guide-no-art');
+      if (image.getAttribute('src') !== desired) image.src = desired;
+    });
     // Only the source changes. Production distance, size, masks and breakpoints remain shared.
     if (selected === 'new') {
       document.body.style.setProperty('--desktop-scene', 'url("' + new URL(newLibrary, location.href).href + '")');
@@ -65,18 +71,17 @@
       art.className = 'jt-guide-art';
       art.setAttribute('aria-hidden', 'true');
       const image = document.createElement('img');
-      image.src = originalArt + pose + '-v4.png';
+      image.src = artSource(pose);
       image.alt = '';
       image.width = 1254; image.height = 1254;
       image.loading = pose === 'welcome' ? 'eager' : 'lazy';
       image.decoding = 'async';
-      if (pose === 'welcome') welcomeImage = image;
+      guideImages.set(pose, image);
       image.onerror = () => {
         art.hidden = true;
         stage.classList.add('jt-guide-no-art');
-        if (pose === 'welcome') report(selected === 'new'
-          ? '새 첫 삽화가 아직 준비되지 않았습니다. 기존 그림으로 비교할 수 있습니다.'
-          : '기존 첫 삽화를 불러오지 못했습니다.');
+        report((selected === 'new' ? '새 ' : '기존 ') + sceneNames[pose]
+          + ' 삽화를 불러오지 못했습니다. 새로고침해 주세요.');
       };
       art.append(image); stage.append(art);
     }
