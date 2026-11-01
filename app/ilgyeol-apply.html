@@ -95,6 +95,10 @@
     <p class="sec">누구를 볼까요?</p>
     <p class="help">저장된 사람 목록에서 고르세요. 아직 없으면 「사람 추가」로 정보를 입력하세요. 태어난 시각을 모르면 「시간 모름」을 고르고, 생일이 음력이면 「음력」을 고르세요. 윤달에 태어났다면 「윤달이에요」에도 표시하세요. 이름은 풀이에 들어가지 않아요.</p>
     <div id="whoWrap" data-slot="who"></div>
+    <!-- 11-01 지금 하는 일 · 들어온 제안(안 써도 됨 · docs/137 비공개). 칸 글은 ilgyeol-work-copy.js(Codex) — 다 차야 보인다 -->
+    <div id="workWrap" hidden><p class="sec" id="workHead"></p><p class="help" id="workHelp"></p>
+      <label for="workNow" id="workNowL"></label><input id="workNow" type="text" maxlength="60" autocomplete="off">
+      <label for="workOffer" id="workOfferL"></label><input id="workOffer" type="text" maxlength="60" autocomplete="off"></div>
 
     <p class="hint">고르신 분의 생년월일시는 풀이를 만드는 데만 쓰고, 이 주문 기록과 함께 2년 동안 보관해요. 지워 달라고 하시면 바로 지워요.
       다른 사람의 생년월일은 그 사람의 동의를 받고 넣어 주세요.</p>
@@ -173,7 +177,8 @@
 <script src="places.js?v=1350b96148"></script>
 <script src="astro.js?v=c0bb3fa175"></script>
 <script src="lunar.js?v=9d5b6391f1"></script>
-<script src="ilgyeol-apply.js?v=376e61e003"></script>
+<script src="ilgyeol-work-copy.js?v=093018fe9c"></script>
+<script src="ilgyeol-apply.js?v=bdbd796bbe"></script>
 <script>
 // 검수 계정(super)이면 맨 위 띠로 사장님 목록 길을 보인다(화면 편의 — 실제 막음은 DB ai_plan()).
 (function () {
