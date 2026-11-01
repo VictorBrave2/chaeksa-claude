@@ -1,5 +1,6 @@
 
 /* Three reading moments: eye contact, evidence, conclusion. Original nodes stay intact. */
+.zd-mobile-ending{display:none}
 .zd.zd-companion{container-type:inline-size}
 .zd.zd-companion .zd-hero{position:relative}
 .zd.zd-companion .zd-guide-controls{display:flex;justify-content:flex-end;margin:0 0 4px}
@@ -88,5 +89,36 @@
  .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{min-width:0;padding:28px 28px 24px 20px;border:0;border-radius:0;box-shadow:none;background:transparent}
  .zd.zd-companion.companion-on .guide-opening h2{font-size:28px;line-height:1.55;text-wrap:balance}
  .zd.zd-companion.companion-on .guide-opening .zd-personal{font-size:14px}
+ .zd.zd-companion.companion-on .guide-opening.guide-no-art{grid-template-columns:minmax(0,1fr)}
+}
+
+/* The chart stays first; the mobile guide introduces the reading below it. */
+@media screen and (max-width:1050px){
+ .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art" "copy";grid-template-columns:minmax(0,1fr);gap:0;border:0;border-radius:0;background:none;overflow:visible;box-shadow:none}
+ .zd.zd-companion.companion-on .guide-opening .guide-art{position:relative;width:100%;max-width:600px;height:clamp(260px,49svh,440px);overflow:hidden;border-radius:14px 14px 0 0;mask-image:none;align-self:auto}
+ .zd.zd-companion.companion-on .guide-opening .guide-art picture{display:block;width:100%;height:100%}
+ .zd.zd-companion.companion-on .guide-opening .guide-art img{width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:50% 0}
+ .zd.zd-companion.companion-on .guide-opening .guide-art::after{content:"";position:absolute;inset:82% 0 -1px;background:linear-gradient(transparent,var(--bg));pointer-events:none}
+ .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{width:100%;max-width:600px;margin:0;padding:20px 20px 24px;border:0;border-radius:0;background:var(--bg);box-shadow:none}
+ .zd.zd-companion.companion-on .guide-opening.guide-no-art{grid-template-areas:"copy"}
+ .zd.zd-companion.companion-on .guide-opening.guide-no-art .guide-scene-copy{padding-top:0}
+ .zd.zd-companion .zd-mobile-ending{display:block;max-width:600px;margin:42px auto 0;padding:32px 18px 24px;border-top:1px solid var(--line2);text-align:center}
+ .zd.zd-companion .zd-mobile-ending .mobile-ending-label{margin:0 0 22px;font-size:11px;letter-spacing:.1em;color:var(--ink3)}
+ .zd.zd-companion .zd-mobile-ending figure{display:none;width:clamp(210px,72vw,320px);max-width:100%;margin:0 auto 24px;overflow:hidden;border-radius:14px}
+ .zd.zd-companion.companion-on .zd-mobile-ending figure:not([hidden]){display:block}
+ .zd.zd-companion .zd-mobile-ending picture,.zd.zd-companion .zd-mobile-ending img{display:block;width:100%}
+ .zd.zd-companion .zd-mobile-ending img{height:auto;aspect-ratio:2/3;object-fit:contain;mask-image:linear-gradient(#000 88%,transparent)}
+ .zd.zd-companion .zd-mobile-ending .mobile-ending-title{font:500 clamp(23px,6vw,29px)/1.6 var(--serif);letter-spacing:-.045em;color:var(--ink);margin:0 0 12px}
+ .zd.zd-companion .zd-mobile-ending>p:not([class]){font-size:14px;color:var(--ink2);margin:0}
+ .zd.zd-companion .zd-mobile-ending>a{display:inline-flex;align-items:center;min-height:46px;margin-top:18px;font-size:14px;color:var(--accent);text-underline-offset:5px}
+}
+@media screen and (max-width:1050px) and (max-height:650px){
+ .zd.zd-companion .zd-mobile-ending figure{width:190px}
+}
+@media screen and (min-width:600px) and (max-width:1050px) and (max-height:500px) and (orientation:landscape){
+ .zd.zd-companion.companion-on .guide-opening{grid-template-areas:"art copy";grid-template-columns:190px minmax(0,1fr);align-items:center}
+ .zd.zd-companion.companion-on .guide-opening .guide-art{width:190px;height:260px;border-radius:12px}
+ .zd.zd-companion.companion-on .guide-opening .guide-scene-copy{padding:16px 18px}
+ .zd.zd-companion.companion-on .guide-opening h2{font-size:26px}
  .zd.zd-companion.companion-on .guide-opening.guide-no-art{grid-template-columns:minmax(0,1fr)}
 }
