@@ -117,7 +117,7 @@
 <!-- 10-02 첫 칸 표지를 미리 부른다 — 표지는 home-cats.js 가 스크립트를 다 받은 뒤에야 그려서, 그제서야 받기 시작했다.
      home-cats.js 메뉴판 맨 앞(10-22 유료차례 첫째 = 출산택일 taekil-main) 그림과 같아야 한다. 그 그림을 바꾸면 여기도 바꾼다.
      홈 칸이 2열 · srcset 이 된 뒤(10-02 홈 첫 화면 다시 짜기)로는 imagesrcset · imagesizes 도 home-cats.js(작은 · 칸폭)와 같게 — 다르면 다른 판을 한 번 더 받는다. -->
-<link rel="preload" as="image" href="art/taekil-main.webp" imagesrcset="art/taekil-main-s.webp 360w, art/taekil-main.webp 1086w" imagesizes="(min-width:520px) 236px, calc((100vw - 48px)/2)" fetchpriority="high">
+<link rel="preload" as="image" href="art/content-tarot-v2/taekil-cover.webp" imagesrcset="art/content-tarot-v2/taekil-cover-s.webp 360w, art/content-tarot-v2/taekil-cover.webp 1024w" imagesizes="(min-width:520px) 236px, calc((100vw - 48px)/2)" fetchpriority="high">
 <!-- 11-01 구글 「책사」 — 이름표 둘. ① Organization 을 따로 한 덩어리로(네이버 「사이트 연관채널」 예제가 단독 객체 — @graph 를 읽는지 문서로 확인 못 함).
      sameAs = 사장님 유튜브(@chaeksa2026 채널 ID 주소 — 핸들이 바뀌어도 산다) · 네이버 블로그 withsajuai(이름 「책사」). 카카오 채널은 10-02 사장님 「카톡책사 삭제 ㄱㄱ」로 넣지 않는다.
      상호 · 사업자번호 · 주소 · 메일은 아래 바닥글(통신판매업 표시)과 글자까지 같게 — 바닥글을 고치면 여기도. 전화는 넣지 않는다(10-02 손님 문의는 메일 한 곳).
@@ -140,6 +140,7 @@
 ]}
 </script>
 <link rel="stylesheet" href="desktop-scenes.css?v=5f13603cbd">
+  <script src="scene-art.js"></script>
 </head>
 <body class="has-head">
 <noscript>
@@ -644,7 +645,7 @@
 <!-- 사람 추가/수정 -->
 <div class="modal hide" id="personForm">
   <div class="sheet">
-    <div class="gc-cut" id="pfCut"><img src="art/jt-13-heart-m.webp" alt="" loading="lazy"><div class="gc-bubble"><b>책사</b><span id="pfSay">그 사람은요? 생년월일만 있으면 돼요.</span></div></div>
+    <div class="gc-cut" id="pfCut"><img src="art/content-tarot-v2/body/jt-13-heart-m.webp" alt="" loading="lazy"><div class="gc-bubble"><b>책사</b><span id="pfSay">그 사람은요? 생년월일만 있으면 돼요.</span></div></div>
     <h3 id="pfTitle" class="hide">그 사람을 적어 주세요</h3>
     <!-- 10-02 생년월일은 필요한 만큼만 — 콘텐츠로 들어오다 이 창이 뜨면(사용설명서 · 궁합의 그 사람 · 그 사람만 넣어 둔 손님의 내 생년월일)
          무엇을 하러 넣는지와 필요한 것(상품 약속 장부 필요 칸)을 한 줄. app.js 사람폼열기가 채운다. -->

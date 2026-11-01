@@ -95,8 +95,8 @@
   <h1>내게 맞는 일과 돈</h1>
   <p class="lead">당신에게 맞는 일의 조건 · 피해야 할 일의 조건 · 돈이 들어오는 경로 · 같이 일할 사람 · 앞으로 10년의 변화를 풀어 드려요. 직업 이름은 예시이니, <b>어떤 조건의 일이 맞는지와 그 근거</b>를 확인하세요. 한 사람의 생년월일시로 여덟 글자의 표(사주)와 열두 칸에 별을 배치한 표(자미두수 명반)를 만들어 풀이해요. 결제하면 바로 화면에서 열려요.</p>
   <!-- 10-23 머리 그림은 손님 성별로(홈 칸 home-cats.js 성별()과 같은 열쇠 chaeksa.profile — 생년월일은 안 읽는다). src 를 비워 두고 바로 아래 스크립트가 한 벌만 고른다(두 벌 다 받지 않게). -->
-  <figure class="hero" id="igHero"><img alt="" width="1024" height="1536" fetchpriority="high"><noscript><img src="art/ilgyeol-f.webp" alt="" width="1024" height="1536"></noscript></figure>
-  <script>(function(){var g='f';try{var p=JSON.parse(localStorage.getItem('chaeksa.profile')||'null');if(p&&p.gender==='M')g='m';}catch(e){}var im=document.querySelector('#igHero img');if(!im)return;im.srcset='art/ilgyeol-'+g+'-s.webp 360w, art/ilgyeol-'+g+'.webp 1024w';im.sizes='(max-width: 720px) 100vw, 660px';im.src='art/ilgyeol-'+g+'.webp';})();</script>
+  <figure class="hero" id="igHero"><img alt="" width="1024" height="1536" fetchpriority="high"><noscript><img src="art/content-tarot-v2/ilgyeol-f-cover.webp" alt="" width="1024" height="1536"></noscript></figure>
+  <script>(function(){var g='f';try{var p=JSON.parse(localStorage.getItem('chaeksa.profile')||'null');if(p&&p.gender==='M')g='m';}catch(e){}var im=document.querySelector('#igHero img');if(!im)return;var art='art/content-tarot-v2/ilgyeol-'+g+'-cover';im.srcset=art+'-s.webp 360w, '+art+'.webp 1024w';im.sizes='(max-width: 720px) 100vw, 660px';im.src=art+'.webp';})();</script>
 
   <div class="tk-mine" id="igMine" hidden></div>
 

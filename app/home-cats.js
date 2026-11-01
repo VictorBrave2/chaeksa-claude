@@ -9,17 +9,17 @@
   // 사용설명서는 연애 칸 — 그 사람 한 명이 연애 단계마다 어떻게 할지라서(두 사람을 맞대는 궁합 칸이 아니다). 연애 두 상품이 첫 줄에 나란히 선다.
   var 칸 = {
     // 10-23 사장님 「클릭하고 싶게 만드는 표지여야 한다」 · 「안 바뀌었는데」 — 빌려 쓰던 밤 컷 아홉 칸을 제 표지(IMG-0013~0026, 콘텐츠 첫 줄에서 꺼낸 밝은 그림)로
-    love: [{ 키: 'love', 탭: 'love', 그림: 'art/love-cover.webp', 작은: 'art/love-cover-s.webp', 크기: [1086, 1448] },
-      { 키: 'pair', 탭: 'pair', 그림: 'art/pair-cover.webp', 작은: 'art/pair-cover-s.webp', 크기: [1024, 1536] }],
-    child: [{ 키: 'taekil', 탭: 'taekil', 주소: 'taekil.html?from=home', 그림: 'art/taekil-main.webp', 작은: 'art/taekil-main-s.webp', 크기: [1086, 1448] }],
+    love: [{ 키: 'love', 탭: 'love', 그림: 'art/content-tarot-v2/love-cover.webp', 작은: 'art/content-tarot-v2/love-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      { 키: 'pair', 탭: 'pair', 그림: 'art/content-tarot-v2/pair-cover.webp', 작은: 'art/content-tarot-v2/pair-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
+    child: [{ 키: 'taekil', 탭: 'taekil', 주소: 'taekil.html?from=home', 그림: 'art/content-tarot-v2/taekil-cover.webp', 작은: 'art/content-tarot-v2/taekil-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
     // 10-07 「결혼상대 점검」(gyeolhon.html, 사장님 10-07 확정 유료) — 궁합 칸 맨 앞. 그림은 소개 쪽 머리와 같은 상견례 컷(성별 없음)
     // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
     //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
-    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/gyeolhon-cover.webp', 작은: 'art/gyeolhon-cover-s.webp', 크기: [1024, 1536] },
-      { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448] },
-      { 키: 'ssom', 탭: 'ssom', 그림: 'art/ssom-main.webp', 작은: 'art/ssom-main-s.webp', 크기: [1086, 1448] }],
+    match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/content-tarot-v2/gyeolhon-cover.webp', 작은: 'art/content-tarot-v2/gyeolhon-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/content-tarot-v2/gunghap-cover.webp', 작은: 'art/content-tarot-v2/gunghap-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      { 키: 'ssom', 탭: 'ssom', 그림: 'art/content-tarot-v2/ssom-cover.webp', 작은: 'art/content-tarot-v2/ssom-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
-      { 키: 'saram', 주소: 'saram.html', 그림: 'art/saram-cover.webp', 작은: 'art/saram-cover-s.webp', 크기: [1024, 1536] },
+      { 키: 'saram', 주소: 'saram.html', 그림: 'art/content-tarot-v2/saram-cover.webp', 작은: 'art/content-tarot-v2/saram-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       // 10-31 나를 알아보기 여섯 표지 — 킹·퀸의 얼굴과 그림체를 통일하고 메뉴마다 장면을 달리한다. 고객 성별과 무관하게 고정.
       { 키: 'jeongtong', 탭: 'jeongtong', 그림: 'art/menu-guides-v1/jeongtong.webp', 작은: 'art/menu-guides-v1/jeongtong-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       // 귀함·고전 이름은 정통사주로 통합. 총명함 집중 보기는 정통사주 안에서 연결한다.
@@ -30,10 +30,10 @@
       { 키: 'three', 탭: 'three', 그림: 'art/menu-guides-v1/three.webp', 작은: 'art/menu-guides-v1/three-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
     // 오늘의 운세는 퀸, 앞으로의 운 흐름은 킹의 표지로 고정한다.
     time: [{ 키: 'today', 탭: 'today', 표시명: '오늘의 운세', 설명: '오늘 무슨 일이 생길까? 누구와, 몇 시쯤인지 미리 보세요.', 그림: 'art/menu-guides-v1/today.webp', 작은: 'art/menu-guides-v1/today-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }, { 키: 'when', 주소: 'when.html', 그림: 'art/menu-guides-v1/when.webp', 작은: 'art/menu-guides-v1/when-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],  // 10-12 「이번 주엔 무엇이 바뀌나」 뺌 — 사장님 「삭제하자 재미가 없네」,
-    learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/read-cover.webp', 작은: 'art/read-cover-s.webp', 크기: [1024, 1536] }],
+    learn: [{ 키: 'read', 주소: 'read.html', 그림: 'art/content-tarot-v2/read-cover.webp', 작은: 'art/content-tarot-v2/read-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
     // 10-22 「나는 뭐해 먹고 살까?」(ilgyeol.html, 진로 보고서 · 유료) — 사장님 「홈에 넣어」. 일과 자리 분류.
     // 10-23 제 그림(IMG-0006 · 0007 밤 갈림길 불 켜진 문들, 남녀 두 벌 — 소개 쪽 머리와 같은 그림). 전에는 정통사주 15장(일) 컷을 빌려 썼다.
-    work: [{ 키: 'ilgyeol', 주소: 'ilgyeol.html', 그림: 'art/ilgyeol-{g}.webp', 작은: 'art/ilgyeol-{g}-s.webp', 크기: [1024, 1536] }],
+    work: [{ 키: 'ilgyeol', 주소: 'ilgyeol.html', 그림: 'art/content-tarot-v2/ilgyeol-{g}-cover.webp', 작은: 'art/content-tarot-v2/ilgyeol-{g}-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
   };
   // 10-22 사장님 「유료 콘텐츠들 상단으로」 — 메뉴판 맨 앞은 값을 받는 다섯(이 차례), 그 뒤는 분류 차례 그대로.
   var 유료차례 = ['taekil', 'gyeolhon', 'ilgyeol', 'love', 'pair'];

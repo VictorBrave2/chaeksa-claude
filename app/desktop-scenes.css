@@ -1,7 +1,7 @@
 /* Approved PC layout: a little farther away, original illustration colour. */
 @media (min-width:1051px){
   body:where([data-desktop-scene],:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide))){
-    --desktop-scene:url("art/three-gallery/sunlit-gallery-v2.png");
+    --desktop-scene:url("art/content-tarot-v2/desktop-home.webp");
     --desktop-scene-width:min(max(76vw,950px),calc((100vw - var(--desktop-paper-width))*2.6));
     --desktop-scene-height:calc(var(--desktop-scene-width)*.5628);
     --desktop-scene-top:180px;
@@ -13,10 +13,23 @@
   body[data-desktop-scene]:has(.zd-companion),body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide) #jtOut .jt-companion){--desktop-paper-width:756px}
   body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)){--desktop-paper-width:572px}
   body[data-desktop-scene="library"],body:has(#app:not(.hide) > .tab[data-tab="jeongtong"]:not(.hide)){--desktop-scene:url("art/jeongtong-tarot-v1/library.png")}
-  body[data-desktop-scene="observatory"]{--desktop-scene:url("art/desktop-scenes/observatory-v1.png")}
-  body[data-desktop-scene="morning"],body:has(#app:not(.hide) > .tab:is([data-tab="today"],[data-tab="why"]):not(.hide)){--desktop-scene:url("art/desktop-scenes/morning-v1.png")}
-  body[data-desktop-scene="garden"],body:has(#app:not(.hide) > .tab:is([data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"]):not(.hide)){--desktop-scene:url("art/desktop-scenes/garden-v1.png")}
-  body[data-desktop-scene="birth"],body:has(#app:not(.hide) > .tab[data-tab="taekil"]:not(.hide)){--desktop-scene:url("art/desktop-scenes/birth-v1.png")}
+  body[data-desktop-scene="observatory"]{--desktop-scene:url("art/content-tarot-v2/desktop-ziwei.webp")}
+  body[data-desktop-scene="morning"],body:has(#app:not(.hide) > .tab:is([data-tab="today"],[data-tab="why"]):not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-today.webp")}
+  body[data-desktop-scene="garden"],body:has(#app:not(.hide) > .tab:is([data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"]):not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-compatibility.webp")}
+  body[data-desktop-scene="birth"],body:has(#app:not(.hide) > .tab[data-tab="taekil"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-birth.webp")}
+  /* Each content has its own scene; existing paper width and distance stay in control. */
+  body[data-desktop-content="ziwei"]{--desktop-scene:url("art/content-tarot-v2/desktop-ziwei.webp")}
+  body[data-desktop-content="when"]{--desktop-scene:url("art/content-tarot-v2/desktop-when.webp")}
+  body[data-desktop-content="saram"]{--desktop-scene:url("art/content-tarot-v2/desktop-saram.webp")}
+  body[data-desktop-content="love"],body:has(#app:not(.hide) > .tab[data-tab="love"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-love.webp")}
+  body[data-desktop-content="pair"],body:has(#app:not(.hide) > .tab[data-tab="pair"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-pair.webp")}
+  body[data-desktop-content="compatibility"],body[data-desktop-content="chongnon"],body:has(#app:not(.hide) > .tab[data-tab="chongnon"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-compatibility.webp")}
+  body[data-desktop-content="ssom"],body:has(#app:not(.hide) > .tab[data-tab="ssom"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-ssom.webp")}
+  body[data-desktop-content="gyeolhon"]{--desktop-scene:url("art/content-tarot-v2/desktop-gyeolhon.webp")}
+  body[data-desktop-content="birth"],body:has(#app:not(.hide) > .tab[data-tab="taekil"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-birth.webp")}
+  body[data-desktop-content="today"],body:has(#app:not(.hide) > .tab[data-tab="today"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-today.webp")}
+  body[data-desktop-content="why"],body:has(#app:not(.hide) > .tab[data-tab="why"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-why.webp")}
+  body[data-desktop-content="three"],body:has(#app:not(.hide) > .tab[data-tab="three"]:not(.hide)){--desktop-scene:url("art/content-tarot-v2/desktop-three.webp")}
   /* Both sides use the same original image. Anchoring each outer edge keeps
      the smaller faces beside the paper instead of sliding underneath it. */
   body:is([data-desktop-scene],:has(#app:not(.hide) > .tab:is([data-tab="home"],[data-tab="all"],[data-tab="three"],[data-tab="jeongtong"],[data-tab="today"],[data-tab="why"],[data-tab="love"],[data-tab="pair"],[data-tab="chongnon"],[data-tab="ssom"],[data-tab="taekil"]):not(.hide)))::before,
