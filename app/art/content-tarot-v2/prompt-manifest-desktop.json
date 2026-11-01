@@ -1,0 +1,118 @@
+{
+  "created": "2026-11-01",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "reference-based identity-preserve replacement",
+  "generationCalls": 5,
+  "callsPerAsset": 1,
+  "scope": "PC backgrounds only; no consuming code, branches, commits, or tests changed or run.",
+  "identityReferences": [
+    "app/art/tarot/chaeksa-v1/P14.webp",
+    "app/art/tarot/chaeksa-v1/P13.webp"
+  ],
+  "referenceRoles": [
+    "P14: male face and illustration style",
+    "P13: female face and illustration style",
+    "old background: approved camera distance, brightness, palette, side placement"
+  ],
+  "constraints": {
+    "requestedAspectRatio": "16:9",
+    "nativeDimensionsPreserved": true,
+    "requestedFaceCenters": "x=13% and x=87%; quiet center x=30%-70%",
+    "compositionNote": "Generated placement is approximate; original framing is preserved without geometric edits.",
+    "noTextOrNumbers": true,
+    "noPhoneScreenClockCalendar": true,
+    "noImageBorder": true
+  },
+  "encoding": {
+    "tool": "ffmpeg",
+    "codec": "libwebp",
+    "quality": 92,
+    "compressionLevel": 6,
+    "frames": 1,
+    "crop": false,
+    "resize": false,
+    "colorFilter": false,
+    "originals": "Generated PNGs retained at source paths."
+  },
+  "visualReview": {
+    "performed": "Each generated image visually inspected for recognizable faces, hands, side placement, shared lighting, menu-specific scene, and no added UI/text. Encoded deliverables retain the native composition.",
+    "limitation": "No browser integration or automated tests; native image dimensions are approximately 16:9, not resampled to an exact ratio."
+  },
+  "assets": [
+    {
+      "key": "ziwei",
+      "sourcePng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-73b50fed-7eec-4995-813d-5f9bb752b85f.png",
+      "output": "app/art/content-tarot-v2/desktop-ziwei.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 726806,
+      "references": [
+        "app/art/tarot/chaeksa-v1/P14.webp",
+        "app/art/tarot/chaeksa-v1/P13.webp",
+        "app/art/desktop-scenes/observatory-v1.png"
+      ],
+      "prompt": "Use case: identity-preserve / stylized-concept.\nAsset: new replacement desktop background illustration for a Korean reading website. Create ONE finished wide landscape illustration, exactly 16:9, preferably 2560x1440. Fully opaque.\nReference roles: reference 1 is the authoritative male FACE and precise tarot illustration style, reference 2 is the authoritative female FACE and style, reference 3 is the PREVIOUS desktop scene for APPROVED camera distance, natural scale, vivid luminous palette and left/right placement only. Make a genuinely different environment, pose and scene; do not merely recolor or reuse that composition's furniture.\nKeep the SAME TWO recognisable adult people: his angular long jaw, amber eyes, swept tousled chestnut hair; her refined long oval face, almond amber-brown OPEN eyes, delicate features, long chestnut waves. Faces must be clear and finely drawn, not tiny, not blurred, not changed to generic characters. Preserve tasteful adult natural proportions.\nStyle: highly detailed modern fantasy tarot illustration, fine confident 2D anime/manhwa outlines, precise hair strands and textile embroidery, rich luminous gold, warm ivory and jewel colors, sharp controlled shadows. Bright clear daylight matching the approved reference, original saturation, no washout, no cinematic darkness, no photo skin, no 3D, no soft airbrush.\nLayout invariant: continuous physical scene with ONE shared perspective and light. Same medium-long camera distance as reference 3, full figures or knee-length with heads/shoulders complete. Male on far left with face centered x=13%, female on far right face centered x=87%; head height y=18%-30%. Figures confined mostly to x=0%-27% and x=74%-100%. Central x=30%-70% remains quiet pale architecture/floor/open air without people or important props because a website reading panel covers it. Do NOT draw the reading panel. Detail and the menu's identifying props go at the outer sides. Keep all faces safely inside frame, 4%-8% headroom. Clear eyes, calm attentive expressions toward viewer. Exactly two arms each, simple natural hands, no pinching.\nAvoid: text, letters, numbers, labels, signatures, logos, watermark, tarot-card frame or decorative border around the image, phones, screens, clocks, calendars, additional people, collage, duplicated faces, split panels.\n\nDedicated menu: Ziwei celestial birth-chart reading.\nNEW SCENE: a sunlit celestial archive with a high pale stone barrel-vault and a broad clear north-facing opening, NOT the old turquoise glass dome terrace. On the far left the male scholar sits upright on a low carved stool at a compact dark-blue/brass instrument desk, one hand resting beside a small brass astrolabe, other hand on a closed star atlas; midnight-blue tailored tunic with refined gold constellations, ivory sleeves, no fur cloak. On the far right the female scholar stands at a slender ivory lectern, gently unrolling a round star-map parchment with only small unlabelled dots and fine connections; pearl-lilac dress, dark sapphire short mantle, long original hair and a subtle gold star clasp. Tall celestial archive cabinets and brass observational instruments at extreme edges establish the topic. Center is pale sunlit floor and distant clear blue sky, no ornate central disk, no tree canopy. Preserve the existing female's long hair identity from reference 2 for this PC scene.",
+      "visualReview": "천문 도구와 별자리 기록을 살피는 새 기록실. 남성은 왼쪽에 앉고 여성은 오른쪽에서 기록을 펼침."
+    },
+    {
+      "key": "today",
+      "sourcePng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-78a11d35-36da-4013-8b0a-85defcb250df.png",
+      "output": "app/art/content-tarot-v2/desktop-today.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 566752,
+      "references": [
+        "app/art/tarot/chaeksa-v1/P14.webp",
+        "app/art/tarot/chaeksa-v1/P13.webp",
+        "app/art/desktop-scenes/morning-v1.png"
+      ],
+      "prompt": "Use case: identity-preserve / stylized-concept.\nAsset: new replacement desktop background illustration for a Korean reading website. Create ONE finished wide landscape illustration, exactly 16:9, preferably 2560x1440. Fully opaque.\nReference roles: reference 1 is the authoritative male FACE and precise tarot illustration style, reference 2 is the authoritative female FACE and style, reference 3 is the PREVIOUS desktop scene for APPROVED camera distance, natural scale, vivid luminous palette and left/right placement only. Make a genuinely different environment, pose and scene; do not merely recolor or reuse that composition's furniture.\nKeep the SAME TWO recognisable adult people: his angular long jaw, amber eyes, swept tousled chestnut hair; her refined long oval face, almond amber-brown OPEN eyes, delicate features, long chestnut waves. Faces must be clear and finely drawn, not tiny, not blurred, not changed to generic characters. Preserve tasteful adult natural proportions.\nStyle: highly detailed modern fantasy tarot illustration, fine confident 2D anime/manhwa outlines, precise hair strands and textile embroidery, rich luminous gold, warm ivory and jewel colors, sharp controlled shadows. Bright clear daylight matching the approved reference, original saturation, no washout, no cinematic darkness, no photo skin, no 3D, no soft airbrush.\nLayout invariant: continuous physical scene with ONE shared perspective and light. Same medium-long camera distance as reference 3, full figures or knee-length with heads/shoulders complete. Male on far left with face centered x=13%, female on far right face centered x=87%; head height y=18%-30%. Figures confined mostly to x=0%-27% and x=74%-100%. Central x=30%-70% remains quiet pale architecture/floor/open air without people or important props because a website reading panel covers it. Do NOT draw the reading panel. Detail and the menu's identifying props go at the outer sides. Keep all faces safely inside frame, 4%-8% headroom. Clear eyes, calm attentive expressions toward viewer. Exactly two arms each, simple natural hands, no pinching.\nAvoid: text, letters, numbers, labels, signatures, logos, watermark, tarot-card frame or decorative border around the image, phones, screens, clocks, calendars, additional people, collage, duplicated faces, split panels.\n\nDedicated menu: Today's fortune, a fresh day's ordinary encounters.\nNEW SCENE: a bright open riverside breakfast pavilion seen from inside, pale apricot morning light, a light wooden doorway at left and a compact breakfast console at right, no mountain/castle panorama and no old balustrade terrace. Far left male stands naturally beside a chair as he picks up his light jade travel cloak, dressed in crisp ivory shirt and warm amber tailored waistcoat, elegant gold stitch details, no crown or fur. Far right female has just laid a small closed daily journal on the console and rests one hand near a neatly folded linen napkin, wearing a soft coral and ivory daytime dress with simple gold edging. A ceramic breakfast cup and fruit bowl remain on the right console, NOT held in hands. Both look toward the reader as the day begins. Center is quiet pale paving leading toward sunlit river and low distant roofs; keep middle very calm. Clothing and gestures must differ from old reference scene.",
+      "visualReview": "새 하루를 준비하는 강변 공간. 남성은 외투를 들고 여성은 기록장을 내려놓음."
+    },
+    {
+      "key": "compatibility",
+      "sourcePng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-a35fbdf0-e646-4516-af15-1a8ab9a69122.png",
+      "output": "app/art/content-tarot-v2/desktop-compatibility.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 594462,
+      "references": [
+        "app/art/tarot/chaeksa-v1/P14.webp",
+        "app/art/tarot/chaeksa-v1/P13.webp",
+        "app/art/desktop-scenes/garden-v1.png"
+      ],
+      "prompt": "Use case: identity-preserve / stylized-concept.\nAsset: new replacement desktop background illustration for a Korean reading website. Create ONE finished wide landscape illustration, exactly 16:9, preferably 2560x1440. Fully opaque.\nReference roles: reference 1 is the authoritative male FACE and precise tarot illustration style, reference 2 is the authoritative female FACE and style, reference 3 is the PREVIOUS desktop scene for APPROVED camera distance, natural scale, vivid luminous palette and left/right placement only. Make a genuinely different environment, pose and scene; do not merely recolor or reuse that composition's furniture.\nKeep the SAME TWO recognisable adult people: his angular long jaw, amber eyes, swept tousled chestnut hair; her refined long oval face, almond amber-brown OPEN eyes, delicate features, long chestnut waves. Faces must be clear and finely drawn, not tiny, not blurred, not changed to generic characters. Preserve tasteful adult natural proportions.\nStyle: highly detailed modern fantasy tarot illustration, fine confident 2D anime/manhwa outlines, precise hair strands and textile embroidery, rich luminous gold, warm ivory and jewel colors, sharp controlled shadows. Bright clear daylight matching the approved reference, original saturation, no washout, no cinematic darkness, no photo skin, no 3D, no soft airbrush.\nLayout invariant: continuous physical scene with ONE shared perspective and light. Same medium-long camera distance as reference 3, full figures or knee-length with heads/shoulders complete. Male on far left with face centered x=13%, female on far right face centered x=87%; head height y=18%-30%. Figures confined mostly to x=0%-27% and x=74%-100%. Central x=30%-70% remains quiet pale architecture/floor/open air without people or important props because a website reading panel covers it. Do NOT draw the reading panel. Detail and the menu's identifying props go at the outer sides. Keep all faces safely inside frame, 4%-8% headroom. Clear eyes, calm attentive expressions toward viewer. Exactly two arms each, simple natural hands, no pinching.\nAvoid: text, letters, numbers, labels, signatures, logos, watermark, tarot-card frame or decorative border around the image, phones, screens, clocks, calendars, additional people, collage, duplicated faces, split panels.\n\nDedicated menu: Traditional compatibility, comparing two people's records with care.\nNEW SCENE: an airy paired-record study opening onto a small courtyard, not a rose garden. Two separate handsome wooden reading lecterns at opposite outer edges, each with a different richly bound unlettered folio. Male at left in deep garnet waistcoat and ivory/gold scholar's coat, slightly turned inward, gently resting a palm on his open folio; female at right in muted jade and warm ivory gown with fine gold floral embroidery, seated upright in a side chair, one hand holding a small plain unlabelled paper slip beside her own open folio. They are two thoughtful guides comparing perspectives, not a wedding couple. Original faces and calm open eyes. Behind each outer lectern, subtle paired geometric lattice screens echo one another; the middle stays pale courtyard floor and soft sky beyond. No scales, score, lettered charts, or diagram UI.",
+      "visualReview": "서로의 기록을 비교하는 두 독서대. 정원 배경에서 기록실로 변경."
+    },
+    {
+      "key": "birth",
+      "sourcePng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-881513e4-f327-4b65-823d-f9bc4a1f4dbd.png",
+      "output": "app/art/content-tarot-v2/desktop-birth.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 610074,
+      "references": [
+        "app/art/tarot/chaeksa-v1/P14.webp",
+        "app/art/tarot/chaeksa-v1/P13.webp",
+        "app/art/desktop-scenes/birth-v1.png"
+      ],
+      "prompt": "Use case: identity-preserve / stylized-concept.\nAsset: new replacement desktop background illustration for a Korean reading website. Create ONE finished wide landscape illustration, exactly 16:9, preferably 2560x1440. Fully opaque.\nReference roles: reference 1 is the authoritative male FACE and precise tarot illustration style, reference 2 is the authoritative female FACE and style, reference 3 is the PREVIOUS desktop scene for APPROVED camera distance, natural scale, vivid luminous palette and left/right placement only. Make a genuinely different environment, pose and scene; do not merely recolor or reuse that composition's furniture.\nKeep the SAME TWO recognisable adult people: his angular long jaw, amber eyes, swept tousled chestnut hair; her refined long oval face, almond amber-brown OPEN eyes, delicate features, long chestnut waves. Faces must be clear and finely drawn, not tiny, not blurred, not changed to generic characters. Preserve tasteful adult natural proportions.\nStyle: highly detailed modern fantasy tarot illustration, fine confident 2D anime/manhwa outlines, precise hair strands and textile embroidery, rich luminous gold, warm ivory and jewel colors, sharp controlled shadows. Bright clear daylight matching the approved reference, original saturation, no washout, no cinematic darkness, no photo skin, no 3D, no soft airbrush.\nLayout invariant: continuous physical scene with ONE shared perspective and light. Same medium-long camera distance as reference 3, full figures or knee-length with heads/shoulders complete. Male on far left with face centered x=13%, female on far right face centered x=87%; head height y=18%-30%. Figures confined mostly to x=0%-27% and x=74%-100%. Central x=30%-70% remains quiet pale architecture/floor/open air without people or important props because a website reading panel covers it. Do NOT draw the reading panel. Detail and the menu's identifying props go at the outer sides. Keep all faces safely inside frame, 4%-8% headroom. Clear eyes, calm attentive expressions toward viewer. Exactly two arms each, simple natural hands, no pinching.\nAvoid: text, letters, numbers, labels, signatures, logos, watermark, tarot-card frame or decorative border around the image, phones, screens, clocks, calendars, additional people, collage, duplicated faces, split panels.\n\nDedicated menu: Choosing a birth date, careful preparation and a welcoming beginning.\nNEW SCENE: a spacious bright family planning atelier opening onto a small spring orchard, not the old glass-roof conservatory. Pale maple shelves and soft cream linen curtains at the far sides; subtle peach blossoms outside. Male on far left sits at a compact recommendation desk, sage-green tailored coat over ivory, his hands calmly gathering two plain parchment sheets into an unlettered ivory folder. Female stands on far right at a light wooden preparation table, cream and pale peach embroidered dress, arranging a small folded ivory baby blanket beside a ribboned keepsake box; natural simple hands. Exactly the two original adult faces, no baby, no pregnancy depiction, no medical setting or medical tools. Clear warm morning light; the center is quiet pale wooden floor and softly lit orchard opening. The action is preparation and completion of choices, not holding a book against the body.",
+      "visualReview": "추천 자료를 정리하고 첫 선물을 준비하는 실내 장면. 접은 담요와 상자를 오른쪽에 배치."
+    },
+    {
+      "key": "three",
+      "sourcePng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-2e15d536-1cc3-4d29-bb7c-fc78dee91de9.png",
+      "output": "app/art/content-tarot-v2/desktop-three.webp",
+      "width": 1672,
+      "height": 940,
+      "bytes": 627686,
+      "references": [
+        "app/art/tarot/chaeksa-v1/P14.webp",
+        "app/art/tarot/chaeksa-v1/P13.webp",
+        "app/art/three-gallery/sunlit-gallery-v2.png"
+      ],
+      "prompt": "Use case: identity-preserve / stylized-concept.\nAsset: new replacement desktop background illustration for a Korean reading website. Create ONE finished wide landscape illustration, exactly 16:9, preferably 2560x1440. Fully opaque.\nReference roles: reference 1 is the authoritative male FACE and precise tarot illustration style, reference 2 is the authoritative female FACE and style, reference 3 is the PREVIOUS desktop scene for APPROVED camera distance, natural scale, vivid luminous palette and left/right placement only. Make a genuinely different environment, pose and scene; do not merely recolor or reuse that composition's furniture.\nKeep the SAME TWO recognisable adult people: his angular long jaw, amber eyes, swept tousled chestnut hair; her refined long oval face, almond amber-brown OPEN eyes, delicate features, long chestnut waves. Faces must be clear and finely drawn, not tiny, not blurred, not changed to generic characters. Preserve tasteful adult natural proportions.\nStyle: highly detailed modern fantasy tarot illustration, fine confident 2D anime/manhwa outlines, precise hair strands and textile embroidery, rich luminous gold, warm ivory and jewel colors, sharp controlled shadows. Bright clear daylight matching the approved reference, original saturation, no washout, no cinematic darkness, no photo skin, no 3D, no soft airbrush.\nLayout invariant: continuous physical scene with ONE shared perspective and light. Same medium-long camera distance as reference 3, full figures or knee-length with heads/shoulders complete. Male on far left with face centered x=13%, female on far right face centered x=87%; head height y=18%-30%. Figures confined mostly to x=0%-27% and x=74%-100%. Central x=30%-70% remains quiet pale architecture/floor/open air without people or important props because a website reading panel covers it. Do NOT draw the reading panel. Detail and the menu's identifying props go at the outer sides. Keep all faces safely inside frame, 4%-8% headroom. Clear eyes, calm attentive expressions toward viewer. Exactly two arms each, simple natural hands, no pinching.\nAvoid: text, letters, numbers, labels, signatures, logos, watermark, tarot-card frame or decorative border around the image, phones, screens, clocks, calendars, additional people, collage, duplicated faces, split panels.\n\nDedicated menu: Three cards answering a question.\nNEW SCENE: a luminous intimate tarot consultation salon with dark emerald velvet and warm ivory marble at the outer edges, tall side windows, elegant small brass reading lamps at the sides, no palace colonnade or long outdoor gallery. Male at far left stands beside a narrow emerald-draped side table, one hand naturally resting at its edge, the other holding a closed unlettered dark-green card case low near his hip; ivory/gold jacket over deep green tunic, no fur. Female at far right sits upright at a separate small round consultation table, wine-red and ivory dress with precise gold embroidery; she gently lays the last of exactly THREE simple face-down unlettered cards on the visible outer-right table. Show card backs as restrained gold vine pattern, no text, numerals, or mini faces. Cards and hands stay on the right x=76%-99%, never in the center. Her eyes meet the reader. The central x=30%-70% is quiet pale floor and softly lit plaster wall; no card spread across the middle. Rich, welcoming, finished illustration with the original faces.",
+      "visualReview": "전용 상담실. 오른쪽 탁자에 뒷면 카드 세 장, 왼쪽 안내자는 카드함을 듦."
+    }
+  ]
+}

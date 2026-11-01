@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "date": "2026-11-01",
+  "scope": "정통사주 17·18회 기본 그림 남녀 4장. 일이 달라진 때와 현재 긴 운을 읽는 공통 장면.",
+  "face_policy": "주인공 남성 P14 / 여성 P13 정확한 얼굴과 타로 화풍. 원화는 장면 확인에만 쓰고 생성 참조는 P14/P13만 사용.",
+  "source_policy": "app/jt-webtoon.js 회별 질문, app/jt-webtoon-2.js 장면·답, app/ssom-vn.html 기본 장면 분기. 새 예언이나 개인 결과를 더하지 않는다.",
+  "tool": "built-in image_gen.imagegen",
+  "call_policy": "자산마다 1회 생성. 손 결함이 발견되면 승인된 수정 편집만 별도 기록.",
+  "encoding": {
+    "full": "WebP quality92 method6",
+    "small": "360px wide Lanczos, WebP quality90 method6"
+  },
+  "assets": [
+    {
+      "key": "jt-17-work-year-f",
+      "chapter": 17,
+      "gender": "F",
+      "label": "일이 달라진 때 · 예전 작업을 다시 펼치다",
+      "source_reason": "공통 17회 이력서의 한 줄에서 멈추는 장면, 일이 바뀌었거나 바뀌지 않는 여러 답. 화면 이력서를 과거 작업을 담은 종이 포트폴리오로 바꾸고 특정 연도·변화를 단정하지 않는다.",
+      "scene": "The P13 woman revisits her earlier work at a broad table in a quiet illustrator's atelier. An old large portfolio lies open with purely pictorial sketches of objects and places from past projects, no words, numbers or glyphs. Nearby are a worn work apron and a newer closed folio. She has stopped at one page, thinking when her working life began to feel different, with a reflective expression rather than sadness or certainty. Exact P13 face, dark wavy hair loosely gathered behind her shoulders, simple rust-orange dress and cream linen cuffs, no jewels or royal embroidery. One open whole hand rests naturally along the portfolio margin, other rests on her lap, no pen or pinched paper. High diffused window light, charcoal sketches propped against an easel, wooden drawers and soft dust in air. Full head, seated body and table, quiet everyday self-review, no electronics or prophecy symbols.",
+      "original": "app/art/jt-17-work-year-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman revisits her earlier work at a broad table in a quiet illustrator's atelier. An old large portfolio lies open with purely pictorial sketches of objects and places from past projects, no words, numbers or glyphs. Nearby are a worn work apron and a newer closed folio. She has stopped at one page, thinking when her working life began to feel different, with a reflective expression rather than sadness or certainty. Exact P13 face, dark wavy hair loosely gathered behind her shoulders, simple rust-orange dress and cream linen cuffs, no jewels or royal embroidery. One open whole hand rests naturally along the portfolio margin, other rests on her lap, no pen or pinched paper. High diffused window light, charcoal sketches propped against an easel, wooden drawers and soft dust in air. Full head, seated body and table, quiet everyday self-review, no electronics or prophecy symbols.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js:135",
+        "app/jt-webtoon-2.js:136",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-4e8776ee-ae04-4373-8a9a-787d1f5fc246.png",
+      "output": "app/art/content-tarot-v2/body/jt-17-work-year-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-17-work-year-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 작업첩과 작은 초상화는 해당 장면 안의 실제 소품.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 543876,
+      "small_bytes": 91684
+    },
+    {
+      "key": "jt-17-work-year-m",
+      "chapter": 17,
+      "gender": "M",
+      "label": "일이 달라진 때 · 지난 일의 흔적",
+      "source_reason": "공통 17회: 자신의 일 이력을 살피며 언제부터 달라졌는지 돌아본다. 남성은 옛 작업 상자와 도면을 살피는 장면으로 새로 구성, 개인의 이직·시기를 예언하지 않는다.",
+      "scene": "The P14 man is sorting an old wooden work chest in a modest loft workshop and pauses over the traces of his earlier projects. On a broad bench, a plain open folio contains only simple drawn building silhouettes and object sketches, and an old leather apron lies folded beside a small worn wooden model. He stands leaning slightly toward the bench, looking back thoughtfully on the route his work has taken. Exact P14 face in clear three-quarter view, plain deep teal shirt with rolled sleeves and dark waistcoat, practical trousers, no royal decorations. Both hands easy and anatomically clear: one rests flat on the broad chest lid, the other rests against his thigh. Cool late-afternoon light from a round attic window, sloped roof beams, low shelves, a distinct quiet room. No text, numbers, writing-like markings, electronics, watches, calendars or magical timeline.",
+      "original": "app/art/jt-17-work-year-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man is sorting an old wooden work chest in a modest loft workshop and pauses over the traces of his earlier projects. On a broad bench, a plain open folio contains only simple drawn building silhouettes and object sketches, and an old leather apron lies folded beside a small worn wooden model. He stands leaning slightly toward the bench, looking back thoughtfully on the route his work has taken. Exact P14 face in clear three-quarter view, plain deep teal shirt with rolled sleeves and dark waistcoat, practical trousers, no royal decorations. Both hands easy and anatomically clear: one rests flat on the broad chest lid, the other rests against his thigh. Cool late-afternoon light from a round attic window, sloped roof beams, low shelves, a distinct quiet room. No text, numbers, writing-like markings, electronics, watches, calendars or magical timeline.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js:135",
+        "app/jt-webtoon-2.js:136",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-4953f2a2-db3f-410f-b415-f2a470dbd8fd.png",
+      "output": "app/art/content-tarot-v2/body/jt-17-work-year-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-17-work-year-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 작업첩과 작은 초상화는 해당 장면 안의 실제 소품.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 589144,
+      "small_bytes": 89528
+    },
+    {
+      "key": "jt-18-ten-years-f",
+      "chapter": 18,
+      "gender": "F",
+      "label": "지금의 십 년 · 예전 얼굴과 지금의 나",
+      "source_reason": "공통 18회: 옛날 사진을 지금 얼굴과 나란히 놓아 보는 장면. 사진은 손으로 그린 예전 자화상으로 치환하며, 어떤 변화·운의 결과인지는 새로 정하지 않는다.",
+      "scene": "The P13 woman sits on a low bench in a light-filled attic bedroom with an open old keepsake trunk beside her. On a small vanity before her, a modest painted portrait of her younger self is propped beside a simple oval mirror that subtly reflects her current P13 face. She studies the old portrait with quiet recognition, considering how she has changed over years, not age distress. Current exact P13 face is clearly visible in the foreground, dark wavy hair down, simple lavender-grey dress and ivory shawl, no crown or jewel headdress. Hands rest naturally together on her lap without interlacing or pinching. A folded childhood shawl and a few blank keepsake papers lie inside the trunk. Bright soft morning light, pale timber and linen, understated domestic interior, no calendars, timepieces, dates, text or electronic photographs. One scene; the small painted portrait is an object within it, not a collage.",
+      "original": "app/art/jt-18-ten-years-f.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P13 principal woman.\nThe P13 woman sits on a low bench in a light-filled attic bedroom with an open old keepsake trunk beside her. On a small vanity before her, a modest painted portrait of her younger self is propped beside a simple oval mirror that subtly reflects her current P13 face. She studies the old portrait with quiet recognition, considering how she has changed over years, not age distress. Current exact P13 face is clearly visible in the foreground, dark wavy hair down, simple lavender-grey dress and ivory shawl, no crown or jewel headdress. Hands rest naturally together on her lap without interlacing or pinching. A folded childhood shawl and a few blank keepsake papers lie inside the trunk. Bright soft morning light, pale timber and linen, understated domestic interior, no calendars, timepieces, dates, text or electronic photographs. One scene; the small painted portrait is an object within it, not a collage.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js:135",
+        "app/jt-webtoon-2.js:136",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-adde6043-1cee-4604-9a6f-24dfd93e2ef5.png",
+      "output": "app/art/content-tarot-v2/body/jt-18-ten-years-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-18-ten-years-f-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 작업첩과 작은 초상화는 해당 장면 안의 실제 소품.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 573694,
+      "small_bytes": 91706
+    },
+    {
+      "key": "jt-18-ten-years-m",
+      "chapter": 18,
+      "gender": "M",
+      "label": "지금의 십 년 · 오래된 그림첩을 넘기며",
+      "source_reason": "공통 18회: 예전 모습과 지금을 나란히 돌아봄, 현재 대운의 기간과 변화를 읽는 질문. 남성은 그림첩을 펼친 툇마루 장면으로 구별하며 날짜·결과를 추가하지 않는다.",
+      "scene": "The P14 man sits in a plain wicker chair on a quiet wooden veranda facing a rain-washed garden, looking through an old sketch album on his lap. One page contains a small hand-painted portrait of his younger self; another is an old view of a simple workshop, all pictorial without any writing. His current exact P14 face is prominent in three-quarter view, expression gently reflective as he compares the past with who he is now. Wear a simple warm ivory shirt under a muted charcoal cardigan-like wool vest and brown trousers, no crown, jewels or richly embroidered costume. One whole hand supports the bottom of the open large album, the other rests naturally along its outer edge; no pinching individual pages, no splayed fingers. An old travel trunk rests nearby under the bench. Overcast pearly light, wet fern leaves, rough wooden floor, no palace terrace, no fancy floral arrangement. No numbers, calendar, clock, hourglass, photos, electronics or prophecy symbols.",
+      "original": "app/art/jt-18-ten-years-m.webp",
+      "refs": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference identity: P14 principal man.\nThe P14 man sits in a plain wicker chair on a quiet wooden veranda facing a rain-washed garden, looking through an old sketch album on his lap. One page contains a small hand-painted portrait of his younger self; another is an old view of a simple workshop, all pictorial without any writing. His current exact P14 face is prominent in three-quarter view, expression gently reflective as he compares the past with who he is now. Wear a simple warm ivory shirt under a muted charcoal cardigan-like wool vest and brown trousers, no crown, jewels or richly embroidered costume. One whole hand supports the bottom of the open large album, the other rests naturally along its outer edge; no pinching individual pages, no splayed fingers. An old travel trunk rests nearby under the bench. Overcast pearly light, wet fern leaves, rough wooden floor, no palace terrace, no fancy floral arrangement. No numbers, calendar, clock, hourglass, photos, electronics or prophecy symbols.",
+      "source_files": [
+        "app/jt-webtoon.js",
+        "app/jt-webtoon-2.js:135",
+        "app/jt-webtoon-2.js:136",
+        "app/ssom-vn.html"
+      ],
+      "original_reviewed": true,
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-caf355cc-d8d5-49fe-8b69-b7c4be4cf36f.png",
+      "output": "app/art/content-tarot-v2/body/jt-18-ten-years-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-18-ten-years-m-s.webp",
+      "visual_review": "생성 원본 직접 확인: P14/P13 주인공 얼굴, 손 모양, 텍스트·전자기기·시계·테두리 없음. 작업첩과 작은 초상화는 해당 장면 안의 실제 소품.",
+      "status": "complete",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 555390,
+      "small_bytes": 86522
+    }
+  ],
+  "generation_calls": 4,
+  "distinct_assets": 4
+}

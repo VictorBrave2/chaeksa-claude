@@ -1,0 +1,1548 @@
+{
+  "title": "현재 love·pair·ssom 본문 삽화 교체 목록",
+  "date": "2026-11-01",
+  "method": "Static consumer inventory, extracted from remaining-illustrations-audit.md; no application tests executed.",
+  "scope": "Union of current love.js chapter images, pair.js local question map plus scene-view fallback, ssom.js stage/general maps, ssom-card.js love cards.",
+  "excluded": [
+    "love-cover (separate cover batch)",
+    "Other home covers",
+    "Legacy story candidates",
+    "Currently unselected ssom fallback assets",
+    "All 60 jeongtong jt assets as a separate full set; only the seven currently referenced by pair are included here",
+    "Today/why events and tarot deck"
+  ],
+  "face_policy": "Latest user correction: P14 male and P13 female approved tarot identity/style, replacing earlier instruction to retain old cover faces.",
+  "count": 82,
+  "counts_by_prefix": {
+    "story-": 39,
+    "ss-": 36,
+    "jt-": 7
+  },
+  "jt_overlap_keys": [
+    "jt-06-steady-f",
+    "jt-11-money-stay-f",
+    "jt-11-money-stay-m",
+    "jt-12-money-year-m",
+    "jt-14-in-love-m",
+    "jt-16-alone-together-f",
+    "jt-16-alone-together-m"
+  ],
+  "limitations": [
+    "Server-provided pair c.bg can override the local table; private responses were not queried.",
+    "Rows identify current static references, not remote deployment status.",
+    "Shared old keys can have multiple scenes; replacing one key preserves reuse until consuming code assigns distinct new assets."
+  ],
+  "assets": [
+    {
+      "key": "jt-06-steady-f",
+      "source_asset": "app/art/jt-06-steady-f.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q10 상대 F",
+          "question_id": "q10",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "jt-11-money-stay-f",
+      "source_asset": "app/art/jt-11-money-stay-f.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q15 상대 F",
+          "question_id": "q15",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "jt-11-money-stay-m",
+      "source_asset": "app/art/jt-11-money-stay-m.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q16 상대 M",
+          "question_id": "q16",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "jt-12-money-year-m",
+      "source_asset": "app/art/jt-12-money-year-m.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q12 상대 M",
+          "question_id": "q12",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "jt-14-in-love-m",
+      "source_asset": "app/art/jt-14-in-love-m.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q13 상대 M",
+          "question_id": "q13",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "jt-16-alone-together-f",
+      "source_asset": "app/art/jt-16-alone-together-f.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q09 상대 F",
+          "question_id": "q09",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "jt-16-alone-together-m",
+      "source_asset": "app/art/jt-16-alone-together-m.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q21 상대 M",
+          "question_id": "q21",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-again-1",
+      "source_asset": "app/art/ss-again-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q39 상대 M",
+          "question_id": "q39",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "재회 1: 헤어진 까닭",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-again-2",
+      "source_asset": "app/art/ss-again-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q32 상대 F",
+          "question_id": "q32",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "재회 2: 다시 연락",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-again-3",
+      "source_asset": "app/art/ss-again-3.webp",
+      "consumers": [
+        {
+          "menu": "love",
+          "scene": "이별과 재회",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "재회 3: 다시 만나 바꿀 것",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 재회",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-early-1",
+      "source_asset": "app/art/ss-early-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q09 상대 M",
+          "question_id": "q09",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 1: 사귄 뒤 달라짐",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 초반",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-early-2",
+      "source_asset": "app/art/ss-early-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q08 상대 F",
+          "question_id": "q08",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 2: 연락 빈도",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-early-3",
+      "source_asset": "app/art/ss-early-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q26 상대 M",
+          "question_id": "q26",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q26 상대 F",
+          "question_id": "q26",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 3: 첫 다툼",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-early-4",
+      "source_asset": "app/art/ss-early-4.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q24 상대 F",
+          "question_id": "q24",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 4: 내 서운함 말하기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-early-5",
+      "source_asset": "app/art/ss-early-5.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q45 상대 F",
+          "question_id": "q45",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "초반 5: 상대의 서운함",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-give",
+      "source_asset": "app/art/ss-give.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q03 상대 M",
+          "question_id": "q03",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "서로 원하는 것 주고받기·일반 공유카드",
+          "source": "app/ssom-card.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 둘",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-her",
+      "source_asset": "app/art/ss-her.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q01 상대 F",
+          "question_id": "q01",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q12 상대 F",
+          "question_id": "q12",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "그 사람의 끌림과 좋아하는 행동",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-hold",
+      "source_asset": "app/art/ss-hold.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "안고 갈 것과 맞출 것",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-marry-1",
+      "source_asset": "app/art/ss-marry-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q41 상대 M",
+          "question_id": "q41",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "결혼 1: 결혼해도 되는지",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 결혼",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-marry-2",
+      "source_asset": "app/art/ss-marry-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q43 상대 M",
+          "question_id": "q43",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q43 상대 F",
+          "question_id": "q43",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "결혼 2: 같이 살 때 부딪힘",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-marry-3",
+      "source_asset": "app/art/ss-marry-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q36 상대 M",
+          "question_id": "q36",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q41 상대 F",
+          "question_id": "q41",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "결혼 3: 결혼 이야기 꺼내기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-marry-4",
+      "source_asset": "app/art/ss-marry-4.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "결혼 4: 집안일과 역할",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-me",
+      "source_asset": "app/art/ss-me.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q32 상대 M",
+          "question_id": "q32",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q46 상대 M",
+          "question_id": "q46",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "나의 끌림과 좋아하는 행동",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-meet-app",
+      "source_asset": "app/art/ss-meet-app.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q04 상대 M",
+          "question_id": "q04",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q04 상대 F",
+          "question_id": "q04",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 2: 데이팅 앱",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-meet-blind",
+      "source_asset": "app/art/ss-meet-blind.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q40 상대 F",
+          "question_id": "q40",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 1: 소개팅",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 시작전",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-meet-club",
+      "source_asset": "app/art/ss-meet-club.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q31 상대 F",
+          "question_id": "q31",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 6: 학교·대외활동",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-meet-office",
+      "source_asset": "app/art/ss-meet-office.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q33 상대 M",
+          "question_id": "q33",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 4: 회사",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-meet-party",
+      "source_asset": "app/art/ss-meet-party.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q03 상대 F",
+          "question_id": "q03",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q34 상대 M",
+          "question_id": "q34",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 3: 친구 모임",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-meet-run",
+      "source_asset": "app/art/ss-meet-run.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q33 상대 F",
+          "question_id": "q33",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "시작전 5: 취미 모임",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-shake-1",
+      "source_asset": "app/art/ss-shake-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q27 상대 F",
+          "question_id": "q27",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "흔들림 1: 만남 지속·헤어짐 고민",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-shake-2",
+      "source_asset": "app/art/ss-shake-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q27 상대 M",
+          "question_id": "q27",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "흔들림 2: 견디지 못하는 까닭",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-shake-3",
+      "source_asset": "app/art/ss-shake-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q24 상대 M",
+          "question_id": "q24",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "관계가 흔들릴 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "흔들림 3: 더 노력할 곳",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 흔들림",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-sseom-1",
+      "source_asset": "app/art/ss-sseom-1.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "썸 1: 그 사람이 내게 끌리는 점",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-sseom-2",
+      "source_asset": "app/art/ss-sseom-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q20 상대 F",
+          "question_id": "q20",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 2: 내가 그 사람에게 끌리는 까닭",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-sseom-3",
+      "source_asset": "app/art/ss-sseom-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q06 상대 M",
+          "question_id": "q06",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 3: 먼저 다가가기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-sseom-4",
+      "source_asset": "app/art/ss-sseom-4.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q05 상대 M",
+          "question_id": "q05",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 4: 연락 방식",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-sseom-5",
+      "source_asset": "app/art/ss-sseom-5.webp",
+      "consumers": [
+        {
+          "menu": "ssom",
+          "scene": "썸 5: 첫 데이트",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 썸",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-sseom-6",
+      "source_asset": "app/art/ss-sseom-6.webp",
+      "consumers": [
+        {
+          "menu": "love",
+          "scene": "썸을 탈 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "썸 6: 가까워지며 맞출 것",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-steady-1",
+      "source_asset": "app/art/ss-steady-1.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q37 상대 M",
+          "question_id": "q37",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "권태가 왔을 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 1: 설렘이 줄어듦",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-steady-2",
+      "source_asset": "app/art/ss-steady-2.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q25 상대 M",
+          "question_id": "q25",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q25 상대 F",
+          "question_id": "q25",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 2: 같은 다툼 반복",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-steady-3",
+      "source_asset": "app/art/ss-steady-3.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q37 상대 F",
+          "question_id": "q37",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q45 상대 M",
+          "question_id": "q45",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 3: 서로 바라는 것의 어긋남",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-steady-4",
+      "source_asset": "app/art/ss-steady-4.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q20 상대 M",
+          "question_id": "q20",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "오래 함께할 때",
+          "source": "app/love.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "안정기 4: 오래 갈 수 있는지",
+          "source": "app/ssom.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "단계 선택 안정기",
+          "source": "app/ssom.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "ss-then-now",
+      "source_asset": "app/art/ss-then-now.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q23 상대 F",
+          "question_id": "q23",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q38 상대 M",
+          "question_id": "q38",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "ssom",
+          "scene": "사이=으뜸 공유카드",
+          "source": "app/ssom-card.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-anniversary",
+      "source_asset": "app/art/story-anniversary.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q18 상대 M",
+          "question_id": "q18",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-apology-text",
+      "source_asset": "app/art/story-apology-text.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q30 상대 F",
+          "question_id": "q30",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-ask-favor",
+      "source_asset": "app/art/story-ask-favor.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q01 상대 M",
+          "question_id": "q01",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q30 상대 M",
+          "question_id": "q30",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-big-buy",
+      "source_asset": "app/art/story-big-buy.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q15 상대 M",
+          "question_id": "q15",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-biz-partner",
+      "source_asset": "app/art/story-biz-partner.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q11 상대 M",
+          "question_id": "q11",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-blind-date",
+      "source_asset": "app/art/story-blind-date.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q13 상대 F",
+          "question_id": "q13",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-breakup",
+      "source_asset": "app/art/story-breakup.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q38 상대 F",
+          "question_id": "q38",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-cold",
+      "source_asset": "app/art/story-cold.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q22 상대 M",
+          "question_id": "q22",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-confess",
+      "source_asset": "app/art/story-confess.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q06 상대 F",
+          "question_id": "q06",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-contact",
+      "source_asset": "app/art/story-contact.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q08 상대 M",
+          "question_id": "q08",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "연락과 애정표현",
+          "source": "app/love.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-contract",
+      "source_asset": "app/art/story-contract.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q44 상대 M",
+          "question_id": "q44",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-drunk-text",
+      "source_asset": "app/art/story-drunk-text.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q11 상대 F",
+          "question_id": "q11",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-fight",
+      "source_asset": "app/art/story-fight.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q28 상대 M",
+          "question_id": "q28",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q28 상대 F",
+          "question_id": "q28",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "싸웠을 때",
+          "source": "app/love.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-first-touch",
+      "source_asset": "app/art/story-first-touch.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q19 상대 M",
+          "question_id": "q19",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q19 상대 F",
+          "question_id": "q19",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "연애가 시작됐을 때",
+          "source": "app/love.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-friend-drift",
+      "source_asset": "app/art/story-friend-drift.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q46 상대 F",
+          "question_id": "q46",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-friend-money",
+      "source_asset": "app/art/story-friend-money.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q07 상대 F",
+          "question_id": "q07",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-friend-to-lover",
+      "source_asset": "app/art/story-friend-to-lover.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "표지·장면 보기 fallback",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-get-back",
+      "source_asset": "app/art/story-get-back.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q39 상대 F",
+          "question_id": "q39",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-geunamja",
+      "source_asset": "app/art/story-geunamja.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q23 상대 M",
+          "question_id": "q23",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q36 상대 F",
+          "question_id": "q36",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-gift",
+      "source_asset": "app/art/story-gift.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q18 상대 F",
+          "question_id": "q18",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-he-likes",
+      "source_asset": "app/art/story-he-likes.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q02 상대 M",
+          "question_id": "q02",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q40 상대 M",
+          "question_id": "q40",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-hold",
+      "source_asset": "app/art/story-hold.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q29 상대 F",
+          "question_id": "q29",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-hurt",
+      "source_asset": "app/art/story-hurt.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q22 상대 F",
+          "question_id": "q22",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-jealous",
+      "source_asset": "app/art/story-jealous.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q31 상대 M",
+          "question_id": "q31",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q34 상대 F",
+          "question_id": "q34",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "질투와 신뢰",
+          "source": "app/love.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-kid-talk",
+      "source_asset": "app/art/story-kid-talk.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q42 상대 F",
+          "question_id": "q42",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-lend",
+      "source_asset": "app/art/story-lend.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q16 상대 F",
+          "question_id": "q16",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-long-distance",
+      "source_asset": "app/art/story-long-distance.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q10 상대 M",
+          "question_id": "q10",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-maeum",
+      "source_asset": "app/art/story-maeum.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q29 상대 M",
+          "question_id": "q29",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q35 상대 M",
+          "question_id": "q35",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "마음에 드는 사람이 생겼을 때",
+          "source": "app/love.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-marry-talk",
+      "source_asset": "app/art/story-marry-talk.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q42 상대 M",
+          "question_id": "q42",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": [
+        "결혼 점검 결론=맞춰·공개 견본"
+      ]
+    },
+    {
+      "key": "story-meet-friends",
+      "source_asset": "app/art/story-meet-friends.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q07 상대 M",
+          "question_id": "q07",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-money",
+      "source_asset": "app/art/story-money.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q14 상대 M",
+          "question_id": "q14",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q14 상대 F",
+          "question_id": "q14",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-office-crush",
+      "source_asset": "app/art/story-office-crush.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q02 상대 F",
+          "question_id": "q02",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-parents-talk",
+      "source_asset": "app/art/story-parents-talk.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q47 상대 F",
+          "question_id": "q47",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-reply",
+      "source_asset": "app/art/story-reply.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q05 상대 F",
+          "question_id": "q05",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-sanggyeonrye",
+      "source_asset": "app/art/story-sanggyeonrye.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q47 상대 M",
+          "question_id": "q47",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": [
+        "결혼 점검 소개 hero"
+      ]
+    },
+    {
+      "key": "story-say-love",
+      "source_asset": "app/art/story-say-love.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q17 상대 M",
+          "question_id": "q17",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q17 상대 F",
+          "question_id": "q17",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-sns",
+      "source_asset": "app/art/story-sns.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q35 상대 F",
+          "question_id": "q35",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-sok",
+      "source_asset": "app/art/story-sok.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q21 상대 F",
+          "question_id": "q21",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    },
+    {
+      "key": "story-spouse-money",
+      "source_asset": "app/art/story-spouse-money.webp",
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q44 상대 F",
+          "question_id": "q44",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "other_in_scope_uses": []
+    }
+  ]
+}

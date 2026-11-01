@@ -1,0 +1,1017 @@
+{
+  "schema_version": 1,
+  "batch": "story-b",
+  "date": "2026-11-01",
+  "generator": "built-in image_gen",
+  "generation_calls": 27,
+  "planned_assets": 26,
+  "identity_policy": "P14 male / P13 female exact approved identity and precision tarot style. Old illustrations used only to understand scene and emotion.",
+  "processing": "RGB WebP quality92, method6; proportional Lanczos 360px small quality90. No crop/composite.",
+  "tests_run": false,
+  "assets": [
+    {
+      "key": "story-he-likes",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P14 male only.\nEmotion: a man quietly showing interest in someone amid a social gathering. New scene: approved P14 man leans comfortably against the edge of a stone fountain in a lively vineyard courtyard at golden sunset. His body is turned toward a small distant group but his clear face turns back toward the viewer with a restrained interested half-smile. One broad open hand rests on the fountain rim, other rests loosely at his waist. Muted terracotta linen shirt and dark olive fitted waistcoat, no royal robes. Two secondary friends out of focus far behind, baskets of grapes, pergola shadows. Mid-thigh framing, man at center-right, face dominates upper third. No dinner party closeup or phone.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "old_scene_reference": "app/art/story-he-likes.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-153bb35d-208f-42e5-86a9-e61ee8c1ceba.png",
+      "output": "app/art/content-tarot-v2/body/story-he-likes.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-he-likes-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 531888,
+      "small_bytes": 94120,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q02 상대 M",
+          "question_id": "q02",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q40 상대 M",
+          "question_id": "q40",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-hold",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nEmotion: a woman privately thinking about whether to hold on to a relationship, cautious rather than cheerful. New scene: approved P13 woman sits sideways on a wide cushioned window seat in a stone cottage during gentle rain, looking out thoughtfully while both relaxed hands lie together on her lap. A deep teal wool shawl draped around her shoulders, cream loose dress, hair over one shoulder. The near window is open onto a misty orchard; a whole ceramic tea bowl rests untouched beside her. Medium portrait with clear face, pale cool daylight and warm hearth reflection, tactile woven cloth. No cup held, no original cafe, no technology.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-hold.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-f55c9ed3-fc8c-430d-8a10-6ac4cdcf8865.png",
+      "output": "app/art/content-tarot-v2/body/story-hold.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-hold-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 596980,
+      "small_bytes": 93006,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q29 상대 F",
+          "question_id": "q29",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-hurt",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nEmotion: hurt feelings and awkward distance after a difficult conversation. New scene: approved P13 woman and P14 man stand at opposite ends of a low stone bridge parapet above a shallow stream at overcast late afternoon, separated by a visible empty gap. Woman foreground right looks down with a subdued hurt expression, her arms wrapped loosely around herself. Man a step behind at left watches her with concern, his hands simply resting open on the parapet. Woman wears rust-red wool dress and ivory shawl; man slate grey cloak over dark blue tunic. Both adults clear faces, no tears exaggerated, no physical restraint. Reeds, rippling water, pale distant cottages. Full upper bodies rather than distant tiny figures.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-hurt.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-5dd8ace2-f44b-443f-ad9d-6d151af9ba6d.png",
+      "output": "app/art/content-tarot-v2/body/story-hurt.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-hurt-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 582358,
+      "small_bytes": 93528,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q22 상대 F",
+          "question_id": "q22",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-jealous",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nEmotion: jealousy and uncertainty within a social situation. New scene: approved P13 woman foreground at the side of a sunlit covered market arcade pauses, looking toward approved P14 man a few paces away as he talks warmly with a clearly different middle-aged woman vendor with grey-streaked hair at a flower stall. Main woman has restrained uneasy expression, arms gently folded, wearing muted aubergine embroidered dress. Man wears sandy linen and dark brown waistcoat, open relaxed hand resting on a broad counter; nobody holds flowers or small props. Vendor is secondary, not another copy of P13. Rich market fabric canopy, terracotta pots, late morning shafts of light. Main couple's recognisable faces both visible. Do not imply infidelity or make anyone villainous.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-jealous.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-7174bd9c-a40d-4058-ab8c-10601d4a8a92.png",
+      "output": "app/art/content-tarot-v2/body/story-jealous.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-jealous-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 572408,
+      "small_bytes": 96770,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q31 상대 M",
+          "question_id": "q31",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q34 상대 F",
+          "question_id": "q34",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "질투와 신뢰",
+          "source": "app/love.js"
+        }
+      ]
+    },
+    {
+      "key": "story-kid-talk",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nEmotion: a mother listening closely to a child's concern. New scene: approved P13 woman kneels on a folded blanket in a light-filled garden greenhouse beside a little girl aged about six sitting on a low wooden bench. They look into each other's eyes in a gentle serious conversation at the child's height. Mother's open palm rests softly on the girl's upper arm; her other hand lies on her own knee. Girl hugs a simple large cloth rabbit against her torso using whole arms, no tiny props. Mother wears soft ochre and ivory practical linen dress, long dark hair loosely tied. Girl wears light blue pinafore. Citrus plants, spring light, garden tools lying far back without sharp focus. Tender safe scene, no crown or royal scene, no night hallway.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-kid-talk.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-f827cea3-7dc2-445e-9d9e-a8c63c8278df.png",
+      "output": "app/art/content-tarot-v2/body/story-kid-talk.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-kid-talk-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 546782,
+      "small_bytes": 97674,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q42 상대 F",
+          "question_id": "q42",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-lend",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nTheme: deciding whether to lend money, careful private consideration. Approved P13 woman sits at a modest oak table in a quiet timber cottage, looking pensively at a closed broad coin pouch and a small open wooden cash box lying on the table. Her forearms rest on the table, palms relaxed and apart; no coins or objects held. Dark blue practical wool dress with muted russet overlayer, long hair braided over one shoulder. Simple earthenware, a few stacked books without writing, ochre plaster wall and one small window overlooking snowy trees. Medium composition, face upper third. Gentle thoughtful concern, not poverty stereotype. No castle, no royal jewellery, no modern wallet, no phone.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-lend.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-d4e11db6-4b98-4465-a8ab-b5436272716a.png",
+      "output": "app/art/content-tarot-v2/body/story-lend.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-lend-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 440286,
+      "small_bytes": 81962,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q16 상대 F",
+          "question_id": "q16",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-long-distance",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: a couple living far apart and a gentle farewell. Approved P13 woman in sage travelling cloak with ivory dress stands by a broad open wooden village gate, a simple packed leather bag rests on the ground beside her. Approved P14 man in muted brown long coat stands just inside the gate a short distance away. They look back into each other's clearly visible faces with tender reluctant smiles; their hands rest naturally at their sides, no grasping or dramatic reaching. A long winding rural road stretches across sunlit hills behind the woman, distant farms, autumn leaves. Both upper bodies prominent, open spatial gap and receding road communicate distance. Fresh morning, no train, clock, phone or vehicles, no castle.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-long-distance.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-e83f7bb4-64a0-47b5-bc0a-d50e56ddb2bd.png",
+      "output": "app/art/content-tarot-v2/body/story-long-distance.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-long-distance-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 629436,
+      "small_bytes": 96774,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q10 상대 M",
+          "question_id": "q10",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-maeum",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P14 male only.\nTheme: thinking about someone one has just started liking. Approved P14 man sits alone on the broad steps of a small coastal bookshop, daydreaming with an almost imperceptible affectionate smile. One elbow rests on his raised knee and his open palm softly supports the side of his jaw; his other hand rests flat on a closed unlabelled book on his lap. Loose ivory linen shirt and soft slate trousers with a narrow russet sash, no heavy embroidered royal suit. Wind ruffles his hair, cobalt sea and whitewashed houses in background, small flowering vines. Quiet midday blue shade with sunlit highlights. Face clear and large, medium seated portrait, no phone or writing and no crowns.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "old_scene_reference": "app/art/story-maeum.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-f8565283-5d29-4258-b6a3-6358221870fb.png",
+      "output": "app/art/content-tarot-v2/body/story-maeum.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-maeum-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 573354,
+      "small_bytes": 87368,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q29 상대 M",
+          "question_id": "q29",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q35 상대 M",
+          "question_id": "q35",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "마음에 드는 사람이 생겼을 때",
+          "source": "app/love.js"
+        }
+      ]
+    },
+    {
+      "key": "story-marry-talk",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: discussing marriage and the ordinary life they might share. Approved P14 man and P13 woman sit beside each other on a woven rug in a new modest cottage room, between two unopened wooden household chests. They turn toward each other and speak with hopeful thoughtful smiles, both faces clearly visible. Woman sage green linen dress, man warm cream shirt and brown waistcoat. Both sets of relaxed hands rest on their own knees, no rings shown or held, no proposal kneeling. A plain long table, folded blankets, two bowls and sunlight crossing the empty wooden floor suggest setting up a home together. One coherent domestic scene, no split-screen, no castle, no decorative throne, no electronics, no papers with writing.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-marry-talk.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-d8a93448-9046-4461-a58f-fdc6dece27d5.png",
+      "output": "app/art/content-tarot-v2/body/story-marry-talk.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-marry-talk-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 542312,
+      "small_bytes": 93946,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q42 상대 M",
+          "question_id": "q42",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-meet-friends",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: bringing a partner to meet friends. Approved P14 man in forest-green tunic and cream undershirt stands in a sunny woodland clearing beside approved P13 woman in dusty rose dress and simple shawl. His open palm rests naturally across his own upper chest in an introduction; her hands are folded loosely at her waist. They look warmly toward three clearly different secondary adult friends seated farther back on a picnic blanket under a large oak, friends smile welcomingly. Their faces must not be duplicates of P14/P13. Main couple shown three-quarter frontal, both recognisable, medium full figures, friends smaller. A plain basket and bread on blanket, dappled light, fern and oak textures, no modern party, no phones or drinks held.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-meet-friends.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-f8689afb-1771-42e9-a8a9-24f524143bdf.png",
+      "output": "app/art/content-tarot-v2/body/story-meet-friends.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-meet-friends-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 572100,
+      "small_bytes": 101226,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q07 상대 M",
+          "question_id": "q07",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-money",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: a couple discussing who pays and how to share spending. Approved P14 man and P13 woman stand together at a small bakery's broad wooden counter, looking at each other with friendly slightly questioning expressions. Two closed cloth coin pouches sit untouched on the counter beside one bread basket; their relaxed palms rest on the counter, no coins/cards in hands. Woman muted blue wool dress with cream collar, man warm brown vest over rolled-sleeve cream shirt. Background brick bread oven and orderly shelves, morning light, small village bakery without signs or writing. Close medium composition with both faces equally clear; no cashier needed, no phones, no modern wallets, no castle.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-money.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-f7543489-0890-4979-b9b6-071b8813eca3.png",
+      "output": "app/art/content-tarot-v2/body/story-money.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-money-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 538284,
+      "small_bytes": 92558,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q14 상대 M",
+          "question_id": "q14",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q14 상대 F",
+          "question_id": "q14",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-office-crush",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: noticing and liking a colleague at work. In a sunlit old mapmaking/archive workshop the approved P13 woman sits at one large drafting table, secretly glancing with gentle curiosity toward approved P14 man concentrating at the adjacent table a few paces away. Both are three-quarter frontal, faces visible. On tables lie blank parchment sheets and rolled paper, compass instruments lying flat but nobody holding small tools. Woman muted moss green work dress with simple cream apron, man dark rust waistcoat over ivory shirt. Her palms flat on her paper, his hands flat near a large closed portfolio. Tall shelves, skylight, warm wood and dust motes. No actual maps/text, no royal dress, no office screens, new setting rather than original cubicles.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-office-crush.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-1ba77db5-c7fa-41ca-81bc-ba31c701a65f.png",
+      "output": "app/art/content-tarot-v2/body/story-office-crush.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-office-crush-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 485916,
+      "small_bytes": 83632,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q02 상대 F",
+          "question_id": "q02",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-parents-talk",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nTheme: opening a difficult but respectful conversation with one's parents. Approved P13 woman sits forward on a plain wooden chair opposite an older mother and father in a warm cottage sitting room, all at ease but attentive. She is the clear main subject in three-quarter frontal view, thoughtful and slightly hesitant, her two open palms resting on her lap; older parents smaller at the far side of a low table listen quietly. Both elders have distinctly older faces and grey-streaked hair, no duplicates of the young protagonists. Woman plum wool dress with ivory collar, parents subdued ochre and dark green. Hearth, woven basket, simple tea bowls resting on table, one soft afternoon window. No electronics, no confrontation or generic cheering.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-parents-talk.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-a14706ca-93ba-41af-a6fc-53d202ad2c45.png",
+      "output": "app/art/content-tarot-v2/body/story-parents-talk.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-parents-talk-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 475812,
+      "small_bytes": 86682,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q47 상대 F",
+          "question_id": "q47",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-reply",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nTheme: waiting for a reply and thinking about the words to send. Approved P13 woman sits at a narrow writing desk beneath a half-open attic window at blue twilight, looking pensively out toward a quiet cobbled lane. A single folded blank letter lies near her relaxed hand on the desktop; a second unopened envelope and a capped inkpot rest farther away. No writing visible, no quill in hands. Her other open hand gently supports her cheek, naturally posed. Pale lavender indoor dress, simple loose dark hair without crown, warm candlelight illuminating recognisable face and blue evening at window. Medium seated composition, no bed or phone, no ornate palace, no wristwatch.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-reply.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-ab24667b-08a5-4904-9720-2f7792c1fd77.png",
+      "output": "app/art/content-tarot-v2/body/story-reply.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-reply-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 470128,
+      "small_bytes": 82066,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q05 상대 F",
+          "question_id": "q05",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-sanggyeonrye",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: a formal first meeting between a couple and family elders before marriage. Approved P14 man and P13 woman sit side by side at a modest elegant round garden-room table, facing two clearly older parents seen in soft three-quarter side view at left and right edges. Young couple exchange a brief reassuring look while sitting upright, shoulders slightly touching; their hands rest separately and naturally on the table edge, no intertwining fingers. Man charcoal blue formal coat with cream shirt, woman warm rose and ivory high-neck dress, restrained embroidery. Older father has silver hair and mother grey-streaked bun, clearly distinct. Four simple cups and one low bowl of flowers on table. Open garden doors, late afternoon diffuse light, polite slightly nervous warmth. Whole young faces unblocked, no banquet clutter, no royal crowns or card frames.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-sanggyeonrye.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-c13ec2ad-bec3-44cc-9809-67518a11ca55.png",
+      "output": "app/art/content-tarot-v2/body/story-sanggyeonrye.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-sanggyeonrye-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 500384,
+      "small_bytes": 88700,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q47 상대 M",
+          "question_id": "q47",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-say-love",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: saying love directly and sharing affection. Approved P14 man and P13 woman stand close on a breezy hilltop path amid low lavender and wild grass at pale sunrise. She looks up into his face with a softly surprised happy expression, he leans slightly toward her and speaks with a tender small smile. Her open palm rests flat on the broad fabric of his upper chest, his open palm rests gently on her upper back; no grasping lapels, pinching or tangled fingers. Woman deep cobalt long linen dress and light cream shawl moving in wind; man simple warm grey wool coat. Upper-body close portrait, both full heads and recognisable three-quarter faces, light hills and sky beyond. No kissing mouth closeup, no city street, no castle or royal scene.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-say-love.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-05c8a305-9c85-44de-90ab-46a3d43af9dc.png",
+      "output": "app/art/content-tarot-v2/body/story-say-love.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-say-love-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 567316,
+      "small_bytes": 96302,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q17 상대 M",
+          "question_id": "q17",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q17 상대 F",
+          "question_id": "q17",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-sns",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nTheme: quietly wondering about another person's social life and public memories, interpreted with a physical album instead of electronic social media. Approved P13 woman sits on a small upholstered chair in a plain art studio, looking thoughtfully down at an open large scrapbook resting on a low table. The album contains several small loose pencil drawings of distant social gatherings, flowers, and a seaside picnic, NO writing or visible text. Her forearms rest on the table and hands lie relaxed flat beside the album, no pages or tiny objects held. She wears muted charcoal-violet dress and a soft dusty-rose shoulder wrap, dark hair loose. A shelf of paper portfolios, painted plaster wall, cool morning side light, warm skin. Main face clear and concerned but subtle. No phone/screen or floating UI, no decorative full-image frame; drawings inside the album are ordinary art objects.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-sns.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-25c0add6-8110-437d-a4bd-087f175b0c09.png",
+      "output": "app/art/content-tarot-v2/body/story-sns.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-sns-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 515004,
+      "small_bytes": 88024,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q35 상대 F",
+          "question_id": "q35",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-sok",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: emotional closeness and being comfortable together. Approved P14 man and P13 woman sit closely on a low wooden bench beneath a broad willow beside a still lake at early blue evening. Her head rests gently against his shoulder while both look peacefully across the water; their faces remain visible three-quarter from front. His arm rests naturally across her far shoulder, her hands lie simply on her own lap without intertwined fingers. Woman soft cream cardigan and muted burgundy long skirt; man dark teal loose woven shirt and brown trousers. A shared thick blanket covers knees, reeds and quiet water fill the lower scene, distant low hills without castle. Medium intimate composition, safe tender affection, no electronics or sexual display.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-sok.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-0fe96987-acfb-45fc-91a1-aee132f94c0d.png",
+      "output": "app/art/content-tarot-v2/body/story-sok.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-sok-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 573290,
+      "small_bytes": 98248,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q21 상대 F",
+          "question_id": "q21",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "story-spouse-money",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: image 1 P14 male, image 2 P13 female.\nTheme: spouses discussing household finances with some practical worry. Approved P14 man and P13 woman sit on opposite adjacent sides of a square kitchen table under warm candles at dusk. They look together at an open blank account book, a closed cloth money pouch, and a plain shallow dish containing a few unmarked coins, all objects resting on table. Woman looks thoughtfully serious with one open palm on the book's blank outer margin; man leans forward attentively with forearms resting on tabletop, hands relaxed and apart. She wears rust wool over ivory linen, he muted blue rolled-sleeve shirt. Humble pantry shelves and ceramic bowls in background, intimate practical cottage. No calculator, numbers, writing or phone; no angry argument, no royal costumes, no coins held.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/story-spouse-money.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-4284fdda-ba8e-4dd4-a90e-8e681d158462.png",
+      "output": "app/art/content-tarot-v2/body/story-spouse-money.webp",
+      "small_output": "app/art/content-tarot-v2/body/story-spouse-money-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 397688,
+      "small_bytes": 75370,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q44 상대 F",
+          "question_id": "q44",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "jt-06-steady-f",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReferences: P13 female only.\nCurrent use pair q10 female: long-distance relationship and maintaining contact while apart; original was a woman travelling alone. Approved P13 woman stands at a quiet stone roadside rest shelter looking steadily along a winding road into misty hills, a packed woven travelling bag resting on the bench beside her. One open hand rests on broad bench back, the other relaxed at her side. Deep forest-green practical travelling cloak, cream dress, muted red scarf moving gently in morning wind, no crown. Her face is clear three-quarter frontal, thoughtful but resolute rather than sad. Bare autumn branches, damp stone, pale sky, large landscape depth. Medium portrait full head and shoulders, no train, platform clock, phone or vehicle, different scene from the couple farewell gate.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/jt-06-steady-f.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-b32cc59f-0162-4182-a702-8ea72874e7da.png",
+      "output": "app/art/content-tarot-v2/body/jt-06-steady-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-06-steady-f-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 676732,
+      "small_bytes": 102108,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q10 상대 F",
+          "question_id": "q10",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "jt-11-money-stay-f",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference: P13 female only.\nCurrent pair q15 female, theme: carefully considering a large purchase and keeping one's money. Approved P13 woman stands in a bright furniture maker's showroom, thoughtfully inspecting a substantial hand-carved wooden cabinet while a closed coin pouch rests on a wide low bench in front of her. Her open palm rests on the broad cabinet door, other hand naturally at side; no handle pinching, coins or keys held. Ivory blouse, dark olive long skirt and muted mustard shawl, long dark hair simply braided back. Practical orderly workshop furniture, cream plaster walls and daylight from high windows, no seller required. Three-quarter frontal face visible and contemplative. Focus on choice and restraint, not luxury or riches. No price tags, text, phones, watches or tiny props.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/jt-11-money-stay-f.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-83b2f609-4727-4fcf-92d1-b71133e7f728.png",
+      "output": "app/art/content-tarot-v2/body/jt-11-money-stay-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-11-money-stay-f-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 534586,
+      "small_bytes": 90188,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q15 상대 F",
+          "question_id": "q15",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "jt-11-money-stay-m",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference: P14 male only.\nCurrent pair q16 male, theme: considering lending money and protecting one's reserves. Approved P14 man sits on a sturdy wooden bench in a quiet enclosed courtyard, looking thoughtfully down toward a closed leather money pouch and blank folded request letter laid on the broad bench beside him. His hands rest flat on his thighs; no item held or pinched. Deep navy linen tunic with brown woven vest, sleeves loosely rolled. Afternoon shade, sunlit pear tree, textured pale stone and simple wooden shutters; no royal robe, castle or throne. Face clear with a serious but calm expression. Composition from head to knees with the pouch and letter clearly visible, different from indoor female scene. No writing, coins held, devices or numbers.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "old_scene_reference": "app/art/jt-11-money-stay-m.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-eb6c4f0b-2592-4138-97a6-4367d3de3c59.png",
+      "output": "app/art/content-tarot-v2/body/jt-11-money-stay-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-11-money-stay-m-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 539866,
+      "small_bytes": 92178,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q16 상대 M",
+          "question_id": "q16",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "jt-12-money-year-m",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference: P14 male only.\nTheme: considering the longer rhythm of money and future household plans without depicting a prediction. Approved P14 man stands at a long wooden table in a rustic storehouse looking across an open blank ledger and orderly storage baskets of grain, apples and folded cloth. One open palm rests on the ledger margin and the other on the broad table edge, nothing held. Soft russet shirt under charcoal waistcoat, simple belt, no crown. Through an open doorway an autumn orchard glows in clear late-season sunlight; the storehouse's carefully arranged supplies suggest planning across time. Three-quarter frontal medium portrait, thoughtful and composed, shelves in soft background. No modern calendar, dates, numbers, charts or writing, no clock or screens.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "old_scene_reference": "app/art/jt-12-money-year-m.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-80b64cab-fdb1-4b48-ab72-0dfc7c6cd6ad.png",
+      "output": "app/art/content-tarot-v2/body/jt-12-money-year-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-12-money-year-m-s.webp",
+      "visual_review": "Approved P14 identity and scene retained. Initial six-digit hand corrected by one authorized imagegen edit; direct inspection confirms five digits. No text, card frame, electronics or pinching gesture observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 522192,
+      "small_bytes": 94266,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q12 상대 M",
+          "question_id": "q12",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "initial_generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-304e5753-cab4-460e-aff8-9628666dab56.png",
+      "correction": {
+        "reason": "One extra digit on ledger-side hand",
+        "generator": "built-in image_gen edit",
+        "prompt": "Precise local anatomy edit of the attached finished illustration. Keep the entire illustration, P14 man's exact face, hairstyle, clothes, pose, framing, light, shelves, orchard, table, book and all other details unchanged. Correct ONLY the man's RIGHT hand resting flat on the open book, which is on the LEFT side of the image. It currently has an extra finger. Redraw that one hand anatomically correctly with EXACTLY FIVE digits total: one thumb on the viewer-right edge and four fingers (index, middle, ring, little) pointing toward the foreground. Remove the extra protruding digit on the viewer-left edge; do not add another hand. Keep this hand relaxed flat on the same spot on the page, with natural proportions, knuckles, fingernails and the existing warm lighting. The man's other hand on the far right side of the picture must remain unchanged. No other changes, no lettering, preserve full 1024x1536 portrait composition.",
+        "reference_images": [
+          "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-304e5753-cab4-460e-aff8-9628666dab56.png"
+        ],
+        "review": "Direct visual inspection: corrected hand has exactly five digits; approved face, pose and scene retained."
+      }
+    },
+    {
+      "key": "jt-14-in-love-m",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference: P14 male only.\nTheme: a man's anticipation before meeting someone romantically. Approved P14 man waits alone at a small round stone terrace table overlooking a quiet harbor at pink dawn, turned slightly toward an open doorway as if expecting someone. One empty chair opposite him, two ceramic cups and a low bowl with a single flowering branch already resting on table. He wears soft pale-blue linen shirt with an unbuttoned dark taupe waistcoat, restrained embroidery. Both open hands lie comfortably on his lap, face clearly visible with tender nervous half-smile. Whitewashed seaside walls, simple wooden shutters and soft sea beyond; no palace/castle, no objects held, no phone, clock or note with text. Fresh hopeful waiting rather than boredom.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "old_scene_reference": "app/art/jt-14-in-love-m.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-182cabd9-f302-4ad9-9d2c-af1e121faed1.png",
+      "output": "app/art/content-tarot-v2/body/jt-14-in-love-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-14-in-love-m-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 503282,
+      "small_bytes": 85376,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q13 상대 M",
+          "question_id": "q13",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "jt-16-alone-together-f",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference: P13 female only.\nTheme: a woman's need for quiet personal time while staying open to companionship. Approved P13 woman sits alone at a potter's workshop table in a bright rural room, calmly pausing to look through an open doorway into the garden. A large finished undecorated clay bowl rests on the table before her and a second empty stool sits nearby; she is not actively shaping clay. Both relaxed open hands rest on broad tabletop, no tools or tiny props. Powder-blue linen dress under a simple oatmeal apron, long dark hair loosely tied. Pottery shelves and terracotta textures, soft spring morning light, reflective relaxed expression, clear three-quarter face. No office, book, laptop, tea-party or royal gown. One coherent scene, peaceful solitude.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "old_scene_reference": "app/art/jt-16-alone-together-f.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-4e938ae1-3070-4cd7-a49b-4582bfbfccd3.png",
+      "output": "app/art/content-tarot-v2/body/jt-16-alone-together-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-16-alone-together-f-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 481776,
+      "small_bytes": 85718,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q09 상대 F",
+          "question_id": "q09",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ]
+    },
+    {
+      "key": "jt-16-alone-together-m",
+      "prompt": "Use case: identity-preserve, narrative website illustration. Create ONE full-bleed portrait 2:3 image, ideally 1024x1536. Exact approved identity AND precision tarot style come from the reference images. P14 man: same slim angular handsome face, straight nose, amber-brown eyes, tousled dark hair, youthful adult. P13 woman: same fine oval face, brown almond eyes, delicate nose and mouth, long dark wavy hair, youthful adult. Preserve their facial proportions faithfully; no generic replacement actors. Match refined fine ink linework, richly layered pigment, dimensional natural light, sharply drawn fabric and foliage, romantic old-world realism of the tarot references. Change clothing, setting, action, composition to the requested fresh scene. No crowns, thrones or pentacles. Keep full heads clearly in frame; no black gradient at bottom, fill composition naturally. Realistic anatomy, simple relaxed whole-hand gestures and normal five fingers; NO pinching, pointing or fingers holding tiny props. NO phones, watches, clocks, electronic screens/devices, vehicles, signage, text, numbers, fake writing, title bands, card borders, watermarks or frames. One unified scene, no panels or collage.\nReference: P14 male only.\nTheme: a man's quiet personal space and balance between solitude and companionship. Approved P14 man sits alone on a broad window bench inside a modest conservatory, a closed unlabelled book resting on his lap, gazing thoughtfully into a rain-washed herb garden. One open hand lies flat on the closed book, other relaxed along the bench back; no page turning or prop pinching. Dark forest green loose shirt and charcoal linen trousers, small cream blanket beside him. A second empty chair a little away makes room for company without crowding him. Ferns, plain terracotta pots, pale stone floor and diffused silver daylight. Three-quarter frontal face, calm grounded mood, no throne/crown or castle view, no writing, timepieces, phones or laptop.",
+      "reference_images": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "old_scene_reference": "app/art/jt-16-alone-together-m.webp",
+      "old_reference_role": "Viewed for scene/emotion only; not passed to generation.",
+      "generated_source": "C:\\Users\\LEE\\.codex\\generated_images\\01a19607-e03b-7b41-b91e-c77b5e2c2bb6\\exec-b89948e2-1ccd-4f9f-93e0-85245615e5ad.png",
+      "output": "app/art/content-tarot-v2/body/jt-16-alone-together-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-16-alone-together-m-s.webp",
+      "visual_review": "Generated output inspected directly: tarot face identity retained; scene and hands visually plausible; no text/borders/electronics/timepieces/pinching gestures observed.",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "output_bytes": 574198,
+      "small_bytes": 94002,
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q21 상대 M",
+          "question_id": "q21",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ]
+    }
+  ],
+  "distinct_assets": 26,
+  "correction_calls": 1
+}

@@ -1,0 +1,332 @@
+{
+  "batch": "jt-chapters-b",
+  "status": "complete",
+  "count": 8,
+  "scope": "root 지정 앞 8장만 제작. jt-17/18/19/20은 다른 담당. 소비 코드·검사·git·branch 변경 없음.",
+  "tool": "built-in image_gen",
+  "referencePolicy": "타로 P14 남성/P13 여성만 얼굴·화풍 참조로 제공. 각 옛 그림은 view_image로 장면·감정·성별·등장수 확인하고 생성 참조에는 넣지 않음.",
+  "chapterSource": "docs/84_정통사주_웹툰_삽화_프롬프트.md:33,35,36,37,38",
+  "encoding": {
+    "full": "ffmpeg libwebp q92 compression_level6 원본 크기 보존",
+    "small": "ffmpeg scale=360:-1:flags=lanczos libwebp q90 compression_level6",
+    "crop": false,
+    "originalPng": "도구 기본 저장 경로에 보존"
+  },
+  "limitations": [
+    "전자기기 제거 요구에 따라 입금 알림은 소액 대금, 업무 노트북은 도면·자료로 옮김.",
+    "일하는 장면은 몰입을 설명하는 삽화이며 특정 직업이나 결과를 예언하는 뜻으로 제작하지 않음.",
+    "일부 생성 의상·장신구가 프롬프트보다 화려하나 P14/P13 얼굴과 화풍을 유지함."
+  ],
+  "assets": [
+    {
+      "key": "jt-10-money-in-f",
+      "title": "돈은 어느 쪽으로",
+      "originalSource": "app/art/jt-10-money-in-f.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "돈은 어느 쪽으로",
+          "gender": "F",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        }
+      ],
+      "originalVisualReview": "편의점 계산대에서 여자가 휴대전화의 입금 알림을 보고 은은히 웃는다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P13 woman only, quietly recognizing money earned and how it comes in. She stands behind the counter of a small artisan dye-and-textile stall at midday, one open palm resting beside a modest open cloth coin pouch and a sealed cream pay envelope, the other flat on a folded length of indigo fabric. A calm satisfied almost-smile, gaze down toward the pay envelope, clear three-quarter face. No customer or second person, no exuberant riches, no falling coins. Practical cream linen blouse, dusty-blue apron and muted wine skirt, hair partly tied with plain ribbon. Indigo cloth hanging to dry, terracotta dye jars, shaded canvas roof and warm daylight, full wooden counter and cobbled floor. The scene suggests a channel of earned money, not a guaranteed fortune.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-4431035f-f8f6-477b-9df8-40bc77e2add8.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-10-money-in-f.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 546852
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-10-money-in-f-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 97406
+        }
+      ],
+      "visualReview": "원화의 입금 확인을 염색 공방의 소박한 대금 봉투·주머니로 옮김. P13 얼굴과 양손 자연스러움."
+    },
+    {
+      "key": "jt-10-money-in-m",
+      "title": "돈은 어느 쪽으로",
+      "originalSource": "app/art/jt-10-money-in-m.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "돈은 어느 쪽으로",
+          "gender": "M",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        }
+      ],
+      "originalVisualReview": "편의점 계산대에서 남자가 휴대전화 입금 알림을 보고 차분하게 웃는다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P14 man only, a small moment of recognition after receiving pay. In a quiet harbor parcel office at late afternoon, he sits on a wooden high stool at a counter, relaxed hands resting on either side of a shallow brass tray with a few plain unlettered coins and a closed receipt envelope. He looks down with a modest contented smile, face unobscured. Slate-blue rolled-sleeve linen shirt, brown waistcoat, no crown/fur/jewels. Behind him neatly stacked cloth-wrapped parcels and rope coils, a sunlit window shows sailboats and pale green harbor water, not a castle. Full work counter and tiled floor. No other people, no money rain, no modern cash register. Broad income theme rather than wealth prophecy.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-1394d2ae-08c9-4bce-a2f1-8a4898f5de9e.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-10-money-in-m.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 476490
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-10-money-in-m-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 81916
+        }
+      ],
+      "visualReview": "항구 작업 공간에서 소액 대금을 확인하는 모습. P14 얼굴과 양손 자연스러움, 숫자 없는 동전."
+    },
+    {
+      "key": "jt-12-money-year-f",
+      "title": "돈이 흔들리는 해",
+      "originalSource": "app/art/jt-12-money-year-f.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "돈이 흔들리는 해",
+          "gender": "F",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        }
+      ],
+      "originalVisualReview": "여자가 벽 달력을 넘기며 앞으로의 재정 흐름을 차분히 살핀다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P13 woman only considering when money conditions change across time. A quiet garden accounting alcove with a wooden table, lavender evening light. She sits turned three-quarter toward us, thoughtful calm face, one relaxed palm on an open unlettered planning folio and other palm beside FOUR small plain cloth money pouches arranged evenly on the table, varied fullness but no huge piles of coins. A framed vertical textile panel behind shows spring blossoms, green leaves, amber leaves and bare snowy branches as FOUR seasonal motifs, NO calendar numbers or words. Muted olive day dress with a pale rose sash, no crown or jewelry. Botanical garden visible through open shutter, full stone floor, candle in plain brass holder, no clocks or screens. Express reviewing financial seasons, not promising a particular gain or loss.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-cfe9fa71-585b-43c4-bc9c-d148a729f063.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-12-money-year-f.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 545994
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-12-money-year-f-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 92330
+        }
+      ],
+      "visualReview": "사계절 천 그림과 네 주머니로 시간에 따른 재정 변화 표현. P13 얼굴·손 명료."
+    },
+    {
+      "key": "jt-13-heart-f",
+      "title": "어떤 사람한테 마음이",
+      "originalSource": "app/art/jt-13-heart-f.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "어떤 사람한테 마음이",
+          "gender": "F",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        },
+        {
+          "menu": "그 사람 입력",
+          "source": "app/app.js:215,2223; app/index.html:648",
+          "condition": "gender=F"
+        },
+        {
+          "menu": "읽을거리 why-day-starts-11pm",
+          "source": "tools_sogae.py:69"
+        }
+      ],
+      "originalVisualReview": "여자가 밤 버스의 빈 옆자리를 두고 창밖을 보며 어떤 사람에게 마음이 가는지 생각한다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P13 woman only reflecting on the sort of person who draws her heart. She sits on one end of a curved wooden bench in a small lakeside willow gazebo at dusk, the space beside her visibly empty, body gently turned toward that empty place while she gazes thoughtfully beyond it. Her expression quietly curious and tender rather than sad after breakup. Both hands naturally open on her lap, face clear three-quarter view. Pale lilac dress and soft cream shawl, loose chestnut waves with one plain ribbon, no heavy jewelry or crown. Willow fronds, calm water with a few amber lamps on distant shore, a modest satchel at feet, carved pale wood and patterned floor all the way down. No phones, bus, reflection duplicate or absent person's portrait.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-27588c74-2aad-4213-8c69-55a456419378.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-13-heart-f.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 556410
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-13-heart-f-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 93802
+        }
+      ],
+      "visualReview": "비어 있는 옆자리와 호숫가에서 마음을 생각하는 여성. P13 얼굴과 무릎 위 두 손 자연스러움."
+    },
+    {
+      "key": "jt-13-heart-m",
+      "title": "어떤 사람한테 마음이",
+      "originalSource": "app/art/jt-13-heart-m.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "어떤 사람한테 마음이",
+          "gender": "M",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        },
+        {
+          "menu": "그 사람 입력",
+          "source": "app/app.js:215,2223; app/index.html:648",
+          "condition": "gender=M"
+        }
+      ],
+      "originalVisualReview": "남자가 밤 버스 창가에 혼자 앉아 빈 옆자리를 두고 조용히 생각한다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P14 man only reflecting on who draws his affection. He stands at a quiet riverside reading pavilion at early blue evening, one relaxed palm on a low carved wooden rail and the other resting on a plain satchel at his hip, gaze turned thoughtfully toward an empty bench beside the railing. Clear three-quarter face with gentle curious introspection, not anguish, not longing for a specific absent person. Soft muted wine shirt beneath a simple charcoal short cloak, no fur, crowns or jewels. Willows and slow river below, distant warm cottage windows and a darkening lavender sky. A plain folded scarf on the empty bench, wood floor and a pot of white camellias at bottom. No duplicate reflection, portraits, phones, electronics or text. Mood welcoming enough for a companion profile form as well as the attraction chapter.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-f97b2ba8-4b27-42a8-8247-ca6599f3a9bd.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-13-heart-m.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 596098
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-13-heart-m-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 96762
+        }
+      ],
+      "visualReview": "강가 정자에서 비어 있는 벤치 옆에 서서 생각함. P14 얼굴, 난간과 가방 옆 두 손 자연스러움."
+    },
+    {
+      "key": "jt-14-in-love-f",
+      "title": "좋아지면 어떤 사람이",
+      "originalSource": "app/art/jt-14-in-love-f.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "좋아지면 어떤 사람이",
+          "gender": "F",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        }
+      ],
+      "originalVisualReview": "여자가 카페에서 두 잔을 놓고 한 잔을 빈 맞은편 자리로 밀어 주며 기다린다.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P13 woman only in a small sunlit roof conservatory, preparing a place for someone she likes. She stands beside a round pale wooden tea table with exactly TWO matching ceramic tea cups; she has just placed one cup at the empty opposite place and her OPEN palm rests beside that cup rather than gripping its handle, other hand gently resting on her own chair. She looks toward the open doorway with attentive hopeful expression and a subtle tender smile, recognizable clear face. Soft mint dress and pale peach shawl, hair half tied simply, no crown, giant jewelry or fur. A small plate of apricots, linen napkins, climbing jasmine and translucent curtains, warm cream and sea-green colors. Nobody else, no wedding or proposal, no phones, modern glass straws, clocks or writing. Full table legs and patterned tile floor to bottom.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-fc0b3b1e-824a-4220-af29-5f5e6b7d09cb.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-14-in-love-f.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 551524
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-14-in-love-f-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 96882
+        }
+      ],
+      "visualReview": "두 찻잔과 빈 의자를 준비하고 문을 바라봄. P13 얼굴·두 손 자연스러움."
+    },
+    {
+      "key": "jt-15-work-f",
+      "title": "어떤 일에서 힘이 나나",
+      "originalSource": "app/art/jt-15-work-f.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "어떤 일에서 힘이 나나",
+          "gender": "F",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        },
+        {
+          "menu": "읽을거리 why-five-elements",
+          "source": "tools_sogae.py:67"
+        }
+      ],
+      "originalVisualReview": "여자가 책상에서 문서와 노트북을 보며 집중해서 기록한다. 롤업 소매, 작업에 몰입한 모습.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P13 woman only absorbed in practical professional planning in a bright restored stone workshop. She stands at an angled wooden drafting desk, sleeves rolled, examining an unlettered geometric architectural plan laid flat with a small plain wooden building model beside it. BOTH palms rest naturally apart on desk edges; no tiny tool pinched in fingers. Her clear three-quarter face focused and quietly energized, not smiling for camera. Simple ivory cotton shirt with closed collar, dark indigo fitted waistcoat and comfortable muted green long skirt, long chestnut hair loosely gathered with plain ribbon, no decorative headpiece, necklace, crown or fur. Shelves of materials and rolled plans, slate floor, large window showing a plain leafy courtyard not a castle. Warm midday light, detailed wood and paper textures. No laptop, phone, ruler numbers or written labels. A broad image of engaged skilled work, not a claim about a specific career.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-e8a286cb-a388-4a28-8a1a-26f9dc9fa466.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-15-work-f.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 458260
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-15-work-f-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 86360
+        }
+      ],
+      "visualReview": "설계 도면과 모형을 살피며 일에 집중. P13 얼굴·펴 둔 두 손 명료, 전자기기와 글자 없음."
+    },
+    {
+      "key": "jt-15-work-m",
+      "title": "어떤 일에서 힘이 나나",
+      "originalSource": "app/art/jt-15-work-m.webp",
+      "consumers": [
+        {
+          "menu": "정통사주",
+          "chapter": "어떤 일에서 힘이 나나",
+          "gender": "M",
+          "source": "docs/84_정통사주_웹툰_삽화_프롬프트.md"
+        },
+        {
+          "menu": "내게 맞는 일과 돈 안내",
+          "source": "app/yaksok.js:49"
+        }
+      ],
+      "originalVisualReview": "남자가 책상에서 서류와 노트북을 살피며 집중해 기록한다. 업무에 몰입한 분위기.",
+      "authoritativeReferences": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+      ],
+      "prompt": "Create one NEW portrait 2:3 full-scene editorial illustration, preferably 1024x1536, for a Korean personal-life reading chapter. Supplied tarot image is the authoritative character identity and drawing style ONLY. Preserve P14 male's refined angular face, amber eyes and tousled chestnut hair, or P13 female's refined oval face, almond brown eyes and long chestnut waves. Do NOT reuse the old contemporary face or copy the original pose/scene.\nPrecise modern fantasy tarot illustration, elegant detailed 2D linework, clear expressive face, intricate but believable fabric and crafted objects, ivory and jewel accents, nuanced luminous palette. Make a fresh narrative scene, not a throne portrait or tarot card layout. One adult protagonist only. Faces in upper two thirds and legible at small size. Complete head, natural body proportions and simple clearly separated hands, five fingers, no pinching gestures. No phone, electronic device, screen, computer, watch, clock, text, letters, numbers, readable currency, logo, watermark, card frame or black empty lower gradient. Full setting all the way to bottom. Avoid royal crowns/fur/armor and repetitive overdecorated palace rooms. MAIN SCENE: P14 man only deeply focused on productive work in a quiet botanical research studio at golden late afternoon. He sits forward at a substantial wooden workbench, carefully comparing an unlettered leaf illustration folio with real herb specimens lying neatly on a linen tray; hands OPEN flat, one on folio edge and one beside tray, no pinching a leaf or pen. His face clear three-quarter view with alert, absorbed concentration. Plain pale blue rolled-sleeve shirt and olive work apron, no crown, fur, necklaces or armor. Glass specimen jars with NO labels, brass weights without numbers, dried herbs on rack, worn wooden shelves and side window onto rain-damp fern garden. Warm copper lamp with visible flame, no electric bulb, phone, computer or clock. Full bench and stone floor, coherent anatomy. Skilled thoughtful work theme, not a prediction of a specific profession.",
+      "toolCalls": 1,
+      "editCalls": 0,
+      "originalPng": "C:\\Users\\LEE\\.codex\\generated_images\\01a19608-2751-7922-ba83-0a199629e4a5\\exec-efc52a22-1e59-45c2-abd5-d4a84b68de9f.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-15-work-m.webp",
+          "width": 1024,
+          "height": 1536,
+          "bytes": 576122
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-15-work-m-s.webp",
+          "width": 360,
+          "height": 540,
+          "bytes": 95580
+        }
+      ],
+      "visualReview": "식물 표본과 그림을 비교하며 업무에 몰입. P14 얼굴·탁자 위 두 손 명료, 전자기기와 글자 없음."
+    }
+  ]
+}

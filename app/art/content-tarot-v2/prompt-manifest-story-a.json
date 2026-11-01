@@ -1,0 +1,865 @@
+{
+  "title": "Story illustrations — batch A, alphabetic first 20",
+  "date": "2026-11-01",
+  "asset_count": 20,
+  "source_inventory": "image-requests/ref/remaining-body-illustrations-audit.json",
+  "face_policy": "P14 male and P13 female identity/style are authoritative. Old illustration is used only for subject/emotion. New compositions; no old faces retained.",
+  "identity_references": {
+    "male": "app/art/tarot/chaeksa-v1/P14.webp",
+    "female": "app/art/tarot/chaeksa-v1/P13.webp"
+  },
+  "generator": "Built-in image_gen.imagegen",
+  "generation_calls_per_asset": 1,
+  "transparent_background": false,
+  "prompt_assembly": "Exact submitted prompt for each asset is common_prompt followed immediately by asset.scene_prompt.",
+  "common_prompt": "Use case: illustration-story. Create ONE new portrait narrative illustration 1024x1536, fully painted to all four edges, no dark empty gradient. Reference image 1 is the ONLY approved adult MALE identity (P14 King): exact angular face, amber eyes, tousled wavy dark-brown hair. Reference image 2 is the ONLY approved adult FEMALE identity (P13 Queen): exact refined oval face, warm brown eyes and long dark-brown waves. Reference image 3 is the old scene, used ONLY to understand its emotion/topic; do NOT keep its faces, modern objects, framing or composition. Render approved tarot faces and precise luminous contemporary Korean romance-fantasy style, rich elegant color, detailed fabrics, crisp natural eyes and coherent anatomy. New content-specific scene as below, varied storytelling composition, all visible eyes open, faces large enough for mobile. No letters, digits, readable writing, logos, watermark, tarot border, cards/pentacles/thrones from references unless scene explicitly asks. No phones, clocks, watches, cars, laptops or electronics. No pinching tiny objects; broad supported hands; correct fingers and two arms per person. No gratuitous additional faces. Fantasy period clothing, not office suits. ",
+  "postprocessing": "FFmpeg libwebp quality92 compression_level6; small scale360:-1 lanczos. Encoding/scaling only, no synthetic painting or compositing.",
+  "limitations": [
+    "pair question text is supplied by a private server and was not queried; subjects follow source scene and audited local consumer keys.",
+    "Server c.bg can override local pair question backgrounds; consumer changes are handled by the root agent.",
+    "Application tests were not run, as requested."
+  ],
+  "assets": [
+    {
+      "key": "story-anniversary",
+      "source_asset": "app/art/story-anniversary.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q18 상대 M",
+          "question_id": "q18",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "A couple celebrates an anniversary. P14 man and P13 woman stand beside a pale stone fountain in an early-autumn orchard. He supports a generous round cake on a ceramic platter with BOTH palms beneath it, and she leans slightly toward its single lit candle with a delighted open-eyed smile, one relaxed hand over her heart and other lowered. Waist-up off-center two-person composition, faces fully visible, cake at lower center; cream and chestnut garments with subtle embroidery. Apple leaves, warm late-afternoon dappled light, small pavilion far behind. Festive and intimate, entirely different from the old dark seated rooftop dinner. No candle blowing closed eyes.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-anniversary.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-3c370eff-9227-43b3-ba7d-a0580d610a5a.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-anniversary.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-anniversary-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Orchard cake celebration; two approved faces, both supporting hands and open eyes clear.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-apology-text",
+      "source_asset": "app/art/story-apology-text.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q30 상대 F",
+          "question_id": "q30",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P13 woman alone after an argument, deciding how to apologize through a letter. In a bright rain-cleared tower window seat, she sits upright in a lilac modest robe, holding a broad folded ivory letter against her chest with the whole palm; her other hand rests flat on a cushion. Three-quarter frontal view, sincere regret and tender resolve, OPEN brown eyes and clear face. A few discarded blank sheets and quill lie on a low table, quill is NOT held. Cool blue garden seen beyond, warm morning light on her face. Mood quiet and thoughtful, no bed, phone or deep black gradient.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-apology-text.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-f22a0efe-3f94-4d43-bf36-69390c53b645.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-apology-text.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-apology-text-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Single P13 long-haired face, broad letter against chest and natural hand silhouette.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-ask-favor",
+      "source_asset": "app/art/story-ask-favor.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q01 상대 M",
+          "question_id": "q01",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q30 상대 M",
+          "question_id": "q30",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P14 man alone initiating a difficult conversation or asking a favor. He has reached a sunlit cottage doorway carrying a modest wicker basket of bread supported by BOTH forearms at waist height. Facing the viewer just outside the open door, a slightly hesitant but earnest expression, clearly open eyes. The empty foreground door edge suggests the recipient without adding a person. Olive travel cloak over cream linen, climbing apricot vines and warm stone village in background. Medium shot, face centered upper half, basket broad and visible below. Invitation to talk, not pleading on stairs or staring up into night.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-ask-favor.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-e3ab9927-faef-4c76-9a46-0fbc718c57e0.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-ask-favor.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-ask-favor-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Single P14 face and basket supported by both arms; no electronics.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-big-buy",
+      "source_asset": "app/art/story-big-buy.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q15 상대 M",
+          "question_id": "q15",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P14 man considers a substantial purchase. In an open-air fantasy crafts market, he stands three-quarter beside an ornate LARGE carved wooden travel chest displayed on a waist-high bench. His relaxed left palm rests on the broad lid; right hand supports an open heavy leather coin purse from BELOW. Thoughtful measured expression toward the chest, exact amber eyes visible, no greed caricature. Deep navy and bronze travel clothes, sunlit terracotta awnings and pale stone courtyard. Framing waist-up with chest lower foreground; no cars, key fob, glass storefront or modern devices.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-big-buy.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-6d2f212d-04ce-4f8e-8e80-2d715825b245.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-big-buy.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-big-buy-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Single P14 contemplating a travel chest; both hands normal, no tiny key/phone.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-biz-partner",
+      "source_asset": "app/art/story-biz-partner.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q11 상대 M",
+          "question_id": "q11",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P14 man discusses an idea with a trusted male business companion. Main P14 face is sharply visible three-quarter at left in an airy fantasy guild workshop, calmly explaining a small timber bridge model resting on a broad plan on the table. His two hands rest flat beside the model without pointing/pinching. The companion is an adult male seen ONLY from behind at right shoulder, plain brown hair and sage cloak, no visible facial features and no duplicate P14 face. Soft industrial-age-free craft materials, open arch to a busy harbor, clear blue and amber daylight. Idea-sharing and practical cooperation, not a dim bar; no alcohol, pen in hand, writing or modern office.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-biz-partner.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-c988b7ac-d8e5-4241-b6c4-2e79220d6c72.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-biz-partner.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-biz-partner-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P14 and male collaborator visible only from behind; bridge model planning, no second conflicting identity.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-blind-date",
+      "source_asset": "app/art/story-blind-date.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q13 상대 F",
+          "question_id": "q13",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P13 woman prepares to meet someone for the first time. She stands at the entrance of a luminous conservatory tea garden, looking toward an EMPTY two-seat table in the middle distance with a small anticipatory open-eyed smile. One hand rests naturally on the broad strap of a fabric handbag against her side, the other at her waist. Main woman three-quarter frontal, chest-up foreground right, clear exact Queen face and long dark waves; peach and jade modest period dress, pale citrus trees and patterned stained-glass roof, fresh soft midday light. No mirror, shop glass reflection, phone or second visible person. New composition about hopeful first meeting.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-blind-date.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-b2303424-f855-4c3a-a0a4-1f75ef5e73c9.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-blind-date.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-blind-date-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P13 long hair, two-seat conservatory table, normal bag strap grip and fingers.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-breakup",
+      "source_asset": "app/art/story-breakup.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q38 상대 F",
+          "question_id": "q38",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P13 woman and P14 man at a quiet farewell. New setting: an open stone bridge over a calm canal on a pale autumn morning. Waist-up two-person composition, woman near foreground left facing slightly toward viewer with sad resolved OPEN eyes, man at right a half step behind facing partly away but his three-quarter face still visible. A clear physical gap separates them; neither touching. Their hands are relaxed at sides, no pointing or objects. Muted plum and slate-blue travel clothing, fallen amber leaves and cool bright sky, gently lit skin. Convey ending a relationship through distance and expressions, not romance or dramatic danger. No café, rain window, black gradient or crying closed eyes.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-breakup.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-702b76d1-5f1f-4977-bf15-694ece6f44b4.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-breakup.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-breakup-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Both approved faces visible, separate bodies and lowered hands, autumn farewell.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-cold",
+      "source_asset": "app/art/story-cold.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q22 상대 M",
+          "question_id": "q22",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P14 man emotionally withdraws while P13 woman tries to reach him. New scene: a bright winter palace gallery with broad snow-lit windows. Man occupies foreground right, turned three-quarter away from her, guarded neutral OPEN eyes looking toward the snowy garden; one hand rests flat on the wide window sill and other lowered. Woman stands in middle ground left with both hands loosely folded at her waist, worried and wanting conversation, exact Queen face visibly clear. A stone column between them creates emotional distance. His dark blue high-collar cloak and her warm cream/burgundy dress. Cold daylight plus soft warm interior accents, detailed full scene, no street, bus, headphones or electronics.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-cold.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-82734ca1-6d9f-4537-bd2d-a0f70946fb7d.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-cold.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-cold-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Both approved faces, window/column distance, P14 hand on sill and P13 folded hands coherent.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-confess",
+      "source_asset": "app/art/story-confess.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q06 상대 F",
+          "question_id": "q06",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "P13 woman confesses her feelings directly to P14 man. New scene: at the edge of an empty fantasy ballroom after a daytime gathering, open terrace doors and pale peach curtains behind. She is in foreground center-left, exact Queen face three-quarter and OPEN eyes meeting his gaze, one natural flat hand over her heart and other resting at side; lips slightly parted mid-sentence, earnest vulnerable courage. P14 man at right in profile/three-quarter listens intently with relaxed lowered hands and warm attentive eyes, no broad grin. Rich wine-red modest gown and ivory/emerald embroidered coat. Broad wooden dance floor lower foreground, golden afternoon light. No bouquet, phone, outdoor winter stair, text or extra people.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-confess.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-f00644f1-27b7-4f1d-9aba-ed995d592643.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-confess.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-confess-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Both approved faces and long hair, P13 hand over heart, clean confession gesture.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-contact",
+      "source_asset": "app/art/story-contact.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q08 상대 M",
+          "question_id": "q08",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "연락과 애정표현",
+          "source": "app/love.js"
+        }
+      ],
+      "scene_prompt": "P14 man communicating with a distant lover through letters. New scene: seated at a sunny sea-facing balcony writing table, he holds one LARGE opened letter supported by BOTH palms underneath at chest level, reading with a gently interested OPEN-eyed expression; exact King face three-quarter toward viewer. A small orderly stack of sealed envelopes lies on the table, quill rests unused, linen ribbon beside it. A white carrier pigeon perches on the broad stone rail in background, sufficiently separate from hands. Sky-blue period shirt with dark embroidered vest, pale blue sea and distant harbor, fresh morning light. Single man, one unified scene, not old split-screen or telephone. No readable words, no clock, no card symbols.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-contact.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-182facb7-e6e0-45c2-b4be-005ab390bd05.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-contact.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-contact-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P14 open-eyed face, broad letter held in two normal hands; no split screen or phone.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-contract",
+      "source_asset": "app/art/story-contract.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q44 상대 M",
+          "question_id": "q44",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "Contract decision: P14 alone at a standing lectern in a light-filled stone archive with shelves of rolled charters. Three-quarter waist-up perspective slightly from above. He carefully reads a large unfolded parchment resting flat on the lectern, BOTH palms spread naturally on either side of it, no pen in hand; a broad wax seal and unused quill lie on the side. His amber eyes clearly visible, serious and deliberative, lips softly pressed. Pale olive scholarly waistcoat and white rolled linen sleeves, no crown/cape. Summer light through a round window, quiet sage and warm walnut palette. The subject is understanding an important agreement before committing; no readable writing.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-contract.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-c18adeee-f5d3-41cf-8b5f-df83370fafd4.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-contract.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-contract-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P14 face and two spread hands around document clearly readable, no pen grip.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-drunk-text",
+      "source_asset": "app/art/story-drunk-text.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q11 상대 F",
+          "question_id": "q11",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "After an impulsive late-night message: P13 alone in a small amber-lit fantasy tavern booth near dawn. She sits upright, visibly embarrassed and rueful with warm flushed cheeks and open worried eyes, one broad palm gently against her forehead WITHOUT covering her eyes, the other palm resting on a large already-sealed letter on the table. A half-empty ceramic wine cup and a water pitcher sit apart, no spilled drink, no drunken collapse. Long wavy brown hair loose over a simple lilac dress and cream shawl, no crown. Pink dawn enters through the tavern door and the candle has almost burned down. Focus on regretting what was said, not glamour drinking, and no modern communication device.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-drunk-text.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-f0e611d6-8406-46c5-a23b-cef3432d3cf9.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-drunk-text.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-drunk-text-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P13 open eyes unobscured by forehead hand; second hand on letter and long loose hair.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-fight",
+      "source_asset": "app/art/story-fight.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q28 상대 M",
+          "question_id": "q28",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q28 상대 F",
+          "question_id": "q28",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "싸웠을 때",
+          "source": "app/love.js"
+        }
+      ],
+      "scene_prompt": "After a lovers' argument: P14 and P13 seated on opposite ends of a low curved stone bench in a sunlit herb courtyard, two distinct expressive faces at comparable size. P13 in muted teal dress looks toward him with hurt frustration; P14 in russet tunic gazes down and away, jaw tense. His hands rest separately on his knees; hers are folded naturally in her lap. A clear empty space between them, no physical aggression, no shouting faces. Low eye-level medium two-shot, afternoon light, lavender and rosemary plants, worn stone. Emotional silence after conflict, visually distinct from the winter-window coldness and autumn bridge breakup.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-fight.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-1947cecc-e290-4681-9218-42d7d9ba10b1.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-fight.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-fight-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Both faces and physically separate seated bodies, hands resting coherently, no violence.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-first-touch",
+      "source_asset": "app/art/story-first-touch.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q19 상대 M",
+          "question_id": "q19",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q19 상대 F",
+          "question_id": "q19",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "love",
+          "scene": "연애가 시작됐을 때",
+          "source": "app/love.js"
+        }
+      ],
+      "scene_prompt": "First affectionate touch: P14 and P13 seated next to each other on a small wooden passenger ferry crossing a clear lake in bright spring sunlight. Their inner hands rest gently palm-to-palm on the wide bench BETWEEN them, relaxed fingers laid naturally without interlacing or pinching; each has only two arms. Both open-eyed, shy smiles with a slight blush, they glance toward each other, their bodies and close-up faces visible. P14 light moss waistcoat over ivory shirt, P13 light blue flowing dress and LONG dark brown hair blown by lake breeze. Framed from thighs upward, mountains and reeds behind, ferry's broad wooden rail foreground, no other visible passengers, no boat machinery.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-first-touch.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-aa2c12e3-52c2-4f0a-ad7d-765095fabe34.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-first-touch.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-first-touch-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Both approved faces, four arms coherent, single gentle palm-over-hand contact on ferry bench.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-friend-drift",
+      "source_asset": "app/art/story-friend-drift.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q46 상대 F",
+          "question_id": "q46",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "A friendship slowly drifting apart: P13 sits alone on one side of a wide garden reading bench, gently looking at the empty place beside her. An open illustrated book with no readable text rests on the EMPTY seat and a second unused teacup sits on a small stone table. Her two hands rest on her own lap, shoulders slightly lowered, open thoughtful eyes with a wistful calm sadness rather than romantic heartbreak. Three-quarter waist-up portrait with empty seat clearly visible. Long wavy dark brown hair, soft ivory and moss dress, autumn vine pergola and distant footpath in soft afternoon light. No second face, no reflection, no ghost person.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-friend-drift.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-cef7dfaf-7918-430f-9fee-428c8e233115.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-friend-drift.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-friend-drift-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P13 long hair, coherent lap hands, empty bench and book convey absence.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-friend-money",
+      "source_asset": "app/art/story-friend-money.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q07 상대 F",
+          "question_id": "q07",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "Money between friends: P13 at a small outdoor market tea stall in dappled midday light, listening carefully to a female friend seen ONLY from behind at the near edge, no second visible face. P13's long dark-brown hair and exact face dominate the composition. A simple open cloth coin pouch and a few broad coins rest on the table BETWEEN them, untouched; P13 keeps both palms flat on her own side of the table and wears a concerned but affectionate, thoughtful expression. Not a bank teller or royal treasure scene. Soft terracotta dress, cream awning, a basket of apricots and warm wood. The tension is friendship plus lending/repayment, with no phone, no text, no pinched coin or money handoff.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-friend-money.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-53ad1f89-8cef-4f79-9abe-6892c6bd134c.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-friend-money.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-friend-money-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P13 face with a female friend only seen from behind, money pouch untouched on table.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-friend-to-lover",
+      "source_asset": "app/art/story-friend-to-lover.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "표지·장면 보기 fallback",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "Friends beginning to see one another romantically: P14 and P13 sit close side-by-side on a sunlit hillside picnic blanket overlooking a small fantasy village. A large illustrated adventure book rests open across their knees, no legible writing. P14 laughs softly with eyes OPEN while turning his face toward her; P13 pauses to look at him with a shy newly tender smile. Both hands rest naturally on their respective knees/book margins; they do not hold small objects and no hand overlaps faces. P14 simple cream shirt with loose forest-green vest, P13 warm rose travel dress, long loose waves. Diagonal close two-shot from the blanket corner, white clouds and tall grasses. Ordinary friendship turning intimate, no crowns, no instruments, no electronics.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-friend-to-lover.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-3d9e2ecb-0a03-4cd1-aac5-6151accd012a.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-friend-to-lover.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-friend-to-lover-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Two approved open-eyed smiling faces, book/picnic context, natural hands.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-get-back",
+      "source_asset": "app/art/story-get-back.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q39 상대 F",
+          "question_id": "q39",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "Hoping to get back together: P13 alone at a half-open arched wooden garden gate after spring rain, mid-step but hesitating, both open palms resting on the broad gate rail. She looks through the gate toward a small warmly lit cottage at early blue dusk with a vulnerable hopeful expression; no one visible inside, no promised reunion. Face in luminous three-quarter view and long brown waves clear; deep plum cloak over pale dress, raindrops on ivy and wet stone path. The strong visual action is returning to a familiar place and pausing before calling out, not waiting under a modern apartment window. No letter, no phone, no extra face.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-get-back.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-8f8b48e2-de02-42c9-badf-6807976f3199.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-get-back.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-get-back-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P13 at garden gate, both broad hands on rail, no extra face or promised reunion.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-geunamja",
+      "source_asset": "app/art/story-geunamja.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q23 상대 M",
+          "question_id": "q23",
+          "gender_condition": "M or any value other than F",
+          "source": "app/pair.js"
+        },
+        {
+          "menu": "pair",
+          "scene": "q36 상대 F",
+          "question_id": "q36",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "Trying to understand that person's feelings: P14 and P13 facing one another across a wide stone balustrade in a quiet walled rose garden at late afternoon. P14 on left leans forward a little with both forearms broadly supported on the railing, intent and gentle, eyes toward her. P13 on right turns her head toward him with a thoughtful uncertain expression, hands resting separately on the railing, no chin in hand. Strong medium two-shot with both exact approved faces equally clear; rich indigo male tunic and dark berry female gown, long wavy brown hair. Slanting light through leaves, a dry fountain behind. Ambiguous but attentive conversation rather than a definite confession or argument; no dinner table, no wine, no phone.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-geunamja.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-264cdbdf-778d-46e9-8ad9-4764b3b1ec12.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-geunamja.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-geunamja-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "Two approved attentive faces and separate hands on balustrade, no device.",
+      "status": "generated, visually inspected, encoded"
+    },
+    {
+      "key": "story-gift",
+      "source_asset": "app/art/story-gift.webp",
+      "source_dimensions": [
+        1024,
+        1536
+      ],
+      "consumers": [
+        {
+          "menu": "pair",
+          "scene": "q18 상대 F",
+          "question_id": "q18",
+          "gender_condition": "F",
+          "source": "app/pair.js"
+        }
+      ],
+      "scene_prompt": "A thoughtful surprise gift: P13 in a cheerful bookbindery beside a sunlit bay window, holding a medium rectangular parcel wrapped in cream linen with a broad burgundy ribbon supported underneath by BOTH palms at chest level. She turns toward P14, who stands nearby among shelves of finished books and looks pleasantly surprised, his two hands lowered and clearly separate from hers. Her exact long-haired P13 face is foreground in three-quarter view; his exact P14 face clearly visible over the parcel at equal focus. Sage-green working vest for him, pale rose dress with cream sleeves for her, no crowns. Warm honey wood, binding tools resting unused, a pot of red camellias on windowsill. Gift offering moment, no tiny jewelry, no behind-the-back contorted hands, no text/electronics.",
+      "reference_image_paths": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/story-gift.webp"
+      ],
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-00c4be30-418d-4e5f-9dec-d6b1b30786f3.png",
+      "generated_dimensions": [
+        1024,
+        1536
+      ],
+      "output": "app/art/content-tarot-v2/body/story-gift.webp",
+      "output_dimensions": [
+        1024,
+        1536
+      ],
+      "small_output": "app/art/content-tarot-v2/body/story-gift-s.webp",
+      "small_dimensions": [
+        360,
+        540
+      ],
+      "visual_review": "P13 supports box with both palms, P14 face and separate lowered hands visible.",
+      "status": "generated, visually inspected, encoded"
+    }
+  ]
+}

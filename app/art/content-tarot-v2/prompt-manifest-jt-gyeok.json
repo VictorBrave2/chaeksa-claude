@@ -1,0 +1,639 @@
+{
+  "schema": 1,
+  "batch": "jt-gyeok",
+  "count": 20,
+  "date": "2026-11-01",
+  "generator": "image_gen.imagegen",
+  "source_policy": "P14/P13는 얼굴·머리·화풍의 유일한 기준. 기존 그림은 감정과 주제만 참고하며 새 장면을 작성. 본문 격의 일상 행동을 장면화하고 신분·재물의 실제 예언으로 확장하지 않음.",
+  "content_sources": [
+    "app/jt-webtoon-2.js:23",
+    "app/jt-webtoon-2.js 격 3·4·15회",
+    "image-requests/ref/remaining-jt-illustrations-audit.json"
+  ],
+  "identity_sources": {
+    "male": "app/art/tarot/chaeksa-v1/P14.webp",
+    "female": "app/art/tarot/chaeksa-v1/P13.webp"
+  },
+  "format": {
+    "full": [
+      1024,
+      1536
+    ],
+    "small": [
+      360,
+      540
+    ],
+    "encoding": "FFmpeg libwebp quality 92 compression_level 6; small scale=360:-1:flags=lanczos"
+  },
+  "assets": [
+    {
+      "key": "jt-g-bigyeon-f",
+      "topic": "옆 사람과 나란히 자기 몫을 하는 협력",
+      "source": "app/art/jt-g-bigyeon-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-bigyeon-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune. Female cooperation (bigyeon): P13 and a female colleague shown only from behind work shoulder-to-shoulder at the SAME broad greenhouse potting bench. Both have equal-sized terracotta pots and equal tasks; P13 holds a large planter securely from both sides with open full-hand grip, her own plant ready to set beside the other's. She glances kindly toward her companion, relaxed confidence from working together. Three-quarter waist-up composition, clear long brown waves loose over one shoulder, soft sage linen dress with cream apron, morning light through greenhouse glass, seedlings and soil, no authority hierarchy, no money.",
+      "scene": "Female cooperation (bigyeon): P13 and a female colleague shown only from behind work shoulder-to-shoulder at the SAME broad greenhouse potting bench. Both have equal-sized terracotta pots and equal tasks; P13 holds a large planter securely from both sides with open full-hand grip, her own plant ready to set beside the other's. She glances kindly toward her companion, relaxed confidence from working together. Three-quarter waist-up composition, clear long brown waves loose over one shoulder, soft sage linen dress with cream apron, morning light through greenhouse glass, seedlings and soil, no authority hierarchy, no money.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-148ef185-a6a9-44ec-b163-5439f78bd8bc.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-bigyeon-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-bigyeon-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-bigyeon-m",
+      "topic": "옆 사람과 나란히 자기 몫을 하는 협력",
+      "source": "app/art/jt-g-bigyeon-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-bigyeon-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune. Male cooperation (bigyeon): P14 and a colleague mostly seen from behind carry opposite ends of ONE wide wooden crate of folded sailcloth down a harbor workshop aisle, equal posture and equal load. P14 is foreground, torso three-quarter view and face large, hands cupped underneath his end with a broad stable grip, two arms anatomically clear. He looks toward the partner with a small encouraging smile. Plain deep blue working vest and ivory rolled sleeves, warm open warehouse doors to bright blue water, coils of rope at floor. A team doing its share together, not a leader commanding workers.",
+      "scene": "Male cooperation (bigyeon): P14 and a colleague mostly seen from behind carry opposite ends of ONE wide wooden crate of folded sailcloth down a harbor workshop aisle, equal posture and equal load. P14 is foreground, torso three-quarter view and face large, hands cupped underneath his end with a broad stable grip, two arms anatomically clear. He looks toward the partner with a small encouraging smile. Plain deep blue working vest and ivory rolled sleeves, warm open warehouse doors to bright blue water, coils of rope at floor. A team doing its share together, not a leader commanding workers.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-a0662317-0902-44f7-bf5e-fca08fd49a49.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-bigyeon-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-bigyeon-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 2,
+      "authorized_identity_correction": {
+        "original_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-17cb6c5d-92ba-470a-bbf8-e8cbb2ebc683.png",
+        "prompt": "Edit reference1 ONLY: preserve the entire harbor teamwork scene, crate, practical blue vest, colleague seen from behind, body pose and supported hands exactly. Replace ONLY the principal man's face and hair with the EXACT approved P14 tarot identity from reference2, which is the sole authority. Copy P14's amber almond eyes, angular lean face, nose/jaw proportions, and especially his full voluminous tousled wavy dark-brown hair including longer nape strands. Do not keep the shorter neat haircut or softer old-scene face. He can keep the small encouraging smile and head angle. Keep the precise tarot illustration rendering. No crown, no throne, no new ornaments, no text, no added person, no other changes. Portrait1024x1536.",
+        "references": [
+          "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-17cb6c5d-92ba-470a-bbf8-e8cbb2ebc683.png",
+          "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp"
+        ]
+      },
+      "correction_reason": "첫 생성의 남성 머리가 짧아 P14 얼굴과 풍성한 웨이브 머리를 복원하고 장면을 유지한 1회 편집."
+    },
+    {
+      "key": "jt-g-geopjae-f",
+      "topic": "상대와 겨루며 힘이 나는 경쟁",
+      "source": "app/art/jt-g-geopjae-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-geopjae-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune. Female competition (geopjae): P13 in a quiet pavilion playing a strategy board game against a rival seen only from behind at the opposite edge. New elevated three-quarter composition across her shoulder-level face and the board. ALL stones lie on the board or in bowls; she touches no small piece. BOTH hands rest flat on the broad table edges as she studies the rival's position with a lively determined half-smile and focused open eyes. Burgundy practical dress, LONG loose dark-brown waves, leafy courtyard reflected in shallow water, cool jade and terracotta palette. Respectful rivalry, no arrogance, no gambling coins or victory trophy.",
+      "scene": "Female competition (geopjae): P13 in a quiet pavilion playing a strategy board game against a rival seen only from behind at the opposite edge. New elevated three-quarter composition across her shoulder-level face and the board. ALL stones lie on the board or in bowls; she touches no small piece. BOTH hands rest flat on the broad table edges as she studies the rival's position with a lively determined half-smile and focused open eyes. Burgundy practical dress, LONG loose dark-brown waves, leafy courtyard reflected in shallow water, cool jade and terracotta palette. Respectful rivalry, no arrogance, no gambling coins or victory trophy.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-c0a3317c-9637-4529-85b5-52416640a282.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-geopjae-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-geopjae-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-geopjae-m",
+      "topic": "상대와 겨루며 힘이 나는 경쟁",
+      "source": "app/art/jt-g-geopjae-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-geopjae-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune. Male competition (geopjae): P14 at a village rowing practice dock, seated in a narrow wooden training boat with ONE broad wooden oar held naturally with both full hands at chest/waist height, the oar shaft thick and fingers coherent. His gaze is focused forward toward another boat seen as a distant silhouette, a slight determined smile suggests a friendly race. Waist-up close composition with sunlit ripples and low wooden jetty, plain charcoal sleeveless waistcoat over cream shirt with sleeves rolled, no crown or jewelry. The challenge energizes him; no humiliating loser, no trophy, no aggression. Both hands wrapped around substantial separate parts of a SINGLE oar, not pinched.",
+      "scene": "Male competition (geopjae): P14 at a village rowing practice dock, seated in a narrow wooden training boat with ONE broad wooden oar held naturally with both full hands at chest/waist height, the oar shaft thick and fingers coherent. His gaze is focused forward toward another boat seen as a distant silhouette, a slight determined smile suggests a friendly race. Waist-up close composition with sunlit ripples and low wooden jetty, plain charcoal sleeveless waistcoat over cream shirt with sleeves rolled, no crown or jewelry. The challenge energizes him; no humiliating loser, no trophy, no aggression. Both hands wrapped around substantial separate parts of a SINGLE oar, not pinched.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-4c79add9-f97b-4a41-b5a6-c2a1c4daebf0.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-geopjae-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-geopjae-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-jeonggwan-f",
+      "topic": "맡은 일을 반듯하게 정리하고 지키는 책임",
+      "source": "app/art/jt-g-jeonggwan-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-jeonggwan-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune. Female responsibility (jeonggwan): P13 finishing an orderly day's records in a village guild archive, standing beside a chest-high wooden shelf. She carries a neatly aligned stack of THREE large closed folios across both forearms with broad palms beneath, turning toward the shelf where matching folios are arranged. Calm attentive open eyes and a restrained satisfied expression, large three-quarter face, LONG brown waves down her back. Plain ink-blue gown with cream sleeves and modest brooch. Bright afternoon window, orderly shelves and an unlabeled tray, no modern office equipment. The story is reliably completing entrusted work, not being a queen or judge.",
+      "scene": "Female responsibility (jeonggwan): P13 finishing an orderly day's records in a village guild archive, standing beside a chest-high wooden shelf. She carries a neatly aligned stack of THREE large closed folios across both forearms with broad palms beneath, turning toward the shelf where matching folios are arranged. Calm attentive open eyes and a restrained satisfied expression, large three-quarter face, LONG brown waves down her back. Plain ink-blue gown with cream sleeves and modest brooch. Bright afternoon window, orderly shelves and an unlabeled tray, no modern office equipment. The story is reliably completing entrusted work, not being a queen or judge.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-3132d0b9-b29f-4dbb-89a8-584548ae0529.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeonggwan-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeonggwan-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-jeonggwan-m",
+      "topic": "맡은 일을 반듯하게 정리하고 지키는 책임",
+      "source": "app/art/jt-g-jeonggwan-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-jeonggwan-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male responsibility (jeonggwan): P14 at the entrance to a village courier depot in clear early morning, checking a neatly packed dispatch box against a large parchment route sheet spread on a waist-high counter. One open palm rests on the box lid, the other supports the lower corner of the broad parchment. His face is calm and focused, a person trusted to deliver what was promised. Plain slate-blue tunic and ivory sleeves, simple leather satchel hanging at his side, warm wooden pigeonholes and tidy bundles behind him, no crown, no guards, no official power. Waist-up close view from the side with face in three-quarter light. No visible written symbols.",
+      "scene": "Male responsibility (jeonggwan): P14 at the entrance to a village courier depot in clear early morning, checking a neatly packed dispatch box against a large parchment route sheet spread on a waist-high counter. One open palm rests on the box lid, the other supports the lower corner of the broad parchment. His face is calm and focused, a person trusted to deliver what was promised. Plain slate-blue tunic and ivory sleeves, simple leather satchel hanging at his side, warm wooden pigeonholes and tidy bundles behind him, no crown, no guards, no official power. Waist-up close view from the side with face in three-quarter light. No visible written symbols.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-44459de5-b61f-407a-be90-64c45a2142ae.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeonggwan-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeonggwan-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-jeongin-f",
+      "topic": "배운 것을 설명하며 사람을 돕는 배움",
+      "source": "app/art/jt-g-jeongin-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-jeongin-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female learning and teaching (jeongin): P13 in a cottage herb garden sharing knowledge with a young ADULT learner seen from behind. She holds a large open botanical picture book at waist height on her forearms, BOTH palms supporting its broad covers from below; the page shows a leaf drawing only. She gently explains with open eyes and an engaged warm expression, looking to the learner beside her. The learner's face is not visible. P13 LONG brown hair loose over her shoulders, simple cream dress and sage shawl. Sunlit herbs and flowers surround the bench, modest cottages in the distance, no magical diagnosis or medicine miracle. Learning becomes useful help.",
+      "scene": "Female learning and teaching (jeongin): P13 in a cottage herb garden sharing knowledge with a young ADULT learner seen from behind. She holds a large open botanical picture book at waist height on her forearms, BOTH palms supporting its broad covers from below; the page shows a leaf drawing only. She gently explains with open eyes and an engaged warm expression, looking to the learner beside her. The learner's face is not visible. P13 LONG brown hair loose over her shoulders, simple cream dress and sage shawl. Sunlit herbs and flowers surround the bench, modest cottages in the distance, no magical diagnosis or medicine miracle. Learning becomes useful help.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-14548557-b66a-44aa-b3c1-4e01c0d759df.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongin-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongin-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-jeongin-m",
+      "topic": "배운 것을 설명하며 사람을 돕는 배움",
+      "source": "app/art/jt-g-jeongin-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-jeongin-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male learning and teaching (jeongin): P14 seated beside an adult apprentice whose back is at the lower frame edge, inside a small warm library with many well-used books. A large folded architectural diagram with only abstract nonverbal shapes rests open on the table, and P14 places his broad palm beside one diagram while the other hand keeps a heavy reference book open. He looks up kindly toward the learner, patient attentive open amber eyes. Chest-up three-quarter view, no glasses hiding eyes, plain dark green waistcoat and soft white shirt, no crown, afternoon honey light through a square window. Being a dependable source of learned knowledge, not a lecturer towering over an audience.",
+      "scene": "Male learning and teaching (jeongin): P14 seated beside an adult apprentice whose back is at the lower frame edge, inside a small warm library with many well-used books. A large folded architectural diagram with only abstract nonverbal shapes rests open on the table, and P14 places his broad palm beside one diagram while the other hand keeps a heavy reference book open. He looks up kindly toward the learner, patient attentive open amber eyes. Chest-up three-quarter view, no glasses hiding eyes, plain dark green waistcoat and soft white shirt, no crown, afternoon honey light through a square window. Being a dependable source of learned knowledge, not a lecturer towering over an audience.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-e3852846-0bd8-4841-9847-79346be0cf76.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongin-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongin-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-jeongjae-f",
+      "topic": "같은 일을 꾸준히 챙기고 숫자와 빠진 것을 확인",
+      "source": "app/art/jt-g-jeongjae-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-jeongjae-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female meticulous stewardship (jeongjae): P13 in a small textile workshop at a long cutting table, carefully checking the aligned edges of several neat folded linen lengths. BOTH open palms press lightly and flat on the upper folded cloth, no scissors/needle, no pinching. A simple wooden measuring batten with no numbers lies on the table, an orderly shelf of fabric rolls behind. She studies the work with a calm, exacting expression and clear open eyes, LONG loose brown waves over a muted plum dress and practical apron. Morning side light, pale lavender/cream/walnut palette. Repeated careful work and nothing overlooked, not a rich woman counting gold.",
+      "scene": "Female meticulous stewardship (jeongjae): P13 in a small textile workshop at a long cutting table, carefully checking the aligned edges of several neat folded linen lengths. BOTH open palms press lightly and flat on the upper folded cloth, no scissors/needle, no pinching. A simple wooden measuring batten with no numbers lies on the table, an orderly shelf of fabric rolls behind. She studies the work with a calm, exacting expression and clear open eyes, LONG loose brown waves over a muted plum dress and practical apron. Morning side light, pale lavender/cream/walnut palette. Repeated careful work and nothing overlooked, not a rich woman counting gold.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-ce01ac33-0f84-408f-a50e-717757900e76.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongjae-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongjae-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-jeongjae-m",
+      "topic": "같은 일을 꾸준히 챙기고 숫자와 빠진 것을 확인",
+      "source": "app/art/jt-g-jeongjae-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-jeongjae-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male meticulous stewardship (jeongjae): P14 in a grain storehouse checking a small inventory in an open ledger laid on a wooden counter; a few neatly tied sacks and two equal measuring baskets line the shelves. His left palm holds the broad book page flat; his right full hand rests on the rim of a large measuring bowl, not pouring or pinching grain. He looks thoughtfully between measured supplies and ledger, calm precision. Three-quarter close view, plain brown vest over cream linen, dark wavy hair and amber eyes exactly P14. Warm daylight cuts across the wooden beams, no mountains of coins, no text/numbers or modern calculator. Steady careful accounting of ordinary stores.",
+      "scene": "Male meticulous stewardship (jeongjae): P14 in a grain storehouse checking a small inventory in an open ledger laid on a wooden counter; a few neatly tied sacks and two equal measuring baskets line the shelves. His left palm holds the broad book page flat; his right full hand rests on the rim of a large measuring bowl, not pouring or pinching grain. He looks thoughtfully between measured supplies and ledger, calm precision. Three-quarter close view, plain brown vest over cream linen, dark wavy hair and amber eyes exactly P14. Warm daylight cuts across the wooden beams, no mountains of coins, no text/numbers or modern calculator. Steady careful accounting of ordinary stores.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-362ca594-c07d-467e-ada4-d3fbd88d6f91.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongjae-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-jeongjae-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-pyeongwan-f",
+      "topic": "급하고 무거운 일을 버티고 처리",
+      "source": "app/art/jt-g-pyeongwan-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-pyeongwan-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female response under pressure (pyeongwan): P13 in the doorway of a village storeroom as a sudden rainstorm begins outside, calmly closing a pair of broad heavy wooden shutters with BOTH palms placed flat and widely apart on the wood. Her body leans only slightly with believable effort; face turned three-quarter toward light, open determined eyes, LONG brown hair flowing over a dark teal practical dress with rolled cream sleeves. Shelves of ordinary grain sacks safe inside, heavy rain visible beyond the doorway, no casualties or battle. Strong diagonal scene conveys handling an urgent heavy task when others hesitate. No fancy palace, no heroic crown, no blood or injuries.",
+      "scene": "Female response under pressure (pyeongwan): P13 in the doorway of a village storeroom as a sudden rainstorm begins outside, calmly closing a pair of broad heavy wooden shutters with BOTH palms placed flat and widely apart on the wood. Her body leans only slightly with believable effort; face turned three-quarter toward light, open determined eyes, LONG brown hair flowing over a dark teal practical dress with rolled cream sleeves. Shelves of ordinary grain sacks safe inside, heavy rain visible beyond the doorway, no casualties or battle. Strong diagonal scene conveys handling an urgent heavy task when others hesitate. No fancy palace, no heroic crown, no blood or injuries.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-c4b1c085-dbf6-4553-a1c8-24479de62347.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeongwan-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeongwan-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-pyeongwan-m",
+      "topic": "급하고 무거운 일을 버티고 처리",
+      "source": "app/art/jt-g-pyeongwan-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-pyeongwan-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male response under pressure (pyeongwan): P14 in a watermill workshop during an urgent breakdown, bracing a heavy wooden support beam with both broad palms at waist height while a second worker seen only from behind secures the opposite end. The wheel outside has stopped; water and early storm light through open doorway, no machinery that resembles a clock or electronics. P14's face clearly lit in three-quarter close view, focused steady amber eyes and full tousled waves, no anger. Sturdy charcoal vest, rolled linen sleeves, a little rain on fabric. Clear coherent arms, no crushing danger or injuries, no superhuman lifting: beam rests supported on trestles. Ability to act under pressure.",
+      "scene": "Male response under pressure (pyeongwan): P14 in a watermill workshop during an urgent breakdown, bracing a heavy wooden support beam with both broad palms at waist height while a second worker seen only from behind secures the opposite end. The wheel outside has stopped; water and early storm light through open doorway, no machinery that resembles a clock or electronics. P14's face clearly lit in three-quarter close view, focused steady amber eyes and full tousled waves, no anger. Sturdy charcoal vest, rolled linen sleeves, a little rain on fabric. Clear coherent arms, no crushing danger or injuries, no superhuman lifting: beam rests supported on trestles. Ability to act under pressure.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-cd405eed-56a9-4d4b-9270-3b506f3ea677.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeongwan-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeongwan-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-pyeonin-f",
+      "topic": "남들이 잘 다루지 않는 문제를 혼자 깊이 탐구",
+      "source": "app/art/jt-g-pyeonin-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-pyeonin-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female solitary investigation (pyeonin): P13 alone at a quiet attic worktable after dusk, intensely studying how daylight from the final sunset passes through a large glass prism onto paper. The prism stands securely on a broad wooden stand; she does NOT hold any tiny object. Both palms rest naturally on the tabletop beside an open illustrated reference book, with a colored band of light crossing blank paper. LONG waves of brown hair, attentive bright eyes and slightly parted thoughtful lips, plain deep blue dress with cream collar. A candle gives warm face light, sloped timber roof and square twilight window visible. Obscure question explored for its own interest, no occult spell, no clockwork ornament or modern lamp.",
+      "scene": "Female solitary investigation (pyeonin): P13 alone at a quiet attic worktable after dusk, intensely studying how daylight from the final sunset passes through a large glass prism onto paper. The prism stands securely on a broad wooden stand; she does NOT hold any tiny object. Both palms rest naturally on the tabletop beside an open illustrated reference book, with a colored band of light crossing blank paper. LONG waves of brown hair, attentive bright eyes and slightly parted thoughtful lips, plain deep blue dress with cream collar. A candle gives warm face light, sloped timber roof and square twilight window visible. Obscure question explored for its own interest, no occult spell, no clockwork ornament or modern lamp.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-4fe60532-9f2b-4cb4-893a-2e625da1ea1e.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonin-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonin-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-pyeonin-m",
+      "topic": "남들이 잘 다루지 않는 문제를 혼자 깊이 탐구",
+      "source": "app/art/jt-g-pyeonin-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-pyeonin-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male solitary investigation (pyeonin): P14 alone in a small stone studio before dawn, deeply absorbed in a miniature WOODEN WATERWHEEL model resting firmly on the bench and several broad diagram sheets with no text. One open palm lies flat beside the model; the other holds the thick outer frame gently with full fingers, no tweezers or pinching. Full voluminous wavy P14 hair and clear amber eyes, curious quiet concentration, simple ink-green vest and ivory sleeves. Cool blue window and one warm candle illuminate face and hands; some experimental wooden parts, not clutter or electronic gears. A new angle nobody else has tried, solitude without sadness. No astrolabe/clock from old scene.",
+      "scene": "Male solitary investigation (pyeonin): P14 alone in a small stone studio before dawn, deeply absorbed in a miniature WOODEN WATERWHEEL model resting firmly on the bench and several broad diagram sheets with no text. One open palm lies flat beside the model; the other holds the thick outer frame gently with full fingers, no tweezers or pinching. Full voluminous wavy P14 hair and clear amber eyes, curious quiet concentration, simple ink-green vest and ivory sleeves. Cool blue window and one warm candle illuminate face and hands; some experimental wooden parts, not clutter or electronic gears. A new angle nobody else has tried, solitude without sadness. No astrolabe/clock from old scene.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-fb839b19-8849-4ed7-be1a-289803444129.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonin-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonin-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-pyeonjae-f",
+      "topic": "밖에서 새 사람과 일을 만나 넓게 벌임",
+      "source": "app/art/jt-g-pyeonjae-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-pyeonjae-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female wide-ranging initiative (pyeonjae): P13 arriving at a lively but modest riverside trading fair, standing at a stall of dyed cloth and pottery as she opens a LARGE fabric sample book flat on the counter with both palms on its covers. She looks enthusiastically toward a prospective collaborator shown only from behind, suggesting another new connection and a larger plan. LONG wavy hair, warm brown eyes, practical terracotta travel dress, cream shawl and plain satchel; no crown, no extravagant jewelry. Bright late afternoon, docked sailing boats and colorful unlettered awnings, diagonal medium shot with her face large. Dynamic outward enterprise, no money pile or luxurious shopping.",
+      "scene": "Female wide-ranging initiative (pyeonjae): P13 arriving at a lively but modest riverside trading fair, standing at a stall of dyed cloth and pottery as she opens a LARGE fabric sample book flat on the counter with both palms on its covers. She looks enthusiastically toward a prospective collaborator shown only from behind, suggesting another new connection and a larger plan. LONG wavy hair, warm brown eyes, practical terracotta travel dress, cream shawl and plain satchel; no crown, no extravagant jewelry. Bright late afternoon, docked sailing boats and colorful unlettered awnings, diagonal medium shot with her face large. Dynamic outward enterprise, no money pile or luxurious shopping.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-0fb7390f-4631-46ce-96c4-bb2dc0d13eb1.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonjae-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonjae-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-pyeonjae-m",
+      "topic": "밖에서 새 사람과 일을 만나 넓게 벌임",
+      "source": "app/art/jt-g-pyeonjae-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-pyeonjae-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male wide-ranging initiative (pyeonjae): P14 beside a modest merchant wagon at the edge of a sunny road leading toward a new hill town, comparing a broad route map laid on a wooden crate with a travelling collaborator seen only from behind. BOTH full palms rest on opposite edges of the map, no pointer, no coin. His amber eyes look up toward the road with energetic curiosity, full voluminous tousled dark-brown hair, plain rust travel coat over cream shirt. Packed cloth bales and everyday ceramic goods, airy blue sky, dust in sunlight, waist-up three-quarter composition. Broadening one's work by moving outward and meeting people, no luxurious treasure or dominant boss pose.",
+      "scene": "Male wide-ranging initiative (pyeonjae): P14 beside a modest merchant wagon at the edge of a sunny road leading toward a new hill town, comparing a broad route map laid on a wooden crate with a travelling collaborator seen only from behind. BOTH full palms rest on opposite edges of the map, no pointer, no coin. His amber eyes look up toward the road with energetic curiosity, full voluminous tousled dark-brown hair, plain rust travel coat over cream shirt. Packed cloth bales and everyday ceramic goods, airy blue sky, dust in sunlight, waist-up three-quarter composition. Broadening one's work by moving outward and meeting people, no luxurious treasure or dominant boss pose.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-53c62f2f-a786-4f03-9d45-b369e46f0a9e.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonjae-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-pyeonjae-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-sanggwan-f",
+      "topic": "기존 방식의 문제를 말하고 새 방법을 제안",
+      "source": "app/art/jt-g-sanggwan-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-sanggwan-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female questioning and proposing change (sanggwan): P13 in a village meeting room beside a wide table bearing TWO small wooden bridge designs, an old solid obstruction on one side and an open arch design on the other. She is explaining an alternative with one relaxed OPEN palm extended toward the new model, the other hand resting flat on the table. Two listeners appear only as soft turned-away shoulders at frame corners. P13 clear open eyes, earnest confident expression, LONG loose waves, simple burgundy dress with cream sleeves. Broad side-window light and practical wooden room, no crown or dais. Speaking a constructive disagreement and imagining a new way, no shouting, humiliation, slogans or readable diagrams.",
+      "scene": "Female questioning and proposing change (sanggwan): P13 in a village meeting room beside a wide table bearing TWO small wooden bridge designs, an old solid obstruction on one side and an open arch design on the other. She is explaining an alternative with one relaxed OPEN palm extended toward the new model, the other hand resting flat on the table. Two listeners appear only as soft turned-away shoulders at frame corners. P13 clear open eyes, earnest confident expression, LONG loose waves, simple burgundy dress with cream sleeves. Broad side-window light and practical wooden room, no crown or dais. Speaking a constructive disagreement and imagining a new way, no shouting, humiliation, slogans or readable diagrams.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-e34b19c4-57c7-4ae9-beed-02b4468befa9.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-sanggwan-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-sanggwan-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-sanggwan-m",
+      "topic": "기존 방식의 문제를 말하고 새 방법을 제안",
+      "source": "app/art/jt-g-sanggwan-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-sanggwan-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male questioning and proposing change (sanggwan): P14 in a theater carpentry workshop, standing beside a tabletop model stage with movable plain geometric scenery. He gestures with a natural open palm toward a newly arranged layout while the other palm rests flat on a discarded broad old layout sheet, no text. One teammate visible only from the back listens at the opposite side. His face large in three-quarter view, alert amber eyes and full tousled hair, firm but thoughtful mid-speech expression. Rolled ivory sleeves and a dark teal work vest, shafts of afternoon light, timber beams and canvas panels. Challenging a habitual design through a creative proposal, not a triumphant dictator or caricature.",
+      "scene": "Male questioning and proposing change (sanggwan): P14 in a theater carpentry workshop, standing beside a tabletop model stage with movable plain geometric scenery. He gestures with a natural open palm toward a newly arranged layout while the other palm rests flat on a discarded broad old layout sheet, no text. One teammate visible only from the back listens at the opposite side. His face large in three-quarter view, alert amber eyes and full tousled hair, firm but thoughtful mid-speech expression. Rolled ivory sleeves and a dark teal work vest, shafts of afternoon light, timber beams and canvas panels. Challenging a habitual design through a creative proposal, not a triumphant dictator or caricature.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-3d9ff2a6-390c-4df3-94ec-903174e64ff0.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-sanggwan-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-sanggwan-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-siksin-f",
+      "topic": "없던 것을 손으로 만들어 내는 창작",
+      "source": "app/art/jt-g-siksin-f.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P13.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-siksin-f.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Female making and creating (siksin): P13 in a bright small pottery workshop shaping a LARGE simple clay bowl on a manually turned pottery wheel. Both hands broadly and gently cup the outside of the bowl with natural spread fingers, no pinched tiny parts, no extra fingers. Her exact face and LONG brown waves clearly visible over one shoulder, half restrained only for practical work; open eyes and a quiet absorbed smile. Muted blue dress with cream rolled sleeves and a clay-spattered apron. Shelves of a few finished bowls, sun through open door and warm earthen walls, no modern motor or digital tools. Waist-up close view, delight in bringing something new into being.",
+      "scene": "Female making and creating (siksin): P13 in a bright small pottery workshop shaping a LARGE simple clay bowl on a manually turned pottery wheel. Both hands broadly and gently cup the outside of the bowl with natural spread fingers, no pinched tiny parts, no extra fingers. Her exact face and LONG brown waves clearly visible over one shoulder, half restrained only for practical work; open eyes and a quiet absorbed smile. Muted blue dress with cream rolled sleeves and a clay-spattered apron. Shelves of a few finished bowls, sun through open door and warm earthen walls, no modern motor or digital tools. Waist-up close view, delight in bringing something new into being.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-545aa930-1830-4be2-af0b-2e53235a4005.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-siksin-f.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-siksin-f-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    },
+    {
+      "key": "jt-g-siksin-m",
+      "topic": "없던 것을 손으로 만들어 내는 창작",
+      "source": "app/art/jt-g-siksin-m.webp",
+      "references": [
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/tarot/chaeksa-v1/P14.webp",
+        "C:/Users/LEE/.codex/worktrees/three-eyes-copy/궁극의 책사/app/art/jt-g-siksin-m.webp"
+      ],
+      "prompt": "Use case: narrative illustration. Create ONE portrait 1024x1536 fully painted edge-to-edge, mobile-readable face and action. Reference image 1 is authoritative identity AND art style: preserve its exact face, eye shape/color, facial proportions and hair, crisp naturally open eyes. If woman, keep P13's LONG wavy dark-brown hair (never short or a complete updo); if man, keep P14's tousled wavy dark-brown hair and angular face. Reference image 2 is the old scene, ONLY for emotional/content understanding, not identity or composition; create the NEW scene below. Precise luminous contemporary Korean fantasy illustration like approved tarot art, elegant detailed brushwork, natural coherent bodies. Practical period-fantasy clothing with restrained decoration, not royal costumes; no crown, throne, extreme gold, piles of wealth, comedy or mockery. Do NOT reuse reference background. No letters, readable writing, numbers, tarot borders/cards/pentacles, logos/watermarks, no blank dark gradient. No phones/clocks/watches/electronics/cars, no pinching small items, no fist near face. Show supported relaxed hands with correct fingers and two arms per person. No gratuitous faces: colleagues/opponents may appear only as small turned-away backs unless specified. Content is a person's ordinary working tendency, not a forecast of actual status or fortune.  IDENTITY MUST NOT BLEND: Completely ignore the face and haircut in the OLD scene reference. The final character must be unmistakably reference1 tarot identity. Male hair has the full voluminous tousled waves and nape strands of P14, NOT short neat old-scene haircut. Female eyes and oval face and long waves must be exactly P13. Male making and creating (siksin): P14 in a rustic bakery at sunrise, proudly lifting a wide wooden tray of freshly baked bread from a sturdy counter, BOTH palms securely supporting its two sides from below. Calm satisfied smile with amber eyes open, exact full P14 hair, white rolled linen sleeves and plain forest-green apron. Warm oven bricks behind him, flour-dusted workbench and a small bowl of dough at side, morning sunlight through an open window. Three-quarter torso and face close enough for mobile, not a chef in modern stainless kitchen. Simple pleasure in finishing a thing made by his own effort, no pinching garnish, no display of wealth.",
+      "scene": "Male making and creating (siksin): P14 in a rustic bakery at sunrise, proudly lifting a wide wooden tray of freshly baked bread from a sturdy counter, BOTH palms securely supporting its two sides from below. Calm satisfied smile with amber eyes open, exact full P14 hair, white rolled linen sleeves and plain forest-green apron. Warm oven bricks behind him, flour-dusted workbench and a small bowl of dough at side, morning sunlight through an open window. Three-quarter torso and face close enough for mobile, not a chef in modern stainless kitchen. Simple pleasure in finishing a thing made by his own effort, no pinching garnish, no display of wealth.",
+      "generated_png": "C:/Users/LEE/.codex/generated_images/01a19607-84dc-7680-b2a5-d96edac17084/exec-127e5cd4-51a1-402b-9c1c-0ff122e8beab.png",
+      "outputs": [
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-siksin-m.webp",
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        {
+          "path": "app/art/content-tarot-v2/body/jt-g-siksin-m-s.webp",
+          "dimensions": [
+            360,
+            540
+          ]
+        }
+      ],
+      "qa": "육안: P13 장발/P14 흐트러진 웨이브 머리와 얼굴, 눈, 팔·손 확인. 전자기기·시계·문자·타로 테두리 없음.",
+      "generation_calls": 1
+    }
+  ]
+}

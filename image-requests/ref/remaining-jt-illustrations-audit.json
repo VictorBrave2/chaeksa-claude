@@ -1,0 +1,930 @@
+{
+  "title": "Remaining jeongtong illustrations — 53 live or retained fallback keys",
+  "date": "2026-11-01",
+  "method": "Read-only static consumer and original-file inventory. No application execution/tests.",
+  "count": 53,
+  "gyeok_count": 20,
+  "chapter_count": 33,
+  "excluded_already_assigned": [
+    "jt-06-steady-f",
+    "jt-11-money-stay-f",
+    "jt-11-money-stay-m",
+    "jt-12-money-year-m",
+    "jt-14-in-love-m",
+    "jt-16-alone-together-f",
+    "jt-16-alone-together-m"
+  ],
+  "route": [
+    "app/bunya.js:155,168-187 marks jeongtong and jt.h1..20 open",
+    "app/home-ask.js:51 maps jt.hN to 회:N",
+    "app/home-ask.js:138 calls 책사들어가기",
+    "app/app.js:2189 stores chaeksa.jtVn and opens ssom-vn.html?h=N",
+    "app/ssom-vn.html:79-84 selects numbered or gyeok image",
+    "app/ssom-vn.html:108,111 resolves selected key via ChaeksaSceneArt"
+  ],
+  "classification": {
+    "direct_chapter_and_gyeok_after_overlap": 47,
+    "numbered_fallback": 6,
+    "numbered_fallback_detail": "jt-03-seat-m/f, jt-04-good-bad-m/f, jt-15-work-m/f stay in source as fallback only when gyeok lookup missing. Normally 3,4,15 share the selected gyeok art. Included by root instruction to replace all 53 retained live paths.",
+    "other_direct_use": "jt-13-heart-m/f also person input; jt-15-work-m also pay product thumbnail."
+  },
+  "dead_reference_exclusions": [],
+  "scope_note": "Old code is not automatically dead: scene viewer remains reachable. No new application tests or private server calls were made.",
+  "extra_consumers": [
+    {
+      "keys": [
+        "jt-13-heart-m",
+        "jt-13-heart-f"
+      ],
+      "source": [
+        "app/index.html:648",
+        "app/app.js:214",
+        "app/app.js:2220",
+        "app/app.js:2222"
+      ],
+      "use": "상대 프로필 입력 그림 — direct art/ path remains"
+    },
+    {
+      "keys": [
+        "jt-15-work-m"
+      ],
+      "source": [
+        "app/yaksok.js:49",
+        "app/pay.html:195"
+      ],
+      "use": "ilgyeol 상품 약속 그림 → 결제 목록 thumbnail"
+    },
+    {
+      "keys": [
+        "jt-g-bigyeon-f",
+        "jt-g-bigyeon-m",
+        "jt-g-geopjae-f",
+        "jt-g-geopjae-m",
+        "jt-g-jeonggwan-f",
+        "jt-g-jeonggwan-m",
+        "jt-g-jeongin-f",
+        "jt-g-jeongin-m",
+        "jt-g-jeongjae-f",
+        "jt-g-jeongjae-m",
+        "jt-g-pyeongwan-f",
+        "jt-g-pyeongwan-m",
+        "jt-g-pyeonin-f",
+        "jt-g-pyeonin-m",
+        "jt-g-pyeonjae-f",
+        "jt-g-pyeonjae-m",
+        "jt-g-sanggwan-f",
+        "jt-g-sanggwan-m",
+        "jt-g-siksin-f",
+        "jt-g-siksin-m"
+      ],
+      "source": [
+        "app/ssom-card.js:82-115"
+      ],
+      "use": "정통 공유카드 생성 코드 references gyeok keys; current UI caller not found, not used as primary reachability evidence."
+    }
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "stem": "01-born",
+      "topic": "태어난 계절과 필요한 기운",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-01-born-{gender}",
+      "still_to_replace": [
+        "jt-01-born-f",
+        "jt-01-born-m"
+      ]
+    },
+    {
+      "number": 2,
+      "stem": "02-push",
+      "topic": "내 안에서 가장 강한 마음",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-02-push-{gender}",
+      "still_to_replace": [
+        "jt-02-push-f",
+        "jt-02-push-m"
+      ]
+    },
+    {
+      "number": 3,
+      "stem": "03-seat",
+      "topic": "일할 때의 역할",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "Known gyeok uses jt-g-{gyeok}-{gender}; numbered image is retained fallback.",
+      "still_to_replace": [
+        "jt-03-seat-f",
+        "jt-03-seat-m"
+      ]
+    },
+    {
+      "number": 4,
+      "stem": "04-good-bad",
+      "topic": "일에서 잘하는 것과 걸리는 것",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "Known gyeok uses jt-g-{gyeok}-{gender}; numbered image is retained fallback.",
+      "still_to_replace": [
+        "jt-04-good-bad-f",
+        "jt-04-good-bad-m"
+      ]
+    },
+    {
+      "number": 5,
+      "stem": "05-who",
+      "topic": "나를 받쳐 주는 것",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-05-who-{gender}",
+      "still_to_replace": [
+        "jt-05-who-f",
+        "jt-05-who-m"
+      ]
+    },
+    {
+      "number": 6,
+      "stem": "06-steady",
+      "topic": "타고난 짜임의 든든함과 흔들림",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-06-steady-{gender}",
+      "still_to_replace": [
+        "jt-06-steady-m"
+      ]
+    },
+    {
+      "number": 7,
+      "stem": "07-shake",
+      "topic": "흔드는 것과 붙잡아 주는 것",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-07-shake-{gender}",
+      "still_to_replace": [
+        "jt-07-shake-f",
+        "jt-07-shake-m"
+      ]
+    },
+    {
+      "number": 8,
+      "stem": "08-power",
+      "topic": "하루를 버티는 힘",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-08-power-{gender}",
+      "still_to_replace": [
+        "jt-08-power-f",
+        "jt-08-power-m"
+      ]
+    },
+    {
+      "number": 9,
+      "stem": "09-shadow",
+      "topic": "버릇과 지켜 주는 도움",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-09-shadow-{gender}",
+      "still_to_replace": [
+        "jt-09-shadow-f",
+        "jt-09-shadow-m"
+      ]
+    },
+    {
+      "number": 10,
+      "stem": "10-money-in",
+      "topic": "돈이 들어오는 길",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-10-money-in-{gender}",
+      "still_to_replace": [
+        "jt-10-money-in-f",
+        "jt-10-money-in-m"
+      ]
+    },
+    {
+      "number": 11,
+      "stem": "11-money-stay",
+      "topic": "돈이 남거나 새는 모습",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-11-money-stay-{gender}",
+      "still_to_replace": []
+    },
+    {
+      "number": 12,
+      "stem": "12-money-year",
+      "topic": "돈 쓰는 방식이 바뀌는 해",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-12-money-year-{gender}",
+      "still_to_replace": [
+        "jt-12-money-year-f"
+      ]
+    },
+    {
+      "number": 13,
+      "stem": "13-heart",
+      "topic": "마음이 가는 사람",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-13-heart-{gender}",
+      "still_to_replace": [
+        "jt-13-heart-f",
+        "jt-13-heart-m"
+      ]
+    },
+    {
+      "number": 14,
+      "stem": "14-in-love",
+      "topic": "좋아할 때 드러나는 행동",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-14-in-love-{gender}",
+      "still_to_replace": [
+        "jt-14-in-love-f"
+      ]
+    },
+    {
+      "number": 15,
+      "stem": "15-work",
+      "topic": "힘이 나는 일",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "Known gyeok uses jt-g-{gyeok}-{gender}; numbered image is retained fallback.",
+      "still_to_replace": [
+        "jt-15-work-f",
+        "jt-15-work-m"
+      ]
+    },
+    {
+      "number": 16,
+      "stem": "16-alone-together",
+      "topic": "혼자와 함께 일할 때",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-16-alone-together-{gender}",
+      "still_to_replace": []
+    },
+    {
+      "number": 17,
+      "stem": "17-work-year",
+      "topic": "일의 방식이 바뀌는 해",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-17-work-year-{gender}",
+      "still_to_replace": [
+        "jt-17-work-year-f",
+        "jt-17-work-year-m"
+      ]
+    },
+    {
+      "number": 18,
+      "stem": "18-ten-years",
+      "topic": "현재 10년 운과 달라진 모습",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-18-ten-years-{gender}",
+      "still_to_replace": [
+        "jt-18-ten-years-f",
+        "jt-18-ten-years-m"
+      ]
+    },
+    {
+      "number": 19,
+      "stem": "19-return",
+      "topic": "원래 기운으로 돌아오는 때",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-19-return-{gender}",
+      "still_to_replace": [
+        "jt-19-return-f",
+        "jt-19-return-m"
+      ]
+    },
+    {
+      "number": 20,
+      "stem": "20-where",
+      "topic": "지금까지의 삶과 현재 위치",
+      "source": "app/jt-webtoon.js:83",
+      "image_rule": "jt-20-where-{gender}",
+      "still_to_replace": [
+        "jt-20-where-f",
+        "jt-20-where-m"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "slug": "bigyeon",
+      "name": "비견",
+      "topic": "옆 사람과 나란히 자기 몫을 하는 협력",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-bigyeon-f",
+        "jt-g-bigyeon-m"
+      ]
+    },
+    {
+      "slug": "geopjae",
+      "name": "겁재",
+      "topic": "상대와 겨루며 힘이 나는 경쟁",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-geopjae-f",
+        "jt-g-geopjae-m"
+      ]
+    },
+    {
+      "slug": "jeonggwan",
+      "name": "정관",
+      "topic": "맡은 일을 반듯하게 정리하고 지키는 책임",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-jeonggwan-f",
+        "jt-g-jeonggwan-m"
+      ]
+    },
+    {
+      "slug": "jeongin",
+      "name": "정인",
+      "topic": "배운 것을 설명하며 사람을 돕는 배움",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-jeongin-f",
+        "jt-g-jeongin-m"
+      ]
+    },
+    {
+      "slug": "jeongjae",
+      "name": "정재",
+      "topic": "같은 일을 꾸준히 챙기고 숫자와 빠진 것을 확인",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-jeongjae-f",
+        "jt-g-jeongjae-m"
+      ]
+    },
+    {
+      "slug": "pyeongwan",
+      "name": "편관",
+      "topic": "급하고 무거운 일을 버티고 처리",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-pyeongwan-f",
+        "jt-g-pyeongwan-m"
+      ]
+    },
+    {
+      "slug": "pyeonin",
+      "name": "편인",
+      "topic": "남들이 잘 다루지 않는 문제를 혼자 깊이 탐구",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-pyeonin-f",
+        "jt-g-pyeonin-m"
+      ]
+    },
+    {
+      "slug": "pyeonjae",
+      "name": "편재",
+      "topic": "밖에서 새 사람과 일을 만나 넓게 벌임",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-pyeonjae-f",
+        "jt-g-pyeonjae-m"
+      ]
+    },
+    {
+      "slug": "sanggwan",
+      "name": "상관",
+      "topic": "기존 방식의 문제를 말하고 새 방법을 제안",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-sanggwan-f",
+        "jt-g-sanggwan-m"
+      ]
+    },
+    {
+      "slug": "siksin",
+      "name": "식신",
+      "topic": "없던 것을 손으로 만들어 내는 창작",
+      "chapters": [
+        3,
+        4,
+        15
+      ],
+      "source": "app/jt-webtoon-2.js:23",
+      "keys": [
+        "jt-g-siksin-f",
+        "jt-g-siksin-m"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "key": "jt-01-born-f",
+      "source_asset": "app/art/jt-01-born-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-01-born-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-01-born-f-s.webp"
+    },
+    {
+      "key": "jt-01-born-m",
+      "source_asset": "app/art/jt-01-born-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-01-born-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-01-born-m-s.webp"
+    },
+    {
+      "key": "jt-02-push-f",
+      "source_asset": "app/art/jt-02-push-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-02-push-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-02-push-f-s.webp"
+    },
+    {
+      "key": "jt-02-push-m",
+      "source_asset": "app/art/jt-02-push-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-02-push-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-02-push-m-s.webp"
+    },
+    {
+      "key": "jt-03-seat-f",
+      "source_asset": "app/art/jt-03-seat-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered fallback; jt-15-work-m additionally payment thumb",
+      "output": "app/art/content-tarot-v2/body/jt-03-seat-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-03-seat-f-s.webp"
+    },
+    {
+      "key": "jt-03-seat-m",
+      "source_asset": "app/art/jt-03-seat-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered fallback; jt-15-work-m additionally payment thumb",
+      "output": "app/art/content-tarot-v2/body/jt-03-seat-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-03-seat-m-s.webp"
+    },
+    {
+      "key": "jt-04-good-bad-f",
+      "source_asset": "app/art/jt-04-good-bad-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered fallback; jt-15-work-m additionally payment thumb",
+      "output": "app/art/content-tarot-v2/body/jt-04-good-bad-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-04-good-bad-f-s.webp"
+    },
+    {
+      "key": "jt-04-good-bad-m",
+      "source_asset": "app/art/jt-04-good-bad-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered fallback; jt-15-work-m additionally payment thumb",
+      "output": "app/art/content-tarot-v2/body/jt-04-good-bad-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-04-good-bad-m-s.webp"
+    },
+    {
+      "key": "jt-05-who-f",
+      "source_asset": "app/art/jt-05-who-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-05-who-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-05-who-f-s.webp"
+    },
+    {
+      "key": "jt-05-who-m",
+      "source_asset": "app/art/jt-05-who-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-05-who-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-05-who-m-s.webp"
+    },
+    {
+      "key": "jt-06-steady-m",
+      "source_asset": "app/art/jt-06-steady-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-06-steady-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-06-steady-m-s.webp"
+    },
+    {
+      "key": "jt-07-shake-f",
+      "source_asset": "app/art/jt-07-shake-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-07-shake-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-07-shake-f-s.webp"
+    },
+    {
+      "key": "jt-07-shake-m",
+      "source_asset": "app/art/jt-07-shake-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-07-shake-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-07-shake-m-s.webp"
+    },
+    {
+      "key": "jt-08-power-f",
+      "source_asset": "app/art/jt-08-power-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-08-power-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-08-power-f-s.webp"
+    },
+    {
+      "key": "jt-08-power-m",
+      "source_asset": "app/art/jt-08-power-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-08-power-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-08-power-m-s.webp"
+    },
+    {
+      "key": "jt-09-shadow-f",
+      "source_asset": "app/art/jt-09-shadow-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-09-shadow-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-09-shadow-f-s.webp"
+    },
+    {
+      "key": "jt-09-shadow-m",
+      "source_asset": "app/art/jt-09-shadow-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-09-shadow-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-09-shadow-m-s.webp"
+    },
+    {
+      "key": "jt-10-money-in-f",
+      "source_asset": "app/art/jt-10-money-in-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-10-money-in-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-10-money-in-f-s.webp"
+    },
+    {
+      "key": "jt-10-money-in-m",
+      "source_asset": "app/art/jt-10-money-in-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-10-money-in-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-10-money-in-m-s.webp"
+    },
+    {
+      "key": "jt-12-money-year-f",
+      "source_asset": "app/art/jt-12-money-year-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-12-money-year-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-12-money-year-f-s.webp"
+    },
+    {
+      "key": "jt-13-heart-f",
+      "source_asset": "app/art/jt-13-heart-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-13-heart-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-13-heart-f-s.webp"
+    },
+    {
+      "key": "jt-13-heart-m",
+      "source_asset": "app/art/jt-13-heart-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-13-heart-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-13-heart-m-s.webp"
+    },
+    {
+      "key": "jt-14-in-love-f",
+      "source_asset": "app/art/jt-14-in-love-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-14-in-love-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-14-in-love-f-s.webp"
+    },
+    {
+      "key": "jt-15-work-f",
+      "source_asset": "app/art/jt-15-work-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered fallback; jt-15-work-m additionally payment thumb",
+      "output": "app/art/content-tarot-v2/body/jt-15-work-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-15-work-f-s.webp"
+    },
+    {
+      "key": "jt-15-work-m",
+      "source_asset": "app/art/jt-15-work-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered fallback; jt-15-work-m additionally payment thumb",
+      "output": "app/art/content-tarot-v2/body/jt-15-work-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-15-work-m-s.webp"
+    },
+    {
+      "key": "jt-17-work-year-f",
+      "source_asset": "app/art/jt-17-work-year-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-17-work-year-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-17-work-year-f-s.webp"
+    },
+    {
+      "key": "jt-17-work-year-m",
+      "source_asset": "app/art/jt-17-work-year-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-17-work-year-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-17-work-year-m-s.webp"
+    },
+    {
+      "key": "jt-18-ten-years-f",
+      "source_asset": "app/art/jt-18-ten-years-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-18-ten-years-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-18-ten-years-f-s.webp"
+    },
+    {
+      "key": "jt-18-ten-years-m",
+      "source_asset": "app/art/jt-18-ten-years-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-18-ten-years-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-18-ten-years-m-s.webp"
+    },
+    {
+      "key": "jt-19-return-f",
+      "source_asset": "app/art/jt-19-return-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-19-return-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-19-return-f-s.webp"
+    },
+    {
+      "key": "jt-19-return-m",
+      "source_asset": "app/art/jt-19-return-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-19-return-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-19-return-m-s.webp"
+    },
+    {
+      "key": "jt-20-where-f",
+      "source_asset": "app/art/jt-20-where-f.webp",
+      "gender": "F",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-20-where-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-20-where-f-s.webp"
+    },
+    {
+      "key": "jt-20-where-m",
+      "source_asset": "app/art/jt-20-where-m.webp",
+      "gender": "M",
+      "assignment": "root: distribute chapter33",
+      "consuming_condition": "numbered chapter",
+      "output": "app/art/content-tarot-v2/body/jt-20-where-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-20-where-m-s.webp"
+    },
+    {
+      "key": "jt-g-bigyeon-f",
+      "source_asset": "app/art/jt-g-bigyeon-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-bigyeon-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-bigyeon-f-s.webp"
+    },
+    {
+      "key": "jt-g-bigyeon-m",
+      "source_asset": "app/art/jt-g-bigyeon-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-bigyeon-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-bigyeon-m-s.webp"
+    },
+    {
+      "key": "jt-g-geopjae-f",
+      "source_asset": "app/art/jt-g-geopjae-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-geopjae-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-geopjae-f-s.webp"
+    },
+    {
+      "key": "jt-g-geopjae-m",
+      "source_asset": "app/art/jt-g-geopjae-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-geopjae-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-geopjae-m-s.webp"
+    },
+    {
+      "key": "jt-g-jeonggwan-f",
+      "source_asset": "app/art/jt-g-jeonggwan-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-jeonggwan-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-jeonggwan-f-s.webp"
+    },
+    {
+      "key": "jt-g-jeonggwan-m",
+      "source_asset": "app/art/jt-g-jeonggwan-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-jeonggwan-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-jeonggwan-m-s.webp"
+    },
+    {
+      "key": "jt-g-jeongin-f",
+      "source_asset": "app/art/jt-g-jeongin-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-jeongin-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-jeongin-f-s.webp"
+    },
+    {
+      "key": "jt-g-jeongin-m",
+      "source_asset": "app/art/jt-g-jeongin-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-jeongin-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-jeongin-m-s.webp"
+    },
+    {
+      "key": "jt-g-jeongjae-f",
+      "source_asset": "app/art/jt-g-jeongjae-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-jeongjae-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-jeongjae-f-s.webp"
+    },
+    {
+      "key": "jt-g-jeongjae-m",
+      "source_asset": "app/art/jt-g-jeongjae-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-jeongjae-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-jeongjae-m-s.webp"
+    },
+    {
+      "key": "jt-g-pyeongwan-f",
+      "source_asset": "app/art/jt-g-pyeongwan-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-pyeongwan-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-pyeongwan-f-s.webp"
+    },
+    {
+      "key": "jt-g-pyeongwan-m",
+      "source_asset": "app/art/jt-g-pyeongwan-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-pyeongwan-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-pyeongwan-m-s.webp"
+    },
+    {
+      "key": "jt-g-pyeonin-f",
+      "source_asset": "app/art/jt-g-pyeonin-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-pyeonin-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-pyeonin-f-s.webp"
+    },
+    {
+      "key": "jt-g-pyeonin-m",
+      "source_asset": "app/art/jt-g-pyeonin-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-pyeonin-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-pyeonin-m-s.webp"
+    },
+    {
+      "key": "jt-g-pyeonjae-f",
+      "source_asset": "app/art/jt-g-pyeonjae-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-pyeonjae-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-pyeonjae-f-s.webp"
+    },
+    {
+      "key": "jt-g-pyeonjae-m",
+      "source_asset": "app/art/jt-g-pyeonjae-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-pyeonjae-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-pyeonjae-m-s.webp"
+    },
+    {
+      "key": "jt-g-sanggwan-f",
+      "source_asset": "app/art/jt-g-sanggwan-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-sanggwan-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-sanggwan-f-s.webp"
+    },
+    {
+      "key": "jt-g-sanggwan-m",
+      "source_asset": "app/art/jt-g-sanggwan-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-sanggwan-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-sanggwan-m-s.webp"
+    },
+    {
+      "key": "jt-g-siksin-f",
+      "source_asset": "app/art/jt-g-siksin-f.webp",
+      "gender": "F",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-siksin-f.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-siksin-f-s.webp"
+    },
+    {
+      "key": "jt-g-siksin-m",
+      "source_asset": "app/art/jt-g-siksin-m.webp",
+      "gender": "M",
+      "assignment": "question_batch2: gyeok20",
+      "consuming_condition": "selected gyeok, chapters3/4/15",
+      "output": "app/art/content-tarot-v2/body/jt-g-siksin-m.webp",
+      "small_output": "app/art/content-tarot-v2/body/jt-g-siksin-m-s.webp"
+    }
+  ]
+}
