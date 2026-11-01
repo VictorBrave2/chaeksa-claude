@@ -105,11 +105,11 @@ function selectResult(m){
 }
 function drawResult(canvas,m){
  const v=selectResult(m),ctx=base(canvas,'옛 책이 나를 좋게 본 이유');
- text(ctx,'나에게도, 이런 이름이 있습니다.',76,281,29,C.muted);
+ text(ctx,'나에게도, 이런 이름이 있습니다.',76,262,29,C.muted);   // 11-02 사장님 「두 줄의 간격이 너무 좁아」 — 머리 줄은 올리고 이름은 내림
  const titleSize=fitText(ctx,v.title,900,76,46,true,2);
- const end=paragraph(ctx,v.title,76,350,900,titleSize,titleSize*1.48,C.ink,true,2);
- text(ctx,[v.name,v.hanja].filter(Boolean).join(' · '),79,Math.max(502,end+12),29,C.gold,true);
- const start=600,rowH=151;
+ const end=paragraph(ctx,v.title,76,368,900,titleSize,titleSize*1.48,C.ink,true,2);
+ const nameY=Math.max(502,end+12);text(ctx,[v.name,v.hanja].filter(Boolean).join(' · '),79,nameY,29,C.gold,true);
+ const start=Math.max(600,nameY+28),rowH=151;
  if(v.conditions.length){
   v.conditions.forEach((f,i)=>{const y=start+i*rowH,indent=i*10;panel(ctx,76+indent,y,928-indent,rowH-14);text(ctx,String(i+1).padStart(2,'0'),105+indent,y+49,24,C.gold,true);text(ctx,f.book,169+indent,y+43,20,C.muted);const size=fitText(ctx,f.title,778-indent,32,23,true,2);paragraph(ctx,f.title,169+indent,y+80,778-indent,size,size*1.35,C.ink,true,2);});
   text(ctx,'나에게 겹친 '+v.count+'가지 좋은 조건 중에서',76,1114,25,C.muted);
