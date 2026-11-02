@@ -51,7 +51,7 @@ const slides=[
  {title:'왜 이 시간을\n먼저 권할까요?',alt:'계절에 필요한 글자와 돕는 글자를 함께 갖춘 첫 추천. 다른 후보와의 차이와 함께 살핀 아쉬운 점도 설명합니다.'},
  {title:'첫 추천이 어렵다면,\n다음 후보도 있습니다.',alt:'가상 가족 견본의 다음 후보는 4월 13일 05:33부터 07:32, 4월 16일 13:32부터 15:31. 첫 추천과 다른 점도 함께 제공합니다.'},
  {title:'병원에 전할\n시계 시각까지.',alt:'출생지와 시각 보정을 반영해 병원에서 쓰는 시계 시각으로 안내합니다. 가상 가족 견본의 시간은 4월 12일 07:33부터 09:32입니다.'},
- {title:'그날을 고를 이유가\n분명해집니다.',alt:'출산택일 보고서 99,000원, 보통 2~3일. 처음 열기 전 전액 환불. 공개된 가상 가족의 보고서 견본을 먼저 읽어 보세요.'}
+ {title:'그날을 고를 이유가\n분명해집니다.',alt:'출산택일 보고서 99,000원. 결제 후 보통 몇 분 안에 「내 보고서」에서 열립니다. 처음 열기 전 전액 환불. 공개된 가상 가족의 보고서 견본을 먼저 읽어 보세요.'}
 ];
 function drawTaekil(canvas,index,images={}){
  const ctx=base(canvas,'출산택일 보고서',String(index+1).padStart(2,'0')+' / 06');
@@ -86,8 +86,9 @@ function drawTaekil(canvas,index,images={}){
   paragraph(ctx,'담당 의사와 정한 출산 가능 범위 안에서 선택합니다.',76,1118,928,25,42,C.muted);sampleTag(ctx);footer(ctx);return canvas;
  }
  text(ctx,'출산택일 보고서 한 벌',76,570,30,C.muted);text(ctx,'99,000',76,689,105,C.gold,true);text(ctx,'원',526,687,46,C.gold,true);
- text(ctx,'보통 2~3일 · 처음 열어 보기 전 전액 환불',76,765,27,C.muted);
- line(ctx,76,832,1004,832);text(ctx,'보고서 견본부터 읽어 보세요.',76,934,43,C.ink,true);
+ text(ctx,'결제 후 보통 몇 분 안에 「내 보고서」에서 열립니다.',76,760,27,C.muted);
+ text(ctx,'처음 열어 보기 전 전액 환불',76,805,27,C.muted);
+ line(ctx,76,860,1004,860);text(ctx,'보고서 견본부터 읽어 보세요.',76,934,43,C.ink,true);
  text(ctx,'chaeksa.kr/taekil-sample.html',76,1006,29,C.gold);
  paragraph(ctx,'아이를 만날 가장 좋은 날과 시간,\n책사에게 맡기세요.',76,1094,928,29,49,C.muted);
  footer(ctx,'책사 · 출산택일');return canvas;
