@@ -1562,4 +1562,5 @@ html[data-boot="landing"] #nav{display:grid!important}
 .to-paid-name{font-size:1.05rem}
 .to-paid-line{color:var(--ink2);line-height:1.5}
 .to-paid-tag{color:var(--accent);font-size:.9rem}
+.to-paid-say{margin:0;text-align:center;color:var(--ink2);line-height:1.6}
 .to-paid-sample{justify-self:center;color:var(--ink2);font-size:.92rem}

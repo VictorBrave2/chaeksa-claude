@@ -1,6 +1,6 @@
 /* 무료 풀이 맨 아래 → 유료 「내게 맞는 일과 돈」(11-03 사장님 「홍보 작전 ㄱㄱ」 — 메인 몫 = 길 잇기).
  * 정통사주 · 정통자미두수를 끝까지 읽은 사람이 가장 가까운 손님이다. 세 관점 단추(to-three.js) 아래에 상품 칸 하나를 단다.
- * 글은 전부 장부(yaksok.js 「ilgyeol」 줄): 이름 · 홈한줄 · 딱지({값}은 상품표) · 그림 · 견본. 메인은 글을 쓰지 않는다. 이름이 비면 그리지 않는다.
+ * 글은 전부 장부(yaksok.js 「ilgyeol」 줄): 풀이끝말(칸 위 한 줄) · 이름 · 홈한줄 · 딱지({값}은 상품표) · 그림 · 견본. 메인은 글을 쓰지 않는다. 이름이 비면 그리지 않는다.
  * 주소에 ?from=<jeongtong|myeongban>-end 꼬리표 — 어느 풀이 끝에서 넘어왔는지 방문 통계(visits_stats sources)에 갈린다.
  * 사건: to_paid|<from>|ilgyeol · to_paid_sample|<from>|ilgyeol. */
 (function (global) {
@@ -15,7 +15,9 @@
     var 주소 = r.탭 + (r.탭.indexOf('?') < 0 ? '?' : '&') + 꼬리;
     var 견본 = r.견본 ? r.견본 + (r.견본.indexOf('?') < 0 ? '?' : '&') + 꼬리 : '';
     var 한줄 = Y.홈한줄 ? Y.홈한줄(상품) : '', 딱지 = Y.딱지html ? Y.딱지html(상품) : '';
+    var 말 = r.풀이끝말 || '';   // 칸 위 한 줄(Codex — COPY-0032, 비면 건너뜀)
     return '<aside class="to-paid" data-from="' + esc(from) + '" aria-label="' + esc(이름) + '">'
+      + (말 ? '<p class="to-paid-say">' + esc(말) + '</p>' : '')
       + '<a class="to-paid-card" href="' + esc(주소) + '" data-to-paid="' + esc(from) + '">'
       + (r.그림 ? '<img class="to-paid-img" src="' + esc(r.그림) + '" alt="" loading="lazy" decoding="async">' : '')
       + '<span class="to-paid-body"><strong class="to-paid-name">' + esc(이름) + '</strong>'
