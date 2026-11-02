@@ -16,7 +16,8 @@
     // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
     //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
     match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/content-tarot-v2/gyeolhon-cover.webp', 작은: 'art/content-tarot-v2/gyeolhon-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
-      { 키: 'chongnon', 탭: 'chongnon', 그림: 'art/content-tarot-v2/gunghap-cover.webp', 작은: 'art/content-tarot-v2/gunghap-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      // 11-03 사장님 궁합 네 줄 「정통 사주 궁합」(필터식 · gunghap-pyo.html) — 궁합총론 자리를 바꾼다(결정함 114). 궁합총론 탭은 ?go=chongnon 으로 남는다
+      { 키: 'ghpyo', 주소: 'gunghap-pyo.html', 그림: 'art/content-tarot-v2/gunghap-cover.webp', 작은: 'art/content-tarot-v2/gunghap-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/content-tarot-v2/ssom-cover.webp', 작은: 'art/content-tarot-v2/ssom-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
       { 키: 'saram', 주소: 'saram.html', 그림: 'art/content-tarot-v2/saram-cover.webp', 작은: 'art/content-tarot-v2/saram-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
@@ -75,7 +76,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1596';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1597';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -145,7 +146,7 @@
     var 묶음들 = [
       ['나를 알아보기', ['jeongtong', 'myeongban', 'tarot', 'three', 'today', 'why', 'when']],
       ['아기 태어날 날과 시간', ['taekil']],
-      ['연애와 궁합', ['chongnon', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
+      ['연애와 궁합', ['ghpyo', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],
       ['읽을거리', ['read']]
     ];
