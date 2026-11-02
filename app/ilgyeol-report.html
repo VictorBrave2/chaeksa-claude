@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=75d0e24735">
-<link rel="stylesheet" href="myeongsik-tarot.css?v=1">
+<link rel="stylesheet" href="myeongsik-tarot.css?v=45643dc2da">
 <link rel="stylesheet" href="ilgyeol-web.css?v=ff696ed33f">
 <style>
   .doc{max-width:760px;margin:0 auto;padding:22px 16px 90px}
@@ -67,6 +67,7 @@
 <script src="pay.js?v=536b36d2a9"></script>
 <script src="engine.js?v=e0bd1ab409"></script>
 <script src="myeongsik-card.js?v=975bd33438"></script>
+<script src="ilgyeol-cards.js?v=1cb7d73b09"></script>
 <script>
 (function () {
   document.documentElement.setAttribute('data-theme', 'day');
@@ -188,22 +189,7 @@
     root.querySelectorAll('*').forEach(function (n) { Array.prototype.slice.call(n.attributes).forEach(function (a) { if (/^on/i.test(a.name) || /^\s*javascript:/i.test(a.value)) n.removeAttribute(a.name); }); });
     return root.innerHTML;
   }
-  function 카드그리기(host) {
-    var E = window.ChaeksaEngine, MC = window.ChaeksaMyeongsikCard, el = host.querySelector('[data-mwk]');
-    if (!el || !E || !MC || !MC.원국표) return;
-    try {
-      var v = JSON.parse(el.getAttribute('data-mwk') || '{}'), 기 = v.기둥 || {}, P = {}, gods = {};
-      ['hour', 'day', 'month', 'year'].forEach(function (k) {
-        var p = 기[k]; if (!p) { P[k] = null; return; }
-        var s = E.STEMS.indexOf(p.간), b = E.BRANCHES.indexOf(p.지);
-        P[k] = s < 0 || b < 0 ? null : { stem: s, branch: b };
-        gods[k] = { stem: k === 'day' ? '일간' : (p.간십성 || ''), branch: p.지십성 || '' };
-      });
-      var h = MC.원국표({ pillars: P, analysis: { gods: gods } }, { pre: 'mwk-' });
-      var 대 = (v.대운 || []).map(function (d) { return '<span class="' + (d.지금 ? 'now' : '') + '">' + esc(d.간지 + ' ' + d.시작해 + '~') + '</span>'; }).join('');
-      if (h) el.innerHTML = h + (대 ? '<div class="igw-du">' + 대 + '</div>' : '');
-    } catch (e) {}
-  }
+  function 카드그리기(host) { if (window.ChaeksaIgCards) window.ChaeksaIgCards.그리기(host); }   // ilgyeol-cards.js(견본 쪽과 같이 씀)
   function 풀이그리기(r, 머리글) {
     var rep = r.report || {};
     sub.textContent = (rep.만든날 ? rep.만든날 + ' 만듦 · ' : '') + '이 계정에 2년 동안 남아요';
