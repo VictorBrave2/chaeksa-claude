@@ -1549,6 +1549,7 @@ html[data-boot="landing"] #nav{display:grid!important}
 
 /* Returning home is the complete catalog. */
 .home-paths+.home-paths{margin-top:28px}
+.home-paths .catalog-list{margin-bottom:14px}   /* 11-02 홈 무료 줄 — 작은 목록 아래 전체 보기 */
 
 /* 11-02 정통 시리즈 맨 아래 → 세 관점(to-three.js) */
 .to-three{max-width:600px;margin:36px auto 8px;padding:24px 16px 0;border-top:1px solid var(--line2);text-align:center}
