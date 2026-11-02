@@ -82,6 +82,8 @@
       if (부록 && 근거인가(n)) {
         let h = 노드(n, rep);
         while (i + 1 < xs.length && 근거인가(xs[i + 1])) h += 노드(xs[++i], rep);
+        // 11-03 사장님 「보고서 형식에서 웹사이트에 바로」 — 화면 판(decision-1)은 근거를 부록으로 보내지 않고 그 자리 「근거 보기」 접힘으로(내게 맞는 일과 돈 웹판과 같은 꼴)
+        if (rep && rep.layout === 'decision-1') { out += '<details class="tkr-fold tkr-evi"><summary>근거 보기</summary>' + h + '</details>'; continue; }
         부록.push({ 곳: 곳 || '', html: h });
         out += rep && rep.layout === 'decision-1'
           ? '<p class="tkr-ref"><a href="#" data-tkr-appendix="' + 부록.length + '">원문 · 근거 → 부록 ' + 부록.length + '</a></p>'
