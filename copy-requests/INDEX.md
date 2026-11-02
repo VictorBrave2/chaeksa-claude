@@ -35,3 +35,4 @@
 | COPY-0032 | 유료 둘 홍보 — 출산택일 4번 그림 날짜 고침 · 내게 맞는 일과 돈 홍보 6장 · 게시글 · 풀이 끝 한 줄(풀이끝말) · 견본 공유 카드 | 제안됨(11-03) | [주문서](COPY-0032-paid-promo.md) · [원고·근거](ref/COPY-0032-paid-promo-copy.md) · [완료 기록](ref/COPY-0032-paid-promo-completion.md) | codex/COPY-0032 |
 | COPY-0033 | 정통 사주 궁합 — 필터 열한 개의 이름 · 결과 이름 · 한 줄, 화면 글67칸 | 제안됨(11-03) | [주문서](COPY-0033-jeongtong-gunghap.md) · [원고 전체·인계](ref/COPY-0033-jeongtong-gunghap-copy.md) | codex/COPY-0033 |
 | COPY-0034 | 정통 자미두수 궁합 — 필터 일곱과 화면 글52칸 · 검색·공유 메타 | 제안됨(11-03) | [주문서](COPY-0034-ziwei-gunghap.md) · [원고 전체·인계](ref/COPY-0034-ziwei-gunghap-copy.md) | codex/COPY-0034 |
+| COPY-0035 | 정통 타로 궁합 — 필터 아홉의 이름 · 결과 이름 · 한 줄, 화면 글 | 요청(11-03) | [주문서](COPY-0035-tarot-gunghap.md) | codex/COPY-0035 |
