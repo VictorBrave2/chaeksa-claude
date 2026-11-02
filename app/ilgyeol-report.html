@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=75d0e24735">
+<link rel="stylesheet" href="myeongsik-tarot.css?v=1">
+<link rel="stylesheet" href="ilgyeol-web.css?v=ff696ed33f">
 <style>
   .doc{max-width:760px;margin:0 auto;padding:22px 16px 90px}
   .doc > h1{font-family:var(--serif);font-size:var(--t6);line-height:1.35;margin:0 0 6px}
@@ -63,6 +65,8 @@
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=b830dbd7bb"></script>
+<script src="engine.js?v=e0bd1ab409"></script>
+<script src="myeongsik-card.js?v=975bd33438"></script>
 <script>
 (function () {
   document.documentElement.setAttribute('data-theme', 'day');
@@ -175,9 +179,40 @@
     그렸음 = true;
     다됨(function () { 풀이그리기(r, 머리글); });
   }
+  // 11-03 사장님 「보고서 형식에서 웹사이트에 바로 뜨도록」 — 서버 웹판(rep.web)이 있으면 사이트 화면 안에 그대로 넣는다(ilgyeol-web.css).
+  //   웹판은 비공개 서버가 글을 모두 이스케이프해 만든 조각이다. 그래도 넣기 전에 script · on* · javascript: 를 걷는다.
+  //   명식은 data-mwk 값으로 타로 카드 네 장(myeongsik-card.js 원국표 mwk-)을 그린다. 웹판이 없는 옛 결과는 아래 iframe 그대로.
+  function 걷기(html) {
+    var d = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html'), root = d.body.firstChild;
+    root.querySelectorAll('script,iframe,object,embed,link,meta,style').forEach(function (n) { n.remove(); });
+    root.querySelectorAll('*').forEach(function (n) { Array.prototype.slice.call(n.attributes).forEach(function (a) { if (/^on/i.test(a.name) || /^\s*javascript:/i.test(a.value)) n.removeAttribute(a.name); }); });
+    return root.innerHTML;
+  }
+  function 카드그리기(host) {
+    var E = window.ChaeksaEngine, MC = window.ChaeksaMyeongsikCard, el = host.querySelector('[data-mwk]');
+    if (!el || !E || !MC || !MC.원국표) return;
+    try {
+      var v = JSON.parse(el.getAttribute('data-mwk') || '{}'), 기 = v.기둥 || {}, P = {}, gods = {};
+      ['hour', 'day', 'month', 'year'].forEach(function (k) {
+        var p = 기[k]; if (!p) { P[k] = null; return; }
+        var s = E.STEMS.indexOf(p.간), b = E.BRANCHES.indexOf(p.지);
+        P[k] = s < 0 || b < 0 ? null : { stem: s, branch: b };
+        gods[k] = { stem: k === 'day' ? '일간' : (p.간십성 || ''), branch: p.지십성 || '' };
+      });
+      var h = MC.원국표({ pillars: P, analysis: { gods: gods } }, { pre: 'mwk-' });
+      var 대 = (v.대운 || []).map(function (d) { return '<span class="' + (d.지금 ? 'now' : '') + '">' + esc(d.간지 + ' ' + d.시작해 + '~') + '</span>'; }).join('');
+      if (h) el.innerHTML = h + (대 ? '<div class="igw-du">' + 대 + '</div>' : '');
+    } catch (e) {}
+  }
   function 풀이그리기(r, 머리글) {
     var rep = r.report || {};
     sub.textContent = (rep.만든날 ? rep.만든날 + ' 만듦 · ' : '') + '이 계정에 2년 동안 남아요';
+    if (rep.web) {
+      그림((머리글 || '') + '<div id="igWeb">' + 걷기(String(rep.web)) + '</div>'
+        + '<div class="igr-tools"><a class="btn ghost small" href="ilgyeol.html">← 소개 화면</a></div>');
+      카드그리기(document.getElementById('igWeb'));
+      return;
+    }
     그림((머리글 || '') + '<div class="igr-tools"><button type="button" class="btn ghost small" id="print">인쇄 · PDF 로 저장</button>'
       + '<a class="btn ghost small" href="ilgyeol.html">← 소개 화면</a></div>'
       + '<iframe id="igFrame" class="igr-frame" title="내게 맞는 일과 돈 풀이" scrolling="no"></iframe>');
