@@ -128,7 +128,7 @@
     const portrait=signature && portraits[signature.lead.key];
     const identity={...m.identity};
     if(portrait){identity.title=portrait[0];identity.line=explanation ? explanation[1] : typeLines[type] || identity.line;identity.name=portrait[2];identity.hanja=String(signature.lead.classical||'').split(/[（(]/)[0];identity.basis='《'+signature.lead.book+'》의 '+signature.lead.name+' 대목을 풀어 책사가 붙인 이름입니다. '+portrait[1];}
-    else if(explanation){identity.title=explanation[1];identity.line=signature ? signature.lead.title : typeLines[type] || identity.line;}
+    else if(explanation){identity.title=explanation[1];identity.line=typeLines[type] || identity.line;}
     const condition=explanation ? {title:explanation[3],text:explanation[2],basis:reasons.join(' / ')} : {title:state?.값==='깨졌다'?'강점을 해치는 조건이 함께 있습니다.':'타고난 성향과 성립 조건을 함께 봅니다.',text:typeLines[type]||'판정에 나온 조건을 아래에서 살펴보세요.',basis:reasons.join(' / ')};
     let caution=state?.값==='띠었다' ? {title:'강점과 함께 남은 흠이 있습니다.',text:explanation?.[2]||reasons.join(' / '),basis:reasons.join(' / '),source:'자평진전'} : null;
     if(season?.blocked) {
@@ -136,8 +136,25 @@
       caution=caution ? {...caution,text:caution.text+' '+seasonal.title+' '+seasonal.text,basis:caution.basis+' / '+seasonal.basis,source:'자평진전 · 궁통보감',classical:true} : seasonal;
     }
     if(state?.값==='깨졌다') caution={title:'타고난 강점이 그대로 힘을 쓰지는 못합니다.',text:explanation ? explanation[2] : '격을 이루는 조건이 깨진 것으로 판정됐습니다.',basis:reasons.join(' / '),source:'자평진전'};
-    const conclusion=explanation ? explanation[1] : condition.title;
-    const conclusionDetail=[condition.text,...matched.slice(1).map(row=>row[2])].filter((x,i,a)=>x&&a.indexOf(x)===i).join(' ');
+    // COPY-0030: 같은 판정 재료를 첫 결론·이유·종합에서 서로 다른 역할로 읽는다.
+    const focusWords={정관:'맡은 책임',편관:'거센 요구에 맞서는 힘',정재:'꾸준한 수입과 살림',편재:'사람과 기회로 넓히는 돈벌이',정인:'배움과 도움',편인:'깊이 파고드는 공부',식신:'꾸준히 만드는 힘',상관:'표현과 재주',건록:'스스로 해내는 힘',양인:'경쟁에 맞서는 힘'};
+    const focus=focusWords[type]||'타고난 성향';
+    const oldPraise=portrait?.[1]||signature?.lead.title;
+    if(explanation){
+      identity.line='이유는 사주에 있습니다. '+explanation[2];
+      if(portrait) identity.line=(state?.값==='깨졌다'||state?.값==='띠었다'?'이 이름만으로 강점이 온전히 작동한다고 보지는 않습니다. ':'')+identity.line;
+    }else identity.line=typeLines[type]||'아래에서 해당하는 조건과 그 이유를 함께 읽습니다.';
+    // 조건별 칭찬은 해당 필터에서 읽고, 여기서는 격의 작동 조건과 구분한다.
+    condition.text=oldPraise?'옛 책이 좋게 본 개별 조건과, '+focus+'의 작동 조건을 함께 봅니다. 좋은 대목 하나가 다른 걸림을 없애지는 않습니다.':'이 사주의 중심은 '+focus+'입니다. 아래의 구성 풀이에서 그 힘을 받치거나 막는 글자를 확인할 수 있습니다.';
+    if(caution) caution={...caution,text:state?.값==='깨졌다'?'좋게 본 다른 조건이 있어도, 이 사주의 격을 이루는 조건은 깨진 것으로 판정됐습니다. 강점을 쓰는 바탕에 걸림이 남아 있습니다.':state?.값==='띠었다'?'격에 남은 흠을 함께 읽어야 합니다. 좋은 조건의 수가 많아도 이 흠이 없어지는 것은 아닙니다.':caution.text};
+    const conclusion=focus+' — '+(caution?'강점과 걸림을 함께 읽는 구성':'강점이 힘을 얻는 구성');
+    const conclusionDetail=[
+      '타고난 중심은 '+focus+'입니다.',
+      explanation?'이를 실제로 쓰는 구조는 다음과 같습니다. '+explanation[3]:condition.title,
+      signature?'여기에 「'+signature.lead.name+'」의 조건도 겹칩니다. '+(state?.값==='깨졌다'||state?.값==='띠었다'?'이 대목을 좋게 읽어도 앞서 본 걸림까지 해결된 것은 아닙니다.':'그 뜻과 성립 범위는 위의 해당 구절까지 함께 읽습니다.'):'',
+      ...matched.slice(1).map(row=>row[2]),
+      season?.blocked?'계절에 필요한 기운과 함께 잡힌 경계 조건도 이 구조의 제약으로 남습니다.':''
+    ].filter(Boolean).join(' ');
     return {...m,identity,distinct:{signature:signature ? {name:portrait?.[2]||signature.lead.name,line:portrait?.[1]||signature.lead.title,book:signature.lead.book,key:signature.lead.key} : null,condition,caution,unmappedReasons:reasons.filter(reason=>!reason.includes('깨는 조항이 없다')&&!exactMechanisms.some(row=>row[0]===reason)&&!mechanisms.some(row=>row[0].test(reason)))},filterStory:{...m.filterStory,filters,readingGroups:groups,conclusion,conclusionDetail}};
   }
   root.ChaeksaJeongtongDistinct={apply};
