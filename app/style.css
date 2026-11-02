@@ -1554,3 +1554,12 @@ html[data-boot="landing"] #nav{display:grid!important}
 /* 11-02 정통 시리즈 맨 아래 → 세 관점(to-three.js) */
 .to-three{max-width:600px;margin:36px auto 8px;padding:24px 16px 0;border-top:1px solid var(--line2);text-align:center}
 .to-three-say{margin:0 0 12px;color:var(--ink2);line-height:1.6}
+/* 11-03 무료 풀이 맨 아래 → 내게 맞는 일과 돈(to-paid.js) */
+.to-paid{max-width:600px;margin:20px auto 8px;padding:0 16px;display:grid;gap:10px}
+.to-paid-card{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;padding:12px;border:1px solid var(--line2);border-radius:14px;background:var(--bg2);color:var(--ink);text-decoration:none}
+.to-paid-img{width:96px;height:96px;object-fit:cover;border-radius:10px}
+.to-paid-body{display:grid;gap:4px;min-width:0}
+.to-paid-name{font-size:1.05rem}
+.to-paid-line{color:var(--ink2);line-height:1.5}
+.to-paid-tag{color:var(--accent);font-size:.9rem}
+.to-paid-sample{justify-self:center;color:var(--ink2);font-size:.92rem}
