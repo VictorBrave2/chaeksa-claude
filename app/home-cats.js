@@ -26,7 +26,7 @@
       { 키: 'myeongban', 주소: 'myeongban.html', 그림: 'art/menu-guides-v1/myeongban.webp', 작은: 'art/menu-guides-v1/myeongban-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       // 「왜 내게만 이런 일이 일어날까?」는 킹의 표지로 고정한다.
       { 키: 'why', 탭: 'why', 그림: 'art/menu-guides-v1/why.webp', 작은: 'art/menu-guides-v1/why-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
-      // 「내 물음에 답하는 세 점」은 퀸의 표지로 고정한다. 이름·한 줄은 장부에서 받는다.
+      // 「SSS급 미래 관측」(11-02 사장님 이름 · 옛 「내 물음에 답하는 세 점」)은 퀸의 표지로 고정한다. 이름·한 줄은 장부에서 받는다.
       { 키: 'three', 탭: 'three', 그림: 'art/menu-guides-v1/three.webp', 작은: 'art/menu-guides-v1/three-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
       // 11-02 정통타로(사장님 「타로를 정통타로로 빼고 + 3관점으로 연결」) — 표지 IMG-0139(남신 · 켈틱 열 장).
       { 키: 'tarot', 탭: 'tarot', 그림: 'art/menu-guides-v1/tarot.webp', 작은: 'art/menu-guides-v1/tarot-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
@@ -75,7 +75,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1581';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1582';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
