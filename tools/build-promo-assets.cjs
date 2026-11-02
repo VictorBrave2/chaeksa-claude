@@ -1,6 +1,7 @@
 'use strict';
 // node tools/build-promo-assets.cjs <bundled node_modules> [private jt-pyo API path]
 // node tools/build-promo-assets.cjs <bundled node_modules> --taekil-delivery-only
+// node tools/build-promo-assets.cjs <bundled node_modules> --taekil-candidates-only
 // Public output contains only authored product copy and fictional examples.
 const fs=require('fs'),path=require('path');
 const ws=path.resolve(__dirname,'..'),modules=process.argv[2];
@@ -10,31 +11,41 @@ const sharp=require(path.join(modules,'sharp')),Zip=require(path.join(modules,'j
 const art=require(path.join(ws,'app/promo-art.js'));
 const target=path.join(ws,'app/promos/taekil-report'),jtTarget=path.join(ws,'app/promos/jeongtong');
 const deliveryOnly=process.argv.includes('--taekil-delivery-only');
+const candidatesOnly=process.argv.includes('--taekil-candidates-only');
+if(deliveryOnly&&candidatesOnly)throw new Error('Choose one taekil-only update mode.');
+const partialTaekil=deliveryOnly||candidatesOnly;
 const write=(file,data)=>fs.writeFileSync(file,data);
 async function main(){
- fs.mkdirSync(target,{recursive:true});if(!deliveryOnly)fs.mkdirSync(jtTarget,{recursive:true});
- const images=deliveryOnly?{}:{offer:await loadImage(path.join(ws,'app/art/taekil-advisor-offer-v1.webp'))};
- const zip=new Zip(),sheet=createCanvas(1080,940),s=sheet.getContext('2d');s.fillStyle='#e9e1d2';s.fillRect(0,0,1080,940);
+ fs.mkdirSync(target,{recursive:true});if(!partialTaekil)fs.mkdirSync(jtTarget,{recursive:true});
+ const images=partialTaekil?{}:{offer:await loadImage(path.join(ws,'app/art/taekil-advisor-offer-v1.webp'))};
+ const zip=candidatesOnly?await Zip.loadAsync(fs.readFileSync(path.join(target,'chaeksa-taekil-promo.zip'))):new Zip();
+ const sheet=createCanvas(1080,940),s=sheet.getContext('2d');s.fillStyle='#e9e1d2';s.fillRect(0,0,1080,940);
  for(let i=0;i<art.slides.length;i++){
   const n=String(i+1).padStart(2,'0');let png,preview;
-  if(deliveryOnly&&i!==5){
-   // Keep the approved 01–05 artwork byte-for-byte; never redraw the old cover.
+  if(partialTaekil&&i!==(candidatesOnly?3:5)){
+   // Reuse approved artwork bytes, including the separate slide 06 delivery update.
    png=fs.readFileSync(path.join(target,n+'.png'));preview=await loadImage(png);
   }else{
    const canvas=createCanvas(art.W,art.H);art.drawTaekil(canvas,i,images);png=canvas.toBuffer('image/png');preview=canvas;
    write(path.join(target,n+'.png'),png);write(path.join(target,n+'.webp'),await sharp(png).webp({quality:88}).toBuffer());
   }
-  zip.file(n+'.png',png);s.drawImage(preview,18+(i%3)*354,18+Math.floor(i/3)*460,336,420);
+  if(!candidatesOnly||i===3){zip.file(n+'.png',png);if(candidatesOnly&&zip.file(n+'.webp'))zip.file(n+'.webp',fs.readFileSync(path.join(target,n+'.webp')));}
+  s.drawImage(preview,18+(i%3)*354,18+Math.floor(i/3)*460,336,420);
  }
- const allCopy=fs.readFileSync(path.join(ws,'copy-requests/COPY-0018-promotion-captions.md'),'utf8');
- const captions=allCopy.slice(allCopy.indexOf('## 출산택일'),allCopy.indexOf('## 정통사주')).trim()+'\n';
- const jtCopy=allCopy.slice(allCopy.indexOf('## 정통사주'),allCopy.indexOf('## 게시 파일')).trim()+'\n';
- write(path.join(target,'게시글.txt'),captions);zip.file('게시글.txt',captions);zip.file('읽어주세요.txt','책사 출산택일 소개 이미지 6장 · 1080×1350\r\n01~06 순서로 게시하세요. 날짜는 가상 가족 견본입니다.\r\n전체 견본 https://chaeksa.kr/taekil-sample.html?from=promo-taekil-post\r\n최초 제작: 2026-10-26 · 가격·제공 조건 갱신: 2026-11-03. 변경 시 이미지도 다시 제작하세요.\r\n');
+ let jtCopy='';
+ if(!candidatesOnly){
+  const allCopy=fs.readFileSync(path.join(ws,'copy-requests/COPY-0018-promotion-captions.md'),'utf8');
+  const captions=allCopy.slice(allCopy.indexOf('## 출산택일'),allCopy.indexOf('## 정통사주')).trim()+'\n';
+  jtCopy=allCopy.slice(allCopy.indexOf('## 정통사주'),allCopy.indexOf('## 게시 파일')).trim()+'\n';
+  write(path.join(target,'게시글.txt'),captions);zip.file('게시글.txt',captions);zip.file('읽어주세요.txt','책사 출산택일 소개 이미지 6장 · 1080×1350\r\n01~06 순서로 게시하세요. 날짜는 가상 가족 견본입니다.\r\n전체 견본 https://chaeksa.kr/taekil-sample.html?from=promo-taekil-post\r\n최초 제작: 2026-10-26 · 가격·제공 조건 갱신: 2026-11-03. 변경 시 이미지도 다시 제작하세요.\r\n');
+ }
  write(path.join(target,'chaeksa-taekil-promo.zip'),await zip.generateAsync({type:'nodebuffer',compression:'DEFLATE',compressionOptions:{level:6}}));
  write(path.join(target,'overview.jpg'),await sharp(sheet.toBuffer('image/png')).jpeg({quality:90}).toBuffer());
  const manifestPath=path.join(target,'manifest.json');
  const previous=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath,'utf8')):{};
- write(manifestPath,JSON.stringify({...previous,created:previous.created||'2026-10-26',updated:'2026-11-03',width:art.W,height:art.H,slides:art.slides,source:'https://chaeksa.kr/taekil-sample.html',note:'가상 가족 견본 · 실제 고객 기록 없음'},null,2)+'\n');
+ const slides=candidatesOnly?previous.slides.map((slide,i)=>i===3?{...slide,...art.slides[3]}:slide):art.slides;
+ write(manifestPath,JSON.stringify({...previous,created:previous.created||'2026-10-26',updated:'2026-11-03',width:art.W,height:art.H,slides,source:'https://chaeksa.kr/taekil-sample.html',note:'가상 가족 견본 · 실제 고객 기록 없음'},null,2)+'\n');
+ if(candidatesOnly){console.log('Updated taekil slide 04, ZIP, overview, and manifest; reused 01–03, 05–06, and existing captions unchanged.');return;}
  if(deliveryOnly){console.log('Updated taekil slide 06, captions, ZIP, overview, and manifest; reused 01–05 unchanged.');return;}
  const og=createCanvas(1200,630),g=og.getContext('2d');g.fillStyle='#f8f5ed';g.fillRect(0,0,1200,630);g.drawImage(images.offer,650,0,945,630);g.fillStyle='#f8f5ed';g.fillRect(0,0,650,630);g.fillStyle='#88651f';g.font='400 26px "Noto Sans KR"';g.fillText('책사 · 출산택일 보고서',60,94);g.fillStyle='#2b261f';g.font='400 56px "Noto Serif KR"';['아이를 만날','가장 좋은','날과 시간.'].forEach((t,i)=>g.fillText(t,60,228+i*88));g.font='400 24px "Noto Sans KR"';g.fillStyle='#756b5c';g.fillText('첫 추천과 선정 이유 · 전체 견본 공개',60,548);
  write(path.join(ws,'app/cards/og/taekil-report-guide.jpg'),await sharp(og.toBuffer('image/png')).jpeg({quality:90}).toBuffer());

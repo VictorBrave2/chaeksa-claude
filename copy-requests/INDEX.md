@@ -32,4 +32,4 @@
 | COPY-0030 | 정통사주 · 자미두수 읽자마자 내 이야기로 — 첫 화면 결론과 이유만 · 거르개 세 층 · 전문용어 뜻 먼저 · 퍼센트 옆 한 줄 · 끝 종합 문장(사장님 11-02 수정전략) | 적용됨 | COPY-0030-read-as-my-story.md | codex/COPY-0030 |
 | COPY-0031 | 정통타로 홈 한 줄 · 입력 단추 · 첫 화면 제목과 물음 · 세 정통 맨 아래 세 관점 단추 위 한 줄 · 세 관점 새 이름 안 셋(적용 안 함) | 적용됨 | COPY-0031-jeongtong-tarot.md | codex/COPY-0031 |
 | 출산택일 자동 공개 안내 | 신청·결제·결과 상태·소개·검색 설명·홍보 6번 카드 제공시간 갱신 | 제안됨 | [전후·인계](ref/taekil-auto-release-copy.md) | codex/taekil-auto-release-copy |
-| COPY-0032 | 유료 둘 홍보 — 출산택일 4번 그림 날짜 고침 · 내게 맞는 일과 돈 홍보 6장 · 게시글 · 풀이 끝 한 줄(풀이끝말) · 견본 공유 카드 | 요청(11-03) | COPY-0032-paid-promo.md | codex/COPY-0032 |
+| COPY-0032 | 유료 둘 홍보 — 출산택일 4번 그림 날짜 고침 · 내게 맞는 일과 돈 홍보 6장 · 게시글 · 풀이 끝 한 줄(풀이끝말) · 견본 공유 카드 | 제안됨(11-03) | [주문서](COPY-0032-paid-promo.md) · [원고·근거](ref/COPY-0032-paid-promo-copy.md) · [완료 기록](ref/COPY-0032-paid-promo-completion.md) | codex/COPY-0032 |
