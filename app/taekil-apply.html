@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>출산택일 보고서 신청 · 책사</title>
-<meta name="description" content="이 페이지 신청서에 아는 만큼 적고 결제하시면, 후보 기간 전체를 모든 날 모든 시각으로 자동 계산하고 책사가 한 번 더 확인한 뒤 보통 2~3일 안에 「내 보고서」에서 보고서를 열어 드립니다.">
+<meta name="description" content="신청서를 적고 결제하시면, 출산 가능 기간의 모든 날과 시각을 비교한 보고서가 보통 몇 분 안에 「내 보고서」에서 열립니다.">
 <link rel="canonical" href="https://chaeksa.kr/taekil-apply.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="책사">
 <meta property="og:title" content="출산택일 보고서 신청">
-<meta property="og:description" content="이 페이지 신청서에 아는 만큼 적고 결제하시면, 후보 기간 전체를 모든 날 모든 시각으로 자동 계산하고 책사가 한 번 더 확인한 뒤 보통 2~3일 안에 「내 보고서」에서 보고서를 열어 드립니다.">
+<meta property="og:description" content="신청서를 적고 결제하시면, 출산 가능 기간의 모든 날과 시각을 비교한 보고서가 보통 몇 분 안에 「내 보고서」에서 열립니다.">
 <meta property="og:image" content="https://chaeksa.kr/cards/og/taekil-apply.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -62,13 +62,13 @@
   <h1>출산택일 보고서 신청</h1>
   <div class="gc-cut"><img src="art/content-tarot-v2/body/taekil-apply.webp" srcset="art/content-tarot-v2/body/taekil-apply-s.webp 360w, art/content-tarot-v2/body/taekil-apply.webp 1024w" sizes="(max-width: 600px) 100vw, 524px" alt="" width="1024" height="1536" fetchpriority="high"><div class="gc-bubble"><b>책사</b><span>병원에서 안내받은 출산 가능 날짜를 알려 주세요.</span></div></div>
   <!-- 세 걸음은 택일 탭 · taekil.html · 택일 비용 글과 같은 말이다(10-02 「켜는 날」 — 바깥 신청 폼을 걷고 사이트 신청서 → 결제 → 「내 보고서」 한 길).
-       처음 몇 건은 사장님이 확인한 뒤 내보낸다(app_flags.taekil_auto_release '0') — 「바로 열린다」고 적지 않는다. -->
-  <p class="lede" id="lede">의사가 정해 준 출산 가능 범위 안에서, 책사의 기준으로 가장 좋은 날과 시간을 골라 드려요. 아래 신청서를 적고 결제하세요. 자동으로 계산한 내용을 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요. 보통 2~3일 안이에요.</p>
+       2026-11-03 자동 공개 설정을 켰다는 사용자 확인에 따라 보통 몇 분 안으로 안내한다. 추가 확인 상태는 별도로 안내한다. -->
+  <p class="lede" id="lede">의사가 정해 준 출산 가능 범위 안에서, 책사의 기준으로 가장 좋은 날과 시간을 골라 드려요. 아래 신청서를 적고 결제하세요. 결제 후 보통 몇 분 안에 「내 보고서」에서 열어 볼 수 있어요. 추가 확인이 필요한 경우에는 더 걸릴 수 있어요.</p>
 
   <ol class="steps" id="steps">
     <li><b>① 신청서</b>이 페이지에서 아는 만큼 적기</li>
     <li><b>② 결제</b><span data-price="taekil">99,000원</span></li>
-    <li><b>③ 내 보고서</b>책사 확인 뒤 열림 · 보통 2~3일</li>
+    <li><b>③ 내 보고서</b>결제 후 보통 몇 분 안에 열림</li>
   </ol>
   <p class="loginmsg" id="loginMsg" role="alert" hidden></p>
 
@@ -325,7 +325,7 @@
             F.초안지움(); F.보냄기록(o.id, d); say('');
             // 10-02 자동 보고서 — 보고서는 메일이 아니라 「내 보고서」(그 주문의 보고서 쪽)에서 연다. 그 쪽이 아직 안 만든 주문이면 만들기를 부른다.
             var 쪽 = ChaeksaPay.taekil && ChaeksaPay.taekil.주소 ? ChaeksaPay.taekil.주소(o.id) : 'taekil.html';
-            box.innerHTML = '<b>고객님, 신청서가 접수됐습니다.</b> 적어 주신 조건에서 가장 좋은 날과 시간을 골라 책사가 한 번 더 확인한 뒤 「내 보고서」에서 보고서를 열어 드려요(보통 2~3일 안). '
+            box.innerHTML = '<b>고객님, 신청서가 접수됐습니다.</b> 적어 주신 조건으로 보고서를 만들어요. 보통 몇 분 안에 「내 보고서」에서 열어 볼 수 있어요. 추가 확인이 필요한 경우에는 더 걸릴 수 있어요. '
               + '<a href="' + esc(쪽) + '"><b>내 보고서로 가기 →</b></a>';
           } else say(F.이유(r), true);
         });

@@ -189,7 +189,7 @@
       if (st === 'no_intake') { 신청서없음(); return; }
       if (st === 'canceled') { 그림(상자('환불된 주문이에요', [T.상태말.canceled])); return; }
       // checking — 확인 중(사장님 확인 대기 · 막힘 · 만들 횟수를 다 씀)
-      그림(상자('책사가 한 번 더 확인하고 있어요', [T.상태말.checking, '확인이 끝나면 이 주소와 출산택일 쪽 「내 보고서」에서 열려요.'], '<a class="btn ghost" href="taekil.html">출산택일로 가기</a>'));
+      그림(상자('보고서에 추가 확인이 필요해요', [T.상태말.checking, '확인이 끝나면 이 주소와 출산택일 쪽 「내 보고서」에서 열려요.'], '<a class="btn ghost" href="taekil.html">출산택일로 가기</a>'));
     });
   }
   불러오기();
