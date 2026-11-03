@@ -31,6 +31,56 @@ details.fold{margin:var(--s2) 0}details.fold>summary{font-size:var(--t2);color:v
 .tkr-banner{font-size:var(--t1);line-height:1.7;color:var(--ink3);margin:0 0 10px;padding:8px 12px;border:1px dashed var(--line2);border-radius:var(--r2)}
 .tkr-state .btn{margin-top:10px}
 .foot{font-size:var(--t1);color:var(--ink3);line-height:1.8;margin-top:var(--s4)}.foot a{color:var(--ink3)}
+/* 11-03 여는 의식 — 섞기 → 부채꼴 77장에서 열 장 → 만드는 중 → 열림(sss-report.js). 부채꼴 꼴은 정통타로(three.css .three-fan)와 같다. */
+.sss-rite{display:flex;flex-direction:column;align-items:center;gap:12px;margin:var(--s2) 0;padding:18px 12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);box-shadow:var(--shadow);text-align:center}
+.sss-rite-say{margin:0;font-size:var(--t3);line-height:1.75;color:var(--ink);word-break:keep-all;max-width:34em}
+.sss-rite .hint{margin:0}
+.sss-rite-btn{min-width:140px}
+.sss-pile{position:relative;width:84px;aspect-ratio:7/12;cursor:pointer}
+.sss-pile span{position:absolute;inset:0;border:1px solid var(--line2);border-radius:6px;background:var(--bg2) url(art/tarot/chaeksa-v1/back-s.webp) center/cover no-repeat;box-shadow:-1px 1px 0 var(--line)}
+.sss-pile span:nth-child(1){transform:translate(-4px,4px)}.sss-pile span:nth-child(2){transform:translate(-2px,2px)}
+.sss-pile.is-shuffle span:nth-child(1){animation:sssRiffleL .9s ease-in-out}.sss-pile.is-shuffle span:nth-child(3){animation:sssRiffleR .9s ease-in-out}
+@keyframes sssRiffleL{0%,100%{transform:translate(-4px,4px)}40%{transform:translate(-46px,0) rotate(-8deg)}}
+@keyframes sssRiffleR{0%,100%{transform:none}40%{transform:translate(46px,0) rotate(8deg)}}
+.sss-count{margin:0;font-size:var(--t2);color:var(--ink3);font-variant-numeric:tabular-nums}.sss-count b{color:var(--accent);font-size:var(--t4)}
+.sss-slots{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;width:100%;max-width:420px}
+.sss-slot{aspect-ratio:7/12;border:1px dashed var(--line2);border-radius:4px}
+.sss-slot.is-on{border:1px solid var(--line2);background:var(--bg2) url(art/tarot/chaeksa-v1/back-s.webp) center/cover no-repeat}
+.sss-slot.is-arrive{animation:sssArrive .45s cubic-bezier(.2,.75,.25,1)}
+.sss-slot.is-next{border-color:var(--accent);animation:sssBlink 1.2s ease-in-out infinite}
+@keyframes sssArrive{from{transform:translateY(60px) scale(.8);opacity:0}to{transform:none;opacity:1}}
+@keyframes sssBlink{50%{opacity:.4}}
+.is-making .sss-slot{animation:sssBreath 1.6s ease-in-out infinite;animation-delay:calc(var(--k,0) * 1ms)}
+.is-making .sss-slot:nth-child(even){animation-delay:.4s}
+@keyframes sssBreath{50%{transform:translateY(-4px);filter:brightness(1.15)}}
+.sss-steps{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;text-align:left}
+.sss-steps li{font-size:var(--t2);color:var(--ink3);opacity:.35;transition:opacity .3s,color .3s;padding-left:22px;position:relative}
+.sss-steps li::before{content:'';position:absolute;left:4px;top:.55em;width:8px;height:8px;border-radius:50%;border:1px solid var(--line2)}
+.sss-steps li.is-on{opacity:1;color:var(--ink)}.sss-steps li.is-on::before{border-color:var(--accent);animation:sssBlink .9s ease-in-out infinite}
+.sss-steps li.is-done::before{background:var(--accent);border-color:var(--accent);animation:none}
+.sss-fan{--fw:clamp(38px,11vw,50px);--fr:clamp(150px,44vw,230px);position:relative;width:100%;height:calc(22px + var(--fr) * .36 + var(--fw) * 1.5);max-width:100%;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.sss-fan-card{position:absolute;left:50%;top:18px;width:var(--fw);aspect-ratio:7/12;margin:0 0 0 calc(var(--fw) / -2);padding:0;border:1px solid var(--line2);border-radius:4px;background:var(--bg2) url(art/tarot/chaeksa-v1/back-s.webp) center/cover no-repeat;box-shadow:-1px 1px 0 var(--line);transform-origin:50% var(--fr);transform:rotate(calc(var(--a,0) * 1deg));cursor:pointer;transition:transform .14s ease}
+@media(hover:hover){.sss-fan-card:hover{transform:rotate(calc(var(--a,0) * 1deg)) translateY(-14px)}}
+.sss-fan-card:active,.sss-fan-card:focus-visible{transform:rotate(calc(var(--a,0) * 1deg)) translateY(-14px)}
+.sss-fan-card:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sss-fan.is-spread .sss-fan-card{animation:sssFanIn .75s cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--k,0) * 4ms)}
+@keyframes sssFanIn{from{opacity:0;transform:rotate(0deg)}25%{opacity:1}to{opacity:1;transform:rotate(calc(var(--a,0) * 1deg))}}
+/* 열림 — 명식 글자 한 자씩 · 열 장 차례로 뒤집힘 · 24칸 떠오름 */
+.sss-ch{display:inline-block;animation:sssCh .5s cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--i,0) * 70ms + 200ms)}
+@keyframes sssCh{from{opacity:0;transform:translateY(-10px) scale(1.6);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+.sss-cards{margin:var(--s2) 0}.sss-cards-head{margin:0 2px 8px;font-size:var(--t2);color:var(--ink2)}
+.sss-cards-row{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+.sss-card{position:relative;aspect-ratio:7/12;perspective:600px}
+.sss-card-face,.sss-card-back{position:absolute;inset:0;border-radius:4px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.sss-card-face img{display:block;width:100%;height:100%;object-fit:cover}.sss-card-face img.is-rev{transform:rotate(180deg)}
+.sss-card-back{border:1px solid var(--line2);background:var(--bg2) url(art/tarot/chaeksa-v1/back-s.webp) center/cover no-repeat;transform:rotateY(180deg)}
+.sss-cards.is-open .sss-card-face{animation:sssFlipF .6s ease both;animation-delay:calc(var(--d) + var(--k) * 180ms)}
+.sss-cards.is-open .sss-card-back{animation:sssFlipB .6s ease both;animation-delay:calc(var(--d) + var(--k) * 180ms)}
+@keyframes sssFlipF{from{transform:rotateY(-180deg)}to{transform:rotateY(0)}}
+@keyframes sssFlipB{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}
+.sss-v.sss-rise{animation:sssRise .7s cubic-bezier(.2,.75,.25,1) both;animation-delay:var(--r,0ms)}
+@keyframes sssRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.sss-ch,.sss-slot,.sss-fan-card,.sss-pile span,.sss-steps li::before,.sss-card-face,.sss-card-back,.sss-v.sss-rise{animation:none!important}}
 </style>
 </head>
 <body>
@@ -47,11 +97,11 @@ details.fold{margin:var(--s2) 0}details.fold>summary{font-size:var(--t2);color:v
 <script src="track.js?v=6dba667933"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=18bd3724a0"></script>
+<script src="pay.js?v=bb5aacf731"></script>
 <script src="gunghap-pyo-copy.js?v=3a30fb78fd"></script>
 <script src="zw-gunghap-pyo-copy.js?v=5a73d12d5c"></script>
 <script src="sss-gunghap-copy.js?v=6893b5d244"></script>
 <script src="sss-gunghap.js?v=e87fdb4fbb"></script>
-<script src="sss-report.js?v=7ce9ee07bb"></script>
+<script src="sss-report.js?v=383ef7911a"></script>
 </body>
 </html>

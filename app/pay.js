@@ -1254,13 +1254,15 @@
       return Array.isArray(j) ? j : null;
     },
     view: (orderId, 손님눈) => 택일함수('sss_view', { p_order: String(orderId || ''), p_as_customer: !!손님눈 }),
-    async make(id) {
+    async make(id, 고름) {   // 고름 = 손님이 부채꼴 77장에서 고른 자리 열(11-03 · 없으면 서버가 맨 위 열 장)
       const C = global.ChaeksaCloud;
       let tok = null;
       try { tok = C && C.token ? await C.token() : null; } catch (_) { tok = null; }
       if (!tok) return { ok: false, reason: 'login', message: '로그인해 주세요.' };
+      const 몸 = { orderId: String(id || '') };
+      if (Array.isArray(고름) && 고름.length === 10) 몸.고름 = 고름;
       try {
-        const r = await fetch(SSS_API, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok }, body: JSON.stringify({ orderId: String(id || '') }) });
+        const r = await fetch(SSS_API, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok }, body: JSON.stringify(몸) });
         const j = await r.json().catch(() => ({}));
         if (r.ok) return { ok: true, state: j.state || 'held' };
         return { ok: false, status: r.status, reason: j.reason || '', message: j.error || '잠시 뒤 다시 해 주세요.' };
