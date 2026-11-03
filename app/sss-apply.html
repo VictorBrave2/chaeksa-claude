@@ -6,9 +6,20 @@
 <title>SSS급 궁합 분석 신청 · 책사</title>
 <!-- 11-03 SSS급 궁합 분석(sss · 29,700원 · 결정함 117) 신청 쪽. 「내게 맞는 일과 돈」(ilgyeol-apply.html) · 결혼 전 궁합 점검(gyeolhon-apply.html) 신청 쪽을 본떴다.
      두 사람(나 · 함께 보는 사람 — 둘 다 태어난 시각 있어야) → 동의 두 칸 → 로그인 → 결제 → pay-done → sss-report.html?o=(결제하면 바로).
-     글은 새로 쓰지 않았다 — 이름 · 소개는 sss-gunghap-copy.js(COPY-0036), 두 사람 머리 · 오류는 gunghap-pyo-copy.js, 안내 · 동의 · 값 줄은 ilgyeol-apply.html · gyeolhon-apply.html 그대로(사람 수만 둘로). 다듬기는 COPY-0037.
-     홈 · 메뉴에 걸리기 전까지 검색에 안 올린다(noindex). 값(원)은 서버 상품표(code sss)에서 읽어 data-price 자리에 붙인다. -->
-<meta name="robots" content="noindex,follow">
+     신청 안내 · 동의 · 상태 글은 Codex COPY-0037. 본문 24관점은 COPY-0036 그대로.
+     COPY-0037 요청대로 검색 메타를 준비했다. 홈 · 메뉴 · 사이트맵 연결은 결제 시험 뒤 메인이 맡는다. 값(원)은 서버 상품표(code sss)에서 읽어 data-price 자리에 붙인다. -->
+<meta name="description" content="서로 끌리는 이유부터 다투는 지점까지, 두 사람의 관계를 24가지 질문으로 읽어요. 두 사람 모두 태어난 시각이 필요하며, 결제 후 카드 열 장을 고르면 보통 몇 초 안에 결과가 열려요.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://chaeksa.kr/sss-apply.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="책사">
+<meta property="og:title" content="SSS급 궁합 분석 신청 · 책사">
+<meta property="og:description" content="서로 끌리는 이유부터 다투는 지점까지, 두 사람의 관계를 24가지 질문으로 읽어요. 두 사람 모두 태어난 시각이 필요하며, 결제 후 카드 열 장을 고르면 보통 몇 초 안에 결과가 열려요.">
+<meta property="og:url" content="https://chaeksa.kr/sss-apply.html">
+<meta property="og:image" content="https://chaeksa.kr/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <script>document.documentElement.setAttribute('data-theme','day');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,38 +73,38 @@
 <div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
 <main class="doc">
   <h1>SSS급 궁합 분석</h1>
-  <p class="lede" id="lede">서로 끌리는 이유부터 자꾸 다투는 지점까지. 두 사람의 연애를 24가지 질문으로 읽어요.</p>
+  <p class="lede" id="lede">서로 끌리는 이유, 다툴 때 어긋나는 지점, 함께 살며 맞춰 갈 일까지. 우리 둘의 관계를 24가지 질문으로 읽어요. 결제 후 카드 열 장을 고르면 보통 몇 초 안에 결과가 열려요.</p>
   <p class="loginmsg" id="loginMsg" role="alert" hidden></p>
 
   <div class="sum">
-    <p><b>값</b> — <span data-price="sss">…</span>(부가세 포함). 처음 열어 보기 전에는 이유를 묻지 않고 전액 돌려드려요.
+    <p><b>결제 금액</b> — <span data-price="sss">…</span>(부가세 포함). 처음 열어 보기 전에는 이유를 묻지 않고 전액 돌려드려요.
       연 뒤에는 청약철회가 제한될 수 있어요. 만들지 못해도 전액 돌려드려요.</p>
-    <p><a href="sss-gunghap-sample.html">어떤 답이 나오는지 먼저 보기 →</a></p>
+    <p><a href="sss-gunghap-sample.html">지어낸 두 사람의 결과로 먼저 보기 →</a></p>
   </div>
   <div class="already" id="already" hidden></div>
 
   <form class="intake" id="apply" novalidate autocomplete="on">
-    <h2>신청서</h2>
-    <p class="lead">신청서에 적는 내용은 이 기기에 임시로 저장돼요. 로그인하고 돌아오셔도 그대로 남으니, 이어서 작성하세요.</p>
+    <h2>우리 둘의 이야기 시작하기</h2>
+    <p class="lead"><b>두 사람 모두 생년월일과 태어난 시각이 필요해요.</b> 한 사람이라도 시각을 모르면 이 분석은 신청할 수 없어요. 고른 사람은 이 기기에 임시로 저장돼요. 로그인하고 돌아와도 이어서 신청하세요.</p>
 
     <p class="sec" id="firstHead">나</p>
-    <p class="help">저장된 사람 목록에서 고르세요. 아직 없으면 「사람 추가」로 정보를 입력하세요. 생일이 음력이면 「음력」을 고르세요. 윤달에 태어났다면 「윤달이에요」에도 표시하세요. 보고서에서는 여기 적힌 이름으로 불러요.</p>
+    <p class="help">내 이름을 고르세요. 목록에 없다면 「사람 추가」를 눌러 생년월일, 태어난 시각, 성별과 태어난 곳을 입력하세요. 음력 생일은 「음력」을 고르고, 윤달이면 함께 표시해 주세요. 결과에서는 여기 적힌 이름으로 불러요.</p>
     <div id="firstWrap" data-slot="first"></div>
 
     <p class="sec" id="secondHead">함께 보는 사람</p>
-    <p class="help">위에서 고른 사람과 다른 사람을 골라야 해요. 같은 방법으로 저장된 사람 목록에서 고르거나 「사람 추가」로 정보를 입력하세요.</p>
+    <p class="help">궁합을 볼 상대를 고르세요. 목록에 없다면 「사람 추가」로 입력하세요. 상대의 태어난 시각도 꼭 확인해 주세요.</p>
     <div id="secondWrap" data-slot="second"></div>
 
-    <p class="hint">고르신 두 분의 생년월일시는 풀이를 만드는 데만 쓰고, 이 주문 기록과 함께 2년 동안 보관해요. 지워 달라고 하시면 바로 지워요.
+    <p class="hint">두 사람의 이름과 출생 정보는 주문 신청서에 저장돼 궁합 분석에 쓰여요. 결과는 결제한 계정에서 결제일부터 2년 동안 다시 열어 봐요. 다시 읽을 때는 홈 「설정」의 「내 결제」에서 열어 주세요.
       다른 사람의 생년월일은 그 사람의 동의를 받고 넣어 주세요.</p>
     <label class="agree" id="agreeDataRow">
       <input type="checkbox" id="agreeData">
-      <span>[필수] 고르신 두 분의 생년월일시 · 성별 · 태어난 곳을 풀이를 만드는 데만 쓰는 것에 동의합니다.
-        동의하지 않으시면 풀이를 만들 수 없습니다. (<a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)</span>
+      <span>[필수] 두 사람의 이름 · 생년월일시 · 성별 · 태어난 곳을 주문 신청서에 저장하고 궁합 분석과 결과 제공에 사용하는 것에 동의합니다.
+        동의하지 않으면 신청이 진행되지 않습니다. (<a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)</span>
     </label>
     <label class="agree" id="agreeRow">
       <input type="checkbox" id="agree">
-      <span>[필수] 풀이를 처음 열어 본 뒤에는 청약철회가 제한될 수 있다는 점에 동의합니다. 열어 보기 전에는 언제든,
+      <span>[필수] 궁합 분석 결과를 처음 열어 본 뒤에는 청약철회가 제한될 수 있다는 점에 동의합니다. 열어 보기 전에는 언제든,
         만들지 못해도 전액 환불됩니다. (<a href="terms.html#refund" target="_blank" rel="noopener">환불 규정</a>)</span>
     </label>
     <div id="pvPick"></div><!-- 결제 수단 칸(결제사가 둘 이상일 때만 pay.js 결제사칸이 채운다) -->
@@ -101,8 +112,7 @@
     <!-- 결제가 아직 열리지 않았을 때(pay.js 곧열림 — 운영이면 저절로 안 뜬다) 결제 단추 밑에 이 자리가 보인다 -->
     <div class="already" id="soonPay" hidden></div>
     <p class="msg" id="msg" role="alert"></p>
-    <p class="hint" id="whyLogin" hidden>결제하려면 카카오 또는 네이버 로그인이 한 번 필요해요 — 구매 내역을 그 계정에
-      저장하기 때문이에요. 적으신 내용과 동의는 그대로 남아요.</p>
+    <p class="hint" id="whyLogin" hidden>결제한 계정에 두 사람의 결과를 보관해요. 카카오 또는 네이버로 로그인해 주세요. 고른 사람과 동의한 내용은 로그인 뒤에도 이어져요.</p>
   </form>
 
   <div class="fine">
@@ -140,7 +150,7 @@
       <input id="gaH" type="number" aria-label="태어난 시" placeholder="시 (0~23)" min="0" max="23" inputmode="numeric">
       <input id="gaMi" type="number" aria-label="태어난 분" placeholder="분" min="0" max="59" inputmode="numeric">
     </div>
-    <div class="check"><input type="checkbox" id="gaNoTime"><label for="gaNoTime" style="margin:0">시간 모름</label></div>
+    <div class="check"><input type="checkbox" id="gaNoTime"><label for="gaNoTime" style="margin:0">시간 모름 — 이 분석은 신청 불가</label></div>
     <label for="gaG">성별</label>
     <select id="gaG"><option value="M">남성</option><option value="F">여성</option></select>
     <label for="gaPlace">태어난 곳</label>
@@ -156,13 +166,13 @@
 <script src="track.js?v=6dba667933"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=9c4d39b6d0"></script>
+<script src="pay.js?v=bb5aacf731"></script>
 <script src="people.js?v=608bb7b89c"></script>
 <script src="places.js?v=1350b96148"></script>
 <script src="astro.js?v=c0bb3fa175"></script>
 <script src="lunar.js?v=9d5b6391f1"></script>
 <script src="gunghap-pyo-copy.js?v=3a30fb78fd"></script>
 <script src="sss-gunghap-copy.js?v=6893b5d244"></script>
-<script src="sss-apply.js?v=8870665731"></script>
+<script src="sss-apply.js?v=d75ddf2062"></script>
 </body>
 </html>
