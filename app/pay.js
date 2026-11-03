@@ -1245,7 +1245,7 @@
   };
 
   // ── SSS급 궁합 분석(sss · 11-03 · 29,700원) — 「나는 뭐해 먹고 살까?」와 같은 길. DB 함수 server/migrate-42(sss_take · _save · my_sss · sss_view · sss_admin_*).
-  //    보관하는 것은 계산 결과 JSON — 결과 쪽(sss-report.html)이 sss-gunghap.js 그리기로 그린다. 상태말은 ilgyeol 것을 그대로 쓴다.
+  //    보관하는 것은 계산 결과 JSON — 결과 쪽(sss-report.html)이 sss-gunghap.js 그리기로 그린다. 상태말은 SSS 전용 글(COPY-0037)을 쓴다.
   const sss = {
     async mine() {
       const C = global.ChaeksaCloud;
@@ -1273,7 +1273,14 @@
     adminRedo: (id) => 택일함수('sss_admin_redo', { p_order: id }),
     adminNote: (id, note) => 택일함수('sss_admin_note', { p_order: id, p_note: note || '' }),
     adminAuto: (on) => 택일함수('sss_admin_auto', { p_on: on == null ? null : !!on }),
-    상태말: ilgyeol.상태말,
+    상태말: {
+      todo: '결제가 확인됐어요. 두 사람의 궁합 분석을 시작해요.',
+      no_intake: '결제는 확인됐지만 두 사람의 신청 정보를 찾지 못했어요.',
+      making: '두 사람의 정보를 계산해 24가지 질문의 답을 준비하고 있어요. 보통 몇 초 걸려요.',
+      checking: '결과를 열기 전에 확인할 내용이 있어요. 책사가 확인을 마치면 궁합 분석 결과가 열려요.',
+      ready: '두 사람의 궁합 분석 결과가 열렸어요.',
+      canceled: '이 주문은 환불되어 궁합 분석 결과가 닫혔어요.',
+    },
     주소: (id) => 'sss-report.html?o=' + encodeURIComponent(String(id || '')),
   };
 

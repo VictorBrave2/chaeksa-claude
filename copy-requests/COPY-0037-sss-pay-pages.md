@@ -39,3 +39,5 @@
 ## 기록
 
 - 2026-11-03 요청 — Claude Code(결제 길: 공개 server/migrate-42-sss-product.sql · api/pay.js · pay.js sss · 비공개 core api/sss-report · lib/sss-report.js)
+
+- 2026-11-03 Codex 제안 — 신청·로그인·결제 직후·결과 상태와 장부 문구 작성, 출생 시각 필수·몇 초·정확한 재진입 경로 안내. 신청 쪽 검색·공유 메타 추가, 개인 결과는 검색 제외 유지. 원고·검사·메인 인계: [COPY-0037 원고](ref/COPY-0037-sss-pay-pages-copy.md). 가지 `codex/COPY-0037`, main 합치기 대기.

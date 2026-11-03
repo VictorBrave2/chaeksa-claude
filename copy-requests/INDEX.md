@@ -37,4 +37,4 @@
 | COPY-0034 | 정통 자미두수 궁합 — 필터 일곱과 화면 글52칸 · 검색·공유 메타 | 제안됨(11-03) | [주문서](COPY-0034-ziwei-gunghap.md) · [원고 전체·인계](ref/COPY-0034-ziwei-gunghap-copy.md) | codex/COPY-0034 |
 | COPY-0035 | 정통 타로 궁합 — 필터 아홉의 이름 · 결과 이름 · 한 줄, 화면 글 | 제안됨(11-03) | [주문서](COPY-0035-tarot-gunghap.md) · [원고·인계](ref/COPY-0035-tarot-gunghap-copy.md) | codex/COPY-0035 |
 | COPY-0036 | SSS급 궁합 분석 — 24관점 화면 글(대중적인 감성 · 29,700원) | 제안됨(11-03) | [주문서](COPY-0036-sss-gunghap.md) · [원고·인계](ref/COPY-0036-sss-gunghap-copy.md) | codex/COPY-0036 |
-| COPY-0037 | SSS급 궁합 분석 — 신청 쪽 · 결과 쪽 · 장부 줄 글 다듬기 | 제안됨(11-03) | [주문서](COPY-0037-sss-pay-pages.md) | codex/COPY-0037 |
+| COPY-0037 | SSS급 궁합 분석 — 신청 쪽 · 결과 쪽 · 장부 줄 글 다듬기 | 제안됨(11-03) | [주문서](COPY-0037-sss-pay-pages.md) · [원고·검사·인계](ref/COPY-0037-sss-pay-pages-copy.md) | codex/COPY-0037 |
