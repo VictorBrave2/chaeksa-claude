@@ -36,3 +36,4 @@
 | COPY-0033 | 정통 사주 궁합 — 필터 열한 개의 이름 · 결과 이름 · 한 줄, 화면 글67칸 | 제안됨(11-03) | [주문서](COPY-0033-jeongtong-gunghap.md) · [원고 전체·인계](ref/COPY-0033-jeongtong-gunghap-copy.md) | codex/COPY-0033 |
 | COPY-0034 | 정통 자미두수 궁합 — 필터 일곱과 화면 글52칸 · 검색·공유 메타 | 제안됨(11-03) | [주문서](COPY-0034-ziwei-gunghap.md) · [원고 전체·인계](ref/COPY-0034-ziwei-gunghap-copy.md) | codex/COPY-0034 |
 | COPY-0035 | 정통 타로 궁합 — 필터 아홉의 이름 · 결과 이름 · 한 줄, 화면 글 | 제안됨(11-03) | [주문서](COPY-0035-tarot-gunghap.md) · [원고·인계](ref/COPY-0035-tarot-gunghap-copy.md) | codex/COPY-0035 |
+| COPY-0036 | SSS급 궁합 분석 — 24관점 화면 글(대중적인 감성 · 29,700원) | 요청(11-03) | [주문서](COPY-0036-sss-gunghap.md) | codex/COPY-0036 |
