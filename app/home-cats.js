@@ -1,4 +1,4 @@
-/* DES-0007 — 홈에는 목적별 입구 네 칸, #all에는 기존 콘텐츠 전체.
+/* 홈 메뉴판 — 처음 홈(#landing)과 다시 온 손님 홈(탭 home) 둘 다 [data-home-cats] → 그리기(11-03부터 같은 판). #all 탭은 [data-home-catalog] → 전체그리기(모든 콘텐츠).
  * 이름·가격은 상품 약속 장부, 입력·결과는 기존 책사들어가기 경로를 쓴다.
  * 표지·묶음·장길 API는 다른 화면에서도 사용하므로 유지한다. */
 (function (global) {
@@ -78,7 +78,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1612';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1613';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -118,7 +118,8 @@
     Object.keys(칸).some(function (분류) { return 칸[분류].some(function (c) { if (c.키 !== 키) return false; out = { b: { 키: 분류 }, c: c }; return true; }); });
     return out;
   }
-  // 처음 방문은 정통 풀이 두 칸 + 오늘의 운세(10-29 사장님 「홈 첫 화면에도 오늘의 운세 칸 올려줘」 — 셋째 칸은 두 칸 너비로 눕는다, style.css .home-doors)와 목적별 입구. 재방문 홈은 전체 목록.
+  // 홈 메뉴판 — 처음 홈 · 다시 온 손님 홈이 같이 쓴다(11-03 사장님 「메뉴 갈무리 다시 해달라했는데 피씨환경이라그런가? 안바꼈네」 — 다시 온 손님 홈이 전체 목록이라 11-02 정리가 안 보였다).
+  // 칸이 홀수인 줄은 마지막 칸이 두 칸 너비로 눕는다(style.css .home-doors). 전체 목록은 #all 탭(전체그리기).
   function 그리기(el) {
     if (!el) return;
     var Y = global.ChaeksaYaksok, g = 성별();
@@ -127,15 +128,22 @@
       var x = 찾기(key);
       return 그림칸(x.b, x.c, i, i, g, Y);
     }).join('');
+    // 11-03 사장님 궁합 네 줄(정통 사주 궁합 · 정통 자미두수 궁합 · 정통 타로 궁합 · SSS급 궁합 분석) — 나를 알아보기 바로 아래 「궁합」 줄(결정함 123).
+    //   SSS급 궁합 분석은 시험 결제가 끝나면 이 줄 넷째 칸으로 넣는다(유료 줄이 아니라 같은 궁합끼리 — 값은 딱지가 말한다). 그 전엔 칸 표에 sss 가 없다.
+    var 궁합 = ['ghpyo', 'zwghpyo', 'tarotghpyo'].map(function (key, i) {
+      var x = 찾기(key);
+      return 그림칸(x.b, x.c, i, 4 + i, g, Y);
+    }).join('');
     var 유료 = [['taekil', '아기 태어날 날과 시간', '가능한 범위에서 가장 좋은 시간을 골라 드려요'], ['ilgyeol']].map(function (r, i) {
       var x = 찾기(r[0]);
-      return 그림칸(x.b, Object.assign({}, x.c, r[1] ? { 표시명: r[1], 설명: r[2] } : {}), i, 4 + i, g, Y);
+      return 그림칸(x.b, Object.assign({}, x.c, r[1] ? { 표시명: r[1], 설명: r[2] } : {}), i, 7 + i, g, Y);
     }).join('');
     var 무료 = ['today', 'why', 'when', 'ssom', 'saram', 'read'].map(function (key, i) {
       var x = 찾기(key);
-      return 그림칸(x.b, Object.assign({}, x.c, { 목록: true }), i, 6 + i, g, Y);
+      return 그림칸(x.b, Object.assign({}, x.c, { 목록: true }), i, 9 + i, g, Y);
     }).join('');
     el.innerHTML = '<section class="home-paths" aria-label="나를 알아보기"><h2>나를 알아보기</h2><div class="cats home-doors">' + 정통 + '</div></section>'
+      + '<section class="home-paths" aria-label="궁합"><h2>궁합</h2><div class="cats home-doors">' + 궁합 + '</div></section>'
       + '<section class="home-paths" aria-label="유료"><h2>유료</h2><div class="cats home-doors">' + 유료 + '</div></section>'
       + '<section class="home-paths" aria-label="무료"><h2>무료</h2><div class="catalog-list">' + 무료 + '</div>'
       + '<a class="home-all-link" href="#all">전체 보기 <span aria-hidden="true">→</span></a></section>';
