@@ -33,6 +33,8 @@ Disallow: /gyeolhon-admin
 Disallow: /ilgyeol-admin
 # 일결 보고서 — 앞부분 맞춤(.html 없는 주소까지). ilgyeol-report 로 시작하는 다른 파일은 없다.
 Disallow: /ilgyeol-report
+# 11-03 SSS급 궁합 분석 결과 — 앞부분 맞춤(sss-report.html · .js · ?o= 모두). 손님 결과는 noindex 이기도 하다.
+Disallow: /sss-report
 # (10-02 개편 3묶음) jeongtong.html 막음은 걷었다 — 넘김 쪽이던 것이 정통사주 소개 쪽이 됐다(tools_sogae.py). 검색에 나와야 하는 쪽이다.
 Disallow: /tools/
 # 그 밖의 공개 글은 전부 연다

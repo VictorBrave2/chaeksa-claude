@@ -44,8 +44,8 @@
 <script src="config.js?v=71396c29ad"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=536b36d2a9"></script>
-<script src="yaksok.js?v=d00ee7a1db"></script>
+<script src="pay.js?v=6a951a2805"></script>
+<script src="yaksok.js?v=aab575422a"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=1350b96148"></script>
 <script src="taekil-read.js?v=665291947e"></script>
@@ -272,7 +272,8 @@
       // 「돌아가서 보기」가 홈으로만 가서, 산 화면을 못 찾았다(2026-09-11 검토). 앱은 주소 뒤 #탭이름 으로
       // 그 탭을 바로 연다(app.js goHash). 2026-10-01 — 앱에서 열리는 유료는 연애 탭 둘뿐이다.
       var 갈곳 = { love_full: './#love', love_pair: './#pair' }[code] || './';   // 행동양식 궁합은 제 탭(pair.js)으로 — 돌아가면 산 쌍을 바로 쓴다
-      if (code === 'ilgyeol') 갈곳 = 'ilgyeol-report.html?o=' + encodeURIComponent(orderId);   // 10-22 「내게 맞는 일과 돈」 — 주문마다 결과 쪽. 그 쪽이 만들기 → 바로 띄운다
+      if (code === 'ilgyeol') 갈곳 = 'ilgyeol-report.html?o=' + encodeURIComponent(orderId);
+      if (code === 'sss') 갈곳 = 'sss-report.html?o=' + encodeURIComponent(orderId);   // 11-03 SSS급 궁합 분석 — 「내게 맞는 일과 돈」처럼 결과 쪽이 만들어 바로 띄운다   // 10-22 「내게 맞는 일과 돈」 — 주문마다 결과 쪽. 그 쪽이 만들기 → 바로 띄운다
       if (code === 'gyeolhon') 갈곳 = 'gyeolhon.html';   // 10-22 결정 25 결혼 전 궁합 점검(카카오페이) — 보고서는 책사가 만들어 메일로 보내니 돌아갈 곳은 소개 쪽
       // 결제는 됐는데 우리 기록이 안 된 경우(api/pay.js saved:false · SAVE_FAILED). 그냥 「끝났습니다」로 보이지 않게 따로 그린다.
       var 기록안됨 = r.saved === false || !!r.saveWarning;
@@ -299,7 +300,7 @@
       // 돌아가면 그 화면이 서버에 산 것을 확인하고 바로 만들기 시작한다(love.js 열고시작 · pair.js 만들기). 만드는 시간은 상품 약속 장부(yaksok.js) 그대로.
       // 시험 결제(검수 계정)는 「시험 결제 취소하기」를 누를 수 있게 저절로 넘어가지 않는다. 「여기 머물기」를 누르면 멈춘다. 승인 · 금액 확인은 위 그대로다.
       var 연애 = code === 'love_full' || code === 'love_pair';
-      var 일결 = code === 'ilgyeol';   // 10-22 사장님 「보고서 형식 말고 결제하면 바로」 — 연애처럼 3초 뒤 결과 쪽으로
+      var 일결 = code === 'ilgyeol' || code === 'sss';   // 10-22 사장님 「보고서 형식 말고 결제하면 바로」 — 연애처럼 3초 뒤 결과 쪽으로
       var 결혼 = code === 'gyeolhon';   // 10-22 결정 25 — 결제 = 접수. 자동으로 넘어가지 않고 「메일로 보내 드려요」만 알린다
       var 자동택일 = code === 'taekil' && 자동길(orderId);   // 10-02 자동 보고서 길(위 자동만들기 머리 주석)
       var Y = window.ChaeksaYaksok, 약 = (Y && Y.줄(code)) || {}, 저절로 = (연애 || 일결) && !시험;
@@ -340,6 +341,7 @@
         }).catch(function (e) { document.getElementById('testRefundMsg').textContent = String(e && e.message || e); 취소.disabled = false; });
       };
       if (code === 'taekil') { if (자동택일) 자동만들기(orderId); else 접수(orderId); }
+      if (code === 'sss') { try { localStorage.removeItem('chaeksa.sss.draft'); } catch (e) {} }   // 11-03 SSS급 궁합 분석 — 결제 뒤 신청 초안은 지운다
       if (code === 'ilgyeol') { try { localStorage.removeItem('chaeksa.ilgyeol.draft'); } catch (e) {} }   // 10-22 진로 보고서 — 결제 뒤 신청 초안은 지운다(신청서는 주문에 붙었다)
       if (code === 'gyeolhon') { try { localStorage.removeItem('chaeksa.gyeolhon.draft'); } catch (e) {} }   // 10-22 결혼 전 궁합 점검 — 결제 뒤 신청 초안은 지운다(신청서는 주문에 붙었다)
       if (저절로) {
