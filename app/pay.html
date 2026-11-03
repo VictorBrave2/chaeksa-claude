@@ -121,8 +121,8 @@
 <script src="config.js?v=71396c29ad"></script>
 <script src="track.js?v=6dba667933"></script>
 <script src="cloud.js?v=bee1b9298c"></script>
-<script src="pay.js?v=536b36d2a9"></script>
-<script src="yaksok.js?v=d00ee7a1db"></script>
+<script src="pay.js?v=6a951a2805"></script>
+<script src="yaksok.js?v=aab575422a"></script>
 <script>
 (function () {
   document.documentElement.setAttribute('data-theme', 'day');
@@ -145,6 +145,7 @@
   if (new URLSearchParams(location.search).get('p') === 'taekil') { location.replace('taekil-apply.html'); return; }
   // 10-22 진로 보고서(ilgyeol)도 신청서가 붙은 신청 쪽에서 결제한다
   if (new URLSearchParams(location.search).get('p') === 'ilgyeol') { location.replace('ilgyeol-apply.html'); return; }
+  if (new URLSearchParams(location.search).get('p') === 'sss') { location.replace('sss-apply.html'); return; }   // 11-03 SSS급 궁합 분석도 신청 쪽에서
   // 10-22 결정 25 결혼 전 궁합 점검(gyeolhon)도 신청서가 붙은 신청 쪽에서 결제한다
   if (new URLSearchParams(location.search).get('p') === 'gyeolhon') { location.replace('gyeolhon-apply.html'); return; }
 
@@ -287,7 +288,7 @@
       if (g !== 'super' || !시험사.length) return;
       var 표시 = { love_full: 'love_full:' + new Array(33).join('0'), love_pair: 'love_pair:' + new Array(33).join('0') };
       var 고른 = 시험사[0].id;
-      var 산것 = 상품.filter(function (p) { return p.code !== 'taekil' && p.code !== 'ilgyeol' && p.code !== 'gyeolhon'; });   // 신청서가 붙어야 열리는 셋은 신청 쪽에서
+      var 산것 = 상품.filter(function (p) { return p.code !== 'taekil' && p.code !== 'ilgyeol' && p.code !== 'gyeolhon' && p.code !== 'sss'; });   // 신청서가 붙어야 열리는 넷은 신청 쪽에서(11-03 sss 더함)
       var box = document.createElement('div'); box.className = 'soon';
       box.innerHTML = '<p><b>시험 결제(검수 계정에만 보여요)</b> — 돈이 빠지지 않아요. 결제창을 끝까지 지나 돌아오는지, 돌아온 화면의 「시험 결제 취소하기」까지 봅니다.</p>'
         + '<p style="margin:8px 0 0">결제사 — ' + 시험사.map(function (p, i) {

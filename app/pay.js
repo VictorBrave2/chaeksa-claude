@@ -557,7 +557,7 @@
       let 기간 = '', 자리 = '';
       // 10-02 출산택일 — 보고서는 주문마다 「내 보고서」 쪽(taekil-report.html?o=)에서 본다. 장부 보관(결제일부터 2년)이 들어와도 이 주소를 지킨다
       // (장부 자리는 결제하는 자리 taekil-apply.html 이라 「보러 가기」로 쓰면 신청서로 간다). 기간이 끝나면 보고서 쪽도 닫힌다(my_taekil 2년).
-      const 보고서자리 = 환불됨 ? '' : code === 'taekil' ? 'taekil-report.html?o=' + encodeURIComponent(id) : code === 'ilgyeol' ? 'ilgyeol-report.html?o=' + encodeURIComponent(id) : '';   // 10-22 「나는 뭐해 먹고 살까?」도 주문마다 결과 쪽
+      const 보고서자리 = 환불됨 ? '' : code === 'taekil' ? 'taekil-report.html?o=' + encodeURIComponent(id) : code === 'ilgyeol' ? 'ilgyeol-report.html?o=' + encodeURIComponent(id) : code === 'sss' ? 'sss-report.html?o=' + encodeURIComponent(id) : '';   // 10-22 「나는 뭐해 먹고 살까?」도 주문마다 결과 쪽
       if (환불됨) 기간 = '환불했어요.';
       else if (해 && 날) {
         const 끝 = new Date(날.getTime()); 끝.setFullYear(끝.getFullYear() + 해);
@@ -1108,6 +1108,7 @@
   // 이 파일엔 판정 · 고르기 · 문장 틀이 없다. 상태 이름은 migrate-36 머리 주석 「손님」 그대로: todo · no_intake · making · checking · ready · canceled.
   const TK_API = 'https://chaeksa-behavior-core.vercel.app/api/taekil-report';
   const IG_API = 'https://chaeksa-behavior-core.vercel.app/api/ilgyeol-report';   // 10-22 「나는 뭐해 먹고 살까?」 자동 풀이(결제하면 바로)
+  const SSS_API = 'https://chaeksa-behavior-core.vercel.app/api/sss-report';   // 11-03 SSS급 궁합 분석(결제하면 바로 · LLM 없음)
   async function 택일함수(name, args) {
     const C = global.ChaeksaCloud, cfg = global.CHAEKSA_SUPABASE;
     let tok = null;
@@ -1243,6 +1244,39 @@
     주소: (id) => 'ilgyeol-report.html?o=' + encodeURIComponent(String(id || '')),
   };
 
+  // ── SSS급 궁합 분석(sss · 11-03 · 29,700원) — 「나는 뭐해 먹고 살까?」와 같은 길. DB 함수 server/migrate-42(sss_take · _save · my_sss · sss_view · sss_admin_*).
+  //    보관하는 것은 계산 결과 JSON — 결과 쪽(sss-report.html)이 sss-gunghap.js 그리기로 그린다. 상태말은 ilgyeol 것을 그대로 쓴다.
+  const sss = {
+    async mine() {
+      const C = global.ChaeksaCloud;
+      if (!C || !C.signedIn || !C.signedIn()) return [];
+      const j = await 택일함수('my_sss', {});
+      return Array.isArray(j) ? j : null;
+    },
+    view: (orderId, 손님눈) => 택일함수('sss_view', { p_order: String(orderId || ''), p_as_customer: !!손님눈 }),
+    async make(id) {
+      const C = global.ChaeksaCloud;
+      let tok = null;
+      try { tok = C && C.token ? await C.token() : null; } catch (_) { tok = null; }
+      if (!tok) return { ok: false, reason: 'login', message: '로그인해 주세요.' };
+      try {
+        const r = await fetch(SSS_API, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok }, body: JSON.stringify({ orderId: String(id || '') }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) return { ok: true, state: j.state || 'held' };
+        return { ok: false, status: r.status, reason: j.reason || '', message: j.error || '잠시 뒤 다시 해 주세요.' };
+      } catch (_) {
+        return { ok: false, reason: 'network', message: '연결이 끊겼어요. 잠시 뒤 다시 해 주세요.' };
+      }
+    },
+    adminList: (filter) => 택일함수('sss_admin_list', { p_filter: filter || null, p_limit: 200 }),
+    adminRelease: (id) => 택일함수('sss_admin_release', { p_order: id }),
+    adminRedo: (id) => 택일함수('sss_admin_redo', { p_order: id }),
+    adminNote: (id, note) => 택일함수('sss_admin_note', { p_order: id, p_note: note || '' }),
+    adminAuto: (on) => 택일함수('sss_admin_auto', { p_on: on == null ? null : !!on }),
+    상태말: ilgyeol.상태말,
+    주소: (id) => 'sss-report.html?o=' + encodeURIComponent(String(id || '')),
+  };
+
   // 10-20 사장님 결제 알림(api/pay.js alertkey · alertsub · alerttest, server/migrate-38) — 사장님 목록에서만 부른다.
   //   켜기: 알림 허락 → 서버 공개키로 이 기기 구독 → 서버에 주소만 넣는다(최대 3대, 새 기기가 맨 앞). 시험: 지금 알림 하나.
   const 결제알림 = {
@@ -1263,5 +1297,5 @@
     시험: () => post({ action: 'alerttest' }),
   };
 
-  global.ChaeksaPay = { 결제알림, state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon, ilgyeol };
+  global.ChaeksaPay = { 결제알림, state, ready, products, product, providers, 모든결제사, 곧열림, 곧열림자리, 결제사칸, 고른결제사, buy, confirm, markFailed, kconfirm, kfail, krefund, nconfirm, nfail, nrefund, intake, mine, 내결제, 내결제줄, 내결제그리기, won, 값, say, paidLoad, paidFor, paidForKey, 누르면, 판, 주문서, taekil, gyeolhon, ilgyeol, sss };
 })(window);

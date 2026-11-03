@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>내 SSS급 궁합 분석 · 책사</title>
+<!-- 11-03 SSS급 궁합 분석(sss · 29,700원) 손님 결과 쪽. 주소 sss-report.html?o=<주문번호>. 「내게 맞는 일과 돈」 결과 쪽(ilgyeol-report.html)과 같은 길 —
+     로그인 → sss_view(server/migrate-42) → 상태대로 그린다. todo 면 비공개 서버(/api/sss-report — lib/sss-gunghap.js 계산 · LLM 없음 · 몇 초)를 불러 만든다.
+     본문 = 보관된 계산 결과 JSON(칸 24) — 견본 쪽과 같은 sss-gunghap.js 그리기 · 글은 sss-gunghap-copy.js(Codex). 화면 상태 글은 ilgyeol-report.html 것을 그대로 쓴다(새로 쓰지 않음 · 다듬기는 COPY-0037).
+     주문번호는 화면에 안 보인다(10-22 사장님). -->
+<script>document.documentElement.setAttribute('data-theme','day');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=c63047faeb">
+<style>
+.wrap{max-width:560px;margin:0 auto;padding:var(--s3) 18px 80px}
+.eyebrow{font-size:var(--t1);color:var(--accent);letter-spacing:.06em;margin:0}
+h1{font-family:var(--serif);font-size:var(--t5);line-height:1.45;margin:6px 0 8px;color:var(--ink)}
+.sub{color:var(--ink2);font-size:var(--t2);margin:0 0 var(--s3);line-height:1.75}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;margin:var(--s2) 0;box-shadow:var(--shadow)}
+.card p{margin:0;font-size:var(--t3);line-height:1.75;color:var(--ink)}
+.why,.card .why{font-size:var(--t2);color:var(--ink2);line-height:1.7;margin:8px 2px 0}
+details.fold{margin:var(--s2) 0}details.fold>summary{font-size:var(--t2);color:var(--accent);padding:10px 2px;cursor:pointer}
+.note{font-size:var(--t1);color:var(--ink3);line-height:1.7;margin-top:var(--s3)}
+.card .sss-q,.sss-q{font-family:var(--serif);font-size:var(--t4);color:var(--ink);font-weight:700;margin:0 0 8px}
+.sss-v p{margin:6px 0}.card .sss-sub,.sss-sub{color:var(--ink2);font-size:var(--t2)}.card .sss-do,.sss-do{color:var(--accent);font-weight:700}
+.sss-won{margin:4px 0 8px;padding-left:18px;font-size:var(--t2);line-height:1.75;color:var(--ink)}.sss-won small{color:var(--ink3)}
+.sss-ms table{width:100%;border-collapse:collapse;font-family:var(--letter);text-align:center}.sss-ms th{font-size:var(--t1);color:var(--ink2);text-align:left;font-weight:400;padding:4px 0}.sss-ms td{font-size:var(--t4);color:var(--ink);padding:4px 0}
+.tkr-banner{font-size:var(--t1);line-height:1.7;color:var(--ink3);margin:0 0 10px;padding:8px 12px;border:1px dashed var(--line2);border-radius:var(--r2)}
+.tkr-state .btn{margin-top:10px}
+.foot{font-size:var(--t1);color:var(--ink3);line-height:1.8;margin-top:var(--s4)}.foot a{color:var(--ink3)}
+</style>
+</head>
+<body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a><a class="mh-home" href="./">← 홈</a></div>
+<main class="wrap">
+  <p class="eyebrow" id="eyebrow"></p>
+  <h1 id="h1">SSS급 궁합 분석</h1>
+  <p class="sub" id="sub"></p>
+  <div id="ms"></div>
+  <div id="out"><p class="hint">불러오는 중…</p></div>
+  <p class="foot">문의 — <a href="mailto:dl4431@naver.com">dl4431@naver.com</a></p>
+</main>
+<script src="config.js?v=71396c29ad"></script>
+<script src="track.js?v=6dba667933"></script>
+<script src="cloud.js?v=bee1b9298c"></script>
+<script src="usage.js?v=0c1ca14b01"></script>
+<script src="pay.js?v=6a951a2805"></script>
+<script src="gunghap-pyo-copy.js?v=3a30fb78fd"></script>
+<script src="zw-gunghap-pyo-copy.js?v=5a73d12d5c"></script>
+<script src="sss-gunghap-copy.js?v=6893b5d244"></script>
+<script src="sss-gunghap.js?v=e87fdb4fbb"></script>
+<script src="sss-report.js?v=7022c7df10"></script>
+</body>
+</html>
