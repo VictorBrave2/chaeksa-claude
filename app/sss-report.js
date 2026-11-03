@@ -44,20 +44,79 @@
     if (Date.now() - 시작 > 한도) { 그림(상자('궁합 분석이 평소보다 오래 걸리고 있어요', ['잠시 뒤 다시 봐 주세요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요' + 내결제 + '.'])); return; }
     기다림 = setTimeout(function () { 불러오기(true); }, 4000);
   }
-  function 만들기() {
-    if (만들었음) { 기다리기(); return; }
-    만들었음 = true;
-    그림('<p class="hint">' + esc(G.상태말.making) + '</p>');
-    G.make(o).then(function (r) {
-      if (r && r.ok) { clearTimeout(기다림); 불러오기(true); return; }
+  // 11-03 사장님 「3만원 결제했는데 드르륵 열리면 좀 아쉽지 않겠어?」 — 처음 열 때만 의식: 섞기 → 부채꼴 77장에서 열 장 고르기(정통타로와 같은 길 · 고른 자리 = 몸의 고름)
+  //   → 만드는 중(고른 열 장 + 단계 글이 차례로) → 열림(두 명식 글자가 한 자씩 · 열 장이 차례로 뒤집힘 · 24칸이 스크롤마다 떠오름).
+  //   글은 Codex 칸(ChaeksaSssCopy.열기 — COPY-0038)만. 비면 기호(⇄ · n / 10)와 데이터(글자 · 카드 그림)만 남는다.
+  var 열기 = CP.열기 || {}, 그림길 = 'art/tarot/chaeksa-v1/', 그림id = /^(?:M(?:0\d|1\d|2[01])|[WCSP](?:0[1-9]|1[0-4]))$/;
+  var 줄p = function (t, cls) { return t ? '<p class="' + (cls || 'sss-rite-say') + '">' + esc(t) + '</p>' : ''; };
+  var 채 = function (t, v) { return t && window.ChaeksaSss && window.ChaeksaSss.채움 ? window.ChaeksaSss.채움(t, v || {}) : ''; };
+  var 덜움직임 = (function () { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+  var 처음연다 = false, 의 = null;
+  function 떨림(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} }
+  function 칸들(n) { var h = '<div class="sss-slots" aria-hidden="true">'; for (var i = 1; i <= 10; i++) h += '<span class="sss-slot' + (i <= n ? ' is-on' + (i === n ? ' is-arrive' : '') : i === n + 1 ? ' is-next' : '') + '"></span>'; return h + '</div>'; }
+  function 부채(고름) {
+    var h = '<div class="sss-fan' + (고름.length === 0 ? ' is-spread' : '') + '" data-fan>';
+    for (var i = 0; i < 77; i++) {
+      if (고름.indexOf(i) >= 0) continue;
+      h += '<button type="button" class="sss-fan-card" data-pick="' + i + '" style="--a:' + (-50 + 100 * i / 76).toFixed(2) + ';--k:' + i + '" aria-label="' + esc(채(열기.카드읽기, { n: String(고름.length + 1) }) || (고름.length + 1) + ' / 10') + '"></button>';
+    }
+    return h + '</div>';
+  }
+  function 의식그리기() {
+    if (!의.섞음) {
+      그림('<div class="sss-rite">' + 줄p(채(열기.처음, {})) + '<div class="sss-pile" data-pile aria-hidden="true"><span></span><span></span><span></span></div>'
+        + '<button type="button" class="btn sss-rite-btn" id="shuffle">' + esc(열기.섞기 || '⇄') + '</button></div>');
+      $('shuffle').onclick = 섞기; var 더미 = out.querySelector('[data-pile]'); if (더미) 더미.onclick = 섞기;
+      return;
+    }
+    var n = 의.고름.length;
+    그림('<div class="sss-rite">' + 칸들(n) + 줄p(채(열기.고르기, { n: String(Math.min(n + 1, 10)) }))
+      + '<p class="sss-count"><b>' + n + '</b> / 10</p>' + 부채(의.고름) + '</div>');
+    out.querySelectorAll('[data-pick]').forEach(function (b) { b.onclick = function () { 고르기(+b.getAttribute('data-pick')); }; });
+  }
+  function 섞기() {
+    if (의.섞음) return;
+    의.섞음 = true; 떨림(18);
+    var 더미 = out.querySelector('[data-pile]');
+    if (더미 && !덜움직임) { 더미.classList.add('is-shuffle'); setTimeout(의식그리기, 900); } else 의식그리기();
+  }
+  function 고르기(i) {
+    if (!(i >= 0 && i <= 76) || 의.고름.indexOf(i) >= 0 || 의.고름.length >= 10) return;
+    var y = window.scrollY;
+    의.고름.push(i); 떨림(8);
+    if (의.고름.length >= 10) { 부르기(의.고름.slice()); return; }
+    의식그리기(); window.scrollTo(0, y);
+  }
+  // 만드는 중 — 고른 열 장이 숨 쉬고 단계 글(열기.단계 — 글 배열)이 차례로 켜진다. 서버가 빨라도 단계를 다 보여 준 뒤 연다(단계 수 × 0.9초 · 최소 1.8초).
+  function 만드는중(뒤) {
+    var 단계 = (Array.isArray(열기.단계) ? 열기.단계 : []).map(function (t) { return 채(t, {}); }).filter(Boolean);
+    그림('<div class="sss-rite is-making">' + 칸들(10) + (단계.length ? '<ol class="sss-steps">' + 단계.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>' : 줄p(G.상태말.making, 'hint')) + '</div>');
+    var li = out.querySelectorAll('.sss-steps li'), k = 0, 끝 = Date.now() + (덜움직임 ? 0 : Math.max(2, 단계.length) * 900);
+    (function 다음() { if (k < li.length) { if (k) li[k - 1].classList.add('is-done'); li[k].classList.add('is-on'); k++; setTimeout(다음, 900); } })();
+    return function () { setTimeout(뒤, Math.max(0, 끝 - Date.now())); };
+  }
+  function 부르기(고름) {
+    만들었음 = true; 처음연다 = true;
+    var 다음 = 만드는중(function () { clearTimeout(기다림); 불러오기(true); });
+    G.make(o, 고름).then(function (r) {
+      if (r && r.ok) { 다음(); return; }
       if (r && r.reason === 'busy') { 기다리기(); return; }
       if (r && r.reason === 'login') { 로그인화면('로그인이 풀렸어요. 결제한 계정으로 다시 로그인하면 궁합 분석을 이어서 진행해요.'); return; }
       clearTimeout(기다림);
       그림(상자('궁합 분석을 마치지 못했어요', [(r && r.message) || '잠시 뒤 다시 해 주세요.', '결제 내역은 유지돼요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요' + 내결제 + '.'],
         '<button type="button" class="btn ghost" id="again">다시 해 보기</button>'));
-      $('again').onclick = function () { 만들었음 = false; 불러오기(); };
+      $('again').onclick = function () { 부르기(고름); };
     });
-    기다리기();
+  }
+  function 만들기() {
+    if (만들었음) { 기다리기(); return; }
+    if (!의) 의 = { 섞음: false, 고름: [] };
+    의식그리기();
+  }
+  // 24칸 — 처음 열 때만 카드가 다 뒤집힌 뒤 위에서부터 차례로 떠오른다(앞 여섯 칸은 0.25초 간격 · 나머지는 여섯째와 함께). CSS 움직임만 — 끝나면 늘 보인다.
+  function 펼치기(몸, 늦춤) {
+    if (!몸 || !늦춤) return;
+    몸.querySelectorAll('.sss-v').forEach(function (x, k) { x.classList.add('sss-rise'); x.style.setProperty('--r', (늦춤 + Math.min(k, 6) * 250) + 'ms'); });
   }
   function 풀이그리기(r, 머리글) {
     clearTimeout(기다림);
@@ -66,13 +125,21 @@
     var rep = r.report || {}, res = rep.결과, 이름 = rep.이름 || { 나: '나', 그: '그 사람' };
     $('sub').textContent = (rep.만든날 ? rep.만든날 + ' 만듦 · ' : '') + '결제일부터 2년 동안 이 계정에 보관돼요';
     if (!res || !res.칸 || !window.ChaeksaSss) { 그림((머리글 || '') + 상자('궁합 분석 결과를 불러오지 못했어요', ['잠시 뒤 새로고침해 주세요. 계속 안 되면 ' + 문의 + ' 으로 주문번호를 알려 주세요' + 내결제 + '.'])); return; }
+    var 열림 = 처음연다 && !덜움직임, 글자 = 0;
     if (res.명식) {
-      var td = function (a) { return (a || []).map(function (x) { return '<td>' + esc(x || '') + '</td>'; }).join(''); };
+      var td = function (a) { return (a || []).map(function (x) { return '<td>' + (열림 ? String(x || '').split('').map(function (c) { return '<span class="sss-ch" style="--i:' + (글자++) + '">' + esc(c) + '</span>'; }).join('') : esc(x || '')) + '</td>'; }).join(''); };
       $('ms').innerHTML = '<div class="card sss-ms"><table><tr><th></th><th>시</th><th>일</th><th>월</th><th>년</th></tr>'
         + '<tr><th>' + esc(이름.나) + '</th>' + td(res.명식.나) + '</tr><tr><th>' + esc(이름.그) + '</th>' + td(res.명식.그) + '</tr></table></div>';
     }
-    out.innerHTML = (머리글 || '') + '<div id="sssBody"></div>';
+    // 고른 열 장(V23 펼침) — 카드 그림 줄. 처음 열 때는 명식 글자 뒤에 차례로 뒤집힌다(--d 시작 · --k 차례).
+    var 펼 = (((res.칸 || {}).V23 || {}).값 || {}).펼침, 장 = (펼 && 펼.자리) || [], 머카 = 채(열기.카드머리, 이름);
+    var 띠 = 장.length ? '<div class="sss-cards' + (열림 ? ' is-open' : '') + '" style="--d:' + (글자 * 70 + 300) + 'ms">' + (머카 ? '<p class="sss-cards-head">' + esc(머카) + '</p>' : '') + '<div class="sss-cards-row">' + 장.map(function (x, i) {
+      var 앞 = 그림id.test(String(x.id)) ? '<img src="' + 그림길 + x.id + '-s.webp?v=2" alt="' + esc(x.이름 || '') + '"' + (x.놓임 === '거꾸로' ? ' class="is-rev"' : '') + '>' : '';
+      return '<span class="sss-card" style="--k:' + i + '"><span class="sss-card-face">' + 앞 + '</span><span class="sss-card-back"></span></span>';
+    }).join('') + '</div></div>' : '';
+    out.innerHTML = (머리글 || '') + 띠 + '<div id="sssBody"></div>';
     window.ChaeksaSss.그리기($('sssBody'), res, 이름);
+    펼치기($('sssBody'), 열림 ? 글자 * 70 + 장.length * 180 + 900 : 0);
     try { window.ChaeksaTrack && window.ChaeksaTrack.event('sss_gh_report'); } catch (e) {}
   }
   function 불러오기(조용히) {
