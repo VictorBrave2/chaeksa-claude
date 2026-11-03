@@ -45,9 +45,11 @@
     } else if (종 === '원서') {
       const 줄들 = (쪽) => { const x = c.값[쪽]; const a = Array.isArray(x) ? x : Object.keys(x || {}).reduce((s, k) => s.concat(x[k]), []); return a; };
       몸 = 줄(채움(V.갈래.머리, v));
+      const 원머 = 채움((C().머리 || {}).원문, v);
       ['나', '그'].forEach(쪽 => {
         const a = 줄들(쪽);
-        몸 += a.length ? '<p><b>' + esc(이름[쪽]) + '</b></p><ul class="sss-won">' + a.map(x => '<li>' + esc(x.뜻) + ' <small>' + esc(x.구절) + '</small></li>').join('') + '</ul>'
+        몸 += a.length ? '<p><b>' + esc(이름[쪽]) + '</b></p><ul class="sss-won">' + a.map(x => '<li>' + esc(x.뜻) + '</li>').join('') + '</ul>'
+          + (원머 ? '<details class="fold"><summary>' + esc(원머) + '</summary><ul class="sss-won">' + a.map(x => '<li>' + esc(x.구절) + ' <small>' + esc(x.출처 || '') + '</small></li>').join('') + '</ul></details>' : '')
           : 줄(채움(V.갈래.줄없음, { 누구: 이름[쪽], 나: 이름.나, 그: 이름.그 }));
       });
     } else if (id === 'V22') {
