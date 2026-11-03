@@ -2,8 +2,7 @@
  *   나 · 함께 보는 사람(people.js 저장된 사람 · 서로 다른 사람 · 둘 다 태어난 시각 있어야) → 동의 두 칸 → 로그인 → 결제 수단 → 「결제하기」
  *   = ChaeksaPay.buy('sss', null, 결제사, 신청서) → 카카오페이 → pay-done.html → 3초 뒤 sss-report.html?o=(비공개 서버가 계산해 바로 띄움 — 「나는 뭐해 먹고 살까?」와 같은 길).
  * 신청서(intake) 꼴 — { v: 1, product: 'sss', 나: 사람, 그: 사람, agreedAt } · 사람 = gyeolhon-apply.js 사람꼴(시모름은 받지 않는다 — 계산이 시주를 쓴다).
- * 글 — 이 쪽에서 새로 쓰지 않는다. 화면 글은 이미 있는 손님 글에서 가져온다: 이름 · 소개(sss-gunghap-copy.js · Codex COPY-0036) · 두 사람 고르기 말(gunghap-pyo-copy.js · COPY-0033) ·
- *   단추 · 로그인 · 결제 오류(gyeolhon-apply.js 그대로). 다듬기는 Codex 주문서(COPY-0037) 몫.
+ * 글 — 신청 · 로그인 · 결제 안내는 Codex COPY-0037. 두 사람 머리는 sss-gunghap-copy.js(COPY-0036), 같은 사람 선택 오류는 gunghap-pyo-copy.js(COPY-0033)를 쓴다.
  * 생년월일은 주소(URL)에 싣지 않는다. 비밀 없음. 판정 코드 없음.
  */
 (function () {
@@ -16,30 +15,30 @@
   var 쓰기 = function (k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   var 채움 = function (s, v) { return String(s == null ? '' : s).replace(/\{([^{}]+)\}/g, function (_, n) { return v && v[n] != null ? v[n] : ''; }); };
 
-  // ── 글 — 새로 쓰지 않는다(머리 주석). 두 사람 머리 = sss-gunghap-copy.js 머리 · 고르기 오류 = gunghap-pyo-copy.js 고르기 · 나머지 = gyeolhon-apply.js 그대로 ──
+  // ── 신청 글(COPY-0037). 두 사람 머리와 같은 사람 선택 오류는 기존 공통 글을 쓴다 ──
   var SC = (window.ChaeksaSssCopy || {}), GP = ((window.ChaeksaGhPyoCopy || {}).고르기 || {}), MH = SC.머리 || {};
   var T = {
-    단추: { 여는중: '결제창을 여는 중…', 닫힘: '지금은 결제를 받을 수 없습니다', 결제: '결제하기', 결제값: ' 결제하기', 카카오: '카카오페이로 {값} 결제하기', 로그인: '카카오로 로그인하고 계속하기' },
+    단추: { 여는중: '결제창을 여는 중…', 닫힘: '지금은 결제를 받을 수 없습니다', 결제: '결제하기', 결제값: ' 결제하기', 카카오: '카카오페이로 {값} 결제하기', 로그인: '로그인하고 결제하기' },
     오류: {
       모듈: '결제 기능을 불러오지 못했어요. 새로고침해 주세요.',
       닫힘: '지금은 결제를 받을 수 없습니다. 문의하실 곳 — ' + 문의메일,
-      사람없음: GP.사람없음 || '',
+      사람없음: '궁합을 볼 두 사람을 각각 골라 주세요.',
       같은사람: GP.같은사람 || '',
-      시모름: GP.시모름 || '',
-      동의: '동의 두 가지에 체크해 주셔야 결제할 수 있어요',
-      너무김: '신청서가 너무 길어요 — 사람 이름을 줄여 주세요',
+      시모름: '두 사람 모두 태어난 시각이 필요해요. 「고치기」에서 시각을 입력해 주세요.',
+      동의: '개인정보 사용과 환불 규정, 두 항목에 동의해 주세요.',
+      너무김: '신청 내용이 너무 길어요. 두 사람의 이름을 짧게 적어 주세요.',
       결제창: '결제창을 열지 못했습니다. 다시 결제하기를 눌러 주세요.'
     },
     로그인: {
-      됨: '로그인됐어요. 동의를 확인하시고 결제하시면 돼요.',
+      됨: '로그인됐어요. 고른 두 사람과 동의 항목을 확인한 뒤 결제해 주세요.',
       다시: ' 신청서 아래 로그인 단추를 다시 눌러 주세요.',
       만료: '로그인 링크가 만료됐거나 이미 쓴 링크예요.',
       안됨: '로그인이 되지 않았어요.',
       못마침: '로그인을 마치지 못했어요.',
       남의계정: '계정으로 결제할까요?\n\n이 기기에서 시작한 로그인이 아니라서 한 번 여쭤봐요. 주문은 이 계정에 남아요.'
     },
-    이름없음: '보고서에서 부를 이름을 적어 주세요',
-    이름칸: '보고서에서 부를 이름'
+    이름없음: '결과에서 부를 이름을 적어 주세요',
+    이름칸: '결과에서 부를 이름'
   };
   try { if ($('firstHead') && (MH.나 || GP.나)) $('firstHead').textContent = MH.나 || GP.나; if ($('secondHead') && (MH.그 || GP.그)) $('secondHead').textContent = MH.그 || GP.그; } catch (e) {}
 
@@ -200,7 +199,7 @@
     if (sol.error) { 알림(sol.error); return; }
     var noTime = $('gaNoTime').checked, 시 = $('gaH').value.trim(), 분 = $('gaMi').value.trim();
     if (!noTime) {
-      if (시 === '' || +시 < 0 || +시 > 23 || +시 % 1) { 알림('태어난 시는 0부터 23까지 넣어 주세요. 모르면 「시간 모름」에 표시해 주세요.'); return; }
+      if (시 === '' || +시 < 0 || +시 > 23 || +시 % 1) { 알림('태어난 시를 0부터 23까지 입력해 주세요. 이 궁합 분석에는 두 사람의 태어난 시각이 모두 필요해요.'); return; }
       if (분 !== '' && (+분 < 0 || +분 > 59 || +분 % 1)) { 알림('분은 0부터 59까지 넣어 주세요.'); return; }
     }
     var 곳 = $('gaPlace').value || 'KR:서울', pl = null; try { pl = PL ? PL.resolve(곳) : null; } catch (e) {}
@@ -329,7 +328,7 @@
     var it = 신청서(f, fn, s, sn);
     if (JSON.stringify(it).length > 7600) { say(T.오류.너무김, true); return; }
     busy = true; 단추(); say('');
-    // 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake). 결제 뒤 화면(pay-done)이 맡는다 — 보고서(PDF)는 책사가 적은 메일로 보낸다.
+    // 신청서는 결제창을 열 때 서버가 그 주문에 붙인다(api/pay.js kopen → order_intake). 결제 뒤 화면(pay-done)이 sss-report.html로 이어 주고, 결과 화면에서 바로 계산해 보여 준다.
     ChaeksaPay.buy(상품, null, (ChaeksaPay.고른결제사 && ChaeksaPay.고른결제사(pvPick)) || null, it).then(function (r) {
       busy = false; 단추();
       if (r && r.ok === false && !r.closed) say(r.message || T.오류.결제창, true);
