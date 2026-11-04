@@ -734,7 +734,7 @@
       try {
         const P = global.ChaeksaPeople, me = P && P.self && P.self();
         const n = me && String(me.name || '').trim();
-        return (!n || ['나', '공주님', '도련님', '당신', '이름 없음'].indexOf(n) >= 0) ? '' : n;
+        return (!n || ['나', '공주님', '도련님', '당신', '이름 없음', '새로 만난 사람'].indexOf(n) >= 0) ? '' : n;
       } catch (e) { return ''; }
     })();
     const 나 = String(내이름 || '본인'), 그 = String((이름 && 이름.그) || '그분');
