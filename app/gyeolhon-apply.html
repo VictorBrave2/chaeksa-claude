@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=18429c7b19">
+<link rel="stylesheet" href="style.css?v=d66e83d491">
 <style>
   .doc{max-width:560px;margin:0 auto;padding:24px 18px 90px}
   .back{display:inline-block;margin-bottom:18px;font-size:var(--t2);color:var(--ink3);text-decoration:none}
@@ -117,11 +117,11 @@
     <p class="help">첫째 분과 다른 사람을 골라야 해요. 같은 방법으로 저장된 사람 목록에서 고르거나 「사람 추가」로 정보를 입력하세요.</p>
     <div id="secondWrap" data-slot="second"></div>
 
-    <label for="email">보고서를 받으실 메일 주소</label>
+    <label class="fq" for="email">보고서를 받으실 메일 주소</label>
     <input id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="100">
     <p class="hint">보고서(PDF)를 이 주소로 보내 드려요. 한 글자만 틀려도 못 받으니 정확히 적었는지 한 번 더 확인하세요.</p>
 
-    <label for="note">바라는 점 (안 적어도 돼요)</label>
+    <label class="fq" for="note">바라는 점 (안 적어도 돼요)</label>
     <textarea id="note" maxlength="300" rows="3"></textarea>
     <p class="hint">보고서를 만들 때 알아 두어야 할 것이나 꼭 보고 싶은 것이 있으면 적어 주세요. 예: 주민등록 생일과 실제 생일이 달라요. 300자까지예요.</p>
 
@@ -197,12 +197,12 @@
 <script src="track.js?v=6dba667933"></script>
 <script src="cloud.js?v=024ffce65b"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
-<script src="pay.js?v=bb5aacf731"></script>
+<script src="pay.js?v=1f42995d7f"></script>
 <script src="people.js?v=68a28f8830"></script>
 <script src="places.js?v=1350b96148"></script>
 <script src="astro.js?v=c0bb3fa175"></script>
 <script src="lunar.js?v=9d5b6391f1"></script>
-<script src="gyeolhon-apply.js?v=7201bd9c5b"></script>
+<script src="gyeolhon-apply.js?v=db4a448853"></script>
 <script>
 // 검수 계정(super)이면 맨 위 띠로 사장님 목록 길을 보인다(화면 편의 — 실제 막음은 DB ai_plan()).
 (function () {
