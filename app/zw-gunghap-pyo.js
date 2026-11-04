@@ -14,23 +14,15 @@
   var 셈 = function (이름) { try { if (global.ChaeksaTrack) global.ChaeksaTrack.event(이름); } catch (e) {} };
   var 글of = function (f) { return (C.거르개 || {})[f.id] || {}; };
 
-  function 사람목록() { return PP && PP.list ? PP.list().filter(function (p) { return p && p.year; }) : []; }
+  function 사람목록() { return PP && PP.list ? PP.list().filter(function (p) { return p && p.birth && p.birth.year; }) : []; }
+  // 11-04 사장님 「사람추가하라고하네 문제있네」 — 두 사람 고르기 · 더하기 · 고치기를 이 쪽 안에서(pair-pick.js · 세 궁합 쪽 같이 씀). 고른 id 는 #na · #geu.
   function 고르기그림() {
-    var 목록 = 사람목록(), box = $('pick'), G = C.고르기 || {};
-    if (목록.length < 2) {
-      box.innerHTML = 칸('p', 'sub', G.사람없음) + (G.사람없음단추 ? '<a class="go" href="./?go=people">' + esc(G.사람없음단추) + '</a>' : '');
-      return;
-    }
-    var opt = 목록.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name || '') + '</option>'; }).join('');
-    var 나 = (PP.self && PP.self()) || 목록[0], 그 = 목록.find(function (p) { return p.id !== 나.id; });
-    box.innerHTML = '<form id="f" class="card">' + 칸('label', '', G.나) + '<select id="na">' + opt + '</select>'
-      + 칸('label', '', G.그) + '<select id="geu">' + opt + '</select>'
-      + '<button class="go" type="submit">' + esc(G.단추 || '→') + '</button></form>';
-    $('na').value = 나.id; if (그) $('geu').value = 그.id;
-    $('f').addEventListener('submit', function (e) { e.preventDefault(); 부르기(); });
+    var G = C.고르기 || {};
+    if (!global.ChaeksaPairPick) { $('pick').innerHTML = 칸('p', 'sub', G.사람없음); return; }
+    global.ChaeksaPairPick.그리기($('pick'), { 나: G.나, 그: G.그, 단추: G.단추, 도움: G.도움, 없음: G.사람없음, 보기: 부르기 });
   }
   function 입력(p) {
-    var b = PP.birthOf ? PP.birthOf(p) : p, o = { year: b.year, month: b.month, day: b.day, hour: b.hour, minute: b.minute || 0, gender: b.gender, place: b.place };
+    var b = (p && p.birth) || {}, o = { year: b.year, month: b.month, day: b.day, hour: b.hour, minute: b.minute || 0, gender: b.gender, place: b.place };
     if (b.longitude != null) o.longitude = b.longitude;
     if (b.tzOffset != null) o.tzOffset = b.tzOffset;
     return o;

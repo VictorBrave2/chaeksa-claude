@@ -1564,3 +1564,8 @@ html[data-boot="landing"] #nav{display:grid!important}
 .to-paid-tag{color:var(--accent);font-size:.9rem}
 .to-paid-say{margin:0;text-align:center;color:var(--ink2);line-height:1.6}
 .to-paid-sample{justify-self:center;color:var(--ink2);font-size:.92rem}
+/* 11-04 두 사람 고르기(pair-pick.js) — 정통 사주 · 자미두수 · 타로 궁합. 칩(.ss-who) · 사람 창(.modal .sheet)은 SSS 신청 · 홈 사람 창과 같은 꼴 */
+.pk .pk-h{font-size:var(--t2);color:var(--ink2);font-weight:700;margin:var(--s2) 0 0}.pk .pk-h:first-child{margin-top:0}
+.pk .pk-none{font-size:var(--t2);color:var(--ink2);line-height:1.7;margin:0 0 var(--s1)}
+.pk .picked{font-size:var(--t1);line-height:1.7;color:var(--ink2);margin:6px 0 0}
+.pk button.lnk{background:none;border:0;padding:0 0 0 4px;color:var(--accent);font-size:var(--t1);cursor:pointer;font-family:var(--sans);text-decoration:underline}
