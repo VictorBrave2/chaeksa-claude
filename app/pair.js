@@ -344,7 +344,7 @@
       + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>연애할 때의 그 사람</h2>')
       + (목록.length
         ? '<div id="pairPickWrap" style="margin:0 0 10px"><label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label><select id="pairPick">'
-          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(p.relation) : '') + '</option>'; }).join('')
+          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(PP.relationOf ? PP.relationOf(p) : p.relation) : '') + '</option>'; }).join('')
           + '</select></div>'
         : '<button class="btn" id="pairAdd" type="button" style="width:100%;margin:0 0 10px">그 사람 생년월일 넣기</button>')
       + '<div id="pairHead"></div><p class="hint" id="pairSt" style="margin:8px 0 0"></p><div id="pairErr"></div></section>'

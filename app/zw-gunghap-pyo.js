@@ -53,7 +53,9 @@
   }
   function 거르개칸(f, 걸림, a, b) {
     var g = 글of(f), 근 = C.근거 || {};
-    var 이름of = function (누구) { return 누구 === '나' ? 부름(a) : 부름(b); };
+    var 가 = 부름(a), 을 = 부름(b), 줄이름 = C.명반 || {};
+    if (가 === 을) { 가 = 줄이름.나 || 가; 을 = 줄이름.그 || 을; }   // 11-04 두 사람 부름이 같으면(이름 없는 「그 사람」 둘 · 같은 이름) 같은 화면 명반 표의 줄 이름(나 · 상대)으로 — 누가 누군지 갈리게
+    var 이름of = function (누구) { return 누구 === '나' ? 가 : 을; };
     var 원문 = (f.원문줄 || []).length ? '<details class="fold"><summary>' + esc(근.원문머리 || f.출처) + '</summary>'
       + f.원문줄.map(function (x) { return 칸('p', 'why', 채움(근.원문누구, { 누구: 이름of(x.누구) })) + '<p class="q">' + esc(x.구절) + '</p>'; }).join('')
       + (f.옮김 ? 칸('p', 'why', 근.옮김머리) : '') + '</details>' : '';

@@ -31,7 +31,7 @@
     if (b.place) { $('p').value = b.place; if ($('p').value !== b.place) $('p').value = 'KR:서울'; }
   }
   function 이름표(p) {
-    var b = p.birth, 이름 = p.name && p.name !== '이름 없음' ? p.name : p.relation || '나';
+    var b = p.birth, 이름 = p.name && p.name !== '이름 없음' ? p.name : (PP && PP.relationOf ? PP.relationOf(p) : p.relation || '나');
     return 이름 + ' · ' + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? '' : ' ' + b.hour + '시');
   }
   function 고르기(i, 처음) {
