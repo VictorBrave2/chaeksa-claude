@@ -15,6 +15,8 @@
   var 고름 = { first: '', second: '' }, 설정 = {}, 상자 = null, 편집 = null, 편집슬롯 = 'first', cal = 'solar', 연단추 = null;
 
   function 목록() { try { return PP ? PP.list().filter(function (p) { return p && p.birth && p.birth.year; }) : []; } catch (e) { return []; } }
+  // 11-04 같은 이름이 목록에 둘 이상이면 칩 작은 줄을 관계 대신 생년월일로 — 「지은 / 그 사람」 둘이 똑같이 보이지 않게(v1625, 이름 없는 사람 칩과 같은 꼴). 셈은 온 목록으로 — 두 칸이 같게 부른다
+  function 이름셈() { var c = {}; 목록().forEach(function (y) { var m = 이름(y); if (m) c[m] = (c[m] || 0) + 1; }); return c; }
   function 사람(id) { try { var p = id && PP ? PP.get(id) : null; return p && p.birth && p.birth.year ? p : null; } catch (e) { return null; } }
   function 이름(p) { if (PP && PP.nameOf) return PP.nameOf(p); var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }   // 손님이 넣은 이름 — people.js nameOf(옛 대체 이름 공주님 · 도련님 · 당신도 이름이 아니다, 11-04 v1621)
   function 곳이름(b) { if (b.placeName) return b.placeName; try { return PL ? PL.resolve(b.place).name : '서울'; } catch (e) { return '서울'; } }
@@ -50,11 +52,11 @@
     기억쓰기();
   }
   function 칩(slot) {
-    var id = 고름[slot], p = 사람(id);
+    var id = 고름[slot], p = 사람(id), 셈 = 이름셈();
     var h = '<div class="ss-who" role="radiogroup" aria-label="' + esc(slot === 'first' ? 설정.나 : 설정.그) + '">' + 목록().map(function (x) {
       var n = 이름(x), b = x.birth;
       return '<button type="button" role="radio" aria-checked="' + (x.id === id) + '" class="ss-wh' + (x.id === id ? ' on' : '') + '" data-pick="' + esc(x.id) + '">'
-        + '<b>' + esc(n || PP.relationOf(x)) + '</b><small>' + esc(n ? (x.relation ? PP.relationOf(x) : '') : b.year + '.' + b.month + '.' + b.day) + '</small></button>';   // 부르는 말은 people.js relationOf 하나로
+        + '<b>' + esc(n || PP.relationOf(x)) + '</b><small>' + esc(n && !(셈[n] > 1) ? (x.relation ? PP.relationOf(x) : '') : b.year + '.' + b.month + '.' + b.day) + '</small></button>';   // 부르는 말은 people.js relationOf 하나로
     }).join('') + '<button type="button" class="ss-wh ss-wh-add" data-add="' + slot + '">＋ 사람 추가</button></div>';
     if (p) h += '<p class="picked">' + esc(생일말(p.birth)) + ' <button type="button" class="lnk" data-edit="' + esc(p.id) + '">고치기</button></p>';
     return h;

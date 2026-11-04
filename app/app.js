@@ -93,7 +93,14 @@
   // 칩 · 고르기 칸 한 줄(웹툰궁합 · 정통궁합 · 연애할 때의 그 사람) — 굵은 이름은 이름(없으면 위 부름), 작은 줄은 이름이 있으면 관계, 없으면 생년월일.
   //   pair-pick.js 칩과 같은 꼴 — 이름 없는 나를 한 칩에서 「그 사람 / 나」로 부르지 않고, 이름 없는 둘을 생년월일로 가른다(11-04 v1621)
   const 칩이름 = (p) => 사람이름(p && p.name) || 이름없을때(p);
-  const 칩꼬리 = (p) => (사람이름(p && p.name) || !(p && p.birth)) ? 관계꼬리(p) : p.birth.year + '.' + p.birth.month + '.' + p.birth.day;
+  //   11-04 같은 이름이 보이는 목록(l)에 둘 이상이면 이름 있는 사람도 작은 줄을 생년월일로 — 「지은 / 그 사람」 둘이 똑같이 보이지 않게(v1625, 오늘의 운세 고르기 칸 v1624와 같은 규칙)
+  const 칩날 = (p) => p.birth.year + '.' + p.birth.month + '.' + p.birth.day;
+  const 칩꼬리 = (p, l) => {
+    if (!(p && p.birth)) return 관계꼬리(p);
+    const n = 사람이름(p.name);
+    if (!n) return 칩날(p);
+    return l && l.filter(x => 사람이름(x && x.name) === n).length > 1 ? 칩날(p) : 관계꼬리(p);
+  };
   function renderPeopleBtn() {
     const btn = $('btnPerson'); if (!btn || !People()) return;
     const p = People().active();
@@ -1003,7 +1010,7 @@
   function 사람칩(wrap, sel, list, 고름, add) {
     sel.classList.add('ss-sel-hidden');
     let 칩 = wrap.querySelector('.ss-who'); if (!칩) { 칩 = document.createElement('div'); 칩.className = 'ss-who'; 칩.setAttribute('role', 'radiogroup'); wrap.appendChild(칩); }
-    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(칩이름(p)) + '</b><small>' + esc(칩꼬리(p)) + '</small></button>').join('')
+    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(칩이름(p)) + '</b><small>' + esc(칩꼬리(p, list)) + '</small></button>').join('')
       + '<button type="button" class="ss-wh ss-wh-add">＋ 다른 사람</button>';
     칩.querySelectorAll('.ss-wh[data-id]').forEach(b => b.onclick = () => { if (sel.value === b.dataset.id) return; sel.value = b.dataset.id; sel.onchange(); });
     칩.querySelector('.ss-wh-add').onclick = () => openPersonForm(null);
@@ -1036,7 +1043,7 @@
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
     sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
-      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p))}</option>`).join('');
+      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderChongnon(); };
     사람칩(wrap, sel, list, 고름, add);
@@ -1076,7 +1083,7 @@
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
     sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
-      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p))}</option>`).join('');
+      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
     사람칩(wrap, sel, list, 고름, add);
@@ -1105,7 +1112,7 @@
     const me = P.active();
     const list = P.list().filter(p => !me || p.id !== me.id);
     $('ghPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p))}</option>`).join('')
+      ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGh').disabled = !list.length;
     $('btnGhAdd').onclick = () => openPersonForm(null);
@@ -1192,7 +1199,7 @@
     $('shPickWrap').classList.toggle('hide', !장.둘); $('btnShAdd').classList.toggle('hide', !장.둘);
     if ($('shSoloWrap')) $('shSoloWrap').classList.toggle('hide', !!장.둘);
     const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
-    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p))}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
+    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
     $('btnSh').disabled = 장.둘 && !list.length;
     $('btnShAdd').onclick = () => openPersonForm(null);
     $('shResult').classList.add('hide');
