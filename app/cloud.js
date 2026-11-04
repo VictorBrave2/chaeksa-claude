@@ -263,12 +263,16 @@
       // 이름을 비워 둔 사람은 people.js 가 「이름 없음」으로 적는다 — 묻는 창에는 「내 사주」·관계로 보여 준다.
       if (Array.isArray(ps)) {
         사람 = ps.length;
-        이름 = ps.map((x) => {
+        const 부름들 = ps.map((x) => {
           const R = window.ChaeksaPeople;   // 11-04 이름 없는 사람 부름은 people.js relationOf 하나로(v1620) · 이름 거름은 nameOf(v1621 — 옛 대체 이름 공주님 · 도련님 · 당신도 이름이 아니다)
           const 날이름 = String((x && x.name) || '').trim();
           const n = R && R.nameOf ? R.nameOf(x) : (날이름 && 날이름 !== '이름 없음' ? 날이름 : '');
           return n || (x && x.isSelf ? '내 사주' : (x && (R && R.relationOf ? R.relationOf(x) : x.relation)) || 날이름);
-        }).filter(Boolean);
+        });
+        // 11-04 같은 부름이 둘 이상이면(이름 없는 「그 사람」 둘 · 같은 이름) 생년월일을 붙여 가른다 — 내 사람들 겹부름과 같은 꼴(v1622). 거름은 맨 끝에(순번이 ps 와 맞게).
+        const 셈 = {};
+        부름들.forEach((n) => { if (n) 셈[n] = (셈[n] || 0) + 1; });
+        이름 = 부름들.map((n, i) => { const b = (ps[i] && ps[i].birth) || {}; return n && 셈[n] > 1 && b.year ? n + '(' + b.year + '.' + b.month + '.' + b.day + ')' : n; }).filter(Boolean);
       }
     } catch (e) {}
     return { 원국, 원국이름, 사람, 이름 };

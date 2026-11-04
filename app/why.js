@@ -9,7 +9,7 @@
 (function (global) {
   'use strict';
   // 11-04 사람 고르기 이름 — 이름 없이 넣은 사람은 「나」 · 관계 + 생년월일(이름 없는 둘을 가를 수 있게). app.js 사람이름과 같은 거름
-  const 고르기이름 = (p, R) => { const n = String(p.name == null ? '' : p.name).trim(); return n && ['이름 없음', '공주님', '도련님', '당신'].indexOf(n) < 0 ? n : (R && R.relationOf ? R.relationOf(p) : (p.isSelf ? '나' : p.relation || '그 사람')) + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : ''); };
+  const 고르기이름 = (p, R) => { const n = String(p.name == null ? '' : p.name).trim(); return n && ['이름 없음', '공주님', '도련님', '당신', '새로 만난 사람'].indexOf(n) < 0 ? n : (R && R.relationOf ? R.relationOf(p) : (p.isSelf ? '나' : p.relation || '그 사람')) + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : ''); };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 채움 = (틀, 값) => String(틀 || '').replace(/\{([^{}]+)\}/g, (m, k) => (k in 값 ? 값[k] : m));
   // 잣대 — 한 항목의 두 수(나 · 보통 사람)를 같은 해 수로 적는다: 보통 사람 값 × 해 가 3.5 이상이 되는 가장 짧은 해(1 · 10 · 100년).

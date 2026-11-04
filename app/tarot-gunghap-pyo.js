@@ -27,6 +27,7 @@
   // 이름 없이 넣은 사람(people.js 가 「이름 없음」으로 저장)은 표에선 이름을 비우고, 문장에선 고르기 칩과 같은 부름(「나」 · 관계)으로(11-04)
   function 표이름(p) { if (PP && PP.nameOf) return PP.nameOf(p); var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }   // people.js nameOf(옛 대체 이름도 이름이 아니다, 11-04 v1621)
   function 부름(p) { return 표이름(p) || (PP && PP.relationOf ? PP.relationOf(p) : (p && p.isSelf ? '나' : (p && p.relation) || '그 사람')); }   // 고르기 칩과 같은 부름(people.js relationOf)
+  function 그부름(b) { var n = 부름(b); return n === '나' ? '상대' : n; }   // 11-04 이 쪽의 「나」는 첫 칸(묻는 사람) — 나를 둘째 칸에 고르면 이 쪽 글이 쓰는 「상대」로 부른다(v1622 · 표가 없어 줄 머리를 바꿀 수 없다)
   // 11-04 사장님 「사람추가하라고하네 문제있네」 — 두 사람 고르기 · 더하기 · 고치기를 이 쪽 안에서(pair-pick.js · 세 궁합 쪽 같이 씀). 고른 id 는 #na · #geu.
   function 고르기그림() {
     var G = C.고르기 || {};
@@ -66,14 +67,14 @@
       var 그것 = x.id === r.그카드.id && !r.그카드.같은카드;
       var 그림 = 그림id.test(x.id) ? '<img class="' + (x.놓임 === '거꾸로' ? 'rev' : '') + '" src="art/tarot/chaeksa-v1/' + x.id + '-s.webp?v=2" alt="" loading="lazy" decoding="async">' : '';
       return '<div class="tg-c' + (그것 ? ' him' : '') + '">' + 그림 + 칸('p', 'n', x.n + '. ' + (자리이름[x.n] || ''))
-        + 칸('p', 'y', x.이름) + 칸('p', 'g', [x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || '', 그것 ? 채움(P.상대표시, { 그: 부름(b) }) : ''].filter(Boolean).join(' · '))
+        + 칸('p', 'y', x.이름) + 칸('p', 'g', [x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || '', 그것 ? 채움(P.상대표시, { 그: 그부름(b) }) : ''].filter(Boolean).join(' · '))
         + 칸('p', 'm', 연애풀이(x, g)) + '</div>';
     }).join('') + '</div>';
   }
   function 그카드줄(r, b) {
     var K = C.그카드 || {}, 자리이름 = 펼침글.자리 || {}, k = r.그카드;
     if (k.같은카드) return 칸('p', 'why', K.같은카드);
-    return 칸('p', '', 채움(K.줄, { 그: 부름(b), 카드: k.이름 || '' }))
+    return 칸('p', '', 채움(K.줄, { 그: 그부름(b), 카드: k.이름 || '' }))
       + (k.자리 ? 칸('p', 'why', 채움(K.나온자리, { 자리: k.자리 + '. ' + (자리이름[k.자리] || '') })) : 칸('p', 'why', K.안나옴));
   }
   function 거르개칸(f, 걸림) {

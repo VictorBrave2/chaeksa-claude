@@ -2,7 +2,7 @@
 (function (global) {
   'use strict';
   // 11-04 이름 없이 넣은 사람(people.js 가 「이름 없음」으로 저장) · 옛 대체 이름은 이름이 없는 것으로 — app.js 사람이름과 같은 거름
-  const 이름있음 = n => { const s = String(n == null ? '' : n).trim(); return !!s && ['이름 없음', '공주님', '도련님', '당신'].indexOf(s) < 0; };
+  const 이름있음 = n => { const s = String(n == null ? '' : n).trim(); return !!s && ['이름 없음', '공주님', '도련님', '당신', '새로 만난 사람'].indexOf(s) < 0; };
   // 이름 없는 사람을 부르는 말은 people.js relationOf 하나로(11-04) — 고르기 칸 · 첫머리 · 홈 단추가 같은 사람을 같게 부른다
   const 관계말 = (p, R) => R && R.relationOf ? R.relationOf(p) : (p.isSelf ? '나' : p.relation || '그 사람');
   const 고르기이름 = (p, R) => 이름있음(p.name) ? String(p.name).trim() : 관계말(p, R) + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : '');
