@@ -265,7 +265,8 @@
         사람 = ps.length;
         이름 = ps.map((x) => {
           const n = (x && x.name) || '';
-          return n && n !== '이름 없음' ? n : x && x.isSelf ? '내 사주' : (x && x.relation) || n;
+          const R = window.ChaeksaPeople;   // 11-04 이름 없는 사람 부름은 people.js relationOf 하나로(v1620)
+          return n && n !== '이름 없음' ? n : x && x.isSelf ? '내 사주' : (x && (R && R.relationOf ? R.relationOf(x) : x.relation)) || n;
         }).filter(Boolean);
       }
     } catch (e) {}

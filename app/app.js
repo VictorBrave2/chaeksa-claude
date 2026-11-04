@@ -88,6 +88,8 @@
   // 이름 없이 넣은 사람을 부르는 말 — 「나」는 「나」인 사람, 그 밖은 관계(그 사람 · 연인 …). 10-02 전에는 이름 없는 그 사람도 「나」로 불렀다.
   // 11-04 people.js relationOf 하나로 — 고르기 칸 · 칩 · 오늘의 운세 첫머리와 같은 사람을 같게 부른다(「나」로만 남은 옛 사람도).
   const 이름없을때 = (p) => { const R = People(); return !p || p.isSelf ? '나' : R && R.relationOf ? R.relationOf(p) : (p.relation && p.relation !== '나' ? p.relation : '나'); };
+  // 관계 꼬리표(사람 창 목록 · 그 사람 칩 · 고르기 칸의 작은 줄)도 같은 셈 — 「나」로만 남은 옛 사람이 굵은 이름 「그 사람」, 꼬리표 「나」로 엇갈리지 않게(11-04 v1620)
+  const 관계꼬리 = (p) => { const R = People(); return R && R.relationOf ? R.relationOf(p) : (p && p.relation) || ''; };
   function renderPeopleBtn() {
     const btn = $('btnPerson'); if (!btn || !People()) return;
     const p = People().active();
@@ -128,7 +130,7 @@
       <div class="pr ${p.id === cur ? 'on' : ''}" data-id="${p.id}">
         <button class="pr-main" data-id="${p.id}" data-a="pick">
           <b>${esc(사람이름(p.name) || 이름없을때(p))}</b>
-          <span>${esc(p.relation)}${p.isSelf ? '' : ''} · ${p.birth.year}.${p.birth.month}.${p.birth.day}${p.birth.hour == null ? ' (시간 모름)' : ''}</span>
+          <span>${esc(관계꼬리(p))}${p.isSelf ? '' : ''} · ${p.birth.year}.${p.birth.month}.${p.birth.day}${p.birth.hour == null ? ' (시간 모름)' : ''}</span>
         </button>
         <button class="btn-ghost" data-id="${p.id}" data-a="edit" aria-label="수정">고치기</button>
         <button class="btn-ghost pr-del" data-id="${p.id}" data-a="del" aria-label="지우기">지우기</button>
@@ -997,7 +999,7 @@
   function 사람칩(wrap, sel, list, 고름, add) {
     sel.classList.add('ss-sel-hidden');
     let 칩 = wrap.querySelector('.ss-who'); if (!칩) { 칩 = document.createElement('div'); 칩.className = 'ss-who'; 칩.setAttribute('role', 'radiogroup'); wrap.appendChild(칩); }
-    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(사람이름(p.name) || '그 사람') + '</b><small>' + esc(p.relation) + '</small></button>').join('')
+    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(사람이름(p.name) || '그 사람') + '</b><small>' + esc(관계꼬리(p)) + '</small></button>').join('')
       + '<button type="button" class="ss-wh ss-wh-add">＋ 다른 사람</button>';
     칩.querySelectorAll('.ss-wh[data-id]').forEach(b => b.onclick = () => { if (sel.value === b.dataset.id) return; sel.value = b.dataset.id; sel.onchange(); });
     칩.querySelector('.ss-wh-add').onclick = () => openPersonForm(null);
@@ -1030,7 +1032,7 @@
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
     sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
-      + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
+      + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(관계꼬리(p))}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderChongnon(); };
     사람칩(wrap, sel, list, 고름, add);
@@ -1070,7 +1072,7 @@
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
     sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
-      + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('');
+      + list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(관계꼬리(p))}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
     사람칩(wrap, sel, list, 고름, add);
@@ -1099,7 +1101,7 @@
     const me = P.active();
     const list = P.list().filter(p => !me || p.id !== me.id);
     $('ghPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('')
+      ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(관계꼬리(p))}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGh').disabled = !list.length;
     $('btnGhAdd').onclick = () => openPersonForm(null);
@@ -1186,7 +1188,7 @@
     $('shPickWrap').classList.toggle('hide', !장.둘); $('btnShAdd').classList.toggle('hide', !장.둘);
     if ($('shSoloWrap')) $('shSoloWrap').classList.toggle('hide', !!장.둘);
     const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
-    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(p.relation)}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
+    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(사람이름(p.name) || '그 사람')} · ${esc(관계꼬리(p))}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
     $('btnSh').disabled = 장.둘 && !list.length;
     $('btnShAdd').onclick = () => openPersonForm(null);
     $('shResult').classList.add('hide');
