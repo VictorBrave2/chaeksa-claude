@@ -73,7 +73,7 @@
   });
   function 그리기() {
     try { PP.migrate(); } catch (e) {}
-    var 나 = PP && PP.self();
+    var 나 = PP && PP.hasSelf && PP.hasSelf() ? PP.self() : null;   // 11-04 그 사람만 넣은 손님의 첫 사람을 「당신」으로 읽지 않는다
     if (!나 || !나.birth || !나.birth.year) {
       $('me').innerHTML = '<div class="big"><p>먼저 <b>당신의 생년월일</b>을 넣어 주세요. 홈에서 당신의 사주를 한 번 보면 자동으로 저장돼요.</p></div>';
       $('add').innerHTML = '<a class="btn" href="./">홈에서 당신의 생년월일 넣기</a>'; return;

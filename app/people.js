@@ -54,6 +54,9 @@
   function self() { return list().find(p => p.isSelf) || list()[0] || null; }
   /** 「나」로 넣은 사람이 있는가(10-02) — self() 는 없으면 첫 사람을 주지만, 이것은 정말 「나」가 있을 때만 true. */
   function hasSelf() { return list().some(p => p.isSelf); }
+  /** 고치기 창의 숨은 관계 값(11-04 관계 칸을 걷은 뒤) — 고쳐도 누가 「나」인지 바뀌지 않게.
+   *  「나」면 「나」, 아니면 저장된 관계(다른 사람을 「나」로 새로 넣어 「나」로만 남은 옛 값은 「그 사람」). */
+  function relationOf(p) { return !p ? '그 사람' : p.isSelf ? '나' : (p.relation && p.relation !== '나' ? p.relation : '그 사람'); }
   function others() { const a = activeId(); return list().filter(p => p.id !== a); }
 
   /** 사람 하나 넣기. opt.옮김 — 옛 칸 옮기기(migrate)라 손님이 새로 넣은 게 아니다(깔때기에 안 셈). */
@@ -132,7 +135,7 @@
   }
 
   global.ChaeksaPeople = {
-    RELATIONS, list, add, update, remove, get, self, hasSelf, others,
+    RELATIONS, list, add, update, remove, get, self, hasSelf, relationOf, others,
     active, activeId, setActive, toProfile, migrate, birthOf,
   };
 })(window);

@@ -170,10 +170,11 @@
     if (mode === 'solar') { $('gaLeap').checked = false; $('gaLeapWrap').classList.add('hide'); }
     바꿈표();
   }
+  function 있는날(y, m, d) { var t = new Date(Date.UTC(y, m - 1, d)); return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; }
   function 양력() {
     var y = +$('gaY').value, m = +$('gaM').value, d = +$('gaD').value;
     if (!y || !m || !d) return null;
-    if (cal === 'solar') return { y: y, m: m, d: d };
+    if (cal === 'solar') return 있는날(y, m, d) ? { y: y, m: m, d: d } : { error: '날짜를 다시 확인해 주세요.' };   // 11-04 4월 31일 · 13월 · 두 자리 해
     if (!window.ChaeksaLunar) return { error: '음력 날짜를 양력으로 바꾸는 기능을 불러오지 못했어요. 새로고침해 주세요.' };
     var r = ChaeksaLunar.lunarToSolar(y, m, d, $('gaLeap').checked);
     return r && !r.error ? r : { error: (r && r.error) || '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
@@ -189,7 +190,7 @@
       note.classList.remove('hide');
       note.innerHTML = r.error ? '<b style="color:var(--g0-ink)">' + esc(r.error) + '</b>' : '음력 ' + y + '.' + m + '.' + d + ($('gaLeap').checked ? ' (윤달)' : '') + ' → 양력 <b>' + r.y + '년 ' + r.m + '월 ' + r.d + '일</b>';
     } else {
-      var l = ChaeksaLunar.solarToLunar(y, m, d); if (!l) { note.classList.add('hide'); return; }
+      var s = 양력(), l = s && !s.error && ChaeksaLunar.solarToLunar(y, m, d); if (!l) { note.classList.add('hide'); return; }
       note.classList.remove('hide');
       note.innerHTML = '양력 ' + y + '.' + m + '.' + d + ' → 음력 <b>' + l.year + '년 ' + (l.leap ? '윤' : '') + l.month + '월 ' + l.day + '일</b>';
     }
@@ -199,7 +200,7 @@
     편집 = id || null; 편집슬롯 = slot === 'second' ? 'second' : 'first';
     var p = 편집 ? 사람(편집) : null, b = p ? p.birth : {};
     $('gaTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
-    $('gaRel').value = p ? (p.relation || (p.isSelf ? '나' : '그 사람')) : (편집슬롯 === 'first' ? (kind === 'parent' ? '자녀' : (PP.hasSelf() ? '기타' : '나')) : (kind === 'parent' ? '기타' : '그 사람'));
+    $('gaRel').value = p ? PP.relationOf(p) : (편집슬롯 === 'first' ? (kind === 'parent' ? '자녀' : (PP.hasSelf() ? '기타' : '나')) : (kind === 'parent' ? '기타' : '그 사람'));
     try { $('gaPlace').innerHTML = PL ? PL.options() : '<option value="KR:서울">서울</option>'; } catch (e) {}
     $('gaName').value = p ? 이름(p) : '';
     cal = b.calendar === 'lunar' ? 'lunar' : 'solar';
