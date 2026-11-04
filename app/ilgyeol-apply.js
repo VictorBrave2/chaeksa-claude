@@ -118,7 +118,7 @@
     var h = '<div class="ss-who" role="radiogroup">' + list.map(function (x) {
       var n = 이름(x), b = x.birth;
       return '<button type="button" role="radio" aria-checked="' + (x.id === id) + '" class="ss-wh' + (x.id === id ? ' on' : '') + '" data-pick="' + esc(x.id) + '">'
-        + '<b>' + esc(n || (x.isSelf ? '나' : x.relation || '그 사람')) + '</b><small>' + esc(n ? (x.relation || '') : b.year + '.' + b.month + '.' + b.day) + '</small></button>';
+        + '<b>' + esc(n || PP.relationOf(x)) + '</b><small>' + esc(n ? (x.relation ? PP.relationOf(x) : '') : b.year + '.' + b.month + '.' + b.day) + '</small></button>';   // 부르는 말은 people.js relationOf 하나로
     }).join('') + '<button type="button" class="ss-wh ss-wh-add" data-add="who">＋ 사람 추가</button></div>';
     if (p) {
       h += '<p class="picked">' + esc(생일말(p.birth)) + ' <button type="button" class="lnk" data-edit="' + esc(p.id) + '">고치기</button></p>';
