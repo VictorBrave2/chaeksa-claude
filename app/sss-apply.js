@@ -110,7 +110,7 @@
     var h = '<div class="ss-who" role="radiogroup">' + list.map(function (x) {
       var n = 이름(x), b = x.birth;
       return '<button type="button" role="radio" aria-checked="' + (x.id === id) + '" class="ss-wh' + (x.id === id ? ' on' : '') + '" data-pick="' + esc(x.id) + '">'
-        + '<b>' + esc(n || (x.isSelf ? '나' : x.relation || '그 사람')) + '</b><small>' + esc(n ? (x.relation || '') : b.year + '.' + b.month + '.' + b.day) + '</small></button>';
+        + '<b>' + esc(n || PP.relationOf(x)) + '</b><small>' + esc(n ? (x.relation ? PP.relationOf(x) : '') : b.year + '.' + b.month + '.' + b.day) + '</small></button>';   // 부르는 말은 people.js relationOf 하나로
     }).join('') + '<button type="button" class="ss-wh ss-wh-add" data-add="' + slot + '">＋ 사람 추가</button></div>';
     if (p) {
       h += '<p class="picked">' + esc(생일말(p.birth)) + ' <button type="button" class="lnk" data-edit="' + esc(p.id) + '">고치기</button></p>';
@@ -171,7 +171,7 @@
     편집 = id || null; 편집슬롯 = slot === 'second' ? 'second' : 'first';
     var p = 편집 ? 사람(편집) : null, b = p ? p.birth : {};
     $('gaTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
-    $('gaRel').value = p ? PP.relationOf(p) : (편집슬롯 === 'first' ? (PP.hasSelf() ? '기타' : '나') : '그 사람');
+    $('gaRel').value = p ? PP.relationOf(p, 편집슬롯 === 'second' ? '그 사람' : '') : (편집슬롯 === 'first' ? (PP.hasSelf() ? '기타' : '나') : '그 사람');   // 둘째 분 칸에서 고친 옛 「나」는 「나」로 되살리지 않는다
     try { $('gaPlace').innerHTML = PL ? PL.options() : '<option value="KR:서울">서울</option>'; } catch (e) {}
     $('gaName').value = p ? 이름(p) : '';
     cal = b.calendar === 'lunar' ? 'lunar' : 'solar';

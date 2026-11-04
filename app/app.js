@@ -85,8 +85,9 @@
   let pendingPick = null;    // 방금 추가한 사람 — 공범 선택칸에 미리 골라둔다
 
 
-  // 이름 없이 넣은 사람을 부르는 말 — 「나」는 「나」로 넣은 사람뿐, 그 밖은 관계(그 사람 · 연인 …). 10-02 전에는 이름 없는 그 사람도 「나」로 불렀다.
-  const 이름없을때 = (p) => (p && !p.isSelf && p.relation && p.relation !== '나') ? p.relation : '나';
+  // 이름 없이 넣은 사람을 부르는 말 — 「나」는 「나」인 사람, 그 밖은 관계(그 사람 · 연인 …). 10-02 전에는 이름 없는 그 사람도 「나」로 불렀다.
+  // 11-04 people.js relationOf 하나로 — 고르기 칸 · 칩 · 오늘의 운세 첫머리와 같은 사람을 같게 부른다(「나」로만 남은 옛 사람도).
+  const 이름없을때 = (p) => { const R = People(); return !p || p.isSelf ? '나' : R && R.relationOf ? R.relationOf(p) : (p.relation && p.relation !== '나' ? p.relation : '나'); };
   function renderPeopleBtn() {
     const btn = $('btnPerson'); if (!btn || !People()) return;
     const p = People().active();
