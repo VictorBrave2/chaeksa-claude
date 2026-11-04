@@ -148,7 +148,7 @@
   let 사람폼길 = null, 사람폼누구 = null;
   const 사람폼처음 = {};
   function 사람폼모양(m) {
-    const say = $('pfSay'), why = $('pfWhy'), rel = $('pfRelWrap'), agree = $('pfAgree'), save = $('pfSave'), nm = $('pfName');
+    const say = $('pfSay'), why = $('pfWhy'), agree = $('pfAgree'), save = $('pfSave'), nm = $('pfName');
     if (사람폼처음.say == null) { 사람폼처음.say = say ? say.textContent : ''; 사람폼처음.save = save ? save.textContent : '저장'; 사람폼처음.ph = nm ? nm.placeholder : ''; }
     사람폼길 = null; 사람폼누구 = m ? m.누구 : null;
     if (say) say.textContent = (m && m.말) || 사람폼처음.say;
@@ -156,7 +156,6 @@
       why.classList.toggle('hide', !(m && m.이름));
       if (m && m.이름) { $('pfWhyN').textContent = m.이름; $('pfWhyS').textContent = m.필요 ? '필요한 것 — ' + m.필요 : ''; }
     }
-    if (rel) rel.classList.toggle('hide', !!(m && m.길));
     if (agree) agree.classList.toggle('hide', 사람폼누구 === 'me');   // 「그 사람 동의를 받고」는 내 생년월일에는 맞지 않는다
     if (save) save.textContent = (m && m.단추) || 사람폼처음.save;
     if (nm) nm.placeholder = 사람폼누구 === 'me' ? '예: 지수' : 사람폼처음.ph;
@@ -190,12 +189,12 @@
     editingId = id || null;
     const p = id ? P.get(id) : null, 나칸 = !!(모양 && 모양.누구 === 'me');
     $('pfTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
-    $('pfRel').innerHTML = P.RELATIONS.map(r => `<option value="${r}">${r}</option>`).join('');
     if ($('pfPlace') && window.ChaeksaPlaces) $('pfPlace').innerHTML = ChaeksaPlaces.options();
     const b = p ? p.birth : {};
     $('pfName').value = p ? p.name : '';
     // 10-02 누구 것인지 정해서 열면(사람폼열기) 관계도 그대로 — 처음 넣는 사람이라고 「나」로 두지 않는다(people.js add 머리말)
-    $('pfRel').value = p ? p.relation : 모양 ? (나칸 ? '나' : '그 사람') : (P.list().length ? '그 사람' : '나');
+    // 11-04 사장님 「사람 추가에서 나와의 관계는 없어도 될 것 같아」 — 관계 칸을 걷고 숨은 값(#pfRel)만. 아래 기본값이 곧 저장값
+    $('pfRel').value = p ? (p.relation || (p.isSelf ? '나' : '그 사람')) : 모양 ? (나칸 ? '나' : '그 사람') : (P.list().length ? '그 사람' : '나');
     pfCal = b.calendar === 'lunar' ? 'lunar' : 'solar';
     setPfCal(pfCal);
     if (pfCal === 'lunar' && b.lunarInput) {
