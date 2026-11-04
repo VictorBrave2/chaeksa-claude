@@ -5,7 +5,17 @@
   const 이름있음 = n => { const s = String(n == null ? '' : n).trim(); return !!s && ['이름 없음', '공주님', '도련님', '당신', '새로 만난 사람'].indexOf(s) < 0; };
   // 이름 없는 사람을 부르는 말은 people.js relationOf 하나로(11-04) — 고르기 칸 · 첫머리 · 홈 단추가 같은 사람을 같게 부른다
   const 관계말 = (p, R) => R && R.relationOf ? R.relationOf(p) : (p.isSelf ? '나' : p.relation || '그 사람');
-  const 고르기이름 = (p, R) => 이름있음(p.name) ? String(p.name).trim() : 관계말(p, R) + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : '');
+  // 11-04 같은 이름이 둘 이상이면 이름 뒤에도 생년월일을 붙여 가른다(v1624 — 내 사람들 겹부름 · 계정 저장 물음창과 같은 꼴). 셈은 보이는 고르기 목록(l)으로, 이름 거름은 people.js nameOf
+  const 날꼬리 = p => p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : '';
+  const 맨이름 = (p, R) => R && R.nameOf ? R.nameOf(p) : (이름있음(p.name) ? String(p.name).trim() : '');
+  const 겹셈 = new WeakMap();
+  const 고르기이름 = (p, R, l) => {
+    const n = 맨이름(p, R);
+    if (!n) return 관계말(p, R) + 날꼬리(p);
+    let c = l ? 겹셈.get(l) : null;
+    if (l && !c) { c = {}; l.forEach(x => { const m = 맨이름(x, R); if (m) c[m] = (c[m] || 0) + 1; }); 겹셈.set(l, c); }
+    return n + (c && c[n] > 1 ? 날꼬리(p) : '');
+  };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateText = s => { const a=s.split('-'); return Number(a[1])+'월 '+Number(a[2])+'일'; };
   const dayKey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -139,7 +149,7 @@
       const first=v.첫줄, quietTitle=text('조용.한줄');
       const yLines=yv?T.조립(yv,P).칸[0].줄:[], yText=(yLines.find(x=>x.자리==='결과.한줄')||yLines.find(x=>x.자리==='첫줄.한줄')||{}).글||'';
       const yBox=yText?'<p class="today-yesterday"><span>어제 바라본 오늘</span>'+esc(yText)+(yv.때?' <small>'+clockRange(yv.때.시작분,yv.때.끝분)+'</small>':'')+'</p>':'';
-      root.innerHTML='<div class="today-person"><label for="today-person">누구의 하루를 볼까요?</label><select id="today-person">'+list.map(p=>'<option value="'+esc(p.id)+'"'+(p.id===selected?' selected':'')+'>'+esc(고르기이름(p,people))+'</option>').join('')+'</select></div>'
+      root.innerHTML='<div class="today-person"><label for="today-person">누구의 하루를 볼까요?</label><select id="today-person">'+list.map(p=>'<option value="'+esc(p.id)+'"'+(p.id===selected?' selected':'')+'>'+esc(고르기이름(p,people,list))+'</option>').join('')+'</select></div>'
         +'<div class="today-refresh" hidden><span>새로운 하루가 시작됐어요.</span><button type="button" id="today-refresh">오늘 운세 보기</button></div>'
         +'<article id="today-result"><section class="today-hero"><div class="today-hero-copy"><p class="today-kicker">오늘의 운세 · 사주로 읽는 오늘</p><time datetime="'+v.날짜+'"><span class="today-person-name">'+esc(이름있음(person.name)?String(person.name).trim():(r=>r==='나'?'당신':r)(관계말(person,people)))+'</span>'+dateText(v.날짜)+' '+esc(v.요일)+'요일</time><h1>'+esc(text('결과.한줄')||(v.조용?quietTitle:(text('첫줄.사건')||text('첫줄.한줄'))))+'</h1>'+(v.때&&(text('때.한줄')||(v.작용&&v.작용.시))?'<p class="today-clock">'+(text('때.이름')?'<span>'+esc(text('때.이름'))+'</span>':'')+clockRange(v.때.시작분,v.때.끝분)+'</p>'+(text('때.한줄')?'<p class="today-hero-foot today-when">'+esc(text('때.한줄'))+(text('이음.뒤')?' '+esc(text('이음.뒤')):'')+'</p>':''):'')+(v.조용&&!text('결과.한줄')?'<p class="today-quiet-copy">'+esc(text('첫줄.한줄'))+'</p>':'')+(text('결과.한줄')?'':'<p class="today-hero-foot">'+(v.조용?'큰 변화보다 익숙한 흐름이 이어집니다.':first.쪽==='천간'?'오늘은 생각의 변화부터 읽어 보세요.':'오늘은 행동의 변화부터 읽어 보세요.')+'</p>')+'</div>'+eventGuide('결과.한줄',narrator,'(max-width: 800px) 128px, 240px',false)+'</section>'
         // 10-29 사장님 「구조가 뒤죽박죽인데 교통정리」 — 차례: 오늘 일어나는 일(제목 · 시간 · 누구와) → 생각 → 오늘 이렇게 해 보세요 → 왜(접힘: 누구 · 태도 · 둘째 흐름 · 바탕 · 근거) → 어제 바라본 오늘 → 이번 주. 목차 칩은 뺐다.
