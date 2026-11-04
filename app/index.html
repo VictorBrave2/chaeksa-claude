@@ -660,9 +660,8 @@
     <div class="fc-what pf-why hide" id="pfWhy"><h2 id="pfWhyN"></h2><p class="hint" id="pfWhyS"></p></div>
     <label>뭐라고 부를까요</label>
     <input id="pfName" type="text" aria-label="이름" placeholder="이름 또는 「그 사람」" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
-    <!-- 10-02 누구 생년월일인지 정해진 채로 열면(사람폼열기) 관계 칸은 숨긴다 — 사용설명서에서 그 사람을 「나」로 고르는 일이 없게 -->
-    <div id="pfRelWrap"><label>나와의 관계</label>
-    <select id="pfRel" aria-label="나와의 관계"></select></div>
+    <!-- 11-04 사장님 「사람 추가에서 나와의 관계는 없어도 될 것 같아」 — 관계 칸을 걷었다. 관계는 숨은 값: 여는 자리가 정한 그대로(첫 사람 · 「나」 칸 = 나, 그 밖 = 그 사람 · 기타), 고칠 때는 저장된 관계 그대로 -->
+    <input type="hidden" id="pfRel">
     <label>생년월일</label>
     <div class="seg" id="pfCalSeg">
       <button type="button" data-cal="solar" class="on">양력</button>
@@ -798,7 +797,7 @@
 <script src="to-paid.js?v=48400a08d8"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=a07212dccd"></script>
+<script src="home-cats.js?v=fc35ad1e7f"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=bda9866c97"></script>
 <script src="share.js?v=4b8ab83494"></script>
@@ -878,7 +877,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
-<script src="app.js?v=c5498b0ca2"></script>
+<script src="app.js?v=9f3d2f70f6"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
      아래 template 안의 스크립트는 처음에는 받지도 돌지도 않는다(template 안은 화면 밖이다). 탭을 열 때 app.js 「탭별 꾸러미」가

@@ -92,7 +92,7 @@
     d.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pkTitle">'
       + '<h3 id="pkTitle">사람 추가</h3>'
       + '<label for="pkName">뭐라고 부를까요</label><input id="pkName" type="text" maxlength="20" placeholder="이름 또는 「그 사람」" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">'
-      + '<label for="pkRel">나와의 관계</label><select id="pkRel"></select>'
+      + '<input type="hidden" id="pkRel">'   // 11-04 사장님 「사람 추가에서 나와의 관계는 없어도 될 것 같아」 — 관계는 칸 자리로 정한 숨은 값
       + '<label>생년월일</label><div class="seg" id="pkCalSeg"><button type="button" data-cal="solar" class="on">양력</button><button type="button" data-cal="lunar">음력</button></div>'
       + '<div class="row"><input id="pkY" type="number" aria-label="태어난 해" placeholder="태어난 해" inputmode="numeric"><input id="pkM" type="number" aria-label="월" placeholder="월" inputmode="numeric"><input id="pkD" type="number" aria-label="일" placeholder="일" inputmode="numeric"></div>'
       + '<div class="check hide" id="pkLeapWrap"><input type="checkbox" id="pkLeap"><label for="pkLeap" style="margin:0">윤달이에요</label></div>'
@@ -153,8 +153,7 @@
     편집 = id || null; 편집슬롯 = slot === 'second' ? 'second' : 'first';
     var p = 편집 ? 사람(편집) : null, b = p ? p.birth : {};
     $('pkTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
-    $('pkRel').innerHTML = (PP.RELATIONS || ['나', '그 사람', '기타']).map(function (r) { return '<option value="' + esc(r) + '">' + esc(r) + '</option>'; }).join('');
-    $('pkRel').value = p ? p.relation : (편집슬롯 === 'first' ? (PP.hasSelf() ? '기타' : '나') : '그 사람');
+    $('pkRel').value = p ? (p.relation || (p.isSelf ? '나' : '그 사람')) : (편집슬롯 === 'first' ? (PP.hasSelf() ? '기타' : '나') : '그 사람');
     try { $('pkPlace').innerHTML = PL ? PL.options() : '<option value="KR:서울">서울</option>'; } catch (e) { $('pkPlace').innerHTML = '<option value="KR:서울">서울</option>'; }
     $('pkName').value = p ? 이름(p) : '';
     cal = b.calendar === 'lunar' ? 'lunar' : 'solar';

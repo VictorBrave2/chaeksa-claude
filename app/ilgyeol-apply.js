@@ -175,8 +175,7 @@
     편집 = id || null;
     var p = 편집 ? 사람(편집) : null, b = p ? p.birth : {};
     $('gaTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
-    $('gaRel').innerHTML = PP.RELATIONS.map(function (r) { return '<option value="' + esc(r) + '">' + esc(r) + '</option>'; }).join('');
-    $('gaRel').value = p ? p.relation : (PP.hasSelf() ? '기타' : '나');
+    $('gaRel').value = p ? (p.relation || (p.isSelf ? '나' : '그 사람')) : (PP.hasSelf() ? '기타' : '나');
     try { $('gaPlace').innerHTML = PL ? PL.options() : '<option value="KR:서울">서울</option>'; } catch (e) {}
     $('gaName').value = p ? 이름(p) : '';
     cal = b.calendar === 'lunar' ? 'lunar' : 'solar';

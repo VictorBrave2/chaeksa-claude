@@ -161,8 +161,8 @@
     <h3 id="gaTitle">사람 추가</h3>
     <label for="gaName">뭐라고 부를까요</label>
     <input id="gaName" type="text" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="ko">
-    <label for="gaRel">나와의 관계</label>
-    <select id="gaRel"></select>
+    <!-- 11-04 사장님 「사람 추가에서 나와의 관계는 없어도 될 것 같아」 — 관계 칸을 걷었다. 관계는 숨은 값: 여는 자리가 정한 그대로(첫 사람 · 「나」 칸 = 나, 그 밖 = 그 사람 · 기타), 고칠 때는 저장된 관계 그대로 -->
+    <input type="hidden" id="gaRel">
     <label>생년월일</label>
     <div class="seg" id="gaCalSeg">
       <button type="button" data-cal="solar" class="on">양력</button>
@@ -202,7 +202,7 @@
 <script src="places.js?v=1350b96148"></script>
 <script src="astro.js?v=c0bb3fa175"></script>
 <script src="lunar.js?v=9d5b6391f1"></script>
-<script src="gyeolhon-apply.js?v=f597775905"></script>
+<script src="gyeolhon-apply.js?v=ff398c42ad"></script>
 <script>
 // 검수 계정(super)이면 맨 위 띠로 사장님 목록 길을 보인다(화면 편의 — 실제 막음은 DB ai_plan()).
 (function () {
