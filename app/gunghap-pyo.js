@@ -22,8 +22,9 @@
 
   function 사람목록() { return PP && PP.list ? PP.list().filter(function (p) { return p && p.birth && p.birth.year; }) : []; }
   // 이름 없이 넣은 사람(people.js 가 「이름 없음」으로 저장)은 표에선 이름을 비우고, 문장에선 고르기 칩과 같은 부름(「나」 · 관계)으로(11-04)
-  function 표이름(p) { var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }
+  function 표이름(p) { if (PP && PP.nameOf) return PP.nameOf(p); var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }   // people.js nameOf(옛 대체 이름도 이름이 아니다, 11-04 v1621)
   function 부름(p) { return 표이름(p) || (PP && PP.relationOf ? PP.relationOf(p) : (p && p.isSelf ? '나' : (p && p.relation) || '그 사람')); }   // 고르기 칩과 같은 부름(people.js relationOf)
+  function 나인가(p) { return PP && PP.relationOf ? PP.relationOf(p) === '나' : !!(p && p.isSelf); }   // 고르기 칩이 「나」라 부르는 사람(people.js relationOf)
   // 11-04 사장님 「사람추가하라고하네 문제있네」 — 두 사람 고르기 · 더하기 · 고치기를 이 쪽 안에서(pair-pick.js · 세 궁합 쪽 같이 씀). 고른 id 는 #na · #geu.
   function 고르기그림() {
     var G = C.고르기 || {};
@@ -51,9 +52,9 @@
       .catch(function () { $('out').innerHTML = ''; err.textContent = C.오류 || ''; });
   }
   function 명식표(r, a, b) {
-    var M = C.명식 || {};
+    var M = C.명식 || {}, 머리들 = 나인가(b) && !나인가(a) ? [M.그, M.나] : [M.나, M.그];   // 11-04 표의 줄 머리(나 · 상대)는 사람을 따라간다 — 나를 「함께 볼 사람」 칸에 고르면 그 줄이 「나」(고르기 칩의 「나」와 같은 사람, v1621)
     var 줄 = function (머리, 이름, 기둥) { return '<tr><th>' + esc(머리 || '') + ' <small>' + esc(이름 || '') + '</small></th>' + 기둥.map(function (g) { return '<td>' + esc(g || '—') + '</td>'; }).join('') + '</tr>'; };
-    return '<div class="card gh-ms"><table>' + 줄(M.나, 표이름(a), r.명식.나) + 줄(M.그, 표이름(b), r.명식.그) + '</table></div>';
+    return '<div class="card gh-ms"><table>' + 줄(머리들[0], 표이름(a), r.명식.나) + 줄(머리들[1], 표이름(b), r.명식.그) + '</table></div>';
   }
   function 거르개칸(f, 걸림) {
     var g = 글of(f), 근 = C.근거 || {};

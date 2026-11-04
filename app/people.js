@@ -59,6 +59,10 @@
    *  「나」가 아무도 없으면 「나」(고쳐 저장하면 다시 「나」 — 관계 칸이 없어 이것 말고는 되살릴 길이 없다).
    *  남자리 — 고치기 창이 다른 사람 자리(함께 볼 사람 칸 · 부모 손님의 자녀 · 상대 칸)면 그 자리 관계를 넘긴다. 옛 「나」를 거기서는 「나」로 되살리지 않는다. */
   function relationOf(p, 남자리) { return !p ? '그 사람' : p.isSelf ? '나' : p.relation === '나' ? (남자리 || (hasSelf() ? '그 사람' : '나')) : (p.relation || '그 사람'); }
+  /** 손님이 넣은 이름 — 없으면 ''(11-04 v1621). 이름을 비우면 add 가 「이름 없음」으로 적고, 09-10 전에는 「공주님」 · 「도련님」 · 「당신」이 이름 대신 저장됐다(migrate · update · 로그인 되살리기가 그대로 옮긴다).
+   *  넷 다 이름이 아니다 — 이름 없는 사람은 relationOf 로 부른다. 이름을 거르는 곳은 모두 이것으로(app.js 사람이름 · today · three · why · love 의 거름과 같은 넷). */
+  const 이름아님 = ['이름 없음', '공주님', '도련님', '당신'];
+  function nameOf(p) { const n = p && p.name != null ? String(p.name).trim() : ''; return n && 이름아님.indexOf(n) < 0 ? n : ''; }
   function others() { const a = activeId(); return list().filter(p => p.id !== a); }
 
   /** 사람 하나 넣기. opt.옮김 — 옛 칸 옮기기(migrate)라 손님이 새로 넣은 게 아니다(깔때기에 안 셈). */
@@ -137,7 +141,7 @@
   }
 
   global.ChaeksaPeople = {
-    RELATIONS, list, add, update, remove, get, self, hasSelf, relationOf, others,
+    RELATIONS, list, add, update, remove, get, self, hasSelf, relationOf, nameOf, others,
     active, activeId, setActive, toProfile, migrate, birthOf,
   };
 })(window);

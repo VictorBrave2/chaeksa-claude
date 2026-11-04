@@ -144,7 +144,8 @@
       longitude: p.longitude == null ? null : +p.longitude, tzOffset: p.tzOffset == null ? null : +p.tzOffset };
   }
   function 표(b) { return [b.year, b.month, b.day, b.hour, b.minute, b.gender, b.longitude, b.tzOffset].join('|'); }
-  function 이름(p) { var n = p && p.name ? String(p.name) : ''; return n && n !== '이름 없음' ? n : '그 사람'; }
+  function 맨이름(p) { var R = global.ChaeksaPeople, n = p && p.name ? String(p.name) : ''; return R && R.nameOf ? R.nameOf(p) : (n && n !== '이름 없음' ? n : ''); }   // 손님이 넣은 이름(없으면 '') — people.js nameOf(옛 대체 이름도 이름이 아니다, 11-04 v1621)
+  function 이름(p) { var R = global.ChaeksaPeople; return 맨이름(p) || (R && R.relationOf ? R.relationOf(p) : '그 사람'); }   // 이름 없는 사람은 다른 화면과 같은 부름(relationOf) — 이름 없는 나를 「그 사람」으로 부르지 않는다
   // 로그인 표(토큰)를 실어 보낸다 — 서버는 로그인한 사람만 받는다. 실패하면 서버 본문(결제 열쇠 등)을 오류에 붙여 둔다.
   function post(path, body) {
     var C = global.ChaeksaCloud;
@@ -344,7 +345,7 @@
       + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>연애할 때의 그 사람</h2>')
       + (목록.length
         ? '<div id="pairPickWrap" style="margin:0 0 10px"><label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label><select id="pairPick">'
-          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(PP.relationOf ? PP.relationOf(p) : p.relation) : '') + '</option>'; }).join('')
+          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (!맨이름(p) && p.birth ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(PP.relationOf ? PP.relationOf(p) : p.relation) : '') + '</option>'; }).join('')
           + '</select></div>'
         : '<button class="btn" id="pairAdd" type="button" style="width:100%;margin:0 0 10px">그 사람 생년월일 넣기</button>')
       + '<div id="pairHead"></div><p class="hint" id="pairSt" style="margin:8px 0 0"></p><div id="pairErr"></div></section>'
