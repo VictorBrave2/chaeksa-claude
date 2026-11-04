@@ -264,9 +264,10 @@
       if (Array.isArray(ps)) {
         사람 = ps.length;
         이름 = ps.map((x) => {
-          const n = (x && x.name) || '';
-          const R = window.ChaeksaPeople;   // 11-04 이름 없는 사람 부름은 people.js relationOf 하나로(v1620)
-          return n && n !== '이름 없음' ? n : x && x.isSelf ? '내 사주' : (x && (R && R.relationOf ? R.relationOf(x) : x.relation)) || n;
+          const R = window.ChaeksaPeople;   // 11-04 이름 없는 사람 부름은 people.js relationOf 하나로(v1620) · 이름 거름은 nameOf(v1621 — 옛 대체 이름 공주님 · 도련님 · 당신도 이름이 아니다)
+          const 날이름 = String((x && x.name) || '').trim();
+          const n = R && R.nameOf ? R.nameOf(x) : (날이름 && 날이름 !== '이름 없음' ? 날이름 : '');
+          return n || (x && x.isSelf ? '내 사주' : (x && (R && R.relationOf ? R.relationOf(x) : x.relation)) || 날이름);
         }).filter(Boolean);
       }
     } catch (e) {}

@@ -15,7 +15,10 @@
     2: ['한쪽은 주고 한쪽은 거스르는 사람', '한쪽은 상대가 바라는 것을 주고, 다른 쪽은 상대가 바라는 것과 반대로 말하고 행동해요.'],
     1: ['서로 주고받지 못하는 사람', '서로 바라는 것이 엇갈려요. 맞춰 가야 하는 사이예요. 각 카드의 「바라는 사람」에 적힌 것을 그 사람에게 일부러 해 주세요.'],
   };
-  function 이름(p) { return (p.name && p.name !== '이름 없음' ? p.name : '') || (PP && PP.relationOf ? PP.relationOf(p) : p.relation) || '이름 없음'; }   // 이름 없는 사람은 다른 화면과 같은 부름(people.js relationOf)
+  function 이름(p) { return (PP && PP.nameOf ? PP.nameOf(p) : (p.name && p.name !== '이름 없음' ? p.name : '')) || (PP && PP.relationOf ? PP.relationOf(p) : p.relation) || '이름 없음'; }   // 이름 없는 사람은 다른 화면과 같은 부름(people.js nameOf · relationOf)
+  // 11-04 넣어 둔 사람들 사이에 같은 부름이 둘 이상이면(이름 없는 「그 사람」 둘 · 같은 이름) 생년월일을 붙여 가른다 — pair-pick 칩과 같은 꼴(v1621). 그리기가 셈을 채운다.
+  var 겹부름 = {};
+  function 부름(p) { var n = 이름(p), b = p.birth || {}; return 겹부름[n] ? n + '(' + b.year + '.' + b.month + '.' + b.day + ')' : n; }
   function 명식(p) { try { return E.calc(PP.toProfile(p)); } catch (e) { return null; } }
   function 바람(R) { try { var k = SS.일지십신(R), 말 = 바람말(k).replace(/^이 사람은 원래 /, '').replace(/이 사람은 /g, '').replace('곁에 두고 싶어 해요', '곁에 두고 싶어요').replace(/^자기 말을/, '당신의 말을').replace('자기 마음', '당신의 마음').replace(/^자기를/, '당신을'); return 말 ? { 말: 말, 십신: k } : null; } catch (e) { return null; } }
   // 10-12 사장님 「이 컨텐츠의 목적은 새로 만난 사람에 대해 한눈에 알아보기」 · 「이 사람은 원래 이래로 가」 — 카드 한 장 네 줄, 모두 시 없이.
@@ -53,7 +56,7 @@
     if (r.나쪽.깎는다) 주고 += ' 그 사람은 당신이 바라는 것과 반대로 말하고 행동해요.';
     if (r.그쪽.깎는다) 주고 += ' 당신은 그 사람이 바라는 것과 반대로 말하고 행동해요.';
     var 줄 = function (머리, 말) { return 말 ? '<p class="ln"><b>' + esc(머리) + '</b> ' + esc(말) + '</p>' : ''; };
-    return '<div class="card pp"><div class="y" style="font-size:var(--t4)">' + esc(이름(p)) + (u && u.기운 ? ' <small style="color:var(--accent)">서로 바라는 것을 살려 주는 사이(으뜸)</small>' : '') + '</div>'
+    return '<div class="card pp"><div class="y" style="font-size:var(--t4)">' + esc(부름(p)) + (u && u.기운 ? ' <small style="color:var(--accent)">서로 바라는 것을 살려 주는 사이(으뜸)</small>' : '') + '</div>'
       + 줄('말과 행동', 언행말(R)) + 줄('바라는 사람', 바람말(SS.일지십신(R))) + 줄('당신과는', 주고) + 줄('달라지는 때', 달라짐(R)) + '</div>';
   }
   // 새로 만난 사람 넣기 — 이름 · 생년월일만(시 없이). 이 기기에만 저장(people.js).
@@ -81,16 +84,17 @@
       $('add').innerHTML = '<a class="btn" href="./">홈에서 당신의 생년월일 넣기</a>'; return;
     }
     var 나R = 명식(나), 다른 = PP.list().filter(function (p) { return p.id !== 나.id && p.birth && p.birth.year; });
+    겹부름 = {}; var 부름셈 = {}; 다른.forEach(function (p) { var n = 이름(p); 부름셈[n] = (부름셈[n] || 0) + 1; }); Object.keys(부름셈).forEach(function (n) { if (부름셈[n] > 1) 겹부름[n] = true; });
     $('sub').textContent = '태어난 날의 아래 글자(일지)로 당신이 사람에게 바라는 것을 봐요. 저장한 사람마다, 당신과 그 사람이 서로 바라는 것을 주는지 보여 줘요. 생년월일은 이 기기에만 저장돼요.';
     var 내바람 = 바람(나R);
     var 칸 = {}, 서로 = 0, 으뜸들 = [];
     다른.forEach(function (p) {
       var R = 명식(p); if (!R || !나R) return;
       var r = SC.재기(나R, R), u = SC.으뜸(나R, R); if (r.단계 === 4) 서로++;
-      if (u && u.기운) 으뜸들.push(이름(p));
+      if (u && u.기운) 으뜸들.push(부름(p));
       (칸[r.단계] = 칸[r.단계] || []).push(카드(p, R, r, u));
     });
-    $('me').innerHTML = 넣기칸() + '<div class="ring"><span class="me">당신</span>' + 다른.map(function (p) { return '<span style="border:1px solid var(--line2);border-radius:999px;padding:8px 14px">' + esc(이름(p)) + '</span>'; }).join('') + '</div>'
+    $('me').innerHTML = 넣기칸() + '<div class="ring"><span class="me">당신</span>' + 다른.map(function (p) { return '<span style="border:1px solid var(--line2);border-radius:999px;padding:8px 14px">' + esc(부름(p)) + '</span>'; }).join('') + '</div>'
       + (내바람 ? '<p class="why">당신이 사람에게 바라는 것: <b>' + esc(내바람.말) + '</b> <small>(' + esc(내바람.십신) + ')</small></p>' : '');
     if (!다른.length) {
       $('out').innerHTML = '<div class="big"><p>아직 저장한 사람이 없어요. <b>한 사람만</b> 넣어 보세요. 당신과 그 사람이 서로 바라는 것을 주고받는지 나와요.</p></div>';

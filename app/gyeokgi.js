@@ -104,7 +104,7 @@
     var r = document.querySelector('input[name=g][value=' + (b.gender === 'F' ? 'F' : 'M') + ']'); if (r) r.checked = true;
     if (b.place) { $('p').value = b.place; if ($('p').value !== b.place) $('p').value = 'KR:서울'; }
   }
-  function 이름표(p) { var b = p.birth, 이름 = p.name && p.name !== '이름 없음' ? p.name : (PP && PP.relationOf ? PP.relationOf(p) : p.relation || '나'); return 이름 + ' · ' + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시 모름)' : ' ' + b.hour + '시'); }
+  function 이름표(p) { var b = p.birth, 이름 = (PP && PP.nameOf ? PP.nameOf(p) : (p.name && p.name !== '이름 없음' ? p.name : '')) || (PP && PP.relationOf ? PP.relationOf(p) : p.relation || '나'); return 이름 + ' · ' + b.year + '.' + b.month + '.' + b.day + (b.hour == null ? ' (시 모름)' : ' ' + b.hour + '시'); }
   function 고르기(i) {
     var p = 사람들[i]; if (!p) return;
     Array.prototype.forEach.call(document.querySelectorAll('#who .who button[data-i]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-i') === i); });

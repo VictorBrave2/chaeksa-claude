@@ -16,7 +16,7 @@
 
   function 목록() { try { return PP ? PP.list().filter(function (p) { return p && p.birth && p.birth.year; }) : []; } catch (e) { return []; } }
   function 사람(id) { try { var p = id && PP ? PP.get(id) : null; return p && p.birth && p.birth.year ? p : null; } catch (e) { return null; } }
-  function 이름(p) { var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }
+  function 이름(p) { if (PP && PP.nameOf) return PP.nameOf(p); var n = p && p.name ? String(p.name).trim() : ''; return n && n !== '이름 없음' ? n : ''; }   // 손님이 넣은 이름 — people.js nameOf(옛 대체 이름 공주님 · 도련님 · 당신도 이름이 아니다, 11-04 v1621)
   function 곳이름(b) { if (b.placeName) return b.placeName; try { return PL ? PL.resolve(b.place).name : '서울'; } catch (e) { return '서울'; } }
   function 생일말(b) {   // SSS 신청 쪽과 같은 꼴
     var 시 = b.hour == null || b.hour === '' ? '시간 모름' : (+b.hour) + '시 ' + (+(b.minute || 0)) + '분';
