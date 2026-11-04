@@ -698,10 +698,10 @@
   const 쓰기 = (k, v) => {
     try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (_) {}
   };
-  const 칸글 = (id, 이름, 꼭, 예, 메일) => '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
+  const 칸글 = (id, 이름, 꼭, 예, 메일) => '<label class="fq" for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
     + '<input id="' + id + '"' + (메일 ? ' type="email" autocomplete="email" inputmode="email"' : '')
     + ' maxlength="200" placeholder="' + 글(예) + '">';
-  const 고르기 = (id, 이름, 갈래, 여럿) => '<label>' + 이름 + '</label><div class="seg" id="' + id + '"' + (여럿 ? ' data-multi="1"' : '') + '>'
+  const 고르기 = (id, 이름, 갈래, 여럿) => '<label class="fq">' + 이름 + '</label><div class="seg" id="' + id + '"' + (여럿 ? ' data-multi="1"' : '') + '>'
     + 갈래.map((g) => '<button type="button" data-v="' + 글(g[0]) + '">' + 글(g[1]) + '</button>').join('') + '</div>';
   // 재물과 자리는 따로 묻는다 — 「재관」이라 해도 재물 쪽인지 관직 쪽인지에 따라 답이 갈린다(택일상담). 둘 다 재관 저울.
   const 앞세움 = [['무난', '두루 무난하게'], ['재물', '돈(재물)'], ['자리', '직업·지위'],
@@ -747,7 +747,7 @@
     + (시각 ? '<div class="tkp-row"><input type="time" data-k="t" aria-label="태어난 시각"><label class="tk-chk"><input type="checkbox" data-k="tno"> 시각을 몰라요</label></div>' : '');
   const 고르개틀 = {
     range: () => '<div class="tkp-row"><input type="date" data-k="a" aria-label="시작"><span>~</span><input type="date" data-k="b" aria-label="끝"></div>'
-      + '<span class="tk-sub">예정일(알면 적어 주세요)</span><div class="tkp-row"><input type="date" data-k="due" aria-label="예정일"></div>',
+      + '<span class="tk-sub tk-subq">예정일(알면 적어 주세요)</span><div class="tkp-row"><input type="date" data-k="due" aria-label="예정일"></div>',
     dates: () => '<div class="tk-list" data-item="date"></div><button type="button" class="tk-add">+ 날짜 더하기</button>',
     slots: () => '<div class="tk-list" data-item="slot"></div><button type="button" class="tk-add">+ 날짜 · 시각 더하기</button>',
     place: () => {
@@ -817,7 +817,7 @@
   function 고르개칸(id, 이름, 꼭, 예) {
     const 꼴 = 고르개짝[id], 속 = 고르개틀[꼴] ? 고르개틀[꼴]() : '';
     if (!속) return 칸글(id, 이름, 꼭, 예);
-    return '<label for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
+    return '<label class="fq" for="' + id + '">' + 이름 + (꼭 ? ' <em>필수</em>' : '') + '</label>'
       + '<div class="tk-pick" data-pick="' + 꼴 + '" data-for="' + id + '">' + 속 + '</div>'
       + '<div class="tk-raw" hidden><input id="' + id + '" maxlength="200" placeholder="' + 글(예) + '"></div>'
       + '<button type="button" class="tk-rawbtn" data-for="' + id + '">직접 적기</button>';
@@ -872,9 +872,9 @@
         + 칸('i_mom', '아이 어머니 생년월일시', false, '예) 1990년 2월 10일 오전 7시 30분 · 양력') + 읽줄('mother')
         + 칸('i_sib', '아이의 형제자매 생년월일', false, '있으면 — 예) 2023년 5월 2일 · 양력') + 읽줄('siblings')
         + '<p class="hint">가족 정보는 아이와 가족의 사주가 부딪히는 날을 빼는 데만 써요. 모르면 비워 두세요. 가족 정보 없이도 보고서를 만들어 드려요.</p>'
-        + '<label for="i_wish">바라는 점</label>'
+        + '<label class="fq" for="i_wish">바라는 점</label>'
         + '<textarea id="i_wish" maxlength="1500" placeholder="예) 자기 길이 뚜렷하고, 가족과 화목했으면"></textarea>'
-        + '<label for="i_ask">궁금한 점</label>'
+        + '<label class="fq" for="i_ask">궁금한 점</label>'
         + '<textarea id="i_ask" maxlength="1500"></textarea>'
         + 읽줄('count');
     },

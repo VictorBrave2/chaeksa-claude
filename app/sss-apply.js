@@ -114,7 +114,7 @@
     }).join('') + '<button type="button" class="ss-wh ss-wh-add" data-add="' + slot + '">＋ 사람 추가</button></div>';
     if (p) {
       h += '<p class="picked">' + esc(생일말(p.birth)) + ' <button type="button" class="lnk" data-edit="' + esc(p.id) + '">고치기</button></p>';
-      if (!이름(p)) h += '<label for="' + slot + 'Name">' + esc(T.이름칸) + '</label><input id="' + slot + 'Name" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" lang="ko">';
+      if (!이름(p)) h += '<label class="fq" for="' + slot + 'Name">' + esc(T.이름칸) + '</label><input id="' + slot + 'Name" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" lang="ko">';
     }
     wrap.innerHTML = h;
   }
