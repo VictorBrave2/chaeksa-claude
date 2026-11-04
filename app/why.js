@@ -9,7 +9,17 @@
 (function (global) {
   'use strict';
   // 11-04 사람 고르기 이름 — 이름 없이 넣은 사람은 「나」 · 관계 + 생년월일(이름 없는 둘을 가를 수 있게). app.js 사람이름과 같은 거름
-  const 고르기이름 = (p, R) => { const n = String(p.name == null ? '' : p.name).trim(); return n && ['이름 없음', '공주님', '도련님', '당신', '새로 만난 사람'].indexOf(n) < 0 ? n : (R && R.relationOf ? R.relationOf(p) : (p.isSelf ? '나' : p.relation || '그 사람')) + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : ''); };
+  // 11-04 같은 이름이 둘 이상이면 이름 뒤에도 생년월일을 붙여 가른다(v1624 — 내 사람들 겹부름 · 계정 저장 물음창과 같은 꼴). 셈은 보이는 고르기 목록(l)으로, 이름 거름은 people.js nameOf
+  const 날꼬리 = p => p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : '';
+  const 맨이름 = (p, R) => { if (R && R.nameOf) return R.nameOf(p); const n = String(p.name == null ? '' : p.name).trim(); return n && ['이름 없음', '공주님', '도련님', '당신', '새로 만난 사람'].indexOf(n) < 0 ? n : ''; };
+  const 겹셈 = new WeakMap();
+  const 고르기이름 = (p, R, l) => {
+    const n = 맨이름(p, R);
+    if (!n) return (R && R.relationOf ? R.relationOf(p) : (p.isSelf ? '나' : p.relation || '그 사람')) + 날꼬리(p);
+    let c = l ? 겹셈.get(l) : null;
+    if (l && !c) { c = {}; l.forEach(x => { const m = 맨이름(x, R); if (m) c[m] = (c[m] || 0) + 1; }); 겹셈.set(l, c); }
+    return n + (c && c[n] > 1 ? 날꼬리(p) : '');
+  };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 채움 = (틀, 값) => String(틀 || '').replace(/\{([^{}]+)\}/g, (m, k) => (k in 값 ? 값[k] : m));
   // 잣대 — 한 항목의 두 수(나 · 보통 사람)를 같은 해 수로 적는다: 보통 사람 값 × 해 가 3.5 이상이 되는 가장 짧은 해(1 · 10 · 100년).
@@ -73,7 +83,7 @@
       if (!person) { root.innerHTML = 빈판(); return; }
       selected = person.id;
       const 고르기 = list.length > 1 ? '<div class="why-person">' + (P.사람 ? '<label for="why-person">' + esc(P.사람) + '</label>' : '')
-        + '<select id="why-person"' + (P.사람 ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(고르기이름(p, people)) + '</option>').join('') + '</select></div>' : '';   // 「사람 바꾸기」 = 머리 줄 사람 칩과 같은 이름(index.html #btnPerson)
+        + '<select id="why-person"' + (P.사람 ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(고르기이름(p, people, list)) + '</option>').join('') + '</select></div>' : '';   // 「사람 바꾸기」 = 머리 줄 사람 칩과 같은 이름(index.html #btnPerson)
       const 달기 = () => {
         if (root.querySelectorAll) root.querySelectorAll('img[data-why-art]').forEach(img => {
           img.onerror = function () {
