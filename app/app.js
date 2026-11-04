@@ -93,7 +93,8 @@
   // 칩 · 고르기 칸 한 줄(웹툰궁합 · 정통궁합 · 연애할 때의 그 사람) — 굵은 이름은 이름(없으면 위 부름), 작은 줄은 이름이 있으면 관계, 없으면 생년월일.
   //   pair-pick.js 칩과 같은 꼴 — 이름 없는 나를 한 칩에서 「그 사람 / 나」로 부르지 않고, 이름 없는 둘을 생년월일로 가른다(11-04 v1621)
   const 칩이름 = (p) => 사람이름(p && p.name) || 이름없을때(p);
-  //   11-04 같은 이름이 보이는 목록(l)에 둘 이상이면 이름 있는 사람도 작은 줄을 생년월일로 — 「지은 / 그 사람」 둘이 똑같이 보이지 않게(v1625, 오늘의 운세 고르기 칸 v1624와 같은 규칙)
+  //   11-04 같은 이름이 목록(l)에 둘 이상이면 이름 있는 사람도 작은 줄을 생년월일로 — 「지은 / 그 사람」 둘이 똑같이 보이지 않게(v1625, 오늘의 운세 고르기 칸 v1624와 같은 규칙).
+  //   l 은 칩에 안 나오는 맨 위 사람(지금 보는 사람)까지 넣은 온 목록 — 맨 위 「지은」과 칩의 다른 「지은」도 가른다(v1626)
   const 칩날 = (p) => p.birth.year + '.' + p.birth.month + '.' + p.birth.day;
   const 칩꼬리 = (p, l) => {
     if (!(p && p.birth)) return 관계꼬리(p);
@@ -1007,10 +1008,10 @@
     try { if (궁합그사람) localStorage.setItem(궁합고름키, 궁합그사람); else localStorage.removeItem(궁합고름키); } catch (e) {}
   }
   // 09-25 사장님 「상대 프로필 선택이 너무 98년도 윈도우 같아」 · 09-26 「규격으로 맞추기」(docs/79 4절) — 그 사람 고르기는 select 를 숨기고 사람 칩으로. 웹툰궁합 · 정통궁합이 같이 쓴다.
-  function 사람칩(wrap, sel, list, 고름, add) {
+  function 사람칩(wrap, sel, list, 고름, add, 온) {   // 온 = 같은 이름을 셀 온 목록(없으면 list — 그 사람 사용설명서는 list 가 이미 모두)
     sel.classList.add('ss-sel-hidden');
     let 칩 = wrap.querySelector('.ss-who'); if (!칩) { 칩 = document.createElement('div'); 칩.className = 'ss-who'; 칩.setAttribute('role', 'radiogroup'); wrap.appendChild(칩); }
-    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(칩이름(p)) + '</b><small>' + esc(칩꼬리(p, list)) + '</small></button>').join('')
+    칩.innerHTML = list.map(p => '<button type="button" role="radio" aria-checked="' + (p.id === 고름) + '" class="ss-wh' + (p.id === 고름 ? ' on' : '') + '" data-id="' + p.id + '"><b>' + esc(칩이름(p)) + '</b><small>' + esc(칩꼬리(p, 온 || list)) + '</small></button>').join('')
       + '<button type="button" class="ss-wh ss-wh-add">＋ 다른 사람</button>';
     칩.querySelectorAll('.ss-wh[data-id]').forEach(b => b.onclick = () => { if (sel.value === b.dataset.id) return; sel.value = b.dataset.id; sel.onchange(); });
     칩.querySelector('.ss-wh-add').onclick = () => openPersonForm(null);
@@ -1037,16 +1038,16 @@
     if (!profile || !R) { 안내('당신의 생년월일이 아직 없어요. 두 사람의 사주를 비교하려면 당신의 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
     if (P && !GC && 꾸러미받는중('chongnon')) return;   // 10-02 정통궁합 파일(탭별 꾸러미)이 아직 오는 중 — 다 오면 go() 가 다시 그린다
     if (!P || !GC) { 궁합그린것 = ''; if (!못불러옴(out, '정통궁합', renderChongnon, [wrap, none, add, $('gcStart')])) 안내('지금은 정통궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderChongnon()); return; }
-    const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
+    const me = P.active(), 온 = P.list(), list = 온.filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람의 생년월일이 아직 없어요. 입력하면 두 사람의 사주를 바로 비교해요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
     sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
-      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('');
+      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, 온))}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderChongnon(); };
-    사람칩(wrap, sel, list, 고름, add);
+    사람칩(wrap, sel, list, 고름, add, 온);
     const 시작 = $('gcStart'); if (시작) { 시작.classList.add('hide'); 시작.onclick = () => { const t = out.querySelector('h2, h3, details, .card') || out; try { t.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { t.scrollIntoView(); } }; }
     if (!고름) { 비우기(); return; }
     const 그 = P.get(고름), 나입력 = 궁합입력(profile), 그입력 = 궁합입력(P.toProfile(그));
@@ -1077,16 +1078,16 @@
     if (!profile || !R) { 안내('당신의 생년월일부터 넣어 주세요.', '내 생년월일 넣기', () => go('home')); return; }
     if (P && !SP && 꾸러미받는중('ssom')) return;   // 10-02 웹툰궁합 파일(탭별 꾸러미)이 아직 오는 중 — 다 오면 go() 가 다시 그린다
     if (!P || !SP) { if (!못불러옴(out, '웹툰궁합', renderSsom, [wrap, none, add, $('ssMore')])) 안내('지금은 웹툰궁합을 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.', '다시 열기', () => renderSsom()); return; }
-    const me = P.active(), list = P.list().filter(p => !me || p.id !== me.id);
+    const me = P.active(), 온 = P.list(), list = 온.filter(p => !me || p.id !== me.id);
     if (!list.length) { 안내('그 사람 생년월일을 먼저 넣어 주세요.', '그 사람 생년월일 넣기', () => openPersonForm(null)); return; }
     none.classList.add('hide'); wrap.classList.remove('hide');
     add.textContent = '그 사람 생년월일 넣기'; add.classList.add('ghost'); add.onclick = () => openPersonForm(null);
     const 고름 = list.some(p => p.id === 궁합그사람) ? 궁합그사람 : '';
     sel.innerHTML = (고름 ? '' : '<option value="">누구와 볼까요?</option>')
-      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('');
+      + list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, 온))}</option>`).join('');
     sel.value = 고름;
     sel.onchange = () => { 궁합고르기(sel.value); renderSsom(); };
-    사람칩(wrap, sel, list, 고름, add);
+    사람칩(wrap, sel, list, 고름, add, 온);
     const more = $('ssMore'), met = $('ssMet');
     if (!고름) { out.innerHTML = ''; if (more) more.classList.add('hide'); return; }
     // 처음 만난 달 — 그 사람마다 이 기기에 기억한다(연 · 월만, 서버로 안 보낸다)
@@ -1109,10 +1110,10 @@
   // ───── 우리 둘, 잘 맞아요? (셋째 장 · gunghap.js) ─────
   function renderGunghap() {
     const P = People(); const G = window.ChaeksaGunghap; if (!P || !G || !$('ghPick')) return;
-    const me = P.active();
-    const list = P.list().filter(p => !me || p.id !== me.id);
+    const me = P.active(), 온 = P.list();
+    const list = 온.filter(p => !me || p.id !== me.id);
     $('ghPick').innerHTML = list.length
-      ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('')
+      ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, 온))}</option>`).join('')
       : '<option value="">등록된 사람이 없습니다</option>';
     $('btnGh').disabled = !list.length;
     $('btnGhAdd').onclick = () => openPersonForm(null);
@@ -1198,8 +1199,8 @@
     $('shHint').innerHTML = 장.둘 ? '그 사람의 생년월일시와 당신이 그 사람을 만난 해를 넣어 주세요. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.' : '당신의 사주만으로 봅니다. 비밀 열 가지를 엽니다 — <b>' + esc(장.부제) + '</b>까지.';
     $('shPickWrap').classList.toggle('hide', !장.둘); $('btnShAdd').classList.toggle('hide', !장.둘);
     if ($('shSoloWrap')) $('shSoloWrap').classList.toggle('hide', !!장.둘);
-    const me = P.active(); const list = P.list().filter(p => !me || p.id !== me.id);
-    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, list))}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
+    const me = P.active(), 온 = P.list(); const list = 온.filter(p => !me || p.id !== me.id);
+    $('shPick').innerHTML = list.length ? list.map(p => `<option value="${p.id}">${esc(칩이름(p))} · ${esc(칩꼬리(p, 온))}</option>`).join('') : '<option value="">등록된 사람이 없습니다</option>';
     $('btnSh').disabled = 장.둘 && !list.length;
     $('btnShAdd').onclick = () => openPersonForm(null);
     $('shResult').classList.add('hide');
