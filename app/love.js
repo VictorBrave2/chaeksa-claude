@@ -465,7 +465,7 @@
       return;
     }
     var b = 생일(profile), 키 = 결과키 + 표(b), 저장 = 읽기(키);
-    var 이름 = profile.name ? esc(profile.name) + ' · ' : '';
+    var 이름 = profile.name && ['이름 없음', '공주님', '도련님', '당신'].indexOf(String(profile.name).trim()) < 0 ? esc(profile.name) + ' · ' : '';   // 11-04 「이름 없음 · …」이 안 나오게(app.js 사람이름과 같은 거름)
     // 소개 — 무엇을 받나(한줄) · 결제 전에 보는 것(미리) · 만드는 때와 시간(만듦)은 장부 love 줄에서(10-02). 「당신」 대신 「나」.
     var Y = 장부(), 소개 = [Y ? Y.한줄('love') : '', 약('love').미리 || '', Y ? Y.만듦글('love') : ''].filter(Boolean).map(esc).join(' ');
     el.innerHTML = '<div class="lv-cover">' + 그림(표지그림, true) + '<span class="k" id="lvCoverK">연애</span><span class="n" id="lvCoverN">연애할 때의 나</span></div>'

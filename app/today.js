@@ -1,6 +1,9 @@
 /* COPY-0020 — view only; calculations belong to ChaeksaToday. */
 (function (global) {
   'use strict';
+  // 11-04 이름 없이 넣은 사람(people.js 가 「이름 없음」으로 저장) · 옛 대체 이름은 이름이 없는 것으로 — app.js 사람이름과 같은 거름
+  const 이름있음 = n => { const s = String(n == null ? '' : n).trim(); return !!s && ['이름 없음', '공주님', '도련님', '당신'].indexOf(s) < 0; };
+  const 고르기이름 = p => 이름있음(p.name) ? String(p.name).trim() : (p.isSelf ? '나' : p.relation || '그 사람') + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : '');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateText = s => { const a=s.split('-'); return Number(a[1])+'월 '+Number(a[2])+'일'; };
   const dayKey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -134,9 +137,9 @@
       const first=v.첫줄, quietTitle=text('조용.한줄');
       const yLines=yv?T.조립(yv,P).칸[0].줄:[], yText=(yLines.find(x=>x.자리==='결과.한줄')||yLines.find(x=>x.자리==='첫줄.한줄')||{}).글||'';
       const yBox=yText?'<p class="today-yesterday"><span>어제 바라본 오늘</span>'+esc(yText)+(yv.때?' <small>'+clockRange(yv.때.시작분,yv.때.끝분)+'</small>':'')+'</p>':'';
-      root.innerHTML='<div class="today-person"><label for="today-person">누구의 하루를 볼까요?</label><select id="today-person">'+list.map(p=>'<option value="'+esc(p.id)+'"'+(p.id===selected?' selected':'')+'>'+esc(p.name||'이름 없음')+'</option>').join('')+'</select></div>'
+      root.innerHTML='<div class="today-person"><label for="today-person">누구의 하루를 볼까요?</label><select id="today-person">'+list.map(p=>'<option value="'+esc(p.id)+'"'+(p.id===selected?' selected':'')+'>'+esc(고르기이름(p))+'</option>').join('')+'</select></div>'
         +'<div class="today-refresh" hidden><span>새로운 하루가 시작됐어요.</span><button type="button" id="today-refresh">오늘 운세 보기</button></div>'
-        +'<article id="today-result"><section class="today-hero"><div class="today-hero-copy"><p class="today-kicker">오늘의 운세 · 사주로 읽는 오늘</p><time datetime="'+v.날짜+'"><span class="today-person-name">'+esc(person.name||'당신')+'</span>'+dateText(v.날짜)+' '+esc(v.요일)+'요일</time><h1>'+esc(text('결과.한줄')||(v.조용?quietTitle:(text('첫줄.사건')||text('첫줄.한줄'))))+'</h1>'+(v.때&&(text('때.한줄')||(v.작용&&v.작용.시))?'<p class="today-clock">'+(text('때.이름')?'<span>'+esc(text('때.이름'))+'</span>':'')+clockRange(v.때.시작분,v.때.끝분)+'</p>'+(text('때.한줄')?'<p class="today-hero-foot today-when">'+esc(text('때.한줄'))+(text('이음.뒤')?' '+esc(text('이음.뒤')):'')+'</p>':''):'')+(v.조용&&!text('결과.한줄')?'<p class="today-quiet-copy">'+esc(text('첫줄.한줄'))+'</p>':'')+(text('결과.한줄')?'':'<p class="today-hero-foot">'+(v.조용?'큰 변화보다 익숙한 흐름이 이어집니다.':first.쪽==='천간'?'오늘은 생각의 변화부터 읽어 보세요.':'오늘은 행동의 변화부터 읽어 보세요.')+'</p>')+'</div>'+eventGuide('결과.한줄',narrator,'(max-width: 800px) 128px, 240px',false)+'</section>'
+        +'<article id="today-result"><section class="today-hero"><div class="today-hero-copy"><p class="today-kicker">오늘의 운세 · 사주로 읽는 오늘</p><time datetime="'+v.날짜+'"><span class="today-person-name">'+esc(이름있음(person.name)?String(person.name).trim():'당신')+'</span>'+dateText(v.날짜)+' '+esc(v.요일)+'요일</time><h1>'+esc(text('결과.한줄')||(v.조용?quietTitle:(text('첫줄.사건')||text('첫줄.한줄'))))+'</h1>'+(v.때&&(text('때.한줄')||(v.작용&&v.작용.시))?'<p class="today-clock">'+(text('때.이름')?'<span>'+esc(text('때.이름'))+'</span>':'')+clockRange(v.때.시작분,v.때.끝분)+'</p>'+(text('때.한줄')?'<p class="today-hero-foot today-when">'+esc(text('때.한줄'))+(text('이음.뒤')?' '+esc(text('이음.뒤')):'')+'</p>':''):'')+(v.조용&&!text('결과.한줄')?'<p class="today-quiet-copy">'+esc(text('첫줄.한줄'))+'</p>':'')+(text('결과.한줄')?'':'<p class="today-hero-foot">'+(v.조용?'큰 변화보다 익숙한 흐름이 이어집니다.':first.쪽==='천간'?'오늘은 생각의 변화부터 읽어 보세요.':'오늘은 행동의 변화부터 읽어 보세요.')+'</p>')+'</div>'+eventGuide('결과.한줄',narrator,'(max-width: 800px) 128px, 240px',false)+'</section>'
         // 10-29 사장님 「구조가 뒤죽박죽인데 교통정리」 — 차례: 오늘 일어나는 일(제목 · 시간 · 누구와) → 생각 → 오늘 이렇게 해 보세요 → 왜(접힘: 누구 · 태도 · 둘째 흐름 · 바탕 · 근거) → 어제 바라본 오늘 → 이번 주. 목차 칩은 뺐다.
         +'<section id="today-reading"><div class="today-guided-reading">'+eventGuide('생각.한줄',narrator==='m'?'f':'m','(max-width: 800px) 180px, 210px',true)+'<div class="today-guided-copy">'
         +(text('생각.한줄')?'<div class="today-second today-think-row"><span>생각에서는</span><p>'+esc(text('생각.한줄'))+(text('이음.앞')?' '+esc(text('이음.앞')):'')+'</p></div>':'')

@@ -36,7 +36,7 @@
     var m = 기억읽기();
     if (!사람(고름.first)) {
       var me = PP && PP.hasSelf && PP.hasSelf() ? PP.self() : null;
-      고름.first = 사람(m.first) ? m.first : (me && 사람(me.id) ? me.id : '');
+      고름.first = 사람(m.first) ? m.first : (me && 사람(me.id) && me.id !== 고름.second ? me.id : '');   // 손님이 「나」를 둘째 칸으로 옮겼으면 첫 칸에 되돌려 놓지 않는다
     }
     if (!사람(고름.second)) 고름.second = 사람(m.second) && m.second !== 고름.first ? m.second : '';
     if (고름.second && 고름.second === 고름.first) 고름.second = '';
@@ -108,7 +108,10 @@
     document.body.appendChild(d);
     $('pkSave').addEventListener('click', 저장);
     $('pkCancel').addEventListener('click', 창닫기);
-    d.addEventListener('click', function (e) { if (e.target === d) 창닫기(); });
+    // 바깥(어두운 곳)을 눌렀을 때만 닫는다 — 칸 안에서 끌다가 바깥에서 손을 떼면 닫히지 않게(쓰던 것이 날아간다)
+    var 누른곳 = null;
+    d.addEventListener('mousedown', function (e) { 누른곳 = e.target; });
+    d.addEventListener('click', function (e) { var 밖 = e.target === d && 누른곳 === d; 누른곳 = null; if (밖) 창닫기(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !d.classList.contains('hide')) 창닫기(); });
     Array.prototype.forEach.call($('pkCalSeg').querySelectorAll('button'), function (b) { b.addEventListener('click', function () { 달력(b.getAttribute('data-cal')); }); });
     ['pkY', 'pkM', 'pkD'].forEach(function (id) { $(id).addEventListener('input', 바꿈표); });
@@ -122,10 +125,11 @@
     if (mode === 'solar') { $('pkLeap').checked = false; $('pkLeapWrap').classList.add('hide'); }
     바꿈표();
   }
+  function 있는날(y, m, d) { var t = new Date(Date.UTC(y, m - 1, d)); return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; }
   function 양력() {
     var y = +$('pkY').value, m = +$('pkM').value, d = +$('pkD').value;
     if (!y || !m || !d) return null;
-    if (cal === 'solar') return { y: y, m: m, d: d };
+    if (cal === 'solar') return 있는날(y, m, d) ? { y: y, m: m, d: d } : { error: '날짜를 다시 확인해 주세요.' };   // 4월 31일 · 13월 · 두 자리 해
     if (!global.ChaeksaLunar) return { error: '음력 날짜를 양력으로 바꾸는 기능을 불러오지 못했어요. 새로고침해 주세요.' };
     var r = global.ChaeksaLunar.lunarToSolar(y, m, d, $('pkLeap').checked);
     return r && !r.error ? r : { error: (r && r.error) || '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
@@ -141,7 +145,7 @@
       note.classList.remove('hide');
       note.innerHTML = r.error ? '<b style="color:var(--g0-ink)">' + esc(r.error) + '</b>' : '음력 ' + y + '.' + m + '.' + d + ($('pkLeap').checked ? ' (윤달)' : '') + ' → 양력 <b>' + r.y + '년 ' + r.m + '월 ' + r.d + '일</b>';
     } else {
-      var l = L.solarToLunar(y, m, d); if (!l) { note.classList.add('hide'); return; }
+      var s = 양력(), l = s && !s.error && L.solarToLunar(y, m, d); if (!l) { note.classList.add('hide'); return; }
       note.classList.remove('hide');
       note.innerHTML = '양력 ' + y + '.' + m + '.' + d + ' → 음력 <b>' + l.year + '년 ' + (l.leap ? '윤' : '') + l.month + '월 ' + l.day + '일</b>';
     }
@@ -153,7 +157,7 @@
     편집 = id || null; 편집슬롯 = slot === 'second' ? 'second' : 'first';
     var p = 편집 ? 사람(편집) : null, b = p ? p.birth : {};
     $('pkTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
-    $('pkRel').value = p ? (p.relation || (p.isSelf ? '나' : '그 사람')) : (편집슬롯 === 'first' ? (PP.hasSelf() ? '기타' : '나') : '그 사람');
+    $('pkRel').value = p ? PP.relationOf(p) : (편집슬롯 === 'first' ? (PP.hasSelf() ? '기타' : '나') : '그 사람');
     try { $('pkPlace').innerHTML = PL ? PL.options() : '<option value="KR:서울">서울</option>'; } catch (e) { $('pkPlace').innerHTML = '<option value="KR:서울">서울</option>'; }
     $('pkName').value = p ? 이름(p) : '';
     cal = b.calendar === 'lunar' ? 'lunar' : 'solar';
@@ -219,5 +223,7 @@
     if (상자 !== box) { 상자 = box; 상자.addEventListener('click', 눌림); }
     그림();
   }
+  // 「뒤로」로 돌아온 쪽(뒤로 가기 캐시)은 다른 곳에서 바뀐 사람을 모른다 — 다시 그린다
+  global.addEventListener('pageshow', function (e) { if (e.persisted && 상자) 바뀜(); });
   global.ChaeksaPairPick = { 그리기: 그리기, 고른: function () { return { first: 고름.first, second: 고름.second }; } };
 })(window);

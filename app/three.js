@@ -37,6 +37,8 @@
 (function (global) {
   'use strict';
   const API = 'https://chaeksa-behavior-core.vercel.app/api/three-eyes';
+  // 11-04 사람 고르기 이름 — 이름 없이 넣은 사람은 「나」 · 관계 + 생년월일(이름 없는 둘을 가를 수 있게). app.js 사람이름과 같은 거름
+  const 고르기이름 = p => { const n = String(p.name == null ? '' : p.name).trim(); return n && ['이름 없음', '공주님', '도련님', '당신'].indexOf(n) < 0 ? n : (p.isSelf ? '나' : p.relation || '그 사람') + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : ''); };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // 값 뒤(닫는 따옴표 너머까지) 조사를 값의 받침에 맞춘다 — 「‘{자리}’와」 → 「‘돈과 재산’과」. 사이트 공통 약속 {값|와} 도 받는다(today-core 붙이기와 같은 일).
   // 10-31 켈틱 펼침 {카드} — 끝 괄호 묶음은 앞말을 돕는 말이라 건너뛰고(조사는 괄호 앞말에: 「완드 페이지(시종)가」 — 화면 글 검사기 B 와 같은 약속),
@@ -632,7 +634,7 @@
       if (!person) { root.innerHTML = 판(); return; }
       selected = person.id;
       const 고르기 = list.length > 1 ? '<div class="three-person">' + (글('사람') ? '<label for="three-person">' + esc(글('사람')) + '</label>' : '')
-        + '<select id="three-person"' + (글('사람') ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(p.name || '') + '</option>').join('') + '</select></div>' : '';
+        + '<select id="three-person"' + (글('사람') ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(고르기이름(p)) + '</option>').join('') + '</select></div>' : '';
       const prof = people.toProfile(person) || {}, 지금 = clock(), 오늘 = 날글(지금), 이번달 = 오늘.slice(0, 7);
       let 판3 = null, 덱 = null;
       const 달기 = () => {
@@ -909,7 +911,7 @@
       if (!person) { root.innerHTML = 판(); return; }
       selected = person.id;
       const 고르기 = list.length > 1 ? '<div class="three-person">' + (글('사람') ? '<label for="three-person">' + esc(글('사람')) + '</label>' : '')
-        + '<select id="three-person"' + (글('사람') ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(p.name || '') + '</option>').join('') + '</select></div>' : '';
+        + '<select id="three-person"' + (글('사람') ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(고르기이름(p)) + '</option>').join('') + '</select></div>' : '';
       const 달기 = () => {
         if (!root.querySelector) return;
         const s = root.querySelector('#three-person');

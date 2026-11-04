@@ -99,7 +99,7 @@
     const P = People(), p = P.get(id);
     if (!p) return;
     const 마지막 = P.list().length <= 1;
-    if (!confirm(`${p.name} 님의 사주와 관련 기록을 지웁니다.${마지막 ? ' 넣어 둔 사람이 없어져 첫 화면으로 돌아가요.' : ''} 계속할까요?`)) return;
+    if (!confirm(`${사람이름(p.name) || 이름없을때(p)} 님의 사주와 관련 기록을 지웁니다.${마지막 ? ' 넣어 둔 사람이 없어져 첫 화면으로 돌아가요.' : ''} 계속할까요?`)) return;
     const 지운사람 = p.id;
     P.remove(id);
     $('personForm').classList.add('hide'); $('peopleSheet').classList.add('hide');
@@ -145,7 +145,8 @@
   // 콘텐츠로 들어오다 이 칸이 뜨면, 맨 위에 그 콘텐츠 이름과 필요한 것(상품 약속 장부 필요 칸)을 띄우고 말풍선 · 저장 단추 말을 맞춘다.
   //   누구 'them' = 그 사람 생년월일(사용설명서 · 궁합) · 'me' = 내 생년월일(그 사람만 넣어 둔 손님이 내 것이 필요한 콘텐츠로 갈 때).
   //   길이 있으면(들어가기가 연 것) 관계 칸은 숨기고, 저장하면 고른 탭으로 간다(도착). 길 없이 열면(궁합 탭의 「그 사람 넣기」 등) 저장 뒤 지금처럼 그 탭이 다시 그린다.
-  let 사람폼길 = null, 사람폼누구 = null;
+  let 사람폼길 = null, 사람폼누구 = null, 사람폼컷고정 = false;
+  const 내칸말 = '당신의 생년월일시를 넣어 주세요. 당신의 사주로 결과를 만들어요.';
   const 사람폼처음 = {};
   function 사람폼모양(m) {
     const say = $('pfSay'), why = $('pfWhy'), agree = $('pfAgree'), save = $('pfSave'), nm = $('pfName');
@@ -168,7 +169,7 @@
     const 필요 = !머리 ? '' : 누구 === 'me' ? 머리.필요 : /^그 사람/.test(머리.필요 || '') ? 머리.필요 : '그 사람 생년월일시';
     openPersonForm(null, {
       누구, 길: !!길, 이름: 머리 && 머리.이름, 필요, 표지: 누구 === 'me' && window.ChaeksaHomeCats && ChaeksaHomeCats.표지 ? ChaeksaHomeCats.표지(tab) : null,
-      말: 누구 === 'me' ? '당신의 생년월일시를 넣어 주세요. 당신의 사주로 결과를 만들어요.' : '그 사람의 생년월일시를 넣어 주세요.',
+      말: 누구 === 'me' ? 내칸말 : '그 사람의 생년월일시를 넣어 주세요.',
       // 저장 단추 — 장부 입력단추(사용설명서 「저장하고 사용설명서 보기」 · 연애 「저장하고 예시 보기」). 「다음 — 그 사람 …」은 이 칸에 맞지 않아 「저장하고 보기」.
       단추: (길 && 말 && !/^다음/.test(말)) ? 말 : '저장하고 보기',
     });
@@ -188,13 +189,15 @@
     const P = People(); if (!P) return;
     editingId = id || null;
     const p = id ? P.get(id) : null, 나칸 = !!(모양 && 모양.누구 === 'me');
+    // 11-04 아무도 없을 때 그냥 연 칸(#addperson · 오늘의 운세 「사람 추가」)은 숨은 관계가 「나」 — 말풍선도 「그 사람은요?」가 아니라 내 칸 말로(있던 말)
+    const 첫나 = !p && !모양 && !P.list().length;
     $('pfTitle').textContent = p ? '사람 정보 고치기' : '사람 추가';
     if ($('pfPlace') && window.ChaeksaPlaces) $('pfPlace').innerHTML = ChaeksaPlaces.options();
     const b = p ? p.birth : {};
-    $('pfName').value = p ? p.name : '';
+    $('pfName').value = p ? 사람이름(p.name) : '';   // 「이름 없음」을 글자로 채우지 않는다(비운 채 저장해도 이름은 그대로 — people.js update)
     // 10-02 누구 것인지 정해서 열면(사람폼열기) 관계도 그대로 — 처음 넣는 사람이라고 「나」로 두지 않는다(people.js add 머리말)
     // 11-04 사장님 「사람 추가에서 나와의 관계는 없어도 될 것 같아」 — 관계 칸을 걷고 숨은 값(#pfRel)만. 아래 기본값이 곧 저장값
-    $('pfRel').value = p ? (p.relation || (p.isSelf ? '나' : '그 사람')) : 모양 ? (나칸 ? '나' : '그 사람') : (P.list().length ? '그 사람' : '나');
+    $('pfRel').value = p ? P.relationOf(p) : 모양 ? (나칸 ? '나' : '그 사람') : (P.list().length ? '그 사람' : '나');   // 고쳐도 「나」는 그대로(people.js relationOf)
     pfCal = b.calendar === 'lunar' ? 'lunar' : 'solar';
     setPfCal(pfCal);
     if (pfCal === 'lunar' && b.lunarInput) {
@@ -209,7 +212,7 @@
     $('pfNoTime').checked = b.hour == null && !!p;
     $('pfH').disabled = $('pfMi').disabled = $('pfNoTime').checked;
     // 09-25 새 사람은 내 반대 성별이 기본. 10-02 내 생년월일 칸(나칸)은 첫 입력 칸(#g)처럼 여성이 먼저 — 지금 보는 사람이 그 사람이라 반대로 두면 틀린다.
-    $('pfG').value = b.gender || (나칸 ? 'F' : (profile && profile.gender === 'M' ? 'F' : 'M'));
+    $('pfG').value = b.gender || ((나칸 || 첫나) ? 'F' : (profile && profile.gender === 'M' ? 'F' : 'M'));
     if (나칸) { const im = $('pfCut') && $('pfCut').querySelector('img'); if (im) { im.style.opacity = 1; im.src = 모양.표지 || 'art/content-tarot-v2/love-cover.webp'; } }   // 내 칸 그림 = 고른 콘텐츠 표지(원본)
     else { try { 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); } catch (e) {} }
     $('pfGUnknown').checked = !!b.genderUnknown;
@@ -218,7 +221,8 @@
     // 10-02 태어난 곳은 접어 둔다(「더 정확하게(선택)」). 서울이 아닌 사람을 고칠 때만 펼쳐서 보여 준다.
     if ($('pfMore') && $('pfPlace')) $('pfMore').open = !!$('pfPlace').value && $('pfPlace').value !== 'KR:서울';
     $('pfDelete').classList.toggle('hide', !p);   // 10-04 마지막 한 사람도 지울 수 있다
-    사람폼모양(모양 || null);
+    사람폼모양(모양 || (첫나 ? { 누구: 'me', 말: 내칸말 } : null));
+    사람폼컷고정 = 나칸;   // 콘텐츠 표지를 단 칸만 성별을 바꿔도 그림 그대로
     $('personForm').classList.remove('hide');
     updatePfConv();
   }
@@ -230,10 +234,12 @@
     if (mode === 'solar') { $('pfLeap').checked = false; $('pfLeapWrap').classList.add('hide'); }
     updatePfConv();
   }
+  // 11-04 없는 날(4월 31일 · 13월 · 두 자리 해)은 저장하지 않는다 — 전에는 다음 날로 계산됐다
+  const 있는날 = (y, m, d) => { const t = new Date(Date.UTC(y, m - 1, d)); return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; };
   function pfToSolar() {
     const y = +$('pfY').value, m = +$('pfM').value, d = +$('pfD').value;
     if (!y || !m || !d) return null;
-    if (pfCal === 'solar') return { y, m, d };
+    if (pfCal === 'solar') return 있는날(y, m, d) ? { y, m, d } : { error: '날짜를 다시 확인해 주세요.' };
     if (!window.ChaeksaLunar) return null;
     const r = ChaeksaLunar.lunarToSolar(y, m, d, $('pfLeap').checked);
     return r && !r.error ? r : { error: (r && r.error) || '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
@@ -252,7 +258,7 @@
       note.innerHTML = r.error ? `<b style="color:var(--g0-ink)">${esc(r.error)}</b>`
         : `음력 ${y}.${m}.${d}${$('pfLeap').checked ? ' (윤달)' : ''} → 양력 <b>${r.y}년 ${r.m}월 ${r.d}일</b>`;
     } else {
-      const l = ChaeksaLunar.solarToLunar(y, m, d);
+      const s = pfToSolar(), l = s && !s.error && ChaeksaLunar.solarToLunar(y, m, d);
       if (!l) { note.classList.add('hide'); return; }
       note.classList.remove('hide');
       note.innerHTML = `양력 ${y}.${m}.${d} → 음력 <b>${l.year}년 ${l.leap ? '윤' : ''}${l.month}월 ${l.day}일</b>`;
@@ -388,7 +394,7 @@
         : `음력 ${y}.${m}.${d}${$('isLeap').checked ? ' (윤달)' : ''} → 양력 <b>${r.y}년 ${r.m}월 ${r.d}일</b>`;
     } else {
       if (!window.ChaeksaLunar) { note.classList.add('hide'); return; }
-      const l = ChaeksaLunar.solarToLunar(y, m, d);
+      const l = 있는날(y, m, d) && ChaeksaLunar.solarToLunar(y, m, d);
       if (!l) { note.classList.add('hide'); return; }
       note.classList.remove('hide');
       note.innerHTML = `양력 ${y}.${m}.${d} → 음력 <b>${l.year}년 ${l.leap ? '윤' : ''}${l.month}월 ${l.day}일</b>`;
@@ -409,7 +415,7 @@
     const pl = window.ChaeksaPlaces ? ChaeksaPlaces.resolve($('place').value) : null;
     if (pl) { p.place = $('place').value; p.placeName = pl.name; p.longitude = pl.lon; p.tzOffset = pl.tzOffset; }
     if (!p.year || !p.month || !p.day) { alert('생년월일을 넣어 주세요.'); return null; }
-    if (p.year < 1900 || p.year > 2100 || p.month < 1 || p.month > 12 || p.day < 1 || p.day > 31) { alert('날짜를 다시 확인해 주세요.'); return null; }
+    if (p.year < 1900 || p.year > 2100 || !있는날(p.year, p.month, p.day)) { alert('날짜를 다시 확인해 주세요.'); return null; }   // 11-04 4월 31일 · 2월 30일도 막는다
     return p;
   }
   $('btnGo').onclick = () => {
@@ -758,6 +764,8 @@
       $('formCard').classList.add('hide');
       $('app').classList.remove('hide');
     }
+    // 11-04 #탭 주소로 와도 ?go= 와 같은 문 — 그 사람만 넣어 둔 손님이 내 것이 필요한 탭으로 오면 내 생년월일부터(들어가기)
+    if (booted && t !== 'home' && NO_PROFILE_TABS.indexOf(t) < 0 && 그사람만탭.indexOf(t) < 0 && !나있음()) { 들어가기(t); return; }
     go(t);
   }
   // 「뒤로」 · 「앞으로」 · #탭 링크 — 주소가 가리키는 화면을 연다. 이미 그 화면이면 아무것도 안 한다(popstate 와 hashchange 가 같이 와도 한 번만).
@@ -2221,7 +2229,7 @@
   // 09-26 큰 판(1024) — 작은 판은 폼 폭에서 흐렸다. (주석을 줄 가운데 넣어 뒤가 잘렸던 것 고침 — feedback-edit-closing-quote 같은 종류)
   const 컷바꾸기 = (sel, cut, 그림) => { const g = $(sel), c = $(cut); if (!g || !c) return; const im = c.querySelector('img'), 새 = sceneArtUrl(그림[g.value] || 그림.F); if (im.getAttribute('src') !== 새) { im.style.opacity = 0; setTimeout(() => { im.src = 새; im.style.opacity = 1; }, 150); } };
   // 첫 만남 입력 칸의 컷(#fcCut)은 10-02 걷었다(맨 위 그림 .fc-art 가 대신한다). 그 사람 칸(#pfCut)만 성별로 바뀐다.
-  if ($('pfG')) $('pfG').addEventListener('change', () => { if (사람폼누구 !== 'me') 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); });   // 10-02 내 칸은 콘텐츠 표지 그대로
+  if ($('pfG')) $('pfG').addEventListener('change', () => { if (!사람폼컷고정) 컷바꾸기('pfG', 'pfCut', { M: 'jt-13-heart-m', F: 'jt-13-heart-f' }); });   // 10-02 내 칸은 콘텐츠 표지 그대로
 
   // ───── 외부 브리지 (consult.js에서 사용) ─────
   window.ChaeksaApp = {

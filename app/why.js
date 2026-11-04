@@ -8,6 +8,8 @@
  * 빈 글 칸은 건너뛴다. 높은 사건이 하나도 없으면 띠 없이 배수 큰 셋. 앞으로 태어날 아이는 이름(+ 빈말 칸)만. */
 (function (global) {
   'use strict';
+  // 11-04 사람 고르기 이름 — 이름 없이 넣은 사람은 「나」 · 관계 + 생년월일(이름 없는 둘을 가를 수 있게). app.js 사람이름과 같은 거름
+  const 고르기이름 = p => { const n = String(p.name == null ? '' : p.name).trim(); return n && ['이름 없음', '공주님', '도련님', '당신'].indexOf(n) < 0 ? n : (p.isSelf ? '나' : p.relation || '그 사람') + (p.birth && p.birth.year ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : ''); };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const 채움 = (틀, 값) => String(틀 || '').replace(/\{([^{}]+)\}/g, (m, k) => (k in 값 ? 값[k] : m));
   // 잣대 — 한 항목의 두 수(나 · 보통 사람)를 같은 해 수로 적는다: 보통 사람 값 × 해 가 3.5 이상이 되는 가장 짧은 해(1 · 10 · 100년).
@@ -71,7 +73,7 @@
       if (!person) { root.innerHTML = 빈판(); return; }
       selected = person.id;
       const 고르기 = list.length > 1 ? '<div class="why-person">' + (P.사람 ? '<label for="why-person">' + esc(P.사람) + '</label>' : '')
-        + '<select id="why-person"' + (P.사람 ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(p.name || '') + '</option>').join('') + '</select></div>' : '';   // 「사람 바꾸기」 = 머리 줄 사람 칩과 같은 이름(index.html #btnPerson)
+        + '<select id="why-person"' + (P.사람 ? '' : ' aria-label="사람 바꾸기"') + '>' + list.map(p => '<option value="' + esc(p.id) + '"' + (p.id === selected ? ' selected' : '') + '>' + esc(고르기이름(p)) + '</option>').join('') + '</select></div>' : '';   // 「사람 바꾸기」 = 머리 줄 사람 칩과 같은 이름(index.html #btnPerson)
       const 달기 = () => {
         if (root.querySelectorAll) root.querySelectorAll('img[data-why-art]').forEach(img => {
           img.onerror = function () {
