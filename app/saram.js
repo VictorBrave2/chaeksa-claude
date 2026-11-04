@@ -67,6 +67,8 @@
     if (e.target.id !== 'nf') return; e.preventDefault();
     var y = +$('ny').value, m = +$('nm').value, d = +$('nd').value, g = (document.querySelector('input[name=ng]:checked') || {}).value || 'M';
     if (!y || !m || !d) { $('nerr').textContent = '생년월일을 다 넣어 주세요.'; return; }
+    var t0 = new Date(Date.UTC(y, m - 1, d));   // 11-04 없는 날(4월 31일 · 13월 · 두 자리 해) 막음 — 다른 입력 칸과 같은 1900 ~ 2100 · 같은 말
+    if (y < 1900 || y > 2100 || t0.getUTCFullYear() !== y || t0.getUTCMonth() !== m - 1 || t0.getUTCDate() !== d) { $('nerr').textContent = '날짜를 다시 확인해 주세요.'; return; }
     var np = null;
     try { np = PP.add({ name: ($('nn').value || '').trim() || '새로 만난 사람', relation: '친구', birth: { year: y, month: m, day: d, hour: null, minute: null, gender: g, calendar: 'solar', place: 'KR:서울', longitude: 126.98, tzOffset: 9 } }); } catch (e2) { $('nerr').textContent = '저장하지 못했어요. 다시 넣어 주세요.'; return; }
     방금 = np && np.id ? np.id : (typeof np === 'string' ? np : null); 그리기(); try { $('out').scrollIntoView({ block: 'start' }); } catch (e3) {}
