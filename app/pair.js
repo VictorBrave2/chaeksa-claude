@@ -338,6 +338,7 @@
     var 나 = PP.list().filter(function (p) { return p.isSelf; })[0], meId = 나 ? 나.id : null;
     var 목록 = PP.list().filter(function (p) { return p.id !== meId; }).concat(나 ? [나] : []);
     var 고른 = 읽기(고른키); if (!목록.some(function (p) { return p.id === 고른; })) 고른 = 목록.length ? 목록[0].id : null;
+    var 셈 = {}; 목록.forEach(function (p) { var m = 맨이름(p); if (m) 셈[m] = (셈[m] || 0) + 1; });   // 11-04 같은 이름이 둘 이상이면 이름 뒤에 생년월일(v1625 — 칩 작은 줄과 같은 규칙)
     var LV = global.ChaeksaLoveView;
     // 10-01 규격(docs/79) — 이름은 표지에 한 번만. 그 사람 고르기 = 정통궁합 · 우리 둘의 연애궁합과 같은 사람 칩(app.js 사람칩, select 는 숨김).
     el.innerHTML = (LV && LV.그림 ? '<div class="lv-cover has-s">' + LV.그림(표지그림, true) + '<span class="k" id="prCoverK">연애</span><span class="n" id="prCoverN">연애할 때의 그 사람</span><span class="s" id="prCoverS">' + esc(글.cover_sub) + '</span></div>' : '')
@@ -345,7 +346,7 @@
       + '<section class="card">' + (LV && LV.그림 ? '' : '<h2>연애할 때의 그 사람</h2>')
       + (목록.length
         ? '<div id="pairPickWrap" style="margin:0 0 10px"><label for="pairPick" class="hint" style="display:block;margin:0 0 4px">그 사람</label><select id="pairPick">'
-          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + (!맨이름(p) && p.birth ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(PP.relationOf ? PP.relationOf(p) : p.relation) : '') + '</option>'; }).join('')
+          + 목록.map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === 고른 ? ' selected' : '') + '>' + esc(이름(p)) + ((!맨이름(p) || 셈[맨이름(p)] > 1) && p.birth ? ' · ' + p.birth.year + '.' + p.birth.month + '.' + p.birth.day : p.id === meId ? ' · 나' : p.relation ? ' · ' + esc(PP.relationOf ? PP.relationOf(p) : p.relation) : '') + '</option>'; }).join('')
           + '</select></div>'
         : '<button class="btn" id="pairAdd" type="button" style="width:100%;margin:0 0 10px">그 사람 생년월일 넣기</button>')
       + '<div id="pairHead"></div><p class="hint" id="pairSt" style="margin:8px 0 0"></p><div id="pairErr"></div></section>'
