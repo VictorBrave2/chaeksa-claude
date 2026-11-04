@@ -125,13 +125,14 @@
     if (mode === 'solar') { $('pkLeap').checked = false; $('pkLeapWrap').classList.add('hide'); }
     바꿈표();
   }
-  function 있는날(y, m, d) { var t = new Date(Date.UTC(y, m - 1, d)); return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; }
+  function 있는날(y, m, d) { var t = new Date(Date.UTC(y, m - 1, d)); return y >= 1900 && y <= 2100 && t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; }   // 해는 첫 입력 칸과 같은 1900 ~ 2100
   function 양력() {
     var y = +$('pkY').value, m = +$('pkM').value, d = +$('pkD').value;
     if (!y || !m || !d) return null;
     if (cal === 'solar') return 있는날(y, m, d) ? { y: y, m: m, d: d } : { error: '날짜를 다시 확인해 주세요.' };   // 4월 31일 · 13월 · 두 자리 해
     if (!global.ChaeksaLunar) return { error: '음력 날짜를 양력으로 바꾸는 기능을 불러오지 못했어요. 새로고침해 주세요.' };
     var r = global.ChaeksaLunar.lunarToSolar(y, m, d, $('pkLeap').checked);
+    if (r && !r.error && !있는날(r.y, r.m, r.d)) return { error: '날짜를 다시 확인해 주세요.' };   // 음력도 바꾼 양력이 1900 ~ 2100년일 때만(두 자리 해 막음)
     return r && !r.error ? r : { error: (r && r.error) || '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
   }
   function 바꿈표() {

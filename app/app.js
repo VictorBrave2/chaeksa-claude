@@ -234,14 +234,15 @@
     if (mode === 'solar') { $('pfLeap').checked = false; $('pfLeapWrap').classList.add('hide'); }
     updatePfConv();
   }
-  // 11-04 없는 날(4월 31일 · 13월 · 두 자리 해)은 저장하지 않는다 — 전에는 다음 날로 계산됐다
-  const 있는날 = (y, m, d) => { const t = new Date(Date.UTC(y, m - 1, d)); return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; };
+  // 11-04 없는 날(4월 31일 · 13월 · 두 자리 해)은 저장하지 않는다 — 전에는 다음 날로 계산됐다. 해는 첫 입력 칸(readForm)과 같은 1900 ~ 2100
+  const 있는날 = (y, m, d) => { const t = new Date(Date.UTC(y, m - 1, d)); return y >= 1900 && y <= 2100 && t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d; };
   function pfToSolar() {
     const y = +$('pfY').value, m = +$('pfM').value, d = +$('pfD').value;
     if (!y || !m || !d) return null;
     if (pfCal === 'solar') return 있는날(y, m, d) ? { y, m, d } : { error: '날짜를 다시 확인해 주세요.' };
     if (!window.ChaeksaLunar) return null;
     const r = ChaeksaLunar.lunarToSolar(y, m, d, $('pfLeap').checked);
+    if (r && !r.error && !있는날(r.y, r.m, r.d)) return { error: '날짜를 다시 확인해 주세요.' };   // 음력도 바꾼 양력이 1900 ~ 2100년일 때만(두 자리 해 막음)
     return r && !r.error ? r : { error: (r && r.error) || '이 음력 날짜는 양력으로 바꿀 수 없어요. 다시 확인해 주세요.' };
   }
   function updatePfConv() {
