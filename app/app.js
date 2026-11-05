@@ -317,9 +317,13 @@
       else if (길.tab === 'pair') { try { localStorage.setItem('chaeksa.pair.pick', JSON.stringify(새)); } catch (e) {} }
     }
     const 보던 = editingId && editingId === P.activeId() && !(길 && 길.누구 === 'me') ? 열린탭() : null;   // 11-05 docs/140 — 시간 넣고 저장하면 홈으로 떨어졌다
-    if (!R || (길 && 길.누구 === 'me') || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
-    else { renderPeopleBtn(); renderPartners(); renderHome(); }
-    if (보던 && 보던 !== 'home' && 보던 !== 'all' && document.querySelector('.tab[data-tab="' + 보던 + '"]')) { try { go(보던); } catch (e) {} }
+    const 되감 = !!(보던 && 보던 !== 'home' && 보던 !== 'all' && document.querySelector('.tab[data-tab="' + 보던 + '"]'));
+    const 전방식 = 주소방식; if (되감) 주소방식 = 'replace';   // v1630 start() 의 홈과 되감는 탭이 주소 칸을 더 쌓지 않게 — 지금 칸(#jeongtong)을 바꿔 쓴다(뒤로 한 번에 그 전 화면)
+    try {
+      if (!R || (길 && 길.누구 === 'me') || (editingId && editingId === P.activeId())) start(P.toProfile(P.active()));
+      else { renderPeopleBtn(); renderPartners(); renderHome(); }
+      if (되감) { try { go(보던); } catch (e) {} }
+    } finally { 주소방식 = 전방식; }
     // 상담 장이 열려 있으면 고르기도 바로 갱신한다(2026-09-04 밤 점검 「입력했는데 안 된다」).
     // (이 남자 · 그 사람 마음 · 이야기 탭은 09-26 걷었다 — 그 탭들을 다시 그리던 줄은 10-02 개편 3묶음에서 지웠다)
     try { renderGunghap(); renderSheet();
@@ -642,9 +646,11 @@
     if (!el.querySelector(':scope > .backhome-top')) { const t = el.querySelector(':scope > .backhome'); if (t) t.classList.add('backhome-top'); else el.insertAdjacentElement('afterbegin', 만들기('top')); }
     if (!el.querySelector(':scope > .backhome-bottom')) el.insertAdjacentElement('beforeend', 만들기('bottom'));
   }
+  // v1630 다른 쪽으로 넘길 때 주소 꼬리(scan · utm · from)는 잇고 go=<탭> 만 뺀다
+  const 꼬리빼기 = (t) => { const q = location.search.replace(new RegExp('([?&])go=' + t + '(&|$)'), '$1').replace(/[?&]$/, ''); return q.length > 1 ? q : ''; };
   function go(tab) {
     if (tab === 'sheet') tab = 'ssom';   // 11-05 결정함 125 — 옛 9,900원 장(API 에 없는 상품)은 우리 둘의 연애궁합으로
-    if (tab === 'gunghap') { location.href = 'gunghap-pyo.html'; return; }   // 옛 「우리 둘, 잘 맞아요?」 → 정통 사주 궁합
+    if (tab === 'gunghap') { location.href = 'gunghap-pyo.html' + 꼬리빼기('gunghap'); return; }   // 옛 「우리 둘, 잘 맞아요?」 → 정통 사주 궁합(꼬리는 잇고 go= 만 뺌 · v1630)
     const 차례 = ++탭차례;   // 10-02 탭별 꾸러미 — 파일이 늦게 오는 사이 다른 화면으로 갔으면 늦게 온 쪽은 그리지 않는다(꾸러미기다림)
     // 떠나기 전에 자리를 적어 둔다. 그리기 전에 해야 한다 — 그린 뒤엔 이미 0 으로 튕겨 있다.
     // 홈에서 아래 「홈」을 다시 누르는 것은 「맨 위로」라는 뜻이다. 그때만 자리를 잊는다.
@@ -2163,7 +2169,7 @@
   const 나있음 = () => { const P = People(); return !P || !P.hasSelf || P.hasSelf(); };
   function 들어가기(tab, 곳) {
     if (tab === 'sheet') tab = 'ssom';   // 11-05 결정함 125
-    if (tab === 'gunghap') { location.href = 'gunghap-pyo.html'; return; }
+    if (tab === 'gunghap') { location.href = 'gunghap-pyo.html' + 꼬리빼기('gunghap'); return; }
     if (NO_PROFILE_TABS.indexOf(tab) >= 0) { 바로열기(tab); return; }
     try { sessionStorage.setItem(가는곳키, tab); if (곳) sessionStorage.setItem(가는칸키, 곳); else sessionStorage.removeItem(가는칸키); } catch (e) {}
     const 그사람만 = 그사람만탭.indexOf(tab) >= 0;
@@ -2235,7 +2241,8 @@
   window.책사들어가기 = 들어가기;
   // 11-05 docs/140 — 내 시간을 넣는 창이 「그 사람은요?」 말로 열렸다. 내 사람이면 내 칸 모양으로, {시간:true} 면 「시간을 몰라요」를 풀고 시 칸에 포커스.
   window.책사내정보수정 = (opt) => {
-    const P = People(), a = P && P.active(); if (!P) return;
+    const P = People(); if (!P) return;
+    const a = (opt && opt.id && P.get(opt.id)) || P.active();   // v1630 세 관점 · 타로에서 고른 사람(selected) — 보는 사람과 다를 수 있다(v1629 검토 1)
     const 나 = !!(a && (a.isSelf || P.relationOf(a) === '나'));
     openPersonForm(a ? a.id : null, 나 ? { 누구: 'me', 말: 내칸말, 표지: window.ChaeksaHomeCats && ChaeksaHomeCats.표지 ? ChaeksaHomeCats.표지(열린탭()) : null } : undefined);
     if (opt && opt.시간 && $('pfNoTime')) { $('pfNoTime').checked = false; $('pfH').disabled = $('pfMi').disabled = false; try { $('pfH').focus(); } catch (e) {} }
