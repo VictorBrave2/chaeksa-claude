@@ -92,12 +92,35 @@
       + (k['%'] != null && K.비율줄 ? 칸('small', '', 채움(K.비율줄, { '%': 쪽수(k['%']), 표본수: k.표본수 })) : '')
       + 근거 + 칸('p', 'todo', (K.할일 || {})[키]) + '</div>';
   }
+  // 11-06 사장님 「필터식 컨텐츠 맞지? 진행해」(전략 docs/144) — 두 사람 각자의 「바라는 사람」 두 줄(겉 · 속)과 맞필터 넷(겉 · 바라던꼴 · 채움 · 센스 — 두 방향 네 꼴 · %). 값은 r.니즈맞필터 · 글은 C.니즈 · C.맞필터(COPY-0039). 머리가 비면 안 그린다.
+  function 니즈칸(r, a, b) {
+    var N = r.니즈맞필터, K = C.니즈 || {}; if (!N || !K.머리) return '';
+    var 무리 = K.무리이름 || {}, 이름 = function (xs) { return (xs || []).map(function (m) { return 무리[m] || m; }).join(K.사이 || ', '); };
+    var 한사람 = function (n, 누구) {
+      if (!n) return '';
+      var 값 = { 누구: 누구, 무리들: 이름(n.겉.무리), 빠진: 이름(n.속.빠진), 일지무리: 무리[n.속.일지.무리] || n.속.일지.무리, 일지십신: n.속.일지.십신, 겉만: 이름(n.겉만), 속만: 이름(n.속만) };
+      var 겉 = K.겉줄 ? '<p><b>' + esc(K.겉머리 || '') + '</b> ' + esc(채움(K.겉줄, 값)) + '</p>' : '';
+      var 속 = K.속줄 ? '<p><b>' + esc(K.속머리 || '') + '</b> ' + esc(채움(n.속.빠진.length && K.속줄빠진 ? K.속줄빠진 : K.속줄, 값)) + '</p>' : '';
+      var 어 = 채움((n.상태 === '어긋남' ? K.어긋남줄 : n.상태 === '일치' ? K.일치줄 : K.보통줄) || '', 값);   // 상태 셋 — 어긋남(겉 · 속이 하나도 안 겹침) · 일치(겉이 다 속에 있음) · 보통
+      return '<div class="card gh-nz">' + 칸('p', 'k', 누구) + 겉 + 속 + 칸('p', 'why', 어) + '</div>';
+    };
+    return 칸('h3', 'sec', K.머리) + 한사람(N.니즈.나, 부름(a)) + 한사람(N.니즈.그, 부름(b));
+  }
+  function 맞필터칸(r, a, b) {
+    var N = r.니즈맞필터, K = C.맞필터 || {}; if (!N || !K.머리 || !K.이름) return '';
+    var 꼴말 = K.꼴 || {}, 누구 = { 나: 부름(a), 그: 부름(b) };
+    var 줄 = N.맞필터.filter(function (f) { return K.이름[f.이름] && f.꼴 !== '해당없음'; }).map(function (f) {
+      return '<div class="card gh-mf ' + esc(f.꼴) + '" data-f="' + esc(f.이름) + '"><p class="y">' + esc(K.이름[f.이름]) + (f['%'] != null && K.비율표시 !== false ? ' <small>' + 쪽수(f['%']) + '</small>' : '') + '</p>'
+        + 칸('p', '', 채움(꼴말[f.꼴] || '', 누구)) + 칸('p', 'why', (K.설명 || {})[f.이름]) + '</div>';
+    }).join('');
+    return 줄 ? 칸('h3', 'sec', K.머리) + 줄 : '';
+  }
   function 그리기(r, a, b) {
     var 걸린 = r.거르개.filter(function (f) { return f.걸림; }).sort(function (x, y) { return 드묾(x) - 드묾(y); });
     var 안 = r.거르개.filter(function (f) { return !f.걸림; });
     var 위 = 걸린[0], 위글 = 위 ? 글of(위) : null, R = C.결과 || {}, J = C.조합 || {};
     var 결과이름 = 위 ? 위글.결과이름 : R.없음이름, 결과한줄 = 위 ? 위글.한줄 : R.없음한줄;
-    var h = 명식표(r, a, b) + 결론53칸(r, a, b)
+    var h = 명식표(r, a, b) + 결론53칸(r, a, b) + 니즈칸(r, a, b) + 맞필터칸(r, a, b)
       + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + 칸('h2', 'gh-name', 결과이름) + 칸('p', '', 결과한줄)
       + 칸('small', '', 채움(J.줄, { '%': 쪽수(r.조합['%']), 해당수: r.조합.해당수, 표본수: r.조합.표본수 })) + '</div>'
       + 칸('h3', 'sec', C.걸린머리) + 걸린.map(function (f) { return 거르개칸(f, true); }).join('')

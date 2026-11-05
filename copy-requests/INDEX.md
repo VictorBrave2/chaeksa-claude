@@ -39,3 +39,4 @@
 | COPY-0036 | SSS급 궁합 분석 — 24관점 화면 글(대중적인 감성 · 29,700원) | 제안됨(11-03) | [주문서](COPY-0036-sss-gunghap.md) · [원고·인계](ref/COPY-0036-sss-gunghap-copy.md) | codex/COPY-0036 |
 | COPY-0037 | SSS급 궁합 분석 — 신청 쪽 · 결과 쪽 · 장부 줄 글 다듬기 | 합침(11-03 · PR #46 · v1612) | [주문서](COPY-0037-sss-pay-pages.md) · [원고·검사·인계](ref/COPY-0037-sss-pay-pages-copy.md) | codex/COPY-0037 |
 | COPY-0038 | SSS급 궁합 분석 — 결제 뒤 여는 의식 글(섞기 · 고르기 · 만드는 중 · 카드 줄) | 제안됨(11-03) | [주문서](COPY-0038-sss-open-rite.md) | codex/COPY-0038 |
+| COPY-0039 | 정통 사주 궁합 — 결론(법전 53조) · 「바라는 사람」 두 줄 · 맞필터 넷의 글 | 제안됨(11-06) | [주문서](COPY-0039-gunghap-needs.md) | codex/COPY-0039 |
