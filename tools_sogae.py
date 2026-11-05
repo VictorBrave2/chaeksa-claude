@@ -400,7 +400,7 @@ def product_page(key, fname, Y, B, arts, foot, ver):
 <!-- {mark} — 글은 상품 약속 장부(yaksok.js) · 분야 표(bunya.js) · 그 콘텐츠 파일에서 읽는다. 손으로 고치지 말고 장부를 고친 뒤 python tools_sogae.py (배포 때도 저절로 돈다). -->
 <script>
 /* 넣어 둔 사람이 있는 손님은 지금처럼 앱의 그 화면으로 곧장 간다(들어온 길 from 은 그대로). 처음 온 손님 · 검색 로봇은 아래 소개를 본다. */
-(function(){{try{{var l=JSON.parse(localStorage.getItem('chaeksa.people')||'[]');if(!(l&&l.length)&&!localStorage.getItem('chaeksa.profile'))return;var f=new URLSearchParams(location.search).get('from');location.replace('./?go={tab}'+(f?'&from='+encodeURIComponent(f):''));}}catch(e){{}}}})();
+(function(){{try{{var l=JSON.parse(localStorage.getItem('chaeksa.people')||'[]');if(!(l&&l.length)&&!localStorage.getItem('chaeksa.profile'))return;var q=location.search.replace(/^\?/,'');location.replace('./?go={tab}'+(q?'&'+q:''));}}catch(e){{}}}})();
 document.documentElement.setAttribute('data-theme','day');
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">

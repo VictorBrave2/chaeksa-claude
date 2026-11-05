@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=d66e83d491">
+<link rel="stylesheet" href="style.css?v=f7b164fe28">
 <style>
   .doc{max-width:520px;margin:0 auto;padding:48px 18px 80px;text-align:center}
   .doc h1{font-family:var(--serif);font-size:var(--t5);margin:18px 0 8px}
@@ -45,7 +45,7 @@
 <script src="cloud.js?v=024ffce65b"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=1f42995d7f"></script>
-<script src="yaksok.js?v=d809ced51e"></script>
+<script src="yaksok.js?v=4240a13079"></script>
 <!-- 출산택일 신청서 칸 밑 「이렇게 읽었어요」(10-02) — 신청서를 이 자리에서 받을 때 -->
 <script src="places.js?v=1350b96148"></script>
 <script src="taekil-read.js?v=665291947e"></script>
@@ -286,7 +286,7 @@
           + '<p>결제는 끝났지만 저희 쪽에 주문 기록이 아직 저장되지 않았습니다. 이 화면을 <b>새로고침</b>하면 다시 기록합니다.</p>'
           + '<p>그래도 이 화면이 다시 보이면 아래 주문번호를 메일로 보내 주세요. 확인해서 결제하신 내용을 열어 드리거나 결제 금액을 돌려드립니다.</p>'
           + '<div class="box">'
-          +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
+          +   '<div class="row"><span>상품</span><span>' + esc((window.ChaeksaYaksok && ChaeksaYaksok.이름 && r.product && ChaeksaYaksok.이름(r.product)) || r.name) + '</span></div>'
           +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
           +   '<div class="row oid"><span>주문번호</span><span>' + esc(orderId) + '</span></div>'
           + '</div>'
@@ -313,7 +313,7 @@
         + (시험 ? '<p><b>시험 결제 — 돈이 빠지지 않았습니다</b></p>' : '')
         + '<p>' + (연애 ? esc(이어서) : 일결 ? esc(일결이어서) : 결혼 ? esc(결혼이어서) : (r.already ? '이미 처리된 주문입니다.' : '고맙습니다. 곧 시작하겠습니다.')) + '</p>'
         + '<div class="box">'
-        +   '<div class="row"><span>상품</span><span>' + esc(r.name) + '</span></div>'
+        +   '<div class="row"><span>상품</span><span>' + esc((window.ChaeksaYaksok && ChaeksaYaksok.이름 && r.product && ChaeksaYaksok.이름(r.product)) || r.name) + '</span></div>'
         +   '<div class="row"><span>금액</span><span>' + esc(ChaeksaPay.won(r.amount)) + '</span></div>'
         +   '<div class="row oid"><span>주문번호</span><span>' + esc(orderId) + '</span></div>'
         + '</div>'

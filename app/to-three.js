@@ -12,8 +12,8 @@
     var Y = global.ChaeksaYaksok; if (!Y || !주소[from]) return '';
     var 이름 = Y.이름('three'); if (!이름) return '';
     var r = (Y.줄 && Y.줄('three')) || {}, 말 = r.정통끝말 || '';
-    return '<nav class="to-three" data-from="' + from + '" aria-label="' + esc(이름) + '">' + (말 ? '<p class="to-three-say">' + esc(말) + '</p>' : '')
-      + '<a class="btn to-three-go" href="' + 주소[from] + '" data-to-three="' + from + '">' + esc(이름) + ' <span aria-hidden="true">→</span></a></nav>';
+    return '<section class="to-three" data-from="' + from + '" aria-label="' + esc(이름) + '">' + (말 ? '<p class="to-three-say">' + esc(말) + '</p>' : '')
+      + '<a class="btn to-three-go" href="' + 주소[from] + '" data-to-three="' + from + '">' + esc(이름) + ' <span aria-hidden="true">→</span></a></section>';   // 11-05 nav → section: style.css 공통 nav 규칙(fixed)이 걸려 폰 아래 메뉴에 가렸다(docs/140)
   }
   function 달기(host, from) {
     if (!host || !host.querySelector || host.querySelector('.to-three')) return;

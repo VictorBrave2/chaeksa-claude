@@ -12,6 +12,7 @@
   robots.txt 가 /tools/ 를 막아 색인은 안 된다.
 -->
 <script src="../config.js"></script>
+<script src="../cloud.js"></script>
 <style>
   :root{--bg:#161433;--card:#1c1a3c;--ink:#eeeaf7;--ink2:#b6aed4;--ink3:#8f87b3;
         --acc:#e6c98a;--line:#302c5c;--ok:#7cc487;--warn:#e2896b}
@@ -66,12 +67,14 @@ function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return ({'<'
 $('load').onclick = function () {
   if (!CFG.url || !CFG.anonKey) { $('body').textContent = 'config.js 를 못 읽었습니다.'; return; }
   $('body').textContent = '부르는 중…';
-  fetch(CFG.url + '/rest/v1/rpc/visits_stats', {
+  // 11-05 docs/140 — 집계 함수는 사장님 로그인 토큰으로만(migrate-44). 로그인 안 돼 있으면 공개 열쇠로 가서 「권한 없음」이 뜬다.
+  (window.ChaeksaCloud && ChaeksaCloud.token ? ChaeksaCloud.token().catch(function () { return null; }) : Promise.resolve(null)).then(function (tok) {
+  return fetch(CFG.url + '/rest/v1/rpc/visits_stats', {
     method: 'POST',
     headers: { 'content-type': 'application/json', apikey: CFG.anonKey,
-               authorization: 'Bearer ' + CFG.anonKey },
+               authorization: 'Bearer ' + (tok || CFG.anonKey) },
     body: '{}',
-  }).then(function (r) { return r.json(); }).then(function (d) {
+  }); }).then(function (r) { return r.json(); }).then(function (d) {
     if (!d || d.code) {
       $('body').innerHTML = '<div class="warn"><b>함수가 없습니다.</b> '
         + 'Supabase 에서 <code>server/schema-7.sql</code> 을 실행하세요.<br>'
