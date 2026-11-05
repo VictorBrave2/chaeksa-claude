@@ -183,6 +183,15 @@ async function 시험계정(userToken) {
   return !!(u && u.app_metadata && u.app_metadata.plan === 'review');
 }
 
+/** 토큰의 사용자 id — nfail 이 그 주문을 연 사람인지 맞춰 볼 때(11-05 docs/140). 못 알면 null. */
+async function 사용자id(userToken) {
+  if (!userToken) return null;
+  const r = await fetch(`${sbUrl()}/auth/v1/user`, { headers: { apikey: sbAnon(), authorization: `Bearer ${userToken}` } }).catch(() => null);
+  if (!r || !r.ok) return null;
+  const u = await r.json().catch(() => null);
+  return (u && u.id) || null;
+}
+
 /* 결제는 돈이 오가므로 '장애 시 통과'가 없다 — 확인 못 하면 승인하지 않는다.
  * api/chat.js 의 결제 확인(llm_gate, 2026-09-12)도 같은 쪽이다: 확인 못 하면 LLM 을 부르지 않는다. */
 
@@ -721,6 +730,10 @@ module.exports = async (req, res) => {
       if (!orderId) return res.status(400).json({ ok: false, reason: 'bad_request' });
       const o = await srv('order_pg_get', { p_order: orderId }).catch(() => null);
       if (!o || !o.ok || o.status !== 'open' || o.provider !== 'naver') return res.status(200).json({ ok: true, kept: true });
+      // 11-05 docs/140 — kfail 은 카카오에 묻고 닫지만 nfail 은 조회가 없어 주문번호만 알면 남의 열린 주문을 닫을 수 있었다.
+      // 그 주문을 연 사람(로그인 토큰)일 때만 닫는다. 로그인이 없으면 열린 채 둔다 — 열린 주문은 nconfirm 이 금액 대조로 지킨다.
+      const 나 = await 사용자id(token);
+      if (!나 || !o.user_id || String(o.user_id) !== String(나)) return res.status(200).json({ ok: true, kept: true });
       const rc = String(body.code || '').replace(/[^A-Za-z]/g, '').slice(0, 40);
       await srv('order_pg_failed', { p_order: orderId, p_code: rc === 'UserCancel' ? 'USER_CANCEL' : ('NAVER_' + (rc || 'FAIL')),
                                      p_message: String(body.message || '').slice(0, 200) }).catch(() => {});

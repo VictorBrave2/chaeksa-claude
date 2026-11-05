@@ -68,8 +68,12 @@ a.logo{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparen
   box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.28);
 }
 .logo small{display:block;font-family:var(--sans);font-weight:400;font-size:var(--t1);color:var(--ink3);letter-spacing:.05em;margin-top:2px}
-.hbtns{display:flex;gap:7px;align-items:center}
-.btn-ghost{background:none;border:1px solid var(--line2);color:var(--ink2);border-radius:var(--r3);padding:7px 13px;font-size:var(--t1);cursor:pointer;transition:.15s;font-family:var(--sans)}
+.hbtns{display:flex;gap:7px;align-items:center;flex:0 0 auto}
+/* 11-05 docs/140 — 360px 폭에서 단추 글이 두 줄로 꺾였다: 단추는 한 줄 그대로, 로고 부제가 줄어든다 */
+.logo{min-width:0}
+.logo>span{min-width:0;display:block}
+.logo small{overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.btn-ghost{white-space:nowrap;flex:0 0 auto;background:none;border:1px solid var(--line2);color:var(--ink2);border-radius:var(--r3);padding:7px 13px;font-size:var(--t1);cursor:pointer;transition:.15s;font-family:var(--sans)}
 .btn-ghost:hover{border-color:var(--accent2);color:var(--accent)}
 .btn-icon{width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:var(--t3);border-radius:50%;color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
 /* 10-02 바깥 쪽 머리줄(개편 3묶음) — 택일 안내 · 글 · 값 안내 · 약관처럼 index.html 밖의 쪽도 앱과 같은 로고 · 바탕 · 밑줄을 맨 위에 둔다

@@ -29,6 +29,7 @@ jobs:
       - name: Drop files the live site does not use
         run: |
           rm -f app/art/exec-*.png app/tests_*.html app/*-wongo-view.html
+          rm -rf app/tools   # 11-05 docs/140 — 사장님 도구 쪽(방문 집계)은 라이브에 올리지 않는다
           du -sh app
       - uses: actions/upload-pages-artifact@v3
         with:

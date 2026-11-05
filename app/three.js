@@ -652,7 +652,7 @@
         const s = root.querySelector('#three-person');
         if (s) { s.onchange = e => { selected = e.target.value; 고른 = ''; 펼친 = null; render(true); }; if (포커스) try { s.focus(); } catch (e) {} }
         const 넣기 = root.querySelector('[data-three-person-edit]');
-        if (넣기) 넣기.onclick = () => { try { const b = global.document.getElementById('btnPerson'); if (b) b.click(); } catch (e) {} };
+        if (넣기) 넣기.onclick = () => { try { if (global.책사내정보수정) global.책사내정보수정({ 시간: true }); else { const b = global.document.getElementById('btnPerson'); if (b) b.click(); } } catch (e) {} };   // 11-05 docs/140 — 시트 대신 고치기 창 바로
         const 모두 = sel => (root.querySelectorAll ? Array.from(root.querySelectorAll(sel)) : []);
         모두('[data-three-q]').forEach(b => { b.onclick = () => 고름(b.getAttribute('data-three-q')); });
         모두('[data-to-three]').forEach(a => { a.onclick = () => 사건('to_three|tarot'); });   // 정통타로 → 세 관점
@@ -927,7 +927,7 @@
         const s = root.querySelector('#three-person');
         if (s) { s.onchange = e => { selected = e.target.value; render(true); }; if (포커스) try { s.focus(); } catch (e) {} }
         const 넣기 = root.querySelector('[data-three-person-edit]');
-        if (넣기) 넣기.onclick = () => { try { const b = global.document.getElementById('btnPerson'); if (b) b.click(); } catch (e) {} };
+        if (넣기) 넣기.onclick = () => { try { if (global.책사내정보수정) global.책사내정보수정({ 시간: true }); else { const b = global.document.getElementById('btnPerson'); if (b) b.click(); } } catch (e) {} };   // 11-05 docs/140 — 시트 대신 고치기 창 바로
         (root.querySelectorAll ? Array.from(root.querySelectorAll('[data-three-card]')) : []).forEach(b => { b.onclick = () => 뽑음(+b.getAttribute('data-three-card')); });
         (root.querySelectorAll ? Array.from(root.querySelectorAll('[data-three-note]')) : []).forEach(b => { b.onclick = () => 적음(b.getAttribute('data-three-note')); });
         const 다시 = root.querySelector('[data-three-retry]');
