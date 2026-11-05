@@ -144,6 +144,6 @@
 | IMG-0136 | 돈을 씀 · 남신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0136-today-expense-m-timeless.md | 삽화원본/today-events/expense-m-v2.png(로컬) | app/art/today-events/expense-m-v2.webp |
 | IMG-0137 | 돈을 씀 · 여신 | 적용됨(v1519 공개 배포 · 10-30 main 합침) | IMG-0137-today-expense-f-timeless.md | 삽화원본/today-events/expense-f-v2.png(로컬) | app/art/today-events/expense-f-v2.webp |
 | IMG-0139 | 홈 표지 정통타로 · 남신 · 열 장 켈틱 펼침 | 제안됨 | IMG-0139-menu-tarot-cover.md | image-requests/out/IMG-0139/ | app/art/menu-guides-v1/tarot.webp |
-| IMG-0140 | 홈 「궁합」 줄 정통 자미두수 궁합 · 두 사람 · 천구환 속 이어진 두 별 | 요청 | IMG-0140-0142-gunghap-covers.md | image-requests/out/IMG-0140/ | app/art/menu-guides-v1/zwgh.webp |
-| IMG-0141 | 홈 「궁합」 줄 정통 타로 궁합 · 마주 앉은 두 사람 · 켈틱 열 장 · 여신이 마지막 장을 뒤집음 | 요청 | IMG-0140-0142-gunghap-covers.md | image-requests/out/IMG-0141/ | app/art/menu-guides-v1/tarotgh.webp |
+| IMG-0140 | 홈 「궁합」 줄 정통 자미두수 궁합 · 두 사람이 두 별 지도를 맞댐 | 적용됨(11-05 사용자 승인 · 홈 전용) | ref/menu-illustrations-20261105.md | 로컬 output/menu-illustrations-20261105/assets/ziwei-compatibility.png | app/art/menu-illustrations-20261105/ziwei-compatibility.webp |
+| IMG-0141 | 홈 「궁합」 줄 정통 타로 궁합 · 두 사람 · 켈틱 열 장 · 여신이 마지막 장을 뒤집음 | 적용됨(11-05 사용자 승인 · 홈 전용) | ref/menu-illustrations-20261105.md | 로컬 output/menu-illustrations-20261105/assets/tarot-compatibility.png | app/art/menu-illustrations-20261105/tarot-compatibility.webp |
 | IMG-0142 | 홈 「궁합」 줄 SSS급 궁합 분석 · 두 사람 · 머리 뒤 24칸 금빛 바퀴 | 요청 | IMG-0140-0142-gunghap-covers.md | image-requests/out/IMG-0142/ | app/art/menu-guides-v1/sssgh.webp |
