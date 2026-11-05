@@ -483,7 +483,8 @@
     const 갈래들 = (opts && opts.갈래들) || ['관계', '배우자', '이별', '재물', '친구', '직장', '학습', '가족'];
     // 사람층of(B, 나를얹고): B의 격신을 「그 사람」 층으로. 나를얹고 = A의 격신을 B에 먼저 얹은 뒤의 B 격신(되돌아오는 효과 Γ 용).
     const 사람층of = (B, A얹기) => {
-      const pB = 판정(B, today, A얹기 ? { 운들: 운들of(B, today).concat(A얹기) } : undefined);
+      const 원국만 = !!(opts && opts.원국만);   // 11-05 궁합 결론은 원국끼리(53조 · docs/62 1-4 — 운을 얹으면 같은 두 사람이 달마다 뒤집힌다)
+      const pB = 판정(B, today, (A얹기 || 원국만) ? { 운들: (원국만 ? [] : 운들of(B, today)).concat(A얹기 || []) } : undefined);
       const 글B = pB.오늘.표.글자;
       const 격신B = pB.오늘.격 && pB.오늘.격.주인 && !pB.오늘.격.주인.운 ? 글B.find(g => g.key === pB.오늘.격.주인.key) : null;
       if (opts && opts.전부) return 글B.filter(g => !g.운 && g.산다 && !g.일간).map(g => ({ stem: g.stem, branch: null, name: '그 사람', 힘: g.힘 }));
@@ -495,7 +496,7 @@
       return [];
     };
     const 한쪽 = (A, B, 여자A, 여자B, 사람층주어진) => {
-      const pB = 판정(B, today);
+      const pB = 판정(B, today, (opts && opts.원국만) ? { 운들: [] } : undefined);
       const 글B = pB.오늘.표.글자;
       const 일간B = 글B.find(g => g.일간);
       const 뿌리B = ['year', 'month', 'day', 'hour'].filter(k => B.pillars[k]).map(k => [B.pillars[k].branch, E.NATAL_WEIGHT[k + 'Branch']]);
@@ -504,7 +505,7 @@
       // 그 사람 = 그 사람의 격신(사장님 09-14 「그녀가 병화 일간에 정관격이라면 내게는 그녀가 계수짓을 한다」). 일간이 아니라 그 사람을 부리는 글자가 내게 온다.
       // 격신이 천간에 없으면(본기만 있는 격) 월지 속 본기 지장간을 그 사람으로(46조, 힘 = 자리 무게). 격을 못 잡으면 「안 나왔어요」.
       const 사람층 = 사람층주어진 || 사람층of(B, null);
-      const 기본 = 운들of(A, today);
+      const 기본 = (opts && opts.원국만) ? [] : 운들of(A, today);
       const 앞 = 판정(A, today, { 운들: 기본 });
       const 뒤 = 판정(A, today, { 운들: 기본.concat(사람층) });
       const 줄 = [];
