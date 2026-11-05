@@ -78,7 +78,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1627';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1628';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -120,6 +120,17 @@
   }
   // 홈 메뉴판 — 처음 홈 · 다시 온 손님 홈이 같이 쓴다(11-03 사장님 「메뉴 갈무리 다시 해달라했는데 피씨환경이라그런가? 안바꼈네」 — 다시 온 손님 홈이 전체 목록이라 11-02 정리가 안 보였다).
   // 칸이 홀수인 줄은 마지막 칸이 두 칸 너비로 눕는다(style.css .home-doors). 전체 목록은 #all 탭(전체그리기).
+  // 11-05 사용자 승인: 홈 궁합 세 칸·유료 두 칸을 전용 타로풍 삽화로. 가로/세로 홈 칸에 맞춘 원본이다.
+  // 전체 목록과 입력창은 원래 세로 표지를 쓰므로 홈에서 호출할 때만 그림을 바꾼다.
+  var 홈메뉴삽화 = {
+    ghpyo: { 그림: 'art/menu-illustrations-20261105/saju-compatibility.webp', 작은: 'art/menu-illustrations-20261105/saju-compatibility-s.webp', 크기: [1536, 1024], 그림위치: '50% 50%' },
+    zwghpyo: { 그림: 'art/menu-illustrations-20261105/ziwei-compatibility.webp', 작은: 'art/menu-illustrations-20261105/ziwei-compatibility-s.webp', 크기: [1536, 1024], 그림위치: '50% 50%' },
+    tarotghpyo: { 그림: 'art/menu-illustrations-20261105/tarot-compatibility.webp', 작은: 'art/menu-illustrations-20261105/tarot-compatibility-s.webp', 크기: [1122, 1402], 그림위치: '50% 50%' },
+    taekil: { 그림: 'art/menu-illustrations-20261105/taekil.webp', 작은: 'art/menu-illustrations-20261105/taekil-s.webp', 크기: [1536, 1024], 그림위치: '50% 50%' },
+    ilgyeol: { 그림: 'art/menu-illustrations-20261105/work-money-{g}.webp', 작은: 'art/menu-illustrations-20261105/work-money-{g}-s.webp', 크기: [1536, 1024], 그림위치: '50% 50%' }
+  };
+  function 홈그림(c) { return Object.assign({}, c, 홈메뉴삽화[c.키] || {}); }
+
   function 그리기(el) {
     if (!el) return;
     var Y = global.ChaeksaYaksok, g = 성별();
@@ -132,11 +143,11 @@
     //   SSS급 궁합 분석은 시험 결제가 끝나면 이 줄 넷째 칸으로 넣는다(유료 줄이 아니라 같은 궁합끼리 — 값은 딱지가 말한다). 그 전엔 칸 표에 sss 가 없다.
     var 궁합 = ['ghpyo', 'zwghpyo', 'tarotghpyo'].map(function (key, i) {
       var x = 찾기(key);
-      return 그림칸(x.b, x.c, i, 4 + i, g, Y);
+      return 그림칸(x.b, 홈그림(x.c), i, 4 + i, g, Y);
     }).join('');
     var 유료 = [['taekil', '아기 태어날 날과 시간', '가능한 범위에서 가장 좋은 시간을 골라 드려요'], ['ilgyeol']].map(function (r, i) {
       var x = 찾기(r[0]);
-      return 그림칸(x.b, Object.assign({}, x.c, r[1] ? { 표시명: r[1], 설명: r[2] } : {}), i, 7 + i, g, Y);
+      return 그림칸(x.b, Object.assign(홈그림(x.c), r[1] ? { 표시명: r[1], 설명: r[2] } : {}), i, 7 + i, g, Y);
     }).join('');
     var 무료 = ['today', 'why', 'when', 'ssom', 'saram', 'read'].map(function (key, i) {
       var x = 찾기(key);
