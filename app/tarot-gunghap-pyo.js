@@ -77,29 +77,24 @@
     return 칸('p', '', 채움(K.줄, { 그: 그부름(b), 카드: k.이름 || '' }))
       + (k.자리 ? 칸('p', 'why', 채움(K.나온자리, { 자리: k.자리 + '. ' + (자리이름[k.자리] || '') })) : 칸('p', 'why', K.안나옴));
   }
-  function 거르개칸(f, 걸림) {
-    var g = 글of(f), 근 = C.근거 || {};
-    var 원문 = (f.원문 || []).length ? '<details class="fold"><summary>' + esc(근.원문머리 || f.출처) + '</summary>'
-      + f.원문.map(function (t) { return '<p class="q">' + esc(t) + '</p>'; }).join('') + 칸('p', 'why', f.출처 + (f.줄 ? ' · ' + f.줄 : ''))
-      + (f.옮김 ? 칸('p', 'why', 근.옮김머리) : '') + '</details>' : '';
-    return '<div class="card gh-f' + (걸림 ? ' on' : '') + '" data-f="' + esc(f.id) + '">'
-      + '<p class="k">' + 칸('span', 'gh-tag', f.옮김 ? 근.방법표시 : 근.고전표시) + '</p>'
-      + '<p class="y">' + esc(g.이름 || '') + ' <small>' + 쪽수(f['%']) + '</small></p>'
-      + (걸림 ? 칸('p', '', g.한줄) + 원문 : '') + '</div>';
+  // 11-06 사장님 「타로를 필터식으로 할 필요는 없지 않느냐」 — 거르개 아홉 · 비율 걷음(결정함 140). 타로 궁합 = 이번 달 연애 열 장 읽기 + 상대 카드가 어디 나왔나 + 넷째 자리(무의식의 배우자 · 결정함 134).
+  // 넷째 자리 줄 — 값은 판[3](카드 · 사람 카드인가 · 상대 카드와 같은가) · 글은 C.넷째(COPY-0042). 머리가 비면 안 그린다.
+  function 넷째줄(r, b) {
+    var K = C.넷째 || {}; if (!K.머리) return '';
+    var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리, x = 판[3]; if (!x) return '';
+    var 사람 = /^[WCSP]1[1-4]$/.test(x.id), 같은 = !r.그카드.같은카드 && x.id === r.그카드.id;
+    var 값 = { 그: 그부름(b), 카드: x.이름 || '' };
+    return '<div class="card gh-t4">' + 칸('p', 'k', K.머리) + 칸('p', '', 채움(같은 ? K.같은줄 : 사람 ? K.사람줄 : K.상태줄, 값)) + 칸('p', 'why', K.뜻줄) + '</div>';
   }
   function 그리기(r, a, b, 다시) {
-    var 걸린 = r.거르개.filter(function (f) { return f.걸림; }).sort(function (x, y) { return x['%'] - y['%']; });
-    var 안 = r.거르개.filter(function (f) { return !f.걸림; });
-    var 위 = 걸린[0], 위글 = 위 ? 글of(위) : null, R = C.결과 || {}, J = C.조합 || {}, M = C.이번달 || {};
+    var R = C.결과 || {}, M = C.이번달 || {}, P = C.판 || {}, 등 = P.등급 || {};
+    var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리, 끝카 = 판[9];
     var 끝 = r.때 && r.때.끝 ? (+r.때.끝.slice(5, 7)) + '월 ' + (+r.때.끝.slice(8, 10)) + '일' : '';
     var h = (다시 ? 칸('p', 'why', M.다시보기) : '')
-      + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + 칸('h2', 'gh-name', 위 ? 위글.결과이름 : R.없음이름) + 칸('p', '', 위 ? 위글.한줄 : R.없음한줄)
-      + 칸('small', '', 채움(J.줄, { '%': 쪽수(r.조합['%']), 해당수: r.조합.해당수, 표본수: r.조합.표본수 })) + 칸('small', '', 채움(M.줄, { 끝: 끝 })) + '</div>'
-      + '<div class="card">' + 그카드줄(r, b) + '</div>'
-      + 판그림(r, b)
-      + 칸('h3', 'sec', C.걸린머리) + 걸린.map(function (f) { return 거르개칸(f, true); }).join('')
-      + (안.length ? '<details class="fold"><summary>' + esc(C.안걸린머리 || '') + '</summary>' + 안.map(function (f) { return 거르개칸(f, false); }).join('') + '</details>' : '')
-      + 칸('p', 'sub', C.끝말) + '<div id="gh-end"></div>';
+      + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + 칸('h2', 'gh-name', 끝카 ? 끝카.이름 : '') + 칸('p', '', 끝카 ? [끝카.놓임 === '거꾸로' ? P.거꾸로 : '', 등[끝카.등급] || ''].filter(Boolean).join(' · ') : '')
+      + 칸('small', '', 채움(M.줄, { 끝: 끝 })) + '</div>'
+      + '<div class="card">' + 그카드줄(r, b) + '</div>' + 넷째줄(r, b)
+      + 판그림(r, b) + '<div id="gh-end"></div>';
     $('out').innerHTML = h;
     셈(다시 ? 'tarot_gh_pyo_again' : 'tarot_gh_pyo');
     try {
@@ -116,6 +111,6 @@
     $('eyebrow').textContent = 쪽.위표시 || '';
     고르기그림();
   }
-  global.ChaeksaTarotGhPyo = { 그리기: 그리기, 거르개칸: 거르개칸 };
+  global.ChaeksaTarotGhPyo = { 그리기: 그리기 };
   if (typeof document !== 'undefined') { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 시작); else 시작(); }
 })(typeof window !== 'undefined' ? window : globalThis);
