@@ -19,6 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=f7b164fe28">
+<link rel="stylesheet" href="three.css?v=970888f5f7">
 <style>
 /* 10-05 사장님 「다른 메뉴들은 왼쪽에 홈이 있잖아 통일」 — 앱 탭과 같은 「← 홈」 단추(btn ghost small backhome)를 본문 왼쪽 위에.
    10-05 사장님 「홈으로 가는 길이 없고 색상이랑 디자인이 거부감」 — 이 쪽만의 색을 걷고 사이트 공통(style.css 변수 · 머리 줄)을 쓴다 */
@@ -60,6 +61,8 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 .gh-name{font-family:var(--serif);font-size:var(--t5);color:var(--ink);margin:4px 0 8px}
 .gh-f.on{border-color:var(--accent-line)}.gh-f .k{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.gh-tag{font-size:var(--t1);color:var(--accent)}
 /* 11-06 열 장 엮기(결정함 141) — 결론 굵게 · 단락 · 할 일 */
+/* 11-06 열 장 고르기 · 뒤집기 연출(three.css 판 · 부채꼴 그대로) — 막 뒤집은 장 한 줄 */
+.gh-flip-now{margin:6px 0 0;font-size:var(--t2);line-height:1.6;color:var(--ink);text-align:center;word-break:keep-all}.gh-flip-now span{color:var(--ink3)}.gh-flip-now b{font-family:var(--serif)}
 .gh-story:empty{display:none}.gh-story p.c{font-family:var(--serif);font-size:var(--t4);font-weight:700;line-height:1.6;margin:2px 0 8px}.gh-story p+p{margin-top:8px}.gh-story p.todo{font-weight:700;margin-top:10px}
 </style>
 </head>
@@ -86,6 +89,6 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 <script src="three-pieces.js?v=fc392a8c4d"></script>
 <script src="tarot-gunghap-pyo-copy.js?v=eece07bb22"></script>
 <script src="pair-pick.js?v=9f42d2c190"></script>
-<script src="tarot-gunghap-pyo.js?v=7b468dd37a"></script>
+<script src="tarot-gunghap-pyo.js?v=5eab36954c"></script>
 </body>
 </html>

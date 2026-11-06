@@ -50,12 +50,88 @@
     if (!/^[MF]$/.test(나.gender || '') || !/^[MF]$/.test(그.gender || '')) { err.textContent = G.성별모름 || ''; return; }
     var 열쇠 = a.id + '|' + b.id + '|' + JSON.stringify([나, 그]), 있던 = 기억읽기()[열쇠];   // 11-04 고치기로 생년월일을 바꾸면 이번 달 판도 새로(사람 id 는 그대로라)
     if (있던 && 있던.때 && 있던.때.달 === 서울달() && 있던.거르개) { 그리기(있던, a, b, true, 열쇠); return; }
-    $('out').innerHTML = 칸('p', 'sub', C.부르는중);
-    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 나, 그: 그 }) })
-      .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.거르개) throw new Error(j.코드 || 'x'); return j; }); })
-      .then(function (r) { 기억쓰기(열쇠, r); 그리기(r, a, b, false, 열쇠); })
-      .catch(function () { $('out').innerHTML = ''; err.textContent = C.오류 || ''; });
+    의식 = { a: a, b: b, 나: 나, 그: 그, 열쇠: 열쇠, 고름: [], 움직임: 'spread', r: null, 연: 0 };
+    의식그리기();
   }
+  // 11-06 사장님 「카드 10장을 고르는 연출이 없네? 그리고 카드 10장 뽑으라고 안내멘트도 넣어줘」 — 정통 타로(three.js · 결정함 83 · 84)와 같은 연출:
+  //   부채꼴 77장(나 카드를 뺀 덱 · 뒤집힌 채)에서 열 장을 고른다(고른 차례 = 자리 1 ~ 10 · 카드는 서버가 섞은 덱의 그 자리 = 몸의 고름) → 한 장씩 뒤집기(판을 눌러도 · 단추를 눌러도) → 열째를 뒤집으면 결과.
+  //   글은 정통 타로 글 그대로(세점.펼침.고르기 「{물음}을 두고 카드를 펼칩니다. 아래에서 열 장을 골라 주세요 …」 · 물음 = 세점.물음말.love · 세점.펼침.뒤집기 「{n}번 · {자리} 뒤집기」) · 모양은 three.css 의 판 · 부채꼴 그대로.
+  //   이번 달에 이미 펼친 짝(기기 저장)은 연출 없이 바로 결과. 다시 펼친 판(열째 애매)은 결과에서 바로 보인다(판.다시줄).
+  var 그림길 = 'art/tarot/chaeksa-v1/', 자리수 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  var 오른쪽보는 = new Set(['C08', 'C10', 'C11', 'C12', 'C13', 'P02', 'P08', 'P09', 'P11', 'P13', 'P14', 'S06', 'S07', 'S11', 'S13', 'W02', 'W03', 'W06', 'W07', 'W09', 'W10', 'W11', 'W12']);   // three.js 와 같음(결정함 80 — 나 카드 그림이 보는 쪽)
+  var 의식 = null;
+  function 서울오늘() { try { var p = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).split('-').map(Number); return { y: p[0], m: p[1], d: p[2] }; } catch (e) { var d = new Date(); return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() }; } }
+  function 나카드id(p) {   // 서버 나카드of 와 같은 규칙(웨이트 671) — 남 40 이상 나이트 · 아래 킹, 여 40 이상 퀸 · 아래 페이지(판 가운데 그림에만 쓴다)
+    var b = (p && p.birth) || {}, t = 서울오늘(), 나이 = t.y - (+b.year || t.y) - ((t.m < +b.month || (t.m === +b.month && t.d < +b.day)) ? 1 : 0);
+    return b.gender === 'F' ? (나이 >= 40 ? 'P13' : 'P11') : (나이 >= 40 ? 'P12' : 'P14');
+  }
+  var 앞면img = function (id, cls) { return 그림id.test(String(id)) ? '<img class="three-sp-img' + cls + '" src="' + 그림길 + id + '-s.webp?v=2" alt="">' : '<span class="three-sp-img three-sp-none' + cls + '"></span>'; };
+  var 뒷면img = function (cls) { return '<img class="three-sp-img three-sp-back' + cls + '" src="' + 그림길 + 'back-s.webp" alt="">'; };
+  function 판틀(나id, 칸, 덧) {
+    var 한칸 = function (n) { var c = 칸(n) || {}; return '<div class="three-sp three-sp-' + n + (c.cls || '') + '" style="--i:' + n + '">' + (c.안 || '') + '<span class="three-sp-n">' + n + '</span></div>'; };
+    return '<div class="three-sp-board' + (덧 || '') + (오른쪽보는.has(나id) ? ' is-face-right' : '') + '" aria-hidden="true"><div class="three-sp-mid"><div class="three-sp three-sp-sig" style="--i:0">' + 앞면img(나id, '') + '</div>'
+      + 한칸(1) + 한칸(2) + '</div>' + 자리수.slice(2).map(한칸).join('') + '</div>';
+  }
+  function 고르는판(나id, 수, 움직임) {   // 고른 만큼 뒷면 · 다음 칸 깜박임 · 막 놓인 칸은 날아든다
+    return '<div class="three-sp-wrap">' + 판틀(나id, function (n) { return n <= 수
+      ? { cls: n === 수 && 움직임 === 'pick' ? ' is-arrive' : '', 안: 뒷면img(n === 2 ? ' is-cross' : '') }
+      : { cls: ' is-empty' + (n === 수 + 1 ? ' is-next' : ''), 안: '<span class="three-sp-img three-sp-slot' + (n === 2 ? ' is-cross' : '') + '"></span>' }; }, ' is-pick') + '</div>';
+  }
+  function 뒤집는판(나id, 자리, 연, 움직임) {   // 연 장까지 앞면(막 뒤집은 칸은 접히고 펴짐) · 나머지 뒷면 · 다음 장 깜박임 · 판 어디를 눌러도 다음 장
+    var 판 = 판틀(나id, function (n) {
+      var x = 자리[n - 1], 가 = n === 2 ? ' is-cross' : '';
+      if (n > 연) return { cls: n === 연 + 1 ? ' is-next' : '', 안: 뒷면img(가) };
+      var 앞 = 앞면img(x && x.id, 가 + (x && x.놓임 === '거꾸로' ? ' is-rev' : '')), 막 = n === 연 && 움직임 === 'flip';
+      return { cls: 막 ? ' is-flip' : '', 안: 막 ? '<span class="three-sp-face">' + 앞 + '</span><span class="three-sp-backface">' + 뒷면img(가) + '</span>' : 앞 };
+    }, ' is-flipping' + (움직임 === 'deal' ? ' is-anim' : ''));
+    return '<div class="three-sp-wrap"' + (연 < 10 ? ' data-three-flipboard' : '') + '>' + 판 + '</div>';
+  }
+  function 부채(고름, 움직임) {   // 77장 -50 ~ 50도 · 고른 장은 빠진다
+    var 집 = {}; (고름 || []).forEach(function (i) { 집[i] = 1; });
+    var h = '<div class="three-fan' + (움직임 === 'spread' ? ' is-spread' : '') + '" data-three-fan>';
+    for (var i = 0; i < 77; i++) { if (집[i]) continue; h += '<button type="button" class="three-fan-card" data-three-pick="' + i + '" style="--a:' + (-50 + 100 * i / 76).toFixed(2) + ';--k:' + i + '" aria-label="' + (i + 1) + '"></button>'; }
+    return h + '</div>';
+  }
+  function 의식그리기() {
+    var 의 = 의식; if (!의) return;
+    var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), h;
+    if (!의.r) {
+      var 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = 물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '';
+      h = '<div class="card three-card three-rite three-picking" data-gh-rite>' + 고르는판(나id, 수, 의.움직임)
+        + (수 < 10 ? 칸('p', 'three-fan-say', 말) + '<p class="three-fan-count" aria-live="polite"><span class="three-fan-no">' + 다음 + '</span>' + 칸('b', '', 자리이름[다음] || '') + '<span class="three-fan-of">' + 수 + ' / 10</span></p>' + 부채(의.고름, 의.움직임)
+          : 칸('p', 'three-fan-say', C.부르는중)) + '</div>';
+    } else {
+      var 판 = 의.r.펼침.자리, 연 = 의.연, x = 연 ? 판[연 - 1] : null, P = C.판 || {}, 등 = P.등급 || {}, 단추글 = 채움(펼침글.뒤집기, { n: 연 + 1, 자리: 자리이름[연 + 1] || '' }) || (자리이름[연 + 1] || '');
+      h = '<div class="card three-card three-rite" data-gh-rite>' + 뒤집는판(나id, 판, 연, 의.움직임)
+        + (x ? '<p class="gh-flip-now"><span>' + esc(x.n + '. ' + (자리이름[x.n] || '')) + '</span> <b>' + esc(x.이름) + '</b>' + esc([x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || ''].filter(Boolean).map(function (s) { return ' · ' + s; }).join('')) + '</p>' : '')
+        + (연 < 10 ? '<div class="three-flip-foot"><button type="button" class="btn three-rite-btn" data-gh-flip>' + esc(단추글) + '</button></div>' : '') + '</div>';
+    }
+    $('out').innerHTML = h;
+  }
+  function 고르다(i) {
+    var 의 = 의식; if (!의 || 의.r || 의.고름.length >= 10) return;
+    if (!(i >= 0 && i <= 76 && i === Math.floor(i)) || 의.고름.indexOf(i) >= 0) return;
+    의.고름.push(i); 의.움직임 = 'pick'; 의식그리기();
+    if (의.고름.length === 10) 펼쳐부르기();
+  }
+  function 뒤집다() {
+    var 의 = 의식; if (!의 || !의.r || 의.연 >= 10) return;
+    의.연++; 의.움직임 = 'flip';
+    if (의.연 >= 10) { 의식 = null; 그리기(의.r, 의.a, 의.b, false, 의.열쇠); return; }
+    의식그리기();
+  }
+  function 펼쳐부르기() {
+    var 의 = 의식;
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 의.나, 그: 의.그, 고름: 의.고름 }) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.거르개) throw new Error(j.코드 || 'x'); return j; }); })
+      .then(function (r) { if (의식 !== 의) return; 기억쓰기(의.열쇠, r); 의.r = r; 의.연 = 0; 의.움직임 = 'deal'; 의식그리기(); })
+      .catch(function () { if (의식 === 의) 의식 = null; $('out').innerHTML = ''; $('err').textContent = C.오류 || ''; });
+  }
+  if (typeof document !== 'undefined') document.addEventListener('click', function (e) {
+    var t = e.target, out = $('out'); if (!t || !t.closest || !out || !out.contains(t)) return;
+    var p = t.closest('[data-three-pick]'); if (p) { 고르다(+p.getAttribute('data-three-pick')); return; }
+    if (t.closest('[data-gh-flip]') || t.closest('[data-three-flipboard]')) 뒤집다();
+  });
   // 11-06 사장님 「열장 엮기를 API로 초안 ㄱㄱ」(결정함 141) — 열 장을 두 사람 이야기로 엮는 결론 · 단락 · 할 일은 비공개 /api/tarot-gh-story 가 쓴다.
   // 보내는 것은 판의 뼈(때 · 성별 · 상대 카드 · 열 장 id · 놓임 · 다시)와 서버가 판에 붙인 서명뿐 — 생년월일 · 이름은 안 간다. 받은 글은 그달 판과 함께 이 기기에 저장해 다시 열면 같은 글.
   var STORY = 'https://chaeksa-behavior-core.vercel.app/api/tarot-gh-story';
