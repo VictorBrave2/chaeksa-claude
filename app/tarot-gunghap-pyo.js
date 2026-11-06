@@ -92,13 +92,15 @@
     for (var i = 0; i < 77; i++) { if (집[i]) continue; h += '<button type="button" class="three-fan-card" data-three-pick="' + i + '" style="--a:' + (-50 + 100 * i / 76).toFixed(2) + ';--k:' + i + '" aria-label="' + (i + 1) + '"></button>'; }
     return h + '</div>';
   }
+  // 11-06 사장님 「줄바꿈 신경좀 써줘」 — 안내 글은 문장마다 한 줄(폰에서 「고른 / 순서대로」처럼 구절 가운데가 끊기지 않게)
+  var 문장줄 = function (cls, 글) { return 글 ? '<p class="' + cls + '">' + String(글).split(/(?<=[.!?])\s+/).map(esc).join('<br>') + '</p>' : ''; };
   function 의식그리기() {
     var 의 = 의식; if (!의) return;
     var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), h;
     if (!의.r) {
       var 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = (C.고르기 || {}).안내 || (물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '');
       h = '<div class="card three-card three-rite three-picking" data-gh-rite>' + 고르는판(나id, 수, 의.움직임)
-        + (수 < 10 ? 칸('p', 'three-fan-say', 말) + '<p class="three-fan-count" aria-live="polite"><span class="three-fan-no">' + 다음 + '</span>' + 칸('b', '', 자리이름[다음] || '') + '<span class="three-fan-of">' + 수 + ' / 10</span></p>' + 부채(의.고름, 의.움직임)
+        + (수 < 10 ? 문장줄('three-fan-say', 말) + '<p class="three-fan-count" aria-live="polite"><span class="three-fan-no">' + 다음 + '</span>' + 칸('b', '', 자리이름[다음] || '') + '<span class="three-fan-of">' + 수 + ' / 10</span></p>' + 부채(의.고름, 의.움직임)
           : 칸('p', 'three-fan-say', C.부르는중)) + '</div>';
     } else {
       var 판 = 의.r.펼침.자리, 연 = 의.연, x = 연 ? 판[연 - 1] : null, P = C.판 || {}, 등 = P.등급 || {}, 단추글 = 채움(펼침글.뒤집기, { n: 연 + 1, 자리: 자리이름[연 + 1] || '' }) || (자리이름[연 + 1] || '');
