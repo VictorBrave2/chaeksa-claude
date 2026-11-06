@@ -137,6 +137,7 @@
   // 11-06 사장님 「열장 엮기를 API로 초안 ㄱㄱ」(결정함 141) — 열 장을 두 사람 이야기로 엮는 결론 · 단락 · 할 일은 비공개 /api/tarot-gh-story 가 쓴다.
   // 보내는 것은 판의 뼈(때 · 성별 · 상대 카드 · 열 장 id · 놓임 · 다시)와 서버가 판에 붙인 서명뿐 — 생년월일 · 이름은 안 간다. 받은 글은 그달 판과 함께 이 기기에 저장해 다시 열면 같은 글.
   var STORY = 'https://chaeksa-behavior-core.vercel.app/api/tarot-gh-story';
+  var STORY판 = 'tarot-gh-story v0.2';   // 서버 lib/tarot-story.js 판과 같게 — 저장된 글이 옛 판이면 다시 엮는다(11-07 v0.2 사건이 뼈대)
   function 이야기그림(s) {
     var K = C.이야기 || {}, el = $('gh-story'); if (!el) return;
     if (!s || !s.이야기) { el.innerHTML = 칸('p', 'why', K.없음); if (!el.innerHTML) el.remove(); return; }
@@ -187,7 +188,7 @@
     var R = C.결과 || {}, M = C.이번달 || {}, P = C.판 || {}, 등 = P.등급 || {}, S = C.이야기 || {};
     var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리, 끝카 = 판[9];
     var 끝 = r.때 && r.때.끝 ? (+r.때.끝.slice(5, 7)) + '월 ' + (+r.때.끝.slice(8, 10)) + '일' : '';
-    var 엮을 = !!(r.서명 && !r.이야기);   // 서명 있는 판(11-06 뒤 새 판)만 엮는다 · 저장된 글이 있으면 다시 안 부른다
+    var 엮을 = !!(r.서명 && (!r.이야기 || r.이야기.판 !== STORY판));   // 서명 있는 판(11-06 뒤 새 판)만 엮는다 · 저장된 글이 지금 판이면 다시 안 부른다
     var h = (다시 ? 칸('p', 'why', M.다시보기) : '')
       + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + 칸('h2', 'gh-name', 끝카 ? 끝카.이름 : '') + 칸('p', '', 끝카 ? [끝카.놓임 === '거꾸로' ? P.거꾸로 : '', 등[끝카.등급] || ''].filter(Boolean).join(' · ') : '')
       + 칸('small', '', 채움(M.줄, { 끝: 끝 })) + '</div>'
@@ -195,7 +196,7 @@
       + '<div class="card">' + 그카드줄(r, b) + '</div>' + 넷째줄(r, b)
       + 판그림(r, b) + '<div id="gh-end"></div>';
     $('out').innerHTML = h;
-    if (r.이야기) 이야기그림(r.이야기); else if (엮을) 엮기(r, 열쇠);
+    if (엮을) 엮기(r, 열쇠); else if (r.이야기) 이야기그림(r.이야기);
     셈(다시 ? 'tarot_gh_pyo_again' : 'tarot_gh_pyo');
     try {
       if ('IntersectionObserver' in global) {
