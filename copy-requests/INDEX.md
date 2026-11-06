@@ -40,5 +40,5 @@
 | COPY-0037 | SSS급 궁합 분석 — 신청 쪽 · 결과 쪽 · 장부 줄 글 다듬기 | 합침(11-03 · PR #46 · v1612) | [주문서](COPY-0037-sss-pay-pages.md) · [원고·검사·인계](ref/COPY-0037-sss-pay-pages-copy.md) | codex/COPY-0037 |
 | COPY-0038 | SSS급 궁합 분석 — 결제 뒤 여는 의식 글(섞기 · 고르기 · 만드는 중 · 카드 줄) | 제안됨(11-03) | [주문서](COPY-0038-sss-open-rite.md) | codex/COPY-0038 |
 | COPY-0039 | 정통 사주 궁합 — 결론·바라는 사람·맞는 조건 86문자열(빈칸·새 열쇠 84개 채움) | 합침(11-06 · v1634 — Codex 가 main 작업트리 가지에서 쓴 글이 메인 커밋에 함께 들어감 · 검사기 0 · 라이브 확인) | [주문서](COPY-0039-gunghap-needs.md) · [원고·확인·인계](ref/COPY-0039-gunghap-needs-copy.md) | codex/COPY-0039 |
-| COPY-0040 | 정통 자미두수 궁합 — 결론·배우자와 각자의 모습·맞는 조건 68값 | 제안됨(11-06) | [주문서](COPY-0040-ziwei-gunghap-needs.md) · [원고·검사·인계](ref/COPY-0040-ziwei-gunghap-needs-copy.md) | codex/COPY-0040 |
+| COPY-0040 | 정통 자미두수 궁합 — 결론·배우자와 각자의 모습·맞는 조건 68값 | 합침(11-06 · PR #48 · v1643) | [주문서](COPY-0040-ziwei-gunghap-needs.md) · [원고·검사·인계](ref/COPY-0040-ziwei-gunghap-needs-copy.md) | codex/COPY-0040 |
 | COPY-0042 | 정통 타로 궁합 — 넷째 자리(마음 깊은 곳의 배우자) 한 칸의 글(빈칸 채움) | 제안됨(11-06) | [주문서](COPY-0042-tarot-gunghap-fourth.md) | codex/COPY-0042 |
