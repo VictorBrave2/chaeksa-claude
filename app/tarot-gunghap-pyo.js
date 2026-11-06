@@ -145,7 +145,7 @@
     var 몸 = { 때: r.때, 성별: r.성별, 그카드: { id: r.그카드.id, 같은카드: !!r.그카드.같은카드 }, 다시: !!r.펼침.다시, 자리: 판.map(function (c) { return { id: c.id, 놓임: c.놓임 }; }), 서명: r.서명 };
     fetch(STORY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(몸) })
       .then(function (x) { return x.json().then(function (j) { if (!x.ok) throw new Error(j.코드 || 'x'); return j; }); })
-      .then(function (s) { r.이야기 = s; if (열쇠) 기억쓰기(열쇠, r); 이야기그림(s); 셈(s.이야기 ? 'tarot_gh_story' : 'tarot_gh_story_none'); })
+      .then(function (s) { if (s.이야기) { r.이야기 = s; if (열쇠) 기억쓰기(열쇠, r); } 이야기그림(s); 셈(s.이야기 ? 'tarot_gh_story' : 'tarot_gh_story_none'); })   // 글이 안 온 판은 저장하지 않는다 — 다시 열면 다시 부른다(한 판 한 번은 서버 메모리가 맡음)
       .catch(function () { 이야기그림(null); });
   }
   // 11-06 궁합 말(COPY-0043) — C.카드풀이.<카드>.<놓임>(두 사람 사이로 쓴 글)이 있으면 그것, 없으면 정통타로 연애 글(three-pieces 세점.펼침.물음카드뜻.love) — 글 하나 또는 { M, F }
