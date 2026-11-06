@@ -49,19 +49,38 @@
     if (나.hour == null || 그.hour == null || 나.hour === '' || 그.hour === '') { err.textContent = G.시모름 || ''; return; }
     if (!/^[MF]$/.test(나.gender || '') || !/^[MF]$/.test(그.gender || '')) { err.textContent = G.성별모름 || ''; return; }
     var 열쇠 = a.id + '|' + b.id + '|' + JSON.stringify([나, 그]), 있던 = 기억읽기()[열쇠];   // 11-04 고치기로 생년월일을 바꾸면 이번 달 판도 새로(사람 id 는 그대로라)
-    if (있던 && 있던.때 && 있던.때.달 === 서울달() && 있던.거르개) { 그리기(있던, a, b, true); return; }
+    if (있던 && 있던.때 && 있던.때.달 === 서울달() && 있던.거르개) { 그리기(있던, a, b, true, 열쇠); return; }
     $('out').innerHTML = 칸('p', 'sub', C.부르는중);
     fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 나, 그: 그 }) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.거르개) throw new Error(j.코드 || 'x'); return j; }); })
-      .then(function (r) { 기억쓰기(열쇠, r); 그리기(r, a, b, false); })
+      .then(function (r) { 기억쓰기(열쇠, r); 그리기(r, a, b, false, 열쇠); })
       .catch(function () { $('out').innerHTML = ''; err.textContent = C.오류 || ''; });
   }
-  function 연애풀이(x, g) {   // three-pieces 세점.펼침.물음카드뜻.love.<카드>.<놓임> — 글 하나 또는 { M, F }
-    var t = 펼침글.물음카드뜻 && 펼침글.물음카드뜻.love, 면 = t && t[x.id] && t[x.id][x.놓임];
+  // 11-06 사장님 「열장 엮기를 API로 초안 ㄱㄱ」(결정함 141) — 열 장을 두 사람 이야기로 엮는 결론 · 단락 · 할 일은 비공개 /api/tarot-gh-story 가 쓴다.
+  // 보내는 것은 판의 뼈(때 · 성별 · 상대 카드 · 열 장 id · 놓임 · 다시)와 서버가 판에 붙인 서명뿐 — 생년월일 · 이름은 안 간다. 받은 글은 그달 판과 함께 이 기기에 저장해 다시 열면 같은 글.
+  var STORY = 'https://chaeksa-behavior-core.vercel.app/api/tarot-gh-story';
+  function 이야기그림(s) {
+    var K = C.이야기 || {}, el = $('gh-story'); if (!el) return;
+    if (!s || !s.이야기) { el.innerHTML = 칸('p', 'why', K.없음); if (!el.innerHTML) el.remove(); return; }
+    el.innerHTML = 칸('p', 'k', K.머리) + 칸('p', 'c', s.결론) + s.이야기.map(function (t) { return 칸('p', '', t); }).join('') + 칸('p', 'todo', s.할일);
+  }
+  function 엮기(r, 열쇠) {
+    var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리;
+    var 몸 = { 때: r.때, 성별: r.성별, 그카드: { id: r.그카드.id, 같은카드: !!r.그카드.같은카드 }, 다시: !!r.펼침.다시, 자리: 판.map(function (c) { return { id: c.id, 놓임: c.놓임 }; }), 서명: r.서명 };
+    fetch(STORY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(몸) })
+      .then(function (x) { return x.json().then(function (j) { if (!x.ok) throw new Error(j.코드 || 'x'); return j; }); })
+      .then(function (s) { r.이야기 = s; if (열쇠) 기억쓰기(열쇠, r); 이야기그림(s); 셈(s.이야기 ? 'tarot_gh_story' : 'tarot_gh_story_none'); })
+      .catch(function () { 이야기그림(null); });
+  }
+  // 11-06 궁합 말(COPY-0043) — C.카드풀이.<카드>.<놓임>(두 사람 사이로 쓴 글)이 있으면 그것, 없으면 정통타로 연애 글(three-pieces 세점.펼침.물음카드뜻.love) — 글 하나 또는 { M, F }
+  function 연애풀이(x, g) {
+    var 면 = C.카드풀이 && C.카드풀이[x.id] && C.카드풀이[x.id][x.놓임];
+    if (!면) { var t = 펼침글.물음카드뜻 && 펼침글.물음카드뜻.love; 면 = t && t[x.id] && t[x.id][x.놓임]; }
     return typeof 면 === 'string' ? 면 : 면 && typeof 면 === 'object' ? (면[g] || '') : '';
   }
+  function 자리이름표() { var A = C.자리이름 || {}; return Object.keys(A).length >= 10 ? A : (펼침글.자리 || {}); }   // 열 자리가 다 차야 궁합 이름을 쓴다(반쯤 섞인 판 없음)
   function 판그림(r, b) {
-    var P = C.판 || {}, 등 = P.등급 || {}, 자리이름 = 펼침글.자리 || {}, g = r.성별 && r.성별[0];
+    var P = C.판 || {}, 등 = P.등급 || {}, 자리이름 = 자리이름표(), g = r.성별 && r.성별[0];
     var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리;
     return 칸('h3', 'sec', P.머리) + (r.펼침.다시 ? 칸('p', 'why', P.다시줄) : '') + '<div class="tg-grid">' + 판.map(function (x) {
       var 그것 = x.id === r.그카드.id && !r.그카드.같은카드;
@@ -72,7 +91,7 @@
     }).join('') + '</div>';
   }
   function 그카드줄(r, b) {
-    var K = C.그카드 || {}, 자리이름 = 펼침글.자리 || {}, k = r.그카드;
+    var K = C.그카드 || {}, 자리이름 = 자리이름표(), k = r.그카드;
     if (k.같은카드) return 칸('p', 'why', K.같은카드);
     return 칸('p', '', 채움(K.줄, { 그: 그부름(b), 카드: k.이름 || '' }))
       + (k.자리 ? 칸('p', 'why', 채움(K.나온자리, { 자리: k.자리 + '. ' + (자리이름[k.자리] || '') })) : 칸('p', 'why', K.안나옴));
@@ -86,16 +105,19 @@
     var 값 = { 그: 그부름(b), 카드: x.이름 || '' };
     return '<div class="card gh-t4">' + 칸('p', 'k', K.머리) + 칸('p', '', 채움(같은 ? K.같은줄 : 사람 ? K.사람줄 : K.상태줄, 값)) + 칸('p', 'why', K.뜻줄) + '</div>';
   }
-  function 그리기(r, a, b, 다시) {
-    var R = C.결과 || {}, M = C.이번달 || {}, P = C.판 || {}, 등 = P.등급 || {};
+  function 그리기(r, a, b, 다시, 열쇠) {
+    var R = C.결과 || {}, M = C.이번달 || {}, P = C.판 || {}, 등 = P.등급 || {}, S = C.이야기 || {};
     var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리, 끝카 = 판[9];
     var 끝 = r.때 && r.때.끝 ? (+r.때.끝.slice(5, 7)) + '월 ' + (+r.때.끝.slice(8, 10)) + '일' : '';
+    var 엮을 = !!(r.서명 && !r.이야기);   // 서명 있는 판(11-06 뒤 새 판)만 엮는다 · 저장된 글이 있으면 다시 안 부른다
     var h = (다시 ? 칸('p', 'why', M.다시보기) : '')
       + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + 칸('h2', 'gh-name', 끝카 ? 끝카.이름 : '') + 칸('p', '', 끝카 ? [끝카.놓임 === '거꾸로' ? P.거꾸로 : '', 등[끝카.등급] || ''].filter(Boolean).join(' · ') : '')
       + 칸('small', '', 채움(M.줄, { 끝: 끝 })) + '</div>'
+      + (r.서명 || r.이야기 ? '<div class="card gh-story" id="gh-story">' + (엮을 ? 칸('p', 'why', S.기다림) : '') + '</div>' : '')
       + '<div class="card">' + 그카드줄(r, b) + '</div>' + 넷째줄(r, b)
       + 판그림(r, b) + '<div id="gh-end"></div>';
     $('out').innerHTML = h;
+    if (r.이야기) 이야기그림(r.이야기); else if (엮을) 엮기(r, 열쇠);
     셈(다시 ? 'tarot_gh_pyo_again' : 'tarot_gh_pyo');
     try {
       if ('IntersectionObserver' in global) {
