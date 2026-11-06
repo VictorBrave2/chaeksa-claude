@@ -72,3 +72,9 @@
 
 - `node -e "global.window=global;require('./app/tarot-gunghap-pyo-copy.js')"` 가 죽지 않을 것 · `python tools_check.py` 막힘 0.
 - 메인이 합칠 때: `python tools_bust.py --bump` HARD 0 · 머리 없는 크롬으로 지어낸 두 사람을 넣어 열 장 판의 풀이가 새 글로 뜨고(큰 카드부터) `{…}` 빈 끼움말 0 · 「연애」 글자가 머리 줄에 0.
+
+## 원고 제안 — 2026-11-06
+
+- `codex/COPY-0043` · 제안됨. 카드 156면 전부(남녀 분기 포함 163값) · 열 자리 10 · 머리 5 · 이야기 틀 3을 작성했다.
+- [전체 전후·까닭·검사·메인 인계](ref/COPY-0043-tarot-gunghap-cards-copy.md).
+- 정통타로 원고·열 장 이야기 본문·넷째 자리(COPY-0042)·계산·배치는 유지했다.

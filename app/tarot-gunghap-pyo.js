@@ -96,7 +96,7 @@
     var 의 = 의식; if (!의) return;
     var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), h;
     if (!의.r) {
-      var 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = 물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '';
+      var 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = (C.고르기 || {}).안내 || (물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '');
       h = '<div class="card three-card three-rite three-picking" data-gh-rite>' + 고르는판(나id, 수, 의.움직임)
         + (수 < 10 ? 칸('p', 'three-fan-say', 말) + '<p class="three-fan-count" aria-live="polite"><span class="three-fan-no">' + 다음 + '</span>' + 칸('b', '', 자리이름[다음] || '') + '<span class="three-fan-of">' + 수 + ' / 10</span></p>' + 부채(의.고름, 의.움직임)
           : 칸('p', 'three-fan-say', C.부르는중)) + '</div>';
