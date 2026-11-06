@@ -1,6 +1,7 @@
 /* 정통 자미두수 궁합 — 결과표 그리기(11-03 사장님 「자미두수 궁합 ㄱㄱ」 · 정통 사주 궁합 gunghap-pyo.js 와 같은 꼴).
  * 계산은 비공개 /api/zw-gh-pyo(《紫微斗數全書》 妻妾 거르개 7 · 무작위 짝 20,000의 %). 이 파일은 고르기 · 부르기 · 그리기만, 글은 zw-gunghap-pyo-copy.js 에서만.
  * 맨 위 결과 = 걸린 거르개 가운데 % 가 가장 낮은 것의 결과이름. 하나도 안 걸리면 결과.없음이름.
+ * 11-06 그 위에 결론(책이 그린 배우자 모습이 그 사람에게 보이나 · 두 방향) · 「책이 그린 배우자 · 얼굴」 두 사람 각자 · 맞필터 셋(별 · 성품 · 나이). 글(C.결론 · C.그림 · C.맞필터 · COPY-0040)이 비면 숨김.
  * 사건: zw_gh_pyo(결과 그림) · zw_gh_pyo_end(맨 아래까지 봄). */
 (function (global) {
   'use strict';
@@ -72,12 +73,59 @@
       + '<p class="y">' + esc(g.이름 || '') + ' <small>' + 쪽수(f['%']) + '</small></p>'
       + (걸림 ? 칸('p', '', g.한줄) + 같은별 + (방법 && f.옮김 ? 칸('p', 'why', 근.옮김머리) : '') + 원문 : '') + '</div>';
   }
+  // 11-06 사장님 「자미두수 궁합도 같은 방식으로 가자 맞필터 ㄱㄱ」(전략 docs/144 3-2) — 결론 · 「책이 그린 배우자」와 「얼굴」 두 사람 각자 · 맞필터 셋(별 · 성품 · 나이 — 두 방향 네 꼴 · %).
+  // 값은 서버 r.결론 · r.그림 · r.맞필터 · r.때 · 글은 C.결론 · C.그림 · C.맞필터(COPY-0040). 머리(또는 결론 이름)가 비면 그 칸 전체를 안 그린다.
+  function 묶음말(xs, K) { var m = (K || {}).묶음이름 || {}; return (xs || []).map(function (x) { return m[x] || x; }).join((K || {}).사이 || ', '); }
+  function 결론칸(r, a, b) {
+    var k = r.결론, K = C.결론 || {}; if (!k || !K.이름 || !K.이름[k.꼴]) return '';
+    var 누구 = { 나: 부름(a), 그: 부름(b) }, G = C.그림 || {};
+    var 별of = function (f, 쪽) { var x = f && f[쪽]; return x ? (x.같음말 && x.같음말.length ? x.같음말 : x.비춤말 || []).join(G.사이 || ', ') : ''; };
+    var 별f = (r.맞필터 || []).filter(function (f) { return f.이름 === '별'; })[0], 성f = (r.맞필터 || []).filter(function (f) { return f.이름 === '성품'; })[0];
+    var 방향줄 = function (x, 쪽, 틀) {   // 종류 다섯 — 같음 · 비춤(별) · 성품만 · 없음 · 책없음(잴 것이 없음)
+      if (!x || !틀) return '';
+      var 종류 = x.별 === '같음' ? '같음' : x.별 === '비춤' ? '비춤' : x.성품 === '그대로' || x.성품 === '일부' ? '성품만' : x.맞음 === null ? '책없음' : '없음';
+      var t = 틀[종류]; if (!t) return '';
+      return '<p class="gh-dir ' + 종류 + '">' + esc(채움(t, { 나: 누구.나, 그: 누구.그, 별: 별of(별f, 쪽), 성품: 묶음말(성f && 성f[쪽] ? 성f[쪽].겹침 : [], G) })) + '</p>';
+    };
+    var 때줄 = function (누, t) { if (!K.때줄) return ''; return 칸('p', 'why', t ? 채움(K.때줄, { 누구: 누, 시작: t.시작나이, 끝: t.끝나이 }) : 채움(K.때없음줄 || '', { 누구: 누 })); };
+    return '<div class="big gh-zc" data-k="' + esc(k.꼴) + '">' + 칸('p', 'k', K.머리) + 칸('h2', 'gh-name', K.이름[k.꼴]) + 칸('p', '', (K.한줄 || {})[k.꼴])
+      + 방향줄(k.나에게, '나에게', K.나에게) + 방향줄(k.그사람에게, '그사람에게', K.그사람에게)
+      + (r.때 ? 때줄(누구.나, r.때.나) + 때줄(누구.그, r.때.그) : '')
+      + (k['%'] != null && K.비율줄 ? 칸('small', '', 채움(K.비율줄, { '%': 쪽수(k['%']), 표본수: k.표본수 })) : '')
+      + 칸('p', 'why', K.방법줄) + 칸('p', 'todo', (K.할일 || {})[k.꼴]) + '</div>';
+  }
+  function 그림칸(r, a, b) {
+    var G = r.그림, K = C.그림 || {}; if (!G || !K.머리) return '';
+    var 나이말 = K.나이말 || {}, 사이 = K.사이 || ', ';
+    var 한사람 = function (g, 누구) {
+      if (!g) return '';
+      var bu = g.배우자, eo = g.얼굴, 별 = (bu.별말 || []).join(사이), 얼별 = (eo.별말 || []).join(사이);
+      var 값 = { 누구: 누구, 별: 별, 특징: 묶음말(bu.특징, K), 나이: (bu.나이 || []).map(function (x) { return 나이말[x] || x; }).join(사이), 얼별: 얼별, 성품: 묶음말(eo.성품, K) };
+      var 배 = bu.빈궁 ? 칸('p', '', 채움(K.배우자빈궁 || '', 값)) : 칸('p', '', 채움(bu.특징.length ? K.배우자줄 : (K.배우자줄특징없음 || K.배우자줄), 값)) + (bu.나이.length ? 칸('p', 'why', 채움(K.배우자나이줄 || '', 값)) : '');
+      var 얼 = !eo.성품.length ? 칸('p', '', 채움(얼별 ? (K.얼굴줄성품없음 || '') : (K.얼굴없음 || ''), 값)) : 칸('p', '', 채움(얼별 ? K.얼굴줄 : (K.얼굴빈궁줄 || K.얼굴줄), 값));
+      var 근 = K.근거머리 ? '<details class="fold"><summary>' + esc(K.근거머리) + '</summary>'
+        + (bu.특징줄 || []).map(function (x) { return 칸('p', 'why', ((K.묶음이름 || {})[x.묶음] || x.묶음)) + x.줄.map(function (j) { return '<p class="q">' + esc(j.구절) + ' <small>' + esc(j.출처 || '') + '</small></p>'; }).join(''); }).join('')
+        + (eo.성품줄 || []).map(function (x) { return 칸('p', 'why', ((K.묶음이름 || {})[x.묶음] || x.묶음)) + x.줄.map(function (j) { return '<p class="q">' + esc((j.별말 ? j.별말 + ' — ' : '') + j.구절) + ' <small>' + esc(j.출처 || '') + '</small></p>'; }).join(''); }).join('')
+        + 칸('p', 'why', K.근거설명) + '</details>' : '';
+      return '<div class="card gh-zg">' + 칸('p', 'k', 누구) + (K.배우자머리 ? '<p><b>' + esc(K.배우자머리) + '</b></p>' : '') + 배 + (K.얼굴머리 ? '<p><b>' + esc(K.얼굴머리) + '</b></p>' : '') + 얼 + 근 + '</div>';
+    };
+    return 칸('h3', 'sec', K.머리) + 한사람(G.나, 부름(a)) + 한사람(G.그, 부름(b));
+  }
+  function 맞필터칸(r, a, b) {
+    var M = r.맞필터, K = C.맞필터 || {}; if (!M || !K.머리 || !K.이름) return '';
+    var 꼴말 = K.꼴 || {}, 누구 = { 나: 부름(a), 그: 부름(b) };
+    var 줄 = M.filter(function (f) { return K.이름[f.이름] && f.꼴 !== '해당없음'; }).map(function (f) {
+      return '<div class="card gh-mf ' + esc(f.꼴) + '" data-f="' + esc(f.이름) + '"><p class="y">' + esc(K.이름[f.이름]) + (f['%'] != null && K.비율표시 !== false ? ' <small>' + 쪽수(f['%']) + '</small>' : '') + '</p>'
+        + 칸('p', '', 채움(꼴말[f.꼴] || '', 누구)) + 칸('p', 'why', (K.설명 || {})[f.이름]) + '</div>';
+    }).join('');
+    return 줄 ? 칸('h3', 'sec', K.머리) + 줄 : '';
+  }
   function 그리기(r, a, b) {
     var 걸린 = r.거르개.filter(function (f) { return f.걸림; }).sort(function (x, y) { return x['%'] - y['%']; });
     var 안 = r.거르개.filter(function (f) { return !f.걸림; });
     var 위 = 걸린[0], 위글 = 위 ? 글of(위) : null, R = C.결과 || {}, J = C.조합 || {};
     var 결과이름 = 위 ? 위글.결과이름 : R.없음이름, 결과한줄 = 위 ? 위글.한줄 : R.없음한줄;
-    var h = 명반표(r, a, b)
+    var h = 명반표(r, a, b) + 결론칸(r, a, b) + 그림칸(r, a, b) + 맞필터칸(r, a, b)
       + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + 칸('h2', 'gh-name', 결과이름) + 칸('p', '', 결과한줄)
       + 칸('small', '', 채움(J.줄, { '%': 쪽수(r.조합['%']), 해당수: r.조합.해당수, 표본수: r.조합.표본수 })) + '</div>'
       + 칸('h3', 'sec', C.걸린머리) + 걸린.map(function (f) { return 거르개칸(f, true, a, b); }).join('')
