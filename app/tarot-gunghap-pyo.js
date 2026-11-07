@@ -11,6 +11,8 @@
   var C = global.ChaeksaTarotGhPyoCopy || {}, PP = global.ChaeksaPeople, TPc = global.ChaeksaThreePieces || {};
   var 펼침글 = (TPc.세점 && TPc.세점.펼침) || {};
   var 기억열쇠 = 'chaeksa.tarotgh';
+  // 11-08 사장님 「정통타로궁합 초기화좀」 — 주소 뒤 ?reset 이면 이 기기에 기억한 판을 지우고 새 판부터(서버엔 판이 없어 지울 게 없다). 주소에서 reset 은 바로 떼어 다시 열어도 또 지우지 않는다.
+  try { if (/[?&]reset(=|&|$)/.test(location.search)) { localStorage.removeItem(기억열쇠); history.replaceState(null, '', location.pathname + location.hash); } } catch (e) {}
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var 칸 = function (태그, cls, 글) { return 글 ? '<' + 태그 + (cls ? ' class="' + cls + '"' : '') + '>' + esc(글) + '</' + 태그 + '>' : ''; };
