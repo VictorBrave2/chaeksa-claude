@@ -153,11 +153,16 @@
   // 11-06 사장님 「열장 엮기를 API로 초안 ㄱㄱ」(결정함 141) — 열 장을 두 사람 이야기로 엮는 결론 · 단락 · 할 일은 비공개 /api/tarot-gh-story 가 쓴다.
   // 보내는 것은 판의 뼈(때 · 성별 · 상대 카드 · 열 장 id · 놓임 · 다시)와 서버가 판에 붙인 서명뿐 — 생년월일 · 이름은 안 간다. 받은 글은 그달 판과 함께 이 기기에 저장해 다시 열면 같은 글.
   var STORY = 'https://chaeksa-behavior-core.vercel.app/api/tarot-gh-story';
-  var 옛이야기 = /v0\.1$/;   // 서버 lib/tarot-story.js 판(지금 v0.3 · 처지) — 저장된 글이 v0.1(나열)이면 다시 엮는다. v0.2 공통 글은 그대로 둔다(11-07)
+  var 옛이야기 = /v0\.[123]$/;   // 서버 lib/tarot-story.js 판(지금 v0.4 · 일곱 답 · 결정함 143) — 저장된 글이 v0.3 까지면 다시 엮는다(11-07)
+  // 11-07 일곱 답(결정함 143 · 사장님 「이 물음 7가지가 처지상황 넷과 융합」) — 결론 한 줄 + 마음 · 결말 · 때 · 할일 · 까닭 · 다른사람 · 나. 답 머리는 C.이야기.물음머리(COPY-0044 · 비면 머리 없이 글만). 옛 글(이야기[] · 할일)도 그대로 그린다.
+  var 물음차례 = ['마음', '결말', '때', '할일', '까닭', '다른사람', '나'];
   function 이야기그림(s) {
     var K = C.이야기 || {}, el = $('gh-story'); if (!el) return;
-    if (!s || !s.이야기) { el.innerHTML = 칸('p', 'why', K.없음); if (!el.innerHTML) el.remove(); return; }
-    el.innerHTML = 칸('p', 'k', K.머리) + 칸('p', 'c', s.결론) + s.이야기.map(function (t) { return 칸('p', '', t); }).join('') + 칸('p', 'todo', s.할일);
+    if (!s || !(s.답 || s.이야기)) { el.innerHTML = 칸('p', 'why', K.없음); if (!el.innerHTML) el.remove(); return; }
+    var 머리들 = K.물음머리 || {}, h = 칸('p', 'k', K.머리) + 칸('p', 'c', s.결론);
+    if (s.답) h += 물음차례.map(function (k) { return s.답[k] ? '<div class="gh-a' + (k === '할일' ? ' is-todo' : '') + '">' + 칸('p', 'qh', 머리들[k]) + 칸('p', k === '할일' ? 'todo' : '', s.답[k]) + '</div>' : ''; }).join('');
+    else h += s.이야기.map(function (t) { return 칸('p', '', t); }).join('') + 칸('p', 'todo', s.할일);
+    el.innerHTML = h;
   }
   function 엮기(r, 열쇠) {
     var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리;
