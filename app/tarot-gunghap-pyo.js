@@ -122,7 +122,8 @@
     } else {
       var 판 = 의.r.펼침.자리, 연 = 의.연, x = 연 ? 판[연 - 1] : null, P = C.판 || {}, 등 = P.등급 || {}, 단추글 = 채움(펼침글.뒤집기, { n: 연 + 1, 자리: 자리이름[연 + 1] || '' }) || (자리이름[연 + 1] || '');
       h = '<div class="card three-card three-rite" data-gh-rite>' + 뒤집는판(나id, 판, 연, 의.움직임)
-        + (x ? '<p class="gh-flip-now"><span>' + esc(x.n + '. ' + (자리이름[x.n] || '')) + '</span> <b>' + esc(x.이름) + '</b>' + esc([x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || ''].filter(Boolean).map(function (s) { return ' · ' + s; }).join('')) + '</p>' : '')
+        + (x ? '<p class="gh-flip-now"><span>' + esc(x.n + '. ' + (자리이름[x.n] || '')) + '</span> <b>' + esc(x.이름) + '</b>' + esc([x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || ''].filter(Boolean).map(function (s) { return ' · ' + s; }).join('')) + '</p>'
+          + 칸('p', 'gh-flip-m', 연애풀이(x, 의.r.성별 && 의.r.성별[0], 의.r.처지)) : '')   // 11-08 사장님 「한장씩 열면서 카드이름 + 삽화 + 설명」 — 여는 자리마다 현재 상황의 카드 풀이를 바로 보인다(열 장 판과 같은 글)
         + (연 < 10 ? '<div class="three-flip-foot"><button type="button" class="btn three-rite-btn" data-gh-flip>' + esc(단추글) + '</button></div>' : '') + '</div>';
     }
     $('out').innerHTML = h;
@@ -172,7 +173,7 @@
     fetch(STORY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(몸) })
       .then(function (x) { return x.json().then(function (j) { if (!x.ok) throw new Error(j.코드 || 'x'); return j; }); })
       .then(function (s) { if (s.이야기) { r.이야기 = s; if (열쇠) 기억쓰기(열쇠, r); } 이야기그림(s); 셈(s.이야기 ? 'tarot_gh_story' : 'tarot_gh_story_none'); })   // 글이 안 온 판은 저장하지 않는다 — 다시 열면 다시 부른다(한 판 한 번은 서버 메모리가 맡음)
-      .catch(function () { 이야기그림(null); });
+      .catch(function (e) { 이야기그림(null); 셈('tarot_gh_story_fail'); try { console.warn('tarot-gh-story', e && e.message); } catch (x) {} });   // 11-08 실패도 사건으로 센다(까닭은 e.message = 서버 코드 또는 fetch 오류)
   }
   // 11-06 궁합 말(COPY-0043) — C.카드풀이.<카드>.<놓임>(두 사람 사이로 쓴 글)이 있으면 그것, 없으면 정통타로 연애 글(three-pieces 세점.펼침.물음카드뜻.love) — 글 하나 또는 { M, F }
   function 연애풀이(x, g, 처지) {   // 11-07 처지 글(C.카드풀이처지.<처지>) 먼저 — 빈 칸은 공통
