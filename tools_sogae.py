@@ -322,8 +322,9 @@ def product_page(key, fname, Y, B, arts, foot, ver):
     값 = ('<span data-yaksok-price="%s" data-pre="%s" data-post="" data-fmt="won"></span>' % (E(I['코드']), E(I['딱지사이']))) if 파는 else ''
     딱지 = '<p class="sg-tag">%s%s%s</p>' % (E(I['딱지앞']), 값, E(I['딱지뒤'])) if (I['딱지앞'] or 값) else ''
     head = ('  <div class="sg-hero">\n%s  <div class="sg-head">\n    %s\n    <h1>%s</h1>\n    <p class="sg-lead">%s</p>\n'
-            '    <a class="btn sg-go" data-go href="%s">%s</a>\n    <p class="hint">필요한 것 — %s</p>\n  </div>\n  </div>'
-            % (cover, 딱지, E(I['이름']), E(I['한줄']), go, E(I['시작']), E(I['필요'])))
+            '    <a class="btn sg-go" data-go href="%s">%s</a>\n    <p class="hint">필요한 것 — %s</p>\n  </div>\n  </div>\n'
+            '  <div data-sayongbeop="%s" hidden></div>'   # 「사용법」 칸 자리(11-08 사장님) — 글은 sayongbeop-copy.js 표.<열쇠>, 그리기 sayongbeop.js. 비면 숨김
+            % (cover, 딱지, E(I['이름']), E(I['한줄']), go, E(I['시작']), E(I['필요']), key))
     parts = [head]
     intro = _bunya_row(B, key).get('소개')
     if intro:
@@ -371,7 +372,7 @@ def product_page(key, fname, Y, B, arts, foot, ver):
     parts.append('\n  <a class="btn sg-go" data-go href="%s">%s</a>' % (go, E(I['시작'])))
     parts.append('\n  <p class="sg-foot">%s</p>' % foot.replace('\n', '\n  '))
 
-    scripts = ['config.js', 'track.js'] + (['yaksok.js', 'pay.js'] if 파는 else [])
+    scripts = ['config.js', 'track.js'] + (['yaksok.js', 'pay.js'] if 파는 else []) + ['sayongbeop-copy.js', 'sayongbeop.js']
     tail = '\n'.join('<script src="%s?v=%d"></script>' % (s, ver) for s in scripts)
     # 들어온 길(from)을 단추에 그대로 잇고, 값 자리를 상품표 값으로 채운다
     tail += ('\n<script>\n(function(){\n  var f=\'\';try{f=new URLSearchParams(location.search).get(\'from\')||\'\';}catch(e){}\n'
