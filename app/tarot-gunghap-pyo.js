@@ -292,7 +292,7 @@
   }
   function 시작() {
     var 쪽 = C.쪽 || {};
-    if (쪽.제목) { $('h1').textContent = 쪽.제목; document.title = 쪽.제목 + ' · 책사'; }
+    if (쪽.제목) { $('h1').textContent = 쪽.제목; if (!document.title) document.title = 쪽.제목 + ' · 책사'; }   // 11-09 검색 제목(HTML <title> · COPY-0049)은 두고 h1 만
     $('sub').textContent = 쪽.소개 || '';
     $('eyebrow').textContent = 쪽.위표시 || '';
     // 11-08 소개 글(COPY-0045) — 이 화면이 무엇을 주나 · 어떻게 보나. 줄 여럿(배열) · 비면 칸 자체가 안 보인다.

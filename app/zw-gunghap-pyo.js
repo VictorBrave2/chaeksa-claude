@@ -153,7 +153,7 @@
   }
   function 시작() {
     var 쪽 = C.쪽 || {};
-    if (쪽.제목) { $('h1').textContent = 쪽.제목; document.title = 쪽.제목 + ' · 책사'; }
+    if (쪽.제목) { $('h1').textContent = 쪽.제목; if (!document.title) document.title = 쪽.제목 + ' · 책사'; }   // 11-09 검색 제목(HTML <title> · COPY-0049)은 두고 h1 만
     $('sub').textContent = 쪽.소개 || '';
     $('eyebrow').textContent = 쪽.위표시 || '';
     고르기그림();
