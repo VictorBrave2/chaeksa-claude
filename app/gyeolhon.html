@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=f7b164fe28">
+<link rel="stylesheet" href="style.css?v=46ecffb7b0">
 <style>
   /* 사이트 공통(style.css 변수 · 머리 줄 · 「← 홈」 단추)만 쓴다 — 쪽 안에 색을 새로 박지 않는다(10-05 사장님). taekil.html 꼴. */
   .doc{max-width:660px;margin:0 auto;padding:var(--s3) 18px 90px}
@@ -88,6 +88,7 @@
   <p class="eyebrow">결혼 전 궁합 점검 보고서</p>
   <h1>결혼 전 궁합 점검</h1>
   <p class="lead">같이 가도 되는지, 서로 맞춰 가야 하는지, 날짜를 잡기 전에 다시 생각해야 하는지 — 두 사람의 생년월일시로 계산해 셋 가운데 하나로 답해요. 결혼 전에 할 일과 날짜를 잡을 때 피할 해까지 보고서로 드려요.</p>
+  <div data-sayongbeop="gyeolhon" hidden></div>
   <figure class="hero"><img src="art/content-tarot-v2/body/story-sanggyeonrye.webp" srcset="art/content-tarot-v2/body/story-sanggyeonrye-s.webp 360w, art/content-tarot-v2/body/story-sanggyeonrye.webp 1024w" sizes="(max-width: 720px) 100vw, 680px" alt="" width="1024" height="1536" fetchpriority="high"></figure>
 
   <h2>어떤 답이 나오나요</h2>
@@ -188,5 +189,6 @@
     document.querySelectorAll('[data-apply-box]').forEach(function (b) { b.hidden = false; });
   })();
 </script>
+<script src="sayongbeop-copy.js?v=50a264aa8e"></script><script src="sayongbeop.js?v=6ae6fae93d"></script>
 </body>
 </html>

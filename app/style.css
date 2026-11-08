@@ -1581,3 +1581,13 @@ html[data-boot="landing"] #nav{display:grid!important}
 .pk .pk-none{font-size:var(--t2);color:var(--ink2);line-height:1.7;margin:0 0 var(--s1)}
 .pk .picked{font-size:var(--t1);line-height:1.7;color:var(--ink2);margin:6px 0 0}
 .pk button.lnk{background:none;border:0;padding:0 0 0 4px;color:var(--accent);font-size:var(--t1);cursor:pointer;font-family:var(--sans);text-decoration:underline}
+
+/* 사용법 칸(11-08 사장님 「사용법이라고 해야겠네」) — sayongbeop.js 가 [data-sayongbeop] 자리표에 그린다. 글이 비면 자리표가 숨겨진다. */
+.sayongbeop{margin:6px 0 var(--s2);border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 14px}
+.sayongbeop summary{cursor:pointer;padding:10px 0;font-size:var(--t2);font-weight:700;color:var(--ink2);list-style:none;display:flex;align-items:center;gap:9px}
+.sayongbeop summary::-webkit-details-marker{display:none}
+.sayongbeop summary::before{content:'';flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink3);border-bottom:1.5px solid var(--ink3);transform:rotate(-45deg);transition:transform .15s}
+.sayongbeop[open] summary::before{transform:rotate(45deg)}
+.sayongbeop .sb-body{padding:0 0 12px}
+.sayongbeop .sb-body p{margin:0;font-size:var(--t2);line-height:1.7;color:var(--ink2);text-wrap:pretty;word-break:keep-all}
+.sayongbeop .sb-body p+p{margin-top:6px}
