@@ -108,7 +108,7 @@
      10-31 승인한 PC 결과 제목에 쓰는 Serif 500을 추가했다. 모바일의 기존 글자 규칙은 그대로다. -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap"></noscript>
-<link rel="stylesheet" href="style.css?v=f7b164fe28">
+<link rel="stylesheet" href="style.css?v=46ecffb7b0">
 <link rel="stylesheet" href="myeongsik-tarot.css?v=45643dc2da">
 <link rel="stylesheet" href="today.css?v=1f23044365">
 <link rel="stylesheet" href="why.css?v=798f71d627">
@@ -467,12 +467,14 @@
     <!-- 오늘의 운세(10-28) — 십성 변화 엔진 일운. 값 today-core.js · 글 today-pieces.js · 그리기 today.js(ChaeksaTodayView). 따로 떨어진 쪽(today.html)은 이 탭으로 넘긴다. -->
     <div class="tab hide" data-tab="today">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="today" hidden></div>
       <div class="today-page"><div id="todayOut" data-plain="1"></div></div>
     </div>
 
     <!-- 왜 내게만 이런 일이 일어날까?(10-29 사장님) — 오늘의 운세 엔진(today-core 하루작용)을 열두 해 세어 보통 사람보다 잦은 사건을 늘어놓는다. 값 why-core.js · 글 why-pieces.js + today-pieces.js · 그리기 why.js(ChaeksaWhyView). -->
     <div class="tab hide" data-tab="why">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="why" hidden></div>
       <div class="why-page"><div id="whyOut" data-plain="1"></div></div>
     </div>
 
@@ -480,18 +482,21 @@
          계산은 비공개 /api/three-eyes(lib/three-eyes.js) · 글 three-pieces.js(Codex) · 그리기 three.js(ChaeksaThreeView). 홈 칸은 글 · 표지가 온 뒤에 단다(그때까지 #three 로만). -->
     <div class="tab hide" data-tab="three">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="three" hidden></div>
       <div class="three-page"><div id="threeOut" data-plain="1"></div></div>
     </div>
 
     <!-- 정통타로(11-02 사장님 「타로를 정통타로로 빼고 + 3관점으로 연결」) — 세 관점과 같은 계산 · 같은 저장(three.js 보기: '타로'). 타로 점 하나만 보이고 맨 아래에서 세 관점으로. -->
     <div class="tab hide" data-tab="tarot">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="tarot" hidden></div>
       <div class="three-page"><div id="tarotOut" data-plain="1"></div></div>
     </div>
 
     <!-- 정통사주 — 판정엔진 + 평생 관점 = 장마다 카드(63조). jeongtong.js 가 그린다. -->
     <div class="tab hide" data-tab="jeongtong">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="jeongtong" hidden></div>
       <!-- DES-0008: 이름·도형·비율 → 고전 이름 → 스크롤로 읽는 운 흐름. -->
       <div id="jtOut" data-plain="1"></div>
     </div>
@@ -500,6 +505,7 @@
          나는 지금 보는 원국, 그 사람은 넣어 둔 사람 가운데 고른다. 9,900원 궁합 장(data-tab="gunghap")과 다른 탭이다. -->
     <div class="tab hide" data-tab="chongnon">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="chongnon" hidden></div>
       <section class="card"><h2>정통궁합</h2><p class="hint" style="margin:0 0 14px">당신과 그 사람의 사주에 대한 3대 고전의 판단을 각각 보여 줘요(궁통보감 · 자평진전 · 적천수). 두 사람의 사주 여덟 글자를 장마다 나란히 놓고 보고, 좋다 · 나쁘다 하나로 합치지 않아요.</p>
         <div id="gcPickWrap" class="hide">
           <label for="gcPick">그 사람</label>
@@ -515,6 +521,7 @@
     <!-- 연애궁합(09-24) — 법전 72조. 명리는 ssom-gwanjeom.js, 원고는 ssom-wongo.js, 그리기는 ssom.js. 그 사람은 궁합총론과 같이 고른다. -->
     <div class="tab hide" data-tab="ssom">
       <button class="btn ghost small backhome" data-open="home">← 홈</button>
+      <div data-sayongbeop="ssom" hidden></div>
       <section class="card"><h2>우리 둘의 연애궁합</h2><p class="hint" style="margin:0 0 14px">당신과 그 사람의 이야기를 생년월일로 그려요. 두 사람 이야기부터 보고, 지금 단계를 골라 이어 보세요.</p>
         <div id="ssPickWrap" class="hide">
           <label for="ssPick">그 사람</label>
@@ -794,7 +801,7 @@
 <script src="to-paid.js?v=48400a08d8"></script>
 <script src="oryu.js?v=dd6fb278b2"></script>
 <script src="bunya.js?v=3445e8960e"></script>
-<script src="home-cats.js?v=b42dd4231f"></script>
+<script src="home-cats.js?v=0e5a9e3d14"></script>
 <script src="home-ask.js?v=6ebbc20453"></script>
 <script src="chaeksadan.js?v=6b88bd1476"></script>
 <script src="share.js?v=4b8ab83494"></script>
@@ -874,6 +881,7 @@
 <script src="rules-health-study-move.js?v=e8609a71fc" data-for="ai"></script>
 <script src="ai.js?v=73dc928813" data-for="ai"></script>
 </template>
+<script src="sayongbeop-copy.js?v=50a264aa8e"></script><script src="sayongbeop.js?v=6ae6fae93d"></script>
 <script src="app.js?v=bfbf1e2d38"></script>
 <script src="landing.js?v=d8ffabc49e"></script>
 <!-- 탭별 꾸러미(10-02 개편 3묶음 「빠르기」) — 전에는 첫 화면이 스크립트 73개(압축 약 1.2MB)를 한꺼번에 받았다. 홈이 쓰는 것은 그 가운데 5분의 1이다.
