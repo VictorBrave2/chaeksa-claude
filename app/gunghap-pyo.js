@@ -131,7 +131,7 @@
       + 칸('p', 'sub', C.끝말) + '<div class="gh-end"></div>';
     var out = OUT(); out.innerHTML = h;
     셈('gh_pyo');
-    try { if (global.ChaeksaToPaid && !(H && H.유료없음)) global.ChaeksaToPaid.달기(out, 'gh-pyo'); } catch (e) {}
+    try { if (global.ChaeksaToPaid && !(H && H.유료없음)) global.ChaeksaToPaid.달기(out, 'gh-pyo', 'gyeolhon'); } catch (e) {}   // 11-09 궁합 쪽의 유료 다리 = 결혼 전 궁합 점검(sss 상품이 서버에 열리면 'sss' 로)
     try {
       if ('IntersectionObserver' in global) {
         var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { 셈('gh_pyo_end'); io.disconnect(); } });

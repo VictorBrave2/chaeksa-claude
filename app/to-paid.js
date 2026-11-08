@@ -2,12 +2,14 @@
  * 정통사주 · 정통자미두수를 끝까지 읽은 사람이 가장 가까운 손님이다. 세 관점 단추(to-three.js) 아래에 상품 칸 하나를 단다.
  * 글은 전부 장부(yaksok.js 「ilgyeol」 줄): 풀이끝말(칸 위 한 줄) · 이름 · 홈한줄 · 딱지({값}은 상품표) · 그림 · 견본. 메인은 글을 쓰지 않는다. 이름이 비면 그리지 않는다.
  * 주소에 ?from=<jeongtong|myeongban>-end 꼬리표 — 어느 풀이 끝에서 넘어왔는지 방문 통계(visits_stats sources)에 갈린다.
- * 사건: to_paid|<from>|ilgyeol · to_paid_sample|<from>|ilgyeol. */
+ * 사건: to_paid|<from>|<상품> · to_paid_sample|<from>|<상품>.
+ * 11-09 사장님 「궁합 검색이 많잖아 궁합으로가야지」 — 달기(host, from, 상품) 셋째 칸으로 쪽마다 상품을 고른다(기본 ilgyeol · 궁합 네 쪽은 gyeolhon). 글은 그 상품의 장부 줄 그대로. */
 (function (global) {
   'use strict';
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
-  var 상품 = 'ilgyeol';
-  function 칸(from) {
+  var 기본상품 = 'ilgyeol';
+  function 칸(from, 상품명) {
+    var 상품 = 상품명 || 기본상품;
     var Y = global.ChaeksaYaksok; if (!Y || !from) return '';
     var r = (Y.줄 && Y.줄(상품)) || null, 이름 = Y.이름(상품);
     if (!r || !이름 || !r.탭) return '';
@@ -26,9 +28,10 @@
       + (견본 ? '<a class="to-paid-sample" href="' + esc(견본) + '" data-to-paid-sample="' + esc(from) + '">보고서 견본 보기 →</a>' : '')
       + '</aside>';
   }
-  function 달기(host, from) {
+  function 달기(host, from, 상품명) {
+    var 상품 = 상품명 || 기본상품;
     if (!host || !host.querySelector || host.querySelector('.to-paid')) return;
-    var h = 칸(from); if (!h) return;
+    var h = 칸(from, 상품); if (!h) return;
     host.insertAdjacentHTML('beforeend', h);
     var box = host.querySelector('.to-paid');
     try { if (global.ChaeksaYaksok && global.ChaeksaYaksok.값채우기) global.ChaeksaYaksok.값채우기(box); } catch (e) {}
