@@ -8,6 +8,8 @@
   var API = 'https://chaeksa-behavior-core.vercel.app/api/zw-gh-pyo';
   var C = global.ChaeksaZwGhPyoCopy || {}, PP = global.ChaeksaPeople;
   var $ = function (id) { return document.getElementById(id); };
+  // 11-09 사장님 「궁합3개 합쳐서SSS급 궁합 측정으로 가야지」 — 바깥 주인(sss-gh-pyo.js)이 상자({ out, err, … })를 주면 그리로 그리고, 없으면 이 쪽의 #out · #err. 계산 · 글은 그대로.
+  var H = null, OUT = function () { return (H && H.out) || $('out'); }, ERR = function () { return (H && H.err) || $('err'); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var 칸 = function (태그, cls, 글) { return 글 ? '<' + 태그 + (cls ? ' class="' + cls + '"' : '') + '>' + esc(글) + '</' + 태그 + '>' : ''; };
   var 채움 = function (t, v) { return String(t || '').replace(/\{([^}]+)\}/g, function (m, k) { return v[k] != null ? v[k] : m; }); };
@@ -35,19 +37,20 @@
     if (b.tzOffset != null) o.tzOffset = b.tzOffset;
     return o;
   }
-  function 부르기() {
+  function 부르기(a0, b0) {   // 사람 둘을 주면(바깥 주인) 그 둘, 아니면 고르기 칸(#na · #geu). 결과(r) 또는 null 을 약속으로 돌려준다.
     var 목록 = 사람목록(), G = C.고르기 || {};
-    var a = 목록.find(function (p) { return p.id === $('na').value; }), b = 목록.find(function (p) { return p.id === $('geu').value; });
-    var err = $('err'); err.textContent = '';
-    if (!a || !b || a.id === b.id) { err.textContent = G.같은사람 || ''; return; }
+    var a = a0 || 목록.find(function (p) { return p.id === $('na').value; }), b = b0 || 목록.find(function (p) { return p.id === $('geu').value; });
+    var err = ERR(); if (err) err.textContent = '';
+    var 막힘 = function (t) { if (err) err.textContent = t || ''; return Promise.resolve(null); };
+    if (!a || !b || a.id === b.id) return 막힘(G.같은사람);
     var 나 = 입력(a), 그 = 입력(b);
-    if (나.hour == null || 그.hour == null || 나.hour === '' || 그.hour === '') { err.textContent = G.시모름 || ''; return; }
-    if (!/^[MF]$/.test(나.gender || '') || !/^[MF]$/.test(그.gender || '')) { err.textContent = G.성별모름 || ''; return; }
-    $('out').innerHTML = 칸('p', 'sub', C.부르는중);
-    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 나, 그: 그 }) })
+    if (나.hour == null || 그.hour == null || 나.hour === '' || 그.hour === '') return 막힘(G.시모름);
+    if (!/^[MF]$/.test(나.gender || '') || !/^[MF]$/.test(그.gender || '')) return 막힘(G.성별모름);
+    OUT().innerHTML = 칸('p', 'sub', C.부르는중);
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 나, 그: 그 }) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.거르개) throw new Error(j.error || 'x'); return j; }); })
-      .then(function (r) { 그리기(r, a, b); })
-      .catch(function () { $('out').innerHTML = ''; err.textContent = C.오류 || ''; });
+      .then(function (r) { 그리기(r, a, b); return r; })
+      .catch(function () { OUT().innerHTML = ''; if (err) err.textContent = C.오류 || ''; return null; });
   }
   function 명반표(r, a, b) {   // 두 사람의 부처궁 · 명궁 주성(별 이름은 서버 한글 이름 + 한자)
     var M = C.명반 || {}, 머리들 = 줄머리(a, b);
@@ -130,16 +133,23 @@
       + 칸('small', '', 채움(J.줄, { '%': 쪽수(r.조합['%']), 해당수: r.조합.해당수, 표본수: r.조합.표본수 })) + '</div>'
       + 칸('h3', 'sec', C.걸린머리) + 걸린.map(function (f) { return 거르개칸(f, true, a, b); }).join('')
       + (안.length ? '<details class="fold"><summary>' + esc(C.안걸린머리 || '') + '</summary>' + 안.map(function (f) { return 거르개칸(f, false, a, b); }).join('') + '</details>' : '')
-      + 칸('p', 'sub', C.끝말) + '<div id="gh-end"></div>';
-    $('out').innerHTML = h;
+      + 칸('p', 'sub', C.끝말) + '<div class="gh-end"></div>';
+    var out = OUT(); out.innerHTML = h;
     셈('zw_gh_pyo');
-    try { if (global.ChaeksaToPaid) global.ChaeksaToPaid.달기($('out'), 'zw-gh-pyo'); } catch (e) {}
+    try { if (global.ChaeksaToPaid && !(H && H.유료없음)) global.ChaeksaToPaid.달기(out, 'zw-gh-pyo'); } catch (e) {}
     try {
       if ('IntersectionObserver' in global) {
         var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { 셈('zw_gh_pyo_end'); io.disconnect(); } });
-        io.observe($('gh-end'));
+        io.observe(out.querySelector('.gh-end'));
       }
     } catch (e) {}
+  }
+  // 11-09 SSS급 궁합 측정의 세 면 요약 한 줄 — 결론(C.결론 · 책이 그린 배우자가 보이나)이 있으면 그 이름 · 한 줄, 없으면 걸린 조건 가운데 % 가 가장 낮은 것의 결과 이름. 글은 이 표 그대로.
+  function 요약(r, a, b) {
+    var k = r && r.결론, K = C.결론 || {};
+    if (k && K.이름 && K.이름[k.꼴]) return { 이름: K.이름[k.꼴], 한줄: (K.한줄 || {})[k.꼴] || '' };
+    var 걸린 = ((r && r.거르개) || []).filter(function (f) { return f.걸림; }).sort(function (x, y) { return x['%'] - y['%']; }), 위 = 걸린[0], R = C.결과 || {};
+    return { 이름: 위 ? 글of(위).결과이름 : R.없음이름, 한줄: 위 ? 글of(위).한줄 : R.없음한줄 };
   }
   function 시작() {
     var 쪽 = C.쪽 || {};
@@ -148,6 +158,6 @@
     $('eyebrow').textContent = 쪽.위표시 || '';
     고르기그림();
   }
-  global.ChaeksaZwGhPyo = { 그리기: 그리기, 거르개칸: 거르개칸 };
-  if (typeof document !== 'undefined') { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 시작); else 시작(); }
+  global.ChaeksaZwGhPyo = { 그리기: 그리기, 거르개칸: 거르개칸, 부르기: 부르기, 요약: 요약, 상자: function (o) { H = o || null; } };
+  if (typeof document !== 'undefined' && !global.ChaeksaGhHost) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 시작); else 시작(); }   // 바깥 주인이 있으면 스스로 시작하지 않는다
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -24,6 +24,8 @@
   // 11-08 사장님 「정통타로궁합 초기화좀」 — 주소 뒤 ?reset 이면 이 기기에 기억한 판을 지우고 새 판부터(서버엔 판이 없어 지울 게 없다). 주소에서 reset 은 바로 떼어 다시 열어도 또 지우지 않는다.
   try { if (/[?&]reset(=|&|$)/.test(location.search)) { localStorage.removeItem(기억열쇠); history.replaceState(null, '', location.pathname + location.hash); } } catch (e) {}
   var $ = function (id) { return document.getElementById(id); };
+  // 11-09 사장님 「궁합3개 합쳐서SSS급 궁합 측정으로 가야지」 — 바깥 주인(sss-gh-pyo.js)이 상자({ out, err, … })를 주면 그리로 그리고, 없으면 이 쪽의 #out · #err. 계산 · 글은 그대로.
+  var H = null, OUT = function () { return (H && H.out) || $('out'); }, ERR = function () { return (H && H.err) || $('err'); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var 칸 = function (태그, cls, 글) { return 글 ? '<' + 태그 + (cls ? ' class="' + cls + '"' : '') + '>' + esc(글) + '</' + 태그 + '>' : ''; };
   // 11-08 값 뒤 조사를 값의 받침에 맞춘다(three.js 채움과 같은 셈 — 「완드 3가」 → 「완드 3이」 · 끝 괄호는 건너뜀 · 끝이 숫자면 한자음 받침). 공용 약속 {값|와} 도 받는다.
@@ -69,18 +71,20 @@
     if (b.tzOffset != null) o.tzOffset = b.tzOffset;
     return o;
   }
-  function 부르기() {
+  function 부르기(a0, b0) {   // 사람 둘을 주면(바깥 주인) 그 둘, 아니면 고르기 칸(#na · #geu). 시작했으면 true(이번 달 판이 있으면 바로 결과 · 끝은 상자.끝남), 막혔으면 false.
     var 목록 = 사람목록(), G = C.고르기 || {};
-    var a = 목록.find(function (p) { return p.id === $('na').value; }), b = 목록.find(function (p) { return p.id === $('geu').value; });
-    var err = $('err'); err.textContent = '';
-    if (!a || !b || a.id === b.id) { err.textContent = G.같은사람 || ''; return; }
+    var a = a0 || 목록.find(function (p) { return p.id === $('na').value; }), b = b0 || 목록.find(function (p) { return p.id === $('geu').value; });
+    var err = ERR(); if (err) err.textContent = '';
+    var 막힘 = function (t) { if (err) err.textContent = t || ''; return false; };
+    if (!a || !b || a.id === b.id) return 막힘(G.같은사람);
     var 나 = 입력(a), 그 = 입력(b);
-    if (나.hour == null || 그.hour == null || 나.hour === '' || 그.hour === '') { err.textContent = G.시모름 || ''; return; }
-    if (!/^[MF]$/.test(나.gender || '') || !/^[MF]$/.test(그.gender || '')) { err.textContent = G.성별모름 || ''; return; }
+    if (나.hour == null || 그.hour == null || 나.hour === '' || 그.hour === '') return 막힘(G.시모름);
+    if (!/^[MF]$/.test(나.gender || '') || !/^[MF]$/.test(그.gender || '')) return 막힘(G.성별모름);
     var 열쇠 = a.id + '|' + b.id + '|' + JSON.stringify([나, 그]), 있던 = 기억읽기()[열쇠];   // 11-04 고치기로 생년월일을 바꾸면 이번 달 판도 새로(사람 id 는 그대로라)
-    if (있던 && 있던.때 && 있던.때.달 === 서울달() && 있던.거르개) { 그리기(있던, a, b, true, 열쇠); return; }
+    if (있던 && 있던.때 && 있던.때.달 === 서울달() && 있던.거르개) { 그리기(있던, a, b, true, 열쇠); return true; }
     의식 = { a: a, b: b, 나: 나, 그: 그, 열쇠: 열쇠, 고름: [], 처지: 처지목록().length ? null : '', 움직임: 'spread', r: null, 연: 0 };   // 처지 글이 없으면 '' = 공통(단계 건너뜀)
     의식그리기();
+    return true;
   }
   // 11-06 사장님 「카드 10장을 고르는 연출이 없네? 그리고 카드 10장 뽑으라고 안내멘트도 넣어줘」 — 정통 타로(three.js · 결정함 83 · 84)와 같은 연출:
   //   부채꼴 77장(나 카드를 뺀 덱 · 뒤집힌 채)에서 열 장을 고른다(고른 차례 = 자리 1 ~ 10 · 카드는 서버가 섞은 덱의 그 자리 = 몸의 고름) → 한 장씩 뒤집기(판을 눌러도 · 단추를 눌러도) → 열째를 뒤집으면 결과.
@@ -138,7 +142,7 @@
   function 의식그리기() {
     var 의 = 의식; if (!의) return;
     var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), 자리뜻 = 자리뜻표(), h;
-    if (!의.r && 의.처지 == null) { $('out').innerHTML = 처지그림(); return; }
+    if (!의.r && 의.처지 == null) { OUT().innerHTML = 처지그림(); return; }
     if (!의.r) {
       var 처 = 처지of(의.처지), 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = (처 && 처.안내) || (C.고르기 || {}).안내 || (물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '');
       h = '<div class="card three-card three-rite three-picking" data-gh-rite>' + 고르는판(나id, 수, 의.움직임)
@@ -152,7 +156,7 @@
           + 칸('p', 'gh-flip-pos', 자리뜻[x.n]) + 칸('p', 'gh-flip-m', 연애풀이(x, 의.r.성별 && 의.r.성별[0], 의.r.처지)) : '')   // 11-08 자리의 뜻 한 줄 → 그 자리의 카드 풀이   // 11-08 사장님 「한장씩 열면서 카드이름 + 삽화 + 설명」 — 여는 자리마다 현재 상황의 카드 풀이를 바로 보인다(열 장 판과 같은 글)
         + (연 < 10 ? '<div class="three-flip-foot"><button type="button" class="btn three-rite-btn" data-gh-flip>' + esc(단추글) + '</button></div>' : '') + '</div>';
     }
-    $('out').innerHTML = h;
+    OUT().innerHTML = h;
   }
   function 고르다(i) {
     var 의 = 의식; if (!의 || 의.r || 의.고름.length >= 10) return;
@@ -171,10 +175,10 @@
     fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 의.나, 그: 의.그, 고름: 의.고름, 처지: 의.처지 || undefined }) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.거르개) throw new Error(j.코드 || 'x'); return j; }); })
       .then(function (r) { if (의식 !== 의) return; 기억쓰기(의.열쇠, r); 의.r = r; 의.연 = 0; 의.움직임 = 'deal'; 의식그리기(); })
-      .catch(function () { if (의식 === 의) 의식 = null; $('out').innerHTML = ''; $('err').textContent = C.오류 || ''; });
+      .catch(function () { if (의식 === 의) 의식 = null; OUT().innerHTML = ''; var err = ERR(); if (err) err.textContent = C.오류 || ''; });
   }
   if (typeof document !== 'undefined') document.addEventListener('click', function (e) {
-    var t = e.target, out = $('out'); if (!t || !t.closest || !out || !out.contains(t)) return;
+    var t = e.target, out = OUT(); if (!t || !t.closest || !out || !out.contains(t)) return;
     var st = t.closest('[data-gh-state]'); if (st) { 처지고르다(st.getAttribute('data-gh-state')); return; }
     var p = t.closest('[data-three-pick]'); if (p) { 고르다(+p.getAttribute('data-three-pick')); return; }
     if (t.closest('[data-gh-flip]') || t.closest('[data-three-flipboard]')) 뒤집다();
@@ -186,7 +190,8 @@
   // 11-07 일곱 답(결정함 143 · 사장님 「이 물음 7가지가 처지상황 넷과 융합」) — 결론 한 줄 + 마음 · 결말 · 때 · 할일 · 까닭 · 다른사람 · 나. 답 머리는 C.이야기.물음머리(COPY-0044 · 비면 머리 없이 글만). 옛 글(이야기[] · 할일)도 그대로 그린다.
   var 물음차례 = ['마음', '결말', '때', '할일', '까닭', '다른사람', '나'];
   function 이야기그림(s) {
-    var K = C.이야기 || {}, el = $('gh-story'); if (!el) return;
+    var K = C.이야기 || {}, el = OUT().querySelector('#gh-story'); if (!el) return;
+    try { if (H && H.이야기) H.이야기(s); } catch (e) {}   // 바깥 주인(SSS급 궁합 측정)에게 엮은 글을 알린다(요약 줄)
     if (!s || !(s.답 || s.이야기)) { el.innerHTML = 칸('p', 'why', K.없음); if (!el.innerHTML) el.remove(); return; }
     var 머리들 = K.물음머리 || {}, h = 칸('p', 'k', K.머리) + 칸('p', 'c', s.결론);
     if (s.답) h += 물음차례.map(function (k) { return s.답[k] ? '<div class="gh-a' + (k === '할일' ? ' is-todo' : '') + '">' + 칸('p', 'qh', 머리들[k]) + 칸('p', k === '할일' ? 'todo' : '', s.답[k]) + '</div>' : ''; }).join('');
@@ -247,16 +252,23 @@
       + 칸('small', '', 채움(M.줄, { 끝: 끝 })) + '</div>'
       + (r.서명 || r.이야기 ? '<div class="card gh-story" id="gh-story">' + (엮을 ? 칸('p', 'why', S.기다림) : '') + '</div>' : '')
       + '<div class="card">' + 그카드줄(r, b) + '</div>' + 넷째줄(r, b)
-      + 판그림(r, b) + '<div id="gh-end"></div>';
-    $('out').innerHTML = h;
+      + 판그림(r, b) + '<div class="gh-end"></div>';
+    var out = OUT(); out.innerHTML = h;
     if (엮을) 엮기(r, 열쇠); else if (r.이야기) 이야기그림(r.이야기);
     셈(다시 ? 'tarot_gh_pyo_again' : 'tarot_gh_pyo');
     try {
       if ('IntersectionObserver' in global) {
         var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { 셈('tarot_gh_pyo_end'); io.disconnect(); } });
-        io.observe($('gh-end'));
+        io.observe(out.querySelector('.gh-end'));
       }
     } catch (e) {}
+    try { if (H && H.끝남) H.끝남(r, a, b, !!다시); } catch (e) {}   // 바깥 주인(SSS급 궁합 측정)에게 열 장을 다 열었다고 알린다
+  }
+  // 11-09 SSS급 궁합 측정의 세 면 요약 — 열째 카드 이름 · 놓임 · 길흉(이 판의 「먼저 읽을 것」과 같음) + 엮은 결론 한 줄(있으면). 글은 이 표 · 공용 글 그대로.
+  function 요약(r) {
+    var P = C.판 || {}, 등 = P.등급 || {}, 판 = r && r.펼침 ? (r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리) : [], 끝카 = 판[9];
+    if (!끝카) return null;
+    return { 이름: 끝카.이름 || '', 한줄: [끝카.놓임 === '거꾸로' ? P.거꾸로 : '', 등[끝카.등급] || ''].filter(Boolean).join(' · '), 결론: (r.이야기 && r.이야기.결론) || '' };
   }
   function 시작() {
     var 쪽 = C.쪽 || {};
@@ -268,6 +280,6 @@
     if (ab) { ab.innerHTML = 줄들.length ? 칸('p', 'k', 쪽.설명머리) + 줄들.map(function (t) { return 칸('p', '', t); }).join('') : ''; ab.hidden = !줄들.length; }
     고르기그림();
   }
-  global.ChaeksaTarotGhPyo = { 그리기: 그리기 };
-  if (typeof document !== 'undefined') { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 시작); else 시작(); }
+  global.ChaeksaTarotGhPyo = { 그리기: 그리기, 부르기: 부르기, 요약: 요약, 상자: function (o) { H = o || null; } };
+  if (typeof document !== 'undefined' && !global.ChaeksaGhHost) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', 시작); else 시작(); }   // 바깥 주인이 있으면 스스로 시작하지 않는다
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SSS급 궁합 측정 · 책사</title>
+<meta name="description" content="두 사람의 사주 · 자미두수 · 타로를 한 번에 잽니다.">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://chaeksa.kr/sss-gh-pyo.html">
+<meta property="og:title" content="SSS급 궁합 측정">
+<meta property="og:description" content="두 사람의 사주 · 자미두수 · 타로를 한 번에 잽니다.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="책사">
+<meta property="og:url" content="https://chaeksa.kr/sss-gh-pyo.html">
+<meta property="og:image" content="https://chaeksa.kr/og.jpg">
+<!-- 11-09 사장님 「궁합3개 합쳐서SSS급 궁합 측정으로 가야지」 — 정통 사주 궁합 · 정통 자미두수 궁합 · 정통 타로 궁합 세 모듈을 한 화면에서(sss-gh-pyo.js 가 차례만 맡는다). 글은 sss-gh-pyo-copy.js(Codex COPY-0047) · 비면 세 모듈 글. 검색은 글이 찬 뒤 연다(robots). -->
+<script>document.documentElement.setAttribute('data-theme','day');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=46ecffb7b0">
+<link rel="stylesheet" href="three.css?v=970888f5f7">
+<style>
+
+
+/* 10-05 사장님 「다른 메뉴들은 왼쪽에 홈이 있잖아 통일」 — 앱 탭과 같은 「← 홈」 단추(btn ghost small backhome)를 본문 왼쪽 위에.
+
+   10-05 사장님 「홈으로 가는 길이 없고 색상이랑 디자인이 거부감」 — 이 쪽만의 색을 걷고 사이트 공통(style.css 변수 · 머리 줄)을 쓴다 */
+
+.wrap{max-width:560px;margin:0 auto;padding:var(--s3) 18px 80px}
+
+.eyebrow{font-size:var(--t1);color:var(--accent);letter-spacing:.06em;margin:0}
+
+h1{font-family:var(--serif);font-size:var(--t5);line-height:1.45;margin:6px 0 8px;color:var(--ink)}
+
+.sub{color:var(--ink2);font-size:var(--t2);margin:0 0 var(--s3);line-height:1.75}
+
+.sec{font-family:var(--serif);font-size:var(--t4);color:var(--ink);margin:var(--s4) 0 var(--s2);font-weight:700}
+
+.card,.bd{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;margin:var(--s2) 0;box-shadow:var(--shadow)}
+
+.card .k{font-size:var(--t1);color:var(--ink3)}.card .y{font-family:var(--serif);font-size:var(--t5);margin:2px 0 6px;color:var(--ink)}.card .y small{font-size:var(--t2);color:var(--ink3)}
+
+.card p{margin:0;font-size:var(--t3);line-height:1.75;color:var(--ink)}
+
+label{display:block;font-size:var(--t2);color:var(--ink2);margin:var(--s2) 0 4px}
+
+input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid var(--line2);border-radius:var(--r1);background:var(--bg2);color:var(--ink);font-family:var(--sans)}
+
+.row{display:flex;gap:8px}.row>*{flex:1}
+
+.seg{display:flex;gap:8px}.seg label{flex:1;margin:0;text-align:center;border:1px solid var(--line2);border-radius:var(--r1);padding:10px;cursor:pointer;color:var(--ink2)}
+
+.seg input{display:none}.seg input:checked+span{font-weight:700;color:var(--accent)}
+
+.go{display:block;width:100%;margin-top:18px;padding:14px;border:0;border-radius:var(--r3);background:var(--accent);color:#fff;font-size:var(--t3);font-weight:700;cursor:pointer}
+
+.err{color:var(--accent);font-size:var(--t2);margin-top:10px;min-height:1em}
+
+.btns{display:flex;gap:8px;margin-top:10px}.btns button,.who button{flex:1;padding:10px;border:1px solid var(--line2);border-radius:var(--r3);background:var(--card);font-size:var(--t2);color:var(--ink2);cursor:pointer;font-family:var(--sans)}
+
+.btns button.on,.who button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);font-weight:700}
+
+.big{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:var(--r2);padding:18px;margin:var(--s2) 0}.big p{margin:8px 0;font-size:var(--t3);line-height:1.75;color:var(--ink)}.big b{color:var(--accent)}
+
+.big small{display:block;margin-top:4px;font-size:var(--t2);color:var(--ink2);line-height:1.65}
+
+.who{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}.who button{flex:0 0 auto;padding:8px 14px}.who-h{font-size:var(--t2);color:var(--ink2);margin:0}.hide{display:none}
+
+/* 10-06 「옛 책이 본 내 머리」 — 원문 칸 · 물음 · 펼침 */
+
+.card .q{font-family:var(--letter);font-size:var(--t3);line-height:1.8;color:var(--ink);margin:0 0 8px}.why,.card .why{font-size:var(--t2);color:var(--ink2);line-height:1.7;margin:8px 2px 0}.why small{color:var(--ink3);font-size:var(--t1)}
+
+.q2,.card .q2{font-size:var(--t2);color:var(--ink);font-weight:700;margin:var(--s2) 2px 0;line-height:1.7}details.fold{margin:var(--s2) 0}details.fold>summary{font-size:var(--t2);color:var(--accent);padding:10px 2px;font-weight:700}
+
+/* 10-06 한 메뉴 두 관점 — 탭 둘 */
+
+.tabs{display:flex;gap:6px;margin:var(--s2) 0 var(--s3);border-bottom:1px solid var(--line)}.tabs button{flex:1;padding:10px 6px;border:0;border-bottom:2px solid transparent;background:none;font-size:var(--t2);color:var(--ink2);cursor:pointer;font-family:var(--sans)}.tabs button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+
+.share-row{margin:var(--s3) 0 0;text-align:center}.share-row .btn{width:auto;padding:10px 18px}.share-row .why{margin-top:8px}
+
+.note{font-size:var(--t1);color:var(--ink3);line-height:1.7;margin-top:var(--s3)}
+
+.foot{font-size:var(--t1);color:var(--ink3);line-height:1.8;margin-top:var(--s4)}.foot a{color:var(--ink3)}
+
+/* 11-03 정통 타로 궁합 결과표 — 정통 사주 궁합과 같은 꼴 · 사이트 공통 변수만 */
+
+.tg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:var(--s2) 0}.tg-c{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:10px;min-width:0}.tg-c.him{border-color:var(--accent-line);background:var(--accent-soft)}
+
+.tg-c img{display:block;width:100%;max-width:140px;margin:0 auto 6px;border-radius:6px}.tg-c img.rev{transform:rotate(180deg)}.tg-c .n{font-size:var(--t1);color:var(--ink3);margin:0}.tg-c .y{font-family:var(--serif);font-size:var(--t3);color:var(--ink);margin:2px 0}.tg-c .g{font-size:var(--t1);color:var(--accent);margin:0}.tg-c p.m{font-size:var(--t2);color:var(--ink2);line-height:1.6;margin:4px 0 0}
+
+.gh-ms table{width:100%;border-collapse:collapse;font-family:var(--letter);text-align:center}.gh-ms th{font-size:var(--t1);color:var(--ink2);text-align:left;font-weight:400;padding:4px 0}.gh-ms td{font-size:var(--t4);color:var(--ink);padding:4px 0}
+
+.gh-name{font-family:var(--serif);font-size:var(--t5);color:var(--ink);margin:4px 0 8px}
+
+.gh-f.on{border-color:var(--accent-line)}.gh-f .k{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.gh-tag{font-size:var(--t1);color:var(--accent)}
+
+/* 11-06 열 장 엮기(결정함 141) — 결론 굵게 · 단락 · 할 일 */
+
+/* 11-06 열 장 고르기 · 뒤집기 연출(three.css 판 · 부채꼴 그대로) — 막 뒤집은 장 한 줄 */
+
+.three-card p.three-fan-say{text-wrap:pretty}.gh-story p,.gh-t4 p{text-wrap:pretty;word-break:keep-all}
+
+.gh-flip-now{margin:6px 0 0;font-size:var(--t2);line-height:1.6;color:var(--ink);text-align:center;word-break:keep-all}.gh-flip-now span{color:var(--ink3)}.gh-flip-now b{font-family:var(--serif)}.gh-flip-m{margin:6px auto 0;max-width:34em;font-size:var(--t2);line-height:1.7;color:var(--ink2);text-align:center;word-break:keep-all}
+
+/* 11-07 처지 고르기(결정함 142) — 단추는 .who 공용 · 결과 머리의 처지 줄 */
+
+.gh-state .who{justify-content:center;margin:12px 0 6px}.gh-state .who button{padding:11px 18px;font-size:var(--t3)}.gh-state .why{text-align:center}.gh-state-line{font-size:var(--t2);color:var(--ink2);margin:0 0 6px}
+
+.gh-story .gh-a{margin-top:10px}.gh-story p.qh{margin:0 0 2px;font-size:var(--t1);color:var(--accent);font-weight:700;letter-spacing:.02em}.gh-story .gh-a p+p{margin-top:0}
+
+/* 11-08 설명 칸 — 소개(두 사람 고르기 위) · 읽는 법 · 자리 뜻(한 장 열 때 · 열 장 판) · 끝말(결과 맨 위) */
+
+.gh-about{margin:8px 0 var(--s2)}.gh-about p{font-size:var(--t2);line-height:1.7;color:var(--ink2);margin:0;text-wrap:pretty;word-break:keep-all}.gh-about p+p{margin-top:6px}.gh-about p.k{font-size:var(--t1);color:var(--ink3);margin-bottom:4px}
+
+.gh-read{margin:0 auto 8px;max-width:34em;font-size:var(--t2);line-height:1.7;color:var(--ink2);text-align:center;word-break:keep-all}.gh-flip-pos{margin:4px auto 0;max-width:34em;font-size:var(--t1);line-height:1.6;color:var(--ink3);text-align:center;word-break:keep-all}
+
+.tg-c p.pos{font-size:var(--t1);color:var(--ink3);line-height:1.5;margin:0 0 2px;word-break:keep-all}.gh-end-line{font-size:var(--t2);color:var(--ink2);line-height:1.6;margin:4px 0 0;text-wrap:pretty;word-break:keep-all}
+
+.gh-story:empty{display:none}.gh-story p.c{font-family:var(--serif);font-size:var(--t4);font-weight:700;line-height:1.6;margin:2px 0 8px}.gh-story p+p{margin-top:8px}.gh-story p.todo{font-weight:700;margin-top:10px}
+
+/* 11-03 정통 사주 궁합 결과표 — 사이트 공통 변수만 */
+
+/* 11-05 법전 53조 결론 칸 — 거르개 표 위 · 두 방향 줄 · 할 일 */
+
+.gh-53 .gh-dir{margin:8px 0;padding-left:10px;border-left:3px solid var(--accent-line);font-size:var(--t3);line-height:1.75;color:var(--ink)}.gh-53 .gh-dir.하락만,.gh-53 .gh-dir.묶임{border-left-color:#b04a3a}.gh-53 .gh-dir.보완만{border-left-color:#4f8f5a}.gh-53 .todo{font-weight:700;margin-top:10px}.gh-53 details.fold{margin:8px 0 0}
+
+/* 11-03 정통 자미두수 궁합 결과표 — 정통 사주 궁합과 같은 꼴 · 사이트 공통 변수만 */
+
+/* 11-06 결론 · 그림 · 맞필터 칸(정통 사주 궁합 .gh-53 과 같은 꼴) */
+
+.gh-zc .gh-dir{margin:8px 0;padding-left:10px;border-left:3px solid var(--accent-line);font-size:var(--t3);line-height:1.75;color:var(--ink)}.gh-zc .gh-dir.없음,.gh-zc .gh-dir.책없음{border-left-color:var(--line)}.gh-zc .gh-dir.같음,.gh-zc .gh-dir.비춤{border-left-color:#4f8f5a}.gh-zc .todo{font-weight:700;margin-top:10px}
+
+.gh-zg p{margin:4px 0}.gh-zg details.fold{margin:8px 0 0}.gh-mf .y small{color:var(--ink2);font-weight:400}
+
+
+/* 11-09 SSS급 궁합 측정 — 세 면 요약 칸(면마다 한 줄 · 누르면 그 탭) · 탭은 .tabs 공용 */
+.sss-summary{padding:16px 18px}.sss-summary>p.k{margin:0 0 6px}
+.sss-face{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:var(--r2);background:var(--card);padding:12px 14px;margin:8px 0 0;cursor:pointer;font-family:var(--sans);color:var(--ink)}
+.sss-face.none{cursor:default;color:var(--ink3)}.sss-face .k{display:block;font-size:var(--t1);color:var(--ink3);letter-spacing:.02em}
+.sss-face b.gh-name{display:block;font-size:var(--t4);margin:2px 0 2px;line-height:1.45}.sss-face .l,.sss-face .c{display:block;font-size:var(--t2);color:var(--ink2);line-height:1.6;word-break:keep-all;text-wrap:pretty}
+.sss-face .c{color:var(--ink);margin-top:4px}.sss-summary .why{margin-top:10px}
+#tabs{position:sticky;top:0;background:var(--bg);z-index:2;padding-top:4px}
+</style>
+</head>
+<body>
+<div class="mini-head" role="banner"><a class="logo" href="./" title="처음 화면으로"><i class="seal">策</i><span>책사</span></a></div>
+<main class="wrap">
+  <a class="btn ghost small backhome" href="./" style="display:inline-block;margin-top:0;text-decoration:none">← 홈</a>
+  <p class="eyebrow" id="eyebrow"></p>
+  <h1 id="h1">SSS급 궁합 측정</h1>
+  <p class="sub" id="sub"></p>
+  <div data-sayongbeop="sssghpyo" hidden></div>
+  <div id="pick"></div>
+  <div class="err" id="err"></div>
+  <div id="result" hidden>
+    <div class="big sss-summary" id="summary" hidden></div>
+    <div class="tabs" id="tabs" hidden></div>
+    <div id="pane-saju" hidden></div>
+    <div id="pane-zw" hidden></div>
+    <div id="pane-tarot"></div>
+  </div>
+  <p class="foot"><a href="./">책사 처음으로</a> · <a href="about.html">책사 소개</a> · <a href="taekil.html">출산택일</a> · <a href="pay.html">유료 상품과 환불</a> · <a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a><br>
+
+  유코아 팔달 · 대표 이승용 · 사업자등록번호 745-68-00160 · 통신판매업 제2026-대구북구-0909호<br>
+
+  대구 북구 매천로 2길19 상가 126동 1층 111호 · 010-9999-1263 · dl4431@naver.com</p>
+</main>
+<script>window.ChaeksaGhHost = true;</script>
+<script src="config.js?v=71396c29ad"></script>
+<script src="track.js?v=6dba667933"></script>
+<script src="people.js?v=68a28f8830"></script>
+<script src="places.js?v=1350b96148"></script>
+<script src="astro.js?v=c0bb3fa175"></script>
+<script src="lunar.js?v=9d5b6391f1"></script>
+<script src="three-pieces.js?v=fc392a8c4d"></script>
+<script src="gunghap-pyo-copy.js?v=dc8cccda68"></script>
+<script src="zw-gunghap-pyo-copy.js?v=79aa1adf57"></script>
+<script src="tarot-gunghap-pyo-copy.js?v=774bad26a5"></script>
+<script src="pair-pick.js?v=9f42d2c190"></script>
+<script src="gunghap-pyo.js?v=c62beef327"></script>
+<script src="zw-gunghap-pyo.js?v=ed6a3bd2fc"></script>
+<script src="tarot-gunghap-pyo.js?v=362186d3de"></script>
+<script src="sss-gh-pyo-copy.js?v=46b2c92846"></script>
+<script src="sss-gh-pyo.js?v=8f9f8f3db9"></script>
+<script src="sayongbeop-copy.js?v=40ac53b826"></script><script src="sayongbeop.js?v=6ae6fae93d"></script>
+</body>
+</html>
