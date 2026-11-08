@@ -10,13 +10,38 @@
   var API = 'https://chaeksa-behavior-core.vercel.app/api/tarot-gh-pyo';
   var C = global.ChaeksaTarotGhPyoCopy || {}, PP = global.ChaeksaPeople, TPc = global.ChaeksaThreePieces || {};
   var 펼침글 = (TPc.세점 && TPc.세점.펼침) || {};
+  // 11-08 사장님 「컨텐츠에 대한 설명이 부족하구나?」 — 설명 칸을 연다. 자리 뜻 열 줄 · 읽는 법 · 열째 카드 끝말은 정통 타로 공용 글(three-pieces.js 세점.펼침)을 그대로 쓰고,
+  //   궁합 글(C.자리뜻 열 다 참 · C.읽는법 · C.결과.끝말)이 있으면 그것이 먼저. 소개 글(C.쪽.설명) · 등급 뜻(C.판.등급뜻)은 COPY-0045(Codex) — 비면 그 줄은 안 나온다.
+  function 자리뜻표() { var A = C.자리뜻 || {}; return Object.keys(A).filter(function (k) { return A[k]; }).length >= 10 ? A : (펼침글.자리뜻 || {}); }
+  function 끝말줄(끝카, 등) {   // 결과 맨 위 — 왜 열째 카드를 먼저 읽나(정통 타로의 끝말 · 대길 · 대흉이면 대까닭 한 줄)
+    if (!끝카) return '';
+    var R = C.결과 || {}, 놓 = (TPc.놓임말 || {})[끝카.놓임] || 끝카.놓임 || '';
+    var 말 = 채움(R.끝말 || 펼침글.끝말, { 카드: 끝카.이름 || '', 놓임: 놓, 길흉: 등[끝카.등급] || '' });
+    var 대 = /^대/.test(끝카.등급 || '') && 펼침글.대까닭 ? 채움(펼침글.대까닭[끝카.등급] || '', { 카드: 끝카.이름 || '' }) : '';
+    return 칸('p', 'gh-end-line', [말, 대].filter(Boolean).join(' '));
+  }
   var 기억열쇠 = 'chaeksa.tarotgh';
   // 11-08 사장님 「정통타로궁합 초기화좀」 — 주소 뒤 ?reset 이면 이 기기에 기억한 판을 지우고 새 판부터(서버엔 판이 없어 지울 게 없다). 주소에서 reset 은 바로 떼어 다시 열어도 또 지우지 않는다.
   try { if (/[?&]reset(=|&|$)/.test(location.search)) { localStorage.removeItem(기억열쇠); history.replaceState(null, '', location.pathname + location.hash); } } catch (e) {}
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var 칸 = function (태그, cls, 글) { return 글 ? '<' + 태그 + (cls ? ' class="' + cls + '"' : '') + '>' + esc(글) + '</' + 태그 + '>' : ''; };
-  var 채움 = function (t, v) { return String(t || '').replace(/\{([^}]+)\}/g, function (m, k) { return v[k] != null ? v[k] : m; }); };
+  // 11-08 값 뒤 조사를 값의 받침에 맞춘다(three.js 채움과 같은 셈 — 「완드 3가」 → 「완드 3이」 · 끝 괄호는 건너뜀 · 끝이 숫자면 한자음 받침). 공용 약속 {값|와} 도 받는다.
+  var 숫자받침 = [21, 8, 0, 16, 0, 0, 1, 8, 8, 0];
+  var 받침of = function (s) {
+    var 원 = String(s), 앞 = 원.replace(/(?:\s*\([^()]*\))+\s*$/, '') || 원;
+    if (/[0-9]$/.test(앞)) return 숫자받침[+앞.slice(-1)];
+    var t = 앞.replace(/[^가-힣]+$/, ''); if (!t) return -1; var c = t.charCodeAt(t.length - 1) - 0xAC00; return c >= 0 && c <= 11171 ? c % 28 : -1;
+  };
+  var 조사짝 = { 와: ['과', '와'], 과: ['과', '와'], 을: ['을', '를'], 를: ['을', '를'], 은: ['은', '는'], 는: ['은', '는'], 이: ['이', '가'], 가: ['이', '가'], 라는: ['이라는', '라는'], 이라는: ['이라는', '라는'] };
+  var 조사맞춤 = function (v, 조) { var b = 받침of(v); if (b < 0) return 조; if (조 === '으로' || 조 === '로') return b === 0 || b === 8 ? '로' : '으로'; var 짝 = 조사짝[조]; return 짝 ? 짝[b ? 0 : 1] : 조; };
+  var 채움 = function (t, v) {
+    return String(t || '').replace(/\{([^{}|]+)(?:\|([^{}]*))?\}([’”」』)]*)((?:으로|로|이라는|라는|와|과|을|를|은|는|이|가)(?=$|[\s.,!?:;]))?/g, function (m, k, 붙, 닫, 뒤) {
+      if (!v || v[k] == null) return m;
+      var x = String(v[k]);
+      return x + (붙 ? 조사맞춤(x, 붙) : '') + (닫 || '') + (뒤 ? 조사맞춤(x, 뒤) : '');
+    });
+  };
   var 쪽수 = function (p) { return (p < 1 ? p.toFixed(2) : p < 10 ? p.toFixed(1) : String(Math.round(p))).replace(/\.0+$/, '') + '%'; };
   var 셈 = function (이름) { try { if (global.ChaeksaTrack) global.ChaeksaTrack.event(이름); } catch (e) {} };
   var 글of = function (f) { return (C.거르개 || {})[f.id] || {}; };
@@ -112,7 +137,7 @@
   }
   function 의식그리기() {
     var 의 = 의식; if (!의) return;
-    var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), h;
+    var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), 자리뜻 = 자리뜻표(), h;
     if (!의.r && 의.처지 == null) { $('out').innerHTML = 처지그림(); return; }
     if (!의.r) {
       var 처 = 처지of(의.처지), 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = (처 && 처.안내) || (C.고르기 || {}).안내 || (물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '');
@@ -122,8 +147,9 @@
     } else {
       var 판 = 의.r.펼침.자리, 연 = 의.연, x = 연 ? 판[연 - 1] : null, P = C.판 || {}, 등 = P.등급 || {}, 단추글 = 채움(펼침글.뒤집기, { n: 연 + 1, 자리: 자리이름[연 + 1] || '' }) || (자리이름[연 + 1] || '');
       h = '<div class="card three-card three-rite" data-gh-rite>' + 뒤집는판(나id, 판, 연, 의.움직임)
+        + (연 === 0 ? 문장줄('gh-read', 채움(C.읽는법 || 펼침글.읽는법, {})) : '')   // 11-08 첫 장을 열기 전에 읽는 법 한 줄(정통 타로와 같은 글)
         + (x ? '<p class="gh-flip-now"><span>' + esc(x.n + '. ' + (자리이름[x.n] || '')) + '</span> <b>' + esc(x.이름) + '</b>' + esc([x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || ''].filter(Boolean).map(function (s) { return ' · ' + s; }).join('')) + '</p>'
-          + 칸('p', 'gh-flip-m', 연애풀이(x, 의.r.성별 && 의.r.성별[0], 의.r.처지)) : '')   // 11-08 사장님 「한장씩 열면서 카드이름 + 삽화 + 설명」 — 여는 자리마다 현재 상황의 카드 풀이를 바로 보인다(열 장 판과 같은 글)
+          + 칸('p', 'gh-flip-pos', 자리뜻[x.n]) + 칸('p', 'gh-flip-m', 연애풀이(x, 의.r.성별 && 의.r.성별[0], 의.r.처지)) : '')   // 11-08 자리의 뜻 한 줄 → 그 자리의 카드 풀이   // 11-08 사장님 「한장씩 열면서 카드이름 + 삽화 + 설명」 — 여는 자리마다 현재 상황의 카드 풀이를 바로 보인다(열 장 판과 같은 글)
         + (연 < 10 ? '<div class="three-flip-foot"><button type="button" class="btn three-rite-btn" data-gh-flip>' + esc(단추글) + '</button></div>' : '') + '</div>';
     }
     $('out').innerHTML = h;
@@ -184,12 +210,12 @@
   }
   function 자리이름표() { var A = C.자리이름 || {}; return Object.keys(A).length >= 10 ? A : (펼침글.자리 || {}); }   // 열 자리가 다 차야 궁합 이름을 쓴다(반쯤 섞인 판 없음)
   function 판그림(r, b) {
-    var P = C.판 || {}, 등 = P.등급 || {}, 자리이름 = 자리이름표(), g = r.성별 && r.성별[0];
+    var P = C.판 || {}, 등 = P.등급 || {}, 자리이름 = 자리이름표(), 자리뜻 = 자리뜻표(), g = r.성별 && r.성별[0];
     var 판 = r.펼침.다시 ? r.펼침.다시.자리 : r.펼침.자리;
     return 칸('h3', 'sec', P.머리) + (r.펼침.다시 ? 칸('p', 'why', P.다시줄) : '') + '<div class="tg-grid">' + 판.map(function (x) {
       var 그것 = x.id === r.그카드.id && !r.그카드.같은카드;
       var 그림 = 그림id.test(x.id) ? '<img class="' + (x.놓임 === '거꾸로' ? 'rev' : '') + '" src="art/tarot/chaeksa-v1/' + x.id + '-s.webp?v=2" alt="" loading="lazy" decoding="async">' : '';
-      return '<div class="tg-c' + (그것 ? ' him' : '') + '">' + 그림 + 칸('p', 'n', x.n + '. ' + (자리이름[x.n] || ''))
+      return '<div class="tg-c' + (그것 ? ' him' : '') + '">' + 그림 + 칸('p', 'n', x.n + '. ' + (자리이름[x.n] || '')) + 칸('p', 'pos', 자리뜻[x.n])
         + 칸('p', 'y', x.이름) + 칸('p', 'g', [x.놓임 === '거꾸로' ? P.거꾸로 : '', 등[x.등급] || '', 그것 ? 채움(P.상대표시, { 그: 그부름(b) }) : ''].filter(Boolean).join(' · '))
         + 칸('p', 'm', 연애풀이(x, g, r.처지)) + '</div>';
     }).join('') + '</div>';
@@ -217,6 +243,7 @@
     var 처 = 처지of(r.처지), K처 = C.처지 || {};
     var h = (다시 ? 칸('p', 'why', M.다시보기) : '')
       + '<div class="big gh-top">' + 칸('p', 'k', R.머리) + (처 && K처.결과줄 ? 칸('p', 'gh-state-line', 채움(K처.결과줄, { 처지: 처.이름 })) : '') + 칸('h2', 'gh-name', 끝카 ? 끝카.이름 : '') + 칸('p', '', 끝카 ? [끝카.놓임 === '거꾸로' ? P.거꾸로 : '', 등[끝카.등급] || ''].filter(Boolean).join(' · ') : '')
+      + 끝말줄(끝카, 등) + 칸('p', 'gh-end-line', 끝카 ? (P.등급뜻 || {})[끝카.등급] : '')   // 11-08 왜 이 카드가 먼저인가 · 이 등급이 무슨 뜻인가(등급뜻은 COPY-0045)
       + 칸('small', '', 채움(M.줄, { 끝: 끝 })) + '</div>'
       + (r.서명 || r.이야기 ? '<div class="card gh-story" id="gh-story">' + (엮을 ? 칸('p', 'why', S.기다림) : '') + '</div>' : '')
       + '<div class="card">' + 그카드줄(r, b) + '</div>' + 넷째줄(r, b)
@@ -236,6 +263,9 @@
     if (쪽.제목) { $('h1').textContent = 쪽.제목; document.title = 쪽.제목 + ' · 책사'; }
     $('sub').textContent = 쪽.소개 || '';
     $('eyebrow').textContent = 쪽.위표시 || '';
+    // 11-08 소개 글(COPY-0045) — 이 화면이 무엇을 주나 · 어떻게 보나. 줄 여럿(배열) · 비면 칸 자체가 안 보인다.
+    var 설 = 쪽.설명, 줄들 = Array.isArray(설) ? 설.filter(Boolean) : (설 ? [설] : []), ab = $('gh-about');
+    if (ab) { ab.innerHTML = 줄들.length ? 칸('p', 'k', 쪽.설명머리) + 줄들.map(function (t) { return 칸('p', '', t); }).join('') : ''; ab.hidden = !줄들.length; }
     고르기그림();
   }
   global.ChaeksaTarotGhPyo = { 그리기: 그리기 };
