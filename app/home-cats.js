@@ -16,8 +16,11 @@
     // 창 = 아래 줄 「궁합」 고르기 창(app.js 고르기창)에서 이름 아래 한 줄(10-10 작가 「궁합창」 — 창의 다른 두 줄처럼 무엇을 보는지 적은 꼴). 홈 칸은 장부 홈한줄(물음 꼴) 그대로.
     //   장부(yaksok.js)에 두지 않은 까닭 — pay.html · pay-done · pay-fail 이 장부를 싣는다. 결제 심사 동안 그 쪽 ?v= 가 바뀌지 않게 여기 둔다(심사 뒤 장부 칸으로 옮긴다).
     match: [{ 키: 'gyeolhon', 주소: 'gyeolhon.html', 창: '그 사람과 함께 살아도 되는지, 결혼식을 피해야 할 해까지', 그림: 'art/content-tarot-v2/gyeolhon-cover.webp', 작은: 'art/content-tarot-v2/gyeolhon-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
-      // 11-09 사용자 진행 승인: 세 궁합 입구를 SSS급 궁합 측정 하나로. 옛 세 쪽의 주소는 유지한다.
-      { 키: 'sssghpyo', 주소: 'sss-gh-pyo.html', 그림: 'art/menu-illustrations-20261105/tarot-compatibility.webp', 작은: 'art/menu-illustrations-20261105/tarot-compatibility-s.webp', 크기: [1122, 1402], 그림위치: '50% 50%' },
+      // 11-09 사장님 「궁합사주 궁합자미두수 궁합 타로 Sss급으로 메뉴 정리다시해줘」 — 「궁합」 줄은 나를 알아보기 줄과 같은 꼴: 정통 사주 궁합 · 정통 자미두수 궁합 · 정통 타로 궁합 · SSS급 궁합 측정(세 면을 한 번에) 넷 차례대로(결정함 148).
+      { 키: 'ghpyo', 주소: 'gunghap-pyo.html', 그림: 'art/content-tarot-v2/gunghap-cover.webp', 작은: 'art/content-tarot-v2/gunghap-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      { 키: 'zwghpyo', 주소: 'zw-gunghap-pyo.html', 그림: 'art/menu-guides-v1/myeongban.webp', 작은: 'art/menu-guides-v1/myeongban-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      { 키: 'tarotghpyo', 주소: 'tarot-gunghap-pyo.html', 그림: 'art/menu-guides-v1/tarot.webp', 작은: 'art/menu-guides-v1/tarot-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
+      { 키: 'sssghpyo', 주소: 'sss-gh-pyo.html', 그림: 'art/gunghap-main.webp', 작은: 'art/gunghap-main-s.webp', 크기: [1086, 1448], 그림위치: '50% 30%' },   // 새 표지(image-requests)가 올 때까지 옛 궁합 표지
       { 키: 'ssom', 탭: 'ssom', 그림: 'art/content-tarot-v2/ssom-cover.webp', 작은: 'art/content-tarot-v2/ssom-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' }],
     me: [// 10-12 「내 사람들」(saram.html, 작업판 36) — 사장님 「내 사람들 ㄱㄱ」. 그림은 비견 칸(나란히 선 사람들)
       { 키: 'saram', 주소: 'saram.html', 그림: 'art/content-tarot-v2/saram-cover.webp', 작은: 'art/content-tarot-v2/saram-cover-s.webp', 크기: [1024, 1536], 그림위치: '50% 28%' },
@@ -76,7 +79,7 @@
   // 11-01 구글 「책사」 — 앱 탭으로 여는 칸도 href 는 그 상품의 소개 쪽(구글은 href 가 있는 <a> 만 따라간다. ./?go= 는 홈 사본이라 소개 쪽 다섯이 어느 쪽에서도 이어지지 않았다).
   // 보통 클릭은 그대로 길달기()가 data-tab 으로 앱 탭을 연다 — 바뀌는 것은 새 탭으로 열 때와 구글이 보는 주소뿐. 소개 쪽은 넣어 둔 사람이 있으면 ./?go= 로 넘긴다. 표 = tools_sogae.py PRODUCTS.
   var 소개쪽 = { love: 'love.html', pair: 'pair.html', chongnon: 'gunghap-chongnon.html', ssom: 'ssom.html', jeongtong: 'jeongtong.html' };
-  var 그림판 = 'v1658';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
+  var 그림판 = 'v1659';   // tools_bust.py --bump 가 서비스워커 판과 같이 올린다
   function 그림칸(b, c, i, 차례, g, Y) {
     // 그림은 그림만(10-23 사장님) — 그림 아래에 이름(.n) · 한줄(.s) · 딱지(.t: 무엇이 무료 · 얼마 — 값은 상품표에서 채운다). 분류 딱지는 안 그린다.
     var 이름 = c.표시명 || (Y && Y.이름(c.키)) || b.이름, 한줄 = c.설명 || (Y && Y.홈한줄 ? Y.홈한줄(c.키) : ''), 딱지 = Y ? Y.딱지html(c.키) : '';
@@ -137,18 +140,18 @@
       var x = 찾기(key);
       return 그림칸(x.b, x.c, i, i, g, Y);
     }).join('');
-    // 11-09 세 궁합을 한 화면으로: 홈 궁합 한 칸은 SSS급 궁합 측정으로 바로 연다.
-    var 궁합 = ['sssghpyo'].map(function (key, i) {
+    // 11-09 사장님 「궁합사주 궁합자미두수 궁합 타로 Sss급으로 메뉴 정리다시해줘」 — 궁합 줄 넷(세 면 + 세 면을 한 번에 재는 SSS급 궁합 측정). SSS급 궁합 분석(유료)은 시험 결제 뒤 이 줄 다섯째(결정함 123).
+    var 궁합 = ['ghpyo', 'zwghpyo', 'tarotghpyo', 'sssghpyo'].map(function (key, i) {
       var x = 찾기(key);
       return 그림칸(x.b, 홈그림(x.c), i, 4 + i, g, Y);
     }).join('');
     var 유료 = [['taekil', '아기 태어날 날과 시간', '가능한 범위에서 가장 좋은 시간을 골라 드려요'], ['ilgyeol']].map(function (r, i) {
       var x = 찾기(r[0]);
-      return 그림칸(x.b, Object.assign(홈그림(x.c), r[1] ? { 표시명: r[1], 설명: r[2] } : {}), i, 7 + i, g, Y);
+      return 그림칸(x.b, Object.assign(홈그림(x.c), r[1] ? { 표시명: r[1], 설명: r[2] } : {}), i, 8 + i, g, Y);
     }).join('');
     var 무료 = ['today', 'why', 'when', 'ssom', 'saram', 'read'].map(function (key, i) {
       var x = 찾기(key);
-      return 그림칸(x.b, Object.assign({}, x.c, { 목록: true }), i, 9 + i, g, Y);
+      return 그림칸(x.b, Object.assign({}, x.c, { 목록: true }), i, 10 + i, g, Y);
     }).join('');
     el.innerHTML = '<section class="home-paths" aria-label="나를 알아보기"><h2>나를 알아보기</h2><div class="cats home-doors">' + 정통 + '</div></section>'
       + '<section class="home-paths" aria-label="궁합"><h2>궁합</h2><div class="cats home-doors">' + 궁합 + '</div></section>'
@@ -164,7 +167,7 @@
     var 묶음들 = [
       ['나를 알아보기', ['jeongtong', 'myeongban', 'tarot', 'three', 'today', 'why', 'when']],
       ['아기 태어날 날과 시간', ['taekil']],
-      ['연애와 궁합', ['sssghpyo', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
+      ['연애와 궁합', ['ghpyo', 'zwghpyo', 'tarotghpyo', 'sssghpyo', 'ssom', 'gyeolhon', 'love', 'pair', 'saram']],
       ['일과 돈', ['ilgyeol']],
       ['읽을거리', ['read']]
     ];
