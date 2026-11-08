@@ -60,6 +60,13 @@ PILLARS = [  # (붙여넣기 이름, slug, 질문형 제목)
     ('날짜만받았을때', 'taekil-one-day-time', '병원에서 날짜만 받았을 때, 출산 시간은 어떻게 고르나요'),
     ('아들딸택일', 'taekil-son-or-daughter', '아들과 딸은 출산택일 결과가 다른가요'),
     ('첫째와부딪히는날', 'taekil-first-child', '첫째 아이와 부딪히지 않는 출산 날짜는 어떻게 고르나요'),
+    # 11-09 사장님 「궁합 검색이 많잖아 궁합으로가야지」 — 궁합 다섯 편(COPY-0049 · Codex) · 2027 정미년(COPY-0048). 제목은 Codex 글의 h2 그대로.
+    ('궁합-1-무료로보는법', 'gunghap-free-how', '사주 궁합 무료로 보는 법, 띠 궁합과 무엇이 다른가요?'),
+    ('궁합-2-서로바라던사람', 'gunghap-wanted-each-other', '사주 궁합에서 서로 바라던 사람은 얼마나 나올까요?'),
+    ('궁합-3-서로보완과기댐', 'gunghap-complement-or-lean', '사주 궁합은 좋다·나쁘다만 보면 될까요?'),
+    ('궁합-4-궁합의두방향', 'gunghap-two-directions', '누가 더 끌리나요? 사주 궁합은 무엇을 비교하나요?'),
+    ('궁합-5-말하는이상형과바라는사람', 'gunghap-stated-vs-wanted', '말하는 이상형과 바라는 사람, 같을까요?'),
+    ('2027정미년', 'new-year-2027-jeongmi', '2027년 정미년 운세, 내 일간에는 무엇이 오나요?'),
 ]
 # 궁통보감 관점 월별 글(tools_gungtong.py) — 열두 달. 여섯 갈래 가운데 첫째(09-19). 달이 늘면 MONTHS 에 줄을 더한다.
 PILLARS += [(f'{mo}월궁통보감', f'taekil-{y}-{mo:02d}-gungtong', f'왜 {mo}월에 태어나는 아이에겐 이 글자가 필요한가요 — 궁통보감으로 본 {y}년 {mo}월') for y, mo in MONTHS]
@@ -67,6 +74,12 @@ PILLARS += [(f'{mo}월궁통보감', f'taekil-{y}-{mo:02d}-gungtong', f'왜 {mo}
 # 같이 읽으면 좋은 글 — 주제가 가까운 글 셋(09-22 점검: 질문 글이 들어오는 링크 하나뿐인 막다른 길이었다).
 # 월별 · 궁통보감 글은 아래 related() 가 같은 달 짝을 붙인다. 없는 slug 는 건너뛴다.
 RELATED = {
+    'gunghap-free-how': ['gunghap-wanted-each-other', 'gunghap-complement-or-lean', 'gunghap-two-directions'],
+    'gunghap-wanted-each-other': ['gunghap-two-directions', 'gunghap-free-how', 'gunghap-stated-vs-wanted'],
+    'gunghap-complement-or-lean': ['gunghap-two-directions', 'gunghap-wanted-each-other', 'gunghap-free-how'],
+    'gunghap-two-directions': ['gunghap-wanted-each-other', 'gunghap-complement-or-lean', 'gunghap-stated-vs-wanted'],
+    'gunghap-stated-vs-wanted': ['gunghap-wanted-each-other', 'gunghap-free-how', 'gunghap-two-directions'],
+    'new-year-2027-jeongmi': ['why-ipchun-new-year', 'why-2026-byeongo', 'why-day-master-is-me'],
     'taekil-one-day-time': ['taekil-first-child', 'taekil-doctor-schedule', 'taekil-solar-time'],
     'taekil-son-or-daughter': ['taekil-fate-vs-timing', 'taekil-one-day-time', 'taekil-how-to-choose'],
     'taekil-first-child': ['taekil-one-day-time', 'taekil-how-to-choose', 'taekil-son-or-daughter'],
