@@ -47,6 +47,7 @@
       + 줄('saju', s.r.saju ? 사주.요약(s.r.saju, a, b) : null) + 줄('zw', s.r.zw ? 자미.요약(s.r.zw, a, b) : null) + 줄('tarot', 타)
       + 칸('p', 'why', R.탭안내) + 칸('p', 'why', R.끝말);
     $('summary').hidden = false;
+    try { if (global.ChaeksaToPaid) global.ChaeksaToPaid.달기($('summary'), 'sss-gh-pyo', 'gyeolhon'); } catch (e) {}   // 11-09 세 면 요약 아래 유료 다리 한 번(결혼 전 궁합 점검 · 글은 장부) — 면 안의 다리는 유료없음으로 막음
   }
   function 끝남(r) {   // 타로 모듈이 열째 카드를 연 뒤(또는 이번 달 판을 바로 연 뒤) 부른다
     var s = 상태; if (!s) return;
@@ -74,7 +75,7 @@
     면들.forEach(function (k) { var p = 판(k); if (p) { p.innerHTML = ''; p.hidden = k !== 'tarot'; } });
     사주.상자({ out: 판('saju'), err: err, 유료없음: true });
     자미.상자({ out: 판('zw'), err: err, 유료없음: true });
-    타로.상자({ out: 판('tarot'), err: err, 끝남: 끝남, 이야기: 이야기옴 });
+    타로.상자({ out: 판('tarot'), err: err, 끝남: 끝남, 이야기: 이야기옴, 유료없음: true });
     // 사주 · 자미두수는 카드를 고르는 동안 미리(숨은 칸에 그려 둔다) — 열째 카드 뒤 요약에 한 번에
     s.약속 = Promise.all([사주.부르기(a, b), 자미.부르기(a, b)]).then(function (rs) { if (상태 === s) { s.r.saju = rs[0]; s.r.zw = rs[1]; } });
     if (!타로.부르기(a, b)) { 상태 = null; $('result').hidden = true; return; }
