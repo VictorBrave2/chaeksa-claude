@@ -67,6 +67,10 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 /* 11-07 처지 고르기(결정함 142) — 단추는 .who 공용 · 결과 머리의 처지 줄 */
 .gh-state .who{justify-content:center;margin:12px 0 6px}.gh-state .who button{padding:11px 18px;font-size:var(--t3)}.gh-state .why{text-align:center}.gh-state-line{font-size:var(--t2);color:var(--ink2);margin:0 0 6px}
 .gh-story .gh-a{margin-top:10px}.gh-story p.qh{margin:0 0 2px;font-size:var(--t1);color:var(--accent);font-weight:700;letter-spacing:.02em}.gh-story .gh-a p+p{margin-top:0}
+/* 11-08 설명 칸 — 소개(두 사람 고르기 위) · 읽는 법 · 자리 뜻(한 장 열 때 · 열 장 판) · 끝말(결과 맨 위) */
+.gh-about{margin:8px 0 var(--s2)}.gh-about p{font-size:var(--t2);line-height:1.7;color:var(--ink2);margin:0;text-wrap:pretty;word-break:keep-all}.gh-about p+p{margin-top:6px}.gh-about p.k{font-size:var(--t1);color:var(--ink3);margin-bottom:4px}
+.gh-read{margin:0 auto 8px;max-width:34em;font-size:var(--t2);line-height:1.7;color:var(--ink2);text-align:center;word-break:keep-all}.gh-flip-pos{margin:4px auto 0;max-width:34em;font-size:var(--t1);line-height:1.6;color:var(--ink3);text-align:center;word-break:keep-all}
+.tg-c p.pos{font-size:var(--t1);color:var(--ink3);line-height:1.5;margin:0 0 2px;word-break:keep-all}.gh-end-line{font-size:var(--t2);color:var(--ink2);line-height:1.6;margin:4px 0 0;text-wrap:pretty;word-break:keep-all}
 .gh-story:empty{display:none}.gh-story p.c{font-family:var(--serif);font-size:var(--t4);font-weight:700;line-height:1.6;margin:2px 0 8px}.gh-story p+p{margin-top:8px}.gh-story p.todo{font-weight:700;margin-top:10px}
 </style>
 </head>
@@ -77,6 +81,7 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
   <p class="eyebrow" id="eyebrow"></p>
   <h1 id="h1">정통 타로 궁합</h1>
   <p class="sub" id="sub"></p>
+  <div id="gh-about" class="card gh-about" hidden></div>
   <div id="pick"></div>
   <div class="err" id="err"></div>
   <div id="out"></div>
@@ -91,8 +96,8 @@ input,select{width:100%;font-size:var(--t3);padding:10px 12px;border:1px solid v
 <script src="astro.js?v=c0bb3fa175"></script>
 <script src="lunar.js?v=9d5b6391f1"></script>
 <script src="three-pieces.js?v=fc392a8c4d"></script>
-<script src="tarot-gunghap-pyo-copy.js?v=e891f2c0d4"></script>
+<script src="tarot-gunghap-pyo-copy.js?v=774bad26a5"></script>
 <script src="pair-pick.js?v=9f42d2c190"></script>
-<script src="tarot-gunghap-pyo.js?v=72d0ed701b"></script>
+<script src="tarot-gunghap-pyo.js?v=adeec30568"></script>
 </body>
 </html>

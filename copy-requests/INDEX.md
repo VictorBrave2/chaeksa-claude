@@ -43,3 +43,4 @@
 | COPY-0040 | 정통 자미두수 궁합 — 결론·배우자와 각자의 모습·맞는 조건 68값 | 합침(11-06 · PR #48 · v1643) | [주문서](COPY-0040-ziwei-gunghap-needs.md) · [원고·검사·인계](ref/COPY-0040-ziwei-gunghap-needs-copy.md) | codex/COPY-0040 |
 | COPY-0042 | 정통 타로 궁합 — 넷째 자리(마음 깊은 곳의 배우자) 한 칸의 글(빈칸 채움) | 제안됨(11-06) | [주문서](COPY-0042-tarot-gunghap-fourth.md) | codex/COPY-0042 |
 | COPY-0044 | 정통 타로 궁합 — 처지 고르기 넷(썸 · 사귀는 중 · 헤어진 뒤 · 혼자 마음에 둠) 글 · 처지마다 카드 풀이 156칸 | 제안됨(11-07) | [주문서](COPY-0044-tarot-gunghap-state.md) | codex/COPY-0044 |
+| COPY-0045 | 정통 타로 궁합 — 이 화면이 무엇을 주는지 설명하는 글(소개 · 등급 뜻 · 자리 뜻) | 제안됨(11-08) | [주문서](COPY-0045-tarot-gunghap-about.md) | codex/COPY-0045 |
