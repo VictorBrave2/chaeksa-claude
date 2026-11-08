@@ -93,6 +93,22 @@
   var 그림길 = 'art/tarot/chaeksa-v1/', 자리수 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   var 오른쪽보는 = new Set(['C08', 'C10', 'C11', 'C12', 'C13', 'P02', 'P08', 'P09', 'P11', 'P13', 'P14', 'S06', 'S07', 'S11', 'S13', 'W02', 'W03', 'W06', 'W07', 'W09', 'W10', 'W11', 'W12']);   // three.js 와 같음(결정함 80 — 나 카드 그림이 보는 쪽)
   var 의식 = null;
+  // 11-09 사장님 「타로 카드의식할때 계속 스크롤이 올라가잖아」 — 정통 타로(three.js · 결정함 89)와 같은 지킴: 다시 그리기 전 그 칸(부채 · 판)의 화면 높이를 재어, 다시 그린 뒤 같은 높이로 되돌린다(손끝 아래 그대로).
+  //   열째를 고른 뒤 서버를 기다리는 동안도 부채 자리를 빈 칸으로 남겨 쪽이 짧아지지 않게 한다(짧아지면 브라우저가 스크롤을 위로 당긴다). 가짜 문서(시험 · 검사기)에선 조용히 넘어간다.
+  var 상자있음 = function (el) { return !!el && (typeof el.getClientRects !== 'function' || el.getClientRects().length > 0); };
+  function 화면위of(sel) { try { var el = OUT().querySelector(sel); return el && typeof el.getBoundingClientRect === 'function' && 상자있음(el) ? { sel: sel, top: el.getBoundingClientRect().top } : null; } catch (e) { return null; } }
+  function 제자리(지) {
+    if (!지) return;
+    try { var el = OUT().querySelector(지.sel); if (!el || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function' || !상자있음(el)) return; var d = el.getBoundingClientRect().top - 지.top; if (Math.abs(d) >= 1) global.scrollBy(0, d); } catch (e) {}
+  }
+  function 다보이게(sel) {   // 펼친 판이 머리 줄(84) · 아래 띠 · 네비(92)에 가리면 가장 적게 움직여 다 보이게(three.js 다보이게의 짧은 판)
+    try {
+      var el = OUT().querySelector(sel), 높 = +global.innerHeight || 0; if (!el || !높 || typeof el.getBoundingClientRect !== 'function' || typeof global.scrollBy !== 'function' || !상자있음(el)) return;
+      var r = el.getBoundingClientRect(), 위 = 84, 바닥 = 높 - 92, d = 0;
+      if (r.top < 위) d = r.top - 위; else if (r.bottom > 바닥) d = Math.min(r.bottom - 바닥, r.top - 위);
+      if (Math.abs(d) >= 1) global.scrollBy(0, d);
+    } catch (e) {}
+  }
   function 서울오늘() { try { var p = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).split('-').map(Number); return { y: p[0], m: p[1], d: p[2] }; } catch (e) { var d = new Date(); return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() }; } }
   function 나카드id(p) {   // 서버 나카드of 와 같은 규칙(웨이트 671) — 남 40 이상 나이트 · 아래 킹, 여 40 이상 퀸 · 아래 페이지(판 가운데 그림에만 쓴다)
     var b = (p && p.birth) || {}, t = 서울오늘(), 나이 = t.y - (+b.year || t.y) - ((t.m < +b.month || (t.m === +b.month && t.d < +b.day)) ? 1 : 0);
@@ -139,15 +155,15 @@
     var 의 = 의식; if (!의 || 의.r || 의.처지 || 처지목록().indexOf(k) < 0) return;
     의.처지 = k; 의.움직임 = 'spread'; 의식그리기();
   }
-  function 의식그리기() {
+  function 의식그리기(지킴) {   // 지킴 { sel, top } — 다시 그린 뒤 그 칸을 이 화면 높이로(결정함 89)
     var 의 = 의식; if (!의) return;
     var 나id = 나카드id(의.a), 자리이름 = 자리이름표(), 자리뜻 = 자리뜻표(), h;
     if (!의.r && 의.처지 == null) { OUT().innerHTML = 처지그림(); return; }
     if (!의.r) {
       var 처 = 처지of(의.처지), 수 = 의.고름.length, 다음 = 수 + 1, 물음 = (TPc.세점 && TPc.세점.물음말 && TPc.세점.물음말.love) || '', 말 = (처 && 처.안내) || (C.고르기 || {}).안내 || (물음 ? 채움(펼침글.고르기, { 물음: 물음 }) : '');
       h = '<div class="card three-card three-rite three-picking" data-gh-rite>' + 고르는판(나id, 수, 의.움직임)
-        + (수 < 10 ? 문장줄('three-fan-say', 말) + '<p class="three-fan-count" aria-live="polite"><span class="three-fan-no">' + 다음 + '</span>' + 칸('b', '', 자리이름[다음] || '') + '<span class="three-fan-of">' + 수 + ' / 10</span></p>' + 부채(의.고름, 의.움직임)
-          : 칸('p', 'three-fan-say', C.부르는중)) + '</div>';
+        + 문장줄('three-fan-say', 말) + '<p class="three-fan-count" aria-live="polite"><span class="three-fan-no">' + Math.min(다음, 10) + '</span>' + 칸('b', '', 자리이름[Math.min(다음, 10)] || '') + '<span class="three-fan-of">' + 수 + ' / 10</span></p>'
+        + (수 < 10 ? 부채(의.고름, 의.움직임) : '<div class="three-fan" aria-hidden="true"></div>' + 칸('p', 'three-fan-say', C.부르는중)) + '</div>';   // 열째 뒤 서버를 기다리는 동안도 안내 · 셈 줄 · 부채 높이를 그대로 둔다(쪽이 짧아져 스크롤이 올라가지 않게 · 11-09)
     } else {
       var 판 = 의.r.펼침.자리, 연 = 의.연, x = 연 ? 판[연 - 1] : null, P = C.판 || {}, 등 = P.등급 || {}, 단추글 = 채움(펼침글.뒤집기, { n: 연 + 1, 자리: 자리이름[연 + 1] || '' }) || (자리이름[연 + 1] || '');
       h = '<div class="card three-card three-rite" data-gh-rite>' + 뒤집는판(나id, 판, 연, 의.움직임)
@@ -157,24 +173,27 @@
         + (연 < 10 ? '<div class="three-flip-foot"><button type="button" class="btn three-rite-btn" data-gh-flip>' + esc(단추글) + '</button></div>' : '') + '</div>';
     }
     OUT().innerHTML = h;
+    제자리(지킴);
   }
   function 고르다(i) {
     var 의 = 의식; if (!의 || 의.r || 의.고름.length >= 10) return;
     if (!(i >= 0 && i <= 76 && i === Math.floor(i)) || 의.고름.indexOf(i) >= 0) return;
-    의.고름.push(i); 의.움직임 = 'pick'; 의식그리기();
+    var 지 = 화면위of('.three-sp-board');   // 판은 손끝 아래 그대로(부채는 그 아래 같은 자리)
+    의.고름.push(i); 의.움직임 = 'pick'; 의식그리기(지);
     if (의.고름.length === 10) 펼쳐부르기();
   }
   function 뒤집다() {
     var 의 = 의식; if (!의 || !의.r || 의.연 >= 10) return;
+    var 지 = 화면위of('.three-sp-board');
     의.연++; 의.움직임 = 'flip';
     if (의.연 >= 10) { 의식 = null; 그리기(의.r, 의.a, 의.b, false, 의.열쇠); return; }
-    의식그리기();
+    의식그리기(지);
   }
   function 펼쳐부르기() {
     var 의 = 의식;
     fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 나: 의.나, 그: 의.그, 고름: 의.고름, 처지: 의.처지 || undefined }) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.거르개) throw new Error(j.코드 || 'x'); return j; }); })
-      .then(function (r) { if (의식 !== 의) return; 기억쓰기(의.열쇠, r); 의.r = r; 의.연 = 0; 의.움직임 = 'deal'; 의식그리기(); })
+      .then(function (r) { if (의식 !== 의) return; var 지 = 화면위of('.three-sp-board'); 기억쓰기(의.열쇠, r); 의.r = r; 의.연 = 0; 의.움직임 = 'deal'; 의식그리기(지); 다보이게('.three-sp-board'); })   // 펼친 판은 고르던 판 자리 그대로(결정함 89)
       .catch(function () { if (의식 === 의) 의식 = null; OUT().innerHTML = ''; var err = ERR(); if (err) err.textContent = C.오류 || ''; });
   }
   if (typeof document !== 'undefined') document.addEventListener('click', function (e) {
