@@ -8,7 +8,7 @@
 <!--
   visits_stats() 를 부르는 화면. 이게 없어서 계수기가 넉 달을 허공에 썼다.
   숫자를 못 보면 「접는 조건」을 판정할 수 없다 — 그래서 도구가 먼저다.
-  집계만 내주는 함수라 anon 키로 부른다(server/schema-7.sql).
+  방문·단계 집계는 로그인 토큰으로 부른다. 실제 승인·환불 금액은 이 화면에서 읽지 않는다.
   robots.txt 가 /tools/ 를 막아 색인은 안 된다.
 -->
 <script src="../config.js"></script>
@@ -48,9 +48,15 @@
 <div class="wrap">
 <h1>유입</h1>
 <p class="lead">계수기는 <b>localhost 를 안 세고</b>, 한 브라우저를 <b>6시간에 한 번만</b> 셉니다.
-  브라우저가 추적을 원치 않는다고 밝히면 세지 않습니다. <b>진짜 숫자입니다.</b></p>
+  브라우저가 추적을 원치 않는다고 밝히면 세지 않습니다. 방문 기록 수이며 실제 사람 수와 다를 수 있습니다.</p>
 <button id="load">불러오기</button>
 <div id="body" class="note" style="margin-top:14px">아직 안 불렀습니다.</div>
+<div id="funnel"></div>
+<h2>승인·환불 금액</h2>
+<div class="warn"><b>아직 이 화면에 연결하지 않았습니다.</b><br>
+  단계 기록의 「결제 버튼」은 버튼을 누른 기록입니다. 결제 완료 건수나 매출이 아닙니다.<br>
+  실제 판매 금액은 운영 결제의 승인 기록으로, 환불 금액은 결제사의 환불 완료 기록으로 따로 확인합니다.
+  시험 결제·실패·미완료 주문은 판매 금액에 넣지 않습니다.</div>
 </div>
 
 <script>
@@ -64,20 +70,60 @@ var 발견 = ['naver', 'google', 'daum/kakao', 'instagram', 'youtube', 'x', 'bin
 
 function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return ({'<':'&lt;','>':'&gt;','&':'&amp;'})[c]; }); }
 
+// 단계는 각각의 기록이다. 같은 사람이 앞 단계를 거쳐 뒤 단계에 도달했는지는 이 집계만으로 알 수 없다.
+function renderFunnel(d) {
+  var stages = [['visit', '방문'], ['profile', '생년월일 입력'], ['sheet', '상세 화면 열기'], ['pay', '결제 버튼 누름']];
+  var h = '<h2>단계별 기록 (최근 ' + esc(d.days || 14) + '일)</h2>'
+    + '<table><tr><th>단계</th><th class="n">브라우저 수</th><th class="n">기록 수</th></tr>';
+  stages.forEach(function (stage) {
+    var v = d[stage[0]] || {};
+    h += '<tr><td>' + stage[1] + '</td><td class="n">' + esc(v.people == null ? '—' : v.people)
+      + '</td><td class="n">' + esc(v.rows == null ? '—' : v.rows) + '</td></tr>';
+  });
+  h += '</table><p class="note">브라우저 수는 무작위 방문 번호로 구분합니다. 같은 사람도 기기·브라우저를 바꾸면 따로 셉니다. '
+    + '번호가 없는 기록은 브라우저 수에 포함하지 않습니다. 방문은 6시간에 한 번, 단계 기록은 같은 브라우저에서 같은 종류를 하루에 한 번만 남깁니다.</p>'
+    + '<p class="note">단계별로 따로 센 수입니다. 연속된 구매 경로나 결제 전환율로 해석하지 않습니다. '
+    + '「상세 화면 열기」는 sheet 사건이 붙은 화면을 연 기록입니다. 「결제 버튼 누름」에는 결제를 취소하거나 실패한 경우도 포함됩니다.</p>';
+  $('funnel').innerHTML = h;
+}
+
+function loadFunnel(tok) {
+  $('funnel').textContent = '단계 기록을 부르는 중…';
+  return fetch(CFG.url + '/rest/v1/rpc/funnel_stats', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', apikey: CFG.anonKey, authorization: 'Bearer ' + tok },
+    body: '{}'
+  }).then(function (r) {
+    if (!r.ok) throw new Error('단계 기록을 불러오지 못했습니다. 로그인 상태와 집계 권한을 확인해 주세요.');
+    return r.json();
+  }).then(function (d) {
+    if (!d || d.code) throw new Error('단계 기록을 불러오지 못했습니다. 집계 권한을 확인해 주세요.');
+    renderFunnel(d);
+  }).catch(function (e) {
+    $('funnel').textContent = e.message;
+  });
+}
+
 $('load').onclick = function () {
   if (!CFG.url || !CFG.anonKey) { $('body').textContent = 'config.js 를 못 읽었습니다.'; return; }
   $('body').textContent = '부르는 중…';
-  // 11-05 docs/140 — 집계 함수는 사장님 로그인 토큰으로만(migrate-44). 로그인 안 돼 있으면 공개 열쇠로 가서 「권한 없음」이 뜬다.
+  $('funnel').textContent = '';
+  // 공개 열쇠로 대신 호출하지 않는다. DB 권한은 서버에서 별도로 제한한다(migrate-44).
   (window.ChaeksaCloud && ChaeksaCloud.token ? ChaeksaCloud.token().catch(function () { return null; }) : Promise.resolve(null)).then(function (tok) {
+  if (!tok) throw new Error('책사 사이트에서 사장님 계정으로 로그인한 뒤 다시 불러와 주세요.');
+  loadFunnel(tok);
   return fetch(CFG.url + '/rest/v1/rpc/visits_stats', {
     method: 'POST',
     headers: { 'content-type': 'application/json', apikey: CFG.anonKey,
-               authorization: 'Bearer ' + (tok || CFG.anonKey) },
+               authorization: 'Bearer ' + tok },
     body: '{}',
-  }); }).then(function (r) { return r.json(); }).then(function (d) {
+  }); }).then(function (r) {
+    if (!r.ok) throw new Error('방문 기록을 불러오지 못했습니다. 로그인 상태와 집계 권한을 확인해 주세요.');
+    return r.json();
+  }).then(function (d) {
     if (!d || d.code) {
-      $('body').innerHTML = '<div class="warn"><b>함수가 없습니다.</b> '
-        + 'Supabase 에서 <code>server/schema-7.sql</code> 을 실행하세요.<br>'
+      $('body').innerHTML = '<div class="warn"><b>방문 기록을 불러오지 못했습니다.</b> '
+        + '사장님 계정의 집계 권한과 서버 설정을 확인해 주세요.<br>'
         + esc(d && (d.message || d.code) || '') + '</div>';
       return;
     }
@@ -85,19 +131,19 @@ $('load').onclick = function () {
     var 총 = src.reduce(function (p, c) { return p + c.n; }, 0) || 1;
     var 발 = src.filter(function (s) { return 발견.indexOf(s.s) >= 0; })
                 .reduce(function (p, c) { return p + c.n; }, 0);
-    var 일수 = days.length || 1;
+    var 일수 = 14; // 방문이 없던 날도 포함한다. 집계 범위는 최근 14일이다.
     var mx = Math.max.apply(null, days.map(function (x) { return x.n; }).concat([1]));
     var smx = Math.max.apply(null, src.map(function (x) { return x.n; }).concat([1]));
 
     var h = '<div class="big">'
-      + '<div class="kpi"><b>' + (d.total || 0).toLocaleString() + '</b><span>전체 누계</span></div>'
-      + '<div class="kpi"><b>' + (d.today || 0).toLocaleString() + '</b><span>오늘</span></div>'
+      + '<div class="kpi"><b>' + (d.total || 0).toLocaleString() + '</b><span>누적 방문 기록</span></div>'
+      + '<div class="kpi"><b>' + (d.today || 0).toLocaleString() + '</b><span>오늘 방문 기록</span></div>'
       + '<div class="kpi"><b>' + 발.toLocaleString() + '</b><span>발견 유입 (14일)</span></div>'
       + '<div class="kpi"><b>' + (발 / 일수).toFixed(1) + '</b><span>발견 유입 · 하루평균</span></div>'
       + '</div>';
 
     h += '<div class="' + (발 / 일수 >= 30 ? 'warn good' : 'warn') + '">'
-      + '<b>발견 유입</b>이 모르는 사람이 스스로 찾아온 수입니다 — 검색·소셜에서 온 것만.<br>'
+      + '<b>발견 유입</b>은 알려진 검색·소셜 유입원에서 온 방문 기록입니다.<br>'
       + 'direct 는 카톡 링크·즐겨찾기·홈화면 실행·본인 방문이 섞여 있어 따로 셉니다.</div>';
 
     h += '<h2>날짜별 (최근 14일)</h2><table><tr><th>날</th><th class="n">방문</th><th class="n">첫 방문</th><th></th></tr>';
