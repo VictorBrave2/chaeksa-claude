@@ -47,7 +47,7 @@
       + 줄('saju', s.r.saju ? 사주.요약(s.r.saju, a, b) : null) + 줄('zw', s.r.zw ? 자미.요약(s.r.zw, a, b) : null) + 줄('tarot', 타)
       + 칸('p', 'why', R.탭안내) + 칸('p', 'why', R.끝말);
     $('summary').hidden = false;
-    try { if (global.ChaeksaToPaid) global.ChaeksaToPaid.달기($('summary'), 'sss-gh-pyo', 'gyeolhon'); } catch (e) {}   // 11-09 세 면 요약 아래 유료 다리 한 번(결혼 전 궁합 점검 · 글은 장부) — 면 안의 다리는 유료없음으로 막음
+    try { if (global.ChaeksaToPaid) global.ChaeksaToPaid.달기($('summary'), 'sss-gh-pyo', 'sss'); } catch (e) {}   // 11-09 세 면 요약 아래 유료 다리 한 번(결혼 전 궁합 점검 · 글은 장부) — 면 안의 다리는 유료없음으로 막음
   }
   function 끝남(r) {   // 타로 모듈이 열째 카드를 연 뒤(또는 이번 달 판을 바로 연 뒤) 부른다
     var s = 상태; if (!s) return;
