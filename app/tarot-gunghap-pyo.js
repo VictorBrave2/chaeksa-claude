@@ -275,7 +275,7 @@
     var out = OUT(); out.innerHTML = h;
     if (엮을) 엮기(r, 열쇠); else if (r.이야기) 이야기그림(r.이야기);
     셈(다시 ? 'tarot_gh_pyo_again' : 'tarot_gh_pyo');
-    try { if (global.ChaeksaToPaid && !(H && H.유료없음)) global.ChaeksaToPaid.달기(out, 'tarot-gh-pyo', 'gyeolhon'); } catch (e) {}   // 11-09 궁합 쪽의 유료 다리 = 결혼 전 궁합 점검(측정 쪽에서는 요약 칸 아래 한 번만)
+    try { if (global.ChaeksaToPaid && !(H && H.유료없음)) global.ChaeksaToPaid.달기(out, 'tarot-gh-pyo', 'sss'); } catch (e) {}   // 11-09 궁합 쪽의 유료 다리 = 결혼 전 궁합 점검(측정 쪽에서는 요약 칸 아래 한 번만)
     try {
       if ('IntersectionObserver' in global) {
         var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { 셈('tarot_gh_pyo_end'); io.disconnect(); } });
