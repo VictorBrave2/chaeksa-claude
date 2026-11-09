@@ -47,6 +47,10 @@
   .sum p + p{margin-top:6px}
   .sum b{color:var(--ink)}
   .sum a{color:var(--accent)}
+  .time-alt{margin:16px 0;padding:15px 17px;border:1px solid var(--accent-line);border-radius:var(--r2);background:var(--accent-soft)}
+  .time-alt h3{margin:0 0 6px;font-family:var(--serif);font-size:var(--t3);color:var(--ink)}
+  .time-alt p{margin:6px 0;font-size:var(--t2);line-height:1.75;color:var(--ink2)}
+  .time-alt a{color:var(--accent);font-weight:700}
   /* 최근 결제한 주문이 있을 때 · 결제가 아직 열리지 않았을 때만 뜬다 */
   .already{margin:14px 0 0;padding:13px 15px;border-radius:var(--r2);border:1px solid var(--accent-line);
            background:var(--accent-soft);font-size:var(--t2);line-height:1.75;color:var(--ink2)}
@@ -95,6 +99,13 @@
     <p class="sec" id="secondHead">함께 보는 사람</p>
     <p class="help">궁합을 볼 상대를 고르세요. 목록에 없다면 「사람 추가」로 입력하세요. 상대의 태어난 시각도 꼭 확인해 주세요.</p>
     <div id="secondWrap" data-slot="second"></div>
+
+    <aside class="time-alt" id="timeAlternative" aria-labelledby="timeAlternativeTitle" hidden>
+      <h3 id="timeAlternativeTitle">태어난 시각을 모른다면</h3>
+      <p>SSS급 궁합 분석에는 두 사람의 태어난 시각이 모두 필요해요.</p>
+      <p>결혼을 앞두고 있다면 「결혼 전 궁합 점검」을 살펴보세요. 시각을 모르면 열두 시간대를 모두 계산하고, 답이 달라지는 부분을 밝혀 드려요.</p>
+      <p><a data-cta="sss-no-time-gyeolhon" href="gyeolhon.html?from=sss-no-time">결혼 전 궁합 점검 알아보기 →</a></p>
+    </aside>
 
     <p class="hint">두 사람의 이름과 출생 정보는 주문 신청서에 저장돼 궁합 분석에 쓰여요. 결과는 결제한 계정에서 결제일부터 2년 동안 다시 열어 봐요. 다시 읽을 때는 홈 「설정」의 「내 결제」에서 열어 주세요.
       다른 사람의 생년월일은 그 사람의 동의를 받고 넣어 주세요.</p>
@@ -164,7 +175,7 @@
 </div>
 
 <script src="config.js?v=71396c29ad"></script>
-<script src="track.js?v=6dba667933"></script>
+<script src="track.js?v=2d1c45e77d"></script>
 <script src="cloud.js?v=024ffce65b"></script>
 <script src="usage.js?v=0c1ca14b01"></script>
 <script src="pay.js?v=1f42995d7f"></script>
@@ -174,7 +185,7 @@
 <script src="lunar.js?v=9d5b6391f1"></script>
 <script src="gunghap-pyo-copy.js?v=dc8cccda68"></script>
 <script src="sss-gunghap-copy.js?v=6893b5d244"></script>
-<script src="sss-apply.js?v=c0ee8d7db9"></script>
+<script src="sss-apply.js?v=577fe41847"></script>
 <script src="sayongbeop-copy.js?v=5feed2306c"></script><script src="sayongbeop.js?v=6ae6fae93d"></script>
 </body>
 </html>

@@ -120,7 +120,14 @@
     }
     wrap.innerHTML = h;
   }
-  function 둘다() { 칩('first'); 칩('second'); }
+  function 시간모름안내() {
+    var el = $('timeAlternative'); if (!el) return;
+    el.hidden = ![고름.first, 고름.second].some(function (id) {
+      var p = 사람(id);
+      return p && p.birth && (p.birth.hour == null || p.birth.hour === '');
+    });
+  }
+  function 둘다() { 칩('first'); 칩('second'); 시간모름안내(); }
   // 「나」가 첫 칸(10-05 「나」 먼저). 함께 보는 사람은 손님이 고른다 — 목록 첫 사람으로 멋대로 두지 않는다(app.js 09-13 규칙).
   function 기본고름() {
     if (!PP) return;
@@ -311,7 +318,7 @@
     if (f.id === s.id) { say(T.오류.같은사람, true); return; }
     var fn = 이름(f) || ($('firstName') ? $('firstName').value.trim() : ''), sn = 이름(s) || ($('secondName') ? $('secondName').value.trim() : '');
     if (!fn || !sn) { say(T.이름없음, true); return; }
-    if (f.birth.hour == null || f.birth.hour === '' || s.birth.hour == null || s.birth.hour === '') { say(T.오류.시모름, true); return; }   // 계산이 시주를 쓴다 — 서버도 막는다
+    if (f.birth.hour == null || f.birth.hour === '' || s.birth.hour == null || s.birth.hour === '') { 시간모름안내(); say(T.오류.시모름, true); return; }   // 계산이 시주를 쓴다 — 서버도 막는다
     if (!agreeData.checked || !agree.checked) { say(T.오류.동의, true); return; }
     // 이름이 없던 사람은 적은 이름을 저장해 둔다 — 사이트 어디서나 그 이름
     try { if (!이름(f)) PP.update(f.id, { name: fn }); if (!이름(s)) PP.update(s.id, { name: sn }); } catch (x) {}
