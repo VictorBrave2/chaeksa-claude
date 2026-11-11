@@ -72,6 +72,7 @@
         return '<ol class="tkr-filters">' + 항.map((f, i) => '<li class="tkr-filter' + (f.적용 === false ? ' tkr-filter-pass' : '') + '" data-key="' + esc(f.키) + '">'
           + '<p class="tkr-filter-h"><span class="tkr-filter-n">' + esc(f.번호 || (i + 1)) + '</span><strong>' + esc(f.이름) + '</strong></p>'
           + (f.조건 ? '<p class="tkr-filter-cond">' + esc(f.조건) + '</p>' : '')
+          + (f.적용 === false && f.되돌림말 ? '<p class="tkr-filter-pass-note">' + esc(f.되돌림말) + '</p>' : '')
           + '<p class="tkr-filter-nums"><span class="tkr-filter-in">' + esc(f.들어옴) + '곳</span><span class="tkr-filter-arr" aria-hidden="true">→</span><strong class="tkr-filter-out">' + esc(f.남음) + '곳</strong></p>'
           + (Array.isArray(f.날짜) && f.날짜.length ? '<p class="tkr-filter-days">' + f.날짜.map(x => esc(x.날) + ' ' + esc(x.n) + '칸').join(' · ') + '</p>' : '')
           + '</li>').join('') + '</ol>';
