@@ -167,7 +167,7 @@
     if (!section || typeof section !== 'object') return '';
     const body = Array.isArray(section.body) ? section.body : [];
     let content;
-    if (id === 'verdict') {
+    if (id === 'verdict' || id === 'verdict2') {   // 11-11 결정함 159 — 챕터 2 결론도 결론 모양으로
       const first = body.findIndex(n => n && n.k === 'b');
       content = first < 0 ? 몸(body, rep, section.head)
         : 몸(body.slice(0, first), rep, section.head) + 결정첫줄(body[first]) + 몸(body.slice(first + 1), rep, section.head);
@@ -175,7 +175,7 @@
     else content = 몸(body, rep, section.head);
     if (Array.isArray(section.items)) content += section.items.map(it => id === 'block' ? 결정후보(it, rep)
       : '<article class="tkr-item"' + (it && it.번호 != null ? ' data-no="' + esc(it.번호) + '"' : '') + '>' + (it && it.head ? '<h3>' + esc(it.head) + '</h3>' : '') + 몸(it && it.body, rep, it && it.head) + '</article>').join('');
-    const classes = 'tkr-sec' + (id === 'verdict' ? ' tkr-decision-verdict' : id === 'summary' ? ' tkr-decision-comparison' : '');
+    const classes = 'tkr-sec' + (id === 'verdict' || id === 'verdict2' ? ' tkr-decision-verdict' : id === 'summary' ? ' tkr-decision-comparison' : '') + (id === 'ch1' || id === 'ch2' ? ' tkr-chapter' : '');
     if (section.접힘 || 접을칸.has(id)) return '<details class="' + classes + ' tkr-foldsec" data-sec="' + esc(id) + '"><summary class="tkr-h">' + esc(id === 'crosscheck' ? '상세 자미두수 대조' : section.head || '') + '</summary><div class="tkr-section-body">' + (id === 'crosscheck' && section.head ? '<p class="tkr-b">' + esc(section.head) + '</p>' : '') + content + '</div></details>';
     return '<section class="' + classes + '" data-sec="' + esc(id) + '">' + (section.head ? '<h2 class="tkr-h">' + esc(section.head) + '</h2>' : '') + content + '</section>';
   }
