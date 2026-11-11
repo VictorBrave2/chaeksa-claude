@@ -26,7 +26,10 @@
     const 곳 = PL ? PL.resolve(곳값) : { name: '서울', lon: 126.98, tzOffset: null };
     const 넣 = (h, mi) => E.calc({ year: y, month: m, day: d, hour: h, minute: mi, gender: 성별, longitude: 곳.lon, tzOffset: 곳.tzOffset });
     const 낮 = 넣(12, 0);
-    const 밀림 = Math.round(-(낮.solarOffsetMin || 0));                      // 시계가 해보다 빠른 만큼(서울 12월이면 +28분)
+    // 11-11 해외는 그 곳 표준시 자오선(tzOffset × 15°) 기준으로 — 엔진의 solarOffsetMin 은 135°E 기준 총 보정이라 그대로 쓰면 해외 창이 통째로 어긋난다
+    //   (로스앤젤레스 1월: 1020분 → 창이 00:00 · 02:00 … 인데 엔진 시진은 01:00 · 03:00 … 에서 바뀜 — 결제 손님 보고서가 「명식 기둥이 덤프와 다르다」로 막힘). 국내(tzOffset 없음)는 전과 같다.
+    const 기준경도 = (곳.tzOffset == null || 곳.tzOffset === '') ? 135 : Number(곳.tzOffset) * 15;
+    const 밀림 = Math.round(-((낮.solarOffsetMin || 0) + (135 - 기준경도) * 4));   // 시계가 해보다 빠른 만큼(서울 12월이면 +28분)
     // 경계는 어림(밀림)으로 자리를 잡고, **엔진에 분 단위로 물어** 확정한다 — 병원에 말할 시각이라 1분도 어긋나면 안 된다.
     // (어림만 쓰면 반올림으로 1분이 밀린다: 2026-12-18 서울 미시는 13:28 부터인데 13:29 로 나왔다.)
     const 시지 = (t) => { t = Math.max(0, Math.min(1439, t)); return 넣(Math.floor(t / 60), t % 60).pillars.hour.branch; };
