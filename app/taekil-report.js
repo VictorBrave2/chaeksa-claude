@@ -67,6 +67,15 @@
           + (Array.isArray(n.노트) ? n.노트.map(t => '<p class="tkr-rarity-note">' + esc(t) + '</p>').join('') : '') + '</section>';
       }
       case 'fold': return '<details class="tkr-fold"><summary>' + esc(n.head) + '</summary>' + 몸(n.body, rep, n.head) + '</details>';
+      case 'filters': {   // 11-11 사장님 「필터식으로 표현해」(결정함 158) — 필터마다 이름 · 조건 · 들어온 자리 → 남은 자리 · 남은 날짜 요약. 값은 비공개 조립기(taekil-pick P.필터), 조건 글은 Codex
+        const 항 = Array.isArray(n.항목) ? n.항목 : [];
+        return '<ol class="tkr-filters">' + 항.map((f, i) => '<li class="tkr-filter' + (f.적용 === false ? ' tkr-filter-pass' : '') + '" data-key="' + esc(f.키) + '">'
+          + '<p class="tkr-filter-h"><span class="tkr-filter-n">' + (i + 1) + '</span><strong>' + esc(f.이름) + '</strong></p>'
+          + (f.조건 ? '<p class="tkr-filter-cond">' + esc(f.조건) + '</p>' : '')
+          + '<p class="tkr-filter-nums"><span class="tkr-filter-in">' + esc(f.들어옴) + '곳</span><span class="tkr-filter-arr" aria-hidden="true">→</span><strong class="tkr-filter-out">' + esc(f.남음) + '곳</strong></p>'
+          + (Array.isArray(f.날짜) && f.날짜.length ? '<p class="tkr-filter-days">' + f.날짜.map(x => esc(x.날) + ' ' + esc(x.n) + '칸').join(' · ') + '</p>' : '')
+          + '</li>').join('') + '</ol>';
+      }
       default: return '';
     }
   }
