@@ -70,7 +70,7 @@
       case 'filters': {   // 11-11 사장님 「필터식으로 표현해」(결정함 158) — 필터마다 이름 · 조건 · 들어온 자리 → 남은 자리 · 남은 날짜 요약. 값은 비공개 조립기(taekil-pick P.필터), 조건 글은 Codex
         const 항 = Array.isArray(n.항목) ? n.항목 : [];
         return '<ol class="tkr-filters">' + 항.map((f, i) => '<li class="tkr-filter' + (f.적용 === false ? ' tkr-filter-pass' : '') + '" data-key="' + esc(f.키) + '">'
-          + '<p class="tkr-filter-h"><span class="tkr-filter-n">' + (i + 1) + '</span><strong>' + esc(f.이름) + '</strong></p>'
+          + '<p class="tkr-filter-h"><span class="tkr-filter-n">' + esc(f.번호 || (i + 1)) + '</span><strong>' + esc(f.이름) + '</strong></p>'
           + (f.조건 ? '<p class="tkr-filter-cond">' + esc(f.조건) + '</p>' : '')
           + '<p class="tkr-filter-nums"><span class="tkr-filter-in">' + esc(f.들어옴) + '곳</span><span class="tkr-filter-arr" aria-hidden="true">→</span><strong class="tkr-filter-out">' + esc(f.남음) + '곳</strong></p>'
           + (Array.isArray(f.날짜) && f.날짜.length ? '<p class="tkr-filter-days">' + f.날짜.map(x => esc(x.날) + ' ' + esc(x.n) + '칸').join(' · ') + '</p>' : '')
@@ -167,7 +167,7 @@
     if (!section || typeof section !== 'object') return '';
     const body = Array.isArray(section.body) ? section.body : [];
     let content;
-    if (id === 'verdict') {
+    if (id === 'verdict' || id === 'verdict2') {   // 11-11 결정함 159 — 챕터 2 결론도 결론 모양으로
       const first = body.findIndex(n => n && n.k === 'b');
       content = first < 0 ? 몸(body, rep, section.head)
         : 몸(body.slice(0, first), rep, section.head) + 결정첫줄(body[first]) + 몸(body.slice(first + 1), rep, section.head);
@@ -175,7 +175,7 @@
     else content = 몸(body, rep, section.head);
     if (Array.isArray(section.items)) content += section.items.map(it => id === 'block' ? 결정후보(it, rep)
       : '<article class="tkr-item"' + (it && it.번호 != null ? ' data-no="' + esc(it.번호) + '"' : '') + '>' + (it && it.head ? '<h3>' + esc(it.head) + '</h3>' : '') + 몸(it && it.body, rep, it && it.head) + '</article>').join('');
-    const classes = 'tkr-sec' + (id === 'verdict' ? ' tkr-decision-verdict' : id === 'summary' ? ' tkr-decision-comparison' : '');
+    const classes = 'tkr-sec' + (id === 'verdict' || id === 'verdict2' ? ' tkr-decision-verdict' : id === 'summary' ? ' tkr-decision-comparison' : '') + (id === 'ch1' || id === 'ch2' ? ' tkr-chapter' : '');
     if (section.접힘 || 접을칸.has(id)) return '<details class="' + classes + ' tkr-foldsec" data-sec="' + esc(id) + '"><summary class="tkr-h">' + esc(id === 'crosscheck' ? '상세 자미두수 대조' : section.head || '') + '</summary><div class="tkr-section-body">' + (id === 'crosscheck' && section.head ? '<p class="tkr-b">' + esc(section.head) + '</p>' : '') + content + '</div></details>';
     return '<section class="' + classes + '" data-sec="' + esc(id) + '">' + (section.head ? '<h2 class="tkr-h">' + esc(section.head) + '</h2>' : '') + content + '</section>';
   }
