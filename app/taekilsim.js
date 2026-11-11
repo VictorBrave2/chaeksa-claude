@@ -42,7 +42,7 @@
     const 끝점 = [0].concat(경계.filter(x => x > 0 && x < 1440), [1440]);
     const rows = [];
     for (let k = 0; k < 끝점.length - 1; k++) {
-      const a = 끝점[k], b = 끝점[k + 1]; if (b - a < 2) continue;
+      const a = 끝점[k], b = 끝점[k + 1]; if (b - a < 1) continue;   // 11-11 1분짜리 창도 둔다 — 버리면 00:00 한 분이 비어 빈칸검사(앞 창과 이어지지 않는다)에 걸린다(로스앤젤레스 2027-01-10 ~ 12 · 결제 손님 보고서가 막힘)
       const 가운데 = Math.floor((a + b) / 2);
       const R = 넣(Math.floor(가운데 / 60), 가운데 % 60);
       let 판 = null, 본 = null;
