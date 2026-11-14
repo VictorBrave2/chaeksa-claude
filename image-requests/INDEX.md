@@ -147,3 +147,5 @@
 | IMG-0140 | 홈 「궁합」 줄 정통 자미두수 궁합 · 두 사람이 두 별 지도를 맞댐 | 적용됨(11-05 사용자 승인 · 홈 전용) | ref/menu-illustrations-20261105.md | 로컬 output/menu-illustrations-20261105/assets/ziwei-compatibility.png | app/art/menu-illustrations-20261105/ziwei-compatibility.webp |
 | IMG-0141 | 홈 「궁합」 줄 정통 타로 궁합 · 두 사람 · 켈틱 열 장 · 여신이 마지막 장을 뒤집음 | 적용됨(11-05 사용자 승인 · 홈 전용) | ref/menu-illustrations-20261105.md | 로컬 output/menu-illustrations-20261105/assets/tarot-compatibility.png | app/art/menu-illustrations-20261105/tarot-compatibility.webp |
 | IMG-0142 | 홈 「궁합」 줄 SSS급 궁합 분석 · 두 사람 · 머리 뒤 24칸 금빛 바퀴 | 요청 | IMG-0140-0142-gunghap-covers.md | image-requests/out/IMG-0142/ | app/art/menu-guides-v1/sssgh.webp |
+
+- 11-15 홈 정통 타로 궁합(IMG-0141 후속)·SSS급 궁합 측정: 새 가로 삽화 두 장 적용. 얼굴 P14·P13 고정, 각 1536×1024/360×240. [제작 기록](ref/menu-illustrations-20261115.md). SSS급 궁합 분석(IMG-0142)과 별도.
